@@ -143,7 +143,7 @@ jobs:
           role-session-name: OPGExampleWorkflowGithubAction
       - name: ECR Login
         id: login_ecr
-        uses: aws-actions/amazon-ecr-login@v1.7.0
+        uses: aws-actions/amazon-ecr-login@v2.0.1
         with:
           registries: 311462405659
       - name: Push Container
