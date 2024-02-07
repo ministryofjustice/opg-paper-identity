@@ -96,7 +96,7 @@ jobs:
       local_docker_image: ${{ matrix.data.image_app_name }}:latest
       sarif_file: trivy-results.sarif
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Show environment values
         run: |
           echo "local_docker_image: ${{ env.local_docker_image }}"
