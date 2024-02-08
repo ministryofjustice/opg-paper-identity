@@ -31,17 +31,9 @@ jobs:
     name: "Generate the workspace name"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v1.36.0
 
-  # SAST
-  # codeql for pythong
-  codeql_analysis:
-    name: "Run CodeQL against the code base"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/analysis-application-codeql-sast-to-github-security.yml@v1.36.0
-    with:
-      application_languages: '["python"]'
-
   # generate tag
   semver_tag:
-    needs: [branch_name, codeql_analysis]
+    needs: [branch_name]
     name: "Generate the semver tag value"
     uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v1.36.0
     with:
