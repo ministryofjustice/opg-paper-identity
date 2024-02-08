@@ -1,0 +1,29 @@
+---
+version: "3.7"
+
+services:
+  api:
+    build:
+      context: service-api
+      dockerfile: Dockerfile
+    healthcheck:
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  front:
+    build:
+      context: service-front
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - api
+    healthcheck:
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
