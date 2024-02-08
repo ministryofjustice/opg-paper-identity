@@ -1,11 +1,5 @@
 # OS
 .DS_STORE
-#  terraform
-**/.terraform/*
-*.tfstate
-*.tfstate.*
-*.tfvars
-secrets.auto.tfvars
 # editors
 .vscode/
 .idea
