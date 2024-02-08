@@ -1,4 +1,4 @@
-name: "[Example Workflow]"
+name: "Main Workflow"
 
 on:
   workflow_dispatch:
@@ -55,8 +55,11 @@ jobs:
       matrix:
         # services to scan over
         data:
-          - docker_build_directory: "./service-app"
-            image_app_name: "helloworld"
+          - service_name: "api"
+            image_app_name: "paper-identity/api"
+            test_command: "ls -l"
+          - service_name: "front"
+            image_app_name: "paper-identity/front"
             test_command: "ls -l"
     # we use these a few times, so its easier to generate them once and env
     # vars are visible in the output, so helps with debug
@@ -74,7 +77,7 @@ jobs:
         # set the working directory to the variable
         working-directory: ${{ matrix.data.docker_build_directory }}
         run: |
-          docker build -t ${{ env.local_docker_image }} .
+          docker compose build ${{ matrix.data.service_name }}
       # to check if things worked, output docker image list
       - name: Docker image list
         run: |
@@ -118,7 +121,7 @@ jobs:
         env:
           SEMVER_TAG: ${{ needs.semver_tag.outputs.tag }}
           ECR_REGISTRY: ${{ steps.login_ecr.outputs.registry }}
-          ECR_REPOSITORY: github-template-repository/helloworld
+          ECR_REPOSITORY: ${{ matrix.data.image_app_name }}
         run: |
           docker tag ${{ env.local_docker_image }} $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVER_TAG }}
           if ${{ github.event_name == 'push' }}; then
