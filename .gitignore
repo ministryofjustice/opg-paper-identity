@@ -8,3 +8,5 @@
 .env
 venv/
 env/
+vendor/
+/nbproject/private/
