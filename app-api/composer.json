@@ -9,10 +9,9 @@
     "type": "project",
     "license": "BSD-3-Clause",
     "keywords": [
-        "laminas",
-        "mvc",
-        "skeleton",
-        "framework"
+        "ministryofjustice",
+        "opg",
+        "paper-id-api"
     ],
     "require": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
