@@ -10,10 +10,6 @@ RUN pecl install apcu && docker-php-ext-enable apcu
 RUN apk upgrade --no-cache curl nghttp2-libs libcrypto3 libssl3 openssl openssl-dev perl
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
-COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www/
 
