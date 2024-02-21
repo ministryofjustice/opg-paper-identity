@@ -17,11 +17,13 @@ COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
-WORKDIR /var/www/
+#WORKDIR /var/www/
 
 RUN mkdir /tmp/cache &&\
 chown -R www-data /tmp/cache &&\
-chown -R www-data /var/www/
+chown -R www-data /app/
+
+#chown -R www-data /var/www/
 
 ENV PHP_FPM_MAX_CHILDREN "8"
 ENV PHP_FPM_MAX_START_CHILDREN "4"
@@ -31,7 +33,8 @@ ENV PHP_FPM_MEMORY_LIMIT "256M"
 
 USER "www-data"
 
-VOLUME ["/var/www/public"]
+#VOLUME ["/var/www/public"]
+VOLUME ["/app/public"]
 
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY composer.json composer.json
