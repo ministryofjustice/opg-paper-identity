@@ -1,13 +1,8 @@
 FROM php:8.2-fpm-alpine AS app
 
-RUN apk --no-cache add postgresql-dev fcgi icu-dev autoconf linux-headers $PHPIZE_DEPS \
-  && docker-php-ext-configure intl \
-  && docker-php-ext-install pdo pdo_pgsql opcache intl sockets zip \
-  && docker-php-ext-enable sodium
+RUN apk --no-cache add icu-dev $PHPIZE_DEPS \
+  && docker-php-ext-install opcache \
 RUN pecl install apcu && docker-php-ext-enable apcu
-
-# Patch curl Vulnerability 20230220
-RUN apk upgrade --no-cache curl nghttp2-libs libcrypto3 libssl3 openssl openssl-dev perl
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
