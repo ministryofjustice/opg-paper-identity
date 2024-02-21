@@ -22,7 +22,7 @@ return [
     'Laminas\Db',
     'Laminas\Router',
     'Laminas\Validator',
-    'Laminas\DeveloperTools',
+    // 'Laminas\DeveloperTools',
     'Laminas\Diactoros',
     'Application',
 ];

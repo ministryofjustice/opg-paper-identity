@@ -19,8 +19,6 @@ services:
     build:
       context: service-front
       dockerfile: Dockerfile
-    ports:
-      - 8000:8000
     depends_on:
       - api
     healthcheck:
@@ -31,6 +29,23 @@ services:
       start_period: 30s
     volumes:
       - ./service-front:/app
+
+  front-web:
+    build: nginx
+    depends_on: [front]
+    environment:
+      APP_HOST: front
+      APP_NAME: front
+      APP_PORT: 9000
+      NGINX_LOG_LEVEL: info
+    ports:
+      - 8000:80
+    healthcheck:
+      test: curl -f http://localhost/nginx-health || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   composer:
     image: composer
