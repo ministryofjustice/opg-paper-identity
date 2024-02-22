@@ -14,6 +14,9 @@ services:
       retries: 3
       start_period: 30s
 
+    volumes:
+        - ./service-api:/var/www
+
   front:
     image: paper-identity/front
     build:
@@ -30,7 +33,24 @@ services:
       retries: 3
       start_period: 30s
 
-  # front-web:
+  api-web:
+      build: nginx
+      depends_on: [api]
+      environment:
+        APP_HOST: api
+        APP_NAME: api
+        APP_PORT: 9000
+        NGINX_LOG_LEVEL: info
+      ports:
+        - 8001:80
+      healthcheck:
+        test: curl -f http://localhost/nginx-health || exit 1
+        interval: 15s
+        timeout: 10s
+        retries: 3
+        start_period: 30s
+
+# front-web:
   #   build: nginx
   #   depends_on: [front]
   #   environment:
@@ -46,3 +66,9 @@ services:
   #     timeout: 10s
   #     retries: 3
   #     start_period: 30s
+
+  composer:
+    image: composer
+    command: [ "install" ]
+
+
