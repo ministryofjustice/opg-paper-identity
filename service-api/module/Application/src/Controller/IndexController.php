@@ -11,6 +11,7 @@ class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
-       return new JsonModel();
+        $data = array('Laminas' => 'Paper ID Service API');
+       return new JsonModel($data);
     }
 }
