@@ -1,7 +1,7 @@
 FROM php:8.2-fpm-alpine AS app
 
 RUN mkdir /app
-WORKDIR /app
+WORKDIR /var/www
 
 RUN apk --no-cache add postgresql-dev fcgi icu-dev autoconf linux-headers $PHPIZE_DEPS \
 && docker-php-ext-install mysqli pdo pdo_pgsql opcache intl sockets \
@@ -17,13 +17,9 @@ COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
-#WORKDIR /var/www/
-
 RUN mkdir /tmp/cache &&\
 chown -R www-data /tmp/cache &&\
-chown -R www-data /app/
-
-#chown -R www-data /var/www/
+chown -R www-data /var/www/
 
 ENV PHP_FPM_MAX_CHILDREN "8"
 ENV PHP_FPM_MAX_START_CHILDREN "4"
@@ -33,8 +29,7 @@ ENV PHP_FPM_MEMORY_LIMIT "256M"
 
 USER "www-data"
 
-#VOLUME ["/var/www/public"]
-VOLUME ["/app/public"]
+VOLUME ["/var/www/public"]
 
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY composer.json composer.json
