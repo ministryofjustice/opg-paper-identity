@@ -1,7 +1,5 @@
 FROM node:21.1.0-alpine3.17 as asset-env
 
-RUN mkdir -p /app
-
 WORKDIR /app
 
 RUN apk add --no-cache git
