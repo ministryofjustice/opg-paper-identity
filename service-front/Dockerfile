@@ -1,3 +1,18 @@
+FROM node:21.1.0-alpine3.17 as asset-env
+
+WORKDIR /app
+
+RUN apk add --no-cache git
+
+RUN mkdir -p public
+
+COPY package.json .
+COPY yarn.lock .
+RUN yarn
+
+COPY web web
+RUN yarn build
+
 FROM php:8.2-fpm-alpine AS app
 
 RUN mkdir /app
@@ -29,8 +44,6 @@ ENV PHP_FPM_MEMORY_LIMIT "256M"
 
 USER "www-data"
 
-VOLUME ["/var/www/public"]
-
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY composer.json composer.json
 COPY composer.lock composer.lock
@@ -40,6 +53,7 @@ composer install --prefer-dist --no-dev --no-interaction --no-scripts &&\
 composer dumpautoload -o
 
 COPY public public
+COPY --from=asset-env /app/public public
 COPY config config
 COPY module module
 STOPSIGNAL SIGQUIT

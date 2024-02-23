@@ -20,6 +20,7 @@
                                 'type' => 'image/vnd.microsoft.icon',
                                 'href' => $this->basePath() . '/img/favicon.ico'
                             ])
+            ->appendStylesheet('/css/all.css')
         ?>
         <!-- Scripts -->
         <?= $this->headScript() ?>
@@ -67,6 +68,7 @@
             </footer>
         </div>
         <?= $this->inlineScript()
-            ->prependFile($this->basePath('js/bootstrap.min.js')) ?>
+            ->prependFile($this->basePath('js/main.js'), 'text/javascript', ['defer' => ''])
+            ->prependScript('document.body.className += " js-enabled" + ("noModule" in HTMLScriptElement.prototype ? " govuk-frontend-supported" : "");') ?>
     </body>
 </html>
