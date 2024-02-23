@@ -4,15 +4,15 @@ WORKDIR /app
 
 RUN apk add --no-cache git
 
-RUN mkdir -p web/assets
-RUN mkdir -p web/static
-RUN mkdir -p web/template
+#RUN mkdir -p web/assets
+#RUN mkdir -p web/static
+#RUN mkdir -p web/template
 
 COPY package.json .
 COPY yarn.lock .
 RUN yarn install
 
-COPY web/assets web/assets
+COPY web web
 RUN yarn build
 
 #FROM golang:1.21.6 as build-env
@@ -41,12 +41,12 @@ RUN yarn build
 #RUN apk update && apk upgrade --no-cache libcrypto3 libssl3
 #
 #COPY --from=build-env /go/bin/opg-paper-identity opg-paper-identity
-COPY web/static web/static
-COPY web/assets web/assets
-COPY web/template web/template
-
-RUN addgroup -S app && \
-    adduser -S -g app app && \
-    chown -R app:app opg-paper-identity web/static web/template
-USER app
-ENTRYPOINT ["./opg-paper-identity/service-front"]
+#COPY web/static web/static
+#COPY web/assets web/assets
+#COPY web/template web/template
+#
+#RUN addgroup -S app && \
+#    adduser -S -g app app && \
+#    chown -R app:app opg-paper-identity web/static web/template
+#USER app
+#ENTRYPOINT ["./opg-paper-identity/service-front"]

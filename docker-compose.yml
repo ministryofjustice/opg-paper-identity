@@ -31,6 +31,7 @@ services:
       retries: 3
       start_period: 30s
     volumes:
+      - ./service-front:/var/www
       - static-content:/var/www/public
 
   api-web:
@@ -75,11 +76,13 @@ services:
 
   yarn:
     build:
-      context: service-front/docker/yarn/
-    working_dir: /home/node/app
+      context: ./service-front
+      dockerfile: ./docker/yarn/Dockerfile
+#    working_dir: /home/node/app
     entrypoint: yarn
     volumes:
-      - ./:/home/node/app
+      - ./service-front:/app
+      - static-content:/app/public
 
 volumes:
   static-content:
