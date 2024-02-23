@@ -36,10 +36,10 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('home');
     }
 
-    public function testIndexActionViewModelTemplateRenderedWithinLayout(): void
+    public function testIndexActionResponse(): void
     {
         $this->dispatch('/', 'GET');
-        $this->assertQuery('body h1');
+        $this->assertEquals('{"Laminas":"Paper ID Service API"}', $this->getResponse()->getContent());
     }
 
     public function testInvalidRouteDoesNotCrash(): void
