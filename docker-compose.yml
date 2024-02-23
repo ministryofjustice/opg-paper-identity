@@ -78,7 +78,6 @@ services:
     build:
       context: ./service-front
       dockerfile: ./docker/yarn/Dockerfile
-#    working_dir: /home/node/app
     entrypoint: yarn
     volumes:
       - ./service-front:/app
