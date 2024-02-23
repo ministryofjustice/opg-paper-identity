@@ -1,0 +1,7 @@
+/.phpcs-cache
+/.phpunit.cache
+/.psalm-cache
+vendor/
+config/development.config.php
+public
+!public/index.php
