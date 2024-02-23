@@ -71,4 +71,12 @@ services:
    image: composer
    command: [ "install" ]
 
+  yarn:
+    build:
+      context: service-front/docker/yarn/
+    working_dir: /home/node/app
+    entrypoint: yarn
+    volumes:
+      - ./:/home/node/app
+
 
