@@ -32,23 +32,7 @@ services:
       start_period: 30s
     volumes:
       - ./service-front:/var/www
-
-  front-web:
-    build: nginx
-    depends_on: [front]
-    environment:
-      APP_HOST: front
-      APP_NAME: front
-      APP_PORT: 9000
-      NGINX_LOG_LEVEL: info
-    ports:
-      - 8000:80
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      - static-content:/var/www/public
 
   api-web:
     build: nginx
@@ -67,7 +51,37 @@ services:
       retries: 3
       start_period: 30s
 
+  front-web:
+    build: nginx
+    depends_on: [front]
+    environment:
+      APP_HOST: front
+      APP_NAME: front
+      APP_PORT: 9000
+      NGINX_LOG_LEVEL: info
+    ports:
+      - 8000:80
+    healthcheck:
+      test: curl -f http://localhost/nginx-health || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - static-content:/var/www/public
+
   composer:
     image: composer
     command: [ "install" ]
 
+  yarn:
+    build:
+      context: ./service-front
+      dockerfile: ./docker/yarn/Dockerfile
+    entrypoint: yarn
+    volumes:
+      - ./service-front:/app
+      - static-content:/app/public
+
+volumes:
+  static-content:
