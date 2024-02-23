@@ -22,8 +22,6 @@ services:
     build:
       context: service-front
       dockerfile: Dockerfile
-    ports:
-      - 8000:8000
     depends_on:
       - api
     healthcheck:
@@ -32,6 +30,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    volumes:
+      - static-content:/var/www/public
 
   api-web:
       build: nginx
@@ -66,6 +66,8 @@ services:
        timeout: 10s
        retries: 3
        start_period: 30s
+     volumes:
+       - static-content:/var/www/public
 
   composer:
    image: composer
@@ -79,4 +81,5 @@ services:
     volumes:
       - ./:/home/node/app
 
-
+volumes:
+  static-content:
