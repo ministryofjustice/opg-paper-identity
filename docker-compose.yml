@@ -7,6 +7,7 @@ services:
     build:
       context: service-api
       dockerfile: Dockerfile
+      target: production
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
       interval: 15s
@@ -16,6 +17,22 @@ services:
 
     volumes:
         - ./service-api:/var/www
+
+  api-test:
+    image: paper-identity/api-test
+    build:
+      context: service-api
+      dockerfile: Dockerfile
+      target: development
+    healthcheck:
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    #volumes:
+     # - ./service-api:/var/www
 
   front:
     image: paper-identity/front
@@ -49,6 +66,8 @@ services:
         timeout: 10s
         retries: 3
         start_period: 30s
+
+
 
 # front-web:
   #   build: nginx
