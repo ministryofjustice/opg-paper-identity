@@ -21,8 +21,6 @@ ENV PHP_FPM_MEMORY_LIMIT "256M"
 
 USER "www-data"
 
-VOLUME ["/var/www/public"]
-
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY composer.json composer.json
 COPY composer.lock composer.lock
@@ -44,7 +42,8 @@ USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
   composer dumpautoload -o
 
-COPY tests tests
-COPY phpstan.neon phpstan.neon
+COPY phpcs.xml phpcs.xml
+COPY phpunit.xml.dist phpunit.xml
+COPY psalm.xml psalm.xml
 
 FROM app AS production
