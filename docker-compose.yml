@@ -14,7 +14,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-
     volumes:
         - ./service-api:/var/www
 
@@ -39,8 +38,6 @@ services:
     build:
       context: service-front
       dockerfile: Dockerfile
-    ports:
-      - 8000:8000
     depends_on:
       - api
     healthcheck:
@@ -49,6 +46,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    volumes:
+      - ./service-front:/var/www
+      - static-content:/var/www/public
 
   api-web:
       build: nginx
@@ -67,24 +67,24 @@ services:
         retries: 3
         start_period: 30s
 
-
-
-# front-web:
-  #   build: nginx
-  #   depends_on: [front]
-  #   environment:
-  #     APP_HOST: front
-  #     APP_NAME: front
-  #     APP_PORT: 9000
-  #     NGINX_LOG_LEVEL: info
-  #   ports:
-  #     - 8000:80
-  #   healthcheck:
-  #     test: curl -f http://localhost/nginx-health || exit 1
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 30s
+  front-web:
+     build: nginx
+     depends_on: [front]
+     environment:
+       APP_HOST: front
+       APP_NAME: front
+       APP_PORT: 9000
+       NGINX_LOG_LEVEL: info
+     ports:
+       - 8080:80
+     healthcheck:
+       test: curl -f http://localhost/nginx-health || exit 1
+       interval: 15s
+       timeout: 10s
+       retries: 3
+       start_period: 30s
+     volumes:
+       - static-content:/var/www/public
 
   api-composer:
     image: composer
@@ -99,3 +99,6 @@ services:
     volumes:
       - ~/.composer:/tmp
       - ./service-front:/app
+
+volumes:
+  static-content:
