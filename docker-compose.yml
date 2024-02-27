@@ -87,18 +87,16 @@ services:
      volumes:
        - static-content:/var/www/public
 
-  composer:
-   image: composer
-   command: [ "install" ]
-
-  yarn:
-    build:
-      context: ./service-front
-      dockerfile: ./docker/yarn/Dockerfile
-    entrypoint: yarn
+  api-composer:
+    image: composer
+    command: [ "install", "--ignore-platform-reqs" ]
     volumes:
-      - ./service-front:/app
-      - static-content:/app/public
+      - ~/.composer:/tmp
+      - ./service-api:/app
 
-volumes:
-  static-content:
+  front-composer:
+    image: composer
+    command: [ "install", "--ignore-platform-reqs" ]
+    volumes:
+      - ~/.composer:/tmp
+      - ./service-front:/app
