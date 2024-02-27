@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Laminas\Mvc\MvcEvent;
+
 class Module
 {
     public function getConfig(): array
