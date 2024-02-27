@@ -8,5 +8,7 @@
 return [
     'Laminas\Router',
     'Laminas\Validator',
+    'Laminas\ZendFrameworkBridge',
+    'Laminas\ApiTools\ApiProblem',
     'Application',
 ];

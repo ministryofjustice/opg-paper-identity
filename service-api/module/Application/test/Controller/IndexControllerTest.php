@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IndexController;
+use Laminas\Http\Headers;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
@@ -36,15 +37,26 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('home');
     }
 
-    public function testIndexActionViewModelTemplateRenderedWithinLayout(): void
+    public function testIndexActionResponse(): void
     {
         $this->dispatch('/', 'GET');
-        $this->assertQuery('body h1');
+        $this->assertEquals('{"Laminas":"Paper ID Service API"}', $this->getResponse()->getContent());
     }
 
     public function testInvalidRouteDoesNotCrash(): void
     {
+        $this->jsonHeaders();
+
         $this->dispatch('/invalid/route', 'GET');
         $this->assertResponseStatusCode(404);
+    }
+
+    public function jsonHeaders(): void
+    {
+        $headers = new Headers();
+        $headers->addHeaderLine('Accept', 'application/json');
+
+        $request = $this->getRequest();
+        $request->setHeaders($headers);
     }
 }

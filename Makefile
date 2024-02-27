@@ -8,3 +8,6 @@ up: ## Start application
 
 down: ## Stop application
 	docker compose down
+
+api-unit-test:
+	docker compose run --rm api-test vendor/bin/phpunit
