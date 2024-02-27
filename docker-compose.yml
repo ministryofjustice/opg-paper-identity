@@ -67,8 +67,16 @@ services:
   #     retries: 3
   #     start_period: 30s
 
-  composer:
+  api-composer:
     image: composer
-    command: [ "install" ]
+    command: [ "install", "--ignore-platform-reqs" ]
+    volumes:
+      - ~/.composer:/tmp
+      - ./service-api:/app
 
-
+  front-composer:
+    image: composer
+    command: [ "install", "--ignore-platform-reqs" ]
+    volumes:
+      - ~/.composer:/tmp
+      - ./service-front:/app
