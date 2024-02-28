@@ -83,8 +83,8 @@ services:
        timeout: 10s
        retries: 3
        start_period: 30s
-     volumes:
-       - static-content:/var/www/public
+#     volumes:
+#       - ./service-front/public:/var/www/public
 
   api-composer:
     image: composer
