@@ -4,10 +4,9 @@ WORKDIR /app
 
 RUN apk add --no-cache git
 
-RUN pwd
-
 COPY package.json .
 COPY yarn.lock .
 RUN yarn install
+
 COPY web web
 RUN yarn build

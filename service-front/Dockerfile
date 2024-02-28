@@ -8,7 +8,8 @@ RUN mkdir -p public
 
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install
+RUN yarn
+
 COPY web web
 RUN yarn build
 
@@ -52,7 +53,6 @@ composer dumpautoload -o
 
 COPY public public
 COPY --from=asset-env /app/public public
-COPY --from=asset-env /app/web web
 COPY config config
 COPY module module
 STOPSIGNAL SIGQUIT
