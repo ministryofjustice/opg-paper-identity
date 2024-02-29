@@ -10,5 +10,7 @@ venv/
 env/
 vendor/
 /nbproject/private/
+# dev mode files
+development.config.php
 # vendor files
 node_modules
