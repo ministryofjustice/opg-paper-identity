@@ -21,13 +21,33 @@ return [
                     ],
                 ],
             ],
+            'test' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/test',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'application',
+                    ],
+                ],
+            ],
+            'bang' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/bang',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'application',
+                    ],
+                ],
+            ],
             'application' => [
                 'type'    => Segment::class,
                 'options' => [
                     'route'    => '/application[/:action]',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action'     => 'application',
                     ],
                 ],
             ],
