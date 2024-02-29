@@ -15,7 +15,8 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - ./service-api:/var/www
+        - ./service-api:/var/www
+        - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
 
   api-test:
     image: paper-identity/api-test
@@ -30,8 +31,8 @@ services:
       retries: 3
       start_period: 30s
 
-      #volumes:
-      # - ./service-api:/var/www
+    #volumes:
+     # - ./service-api:/var/www
 
   front:
     image: paper-identity/front
@@ -48,43 +49,44 @@ services:
       start_period: 30s
     volumes:
       - ./service-front:/var/www
+      - ./service-front/config/development.config.php.dist:/var/www/config/development.config.php
       - static-content:/var/www/public
 
   api-web:
-    build: nginx
-    depends_on: [api]
-    environment:
-      APP_HOST: api
-      APP_NAME: api
-      APP_PORT: 9000
-      NGINX_LOG_LEVEL: info
-    ports:
-      - 8001:80
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      build: nginx
+      depends_on: [api]
+      environment:
+        APP_HOST: api
+        APP_NAME: api
+        APP_PORT: 9000
+        NGINX_LOG_LEVEL: info
+      ports:
+        - 8001:80
+      healthcheck:
+        test: curl -f http://localhost/nginx-health || exit 1
+        interval: 15s
+        timeout: 10s
+        retries: 3
+        start_period: 30s
 
   front-web:
-    build: nginx
-    depends_on: [front]
-    environment:
-      APP_HOST: front
-      APP_NAME: front
-      APP_PORT: 9000
-      NGINX_LOG_LEVEL: info
-    ports:
-      - 8080:80
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    volumes:
-      - static-content:/var/www/public
+     build: nginx
+     depends_on: [front]
+     environment:
+       APP_HOST: front
+       APP_NAME: front
+       APP_PORT: 9000
+       NGINX_LOG_LEVEL: info
+     ports:
+       - 8080:80
+     healthcheck:
+       test: curl -f http://localhost/nginx-health || exit 1
+       interval: 15s
+       timeout: 10s
+       retries: 3
+       start_period: 30s
+     volumes:
+       - static-content:/var/www/public
 
   api-composer:
     image: composer

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * This file is loaded in local development to disable caching. This slows
+ * down performance but ensures that config changes are seen immediately.
+ */
 return [
     // Additional modules to include when in development mode
     'modules' => [
