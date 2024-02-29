@@ -31,13 +31,13 @@ return [
                     ],
                 ],
             ],
-            'bang' => [
+            'page_one' => [
                 'type'    => Literal::class,
                 'options' => [
-                    'route'    => '/bang',
+                    'route'    => '/page-one',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'application',
+                        'action'     => 'pageOne',
                     ],
                 ],
             ],

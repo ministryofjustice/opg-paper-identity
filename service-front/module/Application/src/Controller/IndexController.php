@@ -18,4 +18,19 @@ class IndexController extends AbstractActionController
     {
         return new ViewModel();
     }
+
+    public function pageOneAction()
+    {
+        $data = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number'
+        ];
+
+        $view = new ViewModel($data);
+
+        $view->setVariable('data', $data);
+
+        return $view->setTemplate('application/pages/page_one');
+    }
 }
