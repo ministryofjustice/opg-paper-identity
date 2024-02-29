@@ -21,7 +21,6 @@ return [
     'Laminas\Di',
     'Laminas\Router',
     'Laminas\Validator',
-    // 'Laminas\DeveloperTools',
     'Laminas\Diactoros',
     'Application',
 ];

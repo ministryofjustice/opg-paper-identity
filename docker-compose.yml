@@ -16,6 +16,7 @@ services:
       start_period: 30s
     volumes:
         - ./service-api:/var/www
+        - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
 
   api-test:
     image: paper-identity/api-test
@@ -48,6 +49,7 @@ services:
       start_period: 30s
     volumes:
       - ./service-front:/var/www
+      - ./service-front/config/development.config.php.dist:/var/www/config/development.config.php
       - static-content:/var/www/public
 
   api-web:

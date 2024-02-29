@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * This file is loaded in local development to disable caching. This slows
+ * down performance but ensures that config changes are seen immediately.
+ * It also adds the Laminas Developer Tools to show profiling information
+ * at the bottom of the page.
+ */
 return [
     // Additional modules to include when in development mode
     'modules' => [
+        'Laminas\DeveloperTools'
     ],
     // Configuration overrides during development mode
     'module_listener_options' => [

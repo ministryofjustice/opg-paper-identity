@@ -57,7 +57,7 @@ jobs:
         data:
           - service_name: "api"
             image_app_name: "paper-identity/api"
-            test_command: "ls -l"
+            test_command: "make api-unit-test"
           - service_name: "front"
             image_app_name: "paper-identity/front"
             test_command: "ls -l"
