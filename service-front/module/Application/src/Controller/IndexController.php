@@ -4,28 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Services\OpgApiService;
 
 class IndexController extends AbstractActionController
 {
-    public function indexAction()
-    {
-        return new ViewModel();
-    }
+    function __construct(private readonly OpgApiServiceInterface $opgApiService) {}
 
-    public function applicationAction()
+    public function indexAction()
     {
         return new ViewModel();
     }
 
     public function pageOneAction()
     {
-        $data = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number'
-        ];
+        $data = $this->opgApiService->getIdOptionsData();
 
         $view = new ViewModel($data);
 
