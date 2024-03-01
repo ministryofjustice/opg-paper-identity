@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Auth\Listener as AuthListener;
+use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -36,6 +38,14 @@ return [
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
+        ],
+    ],
+    'listeners' => [
+        AuthListener::class
+    ],
+    'service_manager' => [
+        'factories' => [
+            AuthListener::class => AuthListenerFactory::class
         ],
     ],
     'view_manager' => [
