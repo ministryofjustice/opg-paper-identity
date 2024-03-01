@@ -2,6 +2,18 @@
 version: "3.7"
 
 services:
+  sirius-mock:
+    image: stoplight/prism:5
+    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
+    healthcheck:
+      test: wget -O /dev/null -S 'http://localhost:4010/health-check' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - ./docker/sirius/openapi.yml:/tmp/openapi.yml
+
   api:
     image: paper-identity/api
     build:
@@ -40,6 +52,10 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - api
+      - sirius-mock
+    environment:
+      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
+      - SIRIUS_LOGIN_URL=http://localhost:8080
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
       interval: 15s
@@ -92,7 +108,7 @@ services:
        APP_PORT: 9000
        NGINX_LOG_LEVEL: info
      ports:
-       - 8080:80
+       - 8081:80
      healthcheck:
        test: curl -f http://localhost/nginx-health || exit 1
        interval: 15s
