@@ -31,11 +31,32 @@ return [
                     ],
                 ],
             ],
+            'method' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/method',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'method',
+                    ],
+                ],
+            ],
+            'details' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/details',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'details',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
+            Controller\IdentityController::class => InvokableFactory::class
         ],
     ],
 
