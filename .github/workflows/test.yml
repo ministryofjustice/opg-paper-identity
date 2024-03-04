@@ -1,0 +1,50 @@
+name: "[Job] Test"
+
+on:
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  security-events: write
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [api, front]
+        suite: [phpcs, psalm, unit-test]
+    runs-on: ubuntu-latest
+    name: Run ${{ matrix.service }} "${{ matrix.suite }}" tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_tag }}
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/images
+          key: ${{ runner.os }}-images-${{ github.run_id }}-${{ github.run_number }}
+      - name: Load Images
+        run: |
+          docker load -i /tmp/images/api-test.tar
+          docker load -i /tmp/images/front-test.tar
+      - name: Create test output dir
+        run: |
+          mkdir -m 0777 service-${{ matrix.service }}/build
+      - name: Run Tests
+        run: |
+          make ${{ matrix.service }}-${{ matrix.suite }}
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          comment_mode: off
+          files: service-${{ matrix.service }}/build/*.xml
+          test_file_prefix: +service-${{ matrix.service }}
+          check_name: ${{ matrix.service }} ${{ matrix.suite }} tests
