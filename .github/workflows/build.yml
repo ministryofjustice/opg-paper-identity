@@ -60,7 +60,7 @@ jobs:
             test_command: "make api-unit-test"
           - service_name: "front"
             image_app_name: "paper-identity/front"
-            test_command: "ls -l"
+            test_command: "make front-unit-test"
     # we use these a few times, so its easier to generate them once and env
     # vars are visible in the output, so helps with debug
     env:
