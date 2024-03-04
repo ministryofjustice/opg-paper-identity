@@ -11,3 +11,6 @@ down: ## Stop application
 
 api-unit-test:
 	docker compose run --rm api-test vendor/bin/phpunit
+
+front-unit-test:
+	docker compose run --rm front-test vendor/bin/phpunit
