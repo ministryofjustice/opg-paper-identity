@@ -30,7 +30,7 @@ jobs:
         with:
           name: image-${{ matrix.service }}-test
           path: /tmp/images
-      - name: Load Images
+      - name: Load Image
         run: |
           docker load -i /tmp/images/${{ matrix.service }}-test.tar
       - name: Create test output dir
