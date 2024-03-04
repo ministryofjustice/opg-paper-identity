@@ -9,16 +9,16 @@ use Laminas\View\Model\JsonModel;
 
 class IdentityController extends AbstractActionController
 {
-    public function indexAction()
+    public function indexAction(): JsonModel
     {
         return new JsonModel();
     }
 
-    public function createAction()
+    public function createAction(): void
     {
     }
 
-    public function methodAction()
+    public function methodAction(): JsonModel
     {
         $data = [
             'Passport',
@@ -26,10 +26,14 @@ class IdentityController extends AbstractActionController
             'National Insurance Number'
         ];
 
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
         return new JsonModel($data);
     }
 
-    public function detailsAction()
+    public function detailsAction(): JsonModel
     {
         $data = [
             'Name' => 'Mary Anne Chapman',
@@ -42,4 +46,3 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
     }
 }
-

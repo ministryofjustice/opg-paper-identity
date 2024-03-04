@@ -33,6 +33,11 @@
                 <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::with"/>
             </errorLevel>
         </InternalMethod>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <file name="module/Application/src/Controller/*Controller.php" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
     </issueHandlers>
 
     <plugins>

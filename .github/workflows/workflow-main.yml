@@ -54,18 +54,18 @@ jobs:
       matrix:
         include:
           - image_app_name: paper-identity/api
-            artifact_name: image-api
+            service_name: api
           - image_app_name: paper-identity/front
-            artifact_name: image-front
+            service_name: front
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
+          name: image-${{ matrix.service_name }}
           path: /tmp/images
       - name: Load Image
         run: |
-          docker load -i /tmp/images/${{ matrix.cache_name }}.tar
+          docker load -i /tmp/images/${{ matrix.service_name }}.tar
       - uses: unfor19/install-aws-cli-action@v1
       - name: Configure AWS Credentials With Assumed Role to Management
         uses: aws-actions/configure-aws-credentials@v3.0.1
