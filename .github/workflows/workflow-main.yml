@@ -8,16 +8,12 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
-  security-events: write
   actions: read
-  checks: read
-  deployments: none
-  issues: none
-  packages: none
-  pull-requests: read
-  repository-projects: none
-  statuses: none
+  checks: write
+  contents: write
+  id-token: write
+  pull-requests: write
+  security-events: write
 
 
 jobs:
@@ -40,67 +36,36 @@ jobs:
       branch_name: ${{ needs.branch_name.outputs.parsed }}
     secrets: inherit
 
+  build:
+    name: Build and Scan
+    uses: ./.github/workflows/build-scan.yml
 
-  # Docker build, trivy scan, ECR push as a matrix
-  # The matrix loops over each app to build in a complicated
-  # structure
-  # ADD IN ECR PUSH
-  build_scan_push:
-    name: "Docker build, trivy scan, ECR push"
+  test:
+    name: Test
+    needs: [build]
+    uses: ./.github/workflows/test.yml
+
+  push:
+    name: "ECR push"
     runs-on: ubuntu-latest
-    # require all steps before this matrix to have passed
-    needs: [branch_name, workspace_name, semver_tag]
+    needs: [test, workspace_name, semver_tag]
     strategy:
       fail-fast: true
       matrix:
-        # services to scan over
-        data:
-          - service_name: "api"
-            image_app_name: "paper-identity/api"
-            test_command: "make api-unit-test"
-          - service_name: "front"
-            image_app_name: "paper-identity/front"
-            test_command: "make front-unit-test"
-    # we use these a few times, so its easier to generate them once and env
-    # vars are visible in the output, so helps with debug
-    env:
-      local_docker_image: ${{ matrix.data.image_app_name }}:latest
-      sarif_file: trivy-results.sarif
+        include:
+          - image_app_name: paper-identity/api
+            artifact_name: image-api
+          - image_app_name: paper-identity/front
+            artifact_name: image-front
     steps:
       - uses: actions/checkout@v3
-      - name: Show environment values
-        run: |
-          echo "local_docker_image: ${{ env.local_docker_image }}"
-          echo "sarif_file: ${{ env.sarif_file }}"
-      # build our sample docker image
-      - name: Docker build
-        # set the working directory to the variable
-        working-directory: ${{ matrix.data.docker_build_directory }}
-        run: |
-          docker compose build ${{ matrix.data.service_name }}
-      # to check if things worked, output docker image list
-      - name: Docker image list
-        run: |
-          docker images
-      - name: Trivy scan
-        uses: aquasecurity/trivy-action@0.11.2
+      - uses: actions/download-artifact@v4
         with:
-          image-ref: ${{ env.local_docker_image }}
-          severity: "HIGH,CRITICAL"
-          format: 'sarif'
-          output: ${{ env.sarif_file }}
-      - name: Trivy scan upload to github
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: ${{ env.sarif_file }}
-      # for a lot of our services, there could be a test process here
-      - name: Run Tests
+          name: ${{ matrix.artifact_name }}
+          path: /tmp/images
+      - name: Load Image
         run: |
-          ${{ matrix.data.test_command }}
-      ######
-      ## Push to ECR
-      ######
+          docker load -i /tmp/images/${{ matrix.cache_name }}.tar
       - uses: unfor19/install-aws-cli-action@v1
       - name: Configure AWS Credentials With Assumed Role to Management
         uses: aws-actions/configure-aws-credentials@v3.0.1
@@ -108,7 +73,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
-          # management account role
           role-to-assume: arn:aws:iam::311462405659:role/paper-identity-ci
           role-duration-seconds: 900
           role-session-name: OPGPaperIdentityGithubAction
@@ -121,7 +85,7 @@ jobs:
         env:
           SEMVER_TAG: ${{ needs.semver_tag.outputs.tag }}
           ECR_REGISTRY: ${{ steps.login_ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ matrix.data.image_app_name }}
+          ECR_REPOSITORY: ${{ matrix.image_app_name }}
         run: |
           docker tag ${{ env.local_docker_image }} $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVER_TAG }}
           if ${{ github.event_name == 'push' }}; then
@@ -133,7 +97,7 @@ jobs:
   end:
     name: 'End of workflow'
     runs-on: 'ubuntu-latest'
-    needs: [branch_name, workspace_name, semver_tag, build_scan_push]
+    needs: [branch_name, workspace_name, semver_tag, test, push]
     steps:
       - name: "End"
         run: |

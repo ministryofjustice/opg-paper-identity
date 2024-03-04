@@ -18,8 +18,6 @@
 
         <ignoreFiles>
             <directory name="vendor" />
-            <directory name="data" />
-            <directory name="bin" />
         </ignoreFiles>
     </projectFiles>
 
@@ -36,10 +34,6 @@
             </errorLevel>
         </InternalMethod>
     </issueHandlers>
-
-    <stubs>
-        <file name=".psalm-stubs.phpstub"/>
-    </stubs>
 
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
