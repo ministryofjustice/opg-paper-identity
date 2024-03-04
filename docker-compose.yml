@@ -30,9 +30,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-
-    #volumes:
-     # - ./service-api:/var/www
+    volumes:
+      - ./service-api/build:/var/www/build
 
   front:
     image: paper-identity/front
@@ -64,6 +63,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    volumes:
+      - ./service-front/build:/var/www/build
 
   api-web:
       build: nginx
