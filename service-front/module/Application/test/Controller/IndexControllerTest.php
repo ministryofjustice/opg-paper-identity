@@ -39,6 +39,10 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
 
         parent::setUp();
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
     }
 
     public function testIndexActionCanBeAccessed(): void
@@ -73,7 +77,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->opgApiServiceMock
-//            ->expects(self::once())
+            ->expects(self::once())
             ->method('getIdOptionsData')
             ->willReturn($mockResponseData);
 
