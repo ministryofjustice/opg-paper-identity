@@ -25,18 +25,14 @@
         <exclude-pattern>public/index.php</exclude-pattern>
     </rule>
 
-    <!-- view files adjustments -->
-    <rule ref="Generic.Files.LineLength">
-        <exclude-pattern>*.phtml</exclude-pattern>
-    </rule>
     <rule ref="PSR12.Files.FileHeader">
         <exclude-pattern>config/*</exclude-pattern>
         <exclude-pattern>public/index.php</exclude-pattern>
-        <exclude-pattern>*.phtml</exclude-pattern>
     </rule>
 
     <!-- Paths to check -->
     <file>config</file>
     <file>module</file>
     <file>public/index.php</file>
+    <exclude-pattern>*.phtml</exclude-pattern>
 </ruleset>

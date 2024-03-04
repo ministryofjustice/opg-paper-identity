@@ -6,6 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Controller\IndexController;
 use Laminas\Http\Headers;
+use Laminas\Http\Request as HttpRequest;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
@@ -56,6 +57,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $headers = new Headers();
         $headers->addHeaderLine('Accept', 'application/json');
 
+        /** @var HttpRequest $request */
         $request = $this->getRequest();
         $request->setHeaders($headers);
     }
