@@ -52,6 +52,19 @@ services:
       - ./service-front/config/development.config.php.dist:/var/www/config/development.config.php
       - static-content:/var/www/public
 
+  front-test:
+    image: paper-identity/front-test
+    build:
+      context: service-front
+      dockerfile: Dockerfile
+      target: development
+    healthcheck:
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
   api-web:
       build: nginx
       depends_on: [api]
