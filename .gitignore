@@ -12,5 +12,8 @@ vendor/
 /nbproject/private/
 # dev mode files
 development.config.php
+# ci files
+service-api/build
+service-front/build
 # vendor files
 node_modules
