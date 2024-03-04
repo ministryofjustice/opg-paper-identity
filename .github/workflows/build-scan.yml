@@ -1,0 +1,55 @@
+name: "[Job] Docker Build and Scan"
+
+on:
+  workflow_call:
+    inputs:
+      checkout_tag:
+        description: "Ref or tag to checkout"
+        default: ${{ github.ref }}
+        required: false
+        type: string
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  pull-requests: read
+
+jobs:
+  docker_build_scan:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - ecr_repository: paper-identity/api
+            service_name: api
+          - ecr_repository: paper-identity/front
+            service_name: front
+    runs-on: ubuntu-latest
+    name: Build ${{ matrix.data.service_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_tag }}
+      - name: Build ${{ matrix.ecr_repository }} Image
+        id: build_image
+        run: |
+          docker compose build ${{ matrix.data.service_name }}
+      - name: Trivy Image Vulnerability Scanner for ${{ matrix.data.service_name }}
+        id: trivy_scan
+        uses: aquasecurity/trivy-action@0.17.0
+        with:
+          image-ref: ${{ matrix.ecr_repository }}:latest
+          severity: "HIGH,CRITICAL"
+          format: "sarif"
+          output: "trivy-results.sarif"
+      - name: Upload Trivy scan results to GitHub Security tab for  ${{ matrix.data.service_name }}
+        id: trivy_upload_sarif
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"

@@ -1,0 +1,42 @@
+name: "[Job] Test"
+
+on:
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  security-events: write
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [admin, front]
+        suite: [phpcs, psalm, unit-test]
+    runs-on: ubuntu-latest
+    name: Run ${{ matrix.service }} "${{ matrix.suite }}" tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_tag }}
+      - name: Create test output dir
+        run: |
+          mkdir -m 0777 service-${{ matrix.service }}/build
+      - name: Run Tests
+        run: |
+          make ${{ matrix.service }}-${{ matrix.suite }}
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          comment_mode: off
+          files: service-${{ matrix.service }}/build/*.xml
+          test_file_prefix: +service-${{ matrix.service }}
+          check_name: ${{ matrix.service }} ${{ matrix.suite }} tests
