@@ -11,11 +11,11 @@ permissions:
   contents: write
   security-events: write
   actions: read
-  checks: read
+  checks: write
   deployments: none
   issues: none
   packages: none
-  pull-requests: read
+  pull-requests: write
   repository-projects: none
   statuses: none
 
@@ -57,10 +57,12 @@ jobs:
         data:
           - service_name: "api"
             image_app_name: "paper-identity/api"
-            test_command: "make api-unit-test"
+            test_command: "make api-test"
+            service_dir: "service-api"
           - service_name: "front"
             image_app_name: "paper-identity/front"
-            test_command: "make front-unit-test"
+            test_command: "make front-test"
+            service_dir: "service-front"
     # we use these a few times, so its easier to generate them once and env
     # vars are visible in the output, so helps with debug
     env:
@@ -98,6 +100,13 @@ jobs:
       - name: Run Tests
         run: |
           ${{ matrix.data.test_command }}
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          working-directory: ${{ matrix.data.service_dir }}
+          files: build/*.xml
+          test_file_prefix: -/var/www
       ######
       ## Push to ECR
       ######
