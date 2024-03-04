@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace ApplicationTest\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\OpgApiException;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use GuzzleHttp\Client;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ResponseInterface;
 use Application\Services\OpgApiService;
@@ -96,5 +98,43 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         $response = $this->opgApiService->getDetailsData();
 
         $this->assertEquals($mockResponseData, $response);
+    }
+
+    public function testGetIdOptionsDataBadResponse(): void
+    {
+        $this->expectException(OpgApiException::class);
+
+        $mock = new MockHandler([
+            new Response(400, ['X-Foo' => 'Bar'], 'Bad Request'),
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handlerStack]);
+
+        $this->opgApiService = new OpgApiService($client, $this->config);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiService);
+
+        $response = $this->opgApiService->getIdOptionsData();
+    }
+
+    public function testGetDetailsDataBadResponse(): void
+    {
+        $this->expectException(OpgApiException::class);
+
+        $mock = new MockHandler([
+            new Response(400, ['X-Foo' => 'Bar'], 'Bad Request'),
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handlerStack]);
+
+        $this->opgApiService = new OpgApiService($client, $this->config);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiService);
+
+        $response = $this->opgApiService->getDetailsData();
     }
 }

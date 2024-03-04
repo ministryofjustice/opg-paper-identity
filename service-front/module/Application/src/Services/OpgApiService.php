@@ -6,6 +6,8 @@ namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
 use GuzzleHttp\Client;
+use Laminas\Http\Response;
+use Application\Exceptions\OpgApiException;
 
 class OpgApiService implements OpgApiServiceInterface
 {
@@ -13,15 +15,29 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getIdOptionsData()
     {
-        $data = $this->httpClient->get($this->config['base-url'] . '/identity/method');
+        try {
+            $response = $this->httpClient->get($this->config['base-url'] . '/identity/method');
 
-        return json_decode($data->getBody()->getContents(), true);
+            if($response->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new OpgApiException($response->getReasonPhrase());
+            }
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
     }
 
     public function getDetailsData()
     {
-        $data = $this->httpClient->get($this->config['base-url'] . '/identity/details');
+        try {
+            $response = $this->httpClient->get($this->config['base-url'] . '/identity/details');
 
-        return json_decode($data->getBody()->getContents(), true);
+            if($response->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new OpgApiException($response->getReasonPhrase());
+            }
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
     }
 }
