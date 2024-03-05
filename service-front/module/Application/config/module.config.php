@@ -34,13 +34,23 @@ return [
                     ],
                 ],
             ],
-            'page_one' => [
+            'donor_lpa_check' => [
                 'type'    => Literal::class,
                 'options' => [
-                    'route'    => '/page-one',
+                    'route'    => '/donor-lpa-check',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'pageOne',
+                        'action'     => 'donorLpaCheckAction',
+                    ],
+                ],
+            ],
+            'donor_id_check' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/donor-id-check',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'donorIdCheck',
                     ],
                 ],
             ],
