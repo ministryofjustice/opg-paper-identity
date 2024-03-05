@@ -11,7 +11,7 @@ use Application\Services\OpgApiService;
 
 class IndexController extends AbstractActionController
 {
-    function __construct(private readonly OpgApiServiceInterface $opgApiService)
+    public function __construct(private readonly OpgApiServiceInterface $opgApiService)
     {
     }
 

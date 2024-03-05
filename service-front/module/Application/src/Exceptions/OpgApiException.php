@@ -6,5 +6,4 @@ namespace Application\Exceptions;
 
 class OpgApiException extends \Exception
 {
-
 }

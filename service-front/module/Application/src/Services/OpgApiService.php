@@ -11,7 +11,7 @@ use Application\Exceptions\OpgApiException;
 
 class OpgApiService implements OpgApiServiceInterface
 {
-    function __construct(private Client $httpClient, private readonly array $config)
+    public function __construct(private Client $httpClient, private readonly array $config)
     {
     }
 

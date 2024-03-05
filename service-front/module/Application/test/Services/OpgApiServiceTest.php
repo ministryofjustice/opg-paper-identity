@@ -73,7 +73,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         $this->assertEquals($mockResponseData, $response);
     }
 
-    static public function idOptionsData()
+    public static function idOptionsData()
     {
         $successMockResponseData = [
             "Passport",
@@ -112,7 +112,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
      */
     public function testGetDetailsData(Client $client, array|string $responseData, bool $exception): void
     {
-        if($exception) {
+        if ($exception) {
             $this->expectException(OpgApiException::class);
         }
 
@@ -126,7 +126,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         $this->assertEquals($responseData, $response);
     }
 
-    static public function detailsData()
+    public static function detailsData()
     {
         $successMockResponseData = [
             "Name" => "Mary Anne Chapman",
