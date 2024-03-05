@@ -65,7 +65,8 @@ USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
 composer dumpautoload -o
 
-COPY tests tests
-COPY phpstan.neon phpstan.neon
+COPY phpcs.xml phpcs.xml
+COPY phpunit.xml.dist phpunit.xml
+COPY psalm.xml psalm.xml
 
 FROM app AS production
