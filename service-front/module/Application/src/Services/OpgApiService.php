@@ -11,14 +11,16 @@ use Application\Exceptions\OpgApiException;
 
 class OpgApiService implements OpgApiServiceInterface
 {
-    function __construct(private Client $httpClient, private readonly array $config) {}
+    function __construct(private Client $httpClient, private readonly array $config)
+    {
+    }
 
     public function getIdOptionsData()
     {
         try {
             $response = $this->httpClient->get($this->config['base-url'] . '/identity/method');
 
-            if($response->getStatusCode() !== Response::STATUS_CODE_200) {
+            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
             }
             return json_decode($response->getBody()->getContents(), true);
@@ -32,7 +34,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->get($this->config['base-url'] . '/identity/details');
 
-            if($response->getStatusCode() !== Response::STATUS_CODE_200) {
+            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
             }
             return json_decode($response->getBody()->getContents(), true);
