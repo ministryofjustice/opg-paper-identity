@@ -17,8 +17,10 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getIdOptionsData(): array
     {
+        $baseUrl = $this->config['base-url'];
+
         try {
-            $response = $this->httpClient->get($this->config['base-url'] . '/identity/method');
+            $response = $this->httpClient->get($baseUrl . '/identity/method');
 
             if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
@@ -31,8 +33,10 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getDetailsData(): array
     {
+        $baseUrl = $this->config['base-url'];
+
         try {
-            $response = $this->httpClient->get($this->config['base-url'] . '/identity/details');
+            $response = $this->httpClient->get($baseUrl . '/identity/details');
 
             if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
