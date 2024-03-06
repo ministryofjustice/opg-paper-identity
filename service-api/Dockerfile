@@ -43,7 +43,7 @@ RUN composer install --prefer-dist --no-interaction --no-scripts &&\
   composer dumpautoload -o
 
 COPY phpcs.xml phpcs.xml
-COPY phpunit.xml.dist phpunit.xml
+COPY phpunit.xml phpunit.xml
 COPY psalm.xml psalm.xml
 
 FROM app AS production

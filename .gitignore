@@ -15,5 +15,6 @@ development.config.php
 # ci files
 service-api/build
 service-front/build
+.psalm-cache
 # vendor files
 node_modules
