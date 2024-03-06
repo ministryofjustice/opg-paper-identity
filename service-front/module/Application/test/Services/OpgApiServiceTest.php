@@ -17,8 +17,9 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\RequestException;
+use PHPUnit\Framework\TestCase;
 
-class OpgApiServiceTest extends AbstractHttpControllerTestCase
+class OpgApiServiceTest extends TestCase
 {
     private OpgApiService|MockObject $opgApiService;
 
@@ -29,19 +30,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        // The module configuration should still be applicable for tests.
-        // You can override configuration here with test case specific values,
-        // such as sample view templates, path stacks, module_listener_options,
-        // etc.
-        $configOverrides = [];
-
-        $this->setApplicationConfig(ArrayUtils::merge(
-            include __DIR__ . '/../../../../config/application.config.php',
-            $configOverrides
-        ));
-
         $this->config = ['base-url' => 'testing'];
-
         parent::setUp();
     }
 
@@ -55,9 +44,6 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         }
 
         $this->opgApiService = new OpgApiService($client, $this->config);
-        $serviceManager = $this->getApplicationServiceLocator();
-        $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiService);
 
         $response = $this->opgApiService->getIdOptionsData();
 
@@ -113,9 +99,6 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         }
 
         $this->opgApiService = new OpgApiService($client, $this->config);
-        $serviceManager = $this->getApplicationServiceLocator();
-        $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiService);
 
         $response = $this->opgApiService->getDetailsData();
 

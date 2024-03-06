@@ -15,7 +15,7 @@ use Application\Services\OpgApiService;
 
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
-    private OpgApiService|MockObject $opgApiServiceMock;
+    private OpgApiServiceInterface&MockObject $opgApiServiceMock;
 
     public function setUp(): void
     {
@@ -30,7 +30,6 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             $configOverrides
         ));
 
-        $this->config = ['base-url' => 'testing'];
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
 
         parent::setUp();
