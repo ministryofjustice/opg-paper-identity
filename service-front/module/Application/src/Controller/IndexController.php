@@ -11,6 +11,8 @@ use Application\Services\OpgApiService;
 
 class IndexController extends AbstractActionController
 {
+    protected $plugins;
+
     public function __construct(private readonly OpgApiServiceInterface $opgApiService)
     {
     }
@@ -37,7 +39,7 @@ class IndexController extends AbstractActionController
     {
         $data = $this->opgApiService->getIdOptionsData();
 
-        $view = new ViewModel($data);
+        $view = new ViewModel();
 
         $view->setVariable('data', $data);
 
