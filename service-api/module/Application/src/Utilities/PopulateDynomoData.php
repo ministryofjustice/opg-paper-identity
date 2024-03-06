@@ -7,8 +7,6 @@ namespace Application\Utilities;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 
-use function Application\Utilities\loadData;
-
 class PopulateDynomoData
 {
     public function __construct(
@@ -19,28 +17,35 @@ class PopulateDynomoData
     public function run()
     {
         $tableName = 'identity-verify';
-        //load all the data
-        $fileName = 'testData.json';
+        //load the data
+        $fileName = __DIR__ . '/testData.json';
         $data = file_get_contents($fileName);
 
-        $batch = json_decode($data);
 
+        $batch = json_decode($data);
         $this->writeBatch($tableName, $batch);
 
         //return some subset of data
         $nameKey = [
-            'Key' => [
+            'KEY' => [
                 'name' => [
-                    'S' => "Joe Blogs",
+                    'S' => 'Fred Smith',
                 ],
             ],
         ];
-        $result = $this->query($tableName, $nameKey);
+        $index = "name-index";
+        //$result = $this->query($tableName, $nameKey, $index);
 
-        $marshal = new Marshaler();
-        $output = $marshal->unmarshalItem($result['Items']);
+        //return all data
+        $result = $this->dynamoDbClient->scan(array('TableName' => $tableName));
+        $displayResults = [];
+        foreach ($result['Items'] as $record) {
 
-        return $output;
+            $marshal = new Marshaler();
+            $displayResults[] = $marshal->unmarshalItem($record);
+        }
+        return $displayResults;
+
     }
 
     public function writeBatch(string $TableName, array $Batch, int $depth = 2)
@@ -71,27 +76,30 @@ class PopulateDynomoData
         }
     }
 
-    public function query(string $tableName, $key)
+    public function query(string $tableName, $key, $dbIndex = '')
     {
         $expressionAttributeValues = [];
         $expressionAttributeNames = [];
         $keyConditionExpression = "";
         $index = 1;
         foreach ($key as $name => $value) {
-            $keyConditionExpression .= "#" . array_key_first($value) . " = :v$index,";
+            $keyConditionExpression .= "#" . array_key_first($value) . " = :v$index AND ";
             $expressionAttributeNames["#" . array_key_first($value)] = array_key_first($value);
             $hold = array_pop($value);
             $expressionAttributeValues[":v$index"] = [
                 array_key_first($hold) => array_pop($hold),
             ];
+            $index++;
         }
-        $keyConditionExpression = substr($keyConditionExpression, 0, -1);
+        $keyConditionExpression = substr($keyConditionExpression, 0, -5);
         $query = [
             'ExpressionAttributeValues' => $expressionAttributeValues,
             'ExpressionAttributeNames' => $expressionAttributeNames,
             'KeyConditionExpression' => $keyConditionExpression,
             'TableName' => $tableName,
+            'IndexName' => $dbIndex,
         ];
+
         return $this->dynamoDbClient->query($query);
     }
 
