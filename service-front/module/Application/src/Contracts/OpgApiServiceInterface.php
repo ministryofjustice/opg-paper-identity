@@ -6,7 +6,7 @@ namespace Application\Contracts;
 
 interface OpgApiServiceInterface
 {
-    public function getIdOptionsData();
+    public function getIdOptionsData(): array;
 
-    public function getDetailsData();
+    public function getDetailsData(): array;
 }

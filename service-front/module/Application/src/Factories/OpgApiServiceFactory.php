@@ -15,7 +15,6 @@ class OpgApiServiceFactory implements FactoryInterface
      * @param ContainerInterface $container
      * @param string                          $requestedName
      * @param array<mixed>|null               $options
-     * @return ServicePdfAdapter
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): OpgApiService
     {

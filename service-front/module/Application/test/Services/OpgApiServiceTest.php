@@ -48,20 +48,11 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider idOptionsData
      */
-    public function testGetIdOptionsData(Client $client, array|string $responseData, bool $exception): void
+    public function testGetIdOptionsData(Client $client, array $responseData, bool $exception): void
     {
-        $mockResponseData = [
-            "Passport",
-            "Driving Licence",
-            "National Insurance Number"
-        ];
-
-        $mock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($mockResponseData)),
-        ]);
-
-        $handlerStack = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handlerStack]);
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
 
         $this->opgApiService = new OpgApiService($client, $this->config);
         $serviceManager = $this->getApplicationServiceLocator();
@@ -70,10 +61,15 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
 
         $response = $this->opgApiService->getIdOptionsData();
 
-        $this->assertEquals($mockResponseData, $response);
+        $this->assertEquals($responseData, $response);
     }
 
-    public static function idOptionsData()
+    /**
+     * @return (Client|bool|string[])[][]
+     *
+     * @psalm-return list{list{Client, list{'Passport', 'Driving Licence', 'National Insurance Number'}, false}, list{Client, list{'Bad Request'}, true}}
+     */
+    public static function idOptionsData(): array
     {
         $successMockResponseData = [
             "Passport",
@@ -86,7 +82,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
-        $failMockResponseData = 'Bad Request';
+        $failMockResponseData = ['Bad Request'];
         $failMock = new MockHandler([
             new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
         ]);
@@ -110,7 +106,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider detailsData
      */
-    public function testGetDetailsData(Client $client, array|string $responseData, bool $exception): void
+    public function testGetDetailsData(Client $client, array $responseData, bool $exception): void
     {
         if ($exception) {
             $this->expectException(OpgApiException::class);
@@ -126,7 +122,12 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         $this->assertEquals($responseData, $response);
     }
 
-    public static function detailsData()
+    /**
+     * @return ((string|string[])[]|Client|bool)[][]
+     *
+     * @psalm-return list{list{Client, array{Name: 'Mary Anne Chapman', DOB: '01 May 1943', Address: 'Address line 1, line 2, Country, BN1 4OD', Role: 'Donor', LPA: list{'PA M-1234-ABCB-XXXX', 'PW M-1234-ABCD-AAAA'}}, false}, list{Client, list{'Bad Request'}, true}}
+     */
+    public static function detailsData(): array
     {
         $successMockResponseData = [
             "Name" => "Mary Anne Chapman",
@@ -144,7 +145,7 @@ class OpgApiServiceTest extends AbstractHttpControllerTestCase
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
-        $failMockResponseData = 'Bad Request';
+        $failMockResponseData = ['Bad Request'];
         $failMock = new MockHandler([
             new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
         ]);

@@ -15,7 +15,7 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
-    public function getIdOptionsData()
+    public function getIdOptionsData(): array
     {
         try {
             $response = $this->httpClient->get($this->config['base-url'] . '/identity/method');
@@ -29,7 +29,7 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getDetailsData()
+    public function getDetailsData(): array
     {
         try {
             $response = $this->httpClient->get($this->config['base-url'] . '/identity/details');

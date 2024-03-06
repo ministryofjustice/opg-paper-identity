@@ -20,7 +20,7 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function donorIdCheckAction()
+    public function donorIdCheckAction(): ViewModel
     {
         $optionsdata = $this->opgApiService->getIdOptionsData();
         $detailsData = $this->opgApiService->getDetailsData();
@@ -33,9 +33,9 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/donor_id_check');
     }
 
-    public function donorLpaCheckAction()
+    public function donorLpaCheckAction(): ViewModel
     {
-//        $data = $this->opgApiService->getIdOptionsData();
+        $data = $this->opgApiService->getIdOptionsData();
 
         $view = new ViewModel($data);
 

@@ -17,11 +17,6 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiService|MockObject $opgApiServiceMock;
 
-    /**
-     * @var string[]
-     */
-    private array $config;
-
     public function setUp(): void
     {
         // The module configuration should still be applicable for tests.
