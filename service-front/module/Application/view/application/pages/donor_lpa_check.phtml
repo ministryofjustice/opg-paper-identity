@@ -33,17 +33,18 @@
             </li>
         </ul>
 
-
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      ID over the phone
-    </span>
+                <span class="govuk-details__summary-text">
+                  ID over the phone
+                </span>
             </summary>
             <div class="govuk-details__text">
-                <h2 class="govuk-heading-m">Passport</h2>
-                <h2 class="govuk-heading-m">Driving licence</h2>
-                <h2 class="govuk-heading-m">National insurance number</h2>
+                <?php
+                foreach ($this->data as $datum) {
+                    echo '<h2 class="govuk-heading-m">' . $datum . '</h2>';
+                }
+                ?>
             </div>
         </details>
 

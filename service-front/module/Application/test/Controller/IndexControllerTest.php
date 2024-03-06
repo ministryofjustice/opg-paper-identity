@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
+use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\IndexController;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use GuzzleHttp\Client;
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\ResponseInterface;
+use Application\Services\OpgApiService;
 
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
+    private OpgApiService|MockObject $opgApiServiceMock;
+
     public function setUp(): void
     {
         // The module configuration should still be applicable for tests.
@@ -23,7 +30,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             $configOverrides
         ));
 
+        $this->config = ['base-url' => 'testing'];
+        $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+
         parent::setUp();
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
     }
 
     public function testIndexActionCanBeAccessed(): void
@@ -46,5 +60,44 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     {
         $this->dispatch('/invalid/route', 'GET');
         $this->assertResponseStatusCode(404);
+    }
+
+    public function testDonorIdCheckReturnsPageWithData(): void
+    {
+        $mockResponseDataIdOptions = [
+            "Passport",
+            "Driving Licence",
+            "National Insurance Number"
+        ];
+
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getIdOptionsData')
+            ->willReturn($mockResponseDataIdOptions);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch('/donor-id-check', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('donor_id_check');
     }
 }
