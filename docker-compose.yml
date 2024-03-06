@@ -31,7 +31,7 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - ./service-api/build:/var/www/build
+      - ./service-api:/var/www:cached
 
   front:
     image: paper-identity/front
@@ -64,7 +64,7 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - ./service-front/build:/var/www/build
+      - ./service-front:/var/www
 
   api-web:
       build: nginx
