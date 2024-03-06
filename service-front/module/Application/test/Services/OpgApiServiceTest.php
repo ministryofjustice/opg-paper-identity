@@ -50,11 +50,6 @@ class OpgApiServiceTest extends TestCase
         $this->assertEquals($responseData, $response);
     }
 
-    /**
-     * @return (Client|bool|string[])[][]
-     *
-     * @psalm-return list{list{Client, list{'Passport', 'Driving Licence', 'National Insurance Number'}, false}, list{Client, list{'Bad Request'}, true}}
-     */
     public static function idOptionsData(): array
     {
         $successMockResponseData = [
@@ -105,11 +100,6 @@ class OpgApiServiceTest extends TestCase
         $this->assertEquals($responseData, $response);
     }
 
-    /**
-     * @return ((string|string[])[]|Client|bool)[][]
-     *
-     * @psalm-return list{list{Client, array{Name: 'Mary Anne Chapman', DOB: '01 May 1943', Address: 'Address line 1, line 2, Country, BN1 4OD', Role: 'Donor', LPA: list{'PA M-1234-ABCB-XXXX', 'PW M-1234-ABCD-AAAA'}}, false}, list{Client, list{'Bad Request'}, true}}
-     */
     public static function detailsData(): array
     {
         $successMockResponseData = [
