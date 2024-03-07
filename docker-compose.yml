@@ -55,6 +55,8 @@ services:
       - ./service-front:/var/www
       - ./service-front/config/development.config.php.dist:/var/www/config/development.config.php
       - static-content:/var/www/public
+    environment:
+      - SIRIUS_BASE_URI=http://api-web
 
   front-test:
     image: paper-identity/front-test
