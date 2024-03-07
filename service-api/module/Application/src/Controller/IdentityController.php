@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Fixtures\DataQueryHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
-use Application\Utilities\PopulateDynomoData;
-use Aws\DynamoDb\DynamoDbClient;
-use Application\Aws\DynamoDbClientFactory;
 
 class IdentityController extends AbstractActionController
 {
+    public function __construct(private readonly DataQueryHandler $dataQueryHandler)
+    {
+    }
     public function indexAction()
     {
         return new JsonModel();
@@ -47,17 +48,8 @@ class IdentityController extends AbstractActionController
 
     public function testdataAction()
     {
-        $config = [
-            'aws' => [
-                'debug' => filter_var(getenv('PAPER_ID_BACK_AWS_DEBUG'), FILTER_VALIDATE_BOOLEAN),
-                'endpoint' => getenv('PAPER_ID_BACK_AWS_ENDPOINT') ?: 'http://localstack:4566',
-                'region' => getenv('AWS_REGION') ?: "eu-west-1",
-            ],
-        ];
-        $dynamoDbClient = new DynamoDbClient($config['aws']);
 
-        $dataLoadService = new PopulateDynomoData($dynamoDbClient);
-        $data = $dataLoadService->run();
+        $data = $this->dataQueryHandler->queryByName("Joe Blogs");
 
         return new JsonModel($data);
     }
