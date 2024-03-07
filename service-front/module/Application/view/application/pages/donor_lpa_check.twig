@@ -30,11 +30,9 @@
                 </span>
             </summary>
             <div class="govuk-details__text">
-                <?php
-                foreach ($this->data as $datum) {
-                    echo '<h2 class="govuk-heading-m">' . $this->escapeHtml($datum) . '</h2>';
-                }
-                ?>
+                {% for datum in options_data %}
+                <h2 class="govuk-heading-m">{{ datum }}</h2>
+                {% endfor %}
             </div>
         </details>
 
