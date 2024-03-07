@@ -42,6 +42,6 @@ class IndexController extends AbstractActionController
 
         $view->setVariable('data', $data);
 
-        return $view->setTemplate('application/pages/donor_id_check');
+        return $view->setTemplate('application/pages/donor_lpa_check');
     }
 }
