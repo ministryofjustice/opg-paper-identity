@@ -1,39 +1,56 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <h1 class="govuk-heading-xl">Is the caller prepared to perform the ID check?</h1>
+        <h3 class="govuk-heading-xl">Donor ID check</h3>
+        <h3 class="govuk-heading-m">Is the donor prepared to perform the ID check?</h3>
 
         <p class="govuk-body">
             Things to check:
         </p>
         <ul class="govuk-list govuk-list--bullet">
             <li>
-                how will they ID?
+                Which document would they prefer to ID with?
             </li>
             <li>
-                do they have their ID document with them?
+                do they have the ID document with them?
             </li>
             <li>
-                does the name / dob on their ID document match what is in Sirius?
-            </li>
-            <li>
-                are they ready to answer any questions they might have?
-            </li>
-            <li>
-                CP / voucher: do they have other LPAs they’ll need to do an ID check for?
+                Check the ID matches what is in Sirius (update as appropriate)
             </li>
         </ul>
+
+        <div class="moj-ticket-panel">
+            <div class="moj-ticket-panel__content moj-ticket-panel__content--blue">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
+                    <?php
+                    echo $this->escapeHtml($this->details_data['Name'])
+                    ?>
+                </h2>
+                <p class="govuk-body">
+                    <?php
+                    echo $this->escapeHtml($this->details_data['DOB'])
+                    ?>
+                </p>
+                <p class="govuk-body">
+                    <?php
+                    echo $this->escapeHtml($this->details_data['Address'])
+                    ?>
+                </p>
+            </div>
+        </div>
 
 
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      ID over the phone
-    </span>
+                <span class="govuk-details__summary-text">
+                  ID over the phone
+                </span>
             </summary>
             <div class="govuk-details__text">
-                <h2 class="govuk-heading-m">Passport</h2>
-                <h2 class="govuk-heading-m">Driving licence</h2>
-                <h2 class="govuk-heading-m">National insurance number</h2>
+                <?php
+                foreach ($this->options_data as $datum) {
+                    echo '<h2 class="govuk-heading-m">' . $this->escapeHtml($datum) . '</h2>';
+                }
+                ?>
             </div>
         </details>
 
