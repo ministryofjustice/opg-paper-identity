@@ -24,23 +24,13 @@ return [
                     ],
                 ],
             ],
-            'test' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/test',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'application',
-                    ],
-                ],
-            ],
             'donor_lpa_check' => [
                 'type'    => Literal::class,
                 'options' => [
                     'route'    => '/donor-lpa-check',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'donorLpaCheckAction',
+                        'action'     => 'donorLpaCheck',
                     ],
                 ],
             ],
@@ -51,16 +41,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'donorIdCheck',
-                    ],
-                ],
-            ],
-            'application' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/application[/:action]',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'application',
                     ],
                 ],
             ],

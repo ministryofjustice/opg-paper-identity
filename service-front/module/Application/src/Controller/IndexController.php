@@ -7,7 +7,6 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Application\Services\OpgApiService;
 
 class IndexController extends AbstractActionController
 {
