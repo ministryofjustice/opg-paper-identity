@@ -6,12 +6,12 @@
     <title>GOV.UK - The best place to find government services and information</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0b0c0c">
-    <link rel="icon" sizes="48x48" href="<?=$this->basePath('/assets/images/favicon.ico') ?>">
-    <link rel="icon" sizes="any" href="<?=$this->basePath('/assets/images/favicon.svg') ?>" type="image/svg+xml">
-    <link rel="mask-icon" href="<?=$this->basePath('/assets/images/govuk-icon-mask.svg') ?>" color="#0b0c0c">
-    <link rel="apple-touch-icon" href="<?=$this->basePath('/assets/images/govuk-icon-180.png') ?>">
-    <link rel="manifest" href="<?=$this->basePath('/assets/manifest.json') ?>">
-    <link rel="stylesheet" href="<?=$this->basePath('/css/all.css') ?>">
+    <link rel="icon" sizes="48x48" href="{{ '/assets/images/favicon.ico' | basepath }}">
+    <link rel="icon" sizes="any" href="{{ '/assets/images/favicon.svg' | basepath }}" type="image/svg+xml">
+    <link rel="mask-icon" href="{{ '/assets/images/govuk-icon-mask.svg' | basepath }}" color="#0b0c0c">
+    <link rel="apple-touch-icon" href="{{ '/assets/images/govuk-icon-180.png' | basepath }}">
+    <link rel="manifest" href="{{ '/assets/manifest.json' | basepath }}">
+    <link rel="stylesheet" href="{{ '/css/all.css' | basepath }}">
 </head>
 
 <body class="govuk-template__body">
@@ -40,19 +40,18 @@
     </div>
 </header>
 <div class="govuk-width-container">
+    <div class="govuk-phase-banner">
+        <p class="govuk-phase-banner__content">
+            <strong class="govuk-tag govuk-phase-banner__content__tag">
+                Beta
+            </strong>
+            <span class="govuk-phase-banner__text">
+              This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+            </span>
+        </p>
+    </div>
     <main class="govuk-main-wrapper" id="main-content" role="main">
-        <div class="govuk-phase-banner">
-            <p class="govuk-phase-banner__content">
-                <strong class="govuk-tag govuk-phase-banner__content__tag">
-                    Beta
-                </strong>
-                <span class="govuk-phase-banner__text">
-                  This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
-                </span>
-            </p>
-        </div>
-
-        <?php echo $this->content ?>
+        {{ content | raw }}
     </main>
 </div>
 <footer class="govuk-footer" role="contentinfo">
@@ -117,7 +116,7 @@
         </div>
     </div>
 </footer>
-<script type="module" src="<?=$this->basePath('/js/main.js') ?>"></script>
+<script type="module" src="{{ '/js/main.js' | basepath }}"></script>
 </body>
 
 </html>

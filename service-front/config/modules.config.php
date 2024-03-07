@@ -23,4 +23,5 @@ return [
     'Laminas\Validator',
     'Laminas\Diactoros',
     'Application',
+    'ZendTwig',
 ];
