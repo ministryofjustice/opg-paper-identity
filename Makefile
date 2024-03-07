@@ -4,7 +4,7 @@ build: ## Build containers
 	docker compose build --parallel api front api-test
 
 up: ## Start application
-	docker compose up -d front
+	docker compose up -d front-web
 
 down: ## Stop application
 	docker compose down
