@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Factories\OpgApiServiceFactory;
+use Application\Services\OpgApiService;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
-use Laminas\ServiceManager\Factory\InvokableFactory;
+use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
+
 
 return [
     'router' => [
@@ -21,13 +24,23 @@ return [
                     ],
                 ],
             ],
-            'application' => [
-                'type'    => Segment::class,
+            'donor_lpa_check' => [
+                'type'    => Literal::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route'    => '/donor-lpa-check',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action'     => 'donorLpaCheck',
+                    ],
+                ],
+            ],
+            'donor_id_check' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/donor-id-check',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'donorIdCheck',
                     ],
                 ],
             ],
@@ -35,7 +48,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'view_manager' => [
@@ -52,6 +65,14 @@ return [
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
+        ],
+    ],
+    'service_manager' => [
+        'aliases' => [
+            Contracts\OpgApiServiceInterface::class => Services\OpgApiService::class,
+        ],
+        'factories' => [
+            OpgApiService::class => OpgApiServiceFactory::class,
         ],
     ],
 ];
