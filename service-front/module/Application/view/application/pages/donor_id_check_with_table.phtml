@@ -1,0 +1,98 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h3 class="govuk-heading-xl">Donor ID check</h3>
+        <h3 class="govuk-heading-m">Is the donor prepared to perform the ID check?</h3>
+
+        <p class="govuk-body">
+            Things to check:
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>
+                Which document would they prefer to ID with?
+            </li>
+            <li>
+                do they have the ID document with them?
+            </li>
+            <li>
+                Check the ID matches what is in Sirius (update as appropriate)
+            </li>
+        </ul>
+
+        <table class="govuk-table">
+            <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">Name</th>
+                <td class="govuk-table__cell">
+                    <?php
+                    echo $this->escapeHtml($this->details_data['Name'])
+                    ?>
+                </td>
+            </tr>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">Date of Birth</th>
+                <td class="govuk-table__cell">
+                    <?php
+                    echo $this->escapeHtml($this->details_data['DOB'])
+                    ?>
+                </td>
+            </tr>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">Address</th>
+                <td class="govuk-table__cell">
+                    <?php
+                    echo $this->escapeHtml($this->details_data['Address'])
+                    ?>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <details class="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  ID over the phone
+                </span>
+            </summary>
+            <div class="govuk-details__text">
+                <?php
+                foreach ($this->options_data as $datum) {
+                    echo '<h2 class="govuk-heading-m">' . $this->escapeHtml($datum) . '</h2>';
+                }
+                ?>
+            </div>
+        </details>
+
+        <details class="govuk-details">
+            <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      ID in person at the Post Office
+    </span>
+            </summary>
+            <div class="govuk-details__text">
+            </div>
+        </details>
+
+        <details class="govuk-details">
+            <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      No ID: Choose someone to vouch (donor only)
+    </span>
+            </summary>
+            <div class="govuk-details__text">
+            </div>
+        </details>
+
+        <details class="govuk-details">
+            <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Court of Protection (donor only)
+    </span>
+            </summary>
+            <div class="govuk-details__text">
+            </div>
+        </details>
+
+        <button class="govuk-button">Continue</button>
+
+    </main>
+</div>
