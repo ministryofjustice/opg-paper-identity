@@ -45,4 +45,15 @@ class IndexController extends AbstractActionController
 
         return $view->setTemplate('application/pages/donor_id_check');
     }
+
+    public function addressVerificationAction(): ViewModel
+    {
+        $data = $this->opgApiService->getAddresVerificationData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $data);
+
+        return $view->setTemplate('application/pages/address_verification');
+    }
 }

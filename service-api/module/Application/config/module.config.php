@@ -51,6 +51,16 @@ return [
                     ],
                 ],
             ],
+            'address_verification' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/address_verification',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addressVerification',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

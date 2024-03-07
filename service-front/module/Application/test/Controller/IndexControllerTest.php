@@ -99,4 +99,28 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('IndexController');
         $this->assertMatchedRouteName('donor_id_check');
     }
+
+    public function testAddressVerificationReturnsPageWithData(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddresVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
 }

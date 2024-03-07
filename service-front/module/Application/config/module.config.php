@@ -54,13 +54,13 @@ return [
                     ],
                 ],
             ],
-            'application' => [
+            'address_verification' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route'    => '/address_verification',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'application',
+                        'action'     => 'addressVerification',
                     ],
                 ],
             ],

@@ -1,0 +1,41 @@
+<div class="govuk-phase-banner">
+    <p class="govuk-phase-banner__content">
+        <strong class="govuk-tag govuk-phase-banner__content__tag">
+            Beta
+        </strong>
+        <span class="govuk-phase-banner__text">
+      This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+    </span>
+    </p>
+</div>
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h3 class="govuk-heading-xl">Choose verification method</h3>
+
+
+        <p class="govuk-body">
+            Things to check:
+        </p>
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        Where do you live?
+                    </h1>
+                </legend>
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <?php
+                    foreach ($this->options_data as $datum) {
+                        echo '<div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="whereDoYouLive" name="whereDoYouLive" type="radio" value="england">
+                            <label class="govuk-label govuk-radios__label" for="whereDoYouLive">' . $datum . '</label>
+                        </div>';
+                    }
+                    ?>
+                </div>
+            </fieldset>
+        </div>
+        <button class="govuk-button">Continue</button>
+
+    </main>
+</div>

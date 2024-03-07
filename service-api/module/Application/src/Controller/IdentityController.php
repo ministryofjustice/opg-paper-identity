@@ -45,4 +45,17 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($data);
     }
+
+    public function addressVerificationAction(): JsonModel
+    {
+        $data = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        return new JsonModel($data);
+    }
 }

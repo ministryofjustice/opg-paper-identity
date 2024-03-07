@@ -9,4 +9,6 @@ interface OpgApiServiceInterface
     public function getIdOptionsData(): array;
 
     public function getDetailsData(): array;
+
+    public function getAddresVerificationData(): array;
 }
