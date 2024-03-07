@@ -24,16 +24,6 @@ return [
                     ],
                 ],
             ],
-            'test' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/test',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'application',
-                    ],
-                ],
-            ],
             'donor_lpa_check' => [
                 'type'    => Literal::class,
                 'options' => [

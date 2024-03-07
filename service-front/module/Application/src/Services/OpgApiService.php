@@ -45,10 +45,8 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getAddresVerificationData(): array
     {
-        $baseUrl = $this->config['base-url'];
-
         try {
-            $response = $this->httpClient->get($baseUrl . '/identity/address_verification');
+            $response = $this->httpClient->get('/identity/address_verification');
 
             if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
