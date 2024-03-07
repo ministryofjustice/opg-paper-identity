@@ -23,14 +23,8 @@ class OpgApiServiceTest extends TestCase
 {
     private OpgApiService|MockObject $opgApiService;
 
-    /**
-     * @var string[]
-     */
-    private array $config;
-
     public function setUp(): void
     {
-        $this->config = ['base-url' => 'testing'];
         parent::setUp();
     }
 
@@ -43,7 +37,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $this->opgApiService = new OpgApiService($client, $this->config);
+        $this->opgApiService = new OpgApiService($client);
 
         $response = $this->opgApiService->getIdOptionsData();
 
@@ -93,7 +87,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $this->opgApiService = new OpgApiService($client, $this->config);
+        $this->opgApiService = new OpgApiService($client);
 
         $response = $this->opgApiService->getDetailsData();
 

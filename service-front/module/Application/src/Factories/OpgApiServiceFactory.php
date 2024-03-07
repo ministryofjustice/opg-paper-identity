@@ -18,12 +18,8 @@ class OpgApiServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): OpgApiService
     {
-        $guzzleClient = new Client();
+        $guzzleClient = new Client(['base-url' => 'http://api-web']);
 
-        $config = [
-            'base-url' => 'http://api-web',
-        ];
-
-        return new OpgApiService($guzzleClient, $config);
+        return new OpgApiService($guzzleClient);
     }
 }
