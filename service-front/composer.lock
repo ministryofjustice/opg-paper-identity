@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d26a9da2c7533f5494e27d96556fbc9",
+    "content-hash": "68898ef66cf3b75e5f9ab272edd2eb81",
     "packages": [
         {
             "name": "brick/varexporter",
@@ -3303,6 +3303,69 @@
             "time": "2023-12-10T21:03:43+00:00"
         },
         {
+            "name": "oxcom/zend-twig",
+            "version": "v1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OxCom/zf3-twig.git",
+                "reference": "39e50d3820c92aacf340c8769cfd7962b8c46d09"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OxCom/zf3-twig/zipball/39e50d3820c92aacf340c8769cfd7962b8c46d09",
+                "reference": "39e50d3820c92aacf340c8769cfd7962b8c46d09",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-eventmanager": "^3.1",
+                "laminas/laminas-modulemanager": "^2.7",
+                "laminas/laminas-mvc": "^3.0",
+                "laminas/laminas-mvc-plugin-flashmessenger": "^1.0",
+                "laminas/laminas-servicemanager": "^3.2",
+                "laminas/laminas-view": "^2.8",
+                "php": ">=7.0",
+                "twig/twig": "^2.12|^3.0.1"
+            },
+            "require-dev": {
+                "laminas/laminas-i18n": "^2.7",
+                "laminas/laminas-mvc-i18n": "^1.0",
+                "laminas/laminas-navigation": "^2.8",
+                "laminas/laminas-server": "^2.7",
+                "laminas/laminas-test": "^3.0",
+                "phpunit/phpunit": "^6.5.13|^7.5.20",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ZendTwig\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "OxCom",
+                    "email": "lancer.oxcom@gmail.com"
+                }
+            ],
+            "description": "ZendTwig is a module that integrates the Twig template engine with Zend Framework 3.",
+            "homepage": "https://github.com/OxCom/zf3-twig",
+            "keywords": [
+                "module",
+                "twig",
+                "zf",
+                "zf3"
+            ],
+            "support": {
+                "issues": "https://github.com/OxCom/zf3-twig/issues",
+                "source": "https://github.com/OxCom/zf3-twig/tree/master"
+            },
+            "time": "2020-09-02T09:21:43+00:00"
+        },
+        {
             "name": "psr/cache",
             "version": "3.0.0",
             "source": {
@@ -4697,6 +4760,78 @@
                 }
             ],
             "time": "2024-01-29T15:41:16+00:00"
+        },
+        {
+            "name": "twig/twig",
+            "version": "v3.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twigphp/Twig.git",
+                "reference": "9d15f0ac07f44dc4217883ec6ae02fd555c6f71d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/9d15f0ac07f44dc4217883ec6ae02fd555c6f71d",
+                "reference": "9d15f0ac07f44dc4217883ec6ae02fd555c6f71d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/polyfill-ctype": "^1.8",
+                "symfony/polyfill-mbstring": "^1.3",
+                "symfony/polyfill-php80": "^1.22"
+            },
+            "require-dev": {
+                "psr/container": "^1.0|^2.0",
+                "symfony/phpunit-bridge": "^5.4.9|^6.3|^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Twig\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Twig Team",
+                    "role": "Contributors"
+                },
+                {
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
+                }
+            ],
+            "description": "Twig, the flexible, fast, and secure template language for PHP",
+            "homepage": "https://twig.symfony.com",
+            "keywords": [
+                "templating"
+            ],
+            "support": {
+                "issues": "https://github.com/twigphp/Twig/issues",
+                "source": "https://github.com/twigphp/Twig/tree/v3.8.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/twig/twig",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2023-11-21T18:54:41+00:00"
         },
         {
             "name": "webimpress/safe-writer",
