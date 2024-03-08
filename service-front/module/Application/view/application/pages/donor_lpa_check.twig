@@ -27,8 +27,8 @@
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" id="waste" name="waste" type="checkbox"
-                                                   value="carcasses">
+                                            <input class="govuk-checkboxes__input" id="lpa_check_{{ datum['lpa_ref'] }}" name="lpa_check" type="checkbox"
+                                                   value="{{ datum['lpa_ref'] }}">
                                             <label class="govuk-label govuk-checkboxes__label" for="waste">
                                                 {{ datum['lpa_ref'] }}
                                             </label>

@@ -144,7 +144,7 @@ class OpgApiServiceTest extends TestCase
 
         $this->opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->getAddresVerificationData();
+        $response = $this->opgApiService->getAddressVerificationData();
 
         $this->assertEquals($responseData, $response);
     }

@@ -15,10 +15,10 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
-    public function getIdOptionsData(): array
+    public function makeApiRequest(string $uri): array
     {
         try {
-            $response = $this->httpClient->get('/identity/method');
+            $response = $this->httpClient->get($uri);
 
             if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
@@ -27,47 +27,25 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+    }
+
+    public function getIdOptionsData(): array
+    {
+        return $this->makeApiRequest('/identity/method');
     }
 
     public function getDetailsData(): array
     {
-        try {
-            $response = $this->httpClient->get('/identity/details');
-
-            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
-                throw new OpgApiException($response->getReasonPhrase());
-            }
-            return json_decode($response->getBody()->getContents(), true);
-        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
+        return $this->makeApiRequest('/identity/details');
     }
 
-    public function getAddresVerificationData(): array
+    public function getAddressVerificationData(): array
     {
-        try {
-            $response = $this->httpClient->get('/identity/address_verification');
-
-            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
-                throw new OpgApiException($response->getReasonPhrase());
-            }
-            return json_decode($response->getBody()->getContents(), true);
-        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
+        return $this->makeApiRequest('/identity/address_verification');
     }
 
     public function getLpasByDonorData(): array
     {
-        try {
-            $response = $this->httpClient->get('/identity/list_lpas');
-
-            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
-                throw new OpgApiException($response->getReasonPhrase());
-            }
-            return json_decode($response->getBody()->getContents(), true);
-        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
+        return $this->makeApiRequest('/identity/list_lpas');
     }
 }

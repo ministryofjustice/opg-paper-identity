@@ -47,7 +47,7 @@ class IndexController extends AbstractActionController
 
     public function addressVerificationAction(): ViewModel
     {
-        $data = $this->opgApiService->getAddresVerificationData();
+        $data = $this->opgApiService->getAddressVerificationData();
 
         $view = new ViewModel();
 

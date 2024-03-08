@@ -100,7 +100,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getAddresVerificationData')
+            ->method('getAddressVerificationData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
         $this->dispatch('/address_verification', 'GET');
