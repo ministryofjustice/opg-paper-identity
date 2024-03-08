@@ -6,10 +6,10 @@ namespace Application;
 
 use Application\Factories\OpgApiServiceFactory;
 use Application\Services\OpgApiService;
+use Application\Views\TwigExtension;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
-
 
 return [
     'router' => [
@@ -81,8 +81,16 @@ return [
         'aliases' => [
             Contracts\OpgApiServiceInterface::class => Services\OpgApiService::class,
         ],
+        'invokables' => [
+            TwigExtension::class => TwigExtension::class,
+        ],
         'factories' => [
             OpgApiService::class => OpgApiServiceFactory::class,
+        ],
+    ],
+    'zend_twig'       => [
+        'extensions' => [
+            TwigExtension::class,
         ],
     ],
 ];
