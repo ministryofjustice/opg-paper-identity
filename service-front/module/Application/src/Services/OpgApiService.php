@@ -42,4 +42,32 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException($exception->getMessage());
         }
     }
+
+    public function getAddresVerificationData(): array
+    {
+        try {
+            $response = $this->httpClient->get('/identity/address_verification');
+
+            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new OpgApiException($response->getReasonPhrase());
+            }
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
+
+    public function getLpasByDonorData(): array
+    {
+        try {
+            $response = $this->httpClient->get('/identity/list_lpas');
+
+            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new OpgApiException($response->getReasonPhrase());
+            }
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }
