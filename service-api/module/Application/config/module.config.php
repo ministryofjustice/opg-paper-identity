@@ -78,7 +78,7 @@ return [
         ],
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\IdentityController::class => IdentityControllerFactory::class
+            Controller\IdentityController::class => LazyControllerAbstractFactory::class
         ],
     ],
 

@@ -16,6 +16,8 @@ awslocal dynamodb update-table \
         \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 20, \"WriteCapacityUnits\": 10 }, \
         \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 
+sleep 5
+
 awslocal dynamodb update-table \
     --table-name identity-verify \
     --attribute-definitions AttributeName=id_number,AttributeType=S \
