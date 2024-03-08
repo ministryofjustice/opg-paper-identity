@@ -61,6 +61,16 @@ return [
                     ],
                 ],
             ],
+            'list_lpas' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/list_lpas',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'listLpas',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

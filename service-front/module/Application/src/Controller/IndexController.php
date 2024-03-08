@@ -36,7 +36,7 @@ class IndexController extends AbstractActionController
 
     public function donorLpaCheckAction(): ViewModel
     {
-        $data = $this->opgApiService->getIdOptionsData();
+        $data = $this->opgApiService->getLpasByDonorData();
 
         $view = new ViewModel();
 

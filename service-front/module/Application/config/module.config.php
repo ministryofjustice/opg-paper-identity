@@ -30,7 +30,7 @@ return [
                     'route'    => '/donor-lpa-check',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'donorLpaCheckAction',
+                        'action'     => 'donorLpaCheck',
                     ],
                 ],
             ],
