@@ -41,7 +41,7 @@ class DataQueryHandler
     {
         //return some subset of data
         $idKey = [
-            'KEY' => [
+            'key' => [
                 'id_number' => [
                     'S' => $idNumber,
                 ],

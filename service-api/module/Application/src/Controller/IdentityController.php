@@ -52,10 +52,10 @@ class IdentityController extends AbstractActionController
 
     public function testdataAction()
     {
-        $data = $this->dataQueryHandler->queryByName("Joe Blogs");
-        //$data = $this->dataQueryHandler->queryByIDNumber("HA1483fs528");
-        //$data = $this->dataImportHandler->load();
-
+        $this->dataImportHandler->load();
+        $data = $this->dataQueryHandler->returnAll();
+        //$data = $this->dataQueryHandler->queryByIDNumber("14AH387sdfj");
+        
         return new JsonModel($data);
     }
 }

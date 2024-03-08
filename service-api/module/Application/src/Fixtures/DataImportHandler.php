@@ -26,7 +26,6 @@ class DataImportHandler
         if (!file_exists(self::DATA_FILE_PATH) || !is_readable(self::DATA_FILE_PATH)) {
             throw new \Exception("File does not exist or is not readable");
         }
-
         $data = file_get_contents(self::DATA_FILE_PATH);
 
         if ($data === false) {
@@ -34,7 +33,6 @@ class DataImportHandler
         }
 
         $batch = json_decode($data);
-
         $this->importData($batch);
 
     }
