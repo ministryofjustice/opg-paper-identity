@@ -36,12 +36,23 @@ class IndexController extends AbstractActionController
 
     public function donorLpaCheckAction(): ViewModel
     {
-        $data = $this->opgApiService->getIdOptionsData();
+        $data = $this->opgApiService->getLpasByDonorData();
 
         $view = new ViewModel();
 
         $view->setVariable('data', $data);
 
         return $view->setTemplate('application/pages/donor_lpa_check');
+    }
+
+    public function addressVerificationAction(): ViewModel
+    {
+        $data = $this->opgApiService->getAddresVerificationData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $data);
+
+        return $view->setTemplate('application/pages/address_verification');
     }
 }

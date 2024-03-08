@@ -86,4 +86,54 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('IndexController');
         $this->assertMatchedRouteName('donor_id_check');
     }
+
+    public function testAddressVerificationReturnsPageWithData(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddresVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+    public function testLpasByDonorReturnsPageWithData(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/donor-lpa-check', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('donor_lpa_check');
+    }
 }
