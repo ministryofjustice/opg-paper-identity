@@ -6,6 +6,7 @@ namespace Application\Fixtures;
 
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
+use Aws\Exception\AwsException;
 
 class DataImportHandler
 {
@@ -17,48 +18,44 @@ class DataImportHandler
     ) {
     }
 
-    public function load()
-    {
-        $data = file_get_contents(self::DATA_FILE_PATH);
-        $batch = json_decode($data);
-
-        $this->writeBatch($this->tableName, $batch);
-
-        //return all data
-        $result = $this->dynamoDbClient->scan(array('TableName' => $this->tableName));
-        $displayResults = [];
-        foreach ($result['Items'] as $record) {
-
-            $marshal = new Marshaler();
-            $displayResults[] = $marshal->unmarshalItem($record);
-        }
-        return $displayResults;
-    }
-
     /**
      * @throws \Exception
      */
-    public function writeBatch(string $TableName, array $Batch, int $depth = 2)
+    public function load(): void
     {
-        if (--$depth <= 0) {
-            throw new \Exception("Max depth exceeded. Please try with fewer batch items or increase depth.");
+        if (!file_exists(self::DATA_FILE_PATH) || !is_readable(self::DATA_FILE_PATH)) {
+            throw new \Exception("File does not exist or is not readable");
         }
 
+        $data = file_get_contents(self::DATA_FILE_PATH);
+
+        if ($data === false) {
+            throw new \Exception("Failed to read JSON data");
+        }
+
+        $batch = json_decode($data);
+
+        $this->importData($batch);
+
+    }
+
+    public function importData($data): void
+    {
         $marshal = new Marshaler();
-        $total = 0;
-        foreach (array_chunk($Batch, 25) as $Items) {
-            foreach ($Items as $Item) {
-                $BatchWrite['RequestItems'][$TableName][] = ['PutRequest' => ['Item' => $marshal->marshalItem($Item)]];
-            }
+
+        foreach ($data as $item) {
+            $params = [
+                'TableName' => $this->tableName,
+                'Item' => $marshal->marshalItem($item)
+            ];
+
             try {
-                echo "Batching " . count($Items) . " for a total of " . ($total += count($Items)) . " items!\n";
-                $response = $this->dynamoDbClient->batchWriteItem($BatchWrite);
-                $BatchWrite = [];
-            } catch (\Exception $e) {
-                echo "uh oh...";
-                echo $e->getMessage();
-                die();
+                $this->dynamoDbClient->putItem($params);
+            } catch (AwsException $e) {
+                // Handle errors
+                echo "Error: " . $e->getMessage();
             }
         }
     }
+
 }

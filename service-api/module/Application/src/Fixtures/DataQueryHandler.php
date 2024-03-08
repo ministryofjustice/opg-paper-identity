@@ -47,10 +47,23 @@ class DataQueryHandler
                 ],
             ],
         ];
-        $index = "name-index";
+        $index = "id_number-index";
         $result = $this->query($this->tableName, $idKey, $index);
 
         return $this->returnUnmarshalResult($result);
+    }
+
+    public function searchByPrimaryId($value)
+    {
+        $params = [
+            'TableName' => $this->tableName,
+            'Key' => ['id' => ['N' => $value]],
+        ];
+
+        // Get item from DynamoDB table
+        $result = $this->dynamoDbClient->getItem($params);
+
+        return $result['Item'] ?? null;
     }
 
     public function query(string $tableName, $key, $dbIndex = '')

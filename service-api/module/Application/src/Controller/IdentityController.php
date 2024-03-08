@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
 class IdentityController extends AbstractActionController
 {
-    public function __construct(private readonly DataQueryHandler $dataQueryHandler)
+    public function __construct(
+        private readonly DataQueryHandler $dataQueryHandler,
+        private readonly DataImportHandler $dataImportHandler
+    )
     {
     }
     public function indexAction()
@@ -48,8 +52,9 @@ class IdentityController extends AbstractActionController
 
     public function testdataAction()
     {
-
         $data = $this->dataQueryHandler->queryByName("Joe Blogs");
+        //$data = $this->dataQueryHandler->queryByIDNumber("HA1483fs528");
+        //$data = $this->dataImportHandler->load();
 
         return new JsonModel($data);
     }

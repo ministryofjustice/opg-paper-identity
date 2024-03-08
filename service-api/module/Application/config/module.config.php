@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
+use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
 use Aws\DynamoDb\DynamoDbClient;
 use Behat\Testwork\Cli\Application;
+use Ddc\Controller\Factory\IdentityControllerFactory;
+use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Utilities\PopulateDynomoData;
 
 return [
@@ -68,9 +73,12 @@ return [
         ],
     ],
     'controllers' => [
+        'abstract_factories' => [
+            LazyControllerAbstractFactory::class,
+        ],
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\IdentityController::class => InvokableFactory::class
+            Controller\IdentityController::class => IdentityControllerFactory::class
         ],
     ],
 
@@ -80,6 +88,14 @@ return [
         ],
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
+            DataQueryHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
+                $serviceLocator->get(DynamoDbClient::class),
+                getenv('PAPER_ID_DATA_TABLE') ?: 'identity-verify'
+            ),
+            DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
+                $serviceLocator->get(DynamoDbClient::class),
+                getenv('PAPER_ID_DATA_TABLE') ?: 'identity-verify'
+            )
         ],
     ],
 

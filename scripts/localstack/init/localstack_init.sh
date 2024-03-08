@@ -13,14 +13,14 @@ awslocal dynamodb update-table \
     --attribute-definitions AttributeName=name,AttributeType=S \
     --global-secondary-index-updates \
         "[{\"Create\":{\"IndexName\": \"name-index\",\"KeySchema\":[{\"AttributeName\":\"name\",\"KeyType\":\"HASH\"}], \
-        \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5 }, \
+        \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 20, \"WriteCapacityUnits\": 10 }, \
         \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 
 awslocal dynamodb update-table \
     --table-name identity-verify \
     --attribute-definitions AttributeName=id_number,AttributeType=S \
     --global-secondary-index-updates \
-        "[{\"Create\":{\"IndexName\": \"id_number-index\",\"KeySchema\":[{\"AttributeName\":\"name\",\"KeyType\":\"HASH\"}], \
-        \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 10, \"WriteCapacityUnits\": 5 }, \
+        "[{\"Create\":{\"IndexName\": \"id_number-index\",\"KeySchema\":[{\"AttributeName\":\"id_number\",\"KeyType\":\"HASH\"}], \
+        \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 20, \"WriteCapacityUnits\": 10 }, \
         \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 

@@ -21,7 +21,7 @@ class DynamoDbClientFactory implements FactoryInterface
 
         $dynamoDbClient = new DynamoDbClient($config['aws']);
 
-        $dynamoDbClient->getHandlerList()->appendSign(MiddlewareAws::listen($dynamoDbClient), 'telemetry');
+        //$dynamoDbClient->getHandlerList()->appendSign(MiddlewareAws::listen($dynamoDbClient), 'telemetry');
 
         return $dynamoDbClient;
     }
