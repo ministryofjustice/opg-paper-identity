@@ -1,72 +1,49 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <h1 class="govuk-heading-xl">Is the caller prepared to perform the ID check?</h1>
+        <h1 class="govuk-heading-xl">Donor LPA check</h1>
 
-        <p class="govuk-body">
-            Things to check:
-        </p>
-        <ul class="govuk-list govuk-list--bullet">
-            <li>
-                how will they ID?
-            </li>
-            <li>
-                do they have their ID document with them?
-            </li>
-            <li>
-                does the name / dob on their ID document match what is in Sirius?
-            </li>
-            <li>
-                are they ready to answer any questions they might have?
-            </li>
-            <li>
-                CP / voucher: do they have other LPAs they’ll need to do an ID check for?
-            </li>
-        </ul>
+        <h3 class="govuk-heading-m">Which LPAs should this identity check apply to?</h3>
 
-        <details class="govuk-details">
-            <summary class="govuk-details__summary">
-                <span class="govuk-details__summary-text">
-                  ID over the phone
-                </span>
-            </summary>
-            <div class="govuk-details__text">
-                {% for datum in options_data %}
-                <h2 class="govuk-heading-m">{{ datum }}</h2>
-                {% endfor %}
-            </div>
-        </details>
-
-        <details class="govuk-details">
-            <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      ID in person at the Post Office
-    </span>
-            </summary>
-            <div class="govuk-details__text">
-            </div>
-        </details>
-
-        <details class="govuk-details">
-            <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      No ID: Choose someone to vouch (donor only)
-    </span>
-            </summary>
-            <div class="govuk-details__text">
-            </div>
-        </details>
-
-        <details class="govuk-details">
-            <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      Court of Protection (donor only)
-    </span>
-            </summary>
-            <div class="govuk-details__text">
-            </div>
-        </details>
-
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            LPAs for donor: Mary Chapman
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                {#                                <dd></dd>#}
+                                <dt class="govuk-summary-list__key">
+                                    LPA reference number
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Donor
+                                </dt>
+                            </div>
+                            {% for datum in data %}
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        <div class="govuk-checkboxes__item">
+                                            <input class="govuk-checkboxes__input" id="lpa_check_{{ datum['lpa_ref'] }}" name="lpa_check" type="checkbox"
+                                                   value="{{ datum['lpa_ref'] }}">
+                                            <label class="govuk-label govuk-checkboxes__label" for="waste">
+                                                {{ datum['lpa_ref'] }}
+                                            </label>
+                                        </div>
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        {{ datum['donor_name'] }}
+                                    </dd>
+                                </div>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
         <button class="govuk-button">Continue</button>
-
     </main>
 </div>
