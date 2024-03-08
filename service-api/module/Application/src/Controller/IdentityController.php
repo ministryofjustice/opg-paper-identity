@@ -7,6 +7,10 @@ namespace Application\Controller;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
+/**
+ * @psalm-suppress InvalidArgument
+ * @see https://github.com/laminas/laminas-view/issues/239
+ */
 class IdentityController extends AbstractActionController
 {
     public function indexAction(): JsonModel
@@ -26,10 +30,6 @@ class IdentityController extends AbstractActionController
             'National Insurance Number'
         ];
 
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
         return new JsonModel($data);
     }
 
