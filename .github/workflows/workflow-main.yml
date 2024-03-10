@@ -58,7 +58,7 @@ jobs:
           - image_app_name: paper-identity/front
             service_name: front
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: image-${{ matrix.service_name }}
