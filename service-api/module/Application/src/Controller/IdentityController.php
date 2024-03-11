@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
 class IdentityController extends AbstractActionController
 {
+    public function __construct(
+        private readonly DataQueryHandler $dataQueryHandler,
+        private readonly DataImportHandler $dataImportHandler
+    )
+    {
+    }
+
     public function indexAction(): JsonModel
     {
         return new JsonModel();
@@ -43,6 +52,14 @@ class IdentityController extends AbstractActionController
             'LPA' => ['PA M-1234-ABCB-XXXX', 'PW M-1234-ABCD-AAAA']
         ];
 
+        return new JsonModel($data);
+    }
+
+    public function testdataAction(): JsonModel
+    {
+        $this->dataImportHandler->load();
+        $data = $this->dataQueryHandler->returnAll();
+        
         return new JsonModel($data);
     }
 }
