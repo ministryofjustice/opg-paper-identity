@@ -57,6 +57,7 @@ services:
       - static-content:/var/www/public
     environment:
       - SIRIUS_BASE_URI=http://api-web
+      - ID_CHECK_FLAG=false
 
   front-test:
     image: paper-identity/front-test
