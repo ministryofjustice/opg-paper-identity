@@ -1,4 +1,4 @@
-FROM node:21.1.0-alpine3.17 as asset-env
+FROM node:21.4.0-alpine3.17 as asset-env
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN yarn
 COPY web web
 RUN yarn build
 
-FROM php:8.2-fpm-alpine AS app
+FROM php:8.3-fpm-alpine AS app
 
 RUN mkdir /app
 WORKDIR /var/www
