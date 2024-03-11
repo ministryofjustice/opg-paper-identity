@@ -44,6 +44,16 @@ return [
                     ],
                 ],
             ],
+            'address_verification' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/address_verification',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'addressVerification',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
