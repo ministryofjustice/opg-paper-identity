@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
-    errorLevel="1"
+    errorLevel="2"
     findUnusedPsalmSuppress="true"
     findUnusedCode="true"
     findUnusedBaselineEntry="true"
@@ -18,8 +18,6 @@
 
         <ignoreFiles>
             <directory name="vendor" />
-            <directory name="data" />
-            <directory name="bin" />
         </ignoreFiles>
     </projectFiles>
 
@@ -35,11 +33,17 @@
                 <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::with"/>
             </errorLevel>
         </InternalMethod>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <file name="module/Application/src/Controller/*Controller.php" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <file name="module/Application/src/Controller/*Controller.php" />
+            </errorLevel>
+        </PropertyNotSetInConstructor>
     </issueHandlers>
-
-    <stubs>
-        <file name=".psalm-stubs.phpstub"/>
-    </stubs>
 
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
