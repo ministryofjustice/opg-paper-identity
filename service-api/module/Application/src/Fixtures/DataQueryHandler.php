@@ -17,7 +17,7 @@ class DataQueryHandler
 
     public function returnAll(): array
     {
-        $result = $this->dynamoDbClient->scan(array('TableName' => $this->tableName));
+        $result = $this->dynamoDbClient->scan(['TableName' => $this->tableName]);
 
         return $this->returnUnmarshalResult($result);
     }
@@ -34,7 +34,7 @@ class DataQueryHandler
         $index = "name-index";
         $result = $this->query($this->tableName, $nameKey, $index);
 
-       return $this->returnUnmarshalResult($result);
+        return $this->returnUnmarshalResult($result);
     }
 
     public function queryByIDNumber($idNumber): array
@@ -102,5 +102,4 @@ class DataQueryHandler
         }
         return $displayResults;
     }
-
 }

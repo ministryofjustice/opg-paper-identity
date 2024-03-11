@@ -14,8 +14,7 @@ class IdentityController extends AbstractActionController
     public function __construct(
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler
-    )
-    {
+    ) {
     }
 
     public function indexAction(): JsonModel
@@ -59,7 +58,7 @@ class IdentityController extends AbstractActionController
     {
         $this->dataImportHandler->load();
         $data = $this->dataQueryHandler->returnAll();
-        
+
         return new JsonModel($data);
     }
 }
