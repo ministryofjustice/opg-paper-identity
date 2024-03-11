@@ -38,10 +38,7 @@
     "autoload-dev": {
         "psr-4": {
             "ApplicationTest\\": "module/Application/test/"
-        },
-        "files": [
-            "src/ApiTools/constants.php"
-        ]
+        }
     },
     "scripts": {
         "clear-config-cache": "php bin/clear-config-cache.php",
