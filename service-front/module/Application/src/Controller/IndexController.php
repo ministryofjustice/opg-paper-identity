@@ -61,7 +61,7 @@ class IndexController extends AbstractActionController
 
     public function identityVerificationAction(): ViewModel
     {
-        $this->idVerify();
+        $template = $this->idVerify('application/pages/identity_verification');
 
         $optionsdata = $this->opgApiService->getIdOptionsData();
 
@@ -69,6 +69,6 @@ class IndexController extends AbstractActionController
 
         $view->setVariable('options_data', $optionsdata);
 
-        return $view->setTemplate('application/pages/identity_verification');
+        return $view->setTemplate($template);
     }
 }

@@ -136,4 +136,27 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('IndexController');
         $this->assertMatchedRouteName('donor_lpa_check');
     }
+
+    public function testFeatureBlockTrait(): void
+    {
+        $mockResponseDataIdOptions = [
+            "Passport",
+            "Driving Licence",
+            "National Insurance Number"
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getIdOptionsData')
+            ->willReturn($mockResponseDataIdOptions);
+
+        $this->dispatch('/identity_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('identity_verification');
+        $this->assertTemplateName('error/feature403');
+    }
 }
