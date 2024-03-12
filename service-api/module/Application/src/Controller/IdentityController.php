@@ -12,6 +12,8 @@ use Laminas\View\Model\JsonModel;
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
+ * @psalm-suppress InvalidArgument
+ * @see https://github.com/laminas/laminas-view/issues/239
  */
 class IdentityController extends AbstractActionController
 {
@@ -39,10 +41,6 @@ class IdentityController extends AbstractActionController
             'National Insurance Number'
         ];
 
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
         return new JsonModel($data);
     }
 
@@ -91,4 +89,33 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
 
     }
+    public function addressVerificationAction(): JsonModel
+    {
+        $data = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        return new JsonModel($data);
+    }
+
+    public function listLpasAction(): JsonModel
+    {
+        $data = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        return new JsonModel($data);
+    }
+
 }
