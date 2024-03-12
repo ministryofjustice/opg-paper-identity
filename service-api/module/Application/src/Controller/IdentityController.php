@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
 /**
+ * @psalm-suppress PropertyNotSetInConstructor
+ * Needed here due to false positive from Laminas’s uninitialised properties
  * @psalm-suppress InvalidArgument
  * @see https://github.com/laminas/laminas-view/issues/239
  */
 class IdentityController extends AbstractActionController
 {
+
+    public function __construct(
+        private readonly DataQueryHandler $dataQueryHandler,
+        private readonly DataImportHandler $dataImportHandler,
+    ) {
+    }
+
     public function indexAction(): JsonModel
     {
         return new JsonModel();
@@ -46,6 +57,38 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
     }
 
+    public function testdataAction(): JsonModel
+    {
+        $this->dataImportHandler->load();
+        $data = $this->dataQueryHandler->returnAll();
+
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+    }
+
+    public function findByNameAction(): JsonModel
+    {
+        $data = $this->dataQueryHandler->queryByName("Joe Blogs");
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+    }
+
+    public function findByIdNumberAction(): JsonModel
+    {
+        $data = $this->dataQueryHandler->queryByIDNumber("HA1483fs528");
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+
+    }
     public function addressVerificationAction(): JsonModel
     {
         $data = [
@@ -74,4 +117,5 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($data);
     }
+
 }

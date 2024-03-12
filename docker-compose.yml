@@ -8,6 +8,17 @@ services:
       context: service-api
       dockerfile: Dockerfile
       target: production
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      AWS_REGION: eu-west-1
+      AWS_DYNAMODB_ENDPOINT: http://localstack:4566
+      SECRETS_MANAGER_ENDPOINT: http://localstack:4566
+      AWS_DYNAMODB_TABLE_NAME: identity-verify
+      AWS_ACCESS_KEY_ID: localstack
+      AWS_SECRET_ACCESS_KEY: localstack
+      ENVIRONMENT: local
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
       interval: 15s
@@ -24,6 +35,17 @@ services:
       context: service-api
       dockerfile: Dockerfile
       target: development
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      AWS_REGION: eu-west-1
+      AWS_DYNAMODB_ENDPOINT: http://localstack:4566
+      SECRETS_MANAGER_ENDPOINT: http://localstack:4566
+      AWS_DYNAMODB_TABLE_NAME: identity-verify
+      AWS_ACCESS_KEY_ID: localstack
+      AWS_SECRET_ACCESS_KEY: localstack
+      ENVIRONMENT: local
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
       interval: 15s
@@ -127,6 +149,20 @@ services:
     volumes:
       - ~/.composer:/tmp
       - ./service-front:/app
+
+  localstack:
+    image: localstack/localstack:3.0
+    volumes:
+      - "./scripts/localstack/init:/etc/localstack/init/ready.d"
+      - "./scripts/localstack/wait:/scripts/wait"
+    environment:
+      AWS_DEFAULT_REGION: eu-west-1
+    healthcheck:
+      test: bash /scripts/wait/healthcheck.sh
+      interval: 20s
+      timeout: 30s
+      retries: 50
+    restart: unless-stopped
 
 volumes:
   static-content:
