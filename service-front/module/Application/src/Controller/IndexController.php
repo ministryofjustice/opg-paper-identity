@@ -55,4 +55,15 @@ class IndexController extends AbstractActionController
 
         return $view->setTemplate('application/pages/address_verification');
     }
+
+    public function nationalInsuranceNumberAction(): ViewModel
+    {
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/national_insurance_number');
+    }
 }
