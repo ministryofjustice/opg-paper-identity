@@ -1,0 +1,23 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h3 class="govuk-heading-xl">Identity verification service</h3>
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        You will be redirected to an external service to complete this process
+                    </h1>
+                </legend>
+                <div class="govuk-radios" data-module="govuk-radios">
+                    {% for datum in options_data %}
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="whereDoYouLive" name="whereDoYouLive" type="radio" value="england">
+                            <label class="govuk-label govuk-radios__label" for="whereDoYouLive">{{ datum }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+        </div>
+        <button class="govuk-button">Start</button>
+    </main>
+</div>

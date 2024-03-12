@@ -7,9 +7,12 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Traits\FeatureCheck;
 
 class IndexController extends AbstractActionController
 {
+    use FeatureCheck;
+
     protected $plugins;
 
     public function __construct(private readonly OpgApiServiceInterface $opgApiService)
@@ -54,5 +57,18 @@ class IndexController extends AbstractActionController
         $view->setVariable('options_data', $data);
 
         return $view->setTemplate('application/pages/address_verification');
+    }
+
+    public function identityVerificationAction(): ViewModel
+    {
+        $template = $this->idVerify('application/pages/identity_verification');
+
+        $optionsdata = $this->opgApiService->getIdOptionsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $optionsdata);
+
+        return $view->setTemplate($template);
     }
 }
