@@ -68,7 +68,7 @@ class DataQueryHandler
         $index = 1;
 
         foreach ($key as $_name => $value) {
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 throw new InvalidJsonException("Key value must be an array.");
             }
             $keyConditionExpression .= "#" . array_key_first($value) . " = :v$index AND ";

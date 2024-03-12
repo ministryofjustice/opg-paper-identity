@@ -17,7 +17,6 @@ use Laminas\View\Model\JsonModel;
  */
 class IdentityController extends AbstractActionController
 {
-
     public function __construct(
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
@@ -87,7 +86,6 @@ class IdentityController extends AbstractActionController
          * @see https://github.com/laminas/laminas-view/issues/239
          */
         return new JsonModel($data);
-
     }
     public function addressVerificationAction(): JsonModel
     {
@@ -117,5 +115,4 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($data);
     }
-
 }
