@@ -54,23 +54,6 @@ class DataQueryHandler
 
         return $this->returnUnmarshalResult($result);
     }
-
-    /**
-     * @psalm-suppress MixedInferredReturnType
-     * @psalm-suppress MixedReturnStatement
-     */
-    public function searchByPrimaryId(int $value): ?Array
-    {
-        $params = [
-            'TableName' => $this->tableName,
-            'Key' => ['id' => ['N' => $value]],
-        ];
-
-        // Get item from DynamoDB table
-        $result = $this->dynamoDbClient->getItem($params);
-
-        return $result['Item'];
-    }
     /**
      * @param string $tableName
      * @param array<string, mixed> $key
@@ -83,7 +66,8 @@ class DataQueryHandler
         $expressionAttributeNames = [];
         $keyConditionExpression = "";
         $index = 1;
-        foreach ($key as $name => $value) {
+
+        foreach ($key as $_name => $value) {
             if (!is_array($value)) {
                 throw new InvalidJsonException("Key value must be an array.");
             }
@@ -92,13 +76,19 @@ class DataQueryHandler
 
             /** @var array $hold */
             $hold = array_pop($value);
-            $expressionAttributeValues[":v$index"] = [
-                array_key_first($hold) => array_pop($hold),
-            ];
+            $expressionAttributeValues[":v$index"] = [];
+
+            $key = array_key_first($hold);
+            $value = array_pop($hold);
+
+            if ($key !== null && $value !== null) {
+                $expressionAttributeValues[":v$index"][$key] = $value;
+            }
 
             $index++;
         }
-        $keyConditionExpression = substr($keyConditionExpression, 0, -5);
+        $keyConditionExpression = rtrim($keyConditionExpression, " AND ");
+
         $query = [
             'ExpressionAttributeValues' => $expressionAttributeValues,
             'ExpressionAttributeNames' => $expressionAttributeNames,

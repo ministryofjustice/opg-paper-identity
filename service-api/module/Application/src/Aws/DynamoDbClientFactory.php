@@ -17,12 +17,10 @@ class DynamoDbClientFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): DynamoDbClient
     {
-        /** @var array $config */
+        /** @var array{"aws": array<string, string|bool>} $config */
         $config = $container->get('Config');
 
         $dynamoDbClient = new DynamoDbClient($config['aws']);
-
-        //$dynamoDbClient->getHandlerList()->appendSign(MiddlewareAws::listen($dynamoDbClient), 'telemetry');
 
         return $dynamoDbClient;
     }

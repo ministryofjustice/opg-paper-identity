@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-/*
- * /**
+ /**
  * @psalm-suppress RiskyTruthyFalsyComparison
  *
  * For details on how to configure the AWS SDK please read

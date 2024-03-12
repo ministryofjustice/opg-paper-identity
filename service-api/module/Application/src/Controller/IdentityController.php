@@ -9,13 +9,14 @@ use Application\Fixtures\DataQueryHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ * Needed here due to false positive from Laminas’s uninitialised properties
+ */
 class IdentityController extends AbstractActionController
 {
 
     public function __construct(
-        /**
-         * @psalm-suppress PropertyNotSetInConstructor
-         */
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
     ) {

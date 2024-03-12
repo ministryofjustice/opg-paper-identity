@@ -13,7 +13,12 @@ use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Utilities\PopulateDynomoData;
+
+$tableName = getenv("PAPER_ID_BACK_DATA_TABLE_NAME");
+
+if (! is_string($tableName) || empty($tableName)) {
+    $tableName = 'identity-verify';
+}
 
 return [
     'router' => [
@@ -108,11 +113,11 @@ return [
             DynamoDbClient::class => DynamoDbClientFactory::class,
             DataQueryHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
-                getenv('PAPER_ID_DATA_TABLE') ?: 'identity-verify'
+                $tableName
             ),
             DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
                 $serviceLocator->get(DynamoDbClient::class),
-                getenv('PAPER_ID_DATA_TABLE') ?: 'identity-verify'
+                $tableName
             )
         ],
     ],
