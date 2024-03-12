@@ -11,9 +11,13 @@ use Laminas\View\Model\JsonModel;
 
 class IdentityController extends AbstractActionController
 {
+
     public function __construct(
+        /**
+         * @psalm-suppress PropertyNotSetInConstructor
+         */
         private readonly DataQueryHandler $dataQueryHandler,
-        private readonly DataImportHandler $dataImportHandler
+        private readonly DataImportHandler $dataImportHandler,
     ) {
     }
 
@@ -59,6 +63,31 @@ class IdentityController extends AbstractActionController
         $this->dataImportHandler->load();
         $data = $this->dataQueryHandler->returnAll();
 
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
         return new JsonModel($data);
+    }
+
+    public function findByNameAction(): JsonModel
+    {
+        $data = $this->dataQueryHandler->queryByName("Joe Blogs");
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+    }
+
+    public function findByIdNumberAction(): JsonModel
+    {
+        $data = $this->dataQueryHandler->queryByIDNumber("HA1483fs528");
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+
     }
 }

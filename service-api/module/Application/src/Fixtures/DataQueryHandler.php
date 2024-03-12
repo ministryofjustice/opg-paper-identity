@@ -6,6 +6,8 @@ namespace Application\Fixtures;
 
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
+use Aws\Result;
+use Aws\Exception\InvalidJsonException;
 
 class DataQueryHandler
 {
@@ -22,7 +24,7 @@ class DataQueryHandler
         return $this->returnUnmarshalResult($result);
     }
 
-    public function queryByName($name): array
+    public function queryByName(string $name): array
     {
         $nameKey = [
             'KEY' => [
@@ -37,7 +39,7 @@ class DataQueryHandler
         return $this->returnUnmarshalResult($result);
     }
 
-    public function queryByIDNumber($idNumber): array
+    public function queryByIDNumber(string $idNumber): array
     {
         //return some subset of data
         $idKey = [
@@ -53,7 +55,11 @@ class DataQueryHandler
         return $this->returnUnmarshalResult($result);
     }
 
-    public function searchByPrimaryId($value)
+    /**
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress MixedReturnStatement
+     */
+    public function searchByPrimaryId(int $value): ?Array
     {
         $params = [
             'TableName' => $this->tableName,
@@ -63,22 +69,33 @@ class DataQueryHandler
         // Get item from DynamoDB table
         $result = $this->dynamoDbClient->getItem($params);
 
-        return $result['Item'] ?? null;
+        return $result['Item'];
     }
-
-    public function query(string $tableName, $key, $dbIndex = '')
+    /**
+     * @param string $tableName
+     * @param array<string, mixed> $key
+     * @param string $dbIndex
+     * @return Result
+     */
+    public function query(string $tableName, $key, $dbIndex = ''): Result
     {
         $expressionAttributeValues = [];
         $expressionAttributeNames = [];
         $keyConditionExpression = "";
         $index = 1;
         foreach ($key as $name => $value) {
+            if (!is_array($value)) {
+                throw new InvalidJsonException("Key value must be an array.");
+            }
             $keyConditionExpression .= "#" . array_key_first($value) . " = :v$index AND ";
             $expressionAttributeNames["#" . array_key_first($value)] = array_key_first($value);
+
+            /** @var array $hold */
             $hold = array_pop($value);
             $expressionAttributeValues[":v$index"] = [
                 array_key_first($hold) => array_pop($hold),
             ];
+
             $index++;
         }
         $keyConditionExpression = substr($keyConditionExpression, 0, -5);
@@ -93,12 +110,16 @@ class DataQueryHandler
         return $this->dynamoDbClient->query($query);
     }
 
-    public function returnUnmarshalResult($result): array
+    public function returnUnmarshalResult(Result $result): array
     {
+        $result = $result->toArray();
         $displayResults = [];
-        foreach ($result['Items'] as $record) {
-            $marshal = new Marshaler();
-            $displayResults[] = $marshal->unmarshalItem($record);
+        if (isset($result['Items'])) {
+            /** @var array $record */
+            foreach ($result['Items'] as $record) {
+                $marshal = new Marshaler();
+                $displayResults[] = $marshal->unmarshalItem($record);
+            }
         }
         return $displayResults;
     }

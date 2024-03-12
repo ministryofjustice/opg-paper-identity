@@ -31,15 +31,21 @@ class DataImportHandler
         if ($data === false) {
             throw new \Exception("Failed to read JSON data");
         }
-
+        /**
+         * @var mixed $batch
+         */
         $batch = json_decode($data);
-        $this->importData($batch);
+        if (is_array($batch)) {
+            $this->importData($batch);
+        }
     }
 
-    public function importData($data): void
+    public function importData(array $data): void
     {
         $marshal = new Marshaler();
-
+        /**
+         * @var array $item
+         */
         foreach ($data as $item) {
             $params = [
                 'TableName' => $this->tableName,

@@ -8,8 +8,6 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Aws\DynamoDb\DynamoDbClient;
-use Behat\Testwork\Cli\Application;
-use Ddc\Controller\Factory\IdentityControllerFactory;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -67,6 +65,26 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'testdata',
+                    ],
+                ],
+            ],
+            'findbyname' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/findbyname',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findByName',
+                    ],
+                ],
+            ],
+            'findbyidnumber' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/findbyidnumber',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findByIdNumber',
                     ],
                 ],
             ],
