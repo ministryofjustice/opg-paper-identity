@@ -26,7 +26,7 @@ class NinoValidatorTest extends TestCase
         $this->assertEquals($this->ninoValidator->isValid($nino), $valid);
     }
 
-    public static function ninoData()
+    public static function ninoData(): array
     {
         return [
             ['AA 11 22 33 A', true],

@@ -8,17 +8,17 @@ use Laminas\Validator\AbstractValidator;
 
 class NinoValidator extends AbstractValidator
 {
-    const NINO = 'nino';
+    public const NINO = 'nino';
 
-    protected $messageTemplates = [
+    protected array $messageTemplates = [
         self::NINO => "'%value%' is not a valid National Insurance Number",
     ];
 
-    public function isValid($value)
+    public function isValid($value): bool
     {
         $this->setValue($this->formatValue($value));
 
-        if (!$this->checkPattern($this->value) == 1) {
+        if (! $this->checkPattern($this->value) == 1) {
             $this->error(self::NINO);
             return false;
         }
