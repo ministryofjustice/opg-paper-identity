@@ -4,28 +4,30 @@ declare(strict_types=1);
 
 namespace Application\Factories;
 
+use Application\Services\SiriusApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Application\Services\OpgApiService;
 use RuntimeException;
 
-class OpgApiServiceFactory implements FactoryInterface
+class SiriusApiServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
      * @param string                          $requestedName
      * @param array<mixed>|null               $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): OpgApiService
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): SiriusApiService
     {
-        $baseUri = getenv("API_BASE_URI");
+        $baseUri = getenv("SIRIUS_BASE_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new RuntimeException("API_BASE_URI is empty");
+            throw new RuntimeException("SIRIUS_BASE_URL is empty");
         }
 
-        $guzzleClient = new Client(['base_uri' => $baseUri]);
+        $client = new Client(['base_uri' => $baseUri]);
 
-        return new OpgApiService($guzzleClient);
+        return new SiriusApiService(
+            $client
+        );
     }
 }
