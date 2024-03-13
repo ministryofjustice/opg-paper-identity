@@ -6,6 +6,7 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
 use Application\Services\OpgApiService;
@@ -14,6 +15,7 @@ use Application\Views\TwigExtension;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
+use Psr\Log\LoggerInterface;
 
 return [
     'router' => [
@@ -95,6 +97,7 @@ return [
             AuthListener::class => AuthListenerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
+            LoggerInterface::class => LoggerFactory::class,
         ],
     ],
     'zend_twig'       => [

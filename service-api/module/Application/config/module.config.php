@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Factories\LoggerFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use Psr\Log\LoggerInterface;
 
 return [
     'router' => [
@@ -77,6 +79,11 @@ return [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
             Controller\IdentityController::class => InvokableFactory::class
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
+            LoggerInterface::class => LoggerFactory::class,
         ],
     ],
 
