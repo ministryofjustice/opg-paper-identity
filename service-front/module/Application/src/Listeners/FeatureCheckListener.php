@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\Traits;
+namespace Application\Listeners;
 
-trait FeatureCheck
+class FeatureCheckListener
 {
     /**
      * @psalm-suppress DocblockTypeContradiction

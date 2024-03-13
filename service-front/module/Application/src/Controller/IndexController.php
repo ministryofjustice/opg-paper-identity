@@ -7,12 +7,9 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Application\Traits\FeatureCheck;
 
 class IndexController extends AbstractActionController
 {
-    use FeatureCheck;
-
     protected $plugins;
 
     public function __construct(private readonly OpgApiServiceInterface $opgApiService)
