@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"ApplicationTest\\Controller\\IndexControllerTest::testIndexActionCanBeAccessed":0.28,"ApplicationTest\\Controller\\IndexControllerTest::testIndexActionResponse":0.005,"ApplicationTest\\Controller\\IndexControllerTest::testInvalidRouteDoesNotCrash":0.017,"ApplicationTest\\ModuleTest::testProvidesConfig":0.002}}
