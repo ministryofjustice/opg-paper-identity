@@ -16,6 +16,7 @@
         "laminas/laminas-component-installer": "^3.4.0",
         "laminas/laminas-development-mode": "^3.12.0",
         "laminas/laminas-di": "^3.12.0",
+        "laminas/laminas-form": "^3.19",
         "laminas/laminas-json": "^3.5.0",
         "laminas/laminas-mvc": "^3.7.0",
         "laminas/laminas-mvc-form": "^2.0.0",

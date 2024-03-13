@@ -58,6 +58,16 @@ return [
                     ],
                 ],
             ],
+            'national_insurance_number' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/national-insurance-number',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'nationalInsuranceNumber',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
