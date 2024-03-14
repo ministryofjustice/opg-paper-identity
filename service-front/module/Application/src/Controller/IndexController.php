@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Forms\NinoForm;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Forms\NationalInsuranceNumber;
+use Laminas\Form\Annotation\AttributeBuilder;
 
 class IndexController extends AbstractActionController
 {
@@ -59,10 +60,18 @@ class IndexController extends AbstractActionController
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
-        $detailsData = $this->opgApiService->getDetailsData();
-        $form = new NinoForm();
-
         $view = new ViewModel();
+
+        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        /**
+         * @psalm-suppress UndefinedInterfaceMethod
+         */
+        if (count($this->getRequest()->getPost())) {
+            $form->setData($this->getRequest()->getPost());
+            $form->isValid();
+        }
+
+        $detailsData = $this->opgApiService->getDetailsData();
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);

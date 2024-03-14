@@ -1,45 +1,53 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
         <h1 class="govuk-heading-xl">National Insurance Number</h1>
-        {{ form.openTag() }}
-        <h3 class="govuk-heading-m">Name</h3>
-        <p class="govuk-body">
-            {{ details_data.Name }}
-        </p>
-        <h3 class="govuk-heading-m">Date of Birth</h3>
-        <p class="govuk-body">
-            {{ details_data.DOB }}
-        </p>
-        <h3 class="govuk-heading-m">National Insurance Number</h3>
-        <p class="govuk-body">
-            A NINO is made up of 2 letters, 6 numbers and a final letter, which is always A, B, C or D. Example QQ 12 34
-            56 A
-        </p>
-        <p class="govuk-body">
-{#            {{ form.get('nino') }}#}
-            <input class="govuk-input govuk-!-width-one-third" id="nino" name="nino" type="text">
-        </p>
-        <details class="govuk-details">
-            <summary class="govuk-details__summary">
+        <form method="POST" target="">
+            <h3 class="govuk-heading-m">Name</h3>
+            <p class="govuk-body">
+                {{ details_data.Name }}
+            </p>
+            <h3 class="govuk-heading-m">Date of Birth</h3>
+            <p class="govuk-body">
+                {{ details_data.DOB }}
+            </p>
+            <h3 class="govuk-heading-m">National Insurance Number</h3>
+            <p class="govuk-body">
+                A NINO is made up of 2 letters, 6 numbers and a final letter, which is always A, B, C or D. Example QQ
+                12 34
+                56 A
+            </p>
+            <p class="govuk-body">
+
+                {% for message in form.get('nino').messages %}
+            <p id="event-name-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ message }}
+            </p>
+            {% endfor %}
+            <input class="govuk-input govuk-!-width-one-third" id="nino" name="nino" type="text" autocomplete="nino"
+                   value="{{ form.get('nino').value }}"/>
+            </p>
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
                 <span class="govuk-details__summary-text">
                   Where to find the National Insurance Number
                 </span>
-            </summary>
-            <div class="govuk-details__text">
-             Your National Insurance Number can be found on
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>National Insurance card</li>
-                    <li>payslip</li>
-                    <li>P60</li>
-                    <li>benefits information</li>
-                    <li>tax return</li>
-                </ul>
-            </div>
-        </details>
-        <button class="govuk-button">Continue</button>
-        <a href="./address_verification" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
-            Try a different method
-        </a>
-        {{ form.close() }}
+                </summary>
+                <div class="govuk-details__text">
+                    Your National Insurance Number can be found on
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>National Insurance card</li>
+                        <li>payslip</li>
+                        <li>P60</li>
+                        <li>benefits information</li>
+                        <li>tax return</li>
+                    </ul>
+                </div>
+            </details>
+            <button class="govuk-button">Continue</button>
+            <a href="./address_verification" role="button" draggable="false"
+               class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
+                Try a different method
+            </a>
+        </form>
     </main>
 </div>
