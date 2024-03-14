@@ -4,15 +4,28 @@ version: "3.7"
 services:
   sirius-mock:
     image: stoplight/prism:5
+    restart: unless-stopped
     command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     healthcheck:
-      test: wget -O /dev/null -S 'http://localhost:4010/health-check' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      test: wget -O /dev/null -S 'http://localhost:4010/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
       interval: 15s
       timeout: 10s
       retries: 3
       start_period: 30s
     volumes:
       - ./docker/sirius/openapi.yml:/tmp/openapi.yml
+
+  # sirius-mock:
+  #   image: wiremock/wiremock:3.4.1
+  #   healthcheck:
+  #     test: wget -O /dev/null -S 'http://localhost:8080/__admin' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+  #     interval: 5s
+  #     timeout: 1s
+  #     retries: 3
+  #   volumes:
+  #     - "./docker/sirius/mocks.json:/home/wiremock/mappings/mocks.json"
+  #     - "./docker/sirius/wiremock-faker-extension-standalone-0.2.0-sources.jar:/var/wiremock/extensions/wiremock-faker-extension-standalone-0.2.0-sources.jar"
+  #   ports: ["8563:8080"]
 
   api:
     image: paper-identity/api
