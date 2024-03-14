@@ -1,6 +1,7 @@
 <div class="govuk-width-container">
-    <main class="govuk-main-wrapper" style="padding-top: 0px">
+    <main class="govuk-main-wrapper">
         <h1 class="govuk-heading-xl">National Insurance Number</h1>
+        {{ form.openTag() }}
         <h3 class="govuk-heading-m">Name</h3>
         <p class="govuk-body">
             {{ details_data.Name }}
@@ -15,7 +16,8 @@
             56 A
         </p>
         <p class="govuk-body">
-            <input class="govuk-input govuk-!-width-one-third" id="nino" name="nino" type="text" autocomplete="nino">
+{#            {{ form.get('nino') }}#}
+            <input class="govuk-input govuk-!-width-one-third" id="nino" name="nino" type="text">
         </p>
         <details class="govuk-details">
             <summary class="govuk-details__summary">
@@ -38,5 +40,6 @@
         <a href="./address_verification" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
             Try a different method
         </a>
+        {{ form.close() }}
     </main>
 </div>

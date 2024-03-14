@@ -36,6 +36,9 @@ class NinoValidatorTest extends TestCase
             ['DA 11 22 33 A', false],
             ['FA 11 22 33 A', false],
             ['AO 11 22 33 A', false],
+            ['AO 11 22 33 Q', false],
+            ['AO 11 22 33 F', false],
+            ['AO 11 22 33 L', false],
         ];
     }
 }

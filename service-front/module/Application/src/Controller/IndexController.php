@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Forms\NinoForm;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 
@@ -59,10 +60,12 @@ class IndexController extends AbstractActionController
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $detailsData = $this->opgApiService->getDetailsData();
+        $form = new NinoForm();
 
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/national_insurance_number');
     }
