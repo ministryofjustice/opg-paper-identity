@@ -10,6 +10,7 @@ class NinoValidator extends AbstractValidator
 {
     public const NINO_FORMAT = 'nino_format';
     public const NINO_COUNT = 'nino_count';
+    public const NINO_COUNT_NUMBER = 9;
     protected array $messageTemplates = [
         self::NINO_FORMAT => "The National insurance number is not the correct format. Try again.",
         self::NINO_COUNT => "Enter the full 9 characters of the NI number.  2 letters, 6 numbers 
@@ -44,6 +45,6 @@ class NinoValidator extends AbstractValidator
 
     private function checkLength(): bool
     {
-        return strlen($this->value) == 9;
+        return strlen($this->value) == self::NINO_COUNT_NUMBER;
     }
 }
