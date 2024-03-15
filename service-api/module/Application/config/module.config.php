@@ -97,6 +97,11 @@ return [
         ],
     ],
     'view_manager' => [
+        'template_map'             => [
+            'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
+            '404'                     => __DIR__ . '/../view/error/error.json',
+            'error'                   => __DIR__ . '/../view/error/error.json',
+        ],
         'strategies' => [
             'ViewJsonStrategy',
         ],
