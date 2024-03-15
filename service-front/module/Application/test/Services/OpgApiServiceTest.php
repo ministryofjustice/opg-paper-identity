@@ -294,7 +294,7 @@ class OpgApiServiceTest extends TestCase
                 $invalidNino,
                 $failClient,
                 false,
-                true
+                false
             ],
         ];
     }

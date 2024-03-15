@@ -63,6 +63,7 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData();
         /**
          * @psalm-suppress UndefinedInterfaceMethod
          */
@@ -72,18 +73,18 @@ class IndexController extends AbstractActionController
             $validFormat = $form->isValid();
 
             if ($validFormat) {
+                /**
+                 * @psalm-suppress InvalidArrayAccess
+                 */
                 $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
                 if ($validNino) {
-                    $this->redirect()->toRoute('national_insurance_number_success', ['controller'
-                    => 'IndexController', 'action' => 'nationalInsuranceNumberSuccess']);
+                    $this->redirect()->toRoute('national_insurance_number_success');
                 } else {
                     $this->redirect()->toRoute('national_insurance_number_fail', ['controller'
                     => 'IndexController', 'action' => 'nationalInsuranceNumberFail']);
                 }
             }
         }
-
-        $detailsData = $this->opgApiService->getDetailsData();
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);

@@ -31,7 +31,8 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'form_params' => $data
+                'form_params' => $data,
+                'debug' => true
             ]);
 
             $this->responseStatus = Response::STATUS_CODE_200;
@@ -68,7 +69,18 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkNinoValidity(string $nino): bool
     {
-        $this->makeApiRequest('/identity/validate_nino', 'POST', ['nino' => $nino]);
+        $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
+
+        try {
+            $this->makeApiRequest(
+                '/identity/validate_nino',
+                'POST',
+                ['nino' => $nino],
+                ['Content-Type'=> 'application/x-www-form-urlencoded']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return false;
+        }
 
         return $this->responseData['status'] === 'valid';
     }
