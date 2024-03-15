@@ -73,6 +73,16 @@ return [
                     ],
                 ],
             ],
+            'validate_nino' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_nino',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validateNino',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -86,7 +96,6 @@ return [
             LoggerInterface::class => LoggerFactory::class,
         ],
     ],
-
     'view_manager' => [
         'strategies' => [
             'ViewJsonStrategy',
