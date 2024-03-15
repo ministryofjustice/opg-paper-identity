@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -77,27 +76,26 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function validateNinoAction(): JsonResponse
+    public function validateNinoAction(): JsonModel
     {
         $validNinos = ['AA112233A'];
 
         $data = $this->getRequest()->getPost();
-        $responseStatus = Response::STATUS_CODE_200;
 
         if(in_array($data['nino'], $validNinos)) {
             $response = [
                 'status' => 'valid',
                 'nino' => $data['nino']
             ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
             $response = [
                 'status' => 'not valid',
                 'nino' => $data['nino']
             ];
-            $responseStatus = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
 
-        return new JsonResponse($response,  200,
-            ['Content-Type' => ['application/json']]);
+        return new JsonModel($response);
     }
 }

@@ -8,6 +8,7 @@ use Application\Controller\IdentityController;
 use Application\Controller\IndexController;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
+use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
@@ -63,13 +64,24 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
         $request->setHeaders($headers);
     }
 
-    public function testValidNino(): void
+    /**
+     * @dataProvider ninoData
+     */
+    public function testNino(string $nino, int $status): void
     {
-        $this->dispatch('/identity/validate_nino', 'POST', ['nino' => 'AA112233A']);
-        $this->assertResponseStatusCode(200);
+        $this->dispatch('/identity/validate_nino', 'POST', ['nino' => $nino]);
+        $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
+    }
+
+    public static function ninoData(): array
+    {
+        return [
+            ['AA112233A', Response::STATUS_CODE_200],
+            ['AA112233Q', Response::STATUS_CODE_400]
+        ];
     }
 }
