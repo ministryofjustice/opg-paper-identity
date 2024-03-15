@@ -149,6 +149,11 @@ return [
             LoggerInterface::class => LoggerFactory::class,
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            LoggerInterface::class => LoggerFactory::class,
+        ],
+    ],
 
     'view_manager' => [
         'template_map'             => [
