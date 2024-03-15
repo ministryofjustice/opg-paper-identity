@@ -67,8 +67,20 @@ class IndexController extends AbstractActionController
          * @psalm-suppress UndefinedInterfaceMethod
          */
         if (count($this->getRequest()->getPost())) {
-            $form->setData($this->getRequest()->getPost());
-            $form->isValid();
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+            $validFormat = $form->isValid();
+
+            if ($validFormat) {
+                $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
+                if ($validNino) {
+                    $this->redirect()->toRoute('national_insurance_number_success', ['controller'
+                    => 'IndexController', 'action' => 'nationalInsuranceNumberSuccess']);
+                } else {
+                    $this->redirect()->toRoute('national_insurance_number_fail', ['controller'
+                    => 'IndexController', 'action' => 'nationalInsuranceNumberFail']);
+                }
+            }
         }
 
         $detailsData = $this->opgApiService->getDetailsData();
@@ -77,5 +89,17 @@ class IndexController extends AbstractActionController
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/national_insurance_number');
+    }
+
+    public function nationalInsuranceNumberSuccessAction(): ViewModel
+    {
+        $view = new ViewModel();
+        return $view->setTemplate('application/pages/national_insurance_number_success');
+    }
+
+    public function nationalInsuranceNumberFailAction(): ViewModel
+    {
+        $view = new ViewModel();
+        return $view->setTemplate('application/pages/national_insurance_number_fail');
     }
 }
