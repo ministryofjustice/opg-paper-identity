@@ -7,6 +7,8 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Forms\NationalInsuranceNumber;
+use Laminas\Form\Annotation\AttributeBuilder;
 
 class IndexController extends AbstractActionController
 {
@@ -54,5 +56,51 @@ class IndexController extends AbstractActionController
         $view->setVariable('options_data', $data);
 
         return $view->setTemplate('application/pages/address_verification');
+    }
+
+    public function nationalInsuranceNumberAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData();
+        /**
+         * @psalm-suppress UndefinedInterfaceMethod
+         */
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+            $validFormat = $form->isValid();
+
+            if ($validFormat) {
+                /**
+                 * @psalm-suppress InvalidArrayAccess
+                 */
+                $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
+                if ($validNino) {
+                    $this->redirect()->toRoute('national_insurance_number_success');
+                } else {
+                    $this->redirect()->toRoute('national_insurance_number_fail', ['controller'
+                    => 'IndexController', 'action' => 'nationalInsuranceNumberFail']);
+                }
+            }
+        }
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        return $view->setTemplate('application/pages/national_insurance_number');
+    }
+
+    public function nationalInsuranceNumberSuccessAction(): ViewModel
+    {
+        $view = new ViewModel();
+        return $view->setTemplate('application/pages/national_insurance_number_success');
+    }
+
+    public function nationalInsuranceNumberFailAction(): ViewModel
+    {
+        $view = new ViewModel();
+        return $view->setTemplate('application/pages/national_insurance_number_fail');
     }
 }
