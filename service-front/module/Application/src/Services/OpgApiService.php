@@ -11,19 +11,37 @@ use Application\Exceptions\OpgApiException;
 
 class OpgApiService implements OpgApiServiceInterface
 {
+    /**
+     * @psalm-suppress PropertyNotSetInConstructor
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    protected int $responseStatus;
+    /**
+     * @psalm-suppress PropertyNotSetInConstructor
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    protected array $responseData;
+
     public function __construct(private Client $httpClient)
     {
     }
 
-    public function makeApiRequest(string $uri): array
+    public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {
-            $response = $this->httpClient->get($uri);
+            $response = $this->httpClient->request($verb, $uri, [
+                'headers' => $headers,
+                'form_params' => $data,
+                'debug' => true
+            ]);
+
+            $this->responseStatus = Response::STATUS_CODE_200;
+            $this->responseData = json_decode($response->getBody()->getContents(), true);
 
             if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
             }
-            return json_decode($response->getBody()->getContents(), true);
+            return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
             throw new OpgApiException($exception->getMessage());
         }
@@ -47,5 +65,23 @@ class OpgApiService implements OpgApiServiceInterface
     public function getLpasByDonorData(): array
     {
         return $this->makeApiRequest('/identity/list_lpas');
+    }
+
+    public function checkNinoValidity(string $nino): bool
+    {
+        $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
+
+        try {
+            $this->makeApiRequest(
+                '/identity/validate_nino',
+                'POST',
+                ['nino' => $nino],
+                ['Content-Type'=> 'application/x-www-form-urlencoded']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return false;
+        }
+
+        return $this->responseData['status'] === 'valid';
     }
 }
