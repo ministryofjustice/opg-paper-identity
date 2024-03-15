@@ -76,7 +76,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_nino',
                 'POST',
                 ['nino' => $nino],
-                ['Content-Type'=> 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/x-www-form-urlencoded']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
