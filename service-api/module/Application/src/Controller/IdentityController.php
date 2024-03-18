@@ -82,7 +82,7 @@ class IdentityController extends AbstractActionController
 
         $data = $this->getRequest()->getPost();
 
-        if(in_array($data['nino'], $validNinos)) {
+        if (in_array($data['nino'], $validNinos)) {
             $response = [
                 'status' => 'valid',
                 'nino' => $data['nino']
