@@ -21,7 +21,8 @@
                 <span class="govuk-visually-hidden">Error:</span> {{ message }}
             </p>
             {% endfor %}
-            <input class="govuk-input govuk-!-width-one-third" id="dln" name="dln" type="text" autocomplete="dln"
+            <p>
+                <input class="govuk-input govuk-!-width-one-third" id="dln" name="dln" type="text" autocomplete="dln"
                    value="{{ form.get('dln').value }}"/>
             </p>
             <details class="govuk-details">
@@ -32,7 +33,9 @@
                 </summary>
                 <div class="govuk-details__text">
                     The driving licence number is found in section 5 of the details section for both paper and photo  ID licenses. Example:
-                    <img src="">
+                    <div>
+                        <img src="./../../../../../web/assets/driving_licence_sample.png"  alt=""/>
+                    </div>
                 </div>
             </details>
             <button class="govuk-button">Continue</button>
