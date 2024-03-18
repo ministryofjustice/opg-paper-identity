@@ -13,7 +13,7 @@ RUN yarn
 COPY web web
 RUN yarn build
 
-FROM php:8.2-fpm-alpine AS app
+FROM php:8.3-fpm-alpine AS app
 
 RUN mkdir /app
 WORKDIR /var/www
