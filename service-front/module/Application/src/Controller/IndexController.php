@@ -64,9 +64,7 @@ class IndexController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData();
-        /**
-         * @psalm-suppress UndefinedInterfaceMethod
-         */
+
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
