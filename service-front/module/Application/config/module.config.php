@@ -90,6 +90,36 @@ return [
                     ],
                 ],
             ],
+            'driving_licence_number' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/driving-licence-number',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'drivingLicenceNumber',
+                    ],
+                ],
+            ],
+            'driving_licence_number_success' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/driving-licence-number-success',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'drivingLicenceNumberSuccess',
+                    ],
+                ],
+            ],
+            'driving_licence_number_fail' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/driving-licence-number-fail',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'drivingLicenceNumberFail',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

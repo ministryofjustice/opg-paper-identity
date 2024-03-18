@@ -84,4 +84,22 @@ class OpgApiService implements OpgApiServiceInterface
 
         return $this->responseData['status'] === 'valid';
     }
+
+    public function checkDlnValidity(string $dln): bool
+    {
+        $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln));
+
+        try {
+            $this->makeApiRequest(
+                '/identity/validate_driving_licence',
+                'POST',
+                ['dln' => $dln],
+                ['Content-Type' => 'application/x-www-form-urlencoded']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return false;
+        }
+
+        return $this->responseData['status'] === 'valid';
+    }
 }

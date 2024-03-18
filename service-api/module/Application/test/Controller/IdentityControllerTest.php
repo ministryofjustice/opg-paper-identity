@@ -90,7 +90,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testDrivingLicence(string $drivingLicenceNo, int $status): void
     {
-        $this->dispatch('/identity/validate_driving_licence', 'POST', ['driving_licence' => $drivingLicenceNo]);
+        $this->dispatch('/identity/validate_driving_licence', 'POST', ['dln' => $drivingLicenceNo]);
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
@@ -101,7 +101,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     public static function drivingLicenceData(): array
     {
         return [
-            ['JONES710238HA3DX', Response::STATUS_CODE_200],
+            ['CHAPM301534MA9AX', Response::STATUS_CODE_200],
             ['SMITH710238HA3DX', Response::STATUS_CODE_400]
         ];
     }

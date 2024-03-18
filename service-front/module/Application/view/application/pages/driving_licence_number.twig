@@ -1,0 +1,45 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h1 class="govuk-heading-xl">UK Driving Licence</h1>
+        <form method="POST" target="">
+            <h3 class="govuk-heading-m">Name on licence</h3>
+            <p class="govuk-body">
+                {{ details_data.Name }}
+            </p>
+            <h3 class="govuk-heading-m">Date of Birth</h3>
+            <p class="govuk-body">
+                {{ details_data.DOB }}
+            </p>
+            <h3 class="govuk-heading-m">Driving Licence Number</h3>
+            <p class="govuk-body">
+                A driving licence number is 16-digits. Example: MORGA657054SM9IJ
+            </p>
+            <p class="govuk-body">
+
+                {% for message in form.get('dln').messages %}
+            <p id="event-name-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ message }}
+            </p>
+            {% endfor %}
+            <input class="govuk-input govuk-!-width-one-third" id="dln" name="dln" type="text" autocomplete="dln"
+                   value="{{ form.get('dln').value }}"/>
+            </p>
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Where to find the Driving Licence Number
+                </span>
+                </summary>
+                <div class="govuk-details__text">
+                    The driving licence number is found in section 5 of the details section for both paper and photo  ID licenses. Example:
+                    <img src="">
+                </div>
+            </details>
+            <button class="govuk-button">Continue</button>
+            <a href="./address_verification" role="button" draggable="false"
+               class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
+                Try a different method
+            </a>
+        </form>
+    </main>
+</div>
