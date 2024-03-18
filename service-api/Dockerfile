@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine AS app
+FROM php:8.3-fpm-alpine AS app
 
 RUN apk --no-cache add icu-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
