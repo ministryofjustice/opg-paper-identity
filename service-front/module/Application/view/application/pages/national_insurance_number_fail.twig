@@ -1,0 +1,35 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <div class="govuk-panel govuk-panel--error">
+            <h1 class="govuk-panel__title">
+                National Insurance Number Invalid
+            </h1>
+            <div class="govuk-panel__body">
+                National Insurance Number<br><strong>{{ nino_data.nino }}</strong>
+            </div>
+        </div>
+            <h3 class="govuk-heading-m">Name</h3>
+            <p class="govuk-body">
+                {{ details_data.Name }}
+            </p>
+            <h3 class="govuk-heading-m">Date of Birth</h3>
+            <p class="govuk-body">
+                {{ details_data.DOB }}
+            </p>
+            <p class="govuk-body">
+{#            <button class="govuk-button">Continue</button>#}
+            <a href="./address_verification" role="button" draggable="false"
+               class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
+                Return To Start
+            </a>
+    </main>
+</div>
+
+<style>
+
+.govuk-panel--error {
+    background-color: #AA2A16;
+    color: #FFF;
+}
+
+</style>

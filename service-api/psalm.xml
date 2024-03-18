@@ -40,6 +40,10 @@
         </PossiblyUnusedMethod>
     </issueHandlers>
 
+    <stubs>
+        <file name="module/Application/test/stubs/laminas.phpstub"/>
+    </stubs>
+
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin" />
     </plugins>

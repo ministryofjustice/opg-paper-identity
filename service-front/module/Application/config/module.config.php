@@ -60,6 +60,36 @@ return [
                     ],
                 ],
             ],
+            'national_insurance_number' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/national-insurance-number',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'nationalInsuranceNumber',
+                    ],
+                ],
+            ],
+            'national_insurance_number_success' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/national-insurance-number-success',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'nationalInsuranceNumberSuccess',
+                    ],
+                ],
+            ],
+            'national_insurance_number_fail' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/national-insurance-number-fail',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'nationalInsuranceNumberFail',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
