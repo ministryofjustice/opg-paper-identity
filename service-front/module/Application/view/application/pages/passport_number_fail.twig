@@ -1,0 +1,41 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <div class="govuk-panel govuk-panel--error">
+            <h1 class="govuk-panel__title">
+                Unable to verify passport details
+            </h1>
+        </div>
+        <h3 class="govuk-heading-m">Name on passport</h3>
+        <p class="govuk-body">
+            {{ details_data.Name }}
+        </p>
+        <h3 class="govuk-heading-m">Date of Birth</h3>
+        <p class="govuk-body">
+            {{ details_data.DOB }}
+        </p>
+        <h3 class="govuk-heading-m">Passport number</h3>
+        <p class="govuk-body">
+            {{ details_data.passport }}
+        </p>
+        <h3 class="govuk-heading-m">Passport in date (max 5 years out of date)</h3>
+        <p class="govuk-body">
+            {{ details_data.passport_in_date }}
+        </p>
+        <button class="govuk-button">Edit Details</button>
+        <p class="govuk-body">
+            <a href="./address_verification" role="button" draggable="false"
+               class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
+                Try a different method
+            </a>
+        </p>
+    </main>
+</div>
+
+<style>
+
+    .govuk-panel--error {
+        background-color: #AA2A16;
+        color: #FFF;
+    }
+
+</style>

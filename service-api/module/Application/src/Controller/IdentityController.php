@@ -121,4 +121,27 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    public function validatePassportAction(): JsonModel
+    {
+        $validDrivingLicences = ['123456789'];
+
+        $data = $this->getRequest()->getPost();
+
+        if (in_array($data['passport'], $validDrivingLicences)) {
+            $response = [
+                'status' => 'valid',
+                'driving_licence' => $data['passport']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        } else {
+            $response = [
+                'status' => 'not valid',
+                'driving_licence' => $data['passport']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        }
+
+        return new JsonModel($response);
+    }
 }

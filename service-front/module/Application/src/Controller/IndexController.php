@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\PassportNumber;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Forms\NationalInsuranceNumber;
@@ -135,15 +136,35 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/driving_licence_number');
     }
 
-    public function drivingLicenceNumberSuccessAction(): ViewModel
+    public function passportNumberAction(): ViewModel
     {
         $view = new ViewModel();
-        return $view->setTemplate('application/pages/driving_licence_number_success');
-    }
 
-    public function drivingLicenceNumberFailAction(): ViewModel
-    {
-        $view = new ViewModel();
-        return $view->setTemplate('application/pages/driving_licence_number_fail');
+        $form = (new AttributeBuilder())->createForm(PassportNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+            $validFormat = $form->isValid();
+
+            if ($validFormat) {
+                $view->setVariable('passport_data', $formData);
+                /**
+                 * @psalm-suppress InvalidArrayAccess
+                 */
+                $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
+                if ($validDln) {
+                    return $view->setTemplate('application/pages/passport_number_success');
+                } else {
+                    return $view->setTemplate('application/pages/passport_number_fail');
+                }
+            }
+        }
+
+        return $view->setTemplate('application/pages/passport_number');
     }
 }

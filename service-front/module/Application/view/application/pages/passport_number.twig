@@ -1,0 +1,108 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h1 class="govuk-heading-xl">UK passport</h1>
+        <form method="POST" target="">
+            <h2 class="govuk-heading-m">Name</h2>
+            <p class="govuk-body">
+                {{ details_data.Name }}
+            </p>
+            <h2 class="govuk-heading-m">Date of Birth</h2>
+            <p class="govuk-body">
+                {{ details_data.DOB }}
+            </p>
+            <h2 class="govuk-heading-m">Passport Number</h2>
+            <p class="govuk-body">
+            </p>
+
+            <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                    <label class="govuk-label govuk-label--xs" for="event-name">
+                        A UK passport number is 9-digits
+                    </label>
+                </h1>
+                <input class="govuk-input govuk-!-width-one-third" id="passport" name="passport" type="text"
+                       autocomplete="passport"
+                       value="{{ form.get('passport').value }}"/>
+                {% for message in form.get('passport').messages %}
+                    <p id="event-name-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Where to find the passport number
+                </span>
+                </summary>
+                <div class="govuk-details__text">
+                    The passport number is located at the top right-hand corner of the Personal Details page, printed in
+                    bold, black ink. Example
+                    <img src="{{ '/assets/passport_sample.png' | basepath }}" alt="passport_sample"/>
+                </div>
+            </details>
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        Passport in date (Max 5 years out of date)
+                    </h1>
+                </legend>
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="passportInDate" name="passportInDate" type="radio"
+                               value="yes">
+                        <label class="govuk-label govuk-radios__label" for="passportInDate">Yes</label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="passportInDate" name="passportInDate" type="radio"
+                               value="no">
+                        <label class="govuk-label govuk-radios__label" for="passportInDate">No</label>
+                    </div>
+                </div>
+            </fieldset>
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Help with checking if passport is in date
+                </span>
+                </summary>
+                <div class="govuk-details__text">
+                    Enter passport expiry date. For example 31 3 1980
+
+                    <div class="govuk-date-input" id="passport-issued">
+                        <div class="govuk-date-input__item">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label govuk-date-input__label" for="passport-issued-day">
+                                    Day
+                                </label>
+                                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="passport-issued-day" name="passport-issued-day" type="text" inputmode="numeric">
+                            </div>
+                        </div>
+                        <div class="govuk-date-input__item">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label govuk-date-input__label" for="passport-issued-month">
+                                    Month
+                                </label>
+                                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="passport-issued-month" name="passport-issued-month" type="text" inputmode="numeric">
+                            </div>
+                        </div>
+                        <div class="govuk-date-input__item">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label govuk-date-input__label" for="passport-issued-year">
+                                    Year
+                                </label>
+                                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="passport-issued-year" name="passport-issued-year" type="text" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <button class="govuk-button" data-module="govuk-button">Continue</button>
+            <a href="./address_verification" role="button" draggable="false"
+               class="govuk-button govuk-button--secondary " data-module="govuk-button">
+                Try a different method
+            </a>
+        </form>
+    </main>
+</div>
