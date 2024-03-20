@@ -14,7 +14,7 @@ class DLNValidator extends AbstractValidator
     public const DLN_PATTERN = "^[A-Z9<]{5}[0-9<]{6}[A-Z9]{2}[A-Z0-9]{3}$^";
     protected array $messageTemplates = [
         self::DLN_FORMAT => "The driving licence number is not the correct format. Try again.",
-        self::DLN_COUNT => "Enter the full " . self::DLN_COUNT_NUMBER . " characters of the driving licence number.",
+        self::DLN_COUNT => "Enter the full " . self::DLN_COUNT_NUMBER . " driving licence number.",
     ];
 
     public function isValid($value): bool
