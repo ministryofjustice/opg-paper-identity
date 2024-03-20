@@ -164,7 +164,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('national_insurance_number');
     }
 
-    public function testDrivingNumberReturnsPageWithData(): void
+    public function testDrivingLicenceNumberReturnsPageWithData(): void
     {
         $mockResponseDataIdDetails = [
             "Name" => "Mary Anne Chapman",

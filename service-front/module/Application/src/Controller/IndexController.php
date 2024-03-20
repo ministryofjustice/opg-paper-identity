@@ -92,18 +92,6 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/national_insurance_number');
     }
 
-    public function nationalInsuranceNumberSuccessAction(): ViewModel
-    {
-        $view = new ViewModel();
-        return $view->setTemplate('application/pages/national_insurance_number_success');
-    }
-
-    public function nationalInsuranceNumberFailAction(): ViewModel
-    {
-        $view = new ViewModel();
-        return $view->setTemplate('application/pages/national_insurance_number_fail');
-    }
-
     public function drivingLicenceNumberAction(): ViewModel
     {
         $view = new ViewModel();
