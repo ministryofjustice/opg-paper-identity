@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 return [
     'aws' => [
-        'endpoint' => getenv('PAPER_ID_BACK_AWS_ENDPOINT') ?: 'http://localstack:4566',
+        'endpoint' => getenv('AWS_DYNAMODB_ENDPOINT') ?: 'http://localstack:4566',
         'region' => getenv('AWS_REGION') ?: "eu-west-1",
     ],
 ];
