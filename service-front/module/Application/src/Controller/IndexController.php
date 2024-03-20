@@ -136,6 +136,11 @@ class IndexController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
+
+            if (array_key_exists('check_button', $formData)) {
+                die(json_encode($formData));
+            }
+
             $form->setData($formData);
             $validFormat = $form->isValid();
 

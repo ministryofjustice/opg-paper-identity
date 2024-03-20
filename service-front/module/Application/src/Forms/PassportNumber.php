@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Forms;
 
 use Application\Validators\PassportValidator;
-use Application\Validators\PassportDateValidator;
+use Application\Validators\PassportInDateValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
@@ -24,6 +24,6 @@ class PassportNumber
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(PassportDateValidator::class)]
+    #[Annotation\Validator(PassportInDateValidator::class)]
     public mixed $inDate;
 }

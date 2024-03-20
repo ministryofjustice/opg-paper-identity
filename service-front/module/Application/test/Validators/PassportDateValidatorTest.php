@@ -21,18 +21,21 @@ class PassportDateValidatorTest extends TestCase
     /**
      * @dataProvider passportData
      */
-    public function testValidator(mixed $passport, bool $valid): void
+    public function testValidator(mixed $passportDate, bool $valid): void
     {
-        $this->assertEquals($this->passportDateValidator->isValid($passport), $valid);
+        $this->assertEquals($valid, $this->passportDateValidator->isValid($passportDate));
     }
 
     public static function passportData(): array
     {
+        $currentDate = new \DateTime();
+        $periodN = 4;
+
         return [
-            ['', false],
-            [null, false],
-            ['no', false],
-            ['yes', true],
+            ['2007-12-12', false],
+            ['1999-03-31', false],
+            [$currentDate->format('Y-m-d'), true],
+            [$currentDate->sub(new \DateInterval("P{$periodN}Y"))->format('Y-m-d'), true],
         ];
     }
 }
