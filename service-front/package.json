@@ -6,7 +6,7 @@
     "build": "yarn build:js && yarn build:css && yarn build:assets",
     "build:js": "esbuild --bundle web/main.js --minify --outdir=public/js --sourcemap --resolve-extensions=.mjs,.js",
     "build:css": "sass --load-path . --style compressed web/main.scss public/css/all.css",
-    "build:assets": "mkdir -p public/assets/images public/assets/fonts && cp node_modules/govuk-frontend/dist/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* public/assets/images && cp node_modules/govuk-frontend/dist/govuk/assets/fonts/* public/assets/fonts",
+    "build:assets": "mkdir -p public/assets/images public/assets/fonts && cp node_modules/govuk-frontend/dist/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* web/assets/* public/assets/images && cp node_modules/govuk-frontend/dist/govuk/assets/fonts/* public/assets/fonts",
     "clean": "rm -rf web/static",
     "cypress": "cypress open",
     "lint": "prettier --check .",
