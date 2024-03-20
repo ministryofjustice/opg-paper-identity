@@ -141,16 +141,7 @@ return [
             DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName
-            )
-        ],
-    ],
-    'service_manager' => [
-        'factories' => [
-            LoggerInterface::class => LoggerFactory::class,
-        ],
-    ],
-    'service_manager' => [
-        'factories' => [
+            ),
             LoggerInterface::class => LoggerFactory::class,
         ],
     ],

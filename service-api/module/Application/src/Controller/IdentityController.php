@@ -70,7 +70,8 @@ class IdentityController extends AbstractActionController
 
     public function findByNameAction(): JsonModel
     {
-        $data = $this->dataQueryHandler->queryByName("Joe Blogs");
+        $name = $this->getRequest()->getQuery('name');
+        $data = $this->dataQueryHandler->queryByName($name);
         /**
          * @psalm-suppress InvalidArgument
          * @see https://github.com/laminas/laminas-view/issues/239
