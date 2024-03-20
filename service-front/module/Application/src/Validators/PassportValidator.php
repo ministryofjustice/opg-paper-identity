@@ -11,7 +11,7 @@ class PassportValidator extends AbstractValidator
     public const PASSPORT_FORMAT = 'passport_format';
     public const PASSPORT_COUNT = 'passport_count';
     public const PASSPORT_COUNT_NUMBER = 9;
-    public const PASSPORT_PATTERN = "^[0-9]{10}[a-z]{3}[0-9]{7}[U,M,F]{1}[0-9]{9}$";
+    public const PASSPORT_PATTERN = "^\s*[0-9]+\s*$^";
     protected array $messageTemplates = [
         self::PASSPORT_FORMAT => "The passport number is not the correct format. Try again.",
         self::PASSPORT_COUNT => "Enter the full " . self::PASSPORT_COUNT_NUMBER . " digits of the passport number.",
