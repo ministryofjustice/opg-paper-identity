@@ -112,6 +112,7 @@ class IndexController extends AbstractActionController
                  * @psalm-suppress InvalidArrayAccess
                  */
                 $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
+
                 if ($validDln) {
                     return $view->setTemplate('application/pages/driving_licence_number_success');
                 } else {
