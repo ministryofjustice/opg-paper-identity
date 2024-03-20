@@ -70,6 +70,16 @@ return [
                     ],
                 ],
             ],
+            'driving_licence_number' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/driving-licence-number',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'drivingLicenceNumber',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

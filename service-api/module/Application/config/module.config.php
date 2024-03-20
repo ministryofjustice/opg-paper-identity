@@ -83,6 +83,16 @@ return [
                     ],
                 ],
             ],
+            'validate_driving_licence' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_driving_licence',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validateDrivingLicence',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
