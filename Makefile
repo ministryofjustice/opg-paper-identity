@@ -35,3 +35,7 @@ api-test:
 
 front-test:
 	@${MAKE} front-psalm front-phpcs front-unit-test -j 3
+
+clean-junit-output:
+	gsed -i 's/file=\"\/var\/www\//file="/g' ./service-api/build/phpunit-junit.xml
+	gsed -i 's/file=\"\/var\/www\//file="/g' ./service-front/build/phpunit-junit.xml
