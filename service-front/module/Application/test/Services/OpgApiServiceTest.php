@@ -298,4 +298,63 @@ class OpgApiServiceTest extends TestCase
             ],
         ];
     }
+
+
+    /**
+     * @dataProvider dlnData
+     */
+    public function testValidateDln(string $dln, Client $client, bool $responseData, bool $exception): void
+    {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
+
+        $this->opgApiService = new OpgApiService($client);
+
+        $response = $this->opgApiService->checkDlnValidity($dln);
+
+        $this->assertEquals($responseData, $response);
+    }
+
+    public static function dlnData(): array
+    {
+        $validDln = 'JONES710238HA3DX';
+        $invalidDln = 'JONES710238HA3DXa';
+
+        $successMockResponseData = [
+            'status' => 'valid',
+            'dln' => $validDln
+        ];
+
+        $successMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $failMockResponseData = [
+            'status' => 'not valid',
+            'dln' => $invalidDln
+        ];
+        $failMock = new MockHandler([
+            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $handlerStack]);
+
+        return [
+            [
+                $validDln,
+                $successClient,
+                true,
+                false
+            ],
+            [
+                $invalidDln,
+                $failClient,
+                false,
+                false
+            ],
+        ];
+    }
 }
