@@ -30,6 +30,16 @@ return [
                     ],
                 ],
             ],
+            'start' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/start',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'start',
+                    ],
+                ],
+            ],
             'donor_lpa_check' => [
                 'type'    => Literal::class,
                 'options' => [
