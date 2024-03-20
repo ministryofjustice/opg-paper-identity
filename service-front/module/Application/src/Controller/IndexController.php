@@ -144,8 +144,8 @@ class IndexController extends AbstractActionController
                 /**
                  * @psalm-suppress InvalidArrayAccess
                  */
-                $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
-                if ($validDln) {
+                $validPassport = $this->opgApiService->checkPassportValidity($formData['dln']);
+                if ($validPassport) {
                     return $view->setTemplate('application/pages/passport_number_success');
                 } else {
                     return $view->setTemplate('application/pages/passport_number_fail');
