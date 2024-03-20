@@ -42,36 +42,38 @@
         </summary>
         <div class="govuk-details__text">
             The driving licence number is found in section 5 of the details section for both paper and photo ID
-            licenses. Example:
+            licences. Example:
             <img src="{{ '/assets/driving_licence_sample.png' | basepath }}" alt="driving_licence_sample"/>
         </div>
     </details>
 
-    <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-                Driving licence in date?
-            </h1>
-        </legend>
-        {% if form.get('inDate').messages %}
-            <p id="dln-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('inDate').messages | join(', ', ' and ') }}
-            </p>
-        {% endif %}
-        <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="inDateTrue" name="inDate" type="radio"
-                       value="yes">
-                <label class="govuk-label govuk-radios__label" for="inDateTrue">Yes</label>
+    <div class="govuk-form-group {% if form.get('inDate').messages %}govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset" aria-describedby="govuk-error-message">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h2 class="govuk-fieldset__heading">
+                    Driving licence in date?
+                </h2>
+            </legend>
+            {% if form.get('inDate').messages %}
+                <p id="dln-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('inDate').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            <div class="govuk-radios" data-module="govuk-radios">
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="inDateTrue" name="inDate" type="radio"
+                           value="yes">
+                    <label class="govuk-label govuk-radios__label" for="inDateTrue">Yes</label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="inDateFalse" name="inDate" type="radio"
+                           value="no">
+                    <label class="govuk-label govuk-radios__label" for="inDateFalse">No</label>
+                </div>
             </div>
-            <div class="govuk-radios__item">
-                <input class="govuk-radios__input" id="inDateFalse" name="inDate" type="radio"
-                       value="no">
-                <label class="govuk-label govuk-radios__label" for="inDateFalse">No</label>
-            </div>
-        </div>
-    </fieldset>
+        </fieldset>
+    </div>
     <button class="govuk-button">Continue</button>
     <a href="./address_verification" role="button" draggable="false"
        class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
