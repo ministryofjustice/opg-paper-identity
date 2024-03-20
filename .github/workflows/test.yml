@@ -39,11 +39,15 @@ jobs:
       - name: Run Tests
         run: |
           make ${{ matrix.service }}-${{ matrix.suite }}
+      - name: Clean JUnit output
+        if: always()
+        run: |
+          make -i clean-junit-output
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           comment_mode: off
           files: service-${{ matrix.service }}/build/*.xml
-          test_file_prefix: +service-${{ matrix.service }}
+          test_file_prefix: +service-${{ matrix.service }}/
           check_name: ${{ matrix.service }} ${{ matrix.suite }} tests

@@ -35,3 +35,9 @@ api-test:
 
 front-test:
 	@${MAKE} front-psalm front-phpcs front-unit-test -j 3
+
+clean-junit-output:
+	gsed -i 's/file="\/var\/www\//file="/g' ./service-api/build/phpunit-junit.xml
+	gsed -i 's/file="\/var\/www\//file="/g' ./service-front/build/phpunit-junit.xml
+	gsed -i -E 's/testcase name="(.*?)\/var\/www\/([^ ]+?)( \(([0-9]+):[0-9]+\))?"/& file="\2" line="\4"/g' ./service-api/build/phpcs-junit.xml
+	gsed -i -E 's/testcase name="(.*?)\/var\/www\/([^ ]+?)( \(([0-9]+):[0-9]+\))?"/& file="\2" line="\4"/g' ./service-front/build/phpcs-junit.xml
