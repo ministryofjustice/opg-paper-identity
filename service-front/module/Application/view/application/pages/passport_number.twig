@@ -74,7 +74,7 @@
             </div>
         </fieldset>
     </div>
-    <details class="govuk-details">
+    <details class="govuk-details" {% if details_open %} open {% endif %}>
         <summary class="govuk-details__summary">
                 <span class="govuk-details__summary-text">
                   Help with checking if passport is in date
@@ -90,7 +90,7 @@
                             Day
                         </label>
                         <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="passport-issued-day"
-                               name="passport_issued_day" type="text" inputmode="numeric" value="{{ dateSubForm.get('passport_issued_day').value }}">
+                               name="passport_issued_day" type="text" inputmode="numeric" value="{{ date_sub_form.get('passport_issued_day').value }}">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
@@ -100,7 +100,7 @@
                         </label>
                         <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                                name="passport_issued_month" id="passport-issued-month" type="text" inputmode="numeric"
-                               value="{{ dateSubForm.get('passport_issued_month').value }}">
+                               value="{{ date_sub_form.get('passport_issued_month').value }}">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
@@ -110,7 +110,7 @@
                         </label>
                         <input class="govuk-input govuk-date-input__input govuk-input--width-4"
                                name="passport_issued_year" id="passport-issued-year" type="text" inputmode="numeric"
-                               value="{{ dateSubForm.get('passport_issued_year').value }}">
+                               value="{{ date_sub_form.get('passport_issued_year').value }}">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
@@ -124,7 +124,7 @@
                     </div>
                 </div>
 
-                {% if not valid_date %}
+                {% if invalid_date %}
                     <div class="moj-banner moj-banner--warning moj-banner--date" role="region" aria-label="Warning">
                         <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
                              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">

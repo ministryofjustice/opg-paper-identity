@@ -136,6 +136,7 @@ class IndexController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
         $view->setVariable('date_sub_form', $dateSubForm);
+        $view->setVariable('details_open', false);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
@@ -149,15 +150,19 @@ class IndexController extends AbstractActionController
                     $formData->passport_issued_day
                 );
 
-//                die($expiryDate);
-
                 $formData->set('passport_date', $expiryDate);
-//                die(json_encode($formData->toArray()));
 
                 $dateSubForm->setData($formData);
                 $validDate = $dateSubForm->isValid();
 
-                $view->setVariable('valid_date', $validDate);
+//                die(json_encode($dateSubForm->getData()));
+
+                if($validDate) {
+                    $view->setVariable('valid_date', true);
+                } else {
+                    $view->setVariable('invalid_date', true);
+                }
+                $view->setVariable('details_open', true);
             } else {
                 $form->setData($formData);
                 $validFormat = $form->isValid();

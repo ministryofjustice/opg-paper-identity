@@ -26,4 +26,8 @@ class PassportNumber
      */
     #[Annotation\Validator(PassportInDateValidator::class)]
     public mixed $inDate;
+
+    public string $passport_issued_day;
+    public string $passport_issued_month;
+    public string $passport_issued_year;
 }
