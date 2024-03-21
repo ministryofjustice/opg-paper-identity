@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\View\Model\JsonModel;
@@ -71,10 +72,7 @@ class IdentityController extends AbstractActionController
 
     public function findByNameAction(): JsonModel
     {
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        /** @var string $name */
-        $name = $request->getQuery('username');
+        $name = $this->getRequest()->getQuery('username');
         $data = $this->dataQueryHandler->queryByName($name);
         /**
          * @psalm-suppress InvalidArgument
@@ -85,7 +83,8 @@ class IdentityController extends AbstractActionController
 
     public function findByIdNumberAction(): JsonModel
     {
-        $data = $this->dataQueryHandler->queryByIDNumber("HA1483fs528");
+        $id = $this->getRequest()->getQuery('id');
+        $data = $this->dataQueryHandler->queryByIDNumber($id);
         /**
          * @psalm-suppress InvalidArgument
          * @see https://github.com/laminas/laminas-view/issues/239
@@ -119,5 +118,28 @@ class IdentityController extends AbstractActionController
         ];
 
         return new JsonModel($data);
+    }
+
+    public function validateNinoAction(): JsonModel
+    {
+        $validNinos = ['AA112233A'];
+
+        $data = $this->getRequest()->getPost();
+
+        if (in_array($data['nino'], $validNinos)) {
+            $response = [
+                'status' => 'valid',
+                'nino' => $data['nino']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        } else {
+            $response = [
+                'status' => 'not valid',
+                'nino' => $data['nino']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        }
+
+        return new JsonModel($response);
     }
 }
