@@ -142,12 +142,13 @@ class IndexController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
 
             if (array_key_exists('check_button', $formData->toArray())) {
+                $data = $formData->toArray();
 
                 $expiryDate = sprintf(
                     "%s-%s-%s",
-                    $formData->passport_issued_year,
-                    $formData->passport_issued_month,
-                    $formData->passport_issued_day
+                    $data['passport_issued_year'],
+                    $data['passport_issued_month'],
+                    $data['passport_issued_day']
                 );
 
                 $formData->set('passport_date', $expiryDate);
@@ -155,9 +156,7 @@ class IndexController extends AbstractActionController
                 $dateSubForm->setData($formData);
                 $validDate = $dateSubForm->isValid();
 
-//                die(json_encode($dateSubForm->getData()));
-
-                if($validDate) {
+                if ($validDate) {
                     $view->setVariable('valid_date', true);
                 } else {
                     $view->setVariable('invalid_date', true);

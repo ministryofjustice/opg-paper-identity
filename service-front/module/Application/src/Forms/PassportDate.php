@@ -19,8 +19,16 @@ class PassportDate
      */
     #[Annotation\Validator(PassportDateValidator::class)]
     public mixed $passport_date;
-
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public string $passport_issued_day;
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public string $passport_issued_month;
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public string $passport_issued_year;
 }
