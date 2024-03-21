@@ -81,7 +81,7 @@
                 </span>
         </summary>
         <div class="govuk-details__text">
-            Enter passport expiry date. For example 31 3 1980
+            Enter passport expiry date. For example 31 03 2012
 
             <div class="govuk-date-input" id="passport-issued">
                 <div class="govuk-date-input__item">
@@ -90,7 +90,7 @@
                             Day
                         </label>
                         <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="passport-issued-day"
-                               name="passport-issued-day" type="text" inputmode="numeric">
+                               name="passport_issued_day" type="text" inputmode="numeric" value="{{ dateSubForm.get('passport_issued_day').value }}">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
@@ -99,7 +99,8 @@
                             Month
                         </label>
                         <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                               id="passport-issued-month" name="passport-issued-month" type="text" inputmode="numeric">
+                               name="passport_issued_month" id="passport-issued-month" type="text" inputmode="numeric"
+                               value="{{ dateSubForm.get('passport_issued_month').value }}">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
@@ -108,7 +109,8 @@
                             Year
                         </label>
                         <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                               id="passport-issued-year" name="passport-issued-year" type="text" inputmode="numeric">
+                               name="passport_issued_year" id="passport-issued-year" type="text" inputmode="numeric"
+                               value="{{ dateSubForm.get('passport_issued_year').value }}">
                     </div>
                 </div>
                 <div class="govuk-date-input__item">
@@ -117,25 +119,30 @@
                                 class="govuk-button govuk-button--secondary"
                                 data-module="govuk-button"
                                 name="check_button"
-                        >Check</button>
+                        >Check
+                        </button>
                     </div>
                 </div>
 
-{#                {% if form.get('date_check').messages %}#}
+                {% if not valid_date %}
                     <div class="moj-banner moj-banner--warning moj-banner--date" role="region" aria-label="Warning">
-                        <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                            <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z" />
+                        <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                            <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
                         </svg>
                         <div class="moj-banner__message">Out of date</div>
                     </div>
-{#                {% endif %}#}
+                {% endif %}
 
-                <div class="moj-banner moj-banner--success moj-banner--date" role="region" aria-label="Success">
-                    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                        <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z" />
-                    </svg>
-                    <div class="moj-banner__message">In date</div>
-                </div>
+                {% if valid_date %}
+                    <div class="moj-banner moj-banner--success moj-banner--date" role="region" aria-label="Success">
+                        <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                            <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
+                        </svg>
+                        <div class="moj-banner__message">In date</div>
+                    </div>
+                {% endif %}
 
             </div>
         </div>

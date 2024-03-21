@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\PassportNumber;
+use Application\Forms\PassportDate;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Forms\NationalInsuranceNumber;
@@ -129,31 +130,49 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
+        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData();
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
+        $view->setVariable('date_sub_form', $dateSubForm);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
 
-            if (array_key_exists('check_button', $formData)) {
-                die(json_encode($formData));
-            }
+            if (array_key_exists('check_button', $formData->toArray())) {
 
-            $form->setData($formData);
-            $validFormat = $form->isValid();
+                $expiryDate = sprintf(
+                    "%s-%s-%s",
+                    $formData->passport_issued_year,
+                    $formData->passport_issued_month,
+                    $formData->passport_issued_day
+                );
 
-            if ($validFormat) {
-                $view->setVariable('passport_data', $formData);
-                /**
-                 * @psalm-suppress InvalidArrayAccess
-                 */
-                $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
-                if ($validPassport) {
-                    return $view->setTemplate('application/pages/passport_number_success');
-                } else {
-                    return $view->setTemplate('application/pages/passport_number_fail');
+//                die($expiryDate);
+
+                $formData->set('passport_date', $expiryDate);
+//                die(json_encode($formData->toArray()));
+
+                $dateSubForm->setData($formData);
+                $validDate = $dateSubForm->isValid();
+
+                $view->setVariable('valid_date', $validDate);
+            } else {
+                $form->setData($formData);
+                $validFormat = $form->isValid();
+
+                if ($validFormat) {
+                    $view->setVariable('passport_data', $formData);
+                    /**
+                     * @psalm-suppress InvalidArrayAccess
+                     */
+                    $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
+                    if ($validPassport) {
+                        return $view->setTemplate('application/pages/passport_number_success');
+                    } else {
+                        return $view->setTemplate('application/pages/passport_number_fail');
+                    }
                 }
             }
         }

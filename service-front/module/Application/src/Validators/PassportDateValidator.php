@@ -24,9 +24,12 @@ class PassportDateValidator extends AbstractValidator
 
     private function fiveYearValidity(string $date): bool
     {
-        $now = time();
+        if (!strtotime($date)) {
+            return false;
+        }
 
-        $effectiveExpiry = date('Y-m-d', strtotime('+5 years', strtotime($date)));
+        $now = time();
+        $effectiveExpiry = date('Y-m-d', strtotime('+5 year', strtotime($date)));
 
         return $now < strtotime($effectiveExpiry);
     }
