@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Http\Request as HttpRequest;
 use Laminas\View\Model\JsonModel;
 
 /**
@@ -70,7 +71,10 @@ class IdentityController extends AbstractActionController
 
     public function findByNameAction(): JsonModel
     {
-        $name = $this->getRequest()->getQuery('name');
+        /** @var HttpRequest $request */
+        $request = $this->getRequest();
+        /** @var string $name */
+        $name = $request->getQuery('username');
         $data = $this->dataQueryHandler->queryByName($name);
         /**
          * @psalm-suppress InvalidArgument
