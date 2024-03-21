@@ -162,6 +162,7 @@ class IndexController extends AbstractActionController
                     $view->setVariable('invalid_date', true);
                 }
                 $view->setVariable('details_open', true);
+                $form->setData($formData);
             } else {
                 $form->setData($formData);
                 $validFormat = $form->isValid();
