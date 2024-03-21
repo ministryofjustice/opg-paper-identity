@@ -72,6 +72,7 @@ class IdentityController extends AbstractActionController
 
     public function findByNameAction(): JsonModel
     {
+        /** @var string $name */
         $name = $this->getRequest()->getQuery('username');
         $data = $this->dataQueryHandler->queryByName($name);
         /**
@@ -83,6 +84,7 @@ class IdentityController extends AbstractActionController
 
     public function findByIdNumberAction(): JsonModel
     {
+        /** @var string $id */
         $id = $this->getRequest()->getQuery('id');
         $data = $this->dataQueryHandler->queryByIDNumber($id);
         /**
