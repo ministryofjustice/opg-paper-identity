@@ -84,4 +84,25 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
             ['AA112233Q', Response::STATUS_CODE_400]
         ];
     }
+
+    /**
+     * @dataProvider drivingLicenceData
+     */
+    public function testDrivingLicence(string $drivingLicenceNo, int $status): void
+    {
+        $this->dispatch('/identity/validate_driving_licence', 'POST', ['dln' => $drivingLicenceNo]);
+        $this->assertResponseStatusCode($status);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('validate_driving_licence');
+    }
+
+    public static function drivingLicenceData(): array
+    {
+        return [
+            ['CHAPM301534MA9AX', Response::STATUS_CODE_200],
+            ['SMITH710238HA3DX', Response::STATUS_CODE_400]
+        ];
+    }
 }
