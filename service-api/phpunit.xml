@@ -23,4 +23,9 @@
             <directory>./module/*/test</directory>
         </testsuite>
     </testsuites>
+
+    <php>
+        <env name="MOCK_NINO_API" value="true" />
+        <env name="NINO_BASE_URI" value="NINO_BASE_URI" />
+    </php>
 </phpunit>
