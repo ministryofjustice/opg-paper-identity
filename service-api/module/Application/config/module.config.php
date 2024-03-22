@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Factories\LoggerFactory;
+use Application\Factories\NinoAPIServiceFactory;
+use Application\Services\Contract\NINOServiceInterface;
+use Application\Services\MockNinoService;
+use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
@@ -98,12 +102,13 @@ return [
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\IdentityController::class => InvokableFactory::class
+            Controller\IdentityController::class => LazyControllerAbstractFactory::class
         ],
     ],
     'service_manager' => [
         'factories' => [
             LoggerInterface::class => LoggerFactory::class,
+            NINOServiceInterface::class => NinoAPIServiceFactory::class
         ],
     ],
     'view_manager' => [
