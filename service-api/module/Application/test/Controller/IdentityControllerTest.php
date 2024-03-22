@@ -105,4 +105,25 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
             ['SMITH710238HA3DX', Response::STATUS_CODE_400]
         ];
     }
+
+    /**
+     * @dataProvider passportData
+     */
+    public function testPassportNumber(string $passportNumber, int $status): void
+    {
+        $this->dispatch('/identity/validate_passport', 'POST', ['passport' => $passportNumber]);
+        $this->assertResponseStatusCode($status);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('validate_passport');
+    }
+
+    public static function passportData(): array
+    {
+        return [
+            ['123456789', Response::STATUS_CODE_200],
+            ['123456', Response::STATUS_CODE_400]
+        ];
+    }
 }
