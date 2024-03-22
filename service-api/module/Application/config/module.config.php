@@ -97,6 +97,16 @@ return [
                     ],
                 ],
             ],
+            'verify_nino' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/verify_nino',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'verifyNino',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

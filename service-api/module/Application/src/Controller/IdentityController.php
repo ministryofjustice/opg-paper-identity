@@ -85,19 +85,8 @@ class IdentityController extends AbstractActionController
     {
         $validNinos = ['AA112233A'];
 
-        //$data = $this->getRequest()->getPost();
-        $nino = $this->getRequest()->getQuery('nino');
-
-        $ninoStatus = $this->ninoService->validateNINO($nino);
-
-        $response = [
-            'status' => $ninoStatus,
-            'nino' => $nino
-        ];
-            //$this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-
-
-        /**if (in_array($data['nino'], $validNinos)) {
+        $data = $this->getRequest()->getPost();
+        if (in_array($data['nino'], $validNinos)) {
             $response = [
                 'status' => 'valid',
                 'nino' => $data['nino']
@@ -109,7 +98,22 @@ class IdentityController extends AbstractActionController
                 'nino' => $data['nino']
             ];
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        } */
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function verifyNinoAction(): JsonModel
+    {
+        $nino = $this->getRequest()->getQuery('nino');
+        $ninoStatus = $this->ninoService->validateNINO($nino);
+
+        $response = [
+            'status' => $ninoStatus,
+            'nino' => $nino
+        ];
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
