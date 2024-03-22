@@ -60,6 +60,16 @@ return [
                     ],
                 ],
             ],
+            'identity_verification' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/identity_verification',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'identityVerification',
+                    ],
+                ],
+            ],
             'national_insurance_number' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -97,10 +107,12 @@ return [
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
         'template_map' => [
-            'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
-            'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
-            'error/404'               => __DIR__ . '/../view/error/404.phtml',
-            'error/index'             => __DIR__ . '/../view/error/index.phtml',
+            'layout/layout'           => __DIR__ . '/../view/layout/layout.twig',
+            'application/index/index' => __DIR__ . '/../view/application/index/index.twig',
+            'error/404'               => __DIR__ . '/../view/error/404.twig',
+            'error/403'               => __DIR__ . '/../view/error/403.twig',
+            'error/feature403'        => __DIR__ . '/../view/error/feature403.twig',
+            'error/index'             => __DIR__ . '/../view/error/index.twig',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
