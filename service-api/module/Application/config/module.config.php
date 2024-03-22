@@ -93,6 +93,16 @@ return [
                     ],
                 ],
             ],
+            'validate_passport' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_passport',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validatePassport',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
