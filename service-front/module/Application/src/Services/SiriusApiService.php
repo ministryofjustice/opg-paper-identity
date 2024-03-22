@@ -48,7 +48,7 @@ class SiriusApiService
         return true;
     }
 
-    public function getLpaByUid(string $uid, Request $request)
+    public function getLpaByUid(string $uid, Request $request): array
     {
         $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
             'headers' => $this->getAuthHeaders($request),

@@ -7,12 +7,18 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Services\SiriusApiService;
+use Laminas\Form\Annotation\AttributeBuilder;
+use Application\Forms\NationalInsuranceNumber;
+use Application\Forms\DrivingLicenceNumber;
 
 class IndexController extends AbstractActionController
 {
     protected $plugins;
 
-    public function __construct(private readonly OpgApiServiceInterface $opgApiService)
+    public function __construct(
+        private readonly OpgApiServiceInterface $opgApiService,
+        private readonly SiriusApiService $siriusApiService,)
     {
     }
 
@@ -21,7 +27,7 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function startAction()
+    public function startAction(): ViewModel
     {
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
