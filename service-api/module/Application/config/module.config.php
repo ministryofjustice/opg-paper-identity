@@ -73,6 +73,26 @@ return [
                     ],
                 ],
             ],
+            'validate_nino' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_nino',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validateNino',
+                    ],
+                ],
+            ],
+            'validate_driving_licence' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_driving_licence',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validateDrivingLicence',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -86,7 +106,6 @@ return [
             LoggerInterface::class => LoggerFactory::class,
         ],
     ],
-
     'view_manager' => [
         'template_map'             => [
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
