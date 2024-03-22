@@ -143,6 +143,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             "Passport",
             "Driving Licence",
             "National Insurance Number"
+            ];
 
     }
     public function testNationalInsuranceNumberReturnsPageWithData(): void
@@ -164,7 +165,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 //            ->method('getIdOptionsData')
 //            ->willReturn($mockResponseDataIdOptions);
 
-        $this->dispatch('/identity_verification', 'GET');
+        $this->dispatch('/identity_verification', 'GET')
             ->method('getDetailsData')
             ->willReturn($mockResponseDataIdDetails);
 
