@@ -18,8 +18,8 @@ class IndexController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,)
-    {
+        private readonly SiriusApiService $siriusApiService
+    ) {
     }
 
     public function indexAction()
