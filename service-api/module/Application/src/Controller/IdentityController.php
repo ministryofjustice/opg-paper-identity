@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Services\Contract\NINOServiceInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -14,6 +15,10 @@ use Laminas\View\Model\JsonModel;
  */
 class IdentityController extends AbstractActionController
 {
+    public function __construct(
+        private readonly NINOServiceInterface $ninoService
+    ) {
+    }
     public function indexAction(): JsonModel
     {
         return new JsonModel();
@@ -81,7 +86,6 @@ class IdentityController extends AbstractActionController
         $validNinos = ['AA112233A'];
 
         $data = $this->getRequest()->getPost();
-
         if (in_array($data['nino'], $validNinos)) {
             $response = [
                 'status' => 'valid',
@@ -95,6 +99,21 @@ class IdentityController extends AbstractActionController
             ];
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
+
+        return new JsonModel($response);
+    }
+
+    public function verifyNinoAction(): JsonModel
+    {
+        $nino = $this->getRequest()->getQuery('nino');
+        $ninoStatus = $this->ninoService->validateNINO($nino);
+
+        $response = [
+            'status' => $ninoStatus,
+            'nino' => $nino
+        ];
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
