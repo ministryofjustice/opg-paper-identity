@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Forms\DrivingLicenceNumber;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Forms\NationalInsuranceNumber;
+use Laminas\Form\Annotation\AttributeBuilder;
 
 class IndexController extends AbstractActionController
 {
@@ -67,5 +70,70 @@ class IndexController extends AbstractActionController
         $view->setVariable('options_data', $optionsdata);
 
         return $view->setTemplate($template);
+    }
+
+    public function nationalInsuranceNumberAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+            $validFormat = $form->isValid();
+
+            if ($validFormat) {
+                $view->setVariable('nino_data', $formData);
+                /**
+                 * @psalm-suppress InvalidArrayAccess
+                 */
+                $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
+                if ($validNino) {
+                    return $view->setTemplate('application/pages/national_insurance_number_success');
+                } else {
+                    return $view->setTemplate('application/pages/national_insurance_number_fail');
+                }
+            }
+        }
+
+        return $view->setTemplate('application/pages/national_insurance_number');
+    }
+
+    public function drivingLicenceNumberAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+            $validFormat = $form->isValid();
+
+            if ($validFormat) {
+                $view->setVariable('dln_data', $formData);
+                /**
+                 * @psalm-suppress InvalidArrayAccess
+                 */
+                $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
+
+                if ($validDln) {
+                    return $view->setTemplate('application/pages/driving_licence_number_success');
+                } else {
+                    return $view->setTemplate('application/pages/driving_licence_number_fail');
+                }
+            }
+        }
+
+        return $view->setTemplate('application/pages/driving_licence_number');
     }
 }

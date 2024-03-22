@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use Application\Services\OpgApiService;
+use RuntimeException;
 
 class OpgApiServiceFactory implements FactoryInterface
 {
@@ -18,9 +19,9 @@ class OpgApiServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): OpgApiService
     {
-        $baseUri = getenv("SIRIUS_BASE_URI");
+        $baseUri = getenv("API_BASE_URI");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new \Exception("SIRIUS_BASE_URI is empty");
+            throw new RuntimeException("API_BASE_URI is empty");
         }
 
         $guzzleClient = new Client(['base_uri' => $baseUri]);

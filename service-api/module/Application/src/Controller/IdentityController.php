@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
@@ -73,5 +74,51 @@ class IdentityController extends AbstractActionController
         ];
 
         return new JsonModel($data);
+    }
+
+    public function validateNinoAction(): JsonModel
+    {
+        $validNinos = ['AA112233A'];
+
+        $data = $this->getRequest()->getPost();
+
+        if (in_array($data['nino'], $validNinos)) {
+            $response = [
+                'status' => 'valid',
+                'nino' => $data['nino']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        } else {
+            $response = [
+                'status' => 'not valid',
+                'nino' => $data['nino']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function validateDrivingLicenceAction(): JsonModel
+    {
+        $validDrivingLicences = ['CHAPM301534MA9AX'];
+
+        $data = $this->getRequest()->getPost();
+
+        if (in_array($data['dln'], $validDrivingLicences)) {
+            $response = [
+                'status' => 'valid',
+                'driving_licence' => $data['dln']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        } else {
+            $response = [
+                'status' => 'not valid',
+                'driving_licence' => $data['dln']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        }
+
+        return new JsonModel($response);
     }
 }
