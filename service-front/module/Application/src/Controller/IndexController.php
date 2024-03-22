@@ -59,6 +59,19 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/address_verification');
     }
 
+    public function identityVerificationAction(): ViewModel
+    {
+        $template = $this->idVerify('application/pages/identity_verification');
+
+        $optionsdata = $this->opgApiService->getIdOptionsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $optionsdata);
+
+        return $view->setTemplate($template);
+    }
+
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $view = new ViewModel();

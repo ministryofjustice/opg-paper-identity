@@ -137,6 +137,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('donor_lpa_check');
     }
 
+    public function testFeatureBlockTrait(): void
+    {
+        $mockResponseDataIdOptions = [
+            "Passport",
+            "Driving Licence",
+            "National Insurance Number"
+
+    }
     public function testNationalInsuranceNumberReturnsPageWithData(): void
     {
         $mockResponseDataIdDetails = [
@@ -150,9 +158,13 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             ]
         ];
 
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
+//        $this
+//            ->opgApiServiceMock
+//            ->expects(self::once())
+//            ->method('getIdOptionsData')
+//            ->willReturn($mockResponseDataIdOptions);
+
+        $this->dispatch('/identity_verification', 'GET');
             ->method('getDetailsData')
             ->willReturn($mockResponseDataIdDetails);
 
@@ -161,6 +173,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('identity_verification');
+        $this->assertTemplateName('error/feature403');
         $this->assertMatchedRouteName('national_insurance_number');
     }
 
