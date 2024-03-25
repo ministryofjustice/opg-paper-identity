@@ -90,6 +90,16 @@ return [
                     ],
                 ],
             ],
+            'how_donor_confirms' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/how-will-donor-confirm',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'howWillDonorConfirm',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -98,7 +108,7 @@ return [
         ],
     ],
     'listeners' => [
-        AuthListener::class
+//        AuthListener::class
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
@@ -124,7 +134,7 @@ return [
             TwigExtension::class => TwigExtension::class,
         ],
         'factories' => [
-            AuthListener::class => AuthListenerFactory::class,
+//            AuthListener::class => AuthListenerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             LoggerInterface::class => LoggerFactory::class,

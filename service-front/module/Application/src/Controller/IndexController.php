@@ -184,4 +184,17 @@ class IndexController extends AbstractActionController
 
         return $view->setTemplate('application/pages/passport_number');
     }
+
+    public function howWillDonorConfirmAction(): ViewModel
+    {
+        $optionsdata = $this->opgApiService->getIdOptionsData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/how_will_the_donor_confirm');
+    }
 }
