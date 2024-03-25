@@ -20,6 +20,8 @@ services:
       context: service-api
       dockerfile: Dockerfile
       target: production
+    env_file:
+      ./service-api/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
       interval: 15s
@@ -36,6 +38,8 @@ services:
       context: service-api
       dockerfile: Dockerfile
       target: development
+    env_file:
+      ./service-api/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
       interval: 15s
