@@ -92,11 +92,11 @@ class IdentityController extends AbstractActionController
             'status' => $ninoStatus,
             'nino' => $data['nino']
         ];
-        
+
         if ($ninoStatus === 'NINO check complete') {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400); 
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
 
         return new JsonModel($response);
