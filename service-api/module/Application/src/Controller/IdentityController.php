@@ -10,6 +10,8 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
 /**
+ * @psalm-suppress PropertyNotSetInConstructor
+ * Needed here due to false positive from Laminas’s uninitialised properties
  * @psalm-suppress InvalidArgument
  * @see https://github.com/laminas/laminas-view/issues/239
  */
@@ -105,12 +107,12 @@ class IdentityController extends AbstractActionController
 
     public function verifyNinoAction(): JsonModel
     {
-        $nino = $this->getRequest()->getQuery('nino');
-        $ninoStatus = $this->ninoService->validateNINO($nino);
+        $data = $this->getRequest()->getPost();
+        $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
         $response = [
             'status' => $ninoStatus,
-            'nino' => $nino
+            'nino' => $data['nino']
         ];
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);

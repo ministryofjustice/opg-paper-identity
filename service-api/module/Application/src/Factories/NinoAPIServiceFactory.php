@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Factories;
 
-
 use Application\Services\Contract\NINOServiceInterface;
 use Application\Services\MockNinoService;
 use Application\Services\NinoAPIService;
@@ -13,7 +12,6 @@ use RuntimeException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
-
 class NinoAPIServiceFactory implements FactoryInterface
 {
     /**
@@ -21,9 +19,9 @@ class NinoAPIServiceFactory implements FactoryInterface
      * @param string                          $requestedName
      * @param array<mixed>|null               $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ?NINOServiceInterface
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): NINOServiceInterface
     {
-
+        /** @var bool $useMock */
         $useMock = getenv("MOCK_NINO_API");
         if ($useMock) {
             return new MockNinoService();

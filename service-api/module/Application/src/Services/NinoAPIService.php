@@ -7,6 +7,10 @@ namespace Application\Services;
 use GuzzleHttp\Client;
 use Application\Services\Contract\NINOServiceInterface;
 
+/**
+ * @psalm-suppress PossiblyUnusedProperty
+ * Suppress unused $client pending implementation
+ */
 class NinoAPIService implements NINOServiceInterface
 {
     public function __construct(
