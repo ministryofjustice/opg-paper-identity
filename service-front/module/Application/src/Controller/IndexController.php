@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
+use Application\Services\SiriusApiService;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Forms\NationalInsuranceNumber;
@@ -17,13 +18,36 @@ class IndexController extends AbstractActionController
 {
     protected $plugins;
 
-    public function __construct(private readonly OpgApiServiceInterface $opgApiService)
-    {
+    public function __construct(
+        private readonly OpgApiServiceInterface $opgApiService,
+        private readonly SiriusApiService $siriusApiService,
+    ) {
     }
 
     public function indexAction()
     {
         return new ViewModel();
+    }
+
+    public function startAction()
+    {
+        $lpas = [];
+        foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
+            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
+            $lpas[] = $data['opg.poas.lpastore'];
+        }
+
+        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
+
+        // Create a case in the API with the LPA UID and the actors' details
+
+        // Redirect to the "select which ID to use" page for this case
+
+        return new ViewModel([
+            'lpaUids' => $this->params()->fromQuery("lpas"),
+            'type' => $this->params()->fromQuery("personType"),
+            'lpas' => $lpas,
+        ]);
     }
 
     public function donorIdCheckAction(): ViewModel
