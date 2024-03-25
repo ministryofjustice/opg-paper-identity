@@ -83,7 +83,7 @@ return [
                     'route'    => '/identity/validate_nino',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'validateNino',
+                        'action'     => 'verifyNino',
                     ],
                 ],
             ],
@@ -94,16 +94,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'validateDrivingLicence',
-                    ],
-                ],
-            ],
-            'verify_nino' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/verify_nino',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'verifyNino',
                     ],
                 ],
             ],

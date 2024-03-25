@@ -81,7 +81,9 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             ['AA112233A', Response::STATUS_CODE_200],
-            ['AA112233Q', Response::STATUS_CODE_400]
+            ['BB112233A', Response::STATUS_CODE_200],
+            ['AA112233D', Response::STATUS_CODE_400],
+            ['AA112233C', Response::STATUS_CODE_400]
         ];
     }
 
