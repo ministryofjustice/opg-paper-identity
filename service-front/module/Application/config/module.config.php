@@ -90,6 +90,16 @@ return [
                     ],
                 ],
             ],
+            'passport_number' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/passport-number',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'passportNumber',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
