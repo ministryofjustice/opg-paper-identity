@@ -8,12 +8,11 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
+use Application\Services\SiriusApiService;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Application\Forms\NationalInsuranceNumber;
-use Application\Forms\DrivingLicenceNumber;
 
 class IndexController extends AbstractActionController
 {
@@ -21,7 +20,7 @@ class IndexController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService
+        private readonly SiriusApiService $siriusApiService,
     ) {
     }
 

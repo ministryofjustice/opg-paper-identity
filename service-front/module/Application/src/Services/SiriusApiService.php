@@ -37,8 +37,14 @@ class SiriusApiService
     public function checkAuth(RequestInterface $request): bool
     {
         try {
+            $headers = $this->getAuthHeaders($request);
+
+            if ($headers === null) {
+                return false;
+            }
+
             $this->client->get('/api/v1/users/current', [
-                'headers' => $this->getAuthHeaders($request),
+                'headers' => $headers,
             ]);
         } catch (GuzzleException $e) {
             error_log($e->getMessage());
@@ -48,6 +54,9 @@ class SiriusApiService
         return true;
     }
 
+    /**
+     * @return array{"opg.poas.lpastore": array<string, mixed>}
+     */
     public function getLpaByUid(string $uid, Request $request): array
     {
         $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
