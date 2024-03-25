@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Services\Contract\NINOServiceInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 
 /**
+ * @psalm-suppress PropertyNotSetInConstructor
+ * Needed here due to false positive from Laminas’s uninitialised properties
  * @psalm-suppress InvalidArgument
  * @see https://github.com/laminas/laminas-view/issues/239
  */
 class IdentityController extends AbstractActionController
 {
+    public function __construct(
+        private readonly NINOServiceInterface $ninoService
+    ) {
+    }
     public function indexAction(): JsonModel
     {
         return new JsonModel();
@@ -76,23 +83,19 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function validateNinoAction(): JsonModel
+    public function verifyNinoAction(): JsonModel
     {
-        $validNinos = ['AA112233A'];
-
         $data = $this->getRequest()->getPost();
+        $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
-        if (in_array($data['nino'], $validNinos)) {
-            $response = [
-                'status' => 'valid',
-                'nino' => $data['nino']
-            ];
+        $response = [
+            'status' => $ninoStatus,
+            'nino' => $data['nino']
+        ];
+
+        if ($ninoStatus === 'NINO check complete') {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
-            $response = [
-                'status' => 'not valid',
-                'nino' => $data['nino']
-            ];
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
 
