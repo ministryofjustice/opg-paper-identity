@@ -15,4 +15,8 @@ interface OpgApiServiceInterface
     public function getLpasByDonorData(): array;
 
     public function checkNinoValidity(string $nino): bool;
+
+    public function checkDlnValidity(string $dln): bool;
+
+    public function checkPassportValidity(string $passport): bool;
 }
