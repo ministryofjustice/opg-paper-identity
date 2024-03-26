@@ -6,10 +6,12 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\IdQuestions;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\SiriusApiService;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Application\Forms\NationalInsuranceNumber;
@@ -219,19 +221,24 @@ class IndexController extends AbstractActionController
 
             switch ($formData['id_method']) {
                 case 'Passport':
-
+                    $this->redirect()
+                        ->toRoute('passport_number');
                     break;
 
                 case 'Driving Licence':
-
+                    $this->redirect()
+                        ->toRoute('driving_licence_number');
                     break;
 
                 case 'National Insurance Number':
+                    $this->redirect()
+                        ->toRoute('national_insurance_number');
+                    break;
 
+                default:
                     break;
             }
         }
-
 
         $optionsdata = $this->opgApiService->getIdOptionsData();
         $detailsData = $this->opgApiService->getDetailsData();
@@ -242,6 +249,25 @@ class IndexController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/how_will_the_donor_confirm');
+    }
+
+    public function idVerifyQuestionsAction()
+    {
+        $case = 'uid';
+
+        $form = (new AttributeBuilder())->createForm(IdQuestions::class);
+        $questionsData = $this->opgApiService->getIdCheckQuestions($case);
+        $optionsdata = $this->opgApiService->getIdOptionsData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('form', $form);
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('questions_data', $questionsData);
+
+        return $view->setTemplate('application/pages/identity_check_questions');
     }
 
     public function whoProvidesMortgageAction(): ViewModel

@@ -121,6 +121,81 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['status'] === 'valid';
     }
 
+    public function getIdCheckQuestions(string $case): array
+    {
+//        return $this->makeApiRequest("/cases/$case/kbv-questions");
+
+        return [
+            "one" => [
+                "id" => 1,
+                "question" => "Who provides your mortgage?",
+                "number" => "one",
+                "prompts" => [
+                    0 => "Nationwide",
+                    1 => "Halifax",
+                    2 => "Lloyds",
+                    3 => "HSBC",
+                ]
+            ],
+            "two" => [
+                "id" => 2,
+                "question" => "Who provides your personal mobile contract?",
+                "number" => "two",
+                "prompts" => [
+                    0 => "EE",
+                    1 => "Vodafone",
+                    2 => "BT",
+                    3 => "iMobile",
+                ]
+            ],
+            "three" => [
+                "id" => 3,
+                "question" => "What are the first two letters of the last name of another person on the electroal register at your address?",
+                "number" => "three",
+                "prompts" => [
+                    0 => "Ka",
+                    1 => "Ch",
+                    2 => "Jo",
+                    3 => "None of the above",
+                ]
+            ],
+            "four" => [
+                "id" => 4,
+                "question" => "Who provides your current account?",
+                "number" => "four",
+                "prompts" => [
+                    0 => "Santander",
+                    1 => "HSBC",
+                    2 => "Halifax",
+                    3 => "Nationwide",
+                ]
+            ]
+        ];
+    }
+
+    public function checkIdCheckAnswers(array $answers): bool
+    {
+        $answers = [];
+        $data = $this->getRequest()->getPost();
+        $result = 'pass';
+
+        $answers['uid'] = [
+            1 => 0,
+            2 => 0,
+            3 => 0,
+            4 => 0,
+        ];
+
+
+        foreach ($answers as $key => $value) {
+            if ($value != $answers['uid'][$key]) {
+                $result = 'fail';
+            }
+        }
+
+        return $result === 'pass';
+    }
+
     public function getMortgageData(): array
     {
         return $this->makeApiRequest('/identity/mortgage');

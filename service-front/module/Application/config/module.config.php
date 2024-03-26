@@ -110,6 +110,19 @@ return [
                     ],
                 ],
             ],
+
+            'id_verify_questions' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/id-verify-questions',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'idVerifyQuestions',
+                    ],
+                ],
+            ],
+
+
             'who_provides_mortgage' => [
                 'type'    => Literal::class,
                 'options' => [
@@ -195,7 +208,7 @@ return [
             TwigExtension::class => TwigExtension::class,
         ],
         'factories' => [
-//            AuthListener::class => AuthListenerFactory::class,
+            AuthListener::class => AuthListenerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             LoggerInterface::class => LoggerFactory::class,

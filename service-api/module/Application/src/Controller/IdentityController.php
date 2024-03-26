@@ -144,4 +144,77 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    public function getKbvQuestions(): JsonModel
+    {
+        $response = [
+            [
+                "id" => 1,
+                "question" => "Who provides your mortgage?",
+                "prompts" => [
+                    0 => "Nationwide",
+                    1 => "Halifax",
+                    2 => "Lloyds",
+                    3 => "HSBC",
+                ]
+            ],
+            [
+                "id" => 2,
+                "question" => "Who provides your personal mobile contract?",
+                "prompts" => [
+                    0 => "EE",
+                    1 => "Vodafone",
+                    2 => "BT",
+                    3 => "iMobile",
+                ]
+            ],
+            [
+                "id" => 3,
+                "question" => "What are the first two letters of the last name of another person on the electroal register at your address?",
+                "prompts" => [
+                    0 => "Ka",
+                    1 => "Ch",
+                    2 => "Jo",
+                    3 => "None of the above",
+                ]
+            ],
+            [
+                "id" => 4,
+                "question" => "Who provides your current account?",
+                "prompts" => [
+                    0 => "Santander",
+                    1 => "HSBC",
+                    2 => "Halifax",
+                    3 => "Nationwide",
+                ]
+            ]
+        ];
+
+        return new JsonModel($response);
+    }
+
+    public function checkKbvAnswers(string $caseId): JsonModel
+    {
+        $answers = [];
+        $data = $this->getRequest()->getPost();
+        $result = 'pass';
+
+        $answers[$caseId] = [
+            1 => 0,
+            2 => 0,
+            3 => 0,
+            4 => 0,
+        ];
+
+
+        foreach ($data['answers'] as $key => $value) {
+            if ($value != $answers[$caseId][$key]) {
+                $result = 'fail';
+            }
+        }
+
+        $response['result'] = $result;
+
+        return new JsonModel($response);
+    }
 }

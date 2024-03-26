@@ -24,4 +24,6 @@ interface OpgApiServiceInterface
     public function getMobileData(): array;
     public function getInitialsElectoralRegister(): array;
     public function getCurrentAccountData(): array;
+    public function getIdCheckQuestions(string $case): array;
+    public function checkIdCheckAnswers(array $answers): bool;
 }
