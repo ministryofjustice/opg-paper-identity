@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Nino\ValidatorInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Http\Request as HttpRequest;
 use Laminas\View\Model\JsonModel;
 
 /**
@@ -20,6 +20,7 @@ use Laminas\View\Model\JsonModel;
 class IdentityController extends AbstractActionController
 {
     public function __construct(
+        private readonly ValidatorInterface $ninoService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
     ) {
@@ -122,23 +123,19 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function validateNinoAction(): JsonModel
+    public function verifyNinoAction(): JsonModel
     {
-        $validNinos = ['AA112233A'];
-
         $data = $this->getRequest()->getPost();
+        $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
-        if (in_array($data['nino'], $validNinos)) {
-            $response = [
-                'status' => 'valid',
-                'nino' => $data['nino']
-            ];
+        $response = [
+            'status' => $ninoStatus,
+            'nino' => $data['nino']
+        ];
+
+        if ($ninoStatus === 'NINO check complete') {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
-            $response = [
-                'status' => 'not valid',
-                'nino' => $data['nino']
-            ];
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
 

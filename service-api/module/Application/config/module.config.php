@@ -6,6 +6,8 @@ namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
+use Application\Nino\ValidatorFactory as NinoValidatorFactory;
+use Application\Nino\ValidatorInterface as NinoValidatorInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Aws\DynamoDb\DynamoDbClient;
@@ -122,7 +124,7 @@ return [
                     'route'    => '/identity/validate_nino',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'validateNino',
+                        'action'     => 'verifyNino',
                     ],
                 ],
             ],
@@ -173,6 +175,7 @@ return [
                 $tableName
             ),
             LoggerInterface::class => LoggerFactory::class,
+            NinoValidatorInterface::class => NinoValidatorFactory::class
         ],
     ],
     'view_manager' => [
