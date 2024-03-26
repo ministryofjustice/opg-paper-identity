@@ -110,6 +110,57 @@ return [
                     ],
                 ],
             ],
+            'who_provides_mortgage' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/who-provides-mortgage',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'whoProvidesMortgage',
+                    ],
+                ],
+            ],
+            'who_provides_mobile' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/who-provides-mobile',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'whoProvidesMobile',
+                    ],
+                ],
+            ],
+            'initials_electoral_register' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/initials-electoral-register',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'initialsElectoralRegister',
+                    ],
+                ],
+            ],
+            'who_provides_current_account' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/who-provides-current-account',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'whoProvidesCurrentAccount',
+                    ],
+                ],
+            ],
+            'identity_check_passed' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity-check-passed',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'identityCheckPassed',
+                    ],
+                ],
+            ],
+
         ],
     ],
     'controllers' => [

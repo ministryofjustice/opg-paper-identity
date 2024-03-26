@@ -120,4 +120,21 @@ class OpgApiService implements OpgApiServiceInterface
 
         return $this->responseData['status'] === 'valid';
     }
+
+    public function getMortgageData(): array
+    {
+        return $this->makeApiRequest('/identity/mortgage');
+    }
+    public function getMobileData(): array
+    {
+        return $this->makeApiRequest('/identity/mobile');
+    }
+    public function getInitialsElectoralRegister(): array
+    {
+        return $this->makeApiRequest('/identity/initials');
+    }
+    public function getCurrentAccountData(): array
+    {
+        return $this->makeApiRequest('/identity/current_account');
+    }
 }

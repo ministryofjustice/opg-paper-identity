@@ -229,4 +229,125 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('IndexController');
         $this->assertMatchedRouteName('how_donor_confirms');
     }
+
+    public function testMortgageProviderPage(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddressVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+
+    public function testMobileProviderPage(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddressVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+
+    public function testElectoralInitialsPage(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddressVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+
+    public function testCurrentAccountPage(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddressVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+
+    public function testIdentityCheckPassedPage(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddressVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+
 }

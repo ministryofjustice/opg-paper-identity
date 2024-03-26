@@ -19,4 +19,9 @@ interface OpgApiServiceInterface
     public function checkDlnValidity(string $dln): bool;
 
     public function checkPassportValidity(string $passport): bool;
+
+    public function getMortgageData(): array;
+    public function getMobileData(): array;
+    public function getInitialsElectoralRegister(): array;
+    public function getCurrentAccountData(): array;
 }
