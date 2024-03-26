@@ -9,8 +9,8 @@
                     {% for datum in options_data %}
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="{{ datum }}" name="id_method" type="radio"
-                                   value="england">
-                            <label class="govuk-label govuk-radios__label" for="whereDoYouLive">{{ datum }}</label>
+                                   value="{{ datum }}">
+                            <label class="govuk-label govuk-radios__label" for="{{ datum }}">{{ datum }}</label>
                         </div>
                     {% endfor %}
                 </div>

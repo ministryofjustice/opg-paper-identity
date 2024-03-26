@@ -187,6 +187,25 @@ class IndexController extends AbstractActionController
 
     public function howWillDonorConfirmAction(): ViewModel
     {
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            switch ($formData['id_method']) {
+                case 'Passport':
+
+                    break;
+
+                case 'Driving Licence':
+
+                    break;
+
+                case 'National Insurance Number':
+
+                    break;
+            }
+        }
+
+
         $optionsdata = $this->opgApiService->getIdOptionsData();
         $detailsData = $this->opgApiService->getDetailsData();
 
