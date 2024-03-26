@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Services\Contract\NinoServiceInterface;
+use Application\Nino\ValidatorInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -18,7 +18,7 @@ use Laminas\View\Model\JsonModel;
 class IdentityController extends AbstractActionController
 {
     public function __construct(
-        private readonly NinoServiceInterface $ninoService
+        private readonly ValidatorInterface $ninoService
     ) {
     }
     public function indexAction(): JsonModel

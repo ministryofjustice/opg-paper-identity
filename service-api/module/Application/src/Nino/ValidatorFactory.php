@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Application\Factories;
+namespace Application\Nino;
 
-use Application\Services\Contract\NinoServiceInterface;
-use Application\Services\MockNinoService;
-use Application\Services\NinoAPIService;
+use Application\Nino\ValidatorInterface;
+use Application\Nino\Validator;
+use Application\Mock\Nino\Validator as MockValidator;
 use GuzzleHttp\Client;
 use RuntimeException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
-class NinoAPIServiceFactory implements FactoryInterface
+class ValidatorFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
      * @param string                          $requestedName
      * @param array<mixed>|null               $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): NinoServiceInterface
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ValidatorInterface
     {
         /** @var bool $useMock */
         $useMock = getenv("MOCK_NINO_API");
         if ($useMock) {
-            return new MockNinoService();
+            return new MockValidator();
         }
         //@TODO implement real API service
         $baseUri = getenv("NINO_API_BASE_URL");
@@ -34,7 +34,7 @@ class NinoAPIServiceFactory implements FactoryInterface
 
         $client = new Client(['base_uri' => $baseUri]);
 
-        return new NinoAPIService(
+        return new Validator(
             $client
         );
     }

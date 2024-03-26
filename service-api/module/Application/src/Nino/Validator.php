@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Application\Services;
+namespace Application\Nino;
 
 use GuzzleHttp\Client;
-use Application\Services\Contract\NinoServiceInterface;
+use Application\Nino\ValidatorInterface;
 
 /**
  * @psalm-suppress PossiblyUnusedProperty
  * Suppress unused $client pending implementation
  */
-class NinoAPIService implements NinoServiceInterface
+class Validator implements ValidatorInterface
 {
     public function __construct(
         public readonly Client $client

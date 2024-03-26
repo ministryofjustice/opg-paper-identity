@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Factories\LoggerFactory;
-use Application\Factories\NinoAPIServiceFactory;
-use Application\Services\Contract\NinoServiceInterface;
-use Application\Services\MockNinoService;
+use Application\Nino\ValidatorFactory as NinoValidatorFactory;
+use Application\Nino\ValidatorInterface as NinoValidatorInterface;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -108,7 +107,7 @@ return [
     'service_manager' => [
         'factories' => [
             LoggerInterface::class => LoggerFactory::class,
-            NinoServiceInterface::class => NinoAPIServiceFactory::class
+            NinoValidatorInterface::class => NinoValidatorFactory::class
         ],
     ],
     'view_manager' => [
