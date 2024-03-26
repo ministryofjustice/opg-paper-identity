@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Nino\ValidatorInterface;
+use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -18,9 +20,12 @@ use Laminas\View\Model\JsonModel;
 class IdentityController extends AbstractActionController
 {
     public function __construct(
-        private readonly ValidatorInterface $ninoService
+        private readonly ValidatorInterface $ninoService,
+        private readonly DataQueryHandler $dataQueryHandler,
+        private readonly DataImportHandler $dataImportHandler,
     ) {
     }
+
     public function indexAction(): JsonModel
     {
         return new JsonModel();
@@ -54,6 +59,41 @@ class IdentityController extends AbstractActionController
         return new JsonModel($data);
     }
 
+    public function testdataAction(): JsonModel
+    {
+        $this->dataImportHandler->load();
+        $data = $this->dataQueryHandler->returnAll();
+
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+    }
+
+    public function findByNameAction(): JsonModel
+    {
+        /** @var string $name */
+        $name = $this->getRequest()->getQuery('username');
+        $data = $this->dataQueryHandler->queryByName($name);
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+    }
+
+    public function findByIdNumberAction(): JsonModel
+    {
+        /** @var string $id */
+        $id = $this->getRequest()->getQuery('id');
+        $data = $this->dataQueryHandler->queryByIDNumber($id);
+        /**
+         * @psalm-suppress InvalidArgument
+         * @see https://github.com/laminas/laminas-view/issues/239
+         */
+        return new JsonModel($data);
+    }
     public function addressVerificationAction(): JsonModel
     {
         $data = [
@@ -118,6 +158,29 @@ class IdentityController extends AbstractActionController
             $response = [
                 'status' => 'not valid',
                 'driving_licence' => $data['dln']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function validatePassportAction(): JsonModel
+    {
+        $validDrivingLicences = ['123456789'];
+
+        $data = $this->getRequest()->getPost();
+
+        if (in_array($data['passport'], $validDrivingLicences)) {
+            $response = [
+                'status' => 'valid',
+                'driving_licence' => $data['passport']
+            ];
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        } else {
+            $response = [
+                'status' => 'not valid',
+                'driving_licence' => $data['passport']
             ];
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }

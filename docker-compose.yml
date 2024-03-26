@@ -20,6 +20,9 @@ services:
       context: service-api
       dockerfile: Dockerfile
       target: production
+    depends_on:
+      localstack:
+        condition: service_healthy
     env_file:
       ./service-api/docker-compose.env
     healthcheck:
@@ -38,6 +41,9 @@ services:
       context: service-api
       dockerfile: Dockerfile
       target: development
+    depends_on:
+      localstack:
+        condition: service_healthy
     env_file:
       ./service-api/docker-compose.env
     healthcheck:
@@ -146,6 +152,20 @@ services:
     volumes:
       - ~/.composer:/tmp
       - ./service-front:/app
+
+  localstack:
+    image: localstack/localstack:3.0
+    volumes:
+      - "./scripts/localstack/init:/etc/localstack/init/ready.d"
+      - "./scripts/localstack/wait:/scripts/wait"
+    environment:
+      AWS_DEFAULT_REGION: eu-west-1
+    healthcheck:
+      test: bash /scripts/wait/healthcheck.sh
+      interval: 20s
+      timeout: 30s
+      retries: 50
+    restart: unless-stopped
 
 volumes:
   static-content:
