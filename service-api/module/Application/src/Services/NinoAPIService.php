@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Application\Services;
 
 use GuzzleHttp\Client;
-use Application\Services\Contract\NINOServiceInterface;
+use Application\Services\Contract\NinoServiceInterface;
 
 /**
  * @psalm-suppress PossiblyUnusedProperty
  * Suppress unused $client pending implementation
  */
-class NinoAPIService implements NINOServiceInterface
+class NinoAPIService implements NinoServiceInterface
 {
     public function __construct(
         public readonly Client $client

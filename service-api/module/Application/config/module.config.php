@@ -6,7 +6,7 @@ namespace Application;
 
 use Application\Factories\LoggerFactory;
 use Application\Factories\NinoAPIServiceFactory;
-use Application\Services\Contract\NINOServiceInterface;
+use Application\Services\Contract\NinoServiceInterface;
 use Application\Services\MockNinoService;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -108,7 +108,7 @@ return [
     'service_manager' => [
         'factories' => [
             LoggerInterface::class => LoggerFactory::class,
-            NINOServiceInterface::class => NinoAPIServiceFactory::class
+            NinoServiceInterface::class => NinoAPIServiceFactory::class
         ],
     ],
     'view_manager' => [

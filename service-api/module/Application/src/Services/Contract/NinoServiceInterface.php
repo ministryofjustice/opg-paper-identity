@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Services\Contract;
 
-interface NINOServiceInterface
+interface NinoServiceInterface
 {
     public function validateNINO(string $nino): string;
 }
