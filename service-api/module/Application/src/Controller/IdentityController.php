@@ -188,8 +188,10 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function getKbvQuestions(): JsonModel
+    public function getKbvQuestionsAction(): JsonModel
     {
+        $uuid = $this->params()->fromRoute('uuid');
+
         $response = [
             [
                 "id" => 1,
@@ -236,22 +238,23 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function checkKbvAnswers(string $caseId): JsonModel
+    public function checkKbvAnswersAction(): JsonModel
     {
+        $uuid = $this->params()->fromRoute('uuid');
+
         $answers = [];
         $data = $this->getRequest()->getPost();
         $result = 'pass';
 
-        $answers[$caseId] = [
+        $answers[$uuid] = [
             1 => 0,
             2 => 0,
             3 => 0,
             4 => 0,
         ];
 
-
         foreach ($data['answers'] as $key => $value) {
-            if ($value != $answers[$caseId][$key]) {
+            if ($value != $answers[$uuid][$key]) {
                 $result = 'fail';
             }
         }

@@ -151,7 +151,7 @@ return [
             'get_kbv_questions' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:action]/kbv-questions',
+                    'route'    => '/cases[/:uuid]/kbv-questions',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'getKbvQuestions',
@@ -161,7 +161,7 @@ return [
             'check_kbv_answers' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:action]/kbv-answers',
+                    'route'    => '/cases[/:uuid]/kbv-answers',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'checkKbvAnswers',
