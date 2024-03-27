@@ -1,0 +1,55 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h1 class="govuk-heading-xl">Donor LPA check</h1>
+
+        <h3 class="govuk-heading-m">Which LPAs should this identity check apply to?</h3>
+
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            LPAs for donor: Mary Chapman
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                {#                                <dd></dd>#}
+                                <dt class="govuk-summary-list__key">
+                                    LPA reference number
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Donor
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Action
+                                </dt>
+                            </div>
+                            {% for datum in data %}
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        <div class="govuk-checkboxes__item">
+                                            <input class="govuk-checkboxes__input" id="lpa_check_{{ datum['lpa_ref'] }}" name="lpa_check" type="checkbox"
+                                                   value="{{ datum['lpa_ref'] }}">
+                                            <label class="govuk-label govuk-checkboxes__label" for="waste">
+                                                {{ datum['lpa_ref'] }}
+                                            </label>
+                                        </div>
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        {{ datum['donor_name'] }}
+                                    </dd>
+                                    <dd class="govuk-summary-list__value">
+                                        <a href="">Remove</a>
+                                    </dd>
+                                </div>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <a href="./{{ case }}/how-will-donor-confirm"  class="govuk-button">Open case and continue</a>
+    </main>
+</div>

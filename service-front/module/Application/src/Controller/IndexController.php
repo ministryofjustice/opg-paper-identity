@@ -39,7 +39,6 @@ class IndexController extends AbstractActionController
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            die(json_encode($data));
             $lpas[] = $data['opg.poas.lpastore'];
         }
 
@@ -49,11 +48,16 @@ class IndexController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-        return new ViewModel([
+        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+
+        $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
             'type' => $this->params()->fromQuery("personType"),
             'lpas' => $lpas,
+            'case' => $case,
         ]);
+
+        return $view->setTemplate('application/pages/start');
     }
 
     public function donorIdCheckAction(): ViewModel
@@ -242,6 +246,7 @@ class IndexController extends AbstractActionController
             }
         }
 
+        $uuid = $this->params()->fromQuery("uuid");
         $optionsdata = $this->opgApiService->getIdOptionsData();
         $detailsData = $this->opgApiService->getDetailsData();
 
@@ -249,6 +254,7 @@ class IndexController extends AbstractActionController
 
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate('application/pages/how_will_the_donor_confirm');
     }
@@ -257,7 +263,7 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel();
         $case = 'uid';
-        
+
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
         $questionsData = $this->opgApiService->getIdCheckQuestions($case);
         $view->setVariable('questions_data', $questionsData);
