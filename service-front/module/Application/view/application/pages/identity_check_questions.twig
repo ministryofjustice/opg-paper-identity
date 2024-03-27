@@ -1,33 +1,44 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <form>
-        {% for questionBlock in questions_data %}
-            <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                        <h2 class="govuk-fieldset__heading">
-                            Select answer
-                        </h2>
-                    </legend>
-                    <div class="govuk-radios" data-module="govuk-radios">
-                        {% for datum in questionBlock.prompts %}
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="{{ datum }}" name="{{ questionBlock.number }}" type="radio" value="{{ datum }}">
-                                <label class="govuk-label govuk-radios__label" for="{{ datum }}">{{ datum }}</label>
+        <form method="post" target="">
+            {% for questionBlock in questions_data %}
+                <div class="govuk-form-group {% if questionBlock.number != question %}moj-hidden{% endif %}">
+                    <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h2 class="govuk-fieldset__heading">
+                                    Select answer
+                                </h2>
+                            </legend>
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                {% for datum in questionBlock.prompts %}
+                                    <div class="govuk-radios__item">
+                                        <input
+                                                class="govuk-radios__input"
+                                                id="{{ datum }}"
+                                                name="{{ questionBlock.number }}"
+                                                type="radio"
+                                                value="{{ datum }}"
+                                                {% if form.get(questionBlock.number).value == datum %}checked{% endif %}
+                                        >
+                                        <label class="govuk-label govuk-radios__label"
+                                               for="{{ datum }}">{{ datum }}</label>
+                                    </div>
+                                {% endfor %}
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="dontknow" name="{{ questionBlock.number }}" type="radio"
+                                           value="dontknow">
+                                    <label class="govuk-label govuk-radios__label" for="dontknow">I don't know</label>
+                                </div>
                             </div>
-                        {% endfor %}
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="dontknow" name="dontknow" type="radio" value="dontknow">
-                            <label class="govuk-label govuk-radios__label" for="dontknow">I don't know</label>
-                        </div>
+                        </fieldset>
                     </div>
-                </fieldset>
-                <input type="hidden" name="question2">
-            </div>
-            <input class="govuk-button" type="submit" name="{{ questionBlock.number }}" value="Continue">
-{#            <button class="govuk-button">Continue</button>#}
-        {% endfor %}
+                    <div class="govuk-form-group">
+                        <input class="govuk-button" type="submit" value="Continue">
+                    </div>
+                </div>
+            {% endfor %}
         </form>
     </main>
 </div>

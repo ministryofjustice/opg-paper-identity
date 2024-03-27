@@ -22,8 +22,9 @@ class IndexController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
-    ) {
+        private readonly SiriusApiService       $siriusApiService,
+    )
+    {
     }
 
     public function indexAction()
@@ -253,95 +254,121 @@ class IndexController extends AbstractActionController
 
     public function idVerifyQuestionsAction()
     {
-        $case = 'uid';
-
-        $form = (new AttributeBuilder())->createForm(IdQuestions::class);
-        $questionsData = $this->opgApiService->getIdCheckQuestions($case);
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-
         $view = new ViewModel();
+        $case = 'uid';
+        $form = (new AttributeBuilder())->createForm(IdQuestions::class);
+
+        $view->setVariable('question', 'one');
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+            $view->setVariable('question', $this->getNextQuestion($formData->toArray()));
+
+//            echo(json_encode($formData->toArray()));
+            $form->setData($formData);
+            echo(json_encode($formData));
+        }
+
+
+        $questionsData = $this->opgApiService->getIdCheckQuestions($case);
+//        $optionsdata = $this->opgApiService->getIdOptionsData();
+//        $detailsData = $this->opgApiService->getDetailsData();
+
 
         $view->setVariable('form', $form);
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
+//        $view->setVariable('options_data', $optionsdata);
+//        $view->setVariable('details_data', $detailsData);
         $view->setVariable('questions_data', $questionsData);
 
         return $view->setTemplate('application/pages/identity_check_questions');
     }
 
-    public function whoProvidesMortgageAction(): ViewModel
+    private function getNextQuestion(array $formdata): string
     {
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-        $mortgageData = $this->opgApiService->getMortgageData();
+        $question = array_key_last($formdata);
 
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('mortgage_data', $mortgageData);
-
-        return $view->setTemplate('application/pages/who_provides_mortgage');
+        $sequence = [
+            "one" => "two",
+            "two" => "three",
+            "three" => "four",
+            "four" => "end"
+        ];
+        return $sequence[$question];
     }
 
-    public function whoProvidesMobileAction(): ViewModel
-    {
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-        $mobileData = $this->opgApiService->getMobileData();
-
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('mobile_data', $mobileData);
-
-        return $view->setTemplate('application/pages/who_provides_mobile');
-    }
-
-    public function initialsElectoralRegister(): ViewModel
-    {
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-        $initialsElectoralRegisterData = $this->opgApiService->getInitialsElectoralRegister();
-
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('initials_electoral_register_data', $initialsElectoralRegisterData);
-
-        return $view->setTemplate('application/pages/initials_electoral_register');
-    }
-
-    public function whoProvidesCurrentAccount(): ViewModel
-    {
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-        $currentAccountData = $this->opgApiService->getCurrentAccountData();
-
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('current_account_data', $currentAccountData);
-
-        return $view->setTemplate('application/pages/who_provides_current_account');
-    }
-
-    public function identityCheckPassed(): ViewModel
-    {
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-        $lpasData = $this->opgApiService->getLpasByDonorData();
-
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('lpas_data', $lpasData);
-
-        return $view->setTemplate('application/pages/identity_check_passed');
-    }
+//
+//    public function whoProvidesMortgageAction(): ViewModel
+//    {
+//        $optionsdata = $this->opgApiService->getIdOptionsData();
+//        $detailsData = $this->opgApiService->getDetailsData();
+//        $mortgageData = $this->opgApiService->getMortgageData();
+//
+//        $view = new ViewModel();
+//
+//        $view->setVariable('options_data', $optionsdata);
+//        $view->setVariable('details_data', $detailsData);
+//        $view->setVariable('mortgage_data', $mortgageData);
+//
+//        return $view->setTemplate('application/pages/who_provides_mortgage');
+//    }
+//
+//    public function whoProvidesMobileAction(): ViewModel
+//    {
+//        $optionsdata = $this->opgApiService->getIdOptionsData();
+//        $detailsData = $this->opgApiService->getDetailsData();
+//        $mobileData = $this->opgApiService->getMobileData();
+//
+//        $view = new ViewModel();
+//
+//        $view->setVariable('options_data', $optionsdata);
+//        $view->setVariable('details_data', $detailsData);
+//        $view->setVariable('mobile_data', $mobileData);
+//
+//        return $view->setTemplate('application/pages/who_provides_mobile');
+//    }
+//
+//    public function initialsElectoralRegister(): ViewModel
+//    {
+//        $optionsdata = $this->opgApiService->getIdOptionsData();
+//        $detailsData = $this->opgApiService->getDetailsData();
+//        $initialsElectoralRegisterData = $this->opgApiService->getInitialsElectoralRegister();
+//
+//        $view = new ViewModel();
+//
+//        $view->setVariable('options_data', $optionsdata);
+//        $view->setVariable('details_data', $detailsData);
+//        $view->setVariable('initials_electoral_register_data', $initialsElectoralRegisterData);
+//
+//        return $view->setTemplate('application/pages/initials_electoral_register');
+//    }
+//
+//    public function whoProvidesCurrentAccount(): ViewModel
+//    {
+//        $optionsdata = $this->opgApiService->getIdOptionsData();
+//        $detailsData = $this->opgApiService->getDetailsData();
+//        $currentAccountData = $this->opgApiService->getCurrentAccountData();
+//
+//        $view = new ViewModel();
+//
+//        $view->setVariable('options_data', $optionsdata);
+//        $view->setVariable('details_data', $detailsData);
+//        $view->setVariable('current_account_data', $currentAccountData);
+//
+//        return $view->setTemplate('application/pages/who_provides_current_account');
+//    }
+//
+//    public function identityCheckPassed(): ViewModel
+//    {
+//        $optionsdata = $this->opgApiService->getIdOptionsData();
+//        $detailsData = $this->opgApiService->getDetailsData();
+//        $lpasData = $this->opgApiService->getLpasByDonorData();
+//
+//        $view = new ViewModel();
+//
+//        $view->setVariable('options_data', $optionsdata);
+//        $view->setVariable('details_data', $detailsData);
+//        $view->setVariable('lpas_data', $lpasData);
+//
+//        return $view->setTemplate('application/pages/identity_check_passed');
+//    }
 }

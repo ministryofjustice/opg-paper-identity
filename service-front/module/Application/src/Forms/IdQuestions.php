@@ -17,17 +17,17 @@ class IdQuestions
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public int $one;
+    public string $one;
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public int $two;
+    public string $two;
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public int $three;
+    public string $three;
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public int $four;
+    public string $four;
 }
