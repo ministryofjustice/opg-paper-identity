@@ -262,11 +262,17 @@ class IndexController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
-            $view->setVariable('question', $this->getNextQuestion($formData->toArray()));
+
+            $next = $this->getNextQuestion($formData->toArray());
+            if ($next != 'end') {
+                $view->setVariable('question', $next);
+            } else {
+
+            }
+
 
 //            echo(json_encode($formData->toArray()));
             $form->setData($formData);
-            echo(json_encode($formData));
         }
 
 
@@ -296,21 +302,31 @@ class IndexController extends AbstractActionController
         return $sequence[$question];
     }
 
-//
-//    public function whoProvidesMortgageAction(): ViewModel
-//    {
-//        $optionsdata = $this->opgApiService->getIdOptionsData();
-//        $detailsData = $this->opgApiService->getDetailsData();
-//        $mortgageData = $this->opgApiService->getMortgageData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('options_data', $optionsdata);
-//        $view->setVariable('details_data', $detailsData);
-//        $view->setVariable('mortgage_data', $mortgageData);
-//
-//        return $view->setTemplate('application/pages/who_provides_mortgage');
-//    }
+    public function identityCheckPassedAction(): ViewModel
+    {
+        $lpasData = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_passed');
+    }
+
+    public function identityCheckFailedAction(): ViewModel
+    {
+        $lpasData = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_failed');
+    }
 //
 //    public function whoProvidesMobileAction(): ViewModel
 //    {
