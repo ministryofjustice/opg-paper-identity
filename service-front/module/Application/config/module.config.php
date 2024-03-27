@@ -110,7 +110,6 @@ return [
                     ],
                 ],
             ],
-
             'id_verify_questions' => [
                 'type'    => Literal::class,
                 'options' => [
@@ -118,48 +117,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'idVerifyQuestions',
-                    ],
-                ],
-            ],
-
-
-            'who_provides_mortgage' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/who-provides-mortgage',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'whoProvidesMortgage',
-                    ],
-                ],
-            ],
-            'who_provides_mobile' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/who-provides-mobile',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'whoProvidesMobile',
-                    ],
-                ],
-            ],
-            'initials_electoral_register' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/initials-electoral-register',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'initialsElectoralRegister',
-                    ],
-                ],
-            ],
-            'who_provides_current_account' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/who-provides-current-account',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'whoProvidesCurrentAccount',
                     ],
                 ],
             ],
@@ -173,7 +130,16 @@ return [
                     ],
                 ],
             ],
-
+            'identity_check_failed' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity-check-failed',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'identityCheckFailed',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
