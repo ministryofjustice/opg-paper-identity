@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\OpgApiException;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\IdQuestions;
 use Application\Forms\PassportNumber;
@@ -256,8 +257,10 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel();
         $case = 'uid';
+        
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
-
+        $questionsData = $this->opgApiService->getIdCheckQuestions($case);
+        $view->setVariable('questions_data', $questionsData);
         $view->setVariable('question', 'one');
 
         if (count($this->getRequest()->getPost())) {
@@ -267,24 +270,17 @@ class IndexController extends AbstractActionController
             if ($next != 'end') {
                 $view->setVariable('question', $next);
             } else {
+                try {
+                    $this->opgApiService->checkIdCheckAnswers($case, ['answers' => $formData->toArray()]);
 
+                    $this->redirect()->toRoute('identity_check_passed');
+                } catch (OpgApiException $exception) {
+                    $this->redirect()->toRoute('identity_check_failed');
+                }
             }
-
-
-//            echo(json_encode($formData->toArray()));
             $form->setData($formData);
         }
-
-
-        $questionsData = $this->opgApiService->getIdCheckQuestions($case);
-//        $optionsdata = $this->opgApiService->getIdOptionsData();
-//        $detailsData = $this->opgApiService->getDetailsData();
-
-
         $view->setVariable('form', $form);
-//        $view->setVariable('options_data', $optionsdata);
-//        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('questions_data', $questionsData);
 
         return $view->setTemplate('application/pages/identity_check_questions');
     }
