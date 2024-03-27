@@ -22,6 +22,9 @@
                                 <dt class="govuk-summary-list__key">
                                     Donor
                                 </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Action
+                                </dt>
                             </div>
                             {% for datum in data %}
                                 <div class="govuk-summary-list__row">
@@ -37,6 +40,9 @@
                                     <dd class="govuk-summary-list__value">
                                         {{ datum['donor_name'] }}
                                     </dd>
+                                    <dd class="govuk-summary-list__value">
+                                        <a href="">Remove</a>
+                                    </dd>
                                 </div>
                             {% endfor %}
                         </dl>
@@ -44,6 +50,7 @@
                 </div>
             </fieldset>
         </div>
-        <button class="govuk-button">Continue</button>
+        <a href="./how-will-donor-confirm"  class="govuk-button">Continue</a>
+{#        <button class="govuk-button">Continue</button>#}
     </main>
 </div>

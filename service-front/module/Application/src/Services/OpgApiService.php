@@ -82,7 +82,7 @@ class OpgApiService implements OpgApiServiceInterface
             return false;
         }
 
-        return $this->responseData['status'] === 'valid';
+        return $this->responseData['status'] === 'NINO check complete';
     }
 
     public function checkDlnValidity(string $dln): bool
@@ -194,22 +194,5 @@ class OpgApiService implements OpgApiServiceInterface
         }
 
         return $result === 'pass';
-    }
-
-    public function getMortgageData(): array
-    {
-        return $this->makeApiRequest('/identity/mortgage');
-    }
-    public function getMobileData(): array
-    {
-        return $this->makeApiRequest('/identity/mobile');
-    }
-    public function getInitialsElectoralRegister(): array
-    {
-        return $this->makeApiRequest('/identity/initials');
-    }
-    public function getCurrentAccountData(): array
-    {
-        return $this->makeApiRequest('/identity/current_account');
     }
 }
