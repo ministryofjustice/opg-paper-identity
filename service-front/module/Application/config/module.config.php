@@ -148,7 +148,7 @@ return [
         ],
     ],
     'listeners' => [
-        AuthListener::class
+//        AuthListener::class
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
