@@ -55,7 +55,6 @@ class SiriusApiService
     }
 
     /**
-     * @psalm-suppress PossiblyUnusedMethod
      * @return array{"opg.poas.lpastore": array<string, mixed>}
      */
     public function getLpaByUid(string $uid, Request $request): array

@@ -39,8 +39,8 @@ class IndexController extends AbstractActionController
     {
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
-            //$data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            //$lpas[] = $data['opg.poas.lpastore'];
+            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
+            $lpas[] = $data['opg.poas.lpastore'];
         }
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
