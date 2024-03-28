@@ -121,9 +121,9 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['status'] === 'valid';
     }
 
-    public function getIdCheckQuestions(string $case): array
+    public function getIdCheckQuestions(string $uuid): array
     {
-        return $this->makeApiRequest("/cases/$case/kbv-questions");
+        return $this->makeApiRequest("/cases/$uuid/kbv-questions");
     }
 
     public function checkIdCheckAnswers(string $uuid, array $answers): bool

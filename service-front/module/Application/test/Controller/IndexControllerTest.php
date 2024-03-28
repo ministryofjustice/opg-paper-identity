@@ -230,124 +230,92 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('how_donor_confirms');
     }
 
-    public function testMortgageProviderPage(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getAddressVerificationData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/address_verification', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('address_verification');
-    }
-
-    public function testMobileProviderPage(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getAddressVerificationData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/address_verification', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('address_verification');
-    }
-
-    public function testElectoralInitialsPage(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getAddressVerificationData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/address_verification', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('address_verification');
-    }
-
-    public function testCurrentAccountPage(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getAddressVerificationData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/address_verification', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('address_verification');
-    }
-
     public function testIdentityCheckPassedPage(): void
     {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
         ];
 
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getAddressVerificationData')
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $mockResponseDataAddressVerificationOptions = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch('/address_verification', 'GET');
+        $this->dispatch('/identity-check-passed', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('address_verification');
+        $this->assertMatchedRouteName('identity_check_passed');
+    }
+
+    public function testIdentityCheckFailedPage(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $mockResponseDataAddressVerificationOptions = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/identity-check-failed', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IndexController');
+        $this->assertMatchedRouteName('identity_check_failed');
     }
 
 }
