@@ -6,6 +6,10 @@ info:
 servers:
   - url: http://localhost:4010
     description: Local Prism server
+x-json-schema-faker:
+  alwaysFakeOptionals: false
+  optionalsProbability: 0.5
+  fillProperties: false
 paths:
   /api/v1/users/current:
     get:
@@ -19,9 +23,57 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           description: Error
+  /api/v1/digital-lpas/{uid}:
+    parameters:
+      - name: uid
+        in: path
+        description: The UID of the case
+        required: true
+        schema:
+          type: string
+          nullable: true
+          pattern: (M(-[A-Z0-9]{4}){3})
+    get:
+      summary: Get an LPA
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CombinedLpa'
+        '401':
+          description: Error
 components:
   schemas:
     User:
       type: object
       properties:
         id: int
+    CombinedLpa:
+      allOf:
+        - $ref: "#/components/schemas/DigitalLpa"
+      type: object
+      required:
+        - opg.poas.sirius
+        - opg.poas.lpastore
+      properties:
+        opg.poas.sirius:
+          $ref: "#/components/schemas/DigitalLpa"
+        opg.poas.lpastore:
+          oneOf:
+            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/openapi/openapi.yaml#/components/schemas/Lpa
+            - null
+      additionalProperties: false
+    DigitalLpa:
+      type: object
+      required:
+        - uId
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        uId:
+          type: string
+          pattern: "M(-[0-9A-Z]{4}){3}"
+          example: M-789Q-P4DF-4UX3

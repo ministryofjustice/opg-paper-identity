@@ -263,7 +263,7 @@ class OpgApiServiceTest extends TestCase
         $invalidNino = 'AA112233Q';
 
         $successMockResponseData = [
-            'status' => 'valid',
+            'status' => 'NINO check complete',
             'nino' => $validNino
         ];
 
@@ -351,6 +351,141 @@ class OpgApiServiceTest extends TestCase
             ],
             [
                 $invalidDln,
+                $failClient,
+                false,
+                false
+            ],
+        ];
+    }
+
+    public function testGetIdCheckQuestions(): void
+    {
+        $uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
+
+        $mockResponseData = [
+            "one" => [
+                "id" => 1,
+                "question" => "Who provides your mortgage?",
+                "number" => "one",
+                "prompts" => [
+                    0 => "Nationwide",
+                    1 => "Halifax",
+                    2 => "Lloyds",
+                    3 => "HSBC",
+                ]
+            ],
+            "two" => [
+                "id" => 2,
+                "question" => "Who provides your personal mobile contract?",
+                "number" => "two",
+                "prompts" => [
+                    0 => "EE",
+                    1 => "Vodafone",
+                    2 => "BT",
+                    3 => "iMobile",
+                ]
+            ],
+            "three" => [
+                "id" => 3,
+                "question" => "What are the first two letters of the last name of another person 
+                on the electroal register at your address?",
+                "number" => "three",
+                "prompts" => [
+                    0 => "Ka",
+                    1 => "Ch",
+                    2 => "Jo",
+                    3 => "None of the above",
+                ]
+            ],
+            "four" => [
+                "id" => 4,
+                "question" => "Who provides your current account?",
+                "number" => "four",
+                "prompts" => [
+                    0 => "Santander",
+                    1 => "HSBC",
+                    2 => "Halifax",
+                    3 => "Nationwide",
+                ]
+            ]
+        ];
+
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($mockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handlerStack]);
+
+        $this->opgApiService = new OpgApiService($client);
+
+        $response = $this->opgApiService->getIdCheckQuestions($uuid);
+
+        $this->assertEquals($mockResponseData, $response);
+    }
+
+    /**
+     * @dataProvider idCheckData
+     * @return void
+     */
+    public function testCheckIdCheckAnswers(array $answers, Client $client, bool $responseData, bool $exception): void
+    {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
+        $uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
+
+        $this->opgApiService = new OpgApiService($client);
+
+        $response = $this->opgApiService->checkIdCheckAnswers($uuid, $answers);
+
+        $this->assertEquals($responseData, $response);
+    }
+
+    public static function idCheckData(): array
+    {
+        $correctAnswers = [
+            1 => 0,
+            2 => 0,
+            3 => 0,
+            4 => 0,
+        ];
+
+        $wrongAnswers = [
+            1 => 2,
+            2 => 0,
+            3 => 0,
+            4 => 0,
+        ];
+
+        $correctResponse = [
+            "result" => "pass"
+        ];
+
+        $failResponse = [
+            "result" => "fail"
+        ];
+
+        $successMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($correctResponse)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $failMock = new MockHandler([
+            new Response(400, ['X-Foo' => 'Bar'], json_encode($failResponse)),
+        ]);
+        $handlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $handlerStack]);
+
+        return [
+            [
+                $correctAnswers,
+                $successClient,
+                true,
+                false
+            ],
+            [
+                $wrongAnswers,
                 $failClient,
                 false,
                 false
