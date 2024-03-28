@@ -23,9 +23,6 @@ class IndexController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        /**
-         * @psalm-suppress UnusedProperty
-         */
         private readonly SiriusApiService $siriusApiService,
     ) {
     }

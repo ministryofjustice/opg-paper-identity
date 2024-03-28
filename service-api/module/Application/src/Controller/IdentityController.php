@@ -192,7 +192,7 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        $response = [
+        $response[$uuid] = [
             "one" => [
                 "id" => 1,
                 "question" => "Who provides your mortgage?",
@@ -240,7 +240,7 @@ class IdentityController extends AbstractActionController
             ]
         ];
 
-        return new JsonModel($response);
+        return new JsonModel($response[$uuid]);
     }
 
     public function checkKbvAnswersAction(): JsonModel
@@ -264,6 +264,9 @@ class IdentityController extends AbstractActionController
             }
         }
 
+        /**
+         * @psalm-suppress PossiblyUndefinedVariable
+         */
         $response['result'] = $result;
 
         return new JsonModel($response);
