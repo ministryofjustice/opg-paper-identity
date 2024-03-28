@@ -140,6 +140,16 @@ return [
                     ],
                 ],
             ],
+            'thin_file_failure' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/thin-file-failure',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'thinFileFailure',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

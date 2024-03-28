@@ -344,4 +344,11 @@ class IndexController extends AbstractActionController
 
         return $view->setTemplate('application/pages/identity_check_failed');
     }
+
+    public function thinFileFailureAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        return $view->setTemplate('application/pages/thin_file_failure');
+    }
 }
