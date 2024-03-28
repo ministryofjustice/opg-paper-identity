@@ -13,32 +13,57 @@ use Laminas\Stdlib\RequestInterface;
 class SiriusApiService
 {
     public function __construct(
-        public readonly Client $client
+        private readonly Client $client
     ) {
     }
 
-    public function checkAuth(RequestInterface $request): bool
+    private function getAuthHeaders(RequestInterface $request): ?array
     {
         if (! ($request instanceof Request)) {
-            return false;
+            return null;
         }
 
         $cookieHeader = $request->getHeader('Cookie');
 
         if (! ($cookieHeader instanceof Cookie)) {
-            return false;
+            return null;
         }
 
+        return [
+            'Cookie' => $cookieHeader->getFieldValue(),
+        ];
+    }
+
+    public function checkAuth(RequestInterface $request): bool
+    {
         try {
+            $headers = $this->getAuthHeaders($request);
+
+            if ($headers === null) {
+                return false;
+            }
+
             $this->client->get('/api/v1/users/current', [
-                'headers' => [
-                    'Cookie' => $cookieHeader->getFieldValue(),
-                ],
+                'headers' => $headers,
             ]);
         } catch (GuzzleException $e) {
+            error_log($e->getMessage());
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     * @return array{"opg.poas.lpastore": array<string, mixed>}
+     */
+    public function getLpaByUid(string $uid, Request $request): array
+    {
+        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+            'headers' => $this->getAuthHeaders($request),
+        ]);
+
+        return json_decode(strval($response->getBody()), true);
     }
 }
