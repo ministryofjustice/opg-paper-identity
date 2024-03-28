@@ -1,26 +1,35 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <div class="govuk-panel govuk-panel--error">
-            <h1 class="govuk-panel__title">
-                Driving Licence Number Invalid
-            </h1>
-            <div class="govuk-panel__body">
-                Driving Licence Number<br><strong>{{ dln_data.dln }}</strong>
+        <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
+            <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
+                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
+            </svg>
+            <div class="moj-banner__message">Unable to verify driving licence number. Check again or try a different
+                method.
             </div>
         </div>
-            <h3 class="govuk-heading-m">Name</h3>
-            <p class="govuk-body">
-                {{ details_data.Name }}
-            </p>
-            <h3 class="govuk-heading-m">Date of Birth</h3>
-            <p class="govuk-body">
-                {{ details_data.DOB }}
-            </p>
-            <p class="govuk-body">
-{#            <button class="govuk-button">Continue</button>#}
-            <a href="./address_verification" role="button" draggable="false"
+        <h3 class="govuk-heading-m">Name</h3>
+        <p class="govuk-body">
+            {{ details_data.Name }}
+        </p>
+        <h3 class="govuk-heading-m">Date of Birth</h3>
+        <p class="govuk-body">
+            {{ details_data.DOB }}
+        </p>
+        <h3 class="govuk-heading-m">Driving licence number</h3>
+        <p class="govuk-body">
+            {{ dln_data.dln }}
+        </p>
+        <h3 class="govuk-heading-m">Driving licence in date</h3>
+        <p class="govuk-body">
+            Yes
+        </p>
+
+        <p class="govuk-body">
+            <a href="./how-will-donor-confirm" role="button" draggable="false"
                class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
-                Return To Start
+                Try a different method
             </a>
     </main>
 </div>

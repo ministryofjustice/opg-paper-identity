@@ -1,0 +1,7 @@
+Found LPAs ({{ lpaUids | join(", ")}}):
+<ul>
+  {% for lpa in lpas %}
+  <li>{{lpa.uid}}, Donor: {{lpa.donor.firstNames}} {{lpa.donor.lastName}}</li>
+  {% endfor %}
+</ul>
+<p>Create case for {{type}} on this LPA</p>
