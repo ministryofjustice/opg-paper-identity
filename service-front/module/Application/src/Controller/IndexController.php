@@ -11,6 +11,7 @@ use Application\Forms\IdQuestions;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\SiriusApiService;
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
@@ -266,7 +267,7 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/passport_number');
     }
 
-    public function idVerifyQuestionsAction(): ViewModel
+    public function idVerifyQuestionsAction(): ViewModel|Response
     {
         $view = new ViewModel();
         $case = 'uid';
@@ -284,11 +285,15 @@ class IndexController extends AbstractActionController
                 $view->setVariable('question', $next);
             } else {
                 try {
-                    $this->opgApiService->checkIdCheckAnswers($case, ['answers' => $formData->toArray()]);
+                    $check = $this->opgApiService->checkIdCheckAnswers($case, ['answers' => $formData->toArray()]);
 
-                    $this->redirect()->toRoute('identity_check_passed');
+                    if (! $check) {
+                        return $this->redirect()->toRoute('identity_check_failed');
+                    }
+
+                    return $this->redirect()->toRoute('identity_check_passed');
                 } catch (OpgApiException $exception) {
-                    $this->redirect()->toRoute('identity_check_failed');
+                    return $this->redirect()->toRoute('identity_check_failed');
                 }
             }
             $form->setData($formData);

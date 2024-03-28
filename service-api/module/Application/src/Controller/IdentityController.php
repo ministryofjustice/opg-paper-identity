@@ -252,10 +252,10 @@ class IdentityController extends AbstractActionController
         $result = 'pass';
 
         $answers[$uuid] = [
-            1 => 0,
-            2 => 0,
-            3 => 0,
-            4 => 0,
+            "one" => "Nationwide",
+            "two" => "EE",
+            "three" => "Ka",
+            "four" => "Santander",
         ];
 
         foreach ($data['answers'] as $key => $value) {
