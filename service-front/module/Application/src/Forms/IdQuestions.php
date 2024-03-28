@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
-
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 

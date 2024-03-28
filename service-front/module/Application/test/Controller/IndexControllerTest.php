@@ -317,5 +317,4 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('IndexController');
         $this->assertMatchedRouteName('identity_check_failed');
     }
-
 }

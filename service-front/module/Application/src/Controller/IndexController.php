@@ -20,12 +20,13 @@ use Application\Forms\NationalInsuranceNumber;
 class IndexController extends AbstractActionController
 {
     protected $plugins;
-
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService       $siriusApiService,
-    )
-    {
+        /**
+         * @psalm-suppress UnusedProperty
+         */
+        private readonly SiriusApiService $siriusApiService,
+    ) {
     }
 
     public function indexAction()
@@ -35,7 +36,6 @@ class IndexController extends AbstractActionController
 
     public function startAction(): ViewModel
     {
-
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
             //$data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
@@ -266,7 +266,7 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/passport_number');
     }
 
-    public function idVerifyQuestionsAction()
+    public function idVerifyQuestionsAction(): ViewModel
     {
         $view = new ViewModel();
         $case = 'uid';
@@ -308,7 +308,10 @@ class IndexController extends AbstractActionController
             "three" => "four",
             "four" => "end"
         ];
-        return $sequence[$question];
+        /**
+         * @psalm-suppress PossiblyNullArgument
+         */
+        return array_key_exists($question, $sequence) ? $sequence[$question] : "";
     }
 
     public function identityCheckPassedAction(): ViewModel
