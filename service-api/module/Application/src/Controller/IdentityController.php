@@ -187,4 +187,91 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    public function getKbvQuestionsAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+
+        /**
+         * @psalm-suppress PossiblyUndefinedVariable
+         */
+        $response[$uuid] = [
+            "one" => [
+                "id" => 1,
+                "question" => "Who provides your mortgage?",
+                "number" => "one",
+                "prompts" => [
+                    0 => "Nationwide",
+                    1 => "Halifax",
+                    2 => "Lloyds",
+                    3 => "HSBC",
+                ]
+            ],
+            "two" => [
+                "id" => 2,
+                "question" => "Who provides your personal mobile contract?",
+                "number" => "two",
+                "prompts" => [
+                    0 => "EE",
+                    1 => "Vodafone",
+                    2 => "BT",
+                    3 => "iMobile",
+                ]
+            ],
+            "three" => [
+                "id" => 3,
+                "question" => "What are the first two letters of the last name of another 
+                person on the electoral register at your address?",
+                "number" => "three",
+                "prompts" => [
+                    0 => "Ka",
+                    1 => "Ch",
+                    2 => "Jo",
+                    3 => "None of the above",
+                ]
+            ],
+            "four" => [
+                "id" => 4,
+                "question" => "Who provides your current account?",
+                "number" => "four",
+                "prompts" => [
+                    0 => "Santander",
+                    1 => "HSBC",
+                    2 => "Halifax",
+                    3 => "Nationwide",
+                ]
+            ]
+        ];
+
+        return new JsonModel($response[$uuid]);
+    }
+
+    public function checkKbvAnswersAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+
+        $answers = [];
+        $data = $this->getRequest()->getPost();
+        $result = 'pass';
+
+        $answers[$uuid] = [
+            "one" => "Nationwide",
+            "two" => "EE",
+            "three" => "Ka",
+            "four" => "Santander",
+        ];
+
+        foreach ($data['answers'] as $key => $value) {
+            if ($value != $answers[$uuid][$key]) {
+                $result = 'fail';
+            }
+        }
+
+        /**
+         * @psalm-suppress PossiblyUndefinedVariable
+         */
+        $response['result'] = $result;
+
+        return new JsonModel($response);
+    }
 }

@@ -3,16 +3,16 @@ version: "3.7"
 
 services:
   sirius-mock:
-    image: stoplight/prism:5
-    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
+    image: outofcoffee/imposter
+    restart: unless-stopped
     healthcheck:
-      test: wget -O /dev/null -S 'http://localhost:4010/health-check' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      test: wget -O /dev/null -S 'http://localhost:8080/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
       interval: 15s
       timeout: 10s
       retries: 3
       start_period: 30s
     volumes:
-      - ./docker/sirius/openapi.yml:/tmp/openapi.yml
+      - ./docker/sirius:/opt/imposter/config
 
   api:
     image: paper-identity/api
@@ -32,8 +32,8 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-        - ./service-api:/var/www
-        - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
+      - ./service-api:/var/www
+      - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
 
   api-test:
     image: paper-identity/api-test
@@ -70,7 +70,7 @@ services:
       - sirius-mock
     environment:
       - API_BASE_URI=http://api-web
-      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
+      - SIRIUS_BASE_URL=http://sirius-mock:8080 # http://host.docker.internal:8080 for real Sirius
       - SIRIUS_LOGIN_URL=http://localhost:8080
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
@@ -104,40 +104,40 @@ services:
       - ./service-front/psalm.xml:/var/www/psalm.xml
 
   api-web:
-      build: nginx
-      depends_on: [api]
-      environment:
-        APP_HOST: api
-        APP_NAME: api
-        APP_PORT: 9000
-        NGINX_LOG_LEVEL: info
-      ports:
-        - 8001:80
-      healthcheck:
-        test: curl -f http://localhost/nginx-health || exit 1
-        interval: 15s
-        timeout: 10s
-        retries: 3
-        start_period: 30s
+    build: nginx
+    depends_on: [api]
+    environment:
+      APP_HOST: api
+      APP_NAME: api
+      APP_PORT: 9000
+      NGINX_LOG_LEVEL: info
+    ports:
+      - 8001:80
+    healthcheck:
+      test: curl -f http://localhost/nginx-health || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   front-web:
-     build: nginx
-     depends_on: [front]
-     environment:
-       APP_HOST: front
-       APP_NAME: front
-       APP_PORT: 9000
-       NGINX_LOG_LEVEL: info
-     ports:
-       - 8080:80
-     healthcheck:
-       test: curl -f http://localhost/nginx-health || exit 1
-       interval: 15s
-       timeout: 10s
-       retries: 3
-       start_period: 30s
-     volumes:
-       - static-content:/var/www/public
+    build: nginx
+    depends_on: [front]
+    environment:
+      APP_HOST: front
+      APP_NAME: front
+      APP_PORT: 9000
+      NGINX_LOG_LEVEL: info
+    ports:
+      - 8080:80
+    healthcheck:
+      test: curl -f http://localhost/nginx-health || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - static-content:/var/www/public
 
   api-composer:
     image: composer
