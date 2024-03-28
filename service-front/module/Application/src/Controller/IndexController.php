@@ -38,8 +38,8 @@ class IndexController extends AbstractActionController
 
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
-            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data['opg.poas.lpastore'];
+            //$data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
+            //$lpas[] = $data['opg.poas.lpastore'];
         }
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
@@ -58,6 +58,46 @@ class IndexController extends AbstractActionController
         ]);
 
         return $view->setTemplate('application/pages/start');
+    }
+
+    public function howWillDonorConfirmAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            switch ($formData['id_method']) {
+                case 'Passport':
+                    $this->redirect()
+                        ->toRoute("passport_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'Driving Licence':
+                    $this->redirect()
+                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'National Insurance Number':
+                    $this->redirect()
+                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        $optionsdata = $this->opgApiService->getIdOptionsData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate('application/pages/how_will_the_donor_confirm');
     }
 
     public function donorIdCheckAction(): ViewModel
@@ -98,6 +138,8 @@ class IndexController extends AbstractActionController
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData();
@@ -130,6 +172,8 @@ class IndexController extends AbstractActionController
     public function drivingLicenceNumberAction(): ViewModel
     {
         $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData();
@@ -163,6 +207,8 @@ class IndexController extends AbstractActionController
     public function passportNumberAction(): ViewModel
     {
         $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
@@ -218,45 +264,6 @@ class IndexController extends AbstractActionController
         }
 
         return $view->setTemplate('application/pages/passport_number');
-    }
-
-    public function howWillDonorConfirmAction(): ViewModel
-    {
-        if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost()->toArray();
-
-            switch ($formData['id_method']) {
-                case 'Passport':
-                    $this->redirect()
-                        ->toRoute('passport_number');
-                    break;
-
-                case 'Driving Licence':
-                    $this->redirect()
-                        ->toRoute('driving_licence_number');
-                    break;
-
-                case 'National Insurance Number':
-                    $this->redirect()
-                        ->toRoute('national_insurance_number');
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        $uuid = $this->params()->fromQuery("uuid");
-        $optionsdata = $this->opgApiService->getIdOptionsData();
-        $detailsData = $this->opgApiService->getDetailsData();
-
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        return $view->setTemplate('application/pages/how_will_the_donor_confirm');
     }
 
     public function idVerifyQuestionsAction()
