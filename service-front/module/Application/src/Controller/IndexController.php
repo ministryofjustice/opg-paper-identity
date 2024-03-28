@@ -222,10 +222,11 @@ class IndexController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
+            $data = $formData->toArray();
+            $view->setVariable('passport', $data['passport']);
+            $view->setVariable('passport_indate', $data['inDate']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $data = $formData->toArray();
-
                 $expiryDate = sprintf(
                     "%s-%s-%s",
                     $data['passport_issued_year'],
