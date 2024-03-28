@@ -192,6 +192,9 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
+        /**
+         * @psalm-suppress PossiblyUndefinedVariable
+         */
         $response[$uuid] = [
             "one" => [
                 "id" => 1,
