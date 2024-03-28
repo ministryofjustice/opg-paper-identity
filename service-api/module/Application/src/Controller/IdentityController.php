@@ -221,7 +221,7 @@ class IdentityController extends AbstractActionController
             "three" => [
                 "id" => 3,
                 "question" => "What are the first two letters of the last name of another 
-                person on the electroal register at your address?",
+                person on the electoral register at your address?",
                 "number" => "three",
                 "prompts" => [
                     0 => "Ka",
