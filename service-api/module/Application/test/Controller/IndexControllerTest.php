@@ -30,17 +30,17 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
     public function testIndexActionCanBeAccessed(): void
     {
-        $this->dispatch('/', 'GET');
+        $this->dispatch('/api/', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('home');
+        $this->assertMatchedRouteName('api/home');
     }
 
     public function testIndexActionResponse(): void
     {
-        $this->dispatch('/', 'GET');
+        $this->dispatch('/api/', 'GET');
         $this->assertEquals('{"Laminas":"Paper ID Service API"}', $this->getResponse()->getContent());
     }
 
