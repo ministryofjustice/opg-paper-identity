@@ -5,7 +5,7 @@
 
                 {% if questionBlock.number != question %}
                     <input
-                        type="text"
+                        type="hidden"
                         value="{{ form.get(questionBlock.number).value }}"
                         name="{{ questionBlock.number }}"
                     />
