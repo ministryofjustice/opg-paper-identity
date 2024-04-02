@@ -205,7 +205,7 @@ class IdentityController extends AbstractActionController
          */
         $response[$uuid] = [
             "one" => [
-                "id" => 1,
+//                "id" => 1,
                 "question" => "Who provides your mortgage?",
                 "number" => "one",
                 "prompts" => [
@@ -216,7 +216,7 @@ class IdentityController extends AbstractActionController
                 ]
             ],
             "two" => [
-                "id" => 2,
+//                "id" => 2,
                 "question" => "Who provides your personal mobile contract?",
                 "number" => "two",
                 "prompts" => [
@@ -227,7 +227,7 @@ class IdentityController extends AbstractActionController
                 ]
             ],
             "three" => [
-                "id" => 3,
+//                "id" => 3,
                 "question" => "What are the first two letters of the last name of another 
                 person on the electoral register at your address?",
                 "number" => "three",
@@ -239,7 +239,7 @@ class IdentityController extends AbstractActionController
                 ]
             ],
             "four" => [
-                "id" => 4,
+//                "id" => 4,
                 "question" => "Who provides your current account?",
                 "number" => "four",
                 "prompts" => [
