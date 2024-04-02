@@ -5,25 +5,100 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\OpgApiException;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\IdQuestions;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
+use Application\Services\SiriusApiService;
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
-use Application\Forms\NationalInsuranceNumber;
 use Laminas\Form\Annotation\AttributeBuilder;
+use Application\Forms\NationalInsuranceNumber;
 
 class IndexController extends AbstractActionController
 {
     protected $plugins;
-
-    public function __construct(private readonly OpgApiServiceInterface $opgApiService)
-    {
+    public function __construct(
+        private readonly OpgApiServiceInterface $opgApiService,
+        private readonly SiriusApiService $siriusApiService,
+    ) {
     }
 
     public function indexAction()
     {
         return new ViewModel();
+    }
+
+    public function startAction(): ViewModel
+    {
+        $lpas = [];
+        foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
+            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
+            $lpas[] = $data['opg.poas.lpastore'];
+        }
+
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
+
+        // Create a case in the API with the LPA UID and the actors' details
+
+        // Redirect to the "select which ID to use" page for this case
+
+        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+
+        $view = new ViewModel([
+            'lpaUids' => $this->params()->fromQuery("lpas"),
+            'type' => $this->params()->fromQuery("personType"),
+            'lpas' => $lpas,
+            'case' => $case,
+            'details' => $detailsData,
+        ]);
+
+        return $view->setTemplate('application/pages/start');
+    }
+
+    public function howWillDonorConfirmAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            switch ($formData['id_method']) {
+                case 'Passport':
+                    $this->redirect()
+                        ->toRoute("passport_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'Driving Licence':
+                    $this->redirect()
+                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'National Insurance Number':
+                    $this->redirect()
+                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        $optionsdata = $this->opgApiService->getIdOptionsData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate('application/pages/how_will_the_donor_confirm');
     }
 
     public function donorIdCheckAction(): ViewModel
@@ -64,6 +139,8 @@ class IndexController extends AbstractActionController
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData();
@@ -96,6 +173,8 @@ class IndexController extends AbstractActionController
     public function drivingLicenceNumberAction(): ViewModel
     {
         $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData();
@@ -114,6 +193,7 @@ class IndexController extends AbstractActionController
                  * @psalm-suppress InvalidArrayAccess
                  */
                 $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
+
                 if ($validDln) {
                     return $view->setTemplate('application/pages/driving_licence_number_success');
                 } else {
@@ -128,6 +208,8 @@ class IndexController extends AbstractActionController
     public function passportNumberAction(): ViewModel
     {
         $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
@@ -140,10 +222,11 @@ class IndexController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
+            $data = $formData->toArray();
+            $view->setVariable('passport', $data['passport']);
+            $view->setVariable('passport_indate', $data['inDate']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $data = $formData->toArray();
-
                 $expiryDate = sprintf(
                     "%s-%s-%s",
                     $data['passport_issued_year'],
@@ -183,5 +266,105 @@ class IndexController extends AbstractActionController
         }
 
         return $view->setTemplate('application/pages/passport_number');
+    }
+
+    public function idVerifyQuestionsAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
+
+        $form = (new AttributeBuilder())->createForm(IdQuestions::class);
+        $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
+
+        if (array_key_exists('error', $questionsData)) {
+            return $this->redirect()->toRoute('thin_file_failure', ['uuid' => $uuid]);
+        }
+
+        $view->setVariable('questions_data', $questionsData);
+
+        $view->setVariable('question', 'one');
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+
+            $next = $this->getNextQuestion($formData->toArray());
+
+            if ($next != 'end') {
+                $view->setVariable('question', $next);
+            } else {
+                try {
+                    $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
+
+                    if (! $check) {
+                        return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
+                    }
+
+                    return $this->redirect()->toRoute('identity_check_passed', ['uuid' => $uuid]);
+                } catch (OpgApiException $exception) {
+                    return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
+                }
+            }
+            $form->setData($formData);
+        }
+        $view->setVariable('form', $form);
+
+        return $view->setTemplate('application/pages/identity_check_questions');
+    }
+
+    private function getNextQuestion(array $formdata): string
+    {
+        $question = null;
+        foreach ($formdata as $key => $value) {
+            if (strlen($value) == 0) {
+                continue;
+            } else {
+                $question = $key;
+            }
+        }
+
+        $sequence = [
+            "one" => "two",
+            "two" => "three",
+            "three" => "four",
+            "four" => "end"
+        ];
+        /**
+         * @psalm-suppress PossiblyNullArgument
+         */
+        return array_key_exists($question, $sequence) ? $sequence[$question] : "";
+    }
+
+    public function identityCheckPassedAction(): ViewModel
+    {
+        $lpasData = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_passed');
+    }
+
+    public function identityCheckFailedAction(): ViewModel
+    {
+        $lpasData = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_failed');
+    }
+
+    public function thinFileFailureAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        return $view->setTemplate('application/pages/thin_file_failure');
     }
 }

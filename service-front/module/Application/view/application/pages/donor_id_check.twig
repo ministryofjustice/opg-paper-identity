@@ -1,37 +1,24 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <h3 class="govuk-heading-xl">Donor ID check</h3>
-        <h3 class="govuk-heading-m">Is the donor prepared to perform the ID check?</h3>
+        <h1 class="govuk-heading-xl">Is the donor prepared to perform the ID check?</h1>
 
         <p class="govuk-body">
             Things to check:
         </p>
         <ul class="govuk-list govuk-list--bullet">
             <li>
-                Which document would they prefer to ID with?
+                How will they ID?
             </li>
             <li>
-                do they have the ID document with them?
+                do they have their ID document with them?
             </li>
             <li>
-                Check the ID matches what is in Sirius (update as appropriate)
+                Does the name / dob on their ID document match what is in Sirius
+            </li>
+            <li>
+                Are they ready to answer any questions they might have?
             </li>
         </ul>
-
-        <div class="moj-ticket-panel">
-            <div class="moj-ticket-panel__content moj-ticket-panel__content--blue">
-                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
-                    {{ details_data.Name }}
-                </h2>
-                <p class="govuk-body">
-                    {{ details_data.DOB }}
-                </p>
-                <p class="govuk-body">
-                    {{ details_data.Address }}
-                </p>
-            </div>
-        </div>
-
 
         <details class="govuk-details">
             <summary class="govuk-details__summary">
@@ -41,7 +28,7 @@
             </summary>
             <div class="govuk-details__text">
                 {% for datum in options_data %}
-                <h2 class="govuk-heading-m">{{ datum }}</h2>
+                    <h2 class="govuk-heading-m">{{ datum }}</h2>
                 {% endfor %}
             </div>
         </details>
@@ -75,8 +62,6 @@
             <div class="govuk-details__text">
             </div>
         </details>
-
-        <button class="govuk-button">Continue</button>
-
+        <a href="./donor-lpa-check" class="govuk-button">Continue</a>
     </main>
 </div>
