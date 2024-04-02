@@ -30,23 +30,43 @@ return [
                     ],
                 ],
             ],
-            'donor_lpa_check' => [
-                'type'    => Literal::class,
+            'start' => [
+                'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/donor-lpa-check',
+                    'route'    => '/start',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'start',
+                    ],
+                ],
+            ],
+            'donor_id_check' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/donor-id-check',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'donorIdCheck',
+                    ],
+                ],
+            ],
+            'donor_lpa_check' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/donor-lpa-check',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'donorLpaCheck',
                     ],
                 ],
             ],
-            'donor_id_check' => [
-                'type'    => Literal::class,
+            'how_donor_confirms' => [
+                'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/donor-id-check',
+                    'route'    => '[/:uuid]/how-will-donor-confirm',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'donorIdCheck',
+                        'action'     => 'howWillDonorConfirm',
                     ],
                 ],
             ],
@@ -63,7 +83,7 @@ return [
             'national_insurance_number' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/national-insurance-number',
+                    'route'    => '[/:uuid]/national-insurance-number',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'nationalInsuranceNumber',
@@ -73,7 +93,7 @@ return [
             'driving_licence_number' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/driving-licence-number',
+                    'route'    => '[/:uuid]/driving-licence-number',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'drivingLicenceNumber',
@@ -83,10 +103,50 @@ return [
             'passport_number' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/passport-number',
+                    'route'    => '[/:uuid]/passport-number',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'passportNumber',
+                    ],
+                ],
+            ],
+            'id_verify_questions' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/id-verify-questions',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'idVerifyQuestions',
+                    ],
+                ],
+            ],
+            'identity_check_passed' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/identity-check-passed',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'identityCheckPassed',
+                    ],
+                ],
+            ],
+            'identity_check_failed' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/identity-check-failed',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'identityCheckFailed',
+                    ],
+                ],
+            ],
+            'thin_file_failure' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/thin-file-failure',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'thinFileFailure',
                     ],
                 ],
             ],
@@ -98,7 +158,7 @@ return [
         ],
     ],
     'listeners' => [
-        AuthListener::class
+//        AuthListener::class
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
