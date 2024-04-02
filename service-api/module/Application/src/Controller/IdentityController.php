@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Nino\ValidatorInterface;
+use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Laminas\Http\Response;
@@ -23,6 +24,7 @@ class IdentityController extends AbstractActionController
         private readonly ValidatorInterface $ninoService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
+        private readonly LicenseValidatorInterface $licenseValidator
     ) {
     }
 
@@ -144,21 +146,17 @@ class IdentityController extends AbstractActionController
 
     public function validateDrivingLicenceAction(): JsonModel
     {
-        $validDrivingLicences = ['CHAPM301534MA9AX'];
-
         $data = $this->getRequest()->getPost();
+        $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
-        if (in_array($data['dln'], $validDrivingLicences)) {
-            $response = [
-                'status' => 'valid',
-                'driving_licence' => $data['dln']
-            ];
+        $response = [
+            'status' => $licenseStatus,
+            'driving_license' => $data['dln']
+        ];
+
+        if ($licenseStatus === 'PASS') {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
-            $response = [
-                'status' => 'not valid',
-                'driving_licence' => $data['dln']
-            ];
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
 
