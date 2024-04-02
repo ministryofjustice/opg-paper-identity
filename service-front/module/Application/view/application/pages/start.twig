@@ -1,15 +1,15 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <h1 class="govuk-heading-xl">Donor LPA check</h1>
+        <h1 class="govuk-heading-xl">Start</h1>
 
-        <h3 class="govuk-heading-m">Which LPAs should this identity check apply to?</h3>
+        <h3 class="govuk-heading-m">Begin identity verification process for {{ type }}</h3>
 
         <div class="govuk-form-group">
             <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            LPAs for donor: Mary Chapman
+                            LPA List
                         </h2>
                     </div>
                     <div class="govuk-summary-card__content">
@@ -26,19 +26,19 @@
                                     Action
                                 </dt>
                             </div>
-                            {% for datum in data %}
+                            {% for datum in lpaUids %}
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" id="lpa_check_{{ datum['lpa_ref'] }}" name="lpa_check" type="checkbox"
+                                            <input class="govuk-checkboxes__input" id="lpa_check_{{ datum }}" name="lpa_check" type="checkbox"
                                                    value="{{ datum['lpa_ref'] }}">
                                             <label class="govuk-label govuk-checkboxes__label" for="waste">
-                                                {{ datum['lpa_ref'] }}
+                                                {{ datum }}
                                             </label>
                                         </div>
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        {{ datum['donor_name'] }}
+                                        {{ details['Name'] }}
                                     </dd>
                                     <dd class="govuk-summary-list__value">
                                         <a href="">Remove</a>
@@ -50,7 +50,6 @@
                 </div>
             </fieldset>
         </div>
-        <a href="./how-will-donor-confirm"  class="govuk-button">Continue</a>
-{#        <button class="govuk-button">Continue</button>#}
+        <a href="./{{ case }}/donor-id-check"  class="govuk-button">Open case and continue</a>
     </main>
 </div>
