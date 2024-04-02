@@ -82,7 +82,7 @@ class OpgApiService implements OpgApiServiceInterface
             return false;
         }
 
-        return $this->responseData['status'] === 'valid';
+        return $this->responseData['status'] === 'NINO check complete';
     }
 
     public function checkDlnValidity(string $dln): bool
@@ -119,5 +119,23 @@ class OpgApiService implements OpgApiServiceInterface
         }
 
         return $this->responseData['status'] === 'valid';
+    }
+
+    public function getIdCheckQuestions(string $uuid): array
+    {
+        return $this->makeApiRequest("/cases/$uuid/kbv-questions");
+    }
+
+    public function checkIdCheckAnswers(string $uuid, array $answers): bool
+    {
+        try {
+            $response = $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
+            if ($response['result'] !== 'pass') {
+                return false;
+            }
+            return true;
+        } catch (OpgApiException $opgApiException) {
+            return false;
+        }
     }
 }
