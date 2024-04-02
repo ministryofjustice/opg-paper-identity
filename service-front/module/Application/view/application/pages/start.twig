@@ -15,7 +15,7 @@
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
-                                {#                                <dd></dd>#}
+                                {#                                <dd></dd> #}
                                 <dt class="govuk-summary-list__key">
                                     LPA reference number
                                 </dt>
@@ -29,13 +29,9 @@
                             {% for datum in lpaUids %}
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" id="lpa_check_{{ datum }}" name="lpa_check" type="checkbox"
-                                                   value="{{ datum['lpa_ref'] }}">
-                                            <label class="govuk-label govuk-checkboxes__label" for="lpa_check_{{ datum }}">
-                                                {{ datum }}
-                                            </label>
-                                        </div>
+                                        <label class="govuk-label govuk-checkboxes__label" for="lpa_check_{{ datum }}">
+                                            {{ datum }}
+                                        </label>
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         {{ details['Name'] }}
@@ -50,6 +46,6 @@
                 </div>
             </fieldset>
         </div>
-        <a href="./{{ case }}/donor-id-check"  class="govuk-button">Open case and continue</a>
+        <a href="./{{ case }}/donor-id-check" class="govuk-button">Open case and continue</a>
     </main>
 </div>
