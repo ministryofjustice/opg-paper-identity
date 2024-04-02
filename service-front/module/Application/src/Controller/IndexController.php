@@ -288,7 +288,12 @@ class IndexController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
 
+            echo json_encode($formData);
+
             $next = $this->getNextQuestion($formData->toArray());
+
+            echo $next;
+
             if ($next != 'end') {
                 $view->setVariable('question', $next);
             } else {
@@ -313,7 +318,14 @@ class IndexController extends AbstractActionController
 
     private function getNextQuestion(array $formdata): string
     {
-        $question = array_key_last($formdata);
+        $question = null;
+        foreach ($formdata as $key => $value) {
+            if (strlen($value) == 0) {
+                continue;
+            } else {
+                $question = $key;
+            }
+        }
 
         $sequence = [
             "one" => "two",

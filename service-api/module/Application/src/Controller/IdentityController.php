@@ -194,6 +194,9 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
 
         if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
+            /**
+             * @psalm-suppress PossiblyUndefinedVariable
+             */
             $response[$uuid] = [
                 "error" => "thin_file_error"
             ];
