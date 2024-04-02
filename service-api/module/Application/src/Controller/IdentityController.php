@@ -177,7 +177,7 @@ class IdentityController extends AbstractActionController
             'passport' => $data['passport']
         ];
 
-        if ($passportStatus === 'Passport check complete') {
+        if ($passportStatus === 'PASS') {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
