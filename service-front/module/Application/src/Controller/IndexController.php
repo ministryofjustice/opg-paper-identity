@@ -288,11 +288,7 @@ class IndexController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
 
-            echo json_encode($formData);
-
             $next = $this->getNextQuestion($formData->toArray());
-
-            echo $next;
 
             if ($next != 'end') {
                 $view->setVariable('question', $next);
