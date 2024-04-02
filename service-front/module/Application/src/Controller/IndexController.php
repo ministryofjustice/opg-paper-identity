@@ -40,6 +40,8 @@ class IndexController extends AbstractActionController
             $lpas[] = $data['opg.poas.lpastore'];
         }
 
+        $detailsData = $this->opgApiService->getDetailsData();
+
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
         // Create a case in the API with the LPA UID and the actors' details
@@ -53,6 +55,7 @@ class IndexController extends AbstractActionController
             'type' => $this->params()->fromQuery("personType"),
             'lpas' => $lpas,
             'case' => $case,
+            'details' => $detailsData,
         ]);
 
         return $view->setTemplate('application/pages/start');
@@ -268,10 +271,11 @@ class IndexController extends AbstractActionController
     public function idVerifyQuestionsAction(): ViewModel|Response
     {
         $view = new ViewModel();
-        $case = 'uid';
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
-        $questionsData = $this->opgApiService->getIdCheckQuestions($case);
+        $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
         $view->setVariable('questions_data', $questionsData);
         $view->setVariable('question', 'one');
 
@@ -283,15 +287,15 @@ class IndexController extends AbstractActionController
                 $view->setVariable('question', $next);
             } else {
                 try {
-                    $check = $this->opgApiService->checkIdCheckAnswers($case, ['answers' => $formData->toArray()]);
+                    $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
                     if (! $check) {
-                        return $this->redirect()->toRoute('identity_check_failed');
+                        return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
                     }
 
-                    return $this->redirect()->toRoute('identity_check_passed');
+                    return $this->redirect()->toRoute('identity_check_passed', ['uuid' => $uuid]);
                 } catch (OpgApiException $exception) {
-                    return $this->redirect()->toRoute('identity_check_failed');
+                    return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
                 }
             }
             $form->setData($formData);
