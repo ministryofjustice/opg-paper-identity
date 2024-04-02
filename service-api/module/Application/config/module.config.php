@@ -8,8 +8,11 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidatorInterface;
+use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Passport\ValidatorInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -175,7 +178,8 @@ return [
                 $tableName
             ),
             LoggerInterface::class => LoggerFactory::class,
-            NinoValidatorInterface::class => NinoValidatorFactory::class
+            NinoValidatorInterface::class => NinoValidatorFactory::class,
+            PassportValidatorInterface::class => PassportValidatorFactory::class
         ],
     ],
     'view_manager' => [
