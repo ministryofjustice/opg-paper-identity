@@ -94,6 +94,7 @@ class IdentityController extends AbstractActionController
          */
         return new JsonModel($data);
     }
+
     public function addressVerificationAction(): JsonModel
     {
         $data = [
@@ -191,6 +192,13 @@ class IdentityController extends AbstractActionController
     public function getKbvQuestionsAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
+
+        if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
+            $response[$uuid] = [
+                "error" => "thin_file_error"
+            ];
+            return new JsonModel($response[$uuid]);
+        }
 
         /**
          * @psalm-suppress PossiblyUndefinedVariable
