@@ -173,15 +173,9 @@ class IdentityController extends AbstractActionController
         $passportStatus = $this->passportService->validatePassport($data['passport']);
 
         $response = [
-            'status' => $passportStatus,
-            'passport' => $data['passport']
+            'status' => $passportStatus
         ];
-
-        if ($passportStatus === 'PASS') {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
