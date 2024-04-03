@@ -115,7 +115,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     {
         $this->dispatch('/identity/validate_passport', 'POST', ['passport' => $passportNumber]);
         $this->assertResponseStatusCode($status);
-        $this->assertEquals('{"status":"'.$response.'"}', $this->getResponse()->getContent());
+        $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
