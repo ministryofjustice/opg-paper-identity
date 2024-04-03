@@ -31,7 +31,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'form_params' => $data,
+                'json' => $data,
                 'debug' => true
             ]);
 
