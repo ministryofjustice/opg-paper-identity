@@ -125,7 +125,8 @@ class IdentityController extends AbstractActionController
 
     public function verifyNinoAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
+
         $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
         $response = [
@@ -146,7 +147,7 @@ class IdentityController extends AbstractActionController
     {
         $validDrivingLicences = ['CHAPM301534MA9AX'];
 
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
 
         if (in_array($data['dln'], $validDrivingLicences)) {
             $response = [
@@ -169,7 +170,7 @@ class IdentityController extends AbstractActionController
     {
         $validDrivingLicences = ['123456789'];
 
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
 
         if (in_array($data['passport'], $validDrivingLicences)) {
             $response = [

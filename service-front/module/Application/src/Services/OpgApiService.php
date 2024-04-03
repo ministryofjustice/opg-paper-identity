@@ -31,7 +31,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'form_params' => $data,
+                'json' => $data,
                 'debug' => true
             ]);
 
@@ -76,7 +76,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_nino',
                 'POST',
                 ['nino' => $nino],
-                ['Content-Type' => 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
@@ -94,7 +94,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_driving_licence',
                 'POST',
                 ['dln' => $dln],
-                ['Content-Type' => 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
@@ -112,7 +112,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_passport',
                 'POST',
                 ['passport' => $passport],
-                ['Content-Type' => 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
