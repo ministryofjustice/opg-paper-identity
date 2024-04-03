@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Nino\ValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Laminas\Http\Response;
@@ -23,6 +24,7 @@ class IdentityController extends AbstractActionController
         private readonly ValidatorInterface $ninoService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
+        private readonly PassportValidator $passportService
     ) {
     }
 
@@ -167,23 +169,13 @@ class IdentityController extends AbstractActionController
 
     public function validatePassportAction(): JsonModel
     {
-        $validDrivingLicences = ['123456789'];
-
         $data = $this->getRequest()->getPost();
+        $passportStatus = $this->passportService->validatePassport($data['passport']);
 
-        if (in_array($data['passport'], $validDrivingLicences)) {
-            $response = [
-                'status' => 'valid',
-                'driving_licence' => $data['passport']
-            ];
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $response = [
-                'status' => 'not valid',
-                'driving_licence' => $data['passport']
-            ];
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        }
+        $response = [
+            'status' => $passportStatus
+        ];
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
