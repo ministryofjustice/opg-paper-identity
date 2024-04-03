@@ -115,7 +115,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/id-verify-questions',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\KbvController::class,
                         'action'     => 'idVerifyQuestions',
                     ],
                 ],
@@ -155,6 +155,7 @@ return [
     'controllers' => [
         'factories' => [
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
+            Controller\KbvController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [
