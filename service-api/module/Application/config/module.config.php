@@ -8,6 +8,8 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
+use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
+use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Aws\DynamoDb\DynamoDbClient;
@@ -175,7 +177,9 @@ return [
                 $tableName
             ),
             LoggerInterface::class => LoggerFactory::class,
-            NinoValidatorInterface::class => NinoValidatorFactory::class
+            NinoValidatorInterface::class => NinoValidatorFactory::class,
+            LicenseInterface::class => LicenseFactory::class
+
         ],
     ],
     'view_manager' => [
