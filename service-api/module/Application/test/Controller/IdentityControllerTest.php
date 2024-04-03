@@ -105,7 +105,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             ['CHAPM301534MA9AX', 'PASS', Response::STATUS_CODE_200],
-            ['SMITH710238HA3DX', 'PAST', Response::STATUS_CODE_200],
+            ['SMITH710238HA3DX', 'PASS', Response::STATUS_CODE_200],
             ['SMITH720238HA3D8', 'NO_MATCH', Response::STATUS_CODE_200],
             ['JONES630536AB3J9', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200]
         ];
