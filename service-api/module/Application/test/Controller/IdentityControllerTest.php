@@ -90,10 +90,11 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider drivingLicenceData
      */
-    public function testDrivingLicence(string $drivingLicenceNo, int $status): void
+    public function testDrivingLicence(string $drivingLicenceNo, string $response, int $status): void
     {
         $this->dispatch('/identity/validate_driving_licence', 'POST', ['dln' => $drivingLicenceNo]);
         $this->assertResponseStatusCode($status);
+        $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
@@ -103,10 +104,10 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     public static function drivingLicenceData(): array
     {
         return [
-            ['CHAPM301534MA9AX', Response::STATUS_CODE_200],
-            ['SMITH710238HA3DX', Response::STATUS_CODE_200],
-            ['SMITH720238HA3D8', Response::STATUS_CODE_400],
-            ['JONES630536AB3J9', Response::STATUS_CODE_400]
+            ['CHAPM301534MA9AX', 'PASS', Response::STATUS_CODE_200],
+            ['SMITH710238HA3DX', 'PAST', Response::STATUS_CODE_200],
+            ['SMITH720238HA3D8', 'NO_MATCH', Response::STATUS_CODE_200],
+            ['JONES630536AB3J9', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200]
         ];
     }
 

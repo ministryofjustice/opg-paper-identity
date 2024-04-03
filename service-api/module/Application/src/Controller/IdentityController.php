@@ -150,15 +150,9 @@ class IdentityController extends AbstractActionController
         $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
         $response = [
-            'status' => $licenseStatus,
-            'driving_license' => $data['dln']
+            'status' => $licenseStatus
         ];
-
-        if ($licenseStatus === 'PASS') {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }

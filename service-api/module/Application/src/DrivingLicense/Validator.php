@@ -20,6 +20,6 @@ class Validator implements ValidatorInterface
     //@TODO implement when we have API access
     public function validateDrivingLicense(string $license): string
     {
-        return 'Pass';
+        return self::PASS;
     }
 }
