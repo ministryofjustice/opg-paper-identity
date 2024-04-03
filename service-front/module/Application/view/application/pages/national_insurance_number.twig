@@ -1,4 +1,4 @@
-<h1 class="govuk-heading-xl">National Insurance Number</h1>
+<h1 class="govuk-heading-xl">National insurance number</h1>
 <form method="POST" target="">
     <h2 class="govuk-heading-m">Name</h2>
     <p class="govuk-body">
@@ -12,7 +12,7 @@
     <div class="govuk-form-group {% if form.get('nino').messages %}govuk-form-group--error{% endif %}">
         <h2 class="govuk-label-wrapper">
             <label class="govuk-label govuk-label--m" for="nino">
-                National Insurance Number
+                National Insurance number
             </label>
         </h2>
 
@@ -39,11 +39,11 @@
     <details class="govuk-details">
         <summary class="govuk-details__summary">
                 <span class="govuk-details__summary-text">
-                  Where to find the National Insurance Number
+                  Where to find the National Insurance number
                 </span>
         </summary>
         <div class="govuk-details__text">
-            Your National Insurance Number can be found on
+            Your National Insurance number can be found on
             <ul class="govuk-list govuk-list--bullet">
                 <li>National Insurance card</li>
                 <li>payslip</li>
@@ -54,7 +54,7 @@
         </div>
     </details>
     <button class="govuk-button" data-module="govuk-button">Continue</button>
-    <a href="./address_verification" role="button" draggable="false"
+    <a href="/{{ uuid }}/how-will-donor-confirm" role="button" draggable="false"
        class="govuk-button govuk-button--secondary " data-module="govuk-button">
         Try a different method
     </a>

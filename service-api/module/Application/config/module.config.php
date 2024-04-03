@@ -148,6 +148,26 @@ return [
                     ],
                 ],
             ],
+            'get_kbv_questions' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases[/:uuid]/kbv-questions',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'getKbvQuestions',
+                    ],
+                ],
+            ],
+            'check_kbv_answers' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases[/:uuid]/kbv-answers',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'checkKbvAnswers',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
