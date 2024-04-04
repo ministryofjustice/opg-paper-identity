@@ -8,6 +8,8 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
+use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
+use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
 use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
@@ -179,6 +181,7 @@ return [
             ),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
+            LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class
         ],
     ],

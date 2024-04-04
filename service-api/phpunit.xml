@@ -27,6 +27,8 @@
     <php>
         <env name="MOCK_NINO_API" value="true" />
         <env name="NINO_BASE_URI" value="NINO_BASE_URI" />
+        <env name="MOCK_DRIVINGLICENSE_API" value="true" />
+        <env name="DRIVINGLICENSE_BASE_URL" value="DRIVINGLICENSE_BASE_URL" />
         <env name="MOCK_PASSPORT_API" value="true" />
     </php>
 </phpunit>
