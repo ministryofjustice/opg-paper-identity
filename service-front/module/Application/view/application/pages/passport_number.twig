@@ -4,14 +4,14 @@
     <p class="govuk-body">
         {{ details_data.Name }}
     </p>
-    <h2 class="govuk-heading-m">Date of Birth</h2>
+    <h2 class="govuk-heading-m">Date of birth</h2>
     <p class="govuk-body">
         {{ details_data.DOB }}
     </p>
     <div class="govuk-form-group {% if form.get('passport').messages %}govuk-form-group--error{% endif %}">
         <h2 class="govuk-label-wrapper">
             <label class="govuk-label govuk-label--m" for="passport">
-                Passport Number
+                Passport number
             </label>
         </h2>
 
@@ -37,12 +37,14 @@
     <details class="govuk-details">
         <summary class="govuk-details__summary">
                 <span class="govuk-details__summary-text">
-                  Where to find the Passport Number
+                  Where to find the passport number
                 </span>
         </summary>
         <div class="govuk-details__text">
-            The passport number is located at the top right-hand corner of the Personal Details page, printed in
-            bold, black ink. Example
+            The passport number is located at the top right-hand corner of the <br/>Personal Details page, printed in
+            bold, black ink. Example:
+            <br/>
+            <br/>
             <img src="{{ '/assets/images/passport_sample.png' | basepath }}" alt="Photo of passport highlighting location of passport number"/>
         </div>
     </details>
@@ -148,7 +150,7 @@
         </div>
     </details>
     <button class="govuk-button" name="continue_button">Continue</button>
-    <a href="./address_verification" role="button" draggable="false"
+    <a href="/{{ uuid }}/how-will-donor-confirm" role="button" draggable="false"
        class="govuk-button moj-button-menu__item govuk-button--secondary " data-module="govuk-button">
         Try a different method
     </a>
