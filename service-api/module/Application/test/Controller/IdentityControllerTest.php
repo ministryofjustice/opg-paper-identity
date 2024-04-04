@@ -114,10 +114,11 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider passportData
      */
-    public function testPassportNumber(string $passportNumber, int $status): void
+    public function testPassportNumber(int $passportNumber, string $response, int $status): void
     {
         $this->dispatch('/identity/validate_passport', 'POST', ['passport' => $passportNumber]);
         $this->assertResponseStatusCode($status);
+        $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
@@ -127,8 +128,10 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     public static function passportData(): array
     {
         return [
-            ['123456789', Response::STATUS_CODE_200],
-            ['123456', Response::STATUS_CODE_400]
+            [123456788, 'NO_MATCH', Response::STATUS_CODE_200],
+            [123456789, 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
+            [123333456, 'PASS', Response::STATUS_CODE_200],
+            [123456784, 'PASS', Response::STATUS_CODE_200],
         ];
     }
 }

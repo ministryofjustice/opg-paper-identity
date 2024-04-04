@@ -10,8 +10,11 @@ use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Passport\ValidatorInterface as PassportValidatorInterface;
+use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Passport\ValidatorInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -178,8 +181,8 @@ return [
             ),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
-            LicenseInterface::class => LicenseFactory::class
-
+            LicenseInterface::class => LicenseFactory::class,
+            PassportValidatorInterface::class => PassportValidatorFactory::class
         ],
     ],
     'view_manager' => [
