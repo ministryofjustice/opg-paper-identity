@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Nino\ValidatorInterface;
+use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Laminas\Http\Response;
@@ -23,6 +25,8 @@ class IdentityController extends AbstractActionController
         private readonly ValidatorInterface $ninoService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
+        private readonly LicenseValidatorInterface $licenseValidator,
+        private readonly PassportValidator $passportService
     ) {
     }
 
@@ -94,6 +98,7 @@ class IdentityController extends AbstractActionController
          */
         return new JsonModel($data);
     }
+
     public function addressVerificationAction(): JsonModel
     {
         $data = [
@@ -114,10 +119,10 @@ class IdentityController extends AbstractActionController
                 'lpa_ref' => 'PW M-1234-ABCD-AAAA',
                 'donor_name' => 'Mary Anne Chapman'
             ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
+//            [
+//                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+//                'donor_name' => 'Mary Anne Chapman'
+//            ]
         ];
 
         return new JsonModel($data);
@@ -144,46 +149,119 @@ class IdentityController extends AbstractActionController
 
     public function validateDrivingLicenceAction(): JsonModel
     {
-        $validDrivingLicences = ['CHAPM301534MA9AX'];
-
         $data = $this->getRequest()->getPost();
+        $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
-        if (in_array($data['dln'], $validDrivingLicences)) {
-            $response = [
-                'status' => 'valid',
-                'driving_licence' => $data['dln']
-            ];
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $response = [
-                'status' => 'not valid',
-                'driving_licence' => $data['dln']
-            ];
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        }
+        $response = [
+            'status' => $licenseStatus
+        ];
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
 
     public function validatePassportAction(): JsonModel
     {
-        $validDrivingLicences = ['123456789'];
-
         $data = $this->getRequest()->getPost();
+        $passportStatus = $this->passportService->validatePassport($data['passport']);
 
-        if (in_array($data['passport'], $validDrivingLicences)) {
-            $response = [
-                'status' => 'valid',
-                'driving_licence' => $data['passport']
+        $response = [
+            'status' => $passportStatus
+        ];
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+        return new JsonModel($response);
+    }
+
+    public function getKbvQuestionsAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+
+        if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
+            /**
+             * @psalm-suppress PossiblyUndefinedVariable
+             */
+            $response[$uuid] = [
+                "error" => "thin_file_error"
             ];
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $response = [
-                'status' => 'not valid',
-                'driving_licence' => $data['passport']
-            ];
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel($response[$uuid]);
         }
+
+        /**
+         * @psalm-suppress PossiblyUndefinedVariable
+         */
+        $response[$uuid] = [
+            "one" => [
+                "question" => "Who provides your mortgage?",
+                "number" => "one",
+                "prompts" => [
+                    0 => "Nationwide",
+                    1 => "Halifax",
+                    2 => "Lloyds",
+                    3 => "HSBC",
+                ]
+            ],
+            "two" => [
+                "question" => "Who provides your personal mobile contract?",
+                "number" => "two",
+                "prompts" => [
+                    0 => "EE",
+                    1 => "Vodafone",
+                    2 => "BT",
+                    3 => "iMobile",
+                ]
+            ],
+            "three" => [
+                "question" => "What are the first two letters of the last name of another 
+                person on the electoral register at your address?",
+                "number" => "three",
+                "prompts" => [
+                    0 => "Ka",
+                    1 => "Ch",
+                    2 => "Jo",
+                    3 => "None of the above",
+                ]
+            ],
+            "four" => [
+                "question" => "Who provides your current account?",
+                "number" => "four",
+                "prompts" => [
+                    0 => "Santander",
+                    1 => "HSBC",
+                    2 => "Halifax",
+                    3 => "Nationwide",
+                ]
+            ]
+        ];
+
+        return new JsonModel($response[$uuid]);
+    }
+
+    public function checkKbvAnswersAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+
+        $answers = [];
+        $data = $this->getRequest()->getPost();
+        $result = 'pass';
+
+        $answers[$uuid] = [
+            "one" => "Nationwide",
+            "two" => "EE",
+            "three" => "Ka",
+            "four" => "Santander",
+        ];
+
+        foreach ($data['answers'] as $key => $value) {
+            if ($value != $answers[$uuid][$key]) {
+                $result = 'fail';
+            }
+        }
+
+        /**
+         * @psalm-suppress PossiblyUndefinedVariable
+         */
+        $response['result'] = $result;
 
         return new JsonModel($response);
     }

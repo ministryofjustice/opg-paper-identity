@@ -8,8 +8,13 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
+use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
+use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Passport\ValidatorInterface as PassportValidatorInterface;
+use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Passport\ValidatorInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -156,6 +161,26 @@ return [
                     ],
                 ],
             ],
+            'get_kbv_questions' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases[/:uuid]/kbv-questions',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'getKbvQuestions',
+                    ],
+                ],
+            ],
+            'check_kbv_answers' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases[/:uuid]/kbv-answers',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'checkKbvAnswers',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -183,7 +208,9 @@ return [
                 $tableName
             ),
             LoggerInterface::class => LoggerFactory::class,
-            NinoValidatorInterface::class => NinoValidatorFactory::class
+            NinoValidatorInterface::class => NinoValidatorFactory::class,
+            LicenseInterface::class => LicenseFactory::class,
+            PassportValidatorInterface::class => PassportValidatorFactory::class
         ],
     ],
     'view_manager' => [
