@@ -69,7 +69,11 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testNino(string $nino, int $status): void
     {
-        $this->dispatch('/identity/validate_nino', 'POST', ['nino' => $nino]);
+        $this->dispatchJSON(
+            '/identity/validate_nino',
+            'POST',
+            ['nino' => $nino]
+        );
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
@@ -92,7 +96,11 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testDrivingLicence(string $drivingLicenceNo, string $response, int $status): void
     {
-        $this->dispatch('/identity/validate_driving_licence', 'POST', ['dln' => $drivingLicenceNo]);
+        $this->dispatchJSON(
+            '/identity/validate_driving_licence',
+            'POST',
+            ['dln' => $drivingLicenceNo]
+        );
         $this->assertResponseStatusCode($status);
         $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
@@ -116,7 +124,11 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testPassportNumber(int $passportNumber, string $response, int $status): void
     {
-        $this->dispatch('/identity/validate_passport', 'POST', ['passport' => $passportNumber]);
+        $this->dispatchJSON(
+            '/identity/validate_passport',
+            'POST',
+            ['passport' => $passportNumber]
+        );
         $this->assertResponseStatusCode($status);
         $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
@@ -133,5 +145,19 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
             [123333456, 'PASS', Response::STATUS_CODE_200],
             [123456784, 'PASS', Response::STATUS_CODE_200],
         ];
+    }
+
+    public function dispatchJSON(string $path, string $method, mixed $data = null): void
+    {
+        $headers = new Headers();
+        $headers->addHeaderLine('Accept', 'application/json');
+        $headers->addHeaderLine('Content-Type', 'application/json');
+
+        /** @var HttpRequest $request */
+        $request = $this->getRequest();
+        $request->setHeaders($headers);
+        $request->setContent(is_string($data) ? $data : json_encode($data));
+
+        $this->dispatch($path, $method);
     }
 }
