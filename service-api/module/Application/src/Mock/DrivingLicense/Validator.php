@@ -10,9 +10,9 @@ class Validator implements ValidatorInterface
 {
     public function validateDrivingLicense(string $license): string
     {
-        if (str_ends_with($license, '8')) {
+        if (str_ends_with($license, 'X')) {
             return self::NO_MATCH;
-        } elseif (str_ends_with($license, '9')) {
+        } elseif (str_ends_with($license, 'Z')) {
             return self::NOT_ENOUGH_DETAILS;
         } else {
             return self::PASS;
