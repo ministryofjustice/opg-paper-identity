@@ -150,8 +150,6 @@ class IdentityController extends AbstractActionController
 
     public function validateDrivingLicenceAction(): JsonModel
     {
-        $validDrivingLicences = ['CHAPM301534MA9AX'];
-
         $data = json_decode($this->getRequest()->getContent(), true);
         $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
@@ -165,8 +163,6 @@ class IdentityController extends AbstractActionController
 
     public function validatePassportAction(): JsonModel
     {
-        $validDrivingLicences = ['123456789'];
-
         $data = json_decode($this->getRequest()->getContent(), true);
         $passportStatus = $this->passportService->validatePassport($data['passport']);
 
