@@ -1,0 +1,160 @@
+openapi: "3.0.3"
+info:
+  version: 1.0.0
+  title: OPG Paper ID
+  description: Internal PaperID API used by frontend applications
+  contact:
+    name: MOJ Digital / Office of the Public Guardian
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8001/api/
+    description: local
+paths:
+  /identity/method:
+    get:
+      operationId: method
+      summary: Returns supported methods
+      description: Array of ID verification methods available
+      tags: [otm]
+      responses:
+        "200":
+          description: The list of ID methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/details:
+    get:
+      operationId: details
+      summary: Return a specific person details ( to be replaced by case person or person type )
+      description: Array of person details
+      tags: [otm]
+      responses:
+        "200":
+          description: Person name and address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/findbyname:
+    get:
+      operationId: findByName
+      summary: Return a specific person details ( to be replaced by more specific implementation )
+      description: Array of person details, or empty array
+      tags: [ otm ]
+      responses:
+        "200":
+          description: Person name and address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/findbyidnumber:
+    get:
+      operationId: findByIdNumber
+      summary: Return a specific person details ( test purposes )
+      description: Array of person details
+      tags: [ otm ]
+      responses:
+        "200":
+          description: Person name and address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/address_verification:
+    get:
+      operationId: addressVerification
+      summary: Returns supported methods to verify Address ( test purposes )
+      description: Array of Address verification methods available
+      tags: [otm]
+      responses:
+        "200":
+          description: The list of verification methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/list_lpas:
+    get:
+      operationId: listLpas
+      summary: Returns sample LPAs
+      description: Sample selection of LPAs ( for testing purposes? )
+      tags: [otm]
+      responses:
+        "200":
+          description: The list lpas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/validate_nino:
+    parameters:
+      - name: nino
+        in: path
+        description: The Nino to validate
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: verifyNino
+      summary: Verify the provided National Insurance number
+      description: Verify the provided National Insurance number
+      tags: []
+      requestBody:
+        description: Request with Nino number
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+
+      responses:
+        "200":
+          description: NINO OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        "400":
+          description: Invalid NINO
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+tags:
+  - name: otm
+    description: Operations used for test and mock purposes
+  - name: deprecated
+    description: Operations which should no longer be used
+components:
+  schemas:
+    VerifyResponse:
+      type: array
+      properties:
+        status:
+          type: string
+        nino:
+          type: string
+

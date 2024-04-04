@@ -32,17 +32,17 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
 
     public function testIndexActionCanBeAccessed(): void
     {
-        $this->dispatch('/', 'GET');
+        $this->dispatch('/api/', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('home');
+        $this->assertMatchedRouteName('api/home');
     }
 
     public function testIndexActionResponse(): void
     {
-        $this->dispatch('/', 'GET');
+        $this->dispatch('/api/', 'GET');
         $this->assertEquals('{"Laminas":"Paper ID Service API"}', $this->getResponse()->getContent());
     }
 
@@ -69,12 +69,12 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testNino(string $nino, int $status): void
     {
-        $this->dispatch('/identity/validate_nino', 'POST', ['nino' => $nino]);
+        $this->dispatch('/api/identity/validate_nino', 'POST', ['nino' => $nino]);
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('validate_nino');
+        $this->assertMatchedRouteName('api/validate_nino');
     }
 
     public static function ninoData(): array
@@ -92,13 +92,13 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testDrivingLicence(string $drivingLicenceNo, string $response, int $status): void
     {
-        $this->dispatch('/identity/validate_driving_licence', 'POST', ['dln' => $drivingLicenceNo]);
+        $this->dispatch('/api/identity/validate_driving_licence', 'POST', ['dln' => $drivingLicenceNo]);
         $this->assertResponseStatusCode($status);
         $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('validate_driving_licence');
+        $this->assertMatchedRouteName('api/validate_driving_licence');
     }
 
     public static function drivingLicenceData(): array
@@ -116,13 +116,13 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      */
     public function testPassportNumber(int $passportNumber, string $response, int $status): void
     {
-        $this->dispatch('/identity/validate_passport', 'POST', ['passport' => $passportNumber]);
+        $this->dispatch('/api/identity/validate_passport', 'POST', ['passport' => $passportNumber]);
         $this->assertResponseStatusCode($status);
         $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('validate_passport');
+        $this->assertMatchedRouteName('api/validate_passport');
     }
 
     public static function passportData(): array

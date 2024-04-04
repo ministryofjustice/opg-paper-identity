@@ -49,22 +49,22 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getIdOptionsData(): array
     {
-        return $this->makeApiRequest('/identity/method');
+        return $this->makeApiRequest('/api/identity/method');
     }
 
     public function getDetailsData(): array
     {
-        return $this->makeApiRequest('/identity/details');
+        return $this->makeApiRequest('/api/identity/details');
     }
 
     public function getAddressVerificationData(): array
     {
-        return $this->makeApiRequest('/identity/address_verification');
+        return $this->makeApiRequest('/api/identity/address_verification');
     }
 
     public function getLpasByDonorData(): array
     {
-        return $this->makeApiRequest('/identity/list_lpas');
+        return $this->makeApiRequest('/api/identity/list_lpas');
     }
 
     public function checkNinoValidity(string $nino): bool
@@ -73,7 +73,7 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest(
-                '/identity/validate_nino',
+                '/api/identity/validate_nino',
                 'POST',
                 ['nino' => $nino],
                 ['Content-Type' => 'application/x-www-form-urlencoded']
@@ -91,7 +91,7 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest(
-                '/identity/validate_driving_licence',
+                '/api/identity/validate_driving_licence',
                 'POST',
                 ['dln' => $dln],
                 ['Content-Type' => 'application/x-www-form-urlencoded']
@@ -109,7 +109,7 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest(
-                '/identity/validate_passport',
+                '/api/identity/validate_passport',
                 'POST',
                 ['passport' => $passport],
                 ['Content-Type' => 'application/x-www-form-urlencoded']
@@ -123,13 +123,13 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getIdCheckQuestions(string $uuid): array
     {
-        return $this->makeApiRequest("/cases/$uuid/kbv-questions");
+        return $this->makeApiRequest("/api/cases/$uuid/kbv-questions");
     }
 
     public function checkIdCheckAnswers(string $uuid, array $answers): bool
     {
         try {
-            $response = $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
+            $response = $this->makeApiRequest("/api/cases/$uuid/kbv-answers", 'POST', $answers);
             if ($response['result'] !== 'pass') {
                 return false;
             }

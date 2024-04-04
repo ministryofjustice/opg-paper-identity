@@ -32,124 +32,132 @@ if (! is_string($tableName) || empty($tableName)) {
 return [
     'router' => [
         'routes' => [
-            'home' => [
-                'type'    => Literal::class,
+            'api' => [
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
-                    ],
+                    'route' => '/api',
                 ],
-            ],
-            'application' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/application[/:action]',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                'child_routes' => [
+                    'home' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'method' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/method',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'method',
+                    'application' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/application[/:action]',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'details' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/details',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'details',
+                    'method' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/method',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'method',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'testdata' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/testdata',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'testdata',
+                    'details' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/details',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'details',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'findbyname' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/findbyname',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'findByName',
+                    'testdata' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/testdata',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'testdata',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'findbyidnumber' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/findbyidnumber',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'findByIdNumber',
+                    'findbyname' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/findbyname',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'findByName',
+                            ],
+                        ],
                     ],
-                ],
-            ],
+                    'findbyidnumber' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/findbyidnumber',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'findByIdNumber',
+                            ],
+                        ],
+                    ],
 
-            'address_verification' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/address_verification',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'addressVerification',
+                    'address_verification' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/address_verification',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'addressVerification',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'list_lpas' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/list_lpas',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'listLpas',
+                    'list_lpas' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/list_lpas',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'listLpas',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'validate_nino' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/validate_nino',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'verifyNino',
+                    'validate_nino' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/validate_nino',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'verifyNino',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'validate_driving_licence' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/validate_driving_licence',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'validateDrivingLicence',
+                    'validate_driving_licence' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/validate_driving_licence',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'validateDrivingLicence',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'validate_passport' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/validate_passport',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'validatePassport',
+                    'validate_passport' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/identity/validate_passport',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action'     => 'validatePassport',
+                            ],
+                        ],
                     ],
                 ],
             ],
