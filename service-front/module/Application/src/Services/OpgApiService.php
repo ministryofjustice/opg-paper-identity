@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
+use Monolog\Logger;
 
 class OpgApiService implements OpgApiServiceInterface
 {
@@ -100,7 +101,7 @@ class OpgApiService implements OpgApiServiceInterface
             return false;
         }
 
-        return $this->responseData['status'] === 'valid';
+        return $this->responseData['status'] === 'PASS';
     }
 
     public function checkPassportValidity(string $passport): bool
@@ -118,7 +119,7 @@ class OpgApiService implements OpgApiServiceInterface
             return false;
         }
 
-        return $this->responseData['status'] === 'valid';
+        return $this->responseData['status'] === 'PASS';
     }
 
     public function getIdCheckQuestions(string $uuid): array

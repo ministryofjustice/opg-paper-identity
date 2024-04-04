@@ -164,7 +164,7 @@ class IdentityController extends AbstractActionController
     public function validatePassportAction(): JsonModel
     {
         $data = json_decode($this->getRequest()->getContent(), true);
-        $passportStatus = $this->passportService->validatePassport($data['passport']);
+        $passportStatus = $this->passportService->validatePassport(intval($data['passport']));
 
         $response = [
             'status' => $passportStatus
