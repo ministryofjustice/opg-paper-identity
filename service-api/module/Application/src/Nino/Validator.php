@@ -20,9 +20,6 @@ class Validator implements ValidatorInterface
     //@TODO implement when we have API access
     public function validateNINO(string $nino): string
     {
-        $validNinos = [
-            'AA112233A'
-        ];
-        return in_array(str_replace(' ', '', $nino), $validNinos) ? 'Pass' : 'Fail';
+        return 'Pass';
     }
 }
