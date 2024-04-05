@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
+use Monolog\Logger;
 
 class OpgApiService implements OpgApiServiceInterface
 {
@@ -31,7 +32,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'form_params' => $data,
+                'json' => $data,
                 'debug' => true
             ]);
 
@@ -76,7 +77,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_nino',
                 'POST',
                 ['nino' => $nino],
-                ['Content-Type' => 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
@@ -94,13 +95,13 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_driving_licence',
                 'POST',
                 ['dln' => $dln],
-                ['Content-Type' => 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
         }
 
-        return $this->responseData['status'] === 'valid';
+        return $this->responseData['status'] === 'PASS';
     }
 
     public function checkPassportValidity(string $passport): bool
@@ -112,13 +113,13 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_passport',
                 'POST',
                 ['passport' => $passport],
-                ['Content-Type' => 'application/x-www-form-urlencoded']
+                ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
             return false;
         }
 
-        return $this->responseData['status'] === 'valid';
+        return $this->responseData['status'] === 'PASS';
     }
 
     public function getIdCheckQuestions(string $uuid): array
