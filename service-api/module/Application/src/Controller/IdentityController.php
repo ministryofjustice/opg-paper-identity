@@ -130,7 +130,8 @@ class IdentityController extends AbstractActionController
 
     public function verifyNinoAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
+
         $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
         $response = [
@@ -149,7 +150,7 @@ class IdentityController extends AbstractActionController
 
     public function validateDrivingLicenceAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
         $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
         $response = [
@@ -162,8 +163,8 @@ class IdentityController extends AbstractActionController
 
     public function validatePassportAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
-        $passportStatus = $this->passportService->validatePassport($data['passport']);
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $passportStatus = $this->passportService->validatePassport(intval($data['passport']));
 
         $response = [
             'status' => $passportStatus
