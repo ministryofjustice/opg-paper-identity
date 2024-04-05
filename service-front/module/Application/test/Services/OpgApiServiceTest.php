@@ -274,7 +274,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = [
-            'status' => 'not valid',
+            'status' => 'NO_MATCH',
             'nino' => $invalidNino
         ];
         $failMock = new MockHandler([
@@ -318,11 +318,11 @@ class OpgApiServiceTest extends TestCase
 
     public static function dlnData(): array
     {
-        $validDln = 'JONES710238HA3DX';
-        $invalidDln = 'JONES710238HA3DXa';
+        $validDln = 'CHAPM301534MA9AY';
+        $invalidDln = 'JONES710238HA3DX';
 
         $successMockResponseData = [
-            'status' => 'valid',
+            'status' => 'PASS',
             'dln' => $validDln
         ];
 
@@ -333,7 +333,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = [
-            'status' => 'not valid',
+            'status' => 'NO_MATCH',
             'dln' => $invalidDln
         ];
         $failMock = new MockHandler([
