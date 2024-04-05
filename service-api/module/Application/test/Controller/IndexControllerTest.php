@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
-use Application\Controller\DonorFlowController;
+use Application\Controller\IndexController;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Stdlib\ArrayUtils;
@@ -33,8 +33,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('DonorFlowController');
+        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
+        $this->assertControllerClass(' IndexController');
         $this->assertMatchedRouteName('home');
     }
 

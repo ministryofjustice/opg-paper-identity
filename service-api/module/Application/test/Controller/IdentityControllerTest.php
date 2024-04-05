@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
-use Application\Controller\DonorFlowController;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
 class IdentityControllerTest extends TestCase
 {
@@ -36,8 +34,8 @@ class IdentityControllerTest extends TestCase
         $this->dispatch('/', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('DonorFlowController');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('home');
     }
 
@@ -70,11 +68,7 @@ class IdentityControllerTest extends TestCase
      */
     public function testNino(string $nino, int $status): void
     {
-        $this->dispatchJSON(
-            '/identity/validate_nino',
-            'POST',
-            ['nino' => $nino]
-        );
+        $this->dispatch('/identity/validate_nino', 'POST', ['nino' => $nino]);
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
@@ -113,8 +107,8 @@ class IdentityControllerTest extends TestCase
     public static function drivingLicenceData(): array
     {
         return [
-            ['CHAPM301534MA9AY', 'PASS', Response::STATUS_CODE_200],
-            ['SMITH710238HA3DY', 'PASS', Response::STATUS_CODE_200],
+            ['CHAPM301534MA9AX', 'PASS', Response::STATUS_CODE_200],
+            ['SMITH710238HA3DX', 'PASS', Response::STATUS_CODE_200],
             ['SMITH720238HA3D8', 'NO_MATCH', Response::STATUS_CODE_200],
             ['JONES630536AB3J9', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200]
         ];
@@ -146,19 +140,5 @@ class IdentityControllerTest extends TestCase
             [123333456, 'PASS', Response::STATUS_CODE_200],
             [123456784, 'PASS', Response::STATUS_CODE_200],
         ];
-    }
-
-    public function dispatchJSON(string $path, string $method, mixed $data = null): void
-    {
-        $headers = new Headers();
-        $headers->addHeaderLine('Accept', 'application/json');
-        $headers->addHeaderLine('Content-Type', 'application/json');
-
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        $request->setHeaders($headers);
-        $request->setContent(is_string($data) ? $data : json_encode($data));
-
-        $this->dispatch($path, $method);
     }
 }

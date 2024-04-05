@@ -83,7 +83,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ->method('getIdCheckQuestions')
             ->willReturn($mockResponseData[$mockUuid]);
 
-        $this->dispatch('/'.$mockUuid.'/id-verify-questions', 'GET');
+        $this->dispatch('/' . $mockUuid . '/id-verify-questions', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(KbvController::class); // as specified in router's controller name alias
