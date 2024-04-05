@@ -134,15 +134,10 @@ class IdentityController extends AbstractActionController
         $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
         $response = [
-            'status' => $ninoStatus,
-            'nino' => $data['nino']
+            'status' => $ninoStatus
         ];
 
-        if ($ninoStatus === 'NINO check complete') {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
