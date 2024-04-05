@@ -37,7 +37,7 @@ return [
                 'options' => [
                     'route'    => '/',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'index',
                     ],
                 ],
@@ -47,7 +47,7 @@ return [
                 'options' => [
                     'route'    => '/application[/:action]',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'index',
                     ],
                 ],
@@ -180,7 +180,7 @@ return [
             LazyControllerAbstractFactory::class,
         ],
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\DonorFlowController::class => InvokableFactory::class,
             Controller\IdentityController::class => LazyControllerAbstractFactory::class
         ],
     ],
