@@ -160,6 +160,11 @@ class DonorFlowController extends AbstractActionController
 
     public function drivingLicenceNumberAction(): ViewModel
     {
+        $templates = [
+            'default' => 'application/pages/driving_licence_number',
+            'success' => 'application/pages/driving_licence_number_success',
+            'fail' => 'application/pages/driving_licence_number_fail'
+        ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -171,30 +176,24 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
-            $validFormat = $form->isValid();
-
-            if ($validFormat) {
-                $view->setVariable('dln_data', $formData);
-                /**
-                 * @psalm-suppress InvalidArrayAccess
-                 */
-                $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
-
-                if ($validDln) {
-                    return $view->setTemplate('application/pages/driving_licence_number_success');
-                } else {
-                    return $view->setTemplate('application/pages/driving_licence_number_fail');
-                }
-            }
+            return $this->formProcessorService->processDrivingLicencenForm(
+                $this->getRequest()->getPost(),
+                $form,
+                $view,
+                $templates
+            );
         }
 
-        return $view->setTemplate('application/pages/driving_licence_number');
+        return $view->setTemplate($templates['default']);
     }
 
     public function passportNumberAction(): ViewModel
     {
+        $templates = [
+            'default' => 'application/pages/passport_number',
+            'success' => 'application/pages/passport_number_success',
+            'fail' => 'application/pages/passport_number_fail'
+        ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -215,45 +214,23 @@ class DonorFlowController extends AbstractActionController
             $view->setVariable('passport_indate', $data['inDate']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $expiryDate = sprintf(
-                    "%s-%s-%s",
-                    $data['passport_issued_year'],
-                    $data['passport_issued_month'],
-                    $data['passport_issued_day']
+                return $this->formProcessorService->processPassportDateForm(
+                    $this->getRequest()->getPost(),
+                    $dateSubForm,
+                    $view,
+                    $templates
                 );
-
-                $formData->set('passport_date', $expiryDate);
-
-                $dateSubForm->setData($formData);
-                $validDate = $dateSubForm->isValid();
-
-                if ($validDate) {
-                    $view->setVariable('valid_date', true);
-                } else {
-                    $view->setVariable('invalid_date', true);
-                }
-                $view->setVariable('details_open', true);
-                $form->setData($formData);
             } else {
-                $form->setData($formData);
-                $validFormat = $form->isValid();
-
-                if ($validFormat) {
-                    $view->setVariable('passport_data', $formData);
-                    /**
-                     * @psalm-suppress InvalidArrayAccess
-                     */
-                    $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
-                    if ($validPassport) {
-                        return $view->setTemplate('application/pages/passport_number_success');
-                    } else {
-                        return $view->setTemplate('application/pages/passport_number_fail');
-                    }
-                }
+                return $this->formProcessorService->processPassportForm(
+                    $this->getRequest()->getPost(),
+                    $form,
+                    $view,
+                    $templates
+                );
             }
         }
 
-        return $view->setTemplate('application/pages/passport_number');
+        return $view->setTemplate($templates['default']);
     }
 
     public function identityCheckPassedAction(): ViewModel
