@@ -15,6 +15,8 @@ use Laminas\Validator\Regex;
 
 /**
  * DTO for holding data required to make new case entry post
+ * @psalm-suppress MissingConstructor
+ * Needed here due to false positive from Laminas’s uninitialised properties
  */
 class CaseData implements JsonSerializable
 {
@@ -48,18 +50,18 @@ class CaseData implements JsonSerializable
     /**
      * Factory method
      *
-     * @param array{verifyMethod: ?string, donorType: ?string, firstName: string, lastName: string, dob: string,
-     *     lpas: array{lpa1: ?string, lpa2: ?string, lpa3: ?string, lpa4: ?string }} $data
+     * @param array{verifyMethod: string, donorType: string, firstName: string, lastName: string, dob: string,
+     *     lpas: array{0: string, 1: ?string, 2: ?string, 3: ?string} } $data
      */
     public static function fromArray(mixed $data): self
     {
         $instance = new self();
-        $instance->verifyMethod = $data['verifyMethod'] ?? null;
-        $instance->donorType = $data['donorType'] ?? null;
-        $instance->firstName = $data['firstName'] ?? null;
-        $instance->lastName = $data['lastName'] ?? null;
-        $instance->dob = $data['dob'] ?? null;
-        $instance->lpa1 = $data['lpas'][0] ?? null;
+        $instance->verifyMethod = $data['verifyMethod'];
+        $instance->donorType = $data['donorType'];
+        $instance->firstName = $data['firstName'];
+        $instance->lastName = $data['lastName'];
+        $instance->dob = $data['dob'];
+        $instance->lpa1 = $data['lpas'][0];
         $instance->lpa2 = $data['lpas'][1] ?? null;
         $instance->lpa3 = $data['lpas'][2] ?? null;
         $instance->lpa4 = $data['lpas'][3] ?? null;
@@ -67,6 +69,9 @@ class CaseData implements JsonSerializable
         return $instance;
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function jsonSerialize(): mixed
     {
         return [

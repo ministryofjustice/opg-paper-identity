@@ -24,6 +24,7 @@ class LPAValidator extends AbstractValidator
     private function lpaValidity(?string $lpa): bool
     {
         if ($lpa != '') {
+            /** @var string $lpa */
             $match = preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa);
             if ($match === 1) {
                 return true;
