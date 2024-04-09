@@ -29,7 +29,7 @@ class FormProcessorService
             $view->setVariable('dln_data', $formData);
             $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
 
-            if ($validDln) {
+            if ($validDln === 'PASS') {
                 return $view->setTemplate($templates['success']);
             }
             return $view->setTemplate($templates['fail']);
@@ -45,7 +45,7 @@ class FormProcessorService
         if ($validFormat) {
             $view->setVariable('nino_data', $formData);
             $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
-            if ($validNino) {
+            if ($validNino === 'PASS') {
                 return $view->setTemplate($templates['success']);
             } else {
                 return $view->setTemplate($templates['fail']);
@@ -62,7 +62,7 @@ class FormProcessorService
         if ($validFormat) {
             $view->setVariable('passport_data', $formData);
             $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
-            if ($validPassport) {
+            if ($validPassport === 'PASS') {
                 return $view->setTemplate($templates['success']);
             } else {
                 return $view->setTemplate($templates['fail']);

@@ -69,7 +69,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->makeApiRequest('/identity/list_lpas');
     }
 
-    public function checkNinoValidity(string $nino): bool
+    public function checkNinoValidity(string $nino): string
     {
         $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
 
@@ -82,13 +82,13 @@ class OpgApiService implements OpgApiServiceInterface
             );
         } catch (OpgApiException $opgApiException) {
             error_log($opgApiException->getMessage());
-            return false;
+            return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'] === 'PASS';
+        return $this->responseData['status'];
     }
 
-    public function checkDlnValidity(string $dln): bool
+    public function checkDlnValidity(string $dln): string
     {
         $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln));
 
@@ -101,13 +101,13 @@ class OpgApiService implements OpgApiServiceInterface
             );
         } catch (OpgApiException $opgApiException) {
             error_log($opgApiException->getMessage());
-            return false;
+            return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'] === 'PASS';
+        return $this->responseData['status'];
     }
 
-    public function checkPassportValidity(string $passport): bool
+    public function checkPassportValidity(string $passport): string
     {
         $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport));
 
@@ -120,10 +120,10 @@ class OpgApiService implements OpgApiServiceInterface
             );
         } catch (OpgApiException $opgApiException) {
             error_log($opgApiException->getMessage());
-            return false;
+            return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'] === 'PASS';
+        return $this->responseData['status'];
     }
 
     public function getIdCheckQuestions(string $uuid): array|bool

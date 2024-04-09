@@ -244,7 +244,7 @@ class OpgApiServiceTest extends TestCase
     /**
      * @dataProvider ninoData
      */
-    public function testValidateNino(string $nino, Client $client, bool $responseData, bool $exception): void
+    public function testValidateNino(string $nino, Client $client, string $responseData, bool $exception): void
     {
         if ($exception) {
             $this->expectException(OpgApiException::class);
@@ -260,7 +260,8 @@ class OpgApiServiceTest extends TestCase
     public static function ninoData(): array
     {
         $validNino = 'AA112233A';
-        $invalidNino = 'AA112233Q';
+        $invalidNino = 'AA112233C';
+        $insufficientNino = 'AA112233D';
 
         $successMockResponseData = [
             'status' => 'PASS',
@@ -278,22 +279,38 @@ class OpgApiServiceTest extends TestCase
             'nino' => $invalidNino
         ];
         $failMock = new MockHandler([
-            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
+
+        $insufficientMockResponseData = [
+            'status' => 'NOT_ENOUGH_DETAILS',
+            'nino' => $insufficientNino
+        ];
+        $insufficientMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($insufficientMock);
+        $insufficientClient = new Client(['handler' => $handlerStack]);
 
         return [
             [
                 $validNino,
                 $successClient,
-                true,
+                'PASS',
                 false
             ],
             [
                 $invalidNino,
                 $failClient,
-                false,
+                'NO_MATCH',
+                false
+            ],
+            [
+                $insufficientNino,
+                $insufficientClient,
+                'NOT_ENOUGH_DETAILS',
                 false
             ],
         ];
@@ -303,7 +320,7 @@ class OpgApiServiceTest extends TestCase
     /**
      * @dataProvider dlnData
      */
-    public function testValidateDln(string $dln, Client $client, bool $responseData, bool $exception): void
+    public function testValidateDln(string $dln, Client $client, string $responseData, bool $exception): void
     {
         if ($exception) {
             $this->expectException(OpgApiException::class);
@@ -319,7 +336,8 @@ class OpgApiServiceTest extends TestCase
     public static function dlnData(): array
     {
         $validDln = 'CHAPM301534MA9AY';
-        $invalidDln = 'JONES710238HA3DX';
+        $invalidDln = 'JONES710238HA3D8';
+        $insufficientDln = 'JONES710238HA3D9';
 
         $successMockResponseData = [
             'status' => 'PASS',
@@ -337,22 +355,113 @@ class OpgApiServiceTest extends TestCase
             'dln' => $invalidDln
         ];
         $failMock = new MockHandler([
-            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
+
+        $insufficientMockResponseData = [
+            'status' => 'NOT_ENOUGH_DETAILS',
+            'dln' => $insufficientDln
+        ];
+        $insufficientMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($insufficientMock);
+        $insufficientClient = new Client(['handler' => $handlerStack]);
 
         return [
             [
                 $validDln,
                 $successClient,
-                true,
+                'PASS',
                 false
             ],
             [
                 $invalidDln,
                 $failClient,
-                false,
+                'NO_MATCH',
+                false
+            ],
+            [
+                $insufficientDln,
+                $insufficientClient,
+                'NOT_ENOUGH_DETAILS',
+                false
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider passportData
+     */
+    public function testValidatePassport(string $passport, Client $client, string $responseData, bool $exception): void
+    {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
+
+        $this->opgApiService = new OpgApiService($client);
+
+        $response = $this->opgApiService->checkPassportValidity($passport);
+
+        $this->assertEquals($responseData, $response);
+    }
+
+    public static function passportData(): array
+    {
+        $validPassport = '987654321';
+        $invalidPassport = '123456789';
+        $insufficientPassport = '123456788';
+
+        $successMockResponseData = [
+            'status' => 'PASS',
+            'passport' => $validPassport
+        ];
+
+        $successMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $failMockResponseData = [
+            'status' => 'NO_MATCH',
+            'passport' => $invalidPassport
+        ];
+        $failMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $handlerStack]);
+
+        $insufficientMockResponseData = [
+            'status' => 'NOT_ENOUGH_DETAILS',
+            'passport' => $insufficientPassport
+        ];
+        $insufficientMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($insufficientMock);
+        $insufficientClient = new Client(['handler' => $handlerStack]);
+
+        return [
+            [
+                $validPassport,
+                $successClient,
+                'PASS',
+                false
+            ],
+            [
+                $invalidPassport,
+                $failClient,
+                'NO_MATCH',
+                false
+            ],
+            [
+                $insufficientPassport,
+                $insufficientClient,
+                'NOT_ENOUGH_DETAILS',
                 false
             ],
         ];
