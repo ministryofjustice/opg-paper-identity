@@ -17,9 +17,9 @@ class DataQueryHandler
     ) {
     }
 
-    public function returnAll(): array
+    public function returnAll($tableName = null): array
     {
-        $result = $this->dynamoDbClient->scan(['TableName' => $this->tableName]);
+        $result = $this->dynamoDbClient->scan(['TableName' => $tableName ? : $this->tableName]);
 
         return $this->returnUnmarshalResult($result);
     }
