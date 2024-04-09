@@ -10,6 +10,8 @@ class PassportDateValidator extends AbstractValidator
 {
     public const PASSPORT_DATE = 'passport_date';
 
+    public const EXPIRY_ALLOWANCE = '+5 year';
+
     protected array $messageTemplates = [
         self::PASSPORT_DATE => 'The passport needs to be no more than 5 years out of date. Check the expiry date 
         and change to Yes, or try a different method',
@@ -26,10 +28,15 @@ class PassportDateValidator extends AbstractValidator
     {
         try {
             $now = time();
-            $effectiveExpiry = date('Y-m-d', strtotime('+5 year', strtotime($date)));
+            $expiryDate = strtotime($date);
+            if(!$expiryDate) {
+                return false;
+            }
+            $effectiveExpiry = date('Y-m-d', strtotime(self::EXPIRY_ALLOWANCE, $expiryDate));
 
             return $now < strtotime($effectiveExpiry);
         } catch (\Exception $exception) {
+            error_log($exception->getMessage());
             return false;
         }
     }

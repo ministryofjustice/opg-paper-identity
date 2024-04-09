@@ -211,7 +211,6 @@ class DonorFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
-            $view->setVariable('passport_indate', $data['inDate']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
                 return $this->formProcessorService->processPassportDateForm(
@@ -221,6 +220,7 @@ class DonorFlowController extends AbstractActionController
                     $templates
                 );
             } else {
+                $view->setVariable('passport_indate', $data['inDate']);
                 return $this->formProcessorService->processPassportForm(
                     $this->getRequest()->getPost(),
                     $form,
