@@ -20,8 +20,12 @@ class FormProcessorService
     {
     }
 
-    public function processDrivingLicencenForm(Parameters $formData, FormInterface $form, ViewModel $view, array $templates = []): ViewModel
-    {
+    public function processDrivingLicencenForm(
+        Parameters $formData,
+        FormInterface $form,
+        ViewModel $view,
+        array $templates = []
+    ): ViewModel {
         $form->setData($formData);
         $validFormat = $form->isValid();
 
@@ -37,8 +41,12 @@ class FormProcessorService
         return $view->setTemplate($templates['default']);
     }
 
-    public function processNationalInsuranceNumberForm(Parameters $formData, FormInterface $form, ViewModel $view, array $templates = []): ViewModel
-    {
+    public function processNationalInsuranceNumberForm(
+        Parameters $formData,
+        FormInterface $form,
+        ViewModel $view,
+        array $templates = []
+    ): ViewModel {
         $form->setData($formData);
         $validFormat = $form->isValid();
 
@@ -54,8 +62,12 @@ class FormProcessorService
         return $view->setTemplate($templates['default']);
     }
 
-    public function processPassportForm(Parameters $formData, FormInterface $form, ViewModel $view, array $templates = []): ViewModel
-    {
+    public function processPassportForm(
+        Parameters $formData,
+        FormInterface $form,
+        ViewModel $view,
+        array $templates = []
+    ): ViewModel {
         $form->setData($formData);
         $validFormat = $form->isValid();
 
@@ -71,8 +83,12 @@ class FormProcessorService
         return $view->setTemplate($templates['default']);
     }
 
-    public function processPassportDateForm(Parameters $formData, FormInterface $form, ViewModel $view, array $templates = []): ViewModel
-    {
+    public function processPassportDateForm(
+        Parameters $formData,
+        FormInterface $form,
+        ViewModel $view,
+        array $templates = []
+    ): ViewModel {
         $expiryDate = sprintf(
             "%s-%s-%s",
             $formData['passport_issued_year'],
