@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Validators\LPAValidator;
+use Laminas\Form\Annotation;
 use JsonSerializable;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\Annotation\Validator;
-use Laminas\Validator\Date;
 use Laminas\Validator\InArray;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
@@ -35,15 +36,20 @@ class CaseData implements JsonSerializable
     #[Validator(Regex::class, options: ["pattern" => "/M(-([0-9A-Z]){4}){3}/"])]
     private string $lpa1;
 
+    #[Annotation\Validator(LPAValidator::class)]
     private ?string $lpa2;
 
+    #[Annotation\Validator(LPAValidator::class)]
     private ?string $lpa3;
+
+    #[Annotation\Validator(LPAValidator::class)]
+    private ?string $lpa4;
 
     /**
      * Factory method
      *
      * @param array{verifyMethod: ?string, donorType: ?string, firstName: string, lastName: string, dob: string,
-     *     lpas: array{lpa1: ?string, lpa2: ?string, lpa3: ?string }} $data
+     *     lpas: array{lpa1: ?string, lpa2: ?string, lpa3: ?string, lpa4: ?string }} $data
      */
     public static function fromArray(mixed $data): self
     {
@@ -56,6 +62,7 @@ class CaseData implements JsonSerializable
         $instance->lpa1 = $data['lpas'][0] ?? null;
         $instance->lpa2 = $data['lpas'][1] ?? null;
         $instance->lpa3 = $data['lpas'][2] ?? null;
+        $instance->lpa4 = $data['lpas'][3] ?? null;
 
         return $instance;
     }
@@ -70,7 +77,8 @@ class CaseData implements JsonSerializable
             'dob'   => $this->dob,
             'lpa1' => $this->lpa1,
             'lap2' => $this->lpa2,
-            'lpa3' => $this->lpa3
+            'lpa3' => $this->lpa3,
+            'lpa4' => $this->lpa4,
         ];
     }
 

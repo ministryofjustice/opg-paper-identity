@@ -72,6 +72,5 @@ class DataImportHandler
         } catch (AwsException $e) {
             echo "Error: " . $e->getMessage();
         }
-
     }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Logging\Context;
-use Application\Mvc\Controller\Plugin\ValidatePayload\BadPayloadException;
 use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
@@ -53,11 +51,8 @@ class IdentityController extends AbstractActionController
             'lpas'          => $lpas
         ]);
 
-        var_dump($caseData);
-
-        if( $caseData->isValid()) {
-
-            //@TODO below not RFC 4122 compliant, replace with appropriate library if needed
+        if ($caseData->isValid()) {
+            // uid below not RFC 4122 compliant, replace with appropriate library if needed
             $uid = uniqid();
             $item = [
                 'id'            => ['S' => $uid],
@@ -70,15 +65,12 @@ class IdentityController extends AbstractActionController
 
             ];
 
-            var_dump($item);
-
             $this->dataImportHandler->insertData('cases', $item);
 
-            return new JsonModel(array('uid' => $uid));
+            return new JsonModel(['uid' => $uid]);
         }
 
-        return new JsonModel(array('error' => 'Invalid data'));
-
+        return new JsonModel(['error' => 'Invalid data']);
     }
 
     public function methodAction(): JsonModel
