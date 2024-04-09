@@ -29,7 +29,7 @@ class PassportDateValidator extends AbstractValidator
         try {
             $now = time();
             $expiryDate = strtotime($date);
-            if(!$expiryDate) {
+            if ($expiryDate === false) {
                 return false;
             }
             $effectiveExpiry = date('Y-m-d', strtotime(self::EXPIRY_ALLOWANCE, $expiryDate));
