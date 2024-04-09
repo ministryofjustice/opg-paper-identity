@@ -263,7 +263,7 @@ class OpgApiServiceTest extends TestCase
         $invalidNino = 'AA112233Q';
 
         $successMockResponseData = [
-            'status' => 'NINO check complete',
+            'status' => 'PASS',
             'nino' => $validNino
         ];
 
