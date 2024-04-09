@@ -20,6 +20,6 @@ class Validator implements ValidatorInterface
     //@TODO implement when we have API access
     public function validateNINO(string $nino): string
     {
-        return 'Pass';
+        return self::PASS;
     }
 }

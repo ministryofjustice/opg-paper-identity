@@ -67,7 +67,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider ninoData
      */
-    public function testNino(string $nino, int $status): void
+    public function testNino(string $nino, string $response, int $status): void
     {
         $this->dispatchJSON(
             '/identity/validate_nino',
@@ -76,6 +76,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
         );
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
+        $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
@@ -84,10 +85,10 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     public static function ninoData(): array
     {
         return [
-            ['AA112233A', Response::STATUS_CODE_200],
-            ['BB112233A', Response::STATUS_CODE_200],
-            ['AA112233D', Response::STATUS_CODE_400],
-            ['AA112233C', Response::STATUS_CODE_400]
+            ['AA112233A', 'PASS', Response::STATUS_CODE_200],
+            ['BB112233A', 'PASS', Response::STATUS_CODE_200],
+            ['AA112233D', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
+            ['AA112233C', 'NO_MATCH', Response::STATUS_CODE_200]
         ];
     }
 
