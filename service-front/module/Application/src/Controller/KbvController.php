@@ -30,7 +30,7 @@ class KbvController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
-        if (array_key_exists('error', $questionsData)) {
+        if (is_array($questionsData) && array_key_exists('error', $questionsData)) {
             return $this->redirect()->toRoute('thin_file_failure', ['uuid' => $uuid]);
         }
 
