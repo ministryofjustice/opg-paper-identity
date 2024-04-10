@@ -44,8 +44,9 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(LPAValidator::class)]
     private ?string $lpa3;
 
-    #[Annotation\Validator(LPAValidator::class)]
+
     private ?string $lpa4;
+
 
     /**
      * Factory method
@@ -62,9 +63,9 @@ class CaseData implements JsonSerializable
         $instance->lastName = $data['lastName'];
         $instance->dob = $data['dob'];
         $instance->lpa1 = $data['lpas'][0];
-        $instance->lpa2 = $data['lpas'][1] ?? null;
-        $instance->lpa3 = $data['lpas'][2] ?? null;
-        $instance->lpa4 = $data['lpas'][3] ?? null;
+        $instance->lpa2 = $data['lpas'][1] ?? 'NA';
+        $instance->lpa3 = $data['lpas'][2] ?? 'NA';
+        $instance->lpa4 = $data['lpas'][2] ?? 'NA';
 
         return $instance;
     }
