@@ -39,17 +39,6 @@ class IdentityController extends AbstractActionController
     {
     }
 
-    public function methodAction(): JsonModel
-    {
-        $data = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number'
-        ];
-
-        return new JsonModel($data);
-    }
-
     public function detailsAction(): JsonModel
     {
         $data = [

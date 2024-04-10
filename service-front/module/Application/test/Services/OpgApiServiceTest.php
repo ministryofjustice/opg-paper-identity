@@ -30,56 +30,6 @@ class OpgApiServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider idOptionsData
-     */
-    public function testGetIdOptionsData(Client $client, array $responseData, bool $exception): void
-    {
-        if ($exception) {
-            $this->expectException(OpgApiException::class);
-        }
-
-        $this->opgApiService = new OpgApiService($client);
-
-        $response = $this->opgApiService->getIdOptionsData();
-
-        $this->assertEquals($responseData, $response);
-    }
-
-    public static function idOptionsData(): array
-    {
-        $successMockResponseData = [
-            "Passport",
-            "Driving Licence",
-            "National Insurance Number"
-        ];
-        $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
-        ]);
-        $handlerStack = HandlerStack::create($successMock);
-        $successClient = new Client(['handler' => $handlerStack]);
-
-        $failMockResponseData = ['Bad Request'];
-        $failMock = new MockHandler([
-            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
-        ]);
-        $handlerStack = HandlerStack::create($failMock);
-        $failClient = new Client(['handler' => $handlerStack]);
-
-        return [
-            [
-                $successClient,
-                $successMockResponseData,
-                false
-            ],
-            [
-                $failClient,
-                $failMockResponseData,
-                true
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider detailsData
      */
     public function testGetDetailsData(Client $client, array $responseData, bool $exception): void
