@@ -1,0 +1,316 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ApplicationTest\Controller;
+
+use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\DonorFlowController;
+use Application\Services\FormProcessorService;
+use Application\Services\SiriusApiService;
+use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+
+class DonorFlowControllerTest extends AbstractHttpControllerTestCase
+{
+    private OpgApiServiceInterface&MockObject $opgApiServiceMock;
+    private SiriusApiService&MockObject $siriusApiService;
+    private FormProcessorService&MockObject $formProcessorService;
+
+    public function setUp(): void
+    {
+        $this->setApplicationConfig(include __DIR__ . '/../../../../config/application.config.php');
+
+        $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+        $this->siriusApiService = $this->createMock(SiriusApiService::class);
+        $this->formProcessorService = $this->createMock(FormProcessorService::class);
+
+        parent::setUp();
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
+        $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
+        $serviceManager->setService(FormProcessorService::class, $this->formProcessorService);
+    }
+
+    public function testDonorIdCheckReturnsPageWithData(): void
+    {
+        $mockResponseDataIdOptions = [
+            "Passport",
+            "Driving Licence",
+            "National Insurance Number"
+        ];
+
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getIdOptionsData')
+            ->willReturn($mockResponseDataIdOptions);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch('/donor-id-check', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('donor_id_check');
+    }
+
+    public function testAddressVerificationReturnsPageWithData(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+            'Voucher',
+            'Post Office',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getAddressVerificationData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/address_verification', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('address_verification');
+    }
+    public function testLpasByDonorReturnsPageWithData(): void
+    {
+        $mockResponseDataAddressVerificationOptions = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/donor-lpa-check', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('donor_lpa_check');
+    }
+
+    public function testNationalInsuranceNumberReturnsPageWithData(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch('/national-insurance-number', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('national_insurance_number');
+    }
+
+    public function testDrivingLicenceNumberReturnsPageWithData(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch('/driving-licence-number', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('driving_licence_number');
+    }
+
+    public function testHowWillDonorConfirmPage(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getIdOptionsData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch('/how-will-donor-confirm', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('how_donor_confirms');
+    }
+
+    public function testIdentityCheckPassedPage(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $mockResponseDataAddressVerificationOptions = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/identity-check-passed', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('identity_check_passed');
+    }
+
+    public function testIdentityCheckFailedPage(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $mockResponseDataAddressVerificationOptions = [
+            [
+                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
+        $this->dispatch('/identity-check-failed', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('identity_check_failed');
+    }
+
+    public function testThinFileFailurePage(): void
+    {
+        $this->dispatch('/thin-file-failure', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('thin_file_failure');
+    }
+}

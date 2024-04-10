@@ -35,7 +35,7 @@ return [
                 'options' => [
                     'route'    => '/start',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'start',
                     ],
                 ],
@@ -45,7 +45,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/donor-id-check',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'donorIdCheck',
                     ],
                 ],
@@ -55,7 +55,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/donor-lpa-check',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'donorLpaCheck',
                     ],
                 ],
@@ -65,7 +65,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/how-will-donor-confirm',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'howWillDonorConfirm',
                     ],
                 ],
@@ -75,7 +75,7 @@ return [
                 'options' => [
                     'route'    => '/address_verification',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'addressVerification',
                     ],
                 ],
@@ -85,7 +85,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/national-insurance-number',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'nationalInsuranceNumber',
                     ],
                 ],
@@ -95,7 +95,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/driving-licence-number',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'drivingLicenceNumber',
                     ],
                 ],
@@ -105,7 +105,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/passport-number',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'passportNumber',
                     ],
                 ],
@@ -125,7 +125,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/identity-check-passed',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'identityCheckPassed',
                     ],
                 ],
@@ -135,7 +135,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/identity-check-failed',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'identityCheckFailed',
                     ],
                 ],
@@ -145,7 +145,7 @@ return [
                 'options' => [
                     'route'    => '[/:uuid]/thin-file-failure',
                     'defaults' => [
-                        'controller' => Controller\IndexController::class,
+                        'controller' => Controller\DonorFlowController::class,
                         'action'     => 'thinFileFailure',
                     ],
                 ],
@@ -154,6 +154,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
+            Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
         ],

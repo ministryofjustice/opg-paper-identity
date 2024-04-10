@@ -31,6 +31,7 @@ class PassportInDateValidatorTest extends TestCase
         return [
             ['', false],
             [null, false],
+            ['--', false],
             ['no', false],
             ['yes', true],
         ];
