@@ -36,7 +36,6 @@ class PassportDateValidator extends AbstractValidator
 
             return $now < strtotime($effectiveExpiry);
         } catch (\Exception $exception) {
-            error_log($exception->getMessage());
             return false;
         }
     }
