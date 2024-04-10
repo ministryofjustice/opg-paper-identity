@@ -44,7 +44,6 @@ class OpgApiService implements OpgApiServiceInterface
             }
             return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            error_log($exception->getMessage());
             throw new OpgApiException($exception->getMessage());
         }
     }
@@ -81,7 +80,6 @@ class OpgApiService implements OpgApiServiceInterface
                 ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
-            error_log($opgApiException->getMessage());
             return $opgApiException->getMessage();
         }
 
@@ -100,7 +98,6 @@ class OpgApiService implements OpgApiServiceInterface
                 ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
-            error_log($opgApiException->getMessage());
             return $opgApiException->getMessage();
         }
 
@@ -119,7 +116,6 @@ class OpgApiService implements OpgApiServiceInterface
                 ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
-            error_log($opgApiException->getMessage());
             return $opgApiException->getMessage();
         }
 
@@ -131,7 +127,6 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             return $this->makeApiRequest("/cases/$uuid/kbv-questions");
         } catch (OpgApiException $opgApiException) {
-            error_log($opgApiException->getMessage());
             return false;
         }
     }
@@ -145,7 +140,6 @@ class OpgApiService implements OpgApiServiceInterface
             }
             return true;
         } catch (OpgApiException $opgApiException) {
-            error_log($opgApiException->getMessage());
             return false;
         }
     }
