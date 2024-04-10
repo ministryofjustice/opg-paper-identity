@@ -5,46 +5,43 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\IndexController;
+use Application\Controller\DonorFlowController;
+use Application\Services\FormProcessorService;
+use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class IndexControllerTest extends AbstractHttpControllerTestCase
+class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 {
+    private OpgApiServiceInterface&MockObject $opgApiServiceMock;
+    private SiriusApiService&MockObject $siriusApiService;
+    private FormProcessorService&MockObject $formProcessorService;
+
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../config/application.config.php');
+
+        $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+        $this->siriusApiService = $this->createMock(SiriusApiService::class);
+        $this->formProcessorService = $this->createMock(FormProcessorService::class);
 
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
-    }
-
-    public function testIndexActionCanBeAccessed(): void
-    {
-        $this->dispatch('/', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('home');
-    }
-
-    public function testIndexActionViewModelTemplateRenderedWithinLayout(): void
-    {
-        $this->dispatch('/', 'GET');
-        $this->assertQuery('body h1');
-    }
-
-    public function testInvalidRouteDoesNotCrash(): void
-    {
-        $this->dispatch('/invalid/route', 'GET');
-        $this->assertResponseStatusCode(404);
+        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
+        $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
+        $serviceManager->setService(FormProcessorService::class, $this->formProcessorService);
     }
 
     public function testDonorIdCheckReturnsPageWithData(): void
     {
+        $mockResponseDataIdOptions = [
+            "Passport",
+            "Driving Licence",
+            "National Insurance Number"
+        ];
+
         $mockResponseDataIdDetails = [
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
@@ -59,14 +56,20 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
+            ->method('getIdOptionsData')
+            ->willReturn($mockResponseDataIdOptions);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
             ->method('getDetailsData')
             ->willReturn($mockResponseDataIdDetails);
 
         $this->dispatch('/donor-id-check', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_id_check');
     }
 
@@ -89,8 +92,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/address_verification', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('address_verification');
     }
     public function testLpasByDonorReturnsPageWithData(): void
@@ -115,8 +118,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/donor-lpa-check', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_lpa_check');
     }
 
@@ -142,8 +145,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/national-insurance-number', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('national_insurance_number');
     }
 
@@ -169,8 +172,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/driving-licence-number', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('driving_licence_number');
     }
 
@@ -187,6 +190,18 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             ]
         ];
 
+        $mockResponseDataAddressVerificationOptions = [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number',
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getIdOptionsData')
+            ->willReturn($mockResponseDataAddressVerificationOptions);
+
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -196,8 +211,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/how-will-donor-confirm', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('how_donor_confirms');
     }
 
@@ -240,8 +255,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/identity-check-passed', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('identity_check_passed');
     }
 
@@ -284,8 +299,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/identity-check-failed', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('identity_check_failed');
     }
 
@@ -294,8 +309,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/thin-file-failure', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
+        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('thin_file_failure');
     }
 }

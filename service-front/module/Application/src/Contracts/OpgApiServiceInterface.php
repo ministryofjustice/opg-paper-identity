@@ -10,9 +10,9 @@ interface OpgApiServiceInterface
     public function getDetailsData(): array;
     public function getAddressVerificationData(): array;
     public function getLpasByDonorData(): array;
-    public function checkNinoValidity(string $nino): bool;
-    public function checkDlnValidity(string $dln): bool;
-    public function checkPassportValidity(string $passport): bool;
-    public function getIdCheckQuestions(string $uuid): array;
+    public function checkNinoValidity(string $nino): string;
+    public function checkDlnValidity(string $dln): string;
+    public function checkPassportValidity(string $passport): string;
+    public function getIdCheckQuestions(string $uuid): array|bool;
     public function checkIdCheckAnswers(string $uuid, array $answers): bool;
 }

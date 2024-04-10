@@ -63,7 +63,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->makeApiRequest('/identity/list_lpas');
     }
 
-    public function checkNinoValidity(string $nino): bool
+    public function checkNinoValidity(string $nino): string
     {
         $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
 
@@ -75,13 +75,13 @@ class OpgApiService implements OpgApiServiceInterface
                 ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
-            return false;
+            return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'] === 'NINO check complete';
+        return $this->responseData['status'];
     }
 
-    public function checkDlnValidity(string $dln): bool
+    public function checkDlnValidity(string $dln): string
     {
         $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln));
 
@@ -93,13 +93,13 @@ class OpgApiService implements OpgApiServiceInterface
                 ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
-            return false;
+            return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'] === 'PASS';
+        return $this->responseData['status'];
     }
 
-    public function checkPassportValidity(string $passport): bool
+    public function checkPassportValidity(string $passport): string
     {
         $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport));
 
@@ -111,15 +111,19 @@ class OpgApiService implements OpgApiServiceInterface
                 ['Content-Type' => 'application/json']
             );
         } catch (OpgApiException $opgApiException) {
-            return false;
+            return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'] === 'PASS';
+        return $this->responseData['status'];
     }
 
-    public function getIdCheckQuestions(string $uuid): array
+    public function getIdCheckQuestions(string $uuid): array|bool
     {
-        return $this->makeApiRequest("/cases/$uuid/kbv-questions");
+        try {
+            return $this->makeApiRequest("/cases/$uuid/kbv-questions");
+        } catch (OpgApiException $opgApiException) {
+            return false;
+        }
     }
 
     public function checkIdCheckAnswers(string $uuid, array $answers): bool
