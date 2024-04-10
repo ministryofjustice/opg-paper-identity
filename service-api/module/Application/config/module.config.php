@@ -103,6 +103,17 @@ return [
                 ],
             ],
 
+            'create_case' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/create',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'create',
+                    ],
+                ],
+            ],
+
             'address_verification' => [
                 'type'    => Literal::class,
                 'options' => [

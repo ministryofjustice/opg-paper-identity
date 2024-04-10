@@ -16,10 +16,12 @@ class DataQueryHandler
         private readonly string $tableName,
     ) {
     }
-
-    public function returnAll(): array
+    /**
+     * @psalm-suppress RiskyTruthyFalsyComparison
+     */
+    public function returnAll(string $tableName = null): array
     {
-        $result = $this->dynamoDbClient->scan(['TableName' => $this->tableName]);
+        $result = $this->dynamoDbClient->scan(['TableName' => $tableName ? : $this->tableName]);
 
         return $this->returnUnmarshalResult($result);
     }

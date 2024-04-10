@@ -60,4 +60,17 @@ class DataImportHandler
             }
         }
     }
+
+    public function insertData(string $tablename, array $item): void
+    {
+        $params = [
+            'TableName' => $tablename,
+            'Item' => $item
+        ];
+        try {
+            $this->dynamoDbClient->putItem($params);
+        } catch (AwsException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 }
