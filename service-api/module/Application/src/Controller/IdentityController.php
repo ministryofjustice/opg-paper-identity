@@ -9,6 +9,7 @@ use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -35,8 +36,41 @@ class IdentityController extends AbstractActionController
         return new JsonModel();
     }
 
-    public function createAction(): void
+    public function createAction(): JsonModel
     {
+        $lpas = [];
+        foreach ($this->params()->fromQuery("lpas") as $lpa) {
+            $lpas[] = $lpa;
+        }
+        $caseData = CaseData::fromArray([
+            'donorType'     => $this->params()->fromQuery("personType"),
+            'firstName'     => $this->params()->fromQuery("firstName"),
+            'lastName'      => $this->params()->fromQuery("lastName"),
+            'dob'           => $this->params()->fromQuery("dob"),
+            'verifyMethod'  => $this->params()->fromQuery("method"),
+            'lpas'          => $lpas
+        ]);
+
+        if ($caseData->isValid()) {
+            // uid below not RFC 4122 compliant, replace with appropriate library if needed
+            $uid = uniqid();
+            $item = [
+                'id'            => ['S' => $uid],
+                'donorType'     => ['S' => $this->params()->fromQuery("personType")],
+                'firstName'     => ['S' => $this->params()->fromQuery("firstName")],
+                'lastName'      => ['S' => $this->params()->fromQuery("lastName")],
+                'dob'           => ['S' => $this->params()->fromQuery("dob")],
+                'verifyMethod'  => ['S' => $this->params()->fromQuery("method")],
+                'lpas'          => ['SS' => $lpas]
+
+            ];
+
+            $this->dataImportHandler->insertData('cases', $item);
+
+            return new JsonModel(['uid' => $uid]);
+        }
+
+        return new JsonModel(['error' => 'Invalid data']);
     }
 
     public function methodAction(): JsonModel
@@ -66,7 +100,7 @@ class IdentityController extends AbstractActionController
     public function testdataAction(): JsonModel
     {
         $this->dataImportHandler->load();
-        $data = $this->dataQueryHandler->returnAll();
+        $data = $this->dataQueryHandler->returnAll('cases');
 
         /**
          * @psalm-suppress InvalidArgument
