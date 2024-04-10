@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
-use Application\Controller\IndexController;
+use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 
-class IdentityControllerTest extends AbstractHttpControllerTestCase
+class IdentityControllerTest extends TestCase
 {
     public function setUp(): void
     {
@@ -28,16 +27,6 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
         ));
 
         parent::setUp();
-    }
-
-    public function testIndexActionCanBeAccessed(): void
-    {
-        $this->dispatch('/', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('home');
     }
 
     public function testIndexActionResponse(): void
