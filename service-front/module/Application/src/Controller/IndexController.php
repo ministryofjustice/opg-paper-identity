@@ -21,9 +21,11 @@ use Application\Forms\NationalInsuranceNumber;
 class IndexController extends AbstractActionController
 {
     protected $plugins;
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
+        private readonly array $config
     ) {
     }
 
@@ -89,7 +91,7 @@ class IndexController extends AbstractActionController
             }
         }
 
-        $optionsdata = $this->opgApiService->getIdOptionsData();
+        $optionsdata = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData();
 
         $view = new ViewModel();
@@ -103,7 +105,7 @@ class IndexController extends AbstractActionController
 
     public function donorIdCheckAction(): ViewModel
     {
-        $optionsdata = $this->opgApiService->getIdOptionsData();
+        $optionsdata = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData();
 
         $view = new ViewModel();

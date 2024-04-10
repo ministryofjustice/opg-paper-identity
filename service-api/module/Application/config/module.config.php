@@ -52,16 +52,6 @@ return [
                     ],
                 ],
             ],
-            'method' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/identity/method',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'method',
-                    ],
-                ],
-            ],
             'details' => [
                 'type'    => Literal::class,
                 'options' => [

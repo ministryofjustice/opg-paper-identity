@@ -196,4 +196,11 @@ return [
             TwigExtension::class,
         ],
     ],
+    'opg_settings' => [
+        'identity_methods' => [
+            'Passport',
+            'Driving Licence',
+            'National Insurance Number'
+        ],
+    ]
 ];

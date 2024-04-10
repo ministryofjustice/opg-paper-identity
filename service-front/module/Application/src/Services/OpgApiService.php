@@ -48,11 +48,6 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getIdOptionsData(): array
-    {
-        return $this->makeApiRequest('/identity/method');
-    }
-
     public function getDetailsData(): array
     {
         return $this->makeApiRequest('/identity/details');
