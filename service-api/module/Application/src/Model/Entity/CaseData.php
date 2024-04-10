@@ -6,7 +6,6 @@ namespace Application\Model\Entity;
 
 use Application\Validators\LPAValidator;
 use Laminas\Form\Annotation;
-use JsonSerializable;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\InArray;
@@ -18,13 +17,13 @@ use Laminas\Validator\Regex;
  * @psalm-suppress MissingConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
  */
-class CaseData implements JsonSerializable
+class CaseData
 {
     #[Validator(InArray::class, options: ["haystack" => ['passport', 'drivinglicense', 'nino']])]
     private string $verifyMethod;
 
     #[Validator(NotEmpty::class)]
-    private string $donorType;
+    private string $personType;
 
     #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"])]
     private string $dob;
@@ -51,41 +50,23 @@ class CaseData implements JsonSerializable
     /**
      * Factory method
      *
-     * @param array{verifyMethod: string, donorType: string, firstName: string, lastName: string, dob: string,
+     * @param array{verifyMethod: string, personType: string, firstName: string, lastName: string, dob: string,
      *     lpas: array{0: string, 1: ?string, 2: ?string, 3: ?string} } $data
      */
     public static function fromArray(mixed $data): self
     {
         $instance = new self();
         $instance->verifyMethod = $data['verifyMethod'];
-        $instance->donorType = $data['donorType'];
+        $instance->personType = $data['personType'];
         $instance->firstName = $data['firstName'];
         $instance->lastName = $data['lastName'];
         $instance->dob = $data['dob'];
         $instance->lpa1 = $data['lpas'][0];
         $instance->lpa2 = $data['lpas'][1] ?? 'NA';
         $instance->lpa3 = $data['lpas'][2] ?? 'NA';
-        $instance->lpa4 = $data['lpas'][2] ?? 'NA';
+        $instance->lpa4 = $data['lpas'][3] ?? 'NA';
 
         return $instance;
-    }
-
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     */
-    public function jsonSerialize(): mixed
-    {
-        return [
-            'verifyMethod' => $this->verifyMethod,
-            'donorType' => $this->donorType,
-            'firstName' => $this->firstName,
-            'lastName' => $this->lastName,
-            'dob'   => $this->dob,
-            'lpa1' => $this->lpa1,
-            'lap2' => $this->lpa2,
-            'lpa3' => $this->lpa3,
-            'lpa4' => $this->lpa4,
-        ];
     }
 
     public function isValid(): bool

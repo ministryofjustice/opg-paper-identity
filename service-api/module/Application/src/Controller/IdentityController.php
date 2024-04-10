@@ -13,6 +13,7 @@ use Application\Model\Entity\CaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -38,38 +39,26 @@ class IdentityController extends AbstractActionController
 
     public function createAction(): JsonModel
     {
-        $lpas = [];
-        foreach ($this->params()->fromQuery("lpas") as $lpa) {
-            $lpas[] = $lpa;
-        }
-        $caseData = CaseData::fromArray([
-            'donorType'     => $this->params()->fromQuery("personType"),
-            'firstName'     => $this->params()->fromQuery("firstName"),
-            'lastName'      => $this->params()->fromQuery("lastName"),
-            'dob'           => $this->params()->fromQuery("dob"),
-            'verifyMethod'  => $this->params()->fromQuery("method"),
-            'lpas'          => $lpas
-        ]);
+        $data = json_decode($this->getRequest()->getContent(), true);
+
+        $caseData = CaseData::fromArray($data);
 
         if ($caseData->isValid()) {
-            // uid below not RFC 4122 compliant, replace with appropriate library if needed
-            $uid = uniqid();
+            $uuid = Uuid::uuid4();
             $item = [
-                'id'            => ['S' => $uid],
-                'donorType'     => ['S' => $this->params()->fromQuery("personType")],
-                'firstName'     => ['S' => $this->params()->fromQuery("firstName")],
-                'lastName'      => ['S' => $this->params()->fromQuery("lastName")],
-                'dob'           => ['S' => $this->params()->fromQuery("dob")],
-                'verifyMethod'  => ['S' => $this->params()->fromQuery("method")],
-                'lpas'          => ['SS' => $lpas]
-
+                'id'            => ['S' => $uuid->toString()],
+                'personType'     => ['S' => $data["personType"]],
+                'firstName'     => ['S' => $data["firstName"]],
+                'lastName'      => ['S' => $data["lastName"]],
+                'dob'           => ['S' => $data["dob"]],
+                'verifyMethod'  => ['S' => $data["verifyMethod"]],
+                'lpas'          => ['SS' => $data['lpas']]
             ];
 
             $this->dataImportHandler->insertData('cases', $item);
 
-            return new JsonModel(['uid' => $uid]);
+            return new JsonModel(['uuid' => $uuid]);
         }
-
         return new JsonModel(['error' => 'Invalid data']);
     }
 
