@@ -36,12 +36,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDonorIdCheckReturnsPageWithData(): void
     {
-        $mockResponseDataIdOptions = [
-            "Passport",
-            "Driving Licence",
-            "National Insurance Number"
-        ];
-
         $mockResponseDataIdDetails = [
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
@@ -52,12 +46,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "PW M-1234-ABCD-AAAA"
             ]
         ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getIdOptionsData')
-            ->willReturn($mockResponseDataIdOptions);
 
         $this
             ->opgApiServiceMock
@@ -189,18 +177,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "PW M-1234-ABCD-AAAA"
             ]
         ];
-
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getIdOptionsData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
 
         $this
             ->opgApiServiceMock
