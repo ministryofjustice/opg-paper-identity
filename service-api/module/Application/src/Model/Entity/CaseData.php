@@ -11,13 +11,14 @@ use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\InArray;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
+use JsonSerializable;
 
 /**
  * DTO for holding data required to make new case entry post
  * @psalm-suppress MissingConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
  */
-class CaseData
+class CaseData implements JsonSerializable
 {
     #[Validator(InArray::class, options: ["haystack" => ['passport', 'drivinglicense', 'nino']])]
     private string $verifyMethod;
@@ -67,6 +68,24 @@ class CaseData
         $instance->lpa4 = $data['lpas'][3] ?? 'NA';
 
         return $instance;
+    }
+
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'verifyMethod' => $this->verifyMethod,
+            'personType' => $this->personType,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'dob'   => $this->dob,
+            'lpa1' => $this->lpa1,
+            'lap2' => $this->lpa2,
+            'lpa3' => $this->lpa3,
+            'lpa4' => $this->lpa4,
+        ];
     }
 
     public function isValid(): bool
