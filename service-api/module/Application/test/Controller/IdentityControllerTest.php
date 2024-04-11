@@ -65,6 +65,47 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
     }
 
     /**
+     * @param array $case
+     * @param int $status
+     * @return void
+     * @dataprovider caseData
+     */
+    public function testCreate(array $case, int $status): void
+    {
+        $this->dispatchJSON(
+            '/identity/create',
+            'POST',
+            [$case]
+        );
+        $this->assertResponseStatusCode($status);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('create_case');
+    }
+
+    public static function caseData(): array
+    {
+        $validData = [
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'personType' => 'CP',
+            'dob'   => '1980-10-10',
+            'lpas' => [
+                'M-XYXY-YAGA-35G3',
+                'M-VGAS-OAGA-34G9'
+            ]
+        ];
+
+        return [
+            [$validData, Response::STATUS_CODE_200],
+            [array_merge($validData, ['lastName' => '']), Response::STATUS_CODE_400],
+            [array_merge($validData, ['dob' => '11-11-2020']), Response::STATUS_CODE_400],
+            [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],
+        ];
+    }
+
+    /**
      * @dataProvider ninoData
      */
     public function testNino(string $nino, int $status): void

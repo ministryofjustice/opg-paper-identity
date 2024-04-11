@@ -208,7 +208,8 @@ return [
             ),
             DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
                 $serviceLocator->get(DynamoDbClient::class),
-                $tableName
+                $tableName,
+                $serviceLocator->get(LoggerInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,

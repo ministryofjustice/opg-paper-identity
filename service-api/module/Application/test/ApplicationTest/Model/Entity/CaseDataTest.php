@@ -25,21 +25,17 @@ class CaseDataTest extends TestCase
             'lastName' => 'last',
             'personType' => 'donor',
             'dob'   => '1966-10-10',
-            'verifyMethod' => 'passport',
             'lpas' => [
                 'M-AGAS-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
             ],
         ];
 
-
         return [
             [$validData, true],
-            [array_merge($validData, ['verifyMethod' => 'nino']), true],
-            [array_merge($validData, ['lpas' => 'M-AGGA-XX']), false],
+            [array_merge($validData, ['lpas' => ['M-AGGA-XX']]), false],
             [array_merge($validData, ['lastName' => '']), false],
             [array_merge($validData, ['dob' => '11-11-2020']), false],
-            [array_merge($validData, ['verifyMethod' => 'unknown']), false],
             [array_replace_recursive($validData, ['lpas' => ['xx']]), false],
         ];
     }

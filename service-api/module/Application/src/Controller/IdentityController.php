@@ -51,14 +51,17 @@ class IdentityController extends AbstractActionController
                 'firstName'     => ['S' => $data["firstName"]],
                 'lastName'      => ['S' => $data["lastName"]],
                 'dob'           => ['S' => $data["dob"]],
-                'verifyMethod'  => ['S' => $data["verifyMethod"]],
                 'lpas'          => ['SS' => $data['lpas']]
             ];
 
             $this->dataImportHandler->insertData('cases', $item);
 
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $uuid]);
         }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
         return new JsonModel(['error' => 'Invalid data']);
     }
 

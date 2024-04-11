@@ -23,7 +23,7 @@ class LPAValidator extends AbstractValidator
 
     private function lpaValidity(?string $lpa): bool
     {
-        if ($lpa === 'NA') {
+        if ($lpa === null || $lpa === '') {
             return true;
         }
             /** @var string $lpa */
