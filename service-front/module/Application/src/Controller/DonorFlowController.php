@@ -70,12 +70,12 @@ class DonorFlowController extends AbstractActionController
                         ->toRoute("passport_number", ['uuid' => $uuid]);
                     break;
 
-                case 'Driving Licence':
+                case 'Driving licence':
                     $this->redirect()
                         ->toRoute("driving_licence_number", ['uuid' => $uuid]);
                     break;
 
-                case 'National Insurance Number':
+                case 'National Insurance number':
                     $this->redirect()
                         ->toRoute("national_insurance_number", ['uuid' => $uuid]);
                     break;
