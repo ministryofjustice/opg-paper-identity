@@ -35,8 +35,15 @@ class IdentityController extends AbstractActionController
         return new JsonModel();
     }
 
-    public function createAction(): void
+    public function createAction(): JsonModel
     {
+        $data = json_decode($this->getRequest()->getContent(), true);
+        //validate data then return
+        return new JsonModel([
+            'case_uuid' => 'b79f0be4-02a5-4ad4-bc2d-b68645236d3b',
+            'name' => $data['name'],
+            'lpas' => $data['lpas'],
+        ]);
     }
 
     public function detailsAction(): JsonModel

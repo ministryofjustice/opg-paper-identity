@@ -42,13 +42,15 @@ class DonorFlowController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+//        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+
+        $case = $this->opgApiService->createCase($detailsData['Name'], $lpas);
 
         $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
             'type' => $this->params()->fromQuery("personType"),
             'lpas' => $lpas,
-            'case' => $case,
+            'case' => $case['case_uuid'],
             'details' => $detailsData,
         ]);
 

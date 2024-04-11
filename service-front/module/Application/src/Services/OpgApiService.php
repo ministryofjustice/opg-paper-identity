@@ -138,4 +138,12 @@ class OpgApiService implements OpgApiServiceInterface
             return false;
         }
     }
+
+    public function createCase(string $name, array $lpas): array
+    {
+        return $this->makeApiRequest("/cases/create", 'POST', [
+            'name' => $name,
+            'lpas' => $lpas,
+        ]);
+    }
 }

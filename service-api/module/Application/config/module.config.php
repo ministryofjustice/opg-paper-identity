@@ -163,6 +163,16 @@ return [
                     ],
                 ],
             ],
+            'create' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/create',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'create',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

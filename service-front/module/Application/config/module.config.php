@@ -200,8 +200,8 @@ return [
     'opg_settings' => [
         'identity_methods' => [
             'Passport',
-            'Driving Licence',
-            'National Insurance Number'
+            'Driving licence',
+            'National Insurance number'
         ],
     ]
 ];
