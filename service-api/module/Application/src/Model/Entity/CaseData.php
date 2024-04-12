@@ -16,6 +16,7 @@ use Laminas\Validator\Regex;
  * DTO for holding data required to make new case entry post
  * @psalm-suppress MissingConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
+ * @psalm-suppress UnusedProperty
  */
 class CaseData
 {
@@ -42,7 +43,7 @@ class CaseData
      * Factory method
      *
      * @param array{personType: string, firstName: string, lastName: string, dob: string,
-     *     lpas: array{0: string, 1: ?string, 2: ?string, 3: ?string} } $data
+     *     lpas: array{} } $data
      */
     public static function fromArray(mixed $data): self
     {

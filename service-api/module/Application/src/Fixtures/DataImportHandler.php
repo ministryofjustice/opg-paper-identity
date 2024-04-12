@@ -72,7 +72,7 @@ class DataImportHandler
         try {
             $this->dynamoDbClient->putItem($params);
         } catch (AwsException $e) {
-            $this->logger->error('Unable to save data [' . $e->getMessage() . '] to '. $tablename, [
+            $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $tablename, [
                 'data' => $item
             ]);
         }

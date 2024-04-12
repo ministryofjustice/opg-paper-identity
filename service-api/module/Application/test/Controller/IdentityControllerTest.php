@@ -68,14 +68,14 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
      * @param array $case
      * @param int $status
      * @return void
-     * @dataprovider caseData
+     * @dataProvider caseData
      */
     public function testCreate(array $case, int $status): void
     {
         $this->dispatchJSON(
             '/identity/create',
             'POST',
-            [$case]
+            $case
         );
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
@@ -89,7 +89,7 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
         $validData = [
             'firstName' => 'firstName',
             'lastName' => 'lastName',
-            'personType' => 'CP',
+            'personType' => 'donor',
             'dob'   => '1980-10-10',
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
