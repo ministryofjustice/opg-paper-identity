@@ -150,10 +150,31 @@ return [
                     ],
                 ],
             ],
+            'cp_start' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cp-start',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'start',
+                    ],
+                ],
+            ],
+            'how_cp_confirms' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/how-will-cp-confirm',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'howWillCpConfirm',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
+            Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
@@ -199,9 +220,9 @@ return [
     ],
     'opg_settings' => [
         'identity_methods' => [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number'
+            'pn' => 'Passport',
+            'dln' => 'Driving Licence',
+            'nin' => 'National Insurance Number'
         ],
     ]
 ];
