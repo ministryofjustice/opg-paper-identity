@@ -78,8 +78,10 @@ class DataImportHandlerTest extends TestCase
         // Expect the logger to be called with error message and data
         $this->loggerMock->expects($this->once())
             ->method('error')
-            ->with($this->stringContains(
-                'Unable to save data [Test exception] to test_table'),
+            ->with(
+                $this->stringContains(
+                    'Unable to save data [Test exception] to test_table'
+                ),
                 $this->callback(function ($context) {
                     // Ensure the data passed to logger contains the correct item
                     $this->assertArrayHasKey('data', $context);
