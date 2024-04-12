@@ -1,0 +1,29 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h1 class="govuk-heading-xl">Does the name match the ID?</h1>
+
+        <p class="govuk-body">
+            The certificate provider’s name that is recorded in Sirius should be identical <br/> to how it is printed on the ID document they have chosen to prove their <br/> identity with. If there is a mis-match, amend in Sirius as appropriate.
+        </p>
+
+        <div class="govuk-inset-text">
+            <h2>
+                Sirius record
+            </h2>
+            <h3>
+                Name
+            </h3>
+            <p>
+                {{ details_data.Name }}
+            </p>
+            <p>
+            Click here to open the certificate provider’s details in Sirius
+            </p>
+            <p>
+            If you update the record is Sirius, click here to refresh this page before continuing
+            </p>
+        </div>
+        <a href="./donor-lpa-check" class="govuk-button">Continue</a>
+{#        <button href="" class="govuk-button govuk-button--secondary">Cancel</button>#}
+    </main>
+</div>

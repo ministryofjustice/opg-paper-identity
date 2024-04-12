@@ -68,17 +68,17 @@ class CPFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             switch ($formData['id_method']) {
-                case 'Passport':
+                case 'pn':
                     $this->redirect()
                         ->toRoute("passport_number", ['uuid' => $uuid]);
                     break;
 
-                case 'Driving Licence':
+                case 'dln':
                     $this->redirect()
                         ->toRoute("driving_licence_number", ['uuid' => $uuid]);
                     break;
 
-                case 'National Insurance Number':
+                case 'nin':
                     $this->redirect()
                         ->toRoute("national_insurance_number", ['uuid' => $uuid]);
                     break;
@@ -97,21 +97,21 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
-        return $view->setTemplate('application/pages/how_will_the_cp_confirm');
+        return $view->setTemplate('application/pages/cp/how_will_the_cp_confirm');
     }
-//
-//    public function donorIdCheckAction(): ViewModel
-//    {
-//        $optionsdata = $this->config['opg_settings']['identity_methods'];
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('options_data', $optionsdata);
-//        $view->setVariable('details_data', $detailsData);
-//
-//        return $view->setTemplate('application/pages/donor_id_check');
-//    }
+
+    public function doesNameMatchIdAction(): ViewModel
+    {
+        $optionsdata = $this->config['opg_settings']['identity_methods'];
+        $detailsData = $this->opgApiService->getDetailsData();
+
+        $view = new ViewModel();
+
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/cp/cp_id_check');
+    }
 //
 //    public function donorLpaCheckAction(): ViewModel
 //    {

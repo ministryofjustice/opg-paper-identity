@@ -170,6 +170,16 @@ return [
                     ],
                 ],
             ],
+            'does_name_match_id' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/does-name-match-id',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'doesNameMatchId',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
