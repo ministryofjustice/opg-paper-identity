@@ -9,9 +9,11 @@ use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -35,8 +37,32 @@ class IdentityController extends AbstractActionController
         return new JsonModel();
     }
 
-    public function createAction(): void
+    public function createAction(): JsonModel
     {
+        $data = json_decode($this->getRequest()->getContent(), true);
+
+        $caseData = CaseData::fromArray($data);
+
+        if ($caseData->isValid()) {
+            $uuid = Uuid::uuid4();
+            $item = [
+                'id'            => ['S' => $uuid->toString()],
+                'personType'     => ['S' => $data["personType"]],
+                'firstName'     => ['S' => $data["firstName"]],
+                'lastName'      => ['S' => $data["lastName"]],
+                'dob'           => ['S' => $data["dob"]],
+                'lpas'          => ['SS' => $data['lpas']]
+            ];
+
+            $this->dataImportHandler->insertData('cases', $item);
+
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            return new JsonModel(['uuid' => $uuid]);
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
+        return new JsonModel(['error' => 'Invalid data']);
     }
 
     public function detailsAction(): JsonModel
@@ -55,7 +81,7 @@ class IdentityController extends AbstractActionController
     public function testdataAction(): JsonModel
     {
         $this->dataImportHandler->load();
-        $data = $this->dataQueryHandler->returnAll();
+        $data = $this->dataQueryHandler->returnAll('cases');
 
         /**
          * @psalm-suppress InvalidArgument

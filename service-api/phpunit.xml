@@ -30,5 +30,10 @@
         <env name="MOCK_DRIVINGLICENSE_API" value="true" />
         <env name="DRIVINGLICENSE_BASE_URL" value="DRIVINGLICENSE_BASE_URL" />
         <env name="MOCK_PASSPORT_API" value="true" />
+        <env name="AWS_ACCESS_KEY_ID" value="localstack" />
+        <env name="AWS_SECRET_ACCESS_KEY" value="localstack" />
+        <env name="AWS_REGION" value="eu-west-1" />
+        <env name="AWS_DYNAMODB_ENDPOINT" value="http://localstack:4566" />
+        <env name="AWS_DYNAMODB_TABLE_NAME" value="cases" />
     </php>
 </phpunit>

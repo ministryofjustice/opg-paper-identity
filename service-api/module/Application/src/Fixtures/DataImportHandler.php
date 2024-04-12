@@ -7,6 +7,7 @@ namespace Application\Fixtures;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
+use Psr\Log\LoggerInterface;
 
 class DataImportHandler
 {
@@ -15,6 +16,7 @@ class DataImportHandler
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
         private readonly string $tableName,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -58,6 +60,21 @@ class DataImportHandler
                 // Handle errors
                 echo "Error: " . $e->getMessage();
             }
+        }
+    }
+
+    public function insertData(string $tablename, array $item): void
+    {
+        $params = [
+            'TableName' => $tablename,
+            'Item' => $item
+        ];
+        try {
+            $this->dynamoDbClient->putItem($params);
+        } catch (AwsException $e) {
+            $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $tablename, [
+                'data' => $item
+            ]);
         }
     }
 }
