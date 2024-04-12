@@ -65,17 +65,17 @@ class DonorFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             switch ($formData['id_method']) {
-                case 'Passport':
+                case 'pn':
                     $this->redirect()
                         ->toRoute("passport_number", ['uuid' => $uuid]);
                     break;
 
-                case 'Driving licence':
+                case 'dln':
                     $this->redirect()
                         ->toRoute("driving_licence_number", ['uuid' => $uuid]);
                     break;
 
-                case 'National Insurance number':
+                case 'nin':
                     $this->redirect()
                         ->toRoute("national_insurance_number", ['uuid' => $uuid]);
                     break;
