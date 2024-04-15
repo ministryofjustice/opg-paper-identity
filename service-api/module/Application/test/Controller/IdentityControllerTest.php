@@ -53,6 +53,69 @@ class IdentityControllerTest extends TestCase
         $request->setHeaders($headers);
     }
 
+    public function testDetailsWithUUID(): void
+    {
+        $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('details');
+    }
+
+    public function testDetailsWithNoUUID(): void
+    {
+        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $this->dispatch('/identity/details', 'GET');
+        $this->assertResponseStatusCode(400);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('details');
+    }
+
+    /**
+     * @param array $case
+     * @param int $status
+     * @return void
+     * @dataProvider caseData
+     */
+    public function testCreate(array $case, int $status): void
+    {
+        $this->dispatchJSON(
+            '/identity/create',
+            'POST',
+            $case
+        );
+        $this->assertResponseStatusCode($status);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('create_case');
+    }
+
+    public static function caseData(): array
+    {
+        $validData = [
+            'firstName' => 'firstName',
+            'lastName' => 'lastName',
+            'personType' => 'donor',
+            'dob'   => '1980-10-10',
+            'lpas' => [
+                'M-XYXY-YAGA-35G3',
+                'M-VGAS-OAGA-34G9'
+            ]
+        ];
+
+        return [
+            [$validData, Response::STATUS_CODE_200],
+            [array_merge($validData, ['lastName' => '']), Response::STATUS_CODE_400],
+            [array_merge($validData, ['dob' => '11-11-2020']), Response::STATUS_CODE_400],
+            [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],
+        ];
+    }
+
     /**
      * @dataProvider ninoData
      */
