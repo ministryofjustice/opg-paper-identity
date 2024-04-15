@@ -55,21 +55,6 @@ class DataQueryHandler
         return $this->returnUnmarshalResult($result);
     }
 
-    /**
-     * @param string $tableName
-     * @param array $key
-     * @psalm-suppress PossiblyUnusedMethod
-     * @return Result
-     * @TODO debug why this doesnt seem to work
-     */
-    public function getItemByKey(string $tableName, array $key): Result
-    {
-        return $this->dynamoDbClient->getItem([
-            'Key' => $key['key'],
-            'TableName' => $tableName
-        ]);
-    }
-
     public function queryByIDNumber(string $idNumber): array
     {
         //return some subset of data

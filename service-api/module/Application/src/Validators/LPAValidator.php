@@ -27,7 +27,7 @@ class LPAValidator extends AbstractValidator
             return true;
         }
             /** @var string $lpa */
-        if (1 == preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
+        if (1 === preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
                 return true;
         } else {
                 return false;
