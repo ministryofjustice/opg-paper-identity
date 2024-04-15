@@ -64,6 +64,28 @@ class IdentityControllerTest extends AbstractHttpControllerTestCase
         $request->setHeaders($headers);
     }
 
+    public function testDetailsWithUUID(): void
+    {
+        $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('details');
+    }
+
+    public function testDetailsWithNoUUID(): void
+    {
+        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $this->dispatch('/identity/details', 'GET');
+        $this->assertResponseStatusCode(400);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('details');
+    }
+
     /**
      * @param array $case
      * @param int $status
