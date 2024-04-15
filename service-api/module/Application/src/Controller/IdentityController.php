@@ -78,15 +78,14 @@ class IdentityController extends AbstractActionController
 
     public function detailsAction(): JsonModel
     {
-        //$uuid = $this->getRequest()->getQuery('uuid');
-        $uuid = $this->params()->fromQuery();
+        $uuid = $this->getRequest()->getQuery('uuid');
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Missing uuid']);
         }
 
-        $data = $this->dataQueryHandler->getCaseByUUID($uuid['uuid']);
+        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         if (! empty($data)) {
