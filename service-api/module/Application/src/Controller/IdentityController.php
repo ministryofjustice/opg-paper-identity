@@ -78,6 +78,7 @@ class IdentityController extends AbstractActionController
 
     public function detailsAction(): JsonModel
     {
+        /** @var string $uuid */
         $uuid = $this->getRequest()->getQuery('uuid');
 
         if (! $uuid) {
