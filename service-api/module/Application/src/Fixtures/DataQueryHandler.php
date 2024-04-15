@@ -16,10 +16,12 @@ class DataQueryHandler
         private readonly string $tableName,
     ) {
     }
-
-    public function returnAll(): array
+    /**
+     * @psalm-suppress RiskyTruthyFalsyComparison
+     */
+    public function returnAll(string $tableName = null): array
     {
-        $result = $this->dynamoDbClient->scan(['TableName' => $this->tableName]);
+        $result = $this->dynamoDbClient->scan(['TableName' => $tableName ? : $this->tableName]);
 
         return $this->returnUnmarshalResult($result);
     }
@@ -37,6 +39,35 @@ class DataQueryHandler
         $result = $this->query($this->tableName, $nameKey, $index);
 
         return $this->returnUnmarshalResult($result);
+    }
+
+    public function getCaseByUUID(string $uuid): array
+    {
+        $idKey = [
+            'key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+        ];
+        $result = $this->query('cases', $idKey);
+
+        return $this->returnUnmarshalResult($result);
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $key
+     * @psalm-suppress PossiblyUnusedMethod
+     * @return Result
+     * @TODO debug why this doesnt seem to work
+     */
+    public function getItemByKey(string $tableName, array $key): Result
+    {
+        return $this->dynamoDbClient->getItem([
+            'Key' => $key['key'],
+            'TableName' => $tableName
+        ]);
     }
 
     public function queryByIDNumber(string $idNumber): array
@@ -96,6 +127,10 @@ class DataQueryHandler
             'TableName' => $tableName,
             'IndexName' => $dbIndex,
         ];
+
+        if ($dbIndex === '') {
+            unset($query['IndexName']);
+        }
 
         return $this->dynamoDbClient->query($query);
     }
