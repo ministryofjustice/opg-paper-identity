@@ -1,0 +1,54 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <form method="POST">
+            <h1 class="govuk-heading-xl">LPAs to be included in the identity check</h1>
+
+            <p class="govuk-body">
+                Certificate providers may be on more than 1 LPA and may want to confirm their identity for multiple LPAs at the same time.
+            </p>
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                LPA List
+                            </h2>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    {#                                <dd></dd> #}
+                                    <dt class="govuk-summary-list__key">
+                                        LPA reference number
+                                    </dt>
+                                    <dt class="govuk-summary-list__key">
+                                        Donor
+                                    </dt>
+                                    <dt class="govuk-summary-list__key">
+                                        Action
+                                    </dt>
+                                </div>
+                                {% for datum in lpas %}
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            <label class="govuk-label govuk-checkboxes__label" for="lpa_check_{{ datum }}">
+                                                {{ datum.lpa_ref }}
+                                            </label>
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            {{ datum.donor_name }}
+                                        </dd>
+                                        <dd class="govuk-summary-list__value">
+                                            <a href="">Remove</a>
+                                        </dd>
+                                    </div>
+                                {% endfor %}
+                            </dl>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <input type="submit" class="govuk-button" value="Continue">
+        </form>
+    </main>
+</div>
