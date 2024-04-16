@@ -53,8 +53,8 @@ class OpgApiServiceTest extends TestCase
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
             "Role" => "Donor",
             "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-VGAS-OAGA-34G9"
             ]
         ];
         $successMock = new MockHandler([
@@ -152,15 +152,18 @@ class OpgApiServiceTest extends TestCase
         $this->assertEquals($responseData, $response);
     }
 
+
+
+
     public static function lpasByDonorData(): array
     {
         $successMockResponseData = [
             [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'lpa_ref' => "PA M-XYXY-YAGA-35G3",
                 'donor_name' => 'Mary Anne Chapman'
             ],
             [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
+                'lpa_ref' => "PW M-VGAS-OAGA-34G9",
                 'donor_name' => 'Mary Anne Chapman'
             ]
         ];
@@ -572,8 +575,8 @@ class OpgApiServiceTest extends TestCase
         $uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
         $name = "Mary Anne Chapman";
         $lpas = [
-            "PA M-1234-ABCB-XXXX",
-            "PW M-1234-ABCD-AAAA"
+            "PA M-XYXY-YAGA-35G3",
+            "PW M-VGAS-OAGA-34G9"
         ];
 
         $postData = [

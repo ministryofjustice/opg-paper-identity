@@ -138,13 +138,13 @@ class IdentityController extends AbstractActionController
     {
         $data = [
             [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
                 'donor_name' => 'Mary Anne Chapman'
             ],
-//            [
-//                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
+            [
+                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
         ];
 
         return new JsonModel($data);

@@ -15,5 +15,11 @@ interface OpgApiServiceInterface
     public function checkPassportValidity(string $passport): string;
     public function getIdCheckQuestions(string $uuid): array|bool;
     public function checkIdCheckAnswers(string $uuid, array $answers): bool;
-    public function createCase(string $name, array $lpas): array;
+    public function createCase(
+        string $firstname,
+        string $lastname,
+        string $dob,
+        string $personType,
+        array $lpas
+    ): array;
 }

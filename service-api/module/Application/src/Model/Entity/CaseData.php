@@ -38,7 +38,6 @@ class CaseData
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LPAValidator::class]])]
     private array $lpas;
 
-
     /**
      * Factory method
      *
@@ -53,6 +52,8 @@ class CaseData
         $instance->lastName = $data['lastName'];
         $instance->dob = $data['dob'];
         $instance->lpas = $data['lpas'];
+
+//        die(var_dump($instance));
 
         return $instance;
     }

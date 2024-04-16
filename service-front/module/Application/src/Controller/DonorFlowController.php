@@ -28,6 +28,7 @@ class DonorFlowController extends AbstractActionController
 
     public function startAction(): ViewModel
     {
+
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
@@ -35,6 +36,9 @@ class DonorFlowController extends AbstractActionController
         }
 
         $detailsData = $this->opgApiService->getDetailsData();
+        $firstName = explode('', $detailsData['Name'])[0];
+        $lastName = explode('', $detailsData['Name'])[1];
+        $type = $this->params()->fromQuery("personType");
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
@@ -44,11 +48,11 @@ class DonorFlowController extends AbstractActionController
 
 //        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
 
-        $case = $this->opgApiService->createCase($detailsData['Name'], $lpas);
+        $case = $this->opgApiService->createCase($firstName, $lastName, $detailsData['dob'], $type, $lpas);
 
         $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
-            'type' => $this->params()->fromQuery("personType"),
+            'type' => $type,
             'lpas' => $lpas,
             'case' => $case['case_uuid'],
             'details' => $detailsData,
