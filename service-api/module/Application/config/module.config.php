@@ -93,6 +93,17 @@ return [
                 ],
             ],
 
+            'create_case' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/create',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'create',
+                    ],
+                ],
+            ],
+
             'address_verification' => [
                 'type'    => Literal::class,
                 'options' => [
@@ -197,7 +208,8 @@ return [
             ),
             DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
                 $serviceLocator->get(DynamoDbClient::class),
-                $tableName
+                $tableName,
+                $serviceLocator->get(LoggerInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
