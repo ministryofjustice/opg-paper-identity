@@ -11,6 +11,7 @@ use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
+use Aws\DynamoDb\Marshaler;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -197,7 +198,41 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+
+        if (array_key_exists('kbvQuestions', $case[0])) {
+            $questions = $case[0]['kbvQuestions'];
+ 
+            //revisit formatting here, output needs to be array
+            return new JsonModel($questions);
+        } else {
+            $questions = $this->KBVService->getKBVQuestions();
+            //update formatting here to match FE expected
+            $formattedQuestions = [];
+            $mapNumber = [
+                '0' => 'one',
+                '1' => 'two',
+                '2' => 'three',
+                '3' => 'four'
+            ];
+            for ($i=0; $i < 4; $i++) {
+                $question = $questions[$i];
+                $number = $mapNumber[$i];
+                $questionNumbered = array_merge(['number' => $number], $question);
+                $formattedQuestions[$number] = $questionNumbered;
+            }
+
+            $marshal = new Marshaler();
+            // no save the questions against the case id, is there a way to store $questions as array?
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'kbvQuestions',
+                'S',
+                json_encode($formattedQuestions)
+            );
+        }
+
+        if (!$uuid) {
             /**
              * @psalm-suppress PossiblyUndefinedVariable
              */
@@ -254,7 +289,7 @@ class IdentityController extends AbstractActionController
             ]
         ];
 
-        return new JsonModel($response[$uuid]);
+        return new JsonModel($formattedQuestions);
     }
 
     public function checkKbvAnswersAction(): JsonModel
