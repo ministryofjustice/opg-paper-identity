@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
+use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
@@ -28,7 +29,8 @@ class IdentityController extends AbstractActionController
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
-        private readonly PassportValidator $passportService
+        private readonly PassportValidator $passportService,
+        private readonly KBVServiceInterface $KBVService
     ) {
     }
 
