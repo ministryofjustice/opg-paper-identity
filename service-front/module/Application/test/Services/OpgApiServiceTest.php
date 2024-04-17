@@ -565,7 +565,13 @@ class OpgApiServiceTest extends TestCase
         }
         $this->opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->createCase($postData['name'], $postData['lpas']);
+        $response = $this->opgApiService->createCase(
+            $postData['FirstName'],
+            $postData['LastName'],
+            $postData['DOB'],
+            $postData['personType'],
+            $postData['lpas']
+        );
 
         $this->assertEquals($responseData, $response);
     }
@@ -573,20 +579,25 @@ class OpgApiServiceTest extends TestCase
     public static function caseData(): array
     {
         $uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
-        $name = "Mary Anne Chapman";
+        $firstName = "Mary Anne";
+        $lastName = "Chapman";
+        $dob = "1943-01-01";
         $lpas = [
             "PA M-XYXY-YAGA-35G3",
             "PW M-VGAS-OAGA-34G9"
         ];
 
         $postData = [
-            "name" => $name,
+            "FirstName" => $firstName,
+            "LastName" => $lastName,
+            'DOB' => $dob,
+            'personType' => 'donor',
             "lpas" => $lpas
         ];
 
         $successMockResponseData = [
             "case_uuid" => $uuid,
-            "name" => $name,
+            "name" => $postData['FirstName'] . " " . $postData['LastName'],
             "lpas" => $lpas
         ];
         $successMock = new MockHandler([
