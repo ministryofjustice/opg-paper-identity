@@ -6,11 +6,11 @@
             <h2 class="govuk-heading-m">ID over the phone (preferred)</h2>
             <div class="govuk-form-group">
                 <div class="govuk-radios" data-module="govuk-radios">
-                    {% for datum in options_data %}
+                    {% for  key, datum in options_data %}
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="{{ datum }}" name="id_method" type="radio"
-                                   value="{{ datum }}">
-                            <label class="govuk-label govuk-radios__label" for="{{ datum }}">{{ datum }}</label>
+                            <input class="govuk-radios__input" id="{{ key }}" name="id_method" type="radio"
+                                   value="{{ key }}">
+                            <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}</label>
                         </div>
                     {% endfor %}
                 </div>
