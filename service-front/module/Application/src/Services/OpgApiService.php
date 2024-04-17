@@ -27,6 +27,21 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
+    public function stubDetailsResponse(): array
+    {
+        return [
+            "FirstName" => "Mary Anne",
+            "LastName" => "Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-XYXY-YAGA-35G4"
+            ]
+        ];
+    }
+
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {
