@@ -41,9 +41,6 @@ class DonorFlowController extends AbstractActionController
         $firstName = $detailsData['FirstName'];
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
-        /**
-         * @psalm-suppress UndefinedClass
-         */
         $dob = Carbon::parse(strtotime($detailsData['DOB']))->toDateString();
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
