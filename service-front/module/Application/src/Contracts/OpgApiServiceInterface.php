@@ -7,7 +7,7 @@ namespace Application\Contracts;
 interface OpgApiServiceInterface
 {
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array;
-    public function getDetailsData(): array;
+    public function getDetailsData(string $uuid): array;
     public function stubDetailsResponse(): array;
     public function getAddressVerificationData(): array;
     public function getLpasByDonorData(): array;

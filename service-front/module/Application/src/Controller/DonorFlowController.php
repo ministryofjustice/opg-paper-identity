@@ -38,8 +38,6 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->stubDetailsResponse();
 
-//        die(json_encode($detailsData));
-
         $firstName = $detailsData['FirstName'];
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
@@ -54,15 +52,13 @@ class DonorFlowController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-//        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
-
         $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
 
         $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
             'type' => $type,
             'lpas' => $lpas,
-            'case' => $case['case_uuid'],
+            'case' => $case['uuid'],
             'details' => $detailsData,
         ]);
 
@@ -98,7 +94,7 @@ class DonorFlowController extends AbstractActionController
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -111,8 +107,9 @@ class DonorFlowController extends AbstractActionController
 
     public function donorIdCheckAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -156,7 +153,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -185,7 +182,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -215,7 +212,7 @@ class DonorFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -235,7 +232,7 @@ class DonorFlowController extends AbstractActionController
                     $templates
                 );
             } else {
-                $view->setVariable('passport_indate', $data['inDate']);
+                $view->setVariable('passport_indate', ucwords($data['inDate']));
                 return $this->formProcessorService->processPassportForm(
                     $this->getRequest()->getPost(),
                     $form,
@@ -250,8 +247,9 @@ class DonorFlowController extends AbstractActionController
 
     public function identityCheckPassedAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $lpasData = $this->opgApiService->getLpasByDonorData();
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -263,8 +261,9 @@ class DonorFlowController extends AbstractActionController
 
     public function identityCheckFailedAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $lpasData = $this->opgApiService->getLpasByDonorData();
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 

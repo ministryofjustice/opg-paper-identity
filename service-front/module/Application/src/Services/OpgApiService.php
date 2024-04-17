@@ -29,6 +29,10 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function stubDetailsResponse(): array
     {
+        /**
+         * This is a temporary function to prevent the start page crashing with a 500 error
+         * now that the equivalent API function requires a UUID
+         */
         return [
             "FirstName" => "Mary Anne",
             "LastName" => "Chapman",
@@ -63,9 +67,9 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getDetailsData(): array
+    public function getDetailsData(string $uuid): array
     {
-        return $this->makeApiRequest('/identity/details');
+        return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
     }
 
     public function getAddressVerificationData(): array

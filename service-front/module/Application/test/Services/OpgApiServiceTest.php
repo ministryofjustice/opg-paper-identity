@@ -40,7 +40,7 @@ class OpgApiServiceTest extends TestCase
 
         $this->opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->getDetailsData();
+        $response = $this->opgApiService->getDetailsData('uuid');
 
         $this->assertEquals($responseData, $response);
     }
