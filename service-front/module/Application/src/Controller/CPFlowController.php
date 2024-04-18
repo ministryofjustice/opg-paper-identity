@@ -28,13 +28,24 @@ class CPFlowController extends AbstractActionController
 
     public function startAction(): ViewModel
     {
+        $lpasQuery = $this->params()->fromQuery("lpas");
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
             $lpas[] = $data['opg.poas.lpastore'];
         }
 
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->stubDetailsResponse();
+
+        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
+
+        // Create a case in the API with the LPA UID and the actors' details
+
+        // Redirect to the "select which ID to use" page for this case
+        $firstName = $detailsData['FirstName'];
+        $lastName = $detailsData['LastName'];
+        $type = $this->params()->fromQuery("personType");
+        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
@@ -42,7 +53,7 @@ class CPFlowController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
 
         $types = [
             'donor' => 'Donor',
@@ -53,7 +64,7 @@ class CPFlowController extends AbstractActionController
             'lpaUids' => $this->params()->fromQuery("lpas"),
             'type' => $types[$this->params()->fromQuery("personType")],
             'lpas' => $lpas,
-            'case' => $case,
+            'case' => $case['uuid'],
             'details' => $detailsData,
         ]);
 
@@ -89,7 +100,7 @@ class CPFlowController extends AbstractActionController
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -102,8 +113,9 @@ class CPFlowController extends AbstractActionController
 
     public function doesNameMatchIdAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -112,17 +124,20 @@ class CPFlowController extends AbstractActionController
 
         return $view->setTemplate('application/pages/cp/cp_id_check');
     }
-//
-//    public function donorLpaCheckAction(): ViewModel
-//    {
-//        $data = $this->opgApiService->getLpasByDonorData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('data', $data);
-//
-//        return $view->setTemplate('application/pages/donor_lpa_check');
-//    }
+
+    public function confirmLpasAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpas = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas', $lpas);
+        $view->setVariable('details', $detailsData);
+
+        return $view->setTemplate('application/pages/cp/confirm_lpas');
+    }
 //
 //    public function addressVerificationAction(): ViewModel
 //    {
@@ -134,35 +149,35 @@ class CPFlowController extends AbstractActionController
 //
 //        return $view->setTemplate('application/pages/address_verification');
 //    }
-//
-//    public function nationalInsuranceNumberAction(): ViewModel
-//    {
-//        $templates = [
-//            'default' => 'application/pages/national_insurance_number',
-//            'success' => 'application/pages/national_insurance_number_success',
-//            'fail' => 'application/pages/national_insurance_number_fail'
-//        ];
-//        $view = new ViewModel();
-//        $uuid = $this->params()->fromRoute("uuid");
-//        $view->setVariable('uuid', $uuid);
-//
-//        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view->setVariable('details_data', $detailsData);
-//        $view->setVariable('form', $form);
-//
-//        if (count($this->getRequest()->getPost())) {
-//            return $this->formProcessorService->processNationalInsuranceNumberForm(
-//                $this->getRequest()->getPost(),
-//                $form,
-//                $view,
-//                $templates
-//            );
-//        }
-//
-//        return $view->setTemplate($templates['default']);
-//    }
+
+    public function nationalInsuranceNumberAction(): ViewModel
+    {
+        $templates = [
+            'default' => 'application/pages/national_insurance_number',
+            'success' => 'application/pages/national_insurance_number_success',
+            'fail' => 'application/pages/national_insurance_number_fail'
+        ];
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
+
+        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        if (count($this->getRequest()->getPost())) {
+            return $this->formProcessorService->processNationalInsuranceNumberForm(
+                $this->getRequest()->getPost(),
+                $form,
+                $view,
+                $templates
+            );
+        }
+
+        return $view->setTemplate($templates['default']);
+    }
 //
 //    public function drivingLicenceNumberAction(): ViewModel
 //    {
