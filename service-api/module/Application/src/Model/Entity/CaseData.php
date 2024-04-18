@@ -53,8 +53,6 @@ class CaseData
         $instance->dob = $data['dob'];
         $instance->lpas = $data['lpas'];
 
-//        die(var_dump($instance));
-
         return $instance;
     }
     public function isValid(): bool

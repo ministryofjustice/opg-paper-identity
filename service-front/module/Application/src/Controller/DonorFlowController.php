@@ -14,7 +14,6 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Application\Forms\NationalInsuranceNumber;
-use Carbon\Carbon;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -41,7 +40,7 @@ class DonorFlowController extends AbstractActionController
         $firstName = $detailsData['FirstName'];
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
-        $dob = Carbon::parse(strtotime($detailsData['DOB']))->toDateString();
+        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
