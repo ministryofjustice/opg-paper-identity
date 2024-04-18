@@ -9,9 +9,11 @@ use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -35,27 +37,58 @@ class IdentityController extends AbstractActionController
         return new JsonModel();
     }
 
-    public function createAction(): void
+    public function createAction(): JsonModel
     {
+        $data = json_decode($this->getRequest()->getContent(), true);
+
+        $caseData = CaseData::fromArray($data);
+
+        if ($caseData->isValid()) {
+            $uuid = Uuid::uuid4();
+            $item = [
+                'id'            => ['S' => $uuid->toString()],
+                'personType'     => ['S' => $data["personType"]],
+                'firstName'     => ['S' => $data["firstName"]],
+                'lastName'      => ['S' => $data["lastName"]],
+                'dob'           => ['S' => $data["dob"]],
+                'lpas'          => ['SS' => $data['lpas']]
+            ];
+
+            $this->dataImportHandler->insertData('cases', $item);
+
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            return new JsonModel(['uuid' => $uuid]);
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
+        return new JsonModel(['error' => 'Invalid data']);
     }
 
     public function detailsAction(): JsonModel
     {
-        $data = [
-            'Name' => 'Mary Anne Chapman',
-            'DOB' => '01 May 1943',
-            'Address' => 'Address line 1, line 2, Country, BN1 4OD',
-            'Role' => 'Donor',
-            'LPA' => ['PA M-1234-ABCB-XXXX', 'PW M-1234-ABCD-AAAA']
-        ];
+        /** @var string $uuid */
+        $uuid = $this->getRequest()->getQuery('uuid');
 
-        return new JsonModel($data);
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(['error' => 'Missing uuid']);
+        }
+
+        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+        if (! empty($data)) {
+            return new JsonModel($data);
+        }
+
+        return new JsonModel(['error' => 'Invalid uuid']);
     }
 
     public function testdataAction(): JsonModel
     {
         $this->dataImportHandler->load();
-        $data = $this->dataQueryHandler->returnAll();
+        $data = $this->dataQueryHandler->returnAll('cases');
 
         /**
          * @psalm-suppress InvalidArgument
@@ -105,13 +138,13 @@ class IdentityController extends AbstractActionController
     {
         $data = [
             [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
                 'donor_name' => 'Mary Anne Chapman'
             ],
-//            [
-//                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
+            [
+                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
         ];
 
         return new JsonModel($data);
@@ -162,14 +195,14 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
+        if ($uuid === false) {
             /**
              * @psalm-suppress PossiblyUndefinedVariable
              */
-            $response[$uuid] = [
+            $response['uuid'] = [
                 "error" => "thin_file_error"
             ];
-            return new JsonModel($response[$uuid]);
+            return new JsonModel($response['uuid']);
         }
 
         /**
