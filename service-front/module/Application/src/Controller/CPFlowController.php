@@ -125,19 +125,20 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp/cp_id_check');
     }
 
-//    public function confirmLpasAction(): ViewModel
-//    {
-//        $uuid = $this->params()->fromRoute("uuid");
-//        $lpas = $this->opgApiService->getLpasByDonorData();
-//        $detailsData = $this->opgApiService->getDetailsData($uuid);
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('lpas', $lpas);
-//        $view->setVariable('details', $detailsData);
-//
-//        return $view->setTemplate('application/pages/cp/confirm_lpas');
-//    }
+    public function confirmLpasAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpas = $this->opgApiService->getLpasByDonorData();
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas', $lpas);
+        $view->setVariable('details', $detailsData);
+
+        return $view->setTemplate('application/pages/cp/confirm_lpas');
+    }
 //
 //    public function addressVerificationAction(): ViewModel
 //    {

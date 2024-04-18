@@ -93,33 +93,48 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('does_name_match_id');
     }
-//    public function testLpasByDonorReturnsPageWithData(): void
-//    {
-//        $mockResponseDataAddressVerificationOptions = [
-//            [
-//                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ],
-//            [
-//                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
-//        ];
-//
-//        $this
-//            ->opgApiServiceMock
-//            ->expects(self::once())
-//            ->method('getLpasByDonorData')
-//            ->willReturn($mockResponseDataAddressVerificationOptions);
-//
-//        $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
-//        $this->assertResponseStatusCode(200);
-//        $this->assertModuleName('application');
-//        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
-//        $this->assertControllerClass('DonorFlowController');
-//        $this->assertMatchedRouteName('donor_lpa_check');
-//    }
-//
+
+    public function testConfirmLpasPageWithData(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "cp",
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $mockLpasData = [
+            [
+                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
+                'donor_name' => 'Mary Anne Chapman'
+            ],
+            [
+                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getLpasByDonorData')
+            ->willReturn($mockLpasData);
+
+        $this->dispatch("/$this->uuid/confirm-lpas", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('confirm_lpas');
+    }
+
 //    public function testNationalInsuranceNumberReturnsPageWithData(): void
 //    {
 //        $mockResponseDataIdDetails = [

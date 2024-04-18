@@ -180,6 +180,16 @@ return [
                     ],
                 ],
             ],
+            'confirm_lpas' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/confirm-lpas',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'confirmLpas',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
