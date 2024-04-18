@@ -190,6 +190,16 @@ return [
                     ],
                 ],
             ],
+            'confirm_dob' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/confirm-dob',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'confirmDob',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
