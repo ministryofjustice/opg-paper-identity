@@ -231,8 +231,8 @@ return [
     'opg_settings' => [
         'identity_methods' => [
             'pn' => 'Passport',
-            'dln' => 'Driving Licence',
-            'nin' => 'National Insurance Number'
+            'dln' => 'Driving licence',
+            'nin' => 'National Insurance number'
         ],
     ]
 ];

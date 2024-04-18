@@ -16,10 +16,13 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
     private FormProcessorService&MockObject $formProcessorService;
+    private string $uuid;
 
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../config/application.config.php');
+
+        $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
@@ -51,9 +54,10 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
+            ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch('/donor-id-check', 'GET');
+        $this->dispatch("/$this->uuid/donor-id-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -77,7 +81,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getAddressVerificationData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch('/address_verification', 'GET');
+        $this->dispatch("/address_verification", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -103,7 +107,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getLpasByDonorData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch('/donor-lpa-check', 'GET');
+        $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -128,9 +132,10 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
+            ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch('/national-insurance-number', 'GET');
+        $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -155,9 +160,10 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
+            ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch('/driving-licence-number', 'GET');
+        $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -182,9 +188,10 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
+            ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch('/how-will-donor-confirm', 'GET');
+        $this->dispatch("/$this->uuid/how-will-donor-confirm", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -209,6 +216,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
+            ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
         $mockResponseDataAddressVerificationOptions = [
@@ -228,7 +236,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getLpasByDonorData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch('/identity-check-passed', 'GET');
+        $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -253,6 +261,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
+            ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
         $mockResponseDataAddressVerificationOptions = [
@@ -272,7 +281,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getLpasByDonorData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch('/identity-check-failed', 'GET');
+        $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -282,7 +291,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testThinFileFailurePage(): void
     {
-        $this->dispatch('/thin-file-failure', 'GET');
+        $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
