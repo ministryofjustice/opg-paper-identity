@@ -1,0 +1,32 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <form method="POST">
+            <h1 class="govuk-heading-xl">Find an LPA to add</h1>
+
+            <p class="govuk-body">
+                LPA reference numbers are 12 numbers long. For
+                <br>
+                example: M-0000-0000-0000
+            </p>
+            <div class="govuk-form-group {% if form.get('nino').messages %}govuk-form-group--error{% endif %}">
+                {% if form.get('lpa').messages %}
+                    <p id="lpa-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ form.get('lpa').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+
+                <input
+                        class="govuk-input govuk-!-width-one-third {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
+                        id="lpa" name="lpa" type="text" autocomplete="lpa"
+                        value="{{ form.get('lpa').value }}"
+                        aria-describedby="nino-hint {% if form.get('lpa').messages %}nino-error{% endif %}"
+                />
+                <input type="submit" class="govuk-button" value="Find LPA">
+            </div>
+            <input type="submit" class="govuk-button govuk-button--secondary" value="Return to LPA list">
+        </form>
+    </main>
+</div>
+
+
