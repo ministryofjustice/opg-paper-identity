@@ -138,13 +138,13 @@ class IdentityController extends AbstractActionController
     {
         $data = [
             [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
                 'donor_name' => 'Mary Anne Chapman'
             ],
-//            [
-//                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
+            [
+                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
         ];
 
         return new JsonModel($data);
@@ -195,14 +195,14 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
+        if ($uuid === false) {
             /**
              * @psalm-suppress PossiblyUndefinedVariable
              */
-            $response[$uuid] = [
+            $response['uuid'] = [
                 "error" => "thin_file_error"
             ];
-            return new JsonModel($response[$uuid]);
+            return new JsonModel($response['uuid']);
         }
 
         /**
