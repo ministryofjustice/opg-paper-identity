@@ -34,7 +34,7 @@ class CPFlowController extends AbstractActionController
             $lpas[] = $data['opg.poas.lpastore'];
         }
 
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->stubDetailsResponse();
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
@@ -89,7 +89,7 @@ class CPFlowController extends AbstractActionController
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -102,8 +102,9 @@ class CPFlowController extends AbstractActionController
 
     public function doesNameMatchIdAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -115,8 +116,9 @@ class CPFlowController extends AbstractActionController
 
     public function confirmLpasAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $lpas = $this->opgApiService->getLpasByDonorData();
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -136,35 +138,35 @@ class CPFlowController extends AbstractActionController
 //
 //        return $view->setTemplate('application/pages/address_verification');
 //    }
-//
-//    public function nationalInsuranceNumberAction(): ViewModel
-//    {
-//        $templates = [
-//            'default' => 'application/pages/national_insurance_number',
-//            'success' => 'application/pages/national_insurance_number_success',
-//            'fail' => 'application/pages/national_insurance_number_fail'
-//        ];
-//        $view = new ViewModel();
-//        $uuid = $this->params()->fromRoute("uuid");
-//        $view->setVariable('uuid', $uuid);
-//
-//        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view->setVariable('details_data', $detailsData);
-//        $view->setVariable('form', $form);
-//
-//        if (count($this->getRequest()->getPost())) {
-//            return $this->formProcessorService->processNationalInsuranceNumberForm(
-//                $this->getRequest()->getPost(),
-//                $form,
-//                $view,
-//                $templates
-//            );
-//        }
-//
-//        return $view->setTemplate($templates['default']);
-//    }
+
+    public function nationalInsuranceNumberAction(): ViewModel
+    {
+        $templates = [
+            'default' => 'application/pages/national_insurance_number',
+            'success' => 'application/pages/national_insurance_number_success',
+            'fail' => 'application/pages/national_insurance_number_fail'
+        ];
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $view->setVariable('uuid', $uuid);
+
+        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        if (count($this->getRequest()->getPost())) {
+            return $this->formProcessorService->processNationalInsuranceNumberForm(
+                $this->getRequest()->getPost(),
+                $form,
+                $view,
+                $templates
+            );
+        }
+
+        return $view->setTemplate($templates['default']);
+    }
 //
 //    public function drivingLicenceNumberAction(): ViewModel
 //    {
