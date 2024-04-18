@@ -14,18 +14,13 @@ class KBVService implements KBVServiceInterface
     ) {
     }
 
-    public function getKBVQuestions(string $uuid): array
+    /**
+     * @psalm-suppress ArgumentTypeCoercion
+     */
+    public function getKBVQuestions(): array
     {
         $questionsList = $this->questionsList();
         $questionSelection = [];
-        $formattedQuestions = [];
-        $questionsWithoutAnswers = [];
-        $mapNumber = [
-            '0' => 'one',
-            '1' => 'two',
-            '2' => 'three',
-            '3' => 'four'
-        ];
 
         foreach (array_rand($questionsList, 4) as $key) {
             $question = $questionsList[$key];
@@ -33,9 +28,23 @@ class KBVService implements KBVServiceInterface
             $questionSelection[] = $question;
         }
 
-        //do the formatting for FE
+        return $questionSelection;
+    }
+
+    public function fetchAndSaveQuestions(string $uuid): array
+    {
+        $questions = $this->getKBVQuestions();
+        $questionsWithoutAnswers = [];
+        //update formatting here to match FE expectations
+        $formattedQuestions = [];
+        $mapNumber = [
+            '0' => 'one',
+            '1' => 'two',
+            '2' => 'three',
+            '3' => 'four'
+        ];
         for ($i = 0; $i < 4; $i++) {
-            $question = $questionSelection[$i];
+            $question = $questions[$i];
             $number = $mapNumber[$i];
             $questionNumbered = array_merge(['number' => $number], $question);
             $formattedQuestions[$number] = $questionNumbered;
@@ -53,9 +62,6 @@ class KBVService implements KBVServiceInterface
         return $questionsWithoutAnswers;
     }
 
-    /**
-     * @return array[]
-     */
     private function questionsList(): array
     {
         return [

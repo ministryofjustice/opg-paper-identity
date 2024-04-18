@@ -18,9 +18,15 @@ class KBVService implements KBVServiceInterface
     ) {
     }
 
-    public function getKBVQuestions(string $uuid): array
+    public function getKBVQuestions(): array
     {
         // TODO: Implement getKBVQuestions() method on api access.
+        return [];
+    }
+
+    public function fetchAndSaveQuestions(string $uuid): array
+    {
+        // TODO: Implement fetchAndSaveQuestions() method.
         return [];
     }
 }

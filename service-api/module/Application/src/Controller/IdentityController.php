@@ -220,10 +220,10 @@ class IdentityController extends AbstractActionController
             //revisit formatting here, special character outputs need escaping?
             return new JsonModel($questionsWithoutAnswers);
         } else {
-            $questionsWithoutAnswers = $this->KBVService->getKBVQuestions($uuid);
+            $questionsNew = $this->KBVService->fetchAndSaveQuestions($uuid);
         }
 
-        return new JsonModel($questionsWithoutAnswers);
+        return new JsonModel($questionsNew);
     }
 
     public function checkKbvAnswersAction(): JsonModel

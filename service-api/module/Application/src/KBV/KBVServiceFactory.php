@@ -41,6 +41,5 @@ class KBVServiceFactory implements FactoryInterface
         $client = new Client(['base_uri' => $baseUri]);
 
         return new KBVService($client);
-
     }
 }
