@@ -11,7 +11,6 @@ use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
-use Aws\DynamoDb\Marshaler;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -198,40 +197,6 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        if (array_key_exists('kbvQuestions', $case[0])) {
-            $questions = $case[0]['kbvQuestions'];
- 
-            //revisit formatting here, output needs to be array
-            return new JsonModel($questions);
-        } else {
-            $questions = $this->KBVService->getKBVQuestions();
-            //update formatting here to match FE expected
-            $formattedQuestions = [];
-            $mapNumber = [
-                '0' => 'one',
-                '1' => 'two',
-                '2' => 'three',
-                '3' => 'four'
-            ];
-            for ($i=0; $i < 4; $i++) {
-                $question = $questions[$i];
-                $number = $mapNumber[$i];
-                $questionNumbered = array_merge(['number' => $number], $question);
-                $formattedQuestions[$number] = $questionNumbered;
-            }
-
-            $marshal = new Marshaler();
-            // no save the questions against the case id, is there a way to store $questions as array?
-            $this->dataImportHandler->updateCaseData(
-                $uuid,
-                'kbvQuestions',
-                'S',
-                json_encode($formattedQuestions)
-            );
-        }
-
         if (!$uuid) {
             /**
              * @psalm-suppress PossiblyUndefinedVariable
@@ -242,54 +207,23 @@ class IdentityController extends AbstractActionController
             return new JsonModel($response[$uuid]);
         }
 
-        /**
-         * @psalm-suppress PossiblyUndefinedVariable
-         */
-        $response[$uuid] = [
-            "one" => [
-                "question" => "Who provides your mortgage?",
-                "number" => "one",
-                "prompts" => [
-                    0 => "Nationwide",
-                    1 => "Halifax",
-                    2 => "Lloyds",
-                    3 => "HSBC",
-                ]
-            ],
-            "two" => [
-                "question" => "Who provides your personal mobile contract?",
-                "number" => "two",
-                "prompts" => [
-                    0 => "EE",
-                    1 => "Vodafone",
-                    2 => "BT",
-                    3 => "iMobile",
-                ]
-            ],
-            "three" => [
-                "question" => "What are the first two letters of the last name of another 
-                person on the electoral register at your address?",
-                "number" => "three",
-                "prompts" => [
-                    0 => "Ka",
-                    1 => "Ch",
-                    2 => "Jo",
-                    3 => "None of the above",
-                ]
-            ],
-            "four" => [
-                "question" => "Who provides your current account?",
-                "number" => "four",
-                "prompts" => [
-                    0 => "Santander",
-                    1 => "HSBC",
-                    2 => "Halifax",
-                    3 => "Nationwide",
-                ]
-            ]
-        ];
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        return new JsonModel($formattedQuestions);
+        $questionsWithoutAnswers = [];
+
+        if (array_key_exists('kbvQuestions', $case[0])) {
+            $questions = json_decode($case[0]['kbvQuestions'], true);
+            foreach ($questions as $question) {
+                unset($question['answer']);
+                $questionsWithoutAnswers[] = $question;
+            }
+            //revisit formatting here, special character outputs need escaping?
+            return new JsonModel($questionsWithoutAnswers);
+        } else {
+            $questionsWithoutAnswers = $this->KBVService->fetchAndSaveQuestions($uuid);
+        }
+
+        return new JsonModel($questionsWithoutAnswers);
     }
 
     public function checkKbvAnswersAction(): JsonModel

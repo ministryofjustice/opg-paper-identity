@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Application\Mock\KBV;
 
+use Application\Fixtures\DataImportHandler;
 use Application\KBV\KBVServiceInterface;
 
 class KBVService implements KBVServiceInterface
 {
+    public function __construct(
+        private readonly DataImportHandler $dataHandler,
+    ) {
+    }
+
     public function getKBVQuestions(): array
     {
         $questionsList = $this->questionsList();
@@ -20,6 +26,37 @@ class KBVService implements KBVServiceInterface
         }
 
         return $questionSelection;
+    }
+
+    public function fetchAndSaveQuestions(string $uuid): array
+    {
+        $questions = $this->getKBVQuestions();
+        $questionsWithoutAnswers = [];
+        //update formatting here to match FE expectations
+        $formattedQuestions = [];
+        $mapNumber = [
+            '0' => 'one',
+            '1' => 'two',
+            '2' => 'three',
+            '3' => 'four'
+        ];
+        for ($i=0; $i < 4; $i++) {
+            $question = $questions[$i];
+            $number = $mapNumber[$i];
+            $questionNumbered = array_merge(['number' => $number], $question);
+            $formattedQuestions[$number] = $questionNumbered;
+            unset($questionNumbered['answer']);
+            $questionsWithoutAnswers[$number] = $questionNumbered;
+        }
+
+        $this->dataHandler->updateCaseData(
+            $uuid,
+            'kbvQuestions',
+            'S',
+            json_encode($formattedQuestions)
+        );
+
+        return $questionsWithoutAnswers;
     }
 
     private function questionsList(): array
