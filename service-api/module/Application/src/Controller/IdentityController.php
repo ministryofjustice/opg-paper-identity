@@ -197,7 +197,7 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        if (!$uuid) {
+        if (! $uuid) {
             /**
              * @psalm-suppress PossiblyUndefinedVariable
              */
@@ -220,7 +220,7 @@ class IdentityController extends AbstractActionController
             //revisit formatting here, special character outputs need escaping?
             return new JsonModel($questionsWithoutAnswers);
         } else {
-            $questionsWithoutAnswers = $this->KBVService->fetchAndSaveQuestions($uuid);
+            $questionsWithoutAnswers = $this->KBVService->getKBVQuestions($uuid);
         }
 
         return new JsonModel($questionsWithoutAnswers);
