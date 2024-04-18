@@ -28,6 +28,7 @@ class CPFlowController extends AbstractActionController
 
     public function startAction(): ViewModel
     {
+        $lpasQuery = $this->params()->fromQuery("lpas");
         $lpas = [];
         foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
@@ -41,8 +42,18 @@ class CPFlowController extends AbstractActionController
         // Create a case in the API with the LPA UID and the actors' details
 
         // Redirect to the "select which ID to use" page for this case
+        $firstName = $detailsData['FirstName'];
+        $lastName = $detailsData['LastName'];
+        $type = $this->params()->fromQuery("personType");
+        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
 
-        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
+
+        // Create a case in the API with the LPA UID and the actors' details
+
+        // Redirect to the "select which ID to use" page for this case
+
+        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
 
         $types = [
             'donor' => 'Donor',
@@ -53,7 +64,7 @@ class CPFlowController extends AbstractActionController
             'lpaUids' => $this->params()->fromQuery("lpas"),
             'type' => $types[$this->params()->fromQuery("personType")],
             'lpas' => $lpas,
-            'case' => $case,
+            'case' => $case['uuid'],
             'details' => $detailsData,
         ]);
 
