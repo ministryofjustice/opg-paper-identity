@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\LpaReferenceNumber;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
