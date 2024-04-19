@@ -8,7 +8,7 @@
                 <br>
                 example: M-0000-0000-0000
             </p>
-            <div class="govuk-form-group {% if form.get('nino').messages %}govuk-form-group--error{% endif %}">
+            <div class="govuk-form-group {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
                 {% if form.get('lpa').messages %}
                     <p id="lpa-error" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
@@ -18,9 +18,12 @@
 
                 <input
                         class="govuk-input govuk-!-width-one-third {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
-                        id="lpa" name="lpa" type="text" autocomplete="lpa"
+                        id="lpa"
+                        name="lpa"
+                        type="text"
+                        autocomplete="lpa"
                         value="{{ form.get('lpa').value }}"
-                        aria-describedby="nino-hint {% if form.get('lpa').messages %}nino-error{% endif %}"
+                        aria-describedby="lpa-hint {% if form.get('lpa').messages %}lpa-error{% endif %}"
                 />
                 <input type="submit" class="govuk-button" value="Find LPA">
             </div>

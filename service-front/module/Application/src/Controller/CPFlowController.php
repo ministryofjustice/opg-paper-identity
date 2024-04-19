@@ -10,6 +10,7 @@ use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
+use Application\Validators\LpaValidator;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -143,29 +144,33 @@ class CPFlowController extends AbstractActionController
 
     public function addLpaAction(): ViewModel
     {
+        $templates = [
+            'default' => 'application/pages/cp/add_lpa',
+//            'success' => 'application/pages/national_insurance_number_success',
+//            'fail' => 'application/pages/national_insurance_number_fail'
+        ];
         $uuid = $this->params()->fromRoute("uuid");
         $lpas = $this->opgApiService->getLpasByDonorData();
-
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view = new ViewModel();
+        $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
 
+        $view = new ViewModel();
         $view->setVariable('lpas', $lpas);
         $view->setVariable('details', $detailsData);
+        $view->setVariable('form', $form);
 
-        return $view->setTemplate('application/pages/cp/add_lpa');
+        if (count($this->getRequest()->getPost())) {
+            return $this->formProcessorService->findLpa(
+                $this->getRequest()->getPost(),
+                $form,
+                $view,
+                $templates
+            );
+        }
+
+        return $view->setTemplate($templates['default']);
     }
-//
-//    public function addressVerificationAction(): ViewModel
-//    {
-//        $data = $this->opgApiService->getAddressVerificationData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('options_data', $data);
-//
-//        return $view->setTemplate('application/pages/address_verification');
-//    }
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
@@ -223,84 +228,5 @@ class CPFlowController extends AbstractActionController
 //        }
 //
 //        return $view->setTemplate($templates['default']);
-//    }
-//
-//    public function passportNumberAction(): ViewModel
-//    {
-//        $templates = [
-//            'default' => 'application/pages/passport_number',
-//            'success' => 'application/pages/passport_number_success',
-//            'fail' => 'application/pages/passport_number_fail'
-//        ];
-//        $view = new ViewModel();
-//        $uuid = $this->params()->fromRoute("uuid");
-//        $view->setVariable('uuid', $uuid);
-//
-//        $form = (new AttributeBuilder())->createForm(PassportNumber::class);
-//        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view->setVariable('details_data', $detailsData);
-//        $view->setVariable('form', $form);
-//        $view->setVariable('date_sub_form', $dateSubForm);
-//        $view->setVariable('details_open', false);
-//
-//        if (count($this->getRequest()->getPost())) {
-//            $formData = $this->getRequest()->getPost();
-//            $data = $formData->toArray();
-//            $view->setVariable('passport', $data['passport']);
-//
-//            if (array_key_exists('check_button', $formData->toArray())) {
-//                return $this->formProcessorService->processPassportDateForm(
-//                    $this->getRequest()->getPost(),
-//                    $dateSubForm,
-//                    $view,
-//                    $templates
-//                );
-//            } else {
-//                $view->setVariable('passport_indate', $data['inDate']);
-//                return $this->formProcessorService->processPassportForm(
-//                    $this->getRequest()->getPost(),
-//                    $form,
-//                    $view,
-//                    $templates
-//                );
-//            }
-//        }
-//
-//        return $view->setTemplate($templates['default']);
-//    }
-//
-//    public function identityCheckPassedAction(): ViewModel
-//    {
-//        $lpasData = $this->opgApiService->getLpasByDonorData();
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('lpas_data', $lpasData);
-//        $view->setVariable('details_data', $detailsData);
-//
-//        return $view->setTemplate('application/pages/identity_check_passed');
-//    }
-//
-//    public function identityCheckFailedAction(): ViewModel
-//    {
-//        $lpasData = $this->opgApiService->getLpasByDonorData();
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('lpas_data', $lpasData);
-//        $view->setVariable('details_data', $detailsData);
-//
-//        return $view->setTemplate('application/pages/identity_check_failed');
-//    }
-//
-//    public function thinFileFailureAction(): ViewModel
-//    {
-//        $view = new ViewModel();
-//
-//        return $view->setTemplate('application/pages/thin_file_failure');
 //    }
 }
