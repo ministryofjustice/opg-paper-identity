@@ -23,4 +23,6 @@ interface OpgApiServiceInterface
         string $personType,
         array $lpas
     ): array;
+
+    public function findLpa(string $uuid, string $lpa): array;
 }
