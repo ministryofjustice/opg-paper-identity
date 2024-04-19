@@ -18,7 +18,7 @@ class LpaValidator extends AbstractValidator
     {
         $this->setValue(strtoupper($value));
 
-        if (!$this->lpaValidity($this->value)) {
+        if (! $this->lpaValidity()) {
             $this->error(self::LPA);
             return false;
         }
@@ -26,10 +26,10 @@ class LpaValidator extends AbstractValidator
         return true;
     }
 
-    private function lpaValidity(?string $lpa): bool
+    private function lpaValidity(): bool
     {
-        /** @var string $lpa */
-        if (1 === preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
+        /** @var string $this->>value */
+        if (1 === preg_match('/M(-([0-9A-Z]){4}){3}/', $this->value)) {
             return true;
         } else {
             return false;
