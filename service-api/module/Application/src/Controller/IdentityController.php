@@ -341,8 +341,9 @@ class IdentityController extends AbstractActionController
             default:
                 $response = [];
         }
-        $this->getResponse()->setStatusCode($status);
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['message'] = $message;
+        $response['status'] = $status;
         return new JsonModel($response);
     }
 }

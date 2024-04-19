@@ -110,6 +110,7 @@ class FormProcessorService
     }
 
     public function findLpa(
+        string $uuid,
         Parameters $formData,
         FormInterface $form,
         ViewModel $view,
@@ -120,6 +121,9 @@ class FormProcessorService
 
         if ($validLpa) {
             $view->setVariable('valid_lpa', true);
+            $responseData = $this->opgApiService->findLpa($uuid, $formData->lpa);
+//            echo json_encode($responseData);
+            $view->setVariable('lpa_response', $responseData);
         } else {
             $view->setVariable('invalid_lpa', true);
         }

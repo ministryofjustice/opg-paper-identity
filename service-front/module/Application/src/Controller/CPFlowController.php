@@ -160,9 +160,11 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('lpas', $lpas);
         $view->setVariable('details', $detailsData);
         $view->setVariable('form', $form);
+        $view->setVariable('case_uuid', $uuid);
 
         if (count($this->getRequest()->getPost())) {
             return $this->formProcessorService->findLpa(
+                $uuid,
                 $this->getRequest()->getPost(),
                 $form,
                 $view,
