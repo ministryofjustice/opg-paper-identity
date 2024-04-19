@@ -11,6 +11,24 @@
                     </svg>
                     <div class="moj-banner__message">
                         {{ lpa_response['message'] }}
+
+                        {% if lpa_response['additional_data'] %}
+                            <br><br>This ID check is for:
+                        <table class="govuk-table govuk-!-width-one-half">
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Name</th>
+                                <td class="govuk-table__cell">{{ lpa_response['additional_data']['Name'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Address</th>
+                                <td class="govuk-table__cell">
+                                    {% for line in lpa_response['additional_data']['Address'] %}
+                                        {{ line }}<br>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}

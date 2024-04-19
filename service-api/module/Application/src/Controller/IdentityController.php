@@ -324,7 +324,17 @@ class IdentityController extends AbstractActionController
             case 'M-0000-0000-0003':
                 $status = Response::STATUS_CODE_400;
                 $message = "This LPA cannot be added to this ID check because the 
-                certificate provider details on this LPA do not match.";
+                certificate provider details on this LPA do not match.   Edit the certificate provider record in Sirius if appropriate and find again.";
+                $response['additional_data'] = [
+                    'Name' => 'John Brian Adams',
+                    'Address' => [
+                        'Line_1' => '42 Mount Street',
+                        'Line_2' => 'Hednesford',
+                        'Town' => 'Cannock',
+                        'Postcode' => 'WS12 4DE',
+                        'Country' => 'United Kingdom',
+                    ]
+                ];
                 break;
             case 'M-0000-0000-0004':
                 $status = Response::STATUS_CODE_400;
