@@ -150,10 +150,61 @@ return [
                     ],
                 ],
             ],
+            'cp_start' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cp-start',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'start',
+                    ],
+                ],
+            ],
+            'how_cp_confirms' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/how-will-cp-confirm',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'howWillCpConfirm',
+                    ],
+                ],
+            ],
+            'does_name_match_id' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/does-name-match-id',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'doesNameMatchId',
+                    ],
+                ],
+            ],
+            'confirm_lpas' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/confirm-lpas',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'confirmLpas',
+                    ],
+                ],
+            ],
+            'add_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/add-lpa',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'addLpa',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
+            Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
