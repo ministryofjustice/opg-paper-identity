@@ -143,7 +143,7 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp/confirm_lpas');
     }
 
-    public function confirmDob(): ViewModel
+    public function confirmDobAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
         $lpas = $this->opgApiService->getLpasByDonorData();
@@ -155,7 +155,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('lpas', $lpas);
         $view->setVariable('details', $detailsData);
 
-        return $view->setTemplate('application/pages/cp/confirm_lpas');
+        return $view->setTemplate('application/pages/cp/confirm_dob');
     }
 
     public function addLpaAction(): ViewModel
