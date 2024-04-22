@@ -6,10 +6,12 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\LpaReferenceNumber;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
+use Application\Validators\LpaValidator;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -136,6 +138,7 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariable('lpas', $lpas);
         $view->setVariable('details', $detailsData);
+        $view->setVariable('case_uuid', $uuid);
 
         return $view->setTemplate('application/pages/cp/confirm_lpas');
     }
@@ -154,17 +157,38 @@ class CPFlowController extends AbstractActionController
 
         return $view->setTemplate('application/pages/cp/confirm_lpas');
     }
-//
-//    public function addressVerificationAction(): ViewModel
-//    {
-//        $data = $this->opgApiService->getAddressVerificationData();
-//
-//        $view = new ViewModel();
-//
-//        $view->setVariable('options_data', $data);
-//
-//        return $view->setTemplate('application/pages/address_verification');
-//    }
+
+    public function addLpaAction(): ViewModel
+    {
+        $templates = [
+            'default' => 'application/pages/cp/add_lpa',
+//            'success' => 'application/pages/national_insurance_number_success',
+//            'fail' => 'application/pages/national_insurance_number_fail'
+        ];
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpas = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
+
+        $view = new ViewModel();
+        $view->setVariable('lpas', $lpas);
+        $view->setVariable('details', $detailsData);
+        $view->setVariable('form', $form);
+        $view->setVariable('case_uuid', $uuid);
+
+        if (count($this->getRequest()->getPost())) {
+            return $this->formProcessorService->findLpa(
+                $uuid,
+                $this->getRequest()->getPost(),
+                $form,
+                $view,
+                $templates
+            );
+        }
+
+        return $view->setTemplate($templates['default']);
+    }
 
     public function nationalInsuranceNumberAction(): ViewModel
     {

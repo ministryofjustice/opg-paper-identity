@@ -173,4 +173,22 @@ class OpgApiService implements OpgApiServiceInterface
             'lpas' => $lpas,
         ]);
     }
+
+    public function findLpa(string $uuid, string $lpa): array
+    {
+        $uri = sprintf('cases/%s/find-lpa/%s', $uuid, strtoupper($lpa));
+
+        try {
+            $this->makeApiRequest(
+                $uri,
+                'GET',
+                [],
+                ['Content-Type' => 'application/json']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return [$opgApiException->getMessage()];
+        }
+
+        return $this->responseData;
+    }
 }

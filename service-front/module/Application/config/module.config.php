@@ -200,6 +200,16 @@ return [
                     ],
                 ],
             ],
+            'add_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/add-lpa',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'addLpa',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
