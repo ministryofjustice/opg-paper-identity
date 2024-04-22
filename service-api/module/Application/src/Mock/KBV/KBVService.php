@@ -50,7 +50,10 @@ class KBVService implements KBVServiceInterface
             $formattedQuestions[$number] = $questionNumbered;
             unset($questionNumbered['answer']);
             $questionsWithoutAnswers[$number] = $questionNumbered;
+
         }
+        //$this->dataHandler->updateCaseWithQuestions($uuid, 'kbvQuestions', $questionsWithoutAnswers);
+        //$formattedQuestions = "TEST £12.12";
 
         $this->dataHandler->updateCaseData(
             $uuid,
@@ -58,7 +61,6 @@ class KBVService implements KBVServiceInterface
             'S',
             json_encode($formattedQuestions)
         );
-
         return $questionsWithoutAnswers;
     }
 
@@ -78,15 +80,15 @@ class KBVService implements KBVServiceInterface
                 1 => [
                     'question' => 'How much was your last phone bill?',
                     'prompts' => [
-                        0 => '£5.99',
-                        1 => '£11',
-                        2 => '£16.84',
-                        3 => '£1.25'
+                        0 => "£5.99",
+                        1 => "£11",
+                        2 => "£16.84",
+                        3 => "£1.25"
                     ],
-                    'answer' => '£5.99'
+                    'answer' => "£5.99"
                 ],
                 2 => [
-                    'question' => 'What is your mother’s maiden name?',
+                    'question' => "What is your mother’s maiden name?",
                     'prompts' => [
                         0 => 'Germanotta',
                         1 => 'Gumm',
@@ -96,7 +98,7 @@ class KBVService implements KBVServiceInterface
                     'answer' => 'Germanotta'
                 ],
                 3 => [
-                    'question' => 'What are the last two characters of your car number plate??',
+                    'question' => 'What are the last two characters of your car number plate?',
                     'prompts' => [
                         0 => 'IF',
                         1 => 'SJ',

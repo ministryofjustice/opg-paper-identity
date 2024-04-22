@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Fixtures;
 
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
@@ -78,6 +79,43 @@ class DataImportHandler
         }
     }
 
+    function updateCaseWithQuestions($uuid, $attributeName, $attributeValue) : void
+    {
+        $params = [
+            'TableName' => 'cases',
+            'Key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+            'UpdateExpression' => 'SET #attrName = :attrValue',
+            'ExpressionAttributeNames' => [
+                '#attrName' => 'kbvQuestions'
+            ],
+            'ExpressionAttributeValues' => [
+                ':attrValue' => ['L' => []]
+            ],
+            'ReturnValues' => 'UPDATED_NEW',
+        ];
+
+        foreach ($attributeValue as $value) {
+            $params['ExpressionAttributeValues'][':attrValue']['L'][] = [
+                'M' => [
+                    'number' => ['S' => $value['number']],
+                    'question' => ['S' => $value['question']],
+                    'prompts' => ['L' => array_map(function($prompt) { return ['S' => $prompt]; }, $value['prompts'])],
+                    'answer' => ['S' => $value['answer']]
+                ]
+            ];
+        }
+        try {
+            $result = $this->dynamoDbClient->updateItem($params);
+            echo "Item updated successfully: " . $result['Attributes']['id']['S'] . "\n";
+        } catch (DynamoDbException $e) {
+            echo "Unable to update item: " . $e->getMessage() . "\n"; die;
+        }
+    }
+
     public function updateCaseData(string $uuid, string $attributeName, string $attributeType, string $attributeValue): void
     {
         $idKey = [
@@ -91,6 +129,7 @@ class DataImportHandler
         try {
             $this->updateItemAttributeByKey('cases', $idKey, $attributeName, $attributeType, $attributeValue);
         } catch (AwsException $e) {
+            //var_dump($e->getMessage()); die;
             $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
                 'data' => [$attributeName => $attributeValue]
             ]);

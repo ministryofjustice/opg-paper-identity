@@ -116,6 +116,18 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
+    public function testKBVQuestionsWithNoUUID(): void
+    {
+        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $this->dispatch('/cases/kbv-questions', 'GET');
+        $this->assertResponseStatusCode(400);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('get_kbv_questions');
+    }
+
     /**
      * @dataProvider ninoData
      */

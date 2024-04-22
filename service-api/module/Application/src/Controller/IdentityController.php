@@ -15,6 +15,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 use Ramsey\Uuid\Uuid;
+use function Respect\Stringifier\stringify;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -198,26 +199,36 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
 
         if (! $uuid) {
-            /**
-             * @psalm-suppress PossiblyUndefinedVariable
-             */
-            $response[$uuid] = [
-                "error" => "thin_file_error"
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
             ];
-            return new JsonModel($response[$uuid]);
+            return new JsonModel($response);
         }
 
         $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
+        if (!$case || $case[0]['documentComplete'] === false ) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            $response = [
+                "error" => "Document checks incomplete or unable to locate case"
+            ];
+            return new JsonModel($response);
+        }
+
         $questionsWithoutAnswers = [];
 
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
         if (array_key_exists('kbvQuestions', $case[0])) {
+
             $questions = json_decode($case[0]['kbvQuestions'], true);
+
             foreach ($questions as $question) {
                 unset($question['answer']);
                 $questionsWithoutAnswers[] = $question;
             }
-            //revisit formatting here, special character outputs need escaping?
+            //revisit formatting here, special character outputs
             return new JsonModel($questionsWithoutAnswers);
         } else {
             $questionsNew = $this->KBVService->fetchAndSaveQuestions($uuid);
