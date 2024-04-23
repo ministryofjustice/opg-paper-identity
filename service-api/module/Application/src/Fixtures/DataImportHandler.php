@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Fixtures;
 
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
@@ -76,5 +77,47 @@ class DataImportHandler
                 'data' => $item
             ]);
         }
+    }
+
+    public function updateCaseData(string $uuid, string $attributeName, string $attributeType, string $attributeValue): void
+    {
+        $idKey = [
+            'key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+        ];
+
+        try {
+            $this->updateItemAttributeByKey('cases', $idKey, $attributeName, $attributeType, $attributeValue);
+        } catch (AwsException $e) {
+            $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
+                'data' => [$attributeName => $attributeValue]
+            ]);
+        }
+    }
+
+    public function updateItemAttributeByKey(
+        string $tableName,
+        array $key,
+        string $attributeName,
+        string $attributeType,
+        string $newValue
+    ): void {
+
+        $this->dynamoDbClient->updateItem([
+            'Key' => $key['key'],
+            'TableName' => $tableName,
+            'UpdateExpression' => "set #NV=:NV",
+            'ExpressionAttributeNames' => [
+                '#NV' => $attributeName,
+            ],
+            'ExpressionAttributeValues' => [
+                ':NV' => [
+                    $attributeType => $newValue
+                ]
+            ],
+        ]);
     }
 }
