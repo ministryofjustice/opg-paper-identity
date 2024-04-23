@@ -16,8 +16,6 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 use Ramsey\Uuid\Uuid;
 
-use function Respect\Stringifier\stringify;
-
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
