@@ -31,7 +31,7 @@ class KBVService implements KBVServiceInterface
         return $questionSelection;
     }
 
-    public function fetchAndSaveQuestions(string $uuid): array
+    public function fetchFormattedQuestions(string $uuid): array
     {
         $questions = $this->getKBVQuestions();
         $questionsWithoutAnswers = [];
@@ -50,18 +50,9 @@ class KBVService implements KBVServiceInterface
             $formattedQuestions[$number] = $questionNumbered;
             unset($questionNumbered['answer']);
             $questionsWithoutAnswers[$number] = $questionNumbered;
-
         }
-        //$this->dataHandler->updateCaseWithQuestions($uuid, 'kbvQuestions', $questionsWithoutAnswers);
-        //$formattedQuestions = "TEST £12.12";
 
-        $this->dataHandler->updateCaseData(
-            $uuid,
-            'kbvQuestions',
-            'S',
-            json_encode($formattedQuestions)
-        );
-        return $questionsWithoutAnswers;
+        return ['questionsWithoutAnswers' => $questionsWithoutAnswers, 'formattedQuestions' => $formattedQuestions];
     }
 
     private function questionsList(): array

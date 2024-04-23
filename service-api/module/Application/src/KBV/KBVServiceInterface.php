@@ -15,5 +15,5 @@ interface KBVServiceInterface
      */
     public function getKBVQuestions(): array;
 
-    public function fetchAndSaveQuestions(string $uuid): array;
+    public function fetchFormattedQuestions(string $uuid): array;
 }

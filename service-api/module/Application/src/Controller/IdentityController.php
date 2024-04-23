@@ -15,6 +15,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
 use Ramsey\Uuid\Uuid;
+
 use function Respect\Stringifier\stringify;
 
 /**
@@ -208,7 +209,7 @@ class IdentityController extends AbstractActionController
 
         $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        if (!$case || $case[0]['documentComplete'] === false ) {
+        if (! $case || $case[0]['documentComplete'] === false) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             $response = [
                 "error" => "Document checks incomplete or unable to locate case"
@@ -221,7 +222,6 @@ class IdentityController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         if (array_key_exists('kbvQuestions', $case[0])) {
-
             $questions = json_decode($case[0]['kbvQuestions'], true);
 
             foreach ($questions as $question) {
@@ -231,10 +231,17 @@ class IdentityController extends AbstractActionController
             //revisit formatting here, special character outputs
             return new JsonModel($questionsWithoutAnswers);
         } else {
-            $questionsNew = $this->KBVService->fetchAndSaveQuestions($uuid);
+            $questions = $this->KBVService->fetchFormattedQuestions($uuid);
+
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'kbvQuestions',
+                'S',
+                json_encode($questions['formattedQuestions'])
+            );
         }
 
-        return new JsonModel($questionsNew);
+        return new JsonModel($questions['questionsWithoutAnswers']);
     }
 
     public function checkKbvAnswersAction(): JsonModel
