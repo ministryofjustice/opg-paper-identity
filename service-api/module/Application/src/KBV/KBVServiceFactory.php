@@ -27,11 +27,7 @@ class KBVServiceFactory implements FactoryInterface
         /** @var bool $useMock */
         $useMock = getenv("MOCK_KBV_API");
         if ($useMock) {
-            return new MockKBVService(new DataImportHandler(
-                $container->get(DynamoDbClient::class),
-                'cases',
-                $container->get(LoggerInterface::class)
-            ));
+            return new MockKBVService();
         }
 
         $baseUri = getenv("EXPERIAN_BASE_URL");

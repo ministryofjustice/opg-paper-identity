@@ -9,11 +9,6 @@ use Application\KBV\KBVServiceInterface;
 
 class KBVService implements KBVServiceInterface
 {
-    public function __construct(
-        private readonly DataImportHandler $dataHandler,
-    ) {
-    }
-
     /**
      * @psalm-suppress ArgumentTypeCoercion
      */
