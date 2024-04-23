@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Application\KBV;
 
-use Application\Fixtures\DataImportHandler;
 use Application\Mock\KBV\KBVService as MockKBVService;
-use Application\KBV\KBVService;
-use Application\KBV\KBVServiceInterface;
-use Aws\DynamoDb\DynamoDbClient;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class KBVServiceFactory implements FactoryInterface
