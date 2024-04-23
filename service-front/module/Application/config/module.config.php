@@ -199,9 +199,10 @@ return [
     ],
     'opg_settings' => [
         'identity_methods' => [
-            'pn' => 'Passport',
-            'dln' => 'Driving licence',
-            'nin' => 'National Insurance number'
+            'nin' => 'National Insurance number',
+            'pn' => 'UK Passport (current or expired in the last 5 years)',
+            'dln' => 'Driving licence (current)',
+
         ],
     ]
 ];
