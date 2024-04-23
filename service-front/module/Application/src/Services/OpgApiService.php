@@ -27,6 +27,25 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
+    public function stubDetailsResponse(): array
+    {
+        /**
+         * This is a temporary function to prevent the start page crashing with a 500 error
+         * now that the equivalent API function requires a UUID
+         */
+        return [
+            "FirstName" => "Mary Anne",
+            "LastName" => "Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-XYXY-YAGA-35G4"
+            ]
+        ];
+    }
+
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {
@@ -48,9 +67,9 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getDetailsData(): array
+    public function getDetailsData(string $uuid): array
     {
-        return $this->makeApiRequest('/identity/details');
+        return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
     }
 
     public function getAddressVerificationData(): array
@@ -137,5 +156,21 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (OpgApiException $opgApiException) {
             return false;
         }
+    }
+
+    public function createCase(
+        string $firstname,
+        string $lastname,
+        string $dob,
+        string $personType,
+        array $lpas
+    ): array {
+        return $this->makeApiRequest("/cases/create", 'POST', [
+            'firstName' => $firstname,
+            'lastName' => $lastname,
+            'dob' => $dob,
+            'personType' => $personType,
+            'lpas' => $lpas,
+        ]);
     }
 }

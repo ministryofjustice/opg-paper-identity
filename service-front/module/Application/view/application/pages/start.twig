@@ -15,7 +15,6 @@
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
-                                {#                                <dd></dd> #}
                                 <dt class="govuk-summary-list__key">
                                     LPA reference number
                                 </dt>
@@ -34,7 +33,7 @@
                                         </label>
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        {{ details['Name'] }}
+                                        {{ details['FirstName'] }} {{ details['LastName'] }}
                                     </dd>
                                     <dd class="govuk-summary-list__value">
                                         <a href="">Remove</a>

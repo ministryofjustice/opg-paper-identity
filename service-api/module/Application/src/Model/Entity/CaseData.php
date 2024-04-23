@@ -38,7 +38,6 @@ class CaseData
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LPAValidator::class]])]
     private array $lpas;
 
-
     /**
      * Factory method
      *

@@ -28,13 +28,19 @@ class DonorFlowController extends AbstractActionController
 
     public function startAction(): ViewModel
     {
+        $lpasQuery = $this->params()->fromQuery("lpas");
         $lpas = [];
-        foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
+        foreach ($lpasQuery as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
             $lpas[] = $data['opg.poas.lpastore'];
         }
 
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->stubDetailsResponse();
+
+        $firstName = $detailsData['FirstName'];
+        $lastName = $detailsData['LastName'];
+        $type = $this->params()->fromQuery("personType");
+        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
@@ -42,13 +48,13 @@ class DonorFlowController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = '49895f88-501b-4491-8381-e8aeeaef177d';
+        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
 
         $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
-            'type' => $this->params()->fromQuery("personType"),
+            'type' => $type,
             'lpas' => $lpas,
-            'case' => $case,
+            'case' => $case['uuid'],
             'details' => $detailsData,
         ]);
 
@@ -63,17 +69,17 @@ class DonorFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             switch ($formData['id_method']) {
-                case 'Passport':
+                case 'pn':
                     $this->redirect()
                         ->toRoute("passport_number", ['uuid' => $uuid]);
                     break;
 
-                case 'Driving Licence':
+                case 'dln':
                     $this->redirect()
                         ->toRoute("driving_licence_number", ['uuid' => $uuid]);
                     break;
 
-                case 'National Insurance Number':
+                case 'nin':
                     $this->redirect()
                         ->toRoute("national_insurance_number", ['uuid' => $uuid]);
                     break;
@@ -84,7 +90,7 @@ class DonorFlowController extends AbstractActionController
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -97,8 +103,9 @@ class DonorFlowController extends AbstractActionController
 
     public function donorIdCheckAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -142,7 +149,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -171,7 +178,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -201,7 +208,7 @@ class DonorFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -221,7 +228,7 @@ class DonorFlowController extends AbstractActionController
                     $templates
                 );
             } else {
-                $view->setVariable('passport_indate', $data['inDate']);
+                $view->setVariable('passport_indate', ucwords($data['inDate']));
                 return $this->formProcessorService->processPassportForm(
                     $this->getRequest()->getPost(),
                     $form,
@@ -236,8 +243,9 @@ class DonorFlowController extends AbstractActionController
 
     public function identityCheckPassedAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $lpasData = $this->opgApiService->getLpasByDonorData();
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
@@ -249,8 +257,9 @@ class DonorFlowController extends AbstractActionController
 
     public function identityCheckFailedAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $lpasData = $this->opgApiService->getLpasByDonorData();
-        $detailsData = $this->opgApiService->getDetailsData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
