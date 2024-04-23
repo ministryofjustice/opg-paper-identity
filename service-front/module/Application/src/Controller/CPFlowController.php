@@ -190,6 +190,25 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate($templates['default']);
     }
 
+    public function addressMatchCheckAction()
+    {
+        $view = new ViewModel();
+        $templates = [
+            'default' => 'application/pages/cp/confirm_address_match',
+//            'success' => 'application/pages/national_insurance_number_success',
+//            'fail' => 'application/pages/national_insurance_number_fail'
+        ];
+
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpas = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        echo json_encode($detailsData);
+        $view->setVariable('lpas', $lpas);
+        $view->setVariable('details', $detailsData);
+
+        return $view->setTemplate($templates['default']);
+    }
+
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $templates = [

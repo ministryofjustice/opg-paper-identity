@@ -210,6 +210,16 @@ return [
                     ],
                 ],
             ],
+            'address_match_check' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/address-match-check',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'addressMatchCheck',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

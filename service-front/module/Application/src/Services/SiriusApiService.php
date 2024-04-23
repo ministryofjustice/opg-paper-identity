@@ -62,7 +62,6 @@ class SiriusApiService
         $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
             'headers' => $this->getAuthHeaders($request),
         ]);
-
         return json_decode(strval($response->getBody()), true);
     }
 }

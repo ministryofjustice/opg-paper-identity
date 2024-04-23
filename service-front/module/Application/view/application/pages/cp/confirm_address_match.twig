@@ -1,0 +1,32 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <form method="POST">
+            <h1 class="govuk-heading-xl">Does the address on the ID<br> document match the <br>address in Sirius?</h1>
+
+            <p class="govuk-body">
+                To perform the fraud and identity checks, a check is made against the <br>
+                certificate provider's home address.
+            </p>
+
+            <p class="govuk-body">
+                In the role of certificate provider, they might have registered a business or <br>
+                professional address with us.
+            </p>
+            <p class="govuk-body">
+                We need to either confirm the Sirius record is their home address or capture it<br>
+                on the next page.
+            </p>
+
+            <div class="govuk-inset-text">
+                <h2 class="govuk-heading-m">Sirius Record</h2>
+                <h3 class="govuk-heading-s">Address</h3>
+
+                <p class="govuk-body">
+                    {{ details.Address }}
+                </p>
+
+            </div>
+            <input type="submit" class="govuk-button" value="Continue">
+        </form>
+    </main>
+</div>
