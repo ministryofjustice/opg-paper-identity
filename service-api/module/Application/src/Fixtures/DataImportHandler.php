@@ -79,7 +79,7 @@ class DataImportHandler
         }
     }
 
-    public function updateCaseData(string $uuid, string $attributeName, string $attributeType, string $attributeValue): void
+    public function updateCaseData(string $uuid, string $attrName, string $attrType, string $attrValue): void
     {
         $idKey = [
             'key' => [
@@ -90,10 +90,10 @@ class DataImportHandler
         ];
 
         try {
-            $this->updateItemAttributeByKey('cases', $idKey, $attributeName, $attributeType, $attributeValue);
+            $this->updateItemAttributeByKey('cases', $idKey, $attrName, $attrType, $attrValue);
         } catch (AwsException $e) {
             $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
-                'data' => [$attributeName => $attributeValue]
+                'data' => [$attrName => $attrValue]
             ]);
         }
     }
