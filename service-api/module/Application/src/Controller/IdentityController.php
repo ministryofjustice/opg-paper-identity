@@ -222,9 +222,9 @@ class IdentityController extends AbstractActionController
         if (array_key_exists('kbvQuestions', $case[0])) {
             $questions = json_decode($case[0]['kbvQuestions'], true);
 
-            foreach ($questions as $question) {
+            foreach ($questions as $number => $question) {
                 unset($question['answer']);
-                $questionsWithoutAnswers[] = $question;
+                $questionsWithoutAnswers[$number] = $question;
             }
             //revisit formatting here, special character outputs
             return new JsonModel($questionsWithoutAnswers);

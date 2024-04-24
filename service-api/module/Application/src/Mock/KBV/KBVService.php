@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Mock\KBV;
 
-use Application\Fixtures\DataImportHandler;
 use Application\KBV\KBVServiceInterface;
 
 class KBVService implements KBVServiceInterface
@@ -12,7 +11,7 @@ class KBVService implements KBVServiceInterface
     /**
      * @psalm-suppress ArgumentTypeCoercion
      */
-    public function getKBVQuestions(): array
+    private function getKBVQuestions(): array
     {
         $questionsList = $this->questionsList();
         $questionSelection = [];
