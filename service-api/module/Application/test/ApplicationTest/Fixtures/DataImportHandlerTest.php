@@ -112,7 +112,7 @@ class DataImportHandlerTest extends TestCase
                     $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
                     $this->assertArrayHasKey('UpdateExpression', $input);
                     $this->assertEquals(['#NV' => 'kbvQuestions'], $input['ExpressionAttributeNames']);
-                    //$this->assertEquals(['id' => '123', 'name' => 'John'], $input['Item']);
+
                     return true;
                 })
             );
