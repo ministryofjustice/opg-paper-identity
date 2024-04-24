@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Fixtures;
 
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
@@ -74,6 +75,36 @@ class DataImportHandler
         } catch (AwsException $e) {
             $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $tablename, [
                 'data' => $item
+            ]);
+        }
+    }
+
+    public function updateCaseData(string $uuid, string $attrName, string $attrType, string $attrValue): void
+    {
+        $idKey = [
+            'key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+        ];
+        try {
+            $this->dynamoDbClient->updateItem([
+                'Key' => $idKey['key'],
+                'TableName' => 'cases',
+                'UpdateExpression' => "set #NV=:NV",
+                'ExpressionAttributeNames' => [
+                    '#NV' => $attrName,
+                ],
+                'ExpressionAttributeValues' => [
+                    ':NV' => [
+                        $attrType => $attrValue
+                    ]
+                ],
+            ]);
+        } catch (AwsException $e) {
+            $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
+                'data' => [$attrName => $attrValue]
             ]);
         }
     }

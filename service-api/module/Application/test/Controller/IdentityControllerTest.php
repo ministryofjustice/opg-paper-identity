@@ -5,14 +5,20 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\Fixtures\DataQueryHandler;
+use Application\KBV\KBVServiceInterface;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class IdentityControllerTest extends TestCase
 {
+    private DataQueryHandler&MockObject $dataQueryHandlerMock;
+    private KBVServiceInterface&MockObject $KBVServiceMock;
     public function setUp(): void
     {
         // The module configuration should still be applicable for tests.
@@ -26,7 +32,16 @@ class IdentityControllerTest extends TestCase
             $configOverrides
         ));
 
+        $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
+        $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
+
+
         parent::setUp();
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
+        $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
     }
 
     public function testIndexActionResponse(): void
@@ -114,6 +129,106 @@ class IdentityControllerTest extends TestCase
             [array_merge($validData, ['dob' => '11-11-2020']), Response::STATUS_CODE_400],
             [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],
         ];
+    }
+
+    public function testKBVQuestionsWithNoUUID(): void
+    {
+        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $this->dispatch('/cases/kbv-questions', 'GET');
+        $this->assertResponseStatusCode(400);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('get_kbv_questions');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testKBVQuestionsWithVerifiedDocsCaseGeneratesQuestions(): void
+    {
+        $caseData = [
+            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+            'firstName' => 'test',
+            'lastName' => 'name',
+            'documentComplete' => true,
+        ];
+        $formattedQuestions = $this->formattedQuestions();
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('getCaseByUUID')
+            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
+            ->willReturn([0 => $caseData]);
+
+        $this->KBVServiceMock
+            ->expects($this->once())->method('fetchFormattedQuestions')
+            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
+            ->willReturn($formattedQuestions);
+
+        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertStringContainsString('Who is your electricity supplier?', $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('get_kbv_questions');
+    }
+    /**
+     * @throws Exception
+     */
+    public function testKBVQuestionsWithVerifiedDocsCaseAndExistingQuestions(): void
+    {
+        $caseData = [
+            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+            'firstName' => 'test',
+            'lastName' => 'name',
+            'documentComplete' => true,
+            'kbvQuestions' => json_encode($this->formattedQuestions())
+        ];
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('getCaseByUUID')
+            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
+            ->willReturn([0 => $caseData]);
+
+        $this->KBVServiceMock
+            ->expects($this->never())->method('fetchFormattedQuestions')
+            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999');
+
+        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertStringContainsString('Who is your electricity supplier?', $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('get_kbv_questions');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testKBVQuestionsWithUnVerifiedDocsCase(): void
+    {
+        $response = '{"error":"Document checks incomplete or unable to locate case"}';
+        $caseData = [
+            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+            'firstName' => 'test',
+            'lastName' => 'name',
+            'documentComplete' => false,
+        ];
+
+        $this->dataQueryHandlerMock->expects($this->once())->method('getCaseByUUID')
+            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
+            ->willReturn([0 => $caseData]);
+
+        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('get_kbv_questions');
     }
 
     /**
@@ -212,5 +327,53 @@ class IdentityControllerTest extends TestCase
         $request->setContent(is_string($data) ? $data : json_encode($data));
 
         $this->dispatch($path, $method);
+    }
+
+    public function formattedQuestions(): array
+    {
+        return [
+            'formattedQuestions' => [
+                'one' => [
+                    'question' => 'Who is your electricity supplier?',
+                    'prompts' => [
+                        0 => 'VoltWave',
+                        1 => 'Glow Electric',
+                        2 => 'Powergrid Utilities',
+                        3 => 'Bright Bristol Power'
+                    ],
+                    'answer' => 'VoltWave'
+                ],
+                'two' => [
+                    'question' => 'How much was your last phone bill?',
+                    'prompts' => [
+                        0 => "£5.99",
+                        1 => "£11",
+                        2 => "£16.84",
+                        3 => "£1.25"
+                    ],
+                    'answer' => "£5.99"
+                ]
+            ],
+            'questionsWithoutAnswers' => [
+                'one' => [
+                    'question' => 'Who is your electricity supplier?',
+                    'prompts' => [
+                        0 => 'VoltWave',
+                        1 => 'Glow Electric',
+                        2 => 'Powergrid Utilities',
+                        3 => 'Bright Bristol Power'
+                    ]
+                ],
+                'two' => [
+                    'question' => 'How much was your last phone bill?',
+                    'prompts' => [
+                        0 => "£5.99",
+                        1 => "£11",
+                        2 => "£16.84",
+                        3 => "£1.25"
+                    ]
+                ]
+            ],
+        ];
     }
 }
