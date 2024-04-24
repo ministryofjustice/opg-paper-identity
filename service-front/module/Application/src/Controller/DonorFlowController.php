@@ -101,6 +101,21 @@ class DonorFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/how_will_the_donor_confirm');
     }
 
+    public function donorDetailsMatchCheckAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid)[0];
+
+        $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate('application/pages/donor_details_match_check');
+    }
+
     public function donorIdCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");

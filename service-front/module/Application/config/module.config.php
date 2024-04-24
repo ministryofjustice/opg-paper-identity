@@ -70,6 +70,16 @@ return [
                     ],
                 ],
             ],
+            'donor_details_match_check' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/donor-details-match-check',
+                    'defaults' => [
+                        'controller' => Controller\DonorFlowController::class,
+                        'action'     => 'donorDetailsMatchCheck',
+                    ],
+                ],
+            ],
             'address_verification' => [
                 'type'    => Segment::class,
                 'options' => [
