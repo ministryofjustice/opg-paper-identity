@@ -140,4 +140,38 @@ class DataImportHandlerTest extends TestCase
             ])
         );
     }
+
+    /**
+     * @throws Exception
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUpdateCaseIdMethod(): void
+    {
+        $this->dynamoDbClientMock->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(['#NV' => 'idMethod'], $input['ExpressionAttributeNames']);
+
+                    return true;
+                })
+            );
+
+        // Expect the logger to be called if an exception occurs
+        $this->loggerMock->expects($this->never())->method('error');
+
+        // Call the updateCaseData method with test data
+        $this->sut->updateCaseData(
+            'a9bc8ab8-389c-4367-8a9b-762ab3050491',
+            'idMethod',
+            'S',
+            'passport'
+        );
+    }
 }

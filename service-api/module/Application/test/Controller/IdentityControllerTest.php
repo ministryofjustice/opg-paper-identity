@@ -120,6 +120,9 @@ class IdentityControllerTest extends TestCase
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
+            ],
+            'address' => [
+                'address 1, address 2'
             ]
         ];
 
