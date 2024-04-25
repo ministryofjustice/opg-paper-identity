@@ -186,6 +186,16 @@ return [
                     ],
                 ],
             ],
+            'update_case_method' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases[/:uuid]/update-method',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'updatedMethod',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

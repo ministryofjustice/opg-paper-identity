@@ -53,7 +53,8 @@ class IdentityController extends AbstractActionController
                 'firstName'     => ['S' => $data["firstName"]],
                 'lastName'      => ['S' => $data["lastName"]],
                 'dob'           => ['S' => $data["dob"]],
-                'lpas'          => ['SS' => $data['lpas']]
+                'lpas'          => ['SS' => $data['lpas']],
+                'address'       => ['SS' => $data['address']]
             ];
 
             $this->dataImportHandler->insertData('cases', $item);
@@ -78,7 +79,6 @@ class IdentityController extends AbstractActionController
         }
 
         $data = $this->dataQueryHandler->getCaseByUUID($uuid);
-
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         if (! empty($data)) {
@@ -274,6 +274,33 @@ class IdentityController extends AbstractActionController
         $response['result'] = $result;
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        return new JsonModel($response);
+    }
+
+    public function updatedMethodAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'idMethod',
+            'S',
+            $data['idMethod']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
         return new JsonModel($response);
     }
 }
