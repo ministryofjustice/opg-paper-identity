@@ -28,3 +28,8 @@ $govuk-assets-path: "../assets/";
   border-left: 2px solid #1d70b8;
   background-color: #f3f2f1;
 }
+
+.govuk-main-wrapper-custom {
+  display: block;
+  padding-bottom: 40px;
+}

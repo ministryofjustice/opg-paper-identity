@@ -21,6 +21,7 @@ interface OpgApiServiceInterface
         string $lastname,
         string $dob,
         string $personType,
-        array $lpas
+        array $lpas,
+        array $address,
     ): array;
 }

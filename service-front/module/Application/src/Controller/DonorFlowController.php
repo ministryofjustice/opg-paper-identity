@@ -41,14 +41,14 @@ class DonorFlowController extends AbstractActionController
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
         $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-
+        $address = explode(', ', $detailsData['Address']);
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
         // Create a case in the API with the LPA UID and the actors' details
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
+        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
 
         $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
@@ -289,14 +289,24 @@ class DonorFlowController extends AbstractActionController
 
     public function thinFileFailureAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/thin_file_failure');
     }
 
     public function provingIdentityAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/proving_identity');
     }

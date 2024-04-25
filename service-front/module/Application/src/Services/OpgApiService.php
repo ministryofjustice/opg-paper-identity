@@ -163,7 +163,8 @@ class OpgApiService implements OpgApiServiceInterface
         string $lastname,
         string $dob,
         string $personType,
-        array $lpas
+        array $lpas,
+        array $address,
     ): array {
         return $this->makeApiRequest("/cases/create", 'POST', [
             'firstName' => $firstname,
@@ -171,6 +172,20 @@ class OpgApiService implements OpgApiServiceInterface
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
+            'address' => $address
         ]);
+    }
+
+    public function updateIdMethos(string $uuid, string $method): bool
+    {
+        try {
+            $response = $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
+            if ($response['result'] !== 'pass') {
+                return false;
+            }
+            return true;
+        } catch (OpgApiException $opgApiException) {
+            return false;
+        }
     }
 }
