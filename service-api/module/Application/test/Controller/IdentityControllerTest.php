@@ -136,7 +136,7 @@ class IdentityControllerTest extends TestCase
      */
     public function testKbvAnswers(string $uuid, array $provided, array $actual, string $result, int $status): void
     {
-        if ( $result !== 'error') {
+        if ($result !== 'error') {
             $this->dataQueryHandlerMock
                 ->expects($this->once())->method('getCaseByUUID')
                 ->with($uuid)
@@ -144,7 +144,7 @@ class IdentityControllerTest extends TestCase
         }
 
         $this->dispatchJSON(
-            '/cases/'.$uuid.'/kbv-answers',
+            '/cases/' . $uuid . '/kbv-answers',
             'POST',
             $provided
         );
@@ -154,13 +154,14 @@ class IdentityControllerTest extends TestCase
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('check_kbv_answers');
 
-        if ( $result === "error") {
+        if ($result === "error") {
             $this->assertEquals(
                 '{"status":400,"type":"HTTP400","title":"Bad Request"}',
-                $this->getResponse()->getContent())
+                $this->getResponse()->getContent()
+            )
             ;
         } else {
-            $this->assertEquals('{"result":"'. $result.'"}', $this->getResponse()->getContent());
+            $this->assertEquals('{"result":"' . $result . '"}', $this->getResponse()->getContent());
         }
     }
 

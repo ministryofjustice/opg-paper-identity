@@ -263,12 +263,10 @@ class IdentityController extends AbstractActionController
 
         $questions = json_decode($case[0]['kbvQuestions'], true);
         //compare against all stored answers to ensure all answers passed
-        foreach ($questions as $key => $question)
-        {
-            if (!isset($data['answers'][$key])) {
+        foreach ($questions as $key => $question) {
+            if (! isset($data['answers'][$key])) {
                 $result = 'fail';
-            }
-            else if ($data['answers'][$key] != $question['answer']) {
+            } elseif ($data['answers'][$key] != $question['answer']) {
                 $result = 'fail';
             }
         }
