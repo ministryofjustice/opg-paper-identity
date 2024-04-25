@@ -160,6 +160,16 @@ return [
                     ],
                 ],
             ],
+            'proving_identity' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/proving-identity',
+                    'defaults' => [
+                        'controller' => Controller\DonorFlowController::class,
+                        'action'     => 'provingIdentity',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

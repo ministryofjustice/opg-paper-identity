@@ -108,6 +108,10 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid)[0];
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
+        $stubDetailsData = $this->opgApiService->stubDetailsResponse();
+        $detailsData['address'] = explode(', ', $stubDetailsData['Address']);
+
+//        echo json_encode($detailsData);
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
@@ -289,5 +293,12 @@ class DonorFlowController extends AbstractActionController
         $view = new ViewModel();
 
         return $view->setTemplate('application/pages/thin_file_failure');
+    }
+
+    public function provingIdentityAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        return $view->setTemplate('application/pages/proving_identity');
     }
 }
