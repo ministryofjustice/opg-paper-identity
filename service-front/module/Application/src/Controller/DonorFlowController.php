@@ -111,7 +111,6 @@ class DonorFlowController extends AbstractActionController
         $stubDetailsData = $this->opgApiService->stubDetailsResponse();
         $detailsData['address'] = explode(', ', $stubDetailsData['Address']);
 
-//        echo json_encode($detailsData);
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
