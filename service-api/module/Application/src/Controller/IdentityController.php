@@ -79,9 +79,6 @@ class IdentityController extends AbstractActionController
         }
 
         $data = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        //var_dump($data); die;
-
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         if (! empty($data)) {
