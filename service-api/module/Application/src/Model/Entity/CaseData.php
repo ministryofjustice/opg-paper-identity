@@ -35,6 +35,12 @@ class CaseData
     /**
      * @var string[]
      */
+    #[Validator(NotEmpty::class)]
+    private array $address;
+
+    /**
+     * @var string[]
+     */
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LPAValidator::class]])]
     private array $lpas;
 
@@ -42,7 +48,7 @@ class CaseData
      * Factory method
      *
      * @param array{personType: string, firstName: string, lastName: string, dob: string,
-     *     lpas: array{} } $data
+     *     lpas: array{}, address: array{} } $data
      */
     public static function fromArray(mixed $data): self
     {
@@ -52,6 +58,7 @@ class CaseData
         $instance->lastName = $data['lastName'];
         $instance->dob = $data['dob'];
         $instance->lpas = $data['lpas'];
+        $instance->address = $data['address'];
 
         return $instance;
     }
