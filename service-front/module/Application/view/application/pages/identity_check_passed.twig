@@ -1,5 +1,5 @@
 <div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
+    <main class="govuk-main-wrapper govuk-!-width-two-thirds">
         <div class="moj-banner moj-banner--success" role="region" aria-label="Success">
             <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -10,34 +10,33 @@
 
         <div class="govuk-form-group">
             <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                        Did the donor have assistance from a friend or family member on this call?
-                    </h1>
-                </legend>
-                <div class="govuk-radios" data-module="govuk-radios">
-                    <div class="govuk-radios__item">
-                        <input
-                                class="govuk-radios__input"
-                                id="yes"
-                                name="assistance_on_call"
-                                type="radio"
-                                value="Yes"
-                        >
-                        <label class="govuk-label govuk-radios__label"
-                               for="yes">Yes</label>
-                    </div>
-                    <div class="govuk-radios__item">
-                        <input
-                                class="govuk-radios__input"
-                                id="no"
-                                name="assistance_on_call"
-                                type="radio"
-                                value="No"
-                        >
-                        <label class="govuk-label govuk-radios__label"
-                               for="no">No</label>
-                    </div>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                Did the donor have assistance from a friend or family member on this call?
+                            </h1>
+                        </legend>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="assistance-1" name="assistance" type="radio" value="no" data-aria-controls="conditional-assistance-1">
+                            <label class="govuk-label govuk-radios__label" for="contact-2">
+                                No
+                            </label>
+                        </div>
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="assistance-2" name="assistance" type="radio" value="yes" checked data-aria-controls="conditional-assistance-2">
+                                <label class="govuk-label govuk-radios__label" for="contact">
+                                    Yes, give details
+                                </label>
+                            </div>
+                            <div class="govuk-radios__conditional" id="conditional-assistance">
+                                <div class="govuk-form-group">
+                                    <textarea class="govuk-textarea" rows="2" id="details" name="details" spellcheck="false" aria-describedby="details"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
             </fieldset>
         </div>
@@ -82,8 +81,7 @@
         </div>
         <div class="govuk-form-group">
             <div class="govuk-body">
-                <p>This information will be added to Sirius and an event recorded</p>
-                <p>If the donor has not already sent in their LPA, ask them to send it in as soon as possible.</p>
+                <p>The results of this identity check have been saved.</p>
             </div>
         </div>
         <button class="govuk-button">Continue</button>
