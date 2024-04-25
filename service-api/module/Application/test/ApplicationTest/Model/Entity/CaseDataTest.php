@@ -29,6 +29,11 @@ class CaseDataTest extends TestCase
                 'M-AGAS-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
             ],
+            'address' => [
+                'address line 1',
+                'country',
+                'post code'
+            ]
         ];
 
         return [
