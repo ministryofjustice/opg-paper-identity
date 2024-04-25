@@ -78,10 +78,11 @@ class IdentityController extends AbstractActionController
         }
 
         $data = $this->dataQueryHandler->getCaseByUUID($uuid);
+
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         if (! empty($data)) {
-            return new JsonModel($data);
+            return new JsonModel($data[0]);
         }
 
         return new JsonModel(['error' => 'Invalid uuid']);
@@ -245,29 +246,36 @@ class IdentityController extends AbstractActionController
     public function checkKbvAnswersAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        $answers = [];
-        $data = $this->getRequest()->getPost();
+
         $result = 'pass';
+        $response = [];
 
-        $answers[$uuid] = [
-            "one" => "Nationwide",
-            "two" => "EE",
-            "three" => "Ka",
-            "four" => "Santander",
-        ];
+        if (! $uuid || ! $case) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID or unable to find case"
+            ];
+            return new JsonModel($response);
+        }
 
-        foreach ($data['answers'] as $key => $value) {
-            if ($value != $answers[$uuid][$key]) {
+        $questions = json_decode($case[0]['kbvQuestions'], true);
+        //compare against all stored answers to ensure all answers passed
+        foreach ($questions as $key => $question)
+        {
+            if (!isset($data['answers'][$key])) {
+                $result = 'fail';
+            }
+            else if ($data['answers'][$key] != $question['answer']) {
                 $result = 'fail';
             }
         }
 
-        /**
-         * @psalm-suppress PossiblyUndefinedVariable
-         */
         $response['result'] = $result;
 
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($response);
     }
 }

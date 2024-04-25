@@ -131,6 +131,76 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider kbvAnswersData
+     */
+    public function testKbvAnswers(string $uuid, array $provided, array $actual, string $result, int $status): void
+    {
+        if ( $result !== 'error') {
+            $this->dataQueryHandlerMock
+                ->expects($this->once())->method('getCaseByUUID')
+                ->with($uuid)
+                ->willReturn($actual);
+        }
+
+        $this->dispatchJSON(
+            '/cases/'.$uuid.'/kbv-answers',
+            'POST',
+            $provided
+        );
+        $this->assertResponseStatusCode($status);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('check_kbv_answers');
+
+        if ( $result === "error") {
+            $this->assertEquals(
+                '{"status":400,"type":"HTTP400","title":"Bad Request"}',
+                $this->getResponse()->getContent())
+            ;
+        } else {
+            $this->assertEquals('{"result":"'. $result.'"}', $this->getResponse()->getContent());
+        }
+    }
+
+    public static function kbvAnswersData(): array
+    {
+        $uuid = 'e32a4d31-f15b-43f8-9e21-2fb09c8f45e7';
+        $invalidUUID = 'asdkfh3984ahksdjka';
+        $provided = [
+            'answers' => [
+                'one' => 'VoltWave',
+                'two' => 'Germanotta',
+                'tree' => 'July',
+                'four' => 'Pink'
+            ]
+        ];
+        $providedIncomplete = $provided;
+        unset($providedIncomplete['answers']['four']);
+
+        $providedIncorrect = $provided;
+        $providedIncorrect['answers']['two'] = 'incorrect answer';
+
+        $actual = [
+            '0' => [
+                'kbvQuestions' => json_encode([
+                    'one' => ['answer' => 'VoltWave'],
+                    'two' => ['answer' => 'Germanotta'],
+                    'tree' => ['answer' => 'July'],
+                    'four' => ['answer' => 'Pink']
+                ])
+            ]
+        ];
+
+        return [
+            [$uuid, $provided, $actual, 'pass', Response::STATUS_CODE_200],
+            [$uuid, $providedIncomplete, $actual, 'fail', Response::STATUS_CODE_200],
+            [$uuid, $providedIncorrect, $actual, 'fail', Response::STATUS_CODE_200],
+            [$invalidUUID, $provided, $actual, 'error', Response::STATUS_CODE_400],
+        ];
+    }
+
     public function testKBVQuestionsWithNoUUID(): void
     {
         $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
