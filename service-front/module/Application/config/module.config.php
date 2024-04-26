@@ -170,6 +170,46 @@ return [
                     ],
                 ],
             ],
+            'post_office_documents' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/post-office-documents',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'postOfficeDocuments',
+                    ],
+                ],
+            ],
+            'find_post_office' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/find-post-office',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'findPostOffice',
+                    ],
+                ],
+            ],
+            'confirm_post_office' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/confirm-post-office',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'confirmPostOffice',
+                    ],
+                ],
+            ],
+            'what_happens_next' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/what-happens-next',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'whatHappensNext',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -177,6 +217,7 @@ return [
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
+            Controller\DonorPostOfficeFlowController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [
@@ -223,6 +264,15 @@ return [
             'pn' => 'UK Passport (current or expired in the last 5 years)',
             'dln' => 'Driving licence (current)',
 
+        ],
+        'post_office_identity_methods' => [
+            'ukp' => 'UK passport (up to 18m expired)',
+            'eup' => 'EU passport (must be current)',
+            'inp' => 'International passport (must be current)',
+            'ukd' => 'UK Driving licence (must be current)',
+            'eud' => 'EU Driving licence (must be current)',
+            'ind' => 'International driving licence (must be current)',
+            'n' => 'None of the above',
         ],
     ]
 ];
