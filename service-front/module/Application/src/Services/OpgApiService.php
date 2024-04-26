@@ -176,14 +176,14 @@ class OpgApiService implements OpgApiServiceInterface
         ]);
     }
 
-    public function updateIdMethos(string $uuid, string $method): bool
+    public function updateIdMethod(string $uuid, string $method): string|bool
     {
+        $data = [
+            'idMethod' => $method
+        ];
         try {
-            $response = $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
-            if ($response['result'] !== 'pass') {
-                return false;
-            }
-            return true;
+            $response = $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
+            return $response['result'];
         } catch (OpgApiException $opgApiException) {
             return false;
         }

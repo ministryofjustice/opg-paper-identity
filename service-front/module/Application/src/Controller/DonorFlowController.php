@@ -10,7 +10,9 @@ use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Application\Forms\NationalInsuranceNumber;
@@ -18,12 +20,14 @@ use Application\Forms\NationalInsuranceNumber;
 class DonorFlowController extends AbstractActionController
 {
     protected $plugins;
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
-        private readonly FormProcessorService $formProcessorService,
-        private readonly array $config,
-    ) {
+        private readonly SiriusApiService       $siriusApiService,
+        private readonly FormProcessorService   $formProcessorService,
+        private readonly array                  $config,
+    )
+    {
     }
 
     public function startAction(): ViewModel
@@ -61,31 +65,16 @@ class DonorFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/start');
     }
 
-    public function howWillDonorConfirmAction(): ViewModel
+    public function howWillDonorConfirmAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
+            $response = $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
 
-            switch ($formData['id_method']) {
-                case 'pn':
-                    $this->redirect()
-                        ->toRoute("passport_number", ['uuid' => $uuid]);
-                    break;
-
-                case 'dln':
-                    $this->redirect()
-                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
-                    break;
-
-                case 'nin':
-                    $this->redirect()
-                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
-                    break;
-
-                default:
-                    break;
+            if ($response === "Updated") {
+                return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
             }
         }
 
@@ -105,7 +94,7 @@ class DonorFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid)[0];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
         $stubDetailsData = $this->opgApiService->stubDetailsResponse();
@@ -135,11 +124,41 @@ class DonorFlowController extends AbstractActionController
 
     public function donorLpaCheckAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $data = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
         $view->setVariable('data', $data);
+        $view->setVariable('details_data', $detailsData);
+
+        if (count($this->getRequest()->getPost())) {
+            $data = $this->getRequest()->getPost();
+            // not yet implemented
+//          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
+
+            switch ($detailsData['idMethod']) {
+                case 'pn':
+                    $this->redirect()
+                        ->toRoute("passport_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'dln':
+                    $this->redirect()
+                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'nin':
+                    $this->redirect()
+                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
 
         return $view->setTemplate('application/pages/donor_lpa_check');
     }

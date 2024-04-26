@@ -24,4 +24,6 @@ interface OpgApiServiceInterface
         array $lpas,
         array $address,
     ): array;
+
+    public function updateIdMethod(string $uuid, string $method): string|bool;
 }
