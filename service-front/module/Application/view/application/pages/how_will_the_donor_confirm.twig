@@ -1,9 +1,16 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
         <form method="POST">
-            <h1 class="govuk-heading-xl">How will the donor confirm their identity</h1>
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">How will they confirm their identity</h1>
 
-            <h2 class="govuk-heading-m">ID over the phone (preferred)</h2>
+            <p class="govuk-body govuk-!-width-two-thirds">
+                Confirming their identity over the phone is the quickest and easiest option - they'll need an NI number, passport or driving licence and to answer some identity check questions during the call.
+
+                <br><br></br>Alternately, they can identify in-person at a post office - this will take longer and incurs a cost to OPG
+            </p>
+
+            <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
             <div class="govuk-form-group">
                 <div class="govuk-radios" data-module="govuk-radios">
                     {% for  key, datum in options_data %}
@@ -16,28 +23,37 @@
                 </div>
             </div>
             <div class="govuk-form-group">
-                <h2 class="govuk-heading-m">ID in person at the Post Office (if unable to ID over the phone)</h2>
-
-
+                <h2 class="govuk-heading-m">If unable to ID over the phone</h2>
                 <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
-                           value="PostOffice">
-                    <label class="govuk-label govuk-radios__label" for="PostOffice">
-                        Post Office (current UK / EU international passport or UK driving licence)
-                    </label>
+                    <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
+                           value="OnBehalf">
+                    <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their identity on donor's behalf</label>
                 </div>
             </div>
-            <div class="govuk-form-group">
-                <h2 class="govuk-heading-m">No ID, choose a person to vouch</h2>
-
-                <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="PersonVouch" name="id_method" type="radio"
-                           value="PersonVouch">
-                    <label class="govuk-label govuk-radios__label" for="PersonVouch">
-                        Choose someone to prove their identity on the donor's behalf
-                    </label>
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Other methods
+                </span>
+                </summary>
+                <div class="govuk-details__text">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
+                                   value="PostOffice">
+                            <label class="govuk-label govuk-radios__label" for="PostOffice">
+                                Post Office (current UK / EU / international passport or driving licence)
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
+                                   value="CourtOfProtection">
+                            <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of protection</label>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </details>
+
             <input type="submit" class="govuk-button" value="Continue">
         </form>
     </main>

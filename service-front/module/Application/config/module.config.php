@@ -70,10 +70,20 @@ return [
                     ],
                 ],
             ],
+            'donor_details_match_check' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/donor-details-match-check',
+                    'defaults' => [
+                        'controller' => Controller\DonorFlowController::class,
+                        'action'     => 'donorDetailsMatchCheck',
+                    ],
+                ],
+            ],
             'address_verification' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/address_verification',
+                    'route'    => '[/:uuid]/address_verification',
                     'defaults' => [
                         'controller' => Controller\DonorFlowController::class,
                         'action'     => 'addressVerification',
@@ -150,6 +160,16 @@ return [
                     ],
                 ],
             ],
+            'proving_identity' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/proving-identity',
+                    'defaults' => [
+                        'controller' => Controller\DonorFlowController::class,
+                        'action'     => 'provingIdentity',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -199,9 +219,10 @@ return [
     ],
     'opg_settings' => [
         'identity_methods' => [
-            'pn' => 'Passport',
-            'dln' => 'Driving licence',
-            'nin' => 'National Insurance number'
+            'nin' => 'National Insurance number',
+            'pn' => 'UK Passport (current or expired in the last 5 years)',
+            'dln' => 'Driving licence (current)',
+
         ],
     ]
 ];
