@@ -83,7 +83,7 @@ return [
             'address_verification' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/address_verification',
+                    'route'    => '[/:uuid]/address_verification',
                     'defaults' => [
                         'controller' => Controller\DonorFlowController::class,
                         'action'     => 'addressVerification',

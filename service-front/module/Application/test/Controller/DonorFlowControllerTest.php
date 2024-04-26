@@ -81,7 +81,25 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getAddressVerificationData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch("/address_verification", 'GET');
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/address_verification", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
@@ -338,7 +356,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects(self::once())
             ->method('getDetailsData')
             ->with($this->uuid)
-            ->willReturn([$mockResponseDataIdDetails]);
+            ->willReturn($mockResponseDataIdDetails);
 
         $this
             ->opgApiServiceMock

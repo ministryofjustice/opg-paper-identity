@@ -23,11 +23,10 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService       $siriusApiService,
-        private readonly FormProcessorService   $formProcessorService,
-        private readonly array                  $config,
-    )
-    {
+        private readonly SiriusApiService $siriusApiService,
+        private readonly FormProcessorService $formProcessorService,
+        private readonly array $config,
+    ) {
     }
 
     public function startAction(): ViewModel
@@ -134,7 +133,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         if (count($this->getRequest()->getPost())) {
-            $data = $this->getRequest()->getPost();
+//            $data = $this->getRequest()->getPost();
             // not yet implemented
 //          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
 
@@ -157,7 +156,6 @@ class DonorFlowController extends AbstractActionController
                 default:
                     break;
             }
-
         }
 
         return $view->setTemplate('application/pages/donor_lpa_check');
@@ -165,9 +163,12 @@ class DonorFlowController extends AbstractActionController
 
     public function addressVerificationAction(): ViewModel
     {
-        $data = $this->opgApiService->getAddressVerificationData();
-
         $view = new ViewModel();
+
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+        $data = $this->opgApiService->getAddressVerificationData();
 
         $view->setVariable('options_data', $data);
 
