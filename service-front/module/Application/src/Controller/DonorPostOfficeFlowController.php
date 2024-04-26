@@ -49,4 +49,36 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         return $view->setTemplate('application/pages/post_office/post_office_documents');
     }
+
+    public function findPostOfficeAction(): ViewModel|Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+            $response = $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+
+            if ($response === "Updated") {
+                return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
+            }
+        }
+
+        $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $postcode = "";
+        foreach ($detailsData['address'] as $line) {
+            if (preg_match('/^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$/', $line)) {
+                $postcode = $line;
+            }
+        }
+
+        $view = new ViewModel();
+
+        $view->setVariable('postcode', $postcode);
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate('application/pages/post_office/find_post_office');
+    }
 }

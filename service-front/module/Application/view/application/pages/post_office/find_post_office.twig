@@ -1,0 +1,35 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <form method="POST">
+            <h1 class="govuk-heading-xl">Find a Post Office</h1>
+            <p class="govuk-body govuk-!-width-two-thirds">
+                Not all post offices provide this service, please confirm your postcode so I can find your nearest post office
+            </p>
+            <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
+            <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="assistance-1" name="assistance" type="radio" value="no" data-aria-controls="conditional-assistance-1">
+                    <label class="govuk-label govuk-radios__label" for="contact-2">
+                        {{ postcode }} (default address)
+                    </label>
+                </div>
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="assistance-2" name="assistance" type="radio" value="yes" checked data-aria-controls="conditional-assistance-2">
+                        <label class="govuk-label govuk-radios__label" for="contact">
+                            Alternate postcode
+                        </label>
+                    </div>
+                    <div class="govuk-radios__conditional" id="conditional-assistance">
+                        <div class="govuk-form-group">
+                            <input class="govuk-input govuk-!-width-one-third" id="alt_postcode" name="alt_postcode" aria-describedby="alt_postcode" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <input type="submit" class="govuk-button" value="Continue">
+            <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+        </form>
+    </main>
+</div>
