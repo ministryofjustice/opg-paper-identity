@@ -1,0 +1,301 @@
+openapi: 3.0.0
+info:
+  title: Yoti Mock API
+  description: Provides mock for crucial Yoti endpoints spec for local/dev Post Office integrations
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+    description: Local Imposter server
+x-json-schema-faker:
+  alwaysFakeOptionals: false
+  optionalsProbability: 0.5
+  fillProperties: false
+paths:
+  /idverify/v1/lookup/uk-post-office:
+    post:
+      summary: Given a supplied postcode locate Post Office branches near it
+      requestBody:
+        description: The searchString ( post code )
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchString'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+
+  /idverify/v1/sessions:
+    post:
+      summary: Create a Yoti session with applicant details and selections
+      requestBody:
+        description: the session comprised of required_docs, applicant profile, session_deadline etc
+        content:
+          application/json:
+            schema:
+              $ref: ''
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CombinedLpa'
+        '400':
+          description: Payload validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400payload'
+        '401':
+          description: Unauthorised request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/'
+        '403':
+          description: Application disabled or no associated org ID
+        '404':
+          description: Application does not exist
+        '503':
+          description: Service unavailable
+
+  /idverify/v1/sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        description: The UID of the generated session
+        required: true
+        schema:
+          type: string
+          nullable: true
+    get:
+      summary: Retrieve the results of a generated session
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CombinedLpa'
+        '401':
+          description: Error
+
+  /idverify/v1/sessions/{sessionId}/instructions:
+    parameters:
+      - name: sessionId
+        in: path
+        description: The UID of the generated session
+        required: true
+        schema:
+          type: string
+          nullable: true
+
+    put:
+      summary: Given session/config data generate letter needed for IBV
+      requestBody:
+        description: the payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/letterpayload'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+
+        '400':
+          description: Payload validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400payload'
+        '401':
+          description: Unauthorised request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/'
+        '404':
+          description: Application does not exist
+        '409':
+          description: The session has expired
+        '500':
+          description: internal server error
+        '503':
+          description: Service unavailable
+
+  /idverify/v1/sessions/{sessionId}/instructions/pdf:
+    parameters:
+      - name: sessionId
+        in: path
+        description: The UID of the generated session
+        required: true
+        schema:
+          type: string
+          nullable: true
+    get:
+      summary: Retrieve the results of a generated session
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/'
+        '400':
+          description: Payload validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400payload'
+        '401':
+          description: Unauthorised request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/'
+        '404':
+          description: Application does not exist
+        '409':
+          description: The session has expired
+        '500':
+          description: internal server error
+        '503':
+          description: Service unavailable
+
+
+components:
+  schemas:
+    SearchString:
+      type: object
+      properties:
+        search_string:
+          type: string
+          pattern: "^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$"
+          example: BN1 4TB
+    Branch:
+      type: object
+      properties:
+        type:
+          type: string
+        fade_code:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        postcode:
+          type: string
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+
+    YotiSession:
+      type: object
+      properties:
+        session_deadline:
+          type: string
+          format: date-time
+        resources_ttl:
+          type: integer
+        ibv_options:
+          type: object
+          properties:
+            support:
+              type: string
+              example: "MANDATORY"
+        user_tracking_id:
+          type: string
+        requested_checks:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              config:
+                type: object
+                properties:
+                  manual_check:
+                    type: string
+                  scheme:
+                    type: string
+        required_documents:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              #alternate options, only applicable if supplementary document type
+              document_types:
+                type: array
+                items:
+                  type: string
+              country_codes:
+                type: array
+                items:
+                  type: string
+              filter:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  inclusion:
+                    type: string
+                  documents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        country_codes:
+                          type: array
+                          items:
+                            type: string
+                        document_types:
+                          type: array
+                          items:
+                            type: string
+
+
+
+    User:
+      type: object
+      properties:
+        id: int
+    CombinedLpa:
+      allOf:
+        - $ref: "#/components/schemas/DigitalLpa"
+      type: object
+      required:
+        - opg.poas.sirius
+        - opg.poas.lpastore
+      properties:
+        opg.poas.sirius:
+          $ref: "#/components/schemas/DigitalLpa"
+        opg.poas.lpastore:
+          oneOf:
+            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-04/lpa.json
+            - null
+      additionalProperties: false
+    DigitalLpa:
+      type: object
+      required:
+        - uId
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        uId:
+          type: string
+          pattern: "M(-[0-9A-Z]{4}){3}"
+          example: M-789Q-P4DF-4UX3
