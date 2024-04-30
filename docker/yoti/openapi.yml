@@ -36,26 +36,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ''
+              $ref: '#/components/schemas/YotiSession'
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CombinedLpa'
+                $ref: '#/components/schemas/SessionSuccess'
         '400':
           description: Payload validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/400payload'
+                $ref: '#/components/schemas/SessionError400'
         '401':
           description: Unauthorised request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/'
         '403':
           description: Application disabled or no associated org ID
         '404':
@@ -80,7 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CombinedLpa'
+                $ref: '#/components/schemas/SessionResult'
         '401':
           description: Error
 
@@ -101,7 +97,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/letterpayload'
+              $ref: '#/components/schemas/LetterInstructions'
       responses:
         '201':
           description: Created
@@ -113,13 +109,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/400payload'
+                $ref: '#/components/schemas/LetterPayload400'
         '401':
           description: Unauthorised request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/'
         '404':
           description: Application does not exist
         '409':
@@ -143,22 +135,15 @@ paths:
       responses:
         '200':
           description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/'
+
         '400':
           description: Payload validation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/400payload'
+                $ref: '#/components/schemas/LetterPayload400'
         '401':
           description: Unauthorised request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/'
         '404':
           description: Application does not exist
         '409':
@@ -198,6 +183,62 @@ components:
               type: number
             longitude:
               type: number
+
+    LetterInstructions:
+      type: object
+      properties:
+        contact_profile:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            email:
+              type: string
+              format: email
+        documents:
+          type: array
+          items:
+            type: object
+            properties:
+              requirement_id:
+                type: string
+              document:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  country_code:
+                    type: string
+                  document_type:
+                    type: string
+
+        branch:
+          type: object
+          properties:
+            type:
+              type: string
+            fad_code:
+              type: integer
+
+    LetterPayload400:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+              message:
+                type: string
+
 
     YotiSession:
       type: object
@@ -245,6 +286,11 @@ components:
                 type: array
                 items:
                   type: string
+              objective:
+                type: object
+                properties:
+                  type:
+                    type: string
               filter:
                 type: object
                 properties:
@@ -265,8 +311,228 @@ components:
                           type: array
                           items:
                             type: string
+        resources:
+          type: object
+          properties:
+            applicant_profile:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: dob
+                structured_postal_address:
+                  type: object
+                  properties:
+                    address_format:
+                      type: integer
+                      minimum: 1
+                      maximum: 4
+                    building_number:
+                      type: string
+                    address_line_1:
+                      type: string
+                    town_city:
+                      type: string
+                    postal_code:
+                      type: string
+                      pattern: "^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$"
+                    country_iso:
+                      type: string
+                    country:
+                      type: string
+    SessionSuccess:
+      type: object
+      properties:
+        client_session_token_ttl:
+          type: integer
+        client_session_token:
+          type: string
+        session_id:
+          type: string
 
+    SessionError400:
+      type: object
+      properties:
+        code:
+          type: string
+        errors:
+          type: array
+          items:
+            properties:
+              property:
+                type: string
+              message:
+                type: string
 
+    SessionResult:
+      type: object
+      properties:
+        client_session_token_ttl:
+          type: integer
+        session_id:
+          type: string
+        state:
+          type: string
+        client_session_token:
+          type: string
+        resources:
+          $ref: "#/components/schemas/ResultResources"
+        checks:
+          type: array
+          items:
+           oneOf:
+             - $ref: "#/components/schemas/ResultChecks1"
+             - $ref: "#/components/schemas/ResultChecks2"
+        user_tracking_id:
+          type: string
+          default: ""
+
+    ResultResources:
+      type: object
+      properties:
+        id_documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Document"
+        supplementary_documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Document"
+        liveness_capture:
+          type: array
+          #not clear what these items actually are
+          items:
+            type: string
+        face_capture:
+          type: array
+          items:
+            type: string
+        applicant_profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Applicant"
+
+    Applicant:
+      type: object
+      properties:
+        id:
+          type: string
+        tasks:
+          type: array
+        source:
+          type: object
+          properties:
+            type:
+              type: string
+        created_at:
+          type: string
+          format: datetime
+        last_updated:
+          type: string
+          format: datetime
+        media:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            created:
+              type: string
+              format: datetime
+            last_updated:
+              type: string
+              format: datetime
+
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        tasks:
+          type: array
+        source:
+          type: object
+          properties:
+            type:
+              type: string
+        created_at:
+          type: string
+          format: datetime
+        last_updated:
+          type: string
+          format: datetime
+        document_type:
+          type: string
+        issuing_country:
+          type: string
+        pages:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageCapture"
+
+    PageCapture:
+      type: object
+      properties:
+        capture_method:
+          type: string
+        media:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            created:
+              type: string
+              format: datetime
+            last_updated:
+              type: string
+              format: datetime
+
+    ResultChecks1:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        state:
+          type: string
+        resources_used:
+          type: array
+          items:
+            type: string
+        generated_media:
+          type: array
+          #what time of items?
+        report:
+          type: object
+          properties:
+            recommendation:
+              type: object
+              properties:
+                value:
+                  type: string
+            breakdown:
+              type: array
+              #what type of items?
+        created:
+          type: string
+          format: datetime
+        last_updated:
+          type: string
+          format: datetime
+
+    ResultChecks2:
+      allOf:
+        - $ref: "#/components/schemas/ResultChecks1"
+        - type: object
+          properties:
+            scheme:
+              type: string
 
     User:
       type: object
