@@ -106,4 +106,13 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         return $view->setTemplate('application/pages/post_office/find_post_office');
     }
+
+    public function whatHappensNextAction(): ViewModel
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+        return $view->setTemplate('application/pages/post_office/what_happens_next');
+    }
 }
