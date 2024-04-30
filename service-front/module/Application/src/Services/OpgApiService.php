@@ -230,4 +230,45 @@ class OpgApiService implements OpgApiServiceInterface
         ];
     }
 
+    public function getPostOfficeByCode(string $uuid, string $code): array|bool
+    {
+//        $data = [
+//            'postcode' => $postcode
+//        ];
+//        try {
+//            $response = $this->makeApiRequest("/cases/$uuid/find-post-office", 'POST', $data);
+//            return $response['result'];
+//        } catch (OpgApiException $opgApiException) {
+//            return false;
+//        }
+
+        $postOffices = [
+            'hednesford' => [
+                'name' => 'Hednesford',
+                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
+                'distance' => '0.5 miles'
+            ],
+            'chadsmoor' => [
+                'name' => 'Chadsmoor',
+                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
+                'distance' => '1.1 miles'
+            ],
+            'hazelslade' => [
+                'name' => 'Hazelslade',
+                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
+                'distance' => '1.2 miles'
+            ],
+            'wimblebury' => [
+                'name' => 'Wimblebury',
+                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
+                'distance' => '1.4 miles'
+            ],
+            'heath_hayes' =>  [
+                'name' => 'Heath Hayes',
+                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
+                'distance' => '1.9 miles'
+            ]
+        ];
+        return array_key_exists($code, $postOffices) ? $postOffices[$code]: false;
+    }
 }

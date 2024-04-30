@@ -55,20 +55,39 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
+        $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
+            $view->setVariable('next_page', $formData['next_page']);
 
-            echo json_encode($formData);
+            if($formData['next_page'] == '2') {
 
-            if($formData['postcode'] == 'alt') {
-                $postcode = $formData['alt_postcode'];
-            } else {
-                $postcode = $formData['postcode'];
+                if($formData['postcode'] == 'alt') {
+                    $postcode = $formData['alt_postcode'];
+                } else {
+                    $postcode = $formData['postcode'];
+                }
+
+                $response = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);
+
+                $view->setVariable('post_office_list', $response);
+            } elseif ($formData['next_page'] == '3') {
+                $date = new \DateTime();
+                $date->modify("+90 days");
+                $deadline = $date->format("d M Y");
+
+                $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, $formData['postoffice']);
+
+                $postOfficeAddress = explode(",", $postOfficeData['address']);
+
+                $view->setVariable('post_office_summary', true);
+                $view->setVariable('post_office_data', $postOfficeData);
+                $view->setVariable('post_office_address', $postOfficeAddress);
+                $view->setVariable('deadline', $deadline);
+                $view->setVariable('id_method', $optionsdata[$detailsData['idMethod']]);
             }
-
-            $response = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);
-
-            $view->setVariable('post_office_list', $response);
         }
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];

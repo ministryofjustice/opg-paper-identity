@@ -28,4 +28,6 @@ interface OpgApiServiceInterface
     public function updateIdMethod(string $uuid, string $method): string|bool;
 
     public function listPostOfficesByPostcode(string $uuid, string $postcode): array|bool;
+
+    public function getPostOfficeByCode(string $uuid, string $code): array|bool;
 }
