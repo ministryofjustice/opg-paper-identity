@@ -222,7 +222,7 @@ class OpgApiService implements OpgApiServiceInterface
                 'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
                 'distance' => '1.4 miles'
             ],
-            'heath_hayes' =>  [
+            'heath_hayes' => [
                 'name' => 'Heath Hayes',
                 'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
                 'distance' => '1.9 miles'
@@ -263,12 +263,12 @@ class OpgApiService implements OpgApiServiceInterface
                 'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
                 'distance' => '1.4 miles'
             ],
-            'heath_hayes' =>  [
+            'heath_hayes' => [
                 'name' => 'Heath Hayes',
                 'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
                 'distance' => '1.9 miles'
             ]
         ];
-        return array_key_exists($code, $postOffices) ? $postOffices[$code]: false;
+        return array_key_exists($code, $postOffices) ? $postOffices[$code] : false;
     }
 }

@@ -19,8 +19,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
-        private readonly FormProcessorService $formProcessorService,
+        //        private readonly FormProcessorService $formProcessorService,
         private readonly array $config,
     ) {
     }
@@ -62,9 +61,8 @@ class DonorPostOfficeFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
             $view->setVariable('next_page', $formData['next_page']);
 
-            if($formData['next_page'] == '2') {
-
-                if($formData['postcode'] == 'alt') {
+            if ($formData['next_page'] == '2') {
+                if ($formData['postcode'] == 'alt') {
                     $postcode = $formData['alt_postcode'];
                 } else {
                     $postcode = $formData['postcode'];
@@ -80,6 +78,9 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
                 $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, $formData['postoffice']);
 
+                /**
+                 * @psalm-suppress PossiblyInvalidArrayAccess
+                 */
                 $postOfficeAddress = explode(",", $postOfficeData['address']);
 
                 $view->setVariable('post_office_summary', true);
@@ -91,7 +92,6 @@ class DonorPostOfficeFlowController extends AbstractActionController
         }
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
         $postcode = "";
         foreach ($detailsData['address'] as $line) {
             if (preg_match('/^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$/', $line)) {
@@ -114,5 +114,14 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
         return $view->setTemplate('application/pages/post_office/what_happens_next');
+    }
+
+    public function postOfficeRouteNotAvailableAction(): ViewModel
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+        return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
     }
 }

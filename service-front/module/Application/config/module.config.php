@@ -210,6 +210,16 @@ return [
                     ],
                 ],
             ],
+            'post_office_route_not_available' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/post-office-route-not-available',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'postOfficeRouteNotAvailable',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
