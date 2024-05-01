@@ -30,11 +30,8 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
-            $response = $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-
-            if ($response === "Updated") {
-                return $this->redirect()->toRoute("find_post_office", ['uuid' => $uuid]);
-            }
+            $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+            return $this->redirect()->toRoute("find_post_office", ['uuid' => $uuid]);
         }
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];

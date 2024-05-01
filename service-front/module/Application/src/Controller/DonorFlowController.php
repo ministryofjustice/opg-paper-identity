@@ -70,11 +70,8 @@ class DonorFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
-            $response = $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-
-            if ($response === "Updated") {
-                return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
-            }
+            $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+            return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];

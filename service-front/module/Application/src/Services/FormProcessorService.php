@@ -136,11 +136,8 @@ class FormProcessorService
             $date->modify("+90 days");
             $deadline = $date->format("d M Y");
 
-            $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, $formData['postoffice']);
+            $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, (int)$formData['postoffice']);
 
-            /**
-             * @psalm-suppress PossiblyInvalidArrayAccess
-             */
             $postOfficeAddress = explode(",", $postOfficeData['address']);
 
             $view->setVariable('post_office_summary', true);
