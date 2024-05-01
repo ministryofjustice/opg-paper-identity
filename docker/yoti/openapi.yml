@@ -26,7 +26,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Branch'
+                type: array
+                items:
+                 $ref: '#/components/schemas/Branch'
 
   /idverify/v1/sessions:
     post:
@@ -323,25 +325,83 @@ components:
                   type: string
                   format: dob
                 structured_postal_address:
-                  type: object
-                  properties:
-                    address_format:
-                      type: integer
-                      minimum: 1
-                      maximum: 4
-                    building_number:
-                      type: string
-                    address_line_1:
-                      type: string
-                    town_city:
-                      type: string
-                    postal_code:
-                      type: string
-                      pattern: "^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$"
-                    country_iso:
-                      type: string
-                    country:
-                      type: string
+                  oneOf:
+                    - $ref: "#/components/schemas/AddressFormat1"
+                    - $ref: "#/components/schemas/AddressFormat2"
+                    - $ref: "#/components/schemas/AddressFormat3"
+                    - $ref: "#/components/schemas/AddressFormat4"
+
+    #should country and iso codes be validated somehow?
+    Address:
+      type: object
+      properties:
+        address_format:
+          type: integer
+          minimum: 1
+          maximum: 4
+        country_iso:
+          type: string
+        country:
+          type: string
+        formatted_address:
+          type: string
+
+    AddressFormat1:
+      allOf:
+        - $ref: "#/components/schemas/Address"
+        - type: object
+          properties:
+            address_line1:
+              type: string
+            address_line2:
+              type: string
+            town_city:
+              type: string
+            postal_code:
+              type: string
+              pattern: "^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$"
+
+    AddressFormat2:
+      allOf:
+      - $ref: "#/components/schemas/Address"
+      - type: object
+        properties:
+          building:
+            type: string
+          street:
+            type: string
+          state:
+            type: string
+
+    AddressFormat3:
+      allOf:
+        - $ref: "#/components/schemas/Address"
+        - type: object
+          properties:
+            address_line1:
+              type: string
+            address_line2:
+              type: string
+              default: null
+            town_city:
+              type: string
+            state:
+              type: string
+            postal_code:
+              type: string
+
+    AddressFormat4:
+      allOf:
+        - $ref: "#/components/schemas/Address"
+        - type: object
+          properties:
+            address_line1:
+              type: string
+            address_line2:
+              type: string
+              default: null
+
+
     SessionSuccess:
       type: object
       properties:
@@ -533,35 +593,3 @@ components:
           properties:
             scheme:
               type: string
-
-    User:
-      type: object
-      properties:
-        id: int
-    CombinedLpa:
-      allOf:
-        - $ref: "#/components/schemas/DigitalLpa"
-      type: object
-      required:
-        - opg.poas.sirius
-        - opg.poas.lpastore
-      properties:
-        opg.poas.sirius:
-          $ref: "#/components/schemas/DigitalLpa"
-        opg.poas.lpastore:
-          oneOf:
-            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-04/lpa.json
-            - null
-      additionalProperties: false
-    DigitalLpa:
-      type: object
-      required:
-        - uId
-      properties:
-        id:
-          type: integer
-          minimum: 1
-        uId:
-          type: string
-          pattern: "M(-[0-9A-Z]{4}){3}"
-          example: M-789Q-P4DF-4UX3
