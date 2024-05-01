@@ -10,7 +10,9 @@ use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Application\Forms\NationalInsuranceNumber;
@@ -18,6 +20,7 @@ use Application\Forms\NationalInsuranceNumber;
 class DonorFlowController extends AbstractActionController
 {
     protected $plugins;
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
@@ -41,14 +44,14 @@ class DonorFlowController extends AbstractActionController
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
         $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-
+        $address = explode(', ', $detailsData['Address']);
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
         // Create a case in the API with the LPA UID and the actors' details
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
+        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
 
         $view = new ViewModel([
             'lpaUids' => $this->params()->fromQuery("lpas"),
@@ -61,31 +64,16 @@ class DonorFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/start');
     }
 
-    public function howWillDonorConfirmAction(): ViewModel
+    public function howWillDonorConfirmAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
+            $response = $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
 
-            switch ($formData['id_method']) {
-                case 'pn':
-                    $this->redirect()
-                        ->toRoute("passport_number", ['uuid' => $uuid]);
-                    break;
-
-                case 'dln':
-                    $this->redirect()
-                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
-                    break;
-
-                case 'nin':
-                    $this->redirect()
-                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
-                    break;
-
-                default:
-                    break;
+            if ($response === "Updated") {
+                return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
             }
         }
 
@@ -99,6 +87,24 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate('application/pages/how_will_the_donor_confirm');
+    }
+
+    public function donorDetailsMatchCheckAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
+        $stubDetailsData = $this->opgApiService->stubDetailsResponse();
+        $detailsData['address'] = explode(', ', $stubDetailsData['Address']);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate('application/pages/donor_details_match_check');
     }
 
     public function donorIdCheckAction(): ViewModel
@@ -117,20 +123,57 @@ class DonorFlowController extends AbstractActionController
 
     public function donorLpaCheckAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
         $data = $this->opgApiService->getLpasByDonorData();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
 
         $view->setVariable('data', $data);
+        $view->setVariable('details_data', $detailsData);
+
+        if (count($this->getRequest()->getPost())) {
+//            $data = $this->getRequest()->getPost();
+            // not yet implemented
+//          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
+
+            switch ($detailsData['idMethod']) {
+                case 'pn':
+                    $this->redirect()
+                        ->toRoute("passport_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'dln':
+                    $this->redirect()
+                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'nin':
+                    $this->redirect()
+                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+                    break;
+
+                case 'po':
+                    $this->redirect()
+                        ->toRoute("post_office_documents", ['uuid' => $uuid]);
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         return $view->setTemplate('application/pages/donor_lpa_check');
     }
 
     public function addressVerificationAction(): ViewModel
     {
-        $data = $this->opgApiService->getAddressVerificationData();
-
         $view = new ViewModel();
+
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+        $data = $this->opgApiService->getAddressVerificationData();
 
         $view->setVariable('options_data', $data);
 
@@ -271,8 +314,25 @@ class DonorFlowController extends AbstractActionController
 
     public function thinFileFailureAction(): ViewModel
     {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         $view = new ViewModel();
 
+        $view->setVariable('details_data', $detailsData);
+
         return $view->setTemplate('application/pages/thin_file_failure');
+    }
+
+    public function provingIdentityAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/proving_identity');
     }
 }
