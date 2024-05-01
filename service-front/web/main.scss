@@ -25,8 +25,8 @@ $govuk-assets-path: "../assets/";
   margin-top: 20px;
   margin-bottom: 20px;
   clear: both;
-  border-left: 2px solid #1d70b8;
-  background-color: #f3f2f1;
+  border-left: 2px solid $govuk-brand-colour;
+  background-color: govuk-colour("light-grey");
 }
 
 .govuk-main-wrapper-custom {
