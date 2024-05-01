@@ -60,7 +60,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-id-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_id_check');
     }
@@ -102,7 +102,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/address_verification", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('address_verification');
     }
@@ -128,7 +128,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_lpa_check');
     }
@@ -156,7 +156,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('national_insurance_number');
     }
@@ -184,7 +184,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('driving_licence_number');
     }
@@ -212,7 +212,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/how-will-donor-confirm", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('how_donor_confirms');
     }
@@ -257,7 +257,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('identity_check_passed');
     }
@@ -302,7 +302,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('identity_check_failed');
     }
@@ -311,7 +311,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('thin_file_failure');
     }
@@ -321,7 +321,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/proving-identity", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('proving_identity');
     }
@@ -367,7 +367,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_details_match_check');
     }

@@ -68,7 +68,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-documents", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
         $this->assertMatchedRouteName('post_office_documents');
     }
@@ -104,7 +104,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/find-post-office", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
         $this->assertMatchedRouteName('find_post_office');
     }
@@ -139,7 +139,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
         $this->assertMatchedRouteName('what_happens_next');
     }
@@ -175,7 +175,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-route-not-available", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
         $this->assertMatchedRouteName('post_office_route_not_available');
     }
