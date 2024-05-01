@@ -153,6 +153,11 @@ class DonorFlowController extends AbstractActionController
                         ->toRoute("national_insurance_number", ['uuid' => $uuid]);
                     break;
 
+                case 'po':
+                    $this->redirect()
+                        ->toRoute("post_office_documents", ['uuid' => $uuid]);
+                    break;
+
                 default:
                     break;
             }

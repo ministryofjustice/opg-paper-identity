@@ -33,7 +33,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
             $response = $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
 
             if ($response === "Updated") {
-                return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
+                return $this->redirect()->toRoute("find_post_office", ['uuid' => $uuid]);
             }
         }
 

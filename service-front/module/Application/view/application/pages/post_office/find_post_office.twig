@@ -10,14 +10,7 @@
                     office
                 </p>
             {% endif %}
-            {% if next_page == '2' %}
-                <h1 class="govuk-heading-xl">Find a Post Office</h1>
-                <p class="govuk-body govuk-!-width-two-thirds">
-                    Not all post offices provide this service, please confirm your postcode so I can find your nearest
-                    post
-                    office
-                </p>
-            {% endif %}
+
 
             {% if next_page == '2' %}
                 <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
@@ -55,7 +48,13 @@
 
                 <input type="hidden" name="next_page" value="3">
 
+                <p class="govuk-form-group">
+                    <input type="submit" class="govuk-button" value="Continue"/>
+                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                </p>
+
             {% elseif next_page == '3' %}
+
                 <h1 class="govuk-heading-xl">Confirm Post Office route</h1>
                 <p class="govuk-body govuk-!-width-two-thirds">
                     We will send you a letter
@@ -130,7 +129,18 @@
 
                 <input type="hidden" name="next_page" value="4">
 
+                <p class="govuk-form-group">
+                    <a href="./what-happens-next" class="govuk-button">Continue</a>
+                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                </p>
             {% else %}
+
+                <h1 class="govuk-heading-xl">Find a Post Office</h1>
+                <p class="govuk-body govuk-!-width-two-thirds">
+                    Not all post offices provide this service, please confirm your postcode so I can find your nearest
+                    post
+                    office
+                </p>
 
                 <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
                     <div class="govuk-radios__item">
@@ -175,13 +185,11 @@
                 </fieldset>
 
                 <input type="hidden" name="next_page" value="2">
-
+                <p class="govuk-form-group">
+                    <input type="submit" class="govuk-button" value="Continue"/>
+                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                </p>
             {% endif %}
-
-            <p class="govuk-form-group">
-                <a href="./what-happens-next" class="govuk-button">Continue</a>
-                <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
-            </p>
         </form>
     </main>
 </div>

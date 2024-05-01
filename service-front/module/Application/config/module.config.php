@@ -276,13 +276,13 @@ return [
 
         ],
         'post_office_identity_methods' => [
-            'ukp' => 'UK passport (up to 18m expired)',
-            'eup' => 'EU passport (must be current)',
-            'inp' => 'International passport (must be current)',
-            'ukd' => 'UK Driving licence (must be current)',
-            'eud' => 'EU Driving licence (must be current)',
-            'ind' => 'International driving licence (must be current)',
-            'n' => 'None of the above',
+            'po_ukp' => 'UK passport (up to 18m expired)',
+            'po_eup' => 'EU passport (must be current)',
+            'po_inp' => 'International passport (must be current)',
+            'po_ukd' => 'UK Driving licence (must be current)',
+            'po_eud' => 'EU Driving licence (must be current)',
+            'po_ind' => 'International driving licence (must be current)',
+            'po_n' => 'None of the above',
         ],
     ]
 ];
