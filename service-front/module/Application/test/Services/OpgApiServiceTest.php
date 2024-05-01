@@ -50,7 +50,7 @@ class OpgApiServiceTest extends TestCase
         $successMockResponseData = [
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Address" => "Line 1, Line 2, Country, BN1 4OD",
             "Role" => "Donor",
             "LPA" => [
                 "PA M-XYXY-YAGA-35G3",
@@ -151,9 +151,6 @@ class OpgApiServiceTest extends TestCase
 
         $this->assertEquals($responseData, $response);
     }
-
-
-
 
     public static function lpasByDonorData(): array
     {
@@ -570,7 +567,8 @@ class OpgApiServiceTest extends TestCase
             $postData['LastName'],
             $postData['DOB'],
             $postData['personType'],
-            $postData['lpas']
+            $postData['lpas'],
+            $postData['address'],
         );
 
         $this->assertEquals($responseData, $response);
@@ -592,7 +590,13 @@ class OpgApiServiceTest extends TestCase
             "LastName" => $lastName,
             'DOB' => $dob,
             'personType' => 'donor',
-            "lpas" => $lpas
+            "lpas" => $lpas,
+            'address' => [
+                "Line 1",
+                "Town",
+                "Country",
+                "Postcode"
+            ]
         ];
 
         $successMockResponseData = [
