@@ -1,0 +1,212 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <form method="POST">
+            {% if post_office_list %}
+                <h1 class="govuk-heading-xl">Find a branch</h1>
+                <p class="govuk-body govuk-!-width-two-thirds">
+                    Not all post offices provide this service, please confirm your postcode so I can find your nearest
+                    post
+                    office
+                </p>
+            {% endif %}
+
+
+            {% if next_page == '2' %}
+                <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
+
+                <div class="govuk-form-group">
+                    <h1 class="govuk-label-wrapper">
+                        <label class="govuk-label govuk-label--s app-text-gray govuk-body" for="postcode_confirm">
+                            Enter a postcode, town, or street name
+                        </label>
+                    </h1>
+                    <input class="govuk-input govuk-!-width-one-third" id="postcode_confirm" name="postcode_confirm"
+                           type="text">
+                    <button class="govuk-button govuk-button--secondary">Search</button>
+                </div>
+                <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                    {% for index, item in post_office_list %}
+                        <div class="govuk-radios__item">
+                            <input
+                                    class="govuk-radios__input"
+                                    id="default"
+                                    name="postoffice"
+                                    type="radio"
+                                    value="{{ index }}"
+                                    data-aria-controls="default"
+                            />
+                            <label class="govuk-label govuk-radios__label" for="default">
+                                {{ item.name }} <br>
+                                {{ item.address }} <br>
+                                Distance: {{ item.distance }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                    <div class="govuk-form-group">
+                        <a href="#" class="govuk-link">See more</a>
+                    </div>
+                    <div class="govuk-form-group">
+                        <div class="govuk-radios__item">
+                            <input
+                                    class="govuk-radios__input"
+                                    id="default"
+                                    name="postoffice"
+                                    type="radio"
+                                    value="none"
+                                    data-aria-controls="default"
+                            />
+                            <label class="govuk-label govuk-radios__label" for="default">
+                                None of the above
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <input type="hidden" name="next_page" value="3">
+
+                <p class="govuk-form-group">
+                    <input type="submit" class="govuk-button" value="Continue"/>
+                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                </p>
+
+            {% elseif next_page == '3' %}
+
+                <h1 class="govuk-heading-xl">Confirm Post Office route</h1>
+                <p class="govuk-body govuk-!-width-two-thirds">
+                    We will send you a letter
+                </p>
+                <div class="govuk-summary-card govuk-!-width-two-thirds">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            {{ details_data.firstName }} {{ details_data.lastName }}
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Donor Address
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    {% for line in details_data.address %}
+                                        {{ line }}<br>
+                                    {% endfor %}
+                                </dd>
+                                <dd class="govuk-summary-list__actions">
+
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    LPA Number(s)
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    UK national resident in UK
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Document to take
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    {{ id_method }}
+                                </dd>
+                                <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Post Office
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    {% for line in post_office_address %}
+                                        {{ line }}<br>
+                                    {% endfor %}
+                                </dd>
+                                <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Submission deadline
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    {{ deadline }}
+                                </dd>
+                                <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <input type="hidden" name="next_page" value="4">
+
+                <p class="govuk-form-group">
+                    <a href="./what-happens-next" class="govuk-button">Continue</a>
+                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                </p>
+            {% else %}
+
+                <h1 class="govuk-heading-xl">Find a Post Office</h1>
+                <p class="govuk-body govuk-!-width-two-thirds">
+                    Not all post offices provide this service, please confirm your postcode so I can find your nearest
+                    post
+                    office
+                </p>
+
+                <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                    <div class="govuk-radios__item">
+                        <input
+                                class="govuk-radios__input"
+                                id="default"
+                                name="postcode"
+                                type="radio"
+                                value="{{ postcode }}"
+                                data-aria-controls="default"
+                                checked="checked"
+                        />
+                        <label class="govuk-label govuk-radios__label" for="default">
+                            {{ postcode }} (default address)
+                        </label>
+                    </div>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input
+                                    class="govuk-radios__input"
+                                    id="alternate"
+                                    name="postcode"
+                                    type="radio"
+                                    value="alt"
+                                    data-aria-controls="alternate"
+                            />
+                            <label class="govuk-label govuk-radios__label" for="alternate">
+                                Alternate postcode
+                            </label>
+                        </div>
+                        <div class="govuk-radios__conditional" id="alt_postcode_div">
+                            <div class="govuk-form-group">
+                                <input
+                                        class="govuk-input govuk-!-width-one-third"
+                                        id="alt_postcode"
+                                        name="alt_postcode"
+                                        aria-describedby="alt_postcode"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <input type="hidden" name="next_page" value="2">
+                <p class="govuk-form-group">
+                    <input type="submit" class="govuk-button" value="Continue"/>
+                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                </p>
+            {% endif %}
+        </form>
+    </main>
+</div>

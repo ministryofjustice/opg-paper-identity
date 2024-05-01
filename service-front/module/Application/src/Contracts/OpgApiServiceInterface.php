@@ -21,6 +21,13 @@ interface OpgApiServiceInterface
         string $lastname,
         string $dob,
         string $personType,
-        array $lpas
+        array $lpas,
+        array $address,
     ): array;
+
+    public function updateIdMethod(string $uuid, string $method): void;
+
+    public function listPostOfficesByPostcode(string $uuid, string $postcode): array;
+
+    public function getPostOfficeByCode(string $uuid, int $code): array;
 }
