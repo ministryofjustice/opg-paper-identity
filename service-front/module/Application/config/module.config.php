@@ -190,6 +190,16 @@ return [
                     ],
                 ],
             ],
+            'find_post_office_branch' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/find-post-office-branch',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'findPostOfficeBranch',
+                    ],
+                ],
+            ],
             'confirm_post_office' => [
                 'type'    => Segment::class,
                 'options' => [
