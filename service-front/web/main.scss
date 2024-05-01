@@ -12,3 +12,28 @@ $govuk-assets-path: "../assets/";
 .moj-banner--date {
   max-width: 150px;
 }
+
+.govuk-inset-text-blue {
+  @include govuk-font($size: 16);
+  color: $govuk-text-colour;
+  padding: govuk-spacing(3);
+  margin-top: govuk-spacing(4);
+  margin-bottom: govuk-spacing(4);
+  clear: both;
+  border-left: 2px solid $govuk-brand-colour;
+  background-color: govuk-colour("light-grey");
+}
+
+.govuk-main-wrapper-custom {
+  display: block;
+  padding-bottom: 40px;
+}
+
+.govuk-text-gray {
+  color: #505A5F;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 19px;
+  line-height: 25px;
+}

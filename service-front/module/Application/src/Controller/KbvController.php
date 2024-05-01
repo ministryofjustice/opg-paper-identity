@@ -27,6 +27,9 @@ class KbvController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
 
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 

@@ -1,3 +1,4 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
         <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
@@ -8,12 +9,8 @@
             <div class="moj-banner__message">Not enough details to continue with this form of identification</div>
         </div>
         <div class="govuk-form-group">
-            <p class="govuk-body">
-                Sorry, although the identity details did match, we can’t use this form of ID to continue the check
-                because
-                there is not enough identity information available online to generate the necessary security questions.
-                This
-                is likely to be the same for national insurance number / passport / driving licence.
+            <p class="govuk-body govuk-!-width-two-thirds">
+                Sorry, although the identity details did match, we can’t use this form of ID to continue the check because there is not enough identity information available online to generate the necessary security questions. This is likely to be the same for national insurance number / passport / driving licence.
             </p>
         </div>
         <div class="govuk-form-group">
