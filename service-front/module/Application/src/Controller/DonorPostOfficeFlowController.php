@@ -19,7 +19,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        //        private readonly FormProcessorService $formProcessorService,
+        private readonly FormProcessorService $formProcessorService,
         private readonly array $config,
     ) {
     }
@@ -58,37 +58,17 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost()->toArray();
-            $view->setVariable('next_page', $formData['next_page']);
-
-            if ($formData['next_page'] == '2') {
-                if ($formData['postcode'] == 'alt') {
-                    $postcode = $formData['alt_postcode'];
-                } else {
-                    $postcode = $formData['postcode'];
-                }
-
-                $response = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);
-
-                $view->setVariable('post_office_list', $response);
-            } elseif ($formData['next_page'] == '3') {
-                $date = new \DateTime();
-                $date->modify("+90 days");
-                $deadline = $date->format("d M Y");
-
-                $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, $formData['postoffice']);
-
-                /**
-                 * @psalm-suppress PossiblyInvalidArrayAccess
-                 */
-                $postOfficeAddress = explode(",", $postOfficeData['address']);
-
-                $view->setVariable('post_office_summary', true);
-                $view->setVariable('post_office_data', $postOfficeData);
-                $view->setVariable('post_office_address', $postOfficeAddress);
-                $view->setVariable('deadline', $deadline);
-                $view->setVariable('id_method', $optionsdata[$detailsData['idMethod']]);
+            if ($this->getRequest()->getPost('postoffice') == 'none') {
+                return $this->redirect()->toRoute('post_office_route_not_available', ['uuid' => $uuid]);
             }
+
+            $view = $this->formProcessorService->processFindPostOffice(
+                $uuid,
+                $optionsdata,
+                $this->getRequest()->getPost(),
+                $view,
+                $detailsData
+            );
         }
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
