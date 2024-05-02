@@ -12,6 +12,7 @@ use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
 use Application\Validators\LpaValidator;
+use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -75,32 +76,36 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp_start');
     }
 
-    public function howWillCpConfirmAction(): ViewModel
+    public function howWillCpConfirmAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
+            $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+            return $this->redirect()->toRoute("does_name_match_id", ['uuid' => $uuid]);
 
-            switch ($formData['id_method']) {
-                case 'pn':
-                    $this->redirect()
-                        ->toRoute("passport_number", ['uuid' => $uuid]);
-                    break;
 
-                case 'dln':
-                    $this->redirect()
-                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
-                    break;
-
-                case 'nin':
-                    $this->redirect()
-                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
-                    break;
-
-                default:
-                    break;
-            }
+//
+//            switch ($formData['id_method']) {
+//                case 'pn':
+//                    $this->redirect()
+//                        ->toRoute("passport_number", ['uuid' => $uuid]);
+//                    break;
+//
+//                case 'dln':
+//                    $this->redirect()
+//                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+//                    break;
+//
+//                case 'nin':
+//                    $this->redirect()
+//                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+//                    break;
+//
+//                default:
+//                    break;
+//            }
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
