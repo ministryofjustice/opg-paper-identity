@@ -1,10 +1,10 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: Yoti Mock API
   description: Provides mock for crucial Yoti endpoints spec for local/dev Post Office integrations
   version: 0.1.0
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8001
     description: Local Imposter server
 x-json-schema-faker:
   alwaysFakeOptionals: false
@@ -29,6 +29,8 @@ paths:
                 type: array
                 items:
                  $ref: '#/components/schemas/Branch'
+              example:
+                $ref: 'data/branches.json'
 
   /idverify/v1/sessions:
     post:
@@ -46,12 +48,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionSuccess'
+              example:
+                client_session_token_ttl: 559
+                client_session_token: ebdaacbb-f31b-416b-82bc-7ef2ccf709dd
+                session_id: ebdaacbb-f31b-416b-82bc-7ef2ccf382ki
+
         '400':
           description: Payload validation error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionError400'
+              example:
+                code: PAYLOAD_VALIDATION
+                errors:
+                  property: requested_checks
+                  message: must not be empty
         '401':
           description: Unauthorised request
         '403':
@@ -79,6 +91,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResult'
+              example:
+                # a complete session output here
+                $ref: 'data/session_complete.json'
         '401':
           description: Error
 
@@ -105,13 +120,20 @@ paths:
           description: Created
           content:
             application/json:
-
+              schema:
+                null
         '400':
           description: Payload validation error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LetterPayload400'
+              example:
+                code: Payload validation
+                message: There were errors validating the payload
+                errors:
+                  property: the property XXX
+                  message: is not an accepted value
         '401':
           description: Unauthorised request
         '404':
@@ -144,6 +166,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LetterPayload400'
+              example:
+                code: Payload validation
+                message: There were errors validating the payload
+                errors:
+                  property: the property XXX
+                  message: is not an accepted value
         '401':
           description: Unauthorised request
         '404':
@@ -275,44 +303,10 @@ components:
         required_documents:
           type: array
           items:
-            type: object
-            properties:
-              type:
-                type: string
-              #alternate options, only applicable if supplementary document type
-              document_types:
-                type: array
-                items:
-                  type: string
-              country_codes:
-                type: array
-                items:
-                  type: string
-              objective:
-                type: object
-                properties:
-                  type:
-                    type: string
-              filter:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  inclusion:
-                    type: string
-                  documents:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        country_codes:
-                          type: array
-                          items:
-                            type: string
-                        document_types:
-                          type: array
-                          items:
-                            type: string
+            oneOf:
+              - $ref: "#/components/schemas/ID_DOCUMENT"
+              - $ref: "#/components/schemas/SUPPLEMENTARY_DOCUMENT"
+
         resources:
           type: object
           properties:
@@ -330,6 +324,52 @@ components:
                     - $ref: "#/components/schemas/AddressFormat2"
                     - $ref: "#/components/schemas/AddressFormat3"
                     - $ref: "#/components/schemas/AddressFormat4"
+
+    ID_DOCUMENT:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [ ID_DOCUMENT, SUPPLEMENTARY_DOCUMENT ]
+        filter:
+          type: object
+          properties:
+            type:
+              type: string
+            inclusion:
+              type: string
+            documents:
+              type: array
+              items:
+                type: object
+                properties:
+                  country_codes:
+                    type: array
+                    items:
+                      type: string
+                  document_types:
+                    type: array
+                    items:
+                      type: string
+                      enum: [PASSPORT, DRIVING_LICENCE, NATIONAL_ID, RESIDENCE_PERMIT]
+
+    SUPPLEMENTARY_DOCUMENT:
+      type: object
+      properties:
+        document_types:
+          type: array
+          items:
+            type: string
+
+        country_codes:
+          type: array
+          items:
+            type: string
+        objective:
+          type: object
+          properties:
+            type:
+              type: string
 
     #should country and iso codes be validated somehow?
     Address:
