@@ -207,9 +207,9 @@ class IdentityControllerTest extends TestCase
 
     public function testKBVQuestionsWithNoUUID(): void
     {
-        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $response = '{"status":404,"type":"HTTP404","title":"Not Found"}';
         $this->dispatch('/cases/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(400);
+        $this->assertResponseStatusCode(404);
         $this->assertEquals($response, $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class);
