@@ -48,6 +48,8 @@ class CPFlowController extends AbstractActionController
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
         $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
+//        die(json_encode($detailsData));
+        $address = $detailsData['Address'];
 
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
@@ -55,7 +57,7 @@ class CPFlowController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery);
+        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
 
         $types = [
             'donor' => 'Donor',

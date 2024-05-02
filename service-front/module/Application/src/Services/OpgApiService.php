@@ -37,7 +37,12 @@ class OpgApiService implements OpgApiServiceInterface
             "FirstName" => "Mary Anne",
             "LastName" => "Chapman",
             "DOB" => "01 May 1943",
-            "Address" => "1 Court Street, London, UK, SW1B 1BB",
+            "Address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
             "Role" => "Donor",
             "LPA" => [
                 "PA M-XYXY-YAGA-35G3",
