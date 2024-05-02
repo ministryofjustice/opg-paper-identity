@@ -1,6 +1,2 @@
 plugin: openapi
 specFile: openapi.yml
-path: /idverify/v1/sessions/{sessionId}
-response:
-  scriptFile: useJsonFile.groovy
-  file: data/session_complete.json

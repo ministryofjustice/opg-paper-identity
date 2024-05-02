@@ -99,6 +99,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResult'
+            response:
+              file: data/session.complete.json
         '401':
           description: Error
 
