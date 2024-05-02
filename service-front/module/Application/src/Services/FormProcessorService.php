@@ -129,4 +129,43 @@ class FormProcessorService
         }
         return $view->setTemplate($templates['default']);
     }
+
+    public function processFindPostOffice(
+        string $uuid,
+        array $optionsdata,
+        Parameters $formObject,
+        ViewModel $view,
+        array $detailsData
+    ): ViewModel {
+        $formData = $formObject->toArray();
+        $view->setVariable('next_page', $formData['next_page']);
+
+        if ($formData['next_page'] == '2') {
+            if ($formData['postcode'] == 'alt') {
+                $postcode = $formData['alt_postcode'];
+            } else {
+                $postcode = $formData['postcode'];
+            }
+
+            $response = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);
+
+            $view->setVariable('post_office_list', $response);
+        } elseif ($formData['next_page'] == '3') {
+            $date = new \DateTime();
+            $date->modify("+90 days");
+            $deadline = $date->format("d M Y");
+
+            $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, (int)$formData['postoffice']);
+
+            $postOfficeAddress = explode(",", $postOfficeData['address']);
+
+            $view->setVariable('post_office_summary', true);
+            $view->setVariable('post_office_data', $postOfficeData);
+            $view->setVariable('post_office_address', $postOfficeAddress);
+            $view->setVariable('deadline', $deadline);
+            $view->setVariable('id_method', $optionsdata[$detailsData['idMethod']]);
+        }
+
+        return $view;
+    }
 }

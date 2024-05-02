@@ -6,6 +6,8 @@ namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
+use Application\KBV\KBVServiceFactory;
+use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
@@ -194,6 +196,16 @@ return [
                     ],
                 ],
             ],
+            'update_case_method' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases[/:uuid]/update-method',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'updatedMethod',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -224,7 +236,8 @@ return [
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
-            PassportValidatorInterface::class => PassportValidatorFactory::class
+            PassportValidatorInterface::class => PassportValidatorFactory::class,
+            KBVServiceInterface::class => KBVServiceFactory::class
         ],
     ],
     'view_manager' => [

@@ -37,7 +37,7 @@ class OpgApiService implements OpgApiServiceInterface
             "FirstName" => "Mary Anne",
             "LastName" => "Chapman",
             "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Address" => "1 Court Street, London, UK, SW1B 1BB",
             "Role" => "Donor",
             "LPA" => [
                 "PA M-XYXY-YAGA-35G3",
@@ -163,7 +163,8 @@ class OpgApiService implements OpgApiServiceInterface
         string $lastname,
         string $dob,
         string $personType,
-        array $lpas
+        array $lpas,
+        array $address,
     ): array {
         return $this->makeApiRequest("/cases/create", 'POST', [
             'firstName' => $firstname,
@@ -171,6 +172,7 @@ class OpgApiService implements OpgApiServiceInterface
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
+            'address' => $address
         ]);
     }
 
@@ -190,5 +192,104 @@ class OpgApiService implements OpgApiServiceInterface
         }
 
         return $this->responseData;
+    }
+
+    public function updateIdMethod(string $uuid, string $method): void
+    {
+        $data = [
+            'idMethod' => $method
+        ];
+        try {
+            $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
+
+    public function listPostOfficesByPostcode(string $uuid, string $postcode): array
+    {
+//        $data = [
+//            'postcode' => $postcode
+//        ];
+//        try {
+//            $response = $this->makeApiRequest("/cases/$uuid/find-post-office", 'POST', $data);
+//            return $response['result'];
+//        } catch (OpgApiException $opgApiException) {
+//            throw new OpgApiException('Post office reference code not found');
+//        }
+
+        return [
+            12345672 => [
+                'name' => 'Hednesford',
+                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
+                'distance' => '0.5 miles'
+            ],
+            12345673 => [
+                'name' => 'Chadsmoor',
+                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
+                'distance' => '1.1 miles'
+            ],
+            12345674 => [
+                'name' => 'Hazelslade',
+                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
+                'distance' => '1.2 miles'
+            ],
+            12345675 => [
+                'name' => 'Wimblebury',
+                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
+                'distance' => '1.4 miles'
+            ],
+            12345676 => [
+                'name' => 'Heath Hayes',
+                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
+                'distance' => '1.9 miles'
+            ]
+        ];
+    }
+
+    public function getPostOfficeByCode(string $uuid, int $code): array
+    {
+//        $data = [
+//            'postcode' => $postcode
+//        ];
+//        try {
+//            $response = $this->makeApiRequest("/cases/$uuid/find-post-office", 'POST', $data);
+//            return $response['result'];
+//        } catch (OpgApiException $opgApiException) {
+//            throw new OpgApiException('Post office reference code not found');
+//        }
+
+        $postOffices = [
+            12345672 => [
+                'name' => 'Hednesford',
+                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
+                'distance' => '0.5 miles'
+            ],
+            12345673 => [
+                'name' => 'Chadsmoor',
+                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
+                'distance' => '1.1 miles'
+            ],
+            12345674 => [
+                'name' => 'Hazelslade',
+                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
+                'distance' => '1.2 miles'
+            ],
+            12345675 => [
+                'name' => 'Wimblebury',
+                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
+                'distance' => '1.4 miles'
+            ],
+            12345676 => [
+                'name' => 'Heath Hayes',
+                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
+                'distance' => '1.9 miles'
+            ]
+        ];
+        if (array_key_exists($code, $postOffices)) {
+            return $postOffices[$code] ;
+        } else {
+            throw new OpgApiException('Post office reference code not found');
+        }
     }
 }

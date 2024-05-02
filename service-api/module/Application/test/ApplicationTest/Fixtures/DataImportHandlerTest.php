@@ -93,4 +93,85 @@ class DataImportHandlerTest extends TestCase
         // Call the insertData method with test data
         $this->sut->insertData('test_table', ['id' => '123', 'name' => 'John']);
     }
+
+    /**
+     * @throws Exception
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUpdateCaseData(): void
+    {
+        // Stubbing the putItem method of DynamoDB client
+        $this->dynamoDbClientMock->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(['#NV' => 'kbvQuestions'], $input['ExpressionAttributeNames']);
+
+                    return true;
+                })
+            );
+
+        // Expect the logger to be called if an exception occurs
+        $this->loggerMock->expects($this->never())->method('error');
+
+        // Call the updateCaseData method with test data
+        $this->sut->updateCaseData(
+            'a9bc8ab8-389c-4367-8a9b-762ab3050491',
+            'kbvQuestions',
+            'S',
+            json_encode([
+                'one' => [
+                'number' => 'one',
+                'question' => 'Who is your electricity provider?',
+                'prompts' => [
+                    0 => 'VoltWave',
+                    1 => 'Glow Electric',
+                    2 => 'Powergrid Utilities',
+                    3 => 'Bright Bristol Power'
+                ],
+                'answer' => 'VoltWave'
+                ],
+            ])
+        );
+    }
+
+    /**
+     * @throws Exception
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUpdateCaseIdMethod(): void
+    {
+        $this->dynamoDbClientMock->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(['#NV' => 'idMethod'], $input['ExpressionAttributeNames']);
+
+                    return true;
+                })
+            );
+
+        // Expect the logger to be called if an exception occurs
+        $this->loggerMock->expects($this->never())->method('error');
+
+        // Call the updateCaseData method with test data
+        $this->sut->updateCaseData(
+            'a9bc8ab8-389c-4367-8a9b-762ab3050491',
+            'idMethod',
+            'S',
+            'passport'
+        );
+    }
 }
