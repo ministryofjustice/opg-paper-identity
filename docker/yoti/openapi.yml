@@ -4,7 +4,7 @@ info:
   description: Provides mock for crucial Yoti endpoints spec for local/dev Post Office integrations
   version: 0.1.0
 servers:
-  - url: http://localhost:8001
+  - url: http://localhost:8002
     description: Local Imposter server
 x-json-schema-faker:
   alwaysFakeOptionals: false
@@ -191,7 +191,7 @@ components:
       properties:
         search_string:
           type: string
-          pattern: "^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$"
+          pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
           example: BN1 4TB
     Branch:
       type: object
@@ -399,7 +399,7 @@ components:
               type: string
             postal_code:
               type: string
-              pattern: "^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$"
+              pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
 
     AddressFormat2:
       allOf:
