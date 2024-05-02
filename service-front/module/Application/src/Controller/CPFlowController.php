@@ -165,7 +165,7 @@ class CPFlowController extends AbstractActionController
 
         $view = new ViewModel();
         $view->setVariable('lpas', $lpas);
-        $view->setVariable('details', $detailsData);
+        $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
         $view->setVariable('case_uuid', $uuid);
 
