@@ -30,7 +30,15 @@ paths:
                 items:
                  $ref: '#/components/schemas/Branch'
               example:
-                $ref: 'data/branches.json'
+                type: UK_POST_OFFICE
+                fad_code: 12345677
+                name: St Neots
+                address: 34 High Street, Notts
+                postcode: PE10 1NL
+                location:
+                  latitude: 53.22864,
+                  longitude: -0.36762
+
 
   /idverify/v1/sessions:
     post:
@@ -91,9 +99,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionResult'
-              example:
-                # a complete session output here
-                $ref: 'data/session_complete.json'
         '401':
           description: Error
 
