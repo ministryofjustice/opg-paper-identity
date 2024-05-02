@@ -227,27 +227,22 @@ class OpgApiService implements OpgApiServiceInterface
             12345672 => [
                 'name' => 'Hednesford',
                 'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
-                'distance' => '0.5 miles'
             ],
             12345673 => [
                 'name' => 'Chadsmoor',
                 'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
-                'distance' => '1.1 miles'
             ],
             12345674 => [
                 'name' => 'Hazelslade',
                 'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
-                'distance' => '1.2 miles'
             ],
             12345675 => [
                 'name' => 'Wimblebury',
                 'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
-                'distance' => '1.4 miles'
             ],
             12345676 => [
                 'name' => 'Heath Hayes',
                 'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
-                'distance' => '1.9 miles'
             ]
         ];
     }
@@ -268,27 +263,22 @@ class OpgApiService implements OpgApiServiceInterface
             12345672 => [
                 'name' => 'Hednesford',
                 'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
-                'distance' => '0.5 miles'
             ],
             12345673 => [
                 'name' => 'Chadsmoor',
                 'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
-                'distance' => '1.1 miles'
             ],
             12345674 => [
                 'name' => 'Hazelslade',
                 'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
-                'distance' => '1.2 miles'
             ],
             12345675 => [
                 'name' => 'Wimblebury',
                 'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
-                'distance' => '1.4 miles'
             ],
             12345676 => [
                 'name' => 'Heath Hayes',
                 'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
-                'distance' => '1.9 miles'
             ]
         ];
         if (array_key_exists($code, $postOffices)) {
