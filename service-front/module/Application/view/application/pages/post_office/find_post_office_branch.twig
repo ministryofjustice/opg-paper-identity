@@ -26,16 +26,15 @@
                     <div class="govuk-radios__item">
                         <input
                                 class="govuk-radios__input"
-                                id="default"
+                                id="{{ index }}"
                                 name="postoffice"
                                 type="radio"
                                 value="{{ index }}"
                                 data-aria-controls="default"
                         />
-                        <label class="govuk-label govuk-radios__label" for="default">
+                        <label class="govuk-label govuk-radios__label" for="{{ index }}">
                             {{ item.name }} <br>
                             {{ item.address }} <br>
-                            Distance: {{ item.distance }}
                         </label>
                     </div>
                 {% endfor %}
