@@ -1,0 +1,642 @@
+openapi: 3.1.0
+info:
+  title: Yoti Mock API
+  description: Provides mock for crucial Yoti endpoints spec for local/dev Post Office integrations
+  version: 0.1.0
+servers:
+  - url: http://localhost:8002
+    description: Local Imposter server
+x-json-schema-faker:
+  alwaysFakeOptionals: false
+  optionalsProbability: 0.5
+  fillProperties: false
+paths:
+  /idverify/v1/lookup/uk-post-office:
+    post:
+      summary: Given a supplied postcode locate Post Office branches near it
+      requestBody:
+        description: The searchString ( post code )
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchString'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                 $ref: '#/components/schemas/Branch'
+              example:
+                type: UK_POST_OFFICE
+                fad_code: 12345677
+                name: St Neots
+                address: 34 High Street, Notts
+                postcode: PE10 1NL
+                location:
+                  latitude: 53.22864,
+                  longitude: -0.36762
+
+
+  /idverify/v1/sessions:
+    post:
+      summary: Create a Yoti session with applicant details and selections
+      requestBody:
+        description: the session comprised of required_docs, applicant profile, session_deadline etc
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YotiSession'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionSuccess'
+              example:
+                client_session_token_ttl: 559
+                client_session_token: ebdaacbb-f31b-416b-82bc-7ef2ccf709dd
+                session_id: ebdaacbb-f31b-416b-82bc-7ef2ccf382ki
+
+        '400':
+          description: Payload validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionError400'
+              example:
+                code: PAYLOAD_VALIDATION
+                errors:
+                  property: requested_checks
+                  message: must not be empty
+        '401':
+          description: Unauthorised request
+        '403':
+          description: Application disabled or no associated org ID
+        '404':
+          description: Application does not exist
+        '503':
+          description: Service unavailable
+
+  /idverify/v1/sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        description: The UID of the generated session
+        required: true
+        schema:
+          type: string
+          nullable: true
+    get:
+      summary: Retrieve the results of a generated session
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResult'
+            response:
+              file: data/session.complete.json
+        '401':
+          description: Error
+
+  /idverify/v1/sessions/{sessionId}/instructions:
+    parameters:
+      - name: sessionId
+        in: path
+        description: The UID of the generated session
+        required: true
+        schema:
+          type: string
+          nullable: true
+
+    put:
+      summary: Given session/config data generate letter needed for IBV
+      requestBody:
+        description: the payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LetterInstructions'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                null
+        '400':
+          description: Payload validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LetterPayload400'
+              example:
+                code: Payload validation
+                message: There were errors validating the payload
+                errors:
+                  property: the property XXX
+                  message: is not an accepted value
+        '401':
+          description: Unauthorised request
+        '404':
+          description: Application does not exist
+        '409':
+          description: The session has expired
+        '500':
+          description: internal server error
+        '503':
+          description: Service unavailable
+
+  /idverify/v1/sessions/{sessionId}/instructions/pdf:
+    parameters:
+      - name: sessionId
+        in: path
+        description: The UID of the generated session
+        required: true
+        schema:
+          type: string
+          nullable: true
+    get:
+      summary: Retrieve the results of a generated session
+      responses:
+        '200':
+          description: Success
+
+        '400':
+          description: Payload validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LetterPayload400'
+              example:
+                code: Payload validation
+                message: There were errors validating the payload
+                errors:
+                  property: the property XXX
+                  message: is not an accepted value
+        '401':
+          description: Unauthorised request
+        '404':
+          description: Application does not exist
+        '409':
+          description: The session has expired
+        '500':
+          description: internal server error
+        '503':
+          description: Service unavailable
+
+
+components:
+  schemas:
+    SearchString:
+      type: object
+      properties:
+        search_string:
+          type: string
+          pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
+          example: BN1 4TB
+    Branch:
+      type: object
+      properties:
+        type:
+          type: string
+        fade_code:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        postcode:
+          type: string
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+
+    LetterInstructions:
+      type: object
+      properties:
+        contact_profile:
+          type: object
+          properties:
+            first_name:
+              type: string
+            last_name:
+              type: string
+            email:
+              type: string
+              format: email
+        documents:
+          type: array
+          items:
+            type: object
+            properties:
+              requirement_id:
+                type: string
+              document:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  country_code:
+                    type: string
+                  document_type:
+                    type: string
+
+        branch:
+          type: object
+          properties:
+            type:
+              type: string
+            fad_code:
+              type: integer
+
+    LetterPayload400:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+              message:
+                type: string
+
+
+    YotiSession:
+      type: object
+      properties:
+        session_deadline:
+          type: string
+          format: date-time
+        resources_ttl:
+          type: integer
+        ibv_options:
+          type: object
+          properties:
+            support:
+              type: string
+              example: "MANDATORY"
+        user_tracking_id:
+          type: string
+        requested_checks:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              config:
+                type: object
+                properties:
+                  manual_check:
+                    type: string
+                  scheme:
+                    type: string
+        required_documents:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/ID_DOCUMENT"
+              - $ref: "#/components/schemas/SUPPLEMENTARY_DOCUMENT"
+
+        resources:
+          type: object
+          properties:
+            applicant_profile:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: dob
+                structured_postal_address:
+                  oneOf:
+                    - $ref: "#/components/schemas/AddressFormat1"
+                    - $ref: "#/components/schemas/AddressFormat2"
+                    - $ref: "#/components/schemas/AddressFormat3"
+                    - $ref: "#/components/schemas/AddressFormat4"
+
+    ID_DOCUMENT:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [ ID_DOCUMENT, SUPPLEMENTARY_DOCUMENT ]
+        filter:
+          type: object
+          properties:
+            type:
+              type: string
+            inclusion:
+              type: string
+            documents:
+              type: array
+              items:
+                type: object
+                properties:
+                  country_codes:
+                    type: array
+                    items:
+                      type: string
+                  document_types:
+                    type: array
+                    items:
+                      type: string
+                      enum: [PASSPORT, DRIVING_LICENCE, NATIONAL_ID, RESIDENCE_PERMIT]
+
+    SUPPLEMENTARY_DOCUMENT:
+      type: object
+      properties:
+        document_types:
+          type: array
+          items:
+            type: string
+
+        country_codes:
+          type: array
+          items:
+            type: string
+        objective:
+          type: object
+          properties:
+            type:
+              type: string
+
+    #should country and iso codes be validated somehow?
+    Address:
+      type: object
+      properties:
+        address_format:
+          type: integer
+          minimum: 1
+          maximum: 4
+        country_iso:
+          type: string
+        country:
+          type: string
+        formatted_address:
+          type: string
+
+    AddressFormat1:
+      allOf:
+        - $ref: "#/components/schemas/Address"
+        - type: object
+          properties:
+            address_line1:
+              type: string
+            address_line2:
+              type: string
+            town_city:
+              type: string
+            postal_code:
+              type: string
+              pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
+
+    AddressFormat2:
+      allOf:
+      - $ref: "#/components/schemas/Address"
+      - type: object
+        properties:
+          building:
+            type: string
+          street:
+            type: string
+          state:
+            type: string
+
+    AddressFormat3:
+      allOf:
+        - $ref: "#/components/schemas/Address"
+        - type: object
+          properties:
+            address_line1:
+              type: string
+            address_line2:
+              type: string
+              default: null
+            town_city:
+              type: string
+            state:
+              type: string
+            postal_code:
+              type: string
+
+    AddressFormat4:
+      allOf:
+        - $ref: "#/components/schemas/Address"
+        - type: object
+          properties:
+            address_line1:
+              type: string
+            address_line2:
+              type: string
+              default: null
+
+
+    SessionSuccess:
+      type: object
+      properties:
+        client_session_token_ttl:
+          type: integer
+        client_session_token:
+          type: string
+        session_id:
+          type: string
+
+    SessionError400:
+      type: object
+      properties:
+        code:
+          type: string
+        errors:
+          type: array
+          items:
+            properties:
+              property:
+                type: string
+              message:
+                type: string
+
+    SessionResult:
+      type: object
+      properties:
+        client_session_token_ttl:
+          type: integer
+        session_id:
+          type: string
+        state:
+          type: string
+        client_session_token:
+          type: string
+        resources:
+          $ref: "#/components/schemas/ResultResources"
+        checks:
+          type: array
+          items:
+           oneOf:
+             - $ref: "#/components/schemas/ResultChecks1"
+             - $ref: "#/components/schemas/ResultChecks2"
+        user_tracking_id:
+          type: string
+          default: ""
+
+    ResultResources:
+      type: object
+      properties:
+        id_documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Document"
+        supplementary_documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/Document"
+        liveness_capture:
+          type: array
+          #not clear what these items actually are
+          items:
+            type: string
+        face_capture:
+          type: array
+          items:
+            type: string
+        applicant_profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Applicant"
+
+    Applicant:
+      type: object
+      properties:
+        id:
+          type: string
+        tasks:
+          type: array
+        source:
+          type: object
+          properties:
+            type:
+              type: string
+        created_at:
+          type: string
+          format: datetime
+        last_updated:
+          type: string
+          format: datetime
+        media:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            created:
+              type: string
+              format: datetime
+            last_updated:
+              type: string
+              format: datetime
+
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        tasks:
+          type: array
+        source:
+          type: object
+          properties:
+            type:
+              type: string
+        created_at:
+          type: string
+          format: datetime
+        last_updated:
+          type: string
+          format: datetime
+        document_type:
+          type: string
+        issuing_country:
+          type: string
+        pages:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageCapture"
+
+    PageCapture:
+      type: object
+      properties:
+        capture_method:
+          type: string
+        media:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            created:
+              type: string
+              format: datetime
+            last_updated:
+              type: string
+              format: datetime
+
+    ResultChecks1:
+      type: object
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        state:
+          type: string
+        resources_used:
+          type: array
+          items:
+            type: string
+        generated_media:
+          type: array
+          #what time of items?
+        report:
+          type: object
+          properties:
+            recommendation:
+              type: object
+              properties:
+                value:
+                  type: string
+            breakdown:
+              type: array
+              #what type of items?
+        created:
+          type: string
+          format: datetime
+        last_updated:
+          type: string
+          format: datetime
+
+    ResultChecks2:
+      allOf:
+        - $ref: "#/components/schemas/ResultChecks1"
+        - type: object
+          properties:
+            scheme:
+              type: string
