@@ -12,3 +12,15 @@ $govuk-assets-path: "../assets/";
 .moj-banner--date {
   max-width: 150px;
 }
+
+.app-inset-text-blue {
+  @include govuk-font($size: 16);
+  color: $govuk-text-colour;
+  padding: govuk-spacing(3);
+  margin-top: govuk-spacing(4);
+  margin-bottom: govuk-spacing(4);
+}
+
+.app-text-gray {
+  color:  $govuk-secondary-text-colour;
+}
