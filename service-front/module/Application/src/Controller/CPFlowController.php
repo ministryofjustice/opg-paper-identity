@@ -154,8 +154,6 @@ class CPFlowController extends AbstractActionController
     {
         $templates = [
             'default' => 'application/pages/cp/add_lpa',
-//            'success' => 'application/pages/national_insurance_number_success',
-//            'fail' => 'application/pages/national_insurance_number_fail'
         ];
         $uuid = $this->params()->fromRoute("uuid");
         $lpas = $this->opgApiService->getLpasByDonorData();
@@ -210,33 +208,4 @@ class CPFlowController extends AbstractActionController
 
         return $view->setTemplate($templates['default']);
     }
-//
-//    public function drivingLicenceNumberAction(): ViewModel
-//    {
-//        $templates = [
-//            'default' => 'application/pages/driving_licence_number',
-//            'success' => 'application/pages/driving_licence_number_success',
-//            'fail' => 'application/pages/driving_licence_number_fail'
-//        ];
-//        $view = new ViewModel();
-//        $uuid = $this->params()->fromRoute("uuid");
-//        $view->setVariable('uuid', $uuid);
-//
-//        $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
-//        $detailsData = $this->opgApiService->getDetailsData();
-//
-//        $view->setVariable('details_data', $detailsData);
-//        $view->setVariable('form', $form);
-//
-//        if (count($this->getRequest()->getPost())) {
-//            return $this->formProcessorService->processDrivingLicencenForm(
-//                $this->getRequest()->getPost(),
-//                $form,
-//                $view,
-//                $templates
-//            );
-//        }
-//
-//        return $view->setTemplate($templates['default']);
-//    }
 }

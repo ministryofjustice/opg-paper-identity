@@ -189,7 +189,7 @@ return [
             'find_lpa' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/find-lpa/:lpa',
+                    'route'    => '/cases/:uuid/find-lpa[/:lpa]',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'findLpa',

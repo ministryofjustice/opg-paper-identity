@@ -14,7 +14,6 @@ use Application\Model\Entity\CaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
-use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -312,6 +311,8 @@ class IdentityController extends AbstractActionController
         $status = Response::STATUS_CODE_200;
         $message = "";
 
+//        die ($lpa);
+
         $response = [];
         $response['data'] = [
             'case_uuid' => $uuid,
@@ -328,6 +329,22 @@ class IdentityController extends AbstractActionController
                 'Country' => 'United Kingdom',
             ]
         ];
+
+//        if($lpa == null || $lpa == '') {
+//            $status = Response::STATUS_CODE_400;
+//            $message = "Enter an LPA number to continue.";
+//            $response['message'] = $message;
+//            $response['status'] = $status;
+//            return new JsonModel($response);
+//        }
+//
+//        if (1 !== preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
+//            $status = Response::STATUS_CODE_400;
+//            $message = "Not a valid LPA number. Enter an LPA number to continue.";
+//            $response['message'] = $message;
+//            $response['status'] = $status;
+//            return new JsonModel($response);
+//        }
 
         switch ($lpa) {
             case 'M-0000-0000-0000':
@@ -367,10 +384,18 @@ class IdentityController extends AbstractActionController
                 $status = Response::STATUS_CODE_400;
                 $response['data']['Status'] = 'Draft';
                 $message = "This LPA cannot be added as it’s status is set to Draft. 
-                LPAs need to be in the in progress status to be added to this ID check.";
+                LPAs need to be in the In Progress status to be added to this ID check.";
+                break;
+            case 'M-0000-0000-0006':
+                $status = Response::STATUS_CODE_400;
+                $response['data']['Status'] = 'Draft';
+                $message = "This LPA cannot be added to this identity check because 
+                the certificate provider has signed this LPA online.";
                 break;
             default:
-                $response = [];
+                $status = Response::STATUS_CODE_400;
+                $message = "No LPA found.";
+                break;
         }
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['message'] = $message;
