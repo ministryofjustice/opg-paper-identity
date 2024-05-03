@@ -309,9 +309,6 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $lpa = $this->params()->fromRoute('lpa');
         $status = Response::STATUS_CODE_200;
-        $message = "";
-
-//        die ($lpa);
 
         $response = [];
         $response['data'] = [
@@ -329,6 +326,8 @@ class IdentityController extends AbstractActionController
                 'Country' => 'United Kingdom',
             ]
         ];
+
+        //pending design decision - may need this code
 
 //        if($lpa == null || $lpa == '') {
 //            $status = Response::STATUS_CODE_400;
@@ -353,10 +352,6 @@ class IdentityController extends AbstractActionController
             case 'M-0000-0000-0001':
                 $status = Response::STATUS_CODE_400;
                 $message = "This LPA has already been added to this ID check.";
-                break;
-            case 'M-0000-0000-0002':
-                $status = Response::STATUS_CODE_400;
-                $message = "No LPA found.";
                 break;
             case 'M-0000-0000-0003':
                 $status = Response::STATUS_CODE_400;
