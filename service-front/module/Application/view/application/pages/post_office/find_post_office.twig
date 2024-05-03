@@ -9,7 +9,10 @@
                     office
                 </p>
 
-                <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                <fieldset
+                        class="govuk-fieldset"
+{#                        aria-describedby="contact-hint"#}
+                >
                     <div class="govuk-radios__item">
                         <input
                                 class="govuk-radios__input"
@@ -17,8 +20,8 @@
                                 name="postcode"
                                 type="radio"
                                 value="{{ postcode }}"
-                                data-aria-controls="default"
-                                checked="checked"
+                                checked
+                                data-aria-controls="alt_postcode_div"
                         />
                         <label class="govuk-label govuk-radios__label" for="default">
                             {{ postcode }} (default address)
@@ -32,19 +35,20 @@
                                     name="postcode"
                                     type="radio"
                                     value="alt"
-                                    data-aria-controls="alternate"
+                                    data-aria-controls="alt_postcode_div"
                             />
                             <label class="govuk-label govuk-radios__label" for="alternate">
                                 Alternate postcode
                             </label>
                         </div>
-                        <div class="govuk-radios__conditional" id="alt_postcode_div">
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="alt_postcode_div">
                             <div class="govuk-form-group">
                                 <input
                                         class="govuk-input govuk-!-width-one-third"
                                         id="alt_postcode"
                                         name="alt_postcode"
-                                        aria-describedby="alt_postcode"
+{#                                        aria-describedby="alt_postcode"#}
+                                        aria-label="Alternate postcode"
                                 />
                             </div>
                         </div>
@@ -59,3 +63,5 @@
         </form>
     </main>
 </div>
+09-01-52
+4461 9689
