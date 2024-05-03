@@ -14,6 +14,7 @@ use Application\Model\Entity\CaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
+use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -301,6 +302,79 @@ class IdentityController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Updated";
 
+        return new JsonModel($response);
+    }
+
+    public function findLpaAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+        $status = Response::STATUS_CODE_200;
+        $message = "";
+
+        $response = [];
+        $response['data'] = [
+            'case_uuid' => $uuid,
+            "LPA_Number" => $lpa,
+            "Type_Of_LPA" => "Personal welfare",
+            "Donor" => "Mary Ann Chapman",
+            "Status" => "Processing",
+            "CP_Name" => "David Smith",
+            "CP_Address" => [
+                'Line_1' => '82 Penny Street',
+                'Line_2' => 'Lancaster',
+                'Town' => 'Lancashire',
+                'Postcode' => 'LA1 1XN',
+                'Country' => 'United Kingdom',
+            ]
+        ];
+
+        switch ($lpa) {
+            case 'M-0000-0000-0000':
+                $message = 'Success';
+                break;
+            case 'M-0000-0000-0001':
+                $status = Response::STATUS_CODE_400;
+                $message = "This LPA has already been added to this ID check.";
+                break;
+            case 'M-0000-0000-0002':
+                $status = Response::STATUS_CODE_400;
+                $message = "No LPA found.";
+                break;
+            case 'M-0000-0000-0003':
+                $status = Response::STATUS_CODE_400;
+                $message = "This LPA cannot be added to this ID check because the 
+                certificate provider details on this LPA do not match.   
+                Edit the certificate provider record in Sirius if appropriate and find again.";
+                $response['additional_data'] = [
+                    'Name' => 'John Brian Adams',
+                    'Address' => [
+                        'Line_1' => '42 Mount Street',
+                        'Line_2' => 'Hednesford',
+                        'Town' => 'Cannock',
+                        'Postcode' => 'WS12 4DE',
+                        'Country' => 'United Kingdom',
+                    ]
+                ];
+                break;
+            case 'M-0000-0000-0004':
+                $status = Response::STATUS_CODE_400;
+                $response['data']['Status'] = 'Complete';
+                $message = "This LPA cannot be added as an ID check has already been
+                 completed for this LPA.";
+                break;
+            case 'M-0000-0000-0005':
+                $status = Response::STATUS_CODE_400;
+                $response['data']['Status'] = 'Draft';
+                $message = "This LPA cannot be added as it’s status is set to Draft. 
+                LPAs need to be in the in progress status to be added to this ID check.";
+                break;
+            default:
+                $response = [];
+        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['message'] = $message;
+        $response['status'] = $status;
         return new JsonModel($response);
     }
 }

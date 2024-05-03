@@ -159,7 +159,7 @@ return [
             'get_kbv_questions' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-questions',
+                    'route'    => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'getKbvQuestions',
@@ -169,7 +169,7 @@ return [
             'check_kbv_answers' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-answers',
+                    'route'    => '/cases/:uuid/kbv-answers',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'checkKbvAnswers',
@@ -183,6 +183,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'create',
+                    ],
+                ],
+            ],
+            'find_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/find-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findLpa',
                     ],
                 ],
             ],
