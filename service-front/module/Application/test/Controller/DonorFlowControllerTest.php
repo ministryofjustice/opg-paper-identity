@@ -60,7 +60,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-id-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_id_check');
     }
@@ -81,10 +81,28 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getAddressVerificationData')
             ->willReturn($mockResponseDataAddressVerificationOptions);
 
-        $this->dispatch("/address_verification", 'GET');
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/address_verification", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('address_verification');
     }
@@ -110,7 +128,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('donor_lpa_check');
     }
@@ -138,7 +156,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('national_insurance_number');
     }
@@ -166,7 +184,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('driving_licence_number');
     }
@@ -194,7 +212,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/how-will-donor-confirm", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('how_donor_confirms');
     }
@@ -239,7 +257,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('identity_check_passed');
     }
@@ -284,18 +302,73 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('identity_check_failed');
     }
-
     public function testThinFileFailurePage(): void
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('thin_file_failure');
+    }
+
+    public function testProvingIdentityPage(): void
+    {
+        $this->dispatch("/$this->uuid/proving-identity", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('proving_identity');
+    }
+
+    public function testDonorIdMatchPage(): void
+    {
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "dob" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ]
+        ];
+
+        $mockStubResponse = [
+            "FirstName" => "Mary Anne",
+            "LastName" => "Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "1 Court Street, London, UK, SW1B 1BB",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-XYXY-YAGA-35G4"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('stubDetailsResponse')
+            ->willReturn($mockStubResponse);
+
+        $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('donor_details_match_check');
     }
 }

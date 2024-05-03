@@ -1,5 +1,7 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
+
         <h1 class="govuk-heading-xl">Is the donor prepared to perform the ID check?</h1>
 
         <p class="govuk-body">
@@ -35,9 +37,9 @@
 
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      ID in person at the Post Office
-    </span>
+                    <span class="govuk-details__summary-text">
+                      ID in person at the Post Office
+                    </span>
             </summary>
             <div class="govuk-details__text">
             </div>
@@ -45,14 +47,15 @@
 
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      No ID: choose someone to vouch (donor only)
-    </span>
+                    <span class="govuk-details__summary-text">
+                      No ID: choose someone to vouch (donor only)
+                    </span>
             </summary>
             <div class="govuk-details__text">
             </div>
         </details>
         <a href="./donor-lpa-check" class="govuk-button">Continue</a>
         <button href="" class="govuk-button govuk-button--secondary">Cancel</button>
+
     </main>
 </div>

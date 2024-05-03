@@ -70,10 +70,20 @@ return [
                     ],
                 ],
             ],
+            'donor_details_match_check' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/donor-details-match-check',
+                    'defaults' => [
+                        'controller' => Controller\DonorFlowController::class,
+                        'action'     => 'donorDetailsMatchCheck',
+                    ],
+                ],
+            ],
             'address_verification' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/address_verification',
+                    'route'    => '[/:uuid]/address_verification',
                     'defaults' => [
                         'controller' => Controller\DonorFlowController::class,
                         'action'     => 'addressVerification',
@@ -150,6 +160,76 @@ return [
                     ],
                 ],
             ],
+            'proving_identity' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/proving-identity',
+                    'defaults' => [
+                        'controller' => Controller\DonorFlowController::class,
+                        'action'     => 'provingIdentity',
+                    ],
+                ],
+            ],
+            'post_office_documents' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/post-office-documents',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'postOfficeDocuments',
+                    ],
+                ],
+            ],
+            'find_post_office' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/find-post-office',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'findPostOffice',
+                    ],
+                ],
+            ],
+            'find_post_office_branch' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/find-post-office-branch',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'findPostOfficeBranch',
+                    ],
+                ],
+            ],
+            'confirm_post_office' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/confirm-post-office',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'confirmPostOffice',
+                    ],
+                ],
+            ],
+            'what_happens_next' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/what-happens-next',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'whatHappensNext',
+                    ],
+                ],
+            ],
+            'post_office_route_not_available' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/post-office-route-not-available',
+                    'defaults' => [
+                        'controller' => Controller\DonorPostOfficeFlowController::class,
+                        'action'     => 'postOfficeRouteNotAvailable',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -157,6 +237,7 @@ return [
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
+            Controller\DonorPostOfficeFlowController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [
@@ -199,9 +280,19 @@ return [
     ],
     'opg_settings' => [
         'identity_methods' => [
-            'pn' => 'Passport',
-            'dln' => 'Driving licence',
-            'nin' => 'National Insurance number'
+            'nin' => 'National Insurance number',
+            'pn' => 'UK Passport (current or expired in the last 5 years)',
+            'dln' => 'Driving licence (current)',
+
+        ],
+        'post_office_identity_methods' => [
+            'po_ukp' => 'UK passport (up to 18m expired)',
+            'po_eup' => 'EU passport (must be current)',
+            'po_inp' => 'International passport (must be current)',
+            'po_ukd' => 'UK Driving licence (must be current)',
+            'po_eud' => 'EU Driving licence (must be current)',
+            'po_ind' => 'International driving licence (must be current)',
+            'po_n' => 'None of the above',
         ],
     ]
 ];
