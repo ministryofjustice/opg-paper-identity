@@ -44,7 +44,7 @@ class DonorFlowController extends AbstractActionController
         $lastName = $detailsData['LastName'];
         $type = $this->params()->fromQuery("personType");
         $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-        $address = explode(', ', $detailsData['Address']);
+        $address = $detailsData['Address'];
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
         // Create a case in the API with the LPA UID and the actors' details
@@ -94,7 +94,7 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
         $stubDetailsData = $this->opgApiService->stubDetailsResponse();
-        $detailsData['address'] = explode(', ', $stubDetailsData['Address']);
+        $detailsData['address'] = $stubDetailsData['Address'];
 
         $view = new ViewModel();
 
