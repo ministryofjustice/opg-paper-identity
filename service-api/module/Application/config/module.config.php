@@ -17,6 +17,8 @@ use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
+use Application\Yoti\YotiServiceFactory;
+use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -196,6 +198,46 @@ return [
                     ],
                 ],
             ],
+            'find_postoffice_branches' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/post-office-branches',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'findPostOffice',
+                    ],
+                ],
+            ],
+            'create_yoti_session' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/create-session',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'createSession',
+                    ],
+                ],
+            ],
+            'retrieve_yoti_session' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/retrieve-session',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getSession',
+                    ],
+                ],
+            ],
+            'retrieve_pdf_letter' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/retrieve-letter',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getPDFLetter',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -227,7 +269,8 @@ return [
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
-            KBVServiceInterface::class => KBVServiceFactory::class
+            KBVServiceInterface::class => KBVServiceFactory::class,
+            YotiServiceInterface::class => YotiServiceFactory::class
         ],
     ],
     'view_manager' => [
