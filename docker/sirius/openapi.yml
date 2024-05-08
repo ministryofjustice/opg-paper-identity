@@ -62,7 +62,7 @@ components:
           $ref: "#/components/schemas/DigitalLpa"
         opg.poas.lpastore:
           oneOf:
-            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-04/lpa.json
+            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-10/lpa.json
             - null
       additionalProperties: false
     DigitalLpa:
