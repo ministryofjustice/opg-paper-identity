@@ -23,45 +23,9 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
         private readonly FormProcessorService $formProcessorService,
         private readonly array $config,
     ) {
-    }
-
-    public function startAction(): ViewModel
-    {
-        $lpasQuery = $this->params()->fromQuery("lpas");
-        $lpas = [];
-        foreach ($lpasQuery as $lpaUid) {
-            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data['opg.poas.lpastore'];
-        }
-
-        $detailsData = $this->opgApiService->stubDetailsResponse();
-
-        $firstName = $detailsData['FirstName'];
-        $lastName = $detailsData['LastName'];
-        $type = $this->params()->fromQuery("personType");
-        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-        $address = explode(', ', $detailsData['Address']);
-        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
-
-        // Create a case in the API with the LPA UID and the actors' details
-
-        // Redirect to the "select which ID to use" page for this case
-
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
-
-        $view = new ViewModel([
-            'lpaUids' => $this->params()->fromQuery("lpas"),
-            'type' => $type,
-            'lpas' => $lpas,
-            'case' => $case['uuid'],
-            'details' => $detailsData,
-        ]);
-
-        return $view->setTemplate('application/pages/start');
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -94,7 +58,7 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
         $stubDetailsData = $this->opgApiService->stubDetailsResponse();
-        $detailsData['address'] = explode(', ', $stubDetailsData['Address']);
+        $detailsData['address'] = $stubDetailsData['Address'];
 
         $view = new ViewModel();
 
