@@ -19,7 +19,7 @@ class YotiController extends AbstractActionController
     ) {
     }
 
-    public function findPostOffice(string $postCode): JsonModel
+    public function findPostOfficeAction(string $postCode): JsonModel
     {
         $branches = [];
         $branches["locations"] = $this->yotiService->postOfficeBranch($postCode);
@@ -39,7 +39,7 @@ class YotiController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function getPDFLetter(string $session): JsonModel
+    public function getPDFLetterAction(string $session): JsonModel
     {
         $data = [];
         $data['response'] = $this->yotiService->retrieveLetterPDF($session);
