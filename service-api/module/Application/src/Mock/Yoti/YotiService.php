@@ -7,6 +7,10 @@ namespace Application\Mock\Yoti;
 use Application\Yoti\YotiServiceInterface;
 use GuzzleHttp\Client;
 
+/**
+ * @psalm-suppress PossiblyUnusedProperty
+ * Suppress unused $client pending merge with Yoti mock branch
+ */
 class YotiService implements YotiServiceInterface
 {
     public function __construct(

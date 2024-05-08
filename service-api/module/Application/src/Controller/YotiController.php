@@ -22,23 +22,27 @@ class YotiController extends AbstractActionController
     public function findPostOffice(string $postCode): JsonModel
     {
         $branches = [];
+        $branches["locations"] = $this->yotiService->postOfficeBranch($postCode);
         return new JsonModel($branches);
     }
     public function createSessionAction(array $sessionData): JsonModel
     {
         $data = [];
+        $data['response'] = $this->yotiService->createSession($sessionData);
         return new JsonModel($data);
     }
 
     public function getSessionAction(string $sessionId): JsonModel
     {
         $data = [];
+        $data['response'] = $this->yotiService->retrieveResults($sessionId);
         return new JsonModel($data);
     }
 
     public function getPDFLetter(string $session): JsonModel
     {
         $data = [];
+        $data['response'] = $this->yotiService->retrieveLetterPDF($session);
         return new JsonModel($data);
     }
 }
