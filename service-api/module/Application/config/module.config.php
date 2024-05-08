@@ -196,6 +196,46 @@ return [
                     ],
                 ],
             ],
+            'find_postoffice_branches' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/post-office-branches',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'findPostOffice',
+                    ],
+                ],
+            ],
+            'create_yoti_session' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/create-session',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'createSession',
+                    ],
+                ],
+            ],
+            'retrieve_yoti_session' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/retrieve-session',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getSession',
+                    ],
+                ],
+            ],
+            'retrieve_pdf_letter' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/yoti/retrieve-letter',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getPDFLetter',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

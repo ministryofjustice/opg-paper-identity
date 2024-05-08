@@ -33,6 +33,4 @@ interface YotiServiceInterface
      * Generate PDF letter for applicant
      */
     public function retrieveLetterPDF(string $sessionId): array;
-
-
 }

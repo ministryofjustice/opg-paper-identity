@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
-
 use GuzzleHttp\Client;
 
 /**
@@ -58,4 +57,3 @@ class YotiService implements YotiServiceInterface
         return [];
     }
 }
-
