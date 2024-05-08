@@ -63,8 +63,6 @@ class SiriusApiService
             'headers' => $this->getAuthHeaders($request),
         ]);
 
-        echo json_encode(json_decode(strval($response->getBody()), true));
-
         return json_decode(strval($response->getBody()), true);
     }
 }

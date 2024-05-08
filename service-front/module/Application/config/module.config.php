@@ -35,7 +35,7 @@ return [
                 'options' => [
                     'route'    => '/start',
                     'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
+                        'controller' => Controller\IndexController::class,
                         'action'     => 'start',
                     ],
                 ],
@@ -230,16 +230,16 @@ return [
                     ],
                 ],
             ],
-            'cp_start' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/cp-start',
-                    'defaults' => [
-                        'controller' => Controller\CPFlowController::class,
-                        'action'     => 'start',
-                    ],
-                ],
-            ],
+//            'cp_start' => [
+//                'type'    => Segment::class,
+//                'options' => [
+//                    'route'    => '/cp-start',
+//                    'defaults' => [
+//                        'controller' => Controller\CPFlowController::class,
+//                        'action'     => 'start',
+//                    ],
+//                ],
+//            ],
             'how_cp_confirms' => [
                 'type'    => Segment::class,
                 'options' => [

@@ -23,57 +23,9 @@ class CPFlowController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
         private readonly FormProcessorService $formProcessorService,
         private readonly array $config,
     ) {
-    }
-
-    public function startAction(): ViewModel
-    {
-        $lpasQuery = $this->params()->fromQuery("lpas");
-        $lpas = [];
-        foreach ($this->params()->fromQuery("lpas") as $lpaUid) {
-            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data['opg.poas.lpastore'];
-        }
-
-        $detailsData = $this->opgApiService->stubDetailsResponse();
-
-        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
-
-        // Create a case in the API with the LPA UID and the actors' details
-
-        // Redirect to the "select which ID to use" page for this case
-        $firstName = $detailsData['FirstName'];
-        $lastName = $detailsData['LastName'];
-        $type = $this->params()->fromQuery("personType");
-        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-//        die(json_encode($detailsData));
-        $address = $detailsData['Address'];
-
-        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
-
-        // Create a case in the API with the LPA UID and the actors' details
-
-        // Redirect to the "select which ID to use" page for this case
-
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
-
-        $types = [
-            'donor' => 'Donor',
-            'cp' => 'Certificate Provider'
-        ];
-
-        $view = new ViewModel([
-            'lpaUids' => $this->params()->fromQuery("lpas"),
-            'type' => $types[$this->params()->fromQuery("personType")],
-            'lpas' => $lpas,
-            'case' => $case['uuid'],
-            'details' => $detailsData,
-        ]);
-
-        return $view->setTemplate('application/pages/cp_start');
     }
 
     public function howWillCpConfirmAction(): ViewModel|Response
