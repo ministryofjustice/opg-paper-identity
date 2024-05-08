@@ -17,8 +17,6 @@ services:
   yoti-mock:
     image: outofcoffee/imposter
     restart: unless-stopped
-    ports:
-      - 8002:80
     healthcheck:
       test: wget -O /dev/null -S 'http://localhost:8002/idverify/v1/sessions/X' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
       interval: 15s

@@ -335,7 +335,7 @@ components:
       properties:
         type:
           type: string
-          enum: [ ID_DOCUMENT, SUPPLEMENTARY_DOCUMENT ]
+          enum: [ ID_DOCUMENT ]
         filter:
           type: object
           properties:
@@ -361,6 +361,9 @@ components:
     SUPPLEMENTARY_DOCUMENT:
       type: object
       properties:
+        type:
+          type: string
+          enum: [ SUPPLEMENTARY_DOCUMENT ]
         document_types:
           type: array
           items:
