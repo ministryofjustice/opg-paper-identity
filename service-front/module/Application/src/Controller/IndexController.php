@@ -44,22 +44,24 @@ class IndexController extends AbstractActionController
         }
 
         $type = $this->params()->fromQuery("personType");
+        /**
+         * @psalm-suppress PossiblyUndefinedArrayOffset
+         */
         $detailsData = $this->processLpaResponse($type, $lpas[0]);
-
-        die(json_encode($lpas));
-
-        $firstName = $detailsData['FirstName'];
-        $lastName = $detailsData['LastName'];
-
-        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-        $address = $detailsData['Address'];
         // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
 
         // Create a case in the API with the LPA UID and the actors' details
 
         // Redirect to the "select which ID to use" page for this case
 
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
+        $case = $this->opgApiService->createCase(
+            $detailsData['first_name'],
+            $detailsData['last_name'],
+            $detailsData['dob'],
+            $type,
+            $lpasQuery,
+            $detailsData['address']
+        );
 
         return $type === 'donor' ?
             $this->redirect()->toRoute('how_donor_confirms', ['uuid' => $case['uuid']]) :
@@ -71,16 +73,16 @@ class IndexController extends AbstractActionController
         $parsedIdentity = [];
 
         if ($type === 'donor') {
-            $parsedIdentity['FirstName'] = $data['donor']['firstNames'];
-            $parsedIdentity['LastName'] = $data['donor']['lastName'];
+            $parsedIdentity['first_name'] = $data['donor']['firstNames'];
+            $parsedIdentity['last_name'] = $data['donor']['lastName'];
             $parsedIdentity['dob'] = (new \DateTime($data['donor']['dateOfBirth']))->format("Y-m-d");
-            $parsedIdentity['Address'] = $data['donor']['address'];
+            $parsedIdentity['address'] = $data['donor']['address'];
         } else {
-            $parsedIdentity['FirstName'] = $data['certificateProvider']['firstNames'];
-            $parsedIdentity['LastName'] = $data['certificateProvider']['lastName'];
-            $parsedIdentity['Address'] = $data['certificateProvider']['address'];
+            $parsedIdentity['first_name'] = $data['certificateProvider']['firstNames'];
+            $parsedIdentity['last_name'] = $data['certificateProvider']['lastName'];
+            $parsedIdentity['dob'] = null;
+            $parsedIdentity['address'] = $data['certificateProvider']['address'];
         }
-
         return $parsedIdentity;
     }
 }

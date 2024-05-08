@@ -18,19 +18,18 @@ use Laminas\Validator\Regex;
  * Needed here due to false positive from Laminas’s uninitialised properties
  * @psalm-suppress UnusedProperty
  */
-class CaseData
+class CpCaseData
 {
     #[Validator(NotEmpty::class)]
     private string $personType;
-
-    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"])]
-    private string $dob;
 
     #[Validator(NotEmpty::class)]
     private string $firstName;
 
     #[Validator(NotEmpty::class)]
     private string $lastName;
+
+    private string|null $dob;
 
     /**
      * @var string[]
@@ -56,7 +55,7 @@ class CaseData
         $instance->personType = $data['personType'];
         $instance->firstName = $data['firstName'];
         $instance->lastName = $data['lastName'];
-        $instance->dob = $data['dob'];
+        $instance->dob = null;
         $instance->lpas = $data['lpas'];
         $instance->address = $data['address'];
 

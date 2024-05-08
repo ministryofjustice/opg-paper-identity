@@ -11,6 +11,7 @@ use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\CpCaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -43,18 +44,21 @@ class IdentityController extends AbstractActionController
     {
         $data = json_decode($this->getRequest()->getContent(), true);
 
-        $caseData = CaseData::fromArray($data);
+
+        $caseData = $data['personType'] === 'donor'
+            ? CaseData::fromArray($data)
+            : CpCaseData::fromArray($data);
 
         if ($caseData->isValid()) {
             $uuid = Uuid::uuid4();
             $item = [
                 'id'            => ['S' => $uuid->toString()],
-                'personType'     => ['S' => $data["personType"]],
-                'firstName'     => ['S' => $data["firstName"]],
-                'lastName'      => ['S' => $data["lastName"]],
-                'dob'           => ['S' => $data["dob"]],
-                'lpas'          => ['SS' => $data['lpas']],
-                'address'       => ['SS' => $data['address']]
+                'personType'     => ['S' => $caseData->toArray()["personType"]],
+                'firstName'     => ['S' => $caseData->toArray()["firstName"]],
+                'lastName'      => ['S' => $caseData->toArray()["lastName"]],
+                'dob'           => ['S' => $caseData->toArray()["dob"]],
+                'lpas'          => ['SS' => $caseData->toArray()['lpas']],
+                'address'       => ['SS' => $caseData->toArray()['address']]
             ];
 
             $this->dataImportHandler->insertData('cases', $item);
