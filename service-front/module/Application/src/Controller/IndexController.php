@@ -54,8 +54,6 @@ class IndexController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
-//        die(json_encode($lpas[0]));
-
         $case = $this->opgApiService->createCase(
             $detailsData['first_name'],
             $detailsData['last_name'],
@@ -64,6 +62,8 @@ class IndexController extends AbstractActionController
             $lpasQuery,
             $detailsData['address']
         );
+
+//        die(json_encode($case));
 
         return $type === 'donor' ?
             $this->redirect()->toRoute('how_donor_confirms', ['uuid' => $case['uuid']]) :
@@ -84,9 +84,10 @@ class IndexController extends AbstractActionController
             $address = $this->processAddress($type, $data['certificateProvider']['address']);
             $parsedIdentity['first_name'] = $data['certificateProvider']['firstNames'];
             $parsedIdentity['last_name'] = $data['certificateProvider']['lastName'];
-            $parsedIdentity['dob'] = null;
+            $parsedIdentity['dob'] = '1999-01-01'; //temp setting should be null in prod
             $parsedIdentity['address'] = $address;
         }
+//        die(json_encode($parsedIdentity));
         return $parsedIdentity;
     }
 
@@ -94,19 +95,23 @@ class IndexController extends AbstractActionController
     {
         $address = [];
 
-        if ($type === 'donor') {
-            $address[] = $siriusAddress['line1'];
-            $address[] = $siriusAddress['line2'];
-//            $address['town'] = $siriusAddress['town'];
-            $address[] = $siriusAddress['postcode'];
-            $address[] = $siriusAddress['country'];
-        } else {
-            $address['line_1'] = $siriusAddress['line1'];
-            $address['line_2'] = $siriusAddress['line2'];
-            $address['town'] = $siriusAddress['line3'];
-//            $address['postcode'] = $siriusAddress['postcode'];
-            $address['country'] = $siriusAddress['country'];
+        foreach ($siriusAddress as $line) {
+            $address[] = $line;
         }
+
+//        if ($type === 'donor') {
+//            $address[] = $siriusAddress['line1'];
+//            $address[] = $siriusAddress['line2'];
+////            $address['town'] = $siriusAddress['town'];
+//            $address[] = $siriusAddress['postcode'];
+//            $address[] = $siriusAddress['country'];
+//        } else {
+//            $address[] = $siriusAddress['line1'];
+//            $address[] = $siriusAddress['line2'];
+//            $address[] = $siriusAddress['line3'];
+////            $address['postcode'] = $siriusAddress['postcode'];
+//            $address[] = $siriusAddress['country'];
+//        }
         return $address;
     }
 }

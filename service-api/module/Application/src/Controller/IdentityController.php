@@ -44,9 +44,7 @@ class IdentityController extends AbstractActionController
     {
         $data = json_decode($this->getRequest()->getContent(), true);
 
-        $caseData = $data['personType'] === 'donor'
-            ? CaseData::fromArray($data)
-            : CpCaseData::fromArray($data);
+        $caseData = CaseData::fromArray($data);
 
         if ($caseData->isValid()) {
             $uuid = Uuid::uuid4();
