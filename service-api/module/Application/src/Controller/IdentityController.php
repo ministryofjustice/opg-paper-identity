@@ -44,7 +44,6 @@ class IdentityController extends AbstractActionController
     {
         $data = json_decode($this->getRequest()->getContent(), true);
 
-
         $caseData = $data['personType'] === 'donor'
             ? CaseData::fromArray($data)
             : CpCaseData::fromArray($data);
@@ -62,7 +61,6 @@ class IdentityController extends AbstractActionController
             ];
 
             $this->dataImportHandler->insertData('cases', $item);
-
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $uuid]);
         }

@@ -166,19 +166,21 @@ class OpgApiService implements OpgApiServiceInterface
     public function createCase(
         string $firstname,
         string $lastname,
-        string|null $dob,
+        string $dob,
         string $personType,
         array $lpas,
         array $address,
     ): array {
-        return $this->makeApiRequest("/cases/create", 'POST', [
+
+        $data = [
             'firstName' => $firstname,
             'lastName' => $lastname,
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
             'address' => $address
-        ]);
+        ];
+        return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
     public function findLpa(string $uuid, string $lpa): array

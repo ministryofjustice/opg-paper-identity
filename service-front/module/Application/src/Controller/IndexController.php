@@ -54,6 +54,8 @@ class IndexController extends AbstractActionController
 
         // Redirect to the "select which ID to use" page for this case
 
+//        die(json_encode($lpas[0]));
+
         $case = $this->opgApiService->createCase(
             $detailsData['first_name'],
             $detailsData['last_name'],
@@ -73,16 +75,38 @@ class IndexController extends AbstractActionController
         $parsedIdentity = [];
 
         if ($type === 'donor') {
+            $address = $this->processAddress($type, $data['donor']['address']);
             $parsedIdentity['first_name'] = $data['donor']['firstNames'];
             $parsedIdentity['last_name'] = $data['donor']['lastName'];
             $parsedIdentity['dob'] = (new \DateTime($data['donor']['dateOfBirth']))->format("Y-m-d");
-            $parsedIdentity['address'] = $data['donor']['address'];
+            $parsedIdentity['address'] = $address;
         } else {
+            $address = $this->processAddress($type, $data['certificateProvider']['address']);
             $parsedIdentity['first_name'] = $data['certificateProvider']['firstNames'];
             $parsedIdentity['last_name'] = $data['certificateProvider']['lastName'];
             $parsedIdentity['dob'] = null;
-            $parsedIdentity['address'] = $data['certificateProvider']['address'];
+            $parsedIdentity['address'] = $address;
         }
         return $parsedIdentity;
+    }
+
+    private function processAddress(string $type, array $siriusAddress): array
+    {
+        $address = [];
+
+        if ($type === 'donor') {
+            $address[] = $siriusAddress['line1'];
+            $address[] = $siriusAddress['line2'];
+//            $address['town'] = $siriusAddress['town'];
+            $address[] = $siriusAddress['postcode'];
+            $address[] = $siriusAddress['country'];
+        } else {
+            $address['line_1'] = $siriusAddress['line1'];
+            $address['line_2'] = $siriusAddress['line2'];
+            $address['town'] = $siriusAddress['line3'];
+//            $address['postcode'] = $siriusAddress['postcode'];
+            $address['country'] = $siriusAddress['country'];
+        }
+        return $address;
     }
 }
