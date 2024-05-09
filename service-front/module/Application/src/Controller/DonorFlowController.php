@@ -57,8 +57,6 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
-        $stubDetailsData = $this->opgApiService->stubDetailsResponse();
-        $detailsData['address'] = $stubDetailsData['Address'];
 
         $view = new ViewModel();
 

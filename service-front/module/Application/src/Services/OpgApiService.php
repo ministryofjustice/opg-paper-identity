@@ -27,30 +27,6 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
-    public function stubDetailsResponse(): array
-    {
-        /**
-         * This is a temporary function to prevent the start page crashing with a 500 error
-         * now that the equivalent API function requires a UUID
-         */
-        return [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => [
-                "1 Court Street",
-                "London",
-                "UK",
-                "SW1B 1BB",
-            ],
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-XYXY-YAGA-35G4"
-            ]
-        ];
-    }
-
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {

@@ -35,7 +35,7 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("does_name_match_id", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("cp_does_name_match_id", ['uuid' => $uuid]);
 
 
 //
@@ -62,8 +62,6 @@ class CPFlowController extends AbstractActionController
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        echo json_encode($detailsData);
 
         $view = new ViewModel();
 

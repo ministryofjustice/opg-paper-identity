@@ -240,40 +240,40 @@ return [
 //                    ],
 //                ],
 //            ],
-            'how_cp_confirms' => [
+            'cp_how_cp_confirms' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '[/:uuid]/how-will-cp-confirm',
+                    'route'    => '[/:uuid]/cp/how-will-cp-confirm',
                     'defaults' => [
                         'controller' => Controller\CPFlowController::class,
                         'action'     => 'howWillCpConfirm',
                     ],
                 ],
             ],
-            'does_name_match_id' => [
+            'cp_does_name_match_id' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '[/:uuid]/does-name-match-id',
+                    'route'    => '[/:uuid]/cp/does-name-match-id',
                     'defaults' => [
                         'controller' => Controller\CPFlowController::class,
                         'action'     => 'doesNameMatchId',
                     ],
                 ],
             ],
-            'confirm_lpas' => [
+            'cp_confirm_lpas' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '[/:uuid]/confirm-lpas',
+                    'route'    => '[/:uuid]/cp/confirm-lpas',
                     'defaults' => [
                         'controller' => Controller\CPFlowController::class,
                         'action'     => 'confirmLpas',
                     ],
                 ],
             ],
-            'add_lpa' => [
+            'cp_add_lpa' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '[/:uuid]/add-lpa',
+                    'route'    => '[/:uuid]/cp/add-lpa',
                     'defaults' => [
                         'controller' => Controller\CPFlowController::class,
                         'action'     => 'addLpa',

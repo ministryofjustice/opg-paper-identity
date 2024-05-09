@@ -58,12 +58,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/how-will-cp-confirm", 'GET');
+        $this->dispatch("/$this->uuid/cp/how-will-cp-confirm", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('how_cp_confirms');
+        $this->assertMatchedRouteName('cp_how_cp_confirms');
     }
 
     public function testNameMatchesIDPageWithData(): void
@@ -86,12 +86,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/does-name-match-id", 'GET');
+        $this->dispatch("/$this->uuid/cp/does-name-match-id", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('does_name_match_id');
+        $this->assertMatchedRouteName('cp_does_name_match_id');
     }
 
     public function testConfirmLpasPageWithData(): void
@@ -137,11 +137,11 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getLpasByDonorData')
             ->willReturn($mockLpasData);
 
-        $this->dispatch("/$this->uuid/confirm-lpas", 'GET');
+        $this->dispatch("/$this->uuid/cp/confirm-lpas", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('confirm_lpas');
+        $this->assertMatchedRouteName('cp_confirm_lpas');
     }
 }
