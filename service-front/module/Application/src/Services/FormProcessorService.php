@@ -121,11 +121,8 @@ class FormProcessorService
 
         if ($validLpa) {
             $formArray = $formData->toArray();
-            $view->setVariable('valid_lpa', true);
             $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
             $view->setVariable('lpa_response', $responseData);
-        } else {
-            $view->setVariable('invalid_lpa', true);
         }
         return $view->setTemplate($templates['default']);
     }
