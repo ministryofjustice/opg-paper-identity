@@ -25,6 +25,8 @@ interface OpgApiServiceInterface
         array $address,
     ): array;
 
+    public function findLpa(string $uuid, string $lpa): array;
+
     public function updateIdMethod(string $uuid, string $method): void;
 
     public function listPostOfficesByPostcode(string $uuid, string $postcode): array;

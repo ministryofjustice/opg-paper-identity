@@ -37,7 +37,12 @@ class OpgApiService implements OpgApiServiceInterface
             "FirstName" => "Mary Anne",
             "LastName" => "Chapman",
             "DOB" => "01 May 1943",
-            "Address" => "1 Court Street, London, UK, SW1B 1BB",
+            "Address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
             "Role" => "Donor",
             "LPA" => [
                 "PA M-XYXY-YAGA-35G3",
@@ -166,14 +171,34 @@ class OpgApiService implements OpgApiServiceInterface
         array $lpas,
         array $address,
     ): array {
-        return $this->makeApiRequest("/cases/create", 'POST', [
+
+        $data = [
             'firstName' => $firstname,
             'lastName' => $lastname,
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
             'address' => $address
-        ]);
+        ];
+        return $this->makeApiRequest("/cases/create", 'POST', $data);
+    }
+
+    public function findLpa(string $uuid, string $lpa): array
+    {
+        $uri = sprintf('cases/%s/find-lpa/%s', $uuid, strtoupper($lpa));
+
+        try {
+            $this->makeApiRequest(
+                $uri,
+                'GET',
+                [],
+                ['Content-Type' => 'application/json']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return [$opgApiException->getMessage()];
+        }
+
+        return $this->responseData;
     }
 
     public function updateIdMethod(string $uuid, string $method): void
