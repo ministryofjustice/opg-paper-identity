@@ -177,16 +177,17 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function updateIdMethod(string $uuid, string $method): void
+    public function updateIdMethod(string $uuid, string $method): array
     {
         $data = [
             'idMethod' => $method
         ];
         try {
-            $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
+            $response = $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+        return $this->responseData;
     }
 
     public function listPostOfficesByPostcode(string $uuid, string $postcode): array

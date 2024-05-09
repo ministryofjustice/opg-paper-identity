@@ -311,21 +311,6 @@ class IdentityController extends AbstractActionController
         $status = Response::STATUS_CODE_200;
 
         $response = [];
-        $response['data'] = [
-            'case_uuid' => $uuid,
-            "LPA_Number" => $lpa,
-            "Type_Of_LPA" => "Personal welfare",
-            "Donor" => "Mary Ann Chapman",
-            "Status" => "Processing",
-            "CP_Name" => "David Smith",
-            "CP_Address" => [
-                'Line_1' => '82 Penny Street',
-                'Line_2' => 'Lancaster',
-                'Town' => 'Lancashire',
-                'Postcode' => 'LA1 1XN',
-                'Country' => 'United Kingdom',
-            ]
-        ];
 
         //pending design decision - may need this code
 
@@ -348,6 +333,21 @@ class IdentityController extends AbstractActionController
         switch ($lpa) {
             case 'M-0000-0000-0000':
                 $message = 'Success';
+                $response['data'] = [
+                    'case_uuid' => $uuid,
+                    "LPA_Number" => $lpa,
+                    "Type_Of_LPA" => "Personal welfare",
+                    "Donor" => "Mary Ann Chapman",
+                    "Status" => "Processing",
+                    "CP_Name" => "David Smith",
+                    "CP_Address" => [
+                        'Line_1' => '82 Penny Street',
+                        'Line_2' => 'Lancaster',
+                        'Town' => 'Lancashire',
+                        'Postcode' => 'LA1 1XN',
+                        'Country' => 'United Kingdom',
+                    ]
+                ];
                 break;
             case 'M-0000-0000-0001':
                 $status = Response::STATUS_CODE_400;

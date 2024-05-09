@@ -230,16 +230,6 @@ return [
                     ],
                 ],
             ],
-//            'cp_start' => [
-//                'type'    => Segment::class,
-//                'options' => [
-//                    'route'    => '/cp-start',
-//                    'defaults' => [
-//                        'controller' => Controller\CPFlowController::class,
-//                        'action'     => 'start',
-//                    ],
-//                ],
-//            ],
             'cp_how_cp_confirms' => [
                 'type'    => Segment::class,
                 'options' => [
