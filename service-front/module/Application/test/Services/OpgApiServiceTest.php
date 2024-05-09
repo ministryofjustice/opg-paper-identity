@@ -632,79 +632,78 @@ class OpgApiServiceTest extends TestCase
             ],
         ];
     }
-//
-//    /**
-//     * @dataProvider addLpaData
-//     * @return void
-//     */
-//    public function testFindLpa(array $data, Client $client, array $responseData, bool $exception): void
-//    {
-//        if ($exception) {
-//            $this->expectException(OpgApiException::class);
-//        }
-//        $this->opgApiService = new OpgApiService($client);
-//
-//        $response = $this->opgApiService->findLpa(
-//            $data['uuid'],
-//            $data['lpa'],
-//        );
-//
-//        echo json_encode($response);
-//
-//        $this->assertEquals($responseData, $response);
-//    }
-//
-//    public static function addLpaData(): array
-//    {
-//        $data = [];
-//        $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
-//        $data['lpa'] = "PA M-XYXY-YAGA-35G3";
-//
-//        $successMockResponseData = [
-//            "case_uuid" => "9130a21e-6e5e-4a30-8b27-76d21b747e60",
-//            "LPA_Number" => "M-0000-0000-0000",
-//            "Type_Of_LPA" => "Personal welfare",
-//            "Donor" => "Mary Ann Chapman",
-//            "Status" => "Processing",
-//            "CP_Name" => "David Smith",
-//            "CP_Address" => [
-//                "Line_1" => "82 Penny Street",
-//                "Line_2" => "Lancaster",
-//                "Town" => "Lancashire",
-//                "Postcode" => "LA1 1XN",
-//                "Country" => "United Kingdom"
-//            ],
-//            "message" => "Success",
-//            "status" => 200
-//        ];
-//        $successMock = new MockHandler([
-//            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
-//        ]);
-//        $handlerStack = HandlerStack::create($successMock);
-//        $successClient = new Client(['handler' => $handlerStack]);
-//
-//        $failMockResponseData = ['Bad Request'];
-//        $failMock = new MockHandler([
-//            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
-//        ]);
-//        $handlerStack = HandlerStack::create($failMock);
-//        $failClient = new Client(['handler' => $handlerStack]);
-//
-//        return [
-//            [
-//                $data,
-//                $successClient,
-//                $successMockResponseData,
-//                false
-//            ],
-//            [
-//                $data,
-//                $failClient,
-//                $failMockResponseData,
-//                true
-//            ],
-//        ];
-//    }
+
+    /**
+     * @dataProvider addLpaData
+     * @return void
+     */
+    public function testFindLpa(array $data, Client $client, array $responseData, bool $exception): void
+    {
+        $this->opgApiService = new OpgApiService($client);
+
+        $response = $this->opgApiService->findLpa(
+            $data['uuid'],
+            $data['lpa'],
+        );
+
+        if ($exception) {
+            $this->assertStringContainsString($responseData[0], json_encode($response));
+        } else {
+            $this->assertEquals($responseData, $response);
+        }
+    }
+
+    public static function addLpaData(): array
+    {
+        $data = [];
+        $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
+        $data['lpa'] = "PA M-XYXY-YAGA-35G3";
+
+        $successMockResponseData = [
+            "case_uuid" => "9130a21e-6e5e-4a30-8b27-76d21b747e60",
+            "LPA_Number" => "M-0000-0000-0000",
+            "Type_Of_LPA" => "Personal welfare",
+            "Donor" => "Mary Ann Chapman",
+            "Status" => "Processing",
+            "CP_Name" => "David Smith",
+            "CP_Address" => [
+                "Line_1" => "82 Penny Street",
+                "Line_2" => "Lancaster",
+                "Town" => "Lancashire",
+                "Postcode" => "LA1 1XN",
+                "Country" => "United Kingdom"
+            ],
+            "message" => "Success",
+            "status" => 200
+        ];
+        $successMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $failMockResponseData = ['Client error'];
+        $failMock = new MockHandler([
+            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $handlerStack]);
+
+        return [
+            [
+                $data,
+                $successClient,
+                $successMockResponseData,
+                false
+            ],
+            [
+                $data,
+                $failClient,
+                $failMockResponseData,
+                true
+            ],
+        ];
+    }
 
     /**
      * @dataProvider updateIdMethodData
