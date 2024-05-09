@@ -166,7 +166,7 @@ class OpgApiService implements OpgApiServiceInterface
     public function createCase(
         string $firstname,
         string $lastname,
-        string $dob,
+        string|null $dob,
         string $personType,
         array $lpas,
         array $address,
