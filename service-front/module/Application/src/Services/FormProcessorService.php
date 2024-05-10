@@ -6,16 +6,11 @@ namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Stdlib\Parameters;
-use Laminas\Form\Form;
 use Laminas\Form\FormInterface;
 use Laminas\View\Model\ViewModel;
 
 class FormProcessorService
 {
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     * @param OpgApiServiceInterface $opgApiService
-     */
     public function __construct(private OpgApiServiceInterface $opgApiService)
     {
     }
@@ -107,7 +102,24 @@ class FormProcessorService
             $view->setVariable('invalid_date', true);
         }
         $view->setVariable('details_open', true);
+        return $view->setTemplate($templates['default']);
+    }
+
+    public function findLpa(
+        string $uuid,
+        Parameters $formData,
+        FormInterface $form,
+        ViewModel $view,
+        array $templates = []
+    ): ViewModel {
         $form->setData($formData);
+        $validLpa = $form->isValid();
+
+        if ($validLpa) {
+            $formArray = $formData->toArray();
+            $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
+            $view->setVariable('lpa_response', $responseData);
+        }
         return $view->setTemplate($templates['default']);
     }
 
