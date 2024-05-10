@@ -183,7 +183,7 @@ class OpgApiService implements OpgApiServiceInterface
             'idMethod' => $method
         ];
         try {
-            $response = $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
+            $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

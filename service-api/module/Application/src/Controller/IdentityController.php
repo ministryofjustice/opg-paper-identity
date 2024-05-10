@@ -397,4 +397,9 @@ class IdentityController extends AbstractActionController
         $response['status'] = $status;
         return new JsonModel($response);
     }
+
+    public function addCaseLpa(): JsonModel
+    {
+        return new JsonModel([]);
+    }
 }

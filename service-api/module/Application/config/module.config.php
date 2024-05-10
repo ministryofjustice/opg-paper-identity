@@ -189,7 +189,7 @@ return [
             'find_lpa' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/find-lpa[/:lpa]',
+                    'route'    => '/cases/:uuid/find-lpa/:lpa',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'findLpa',
@@ -199,10 +199,20 @@ return [
             'update_case_method' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/update-method',
+                    'route'    => '/cases/:uuid/update-method',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'updatedMethod',
+                    ],
+                ],
+            ],
+            'add_case_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add=lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addCaseLpa',
                     ],
                 ],
             ],
