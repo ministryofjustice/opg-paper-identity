@@ -201,7 +201,7 @@ return [
             'find_postoffice_branches' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/yoti/post-office-branches',
+                    'route'    => '/counter-service/branches',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action'     => 'findPostOffice',
@@ -211,7 +211,7 @@ return [
             'create_yoti_session' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/yoti/create-session',
+                    'route'    => '/counter-service/create-session',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action'     => 'createSession',
@@ -221,7 +221,7 @@ return [
             'retrieve_yoti_session' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/yoti/retrieve-session',
+                    'route'    => '/counter-service/retrieve-session',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action'     => 'getSession',
@@ -231,7 +231,7 @@ return [
             'retrieve_pdf_letter' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/yoti/retrieve-letter',
+                    'route'    => '/counter-service/retrieve-letter',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action'     => 'getPDFLetter',
