@@ -399,8 +399,8 @@ class IdentityController extends AbstractActionController
 
     public function addCaseLpaAction(): JsonModel
     {
-        $uuid = $this->params()->fromRoute('uuid');
-        $lpa = $this->params()->fromRoute('lpa');
+//        $uuid = $this->params()->fromRoute('uuid');
+//        $lpa = $this->params()->fromRoute('lpa');
 
         return new JsonModel([]);
     }

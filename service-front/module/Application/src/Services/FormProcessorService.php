@@ -11,10 +11,6 @@ use Laminas\View\Model\ViewModel;
 
 class FormProcessorService
 {
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     * @param OpgApiServiceInterface $opgApiService
-     */
     public function __construct(private OpgApiServiceInterface $opgApiService)
     {
     }

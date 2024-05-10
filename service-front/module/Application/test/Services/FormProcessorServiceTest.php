@@ -29,9 +29,7 @@ use Laminas\Http\Response as HttpResponse;
 
 class FormProcessorServiceTest extends TestCase
 {
-    private OpgApiService|MockObject $opgApiService;
-
-    private string $uuid;
+//    private OpgApiService|MockObject $opgApiService;
 
     public function setUp(): void
     {
@@ -42,14 +40,12 @@ class FormProcessorServiceTest extends TestCase
      * @dataProvider lpaData
      */
     public function testFindLpa(
-        array         $responseData,
-        Parameters    $formData,
+        array $responseData,
+        Parameters $formData,
         FormInterface $form,
-        ViewModel     $view,
-        array         $templates = [],
-
-    ): void
-    {
+        ViewModel $view,
+        array $templates = [],
+    ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorService = new FormProcessorService($opgApiServiceMock);
 
@@ -69,7 +65,7 @@ class FormProcessorServiceTest extends TestCase
     public static function lpaData(): array
     {
         $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
-        $lpa =  "M-0000-0000-0000";
+        $lpa = "M-0000-0000-0000";
 
         $mockResponseData = [
             "data" => [
