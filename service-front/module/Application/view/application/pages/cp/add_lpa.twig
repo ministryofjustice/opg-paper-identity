@@ -2,6 +2,17 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
 
+        {% if form.get('lpa').messages %}
+            <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+                <p class="govuk-body">
+                    <b>There is a problem</b>
+                </p>
+                <div class="moj-banner__message">
+                    Enter a valid LPA number to continue.
+                </div>
+            </div>
+        {% endif %}
+
         {% if lpa_response %}
             {% if lpa_response['status'] == 400 %}
 

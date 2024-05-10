@@ -11,7 +11,6 @@ use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
-use Application\Model\Entity\CpCaseData;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -398,8 +397,11 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function addCaseLpa(): JsonModel
+    public function addCaseLpaAction(): JsonModel
     {
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+
         return new JsonModel([]);
     }
 }

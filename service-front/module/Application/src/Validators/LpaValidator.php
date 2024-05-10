@@ -9,13 +9,20 @@ use Laminas\Validator\AbstractValidator;
 class LpaValidator extends AbstractValidator
 {
     public const LPA = 'lpa';
+    public const EMPTY = 'empty';
 
     protected array $messageTemplates = [
+        self::EMPTY => 'Enter an LPA number to continue.',
         self::LPA => 'The LPA needs to be valid in the format M-XXXX-XXXX-XXXX',
     ];
 
     public function isValid($value): bool
     {
+        if (empty($value)) {
+            $this->error(self::EMPTY);
+            return false;
+        }
+
         $this->setValue(strtoupper($value));
 
         if (! $this->lpaValidity()) {
