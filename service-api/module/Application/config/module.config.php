@@ -221,7 +221,7 @@ return [
             'retrieve_yoti_session' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/retrieve-session',
+                    'route'    => '/counter-service[/:sessionId]/retrieve-session',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action'     => 'getSession',
@@ -231,7 +231,7 @@ return [
             'retrieve_pdf_letter' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/retrieve-letter',
+                    'route'    => '/counter-service[/:sessionId]/retrieve-letter',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action'     => 'getPDFLetter',

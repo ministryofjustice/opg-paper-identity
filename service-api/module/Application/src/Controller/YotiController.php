@@ -32,8 +32,9 @@ class YotiController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function getSessionAction(string $sessionId): JsonModel
+    public function getSessionAction(): JsonModel
     {
+        $sessionId = $this->params()->fromRoute('sessionId');
         $data = [];
         $data['response'] = $this->yotiService->retrieveResults($sessionId);
         return new JsonModel($data);
