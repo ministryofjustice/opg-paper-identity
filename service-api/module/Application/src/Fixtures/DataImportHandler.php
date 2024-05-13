@@ -64,7 +64,7 @@ class DataImportHandler
         }
     }
 
-    public function insertData(string $tablename, array $item): void
+    public function insertData(string $tablename, array $item): bool
     {
         $params = [
             'TableName' => $tablename,
@@ -72,10 +72,12 @@ class DataImportHandler
         ];
         try {
             $this->dynamoDbClient->putItem($params);
+            return true;
         } catch (AwsException $e) {
             $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $tablename, [
                 'data' => $item
             ]);
+            return false;
         }
     }
 
