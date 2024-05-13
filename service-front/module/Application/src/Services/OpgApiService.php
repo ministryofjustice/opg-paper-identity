@@ -27,25 +27,6 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
-    public function stubDetailsResponse(): array
-    {
-        /**
-         * This is a temporary function to prevent the start page crashing with a 500 error
-         * now that the equivalent API function requires a UUID
-         */
-        return [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "1 Court Street, London, UK, SW1B 1BB",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-XYXY-YAGA-35G4"
-            ]
-        ];
-    }
-
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {
@@ -161,22 +142,42 @@ class OpgApiService implements OpgApiServiceInterface
     public function createCase(
         string $firstname,
         string $lastname,
-        string $dob,
+        string|null $dob,
         string $personType,
         array $lpas,
         array $address,
     ): array {
-        return $this->makeApiRequest("/cases/create", 'POST', [
+
+        $data = [
             'firstName' => $firstname,
             'lastName' => $lastname,
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
             'address' => $address
-        ]);
+        ];
+        return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
-    public function updateIdMethod(string $uuid, string $method): void
+    public function findLpa(string $uuid, string $lpa): array
+    {
+        $uri = sprintf('cases/%s/find-lpa/%s', $uuid, strtoupper($lpa));
+
+        try {
+            $this->makeApiRequest(
+                $uri,
+                'GET',
+                [],
+                ['Content-Type' => 'application/json']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return [$opgApiException->getMessage()];
+        }
+
+        return $this->responseData;
+    }
+
+    public function updateIdMethod(string $uuid, string $method): array
     {
         $data = [
             'idMethod' => $method
@@ -186,6 +187,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+        return $this->responseData;
     }
 
     public function listPostOfficesByPostcode(string $uuid, string $postcode): array

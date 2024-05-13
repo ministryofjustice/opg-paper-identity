@@ -159,7 +159,7 @@ return [
             'get_kbv_questions' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-questions',
+                    'route'    => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'getKbvQuestions',
@@ -169,7 +169,7 @@ return [
             'check_kbv_answers' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-answers',
+                    'route'    => '/cases/:uuid/kbv-answers',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'checkKbvAnswers',
@@ -186,13 +186,33 @@ return [
                     ],
                 ],
             ],
+            'find_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/find-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findLpa',
+                    ],
+                ],
+            ],
             'update_case_method' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/update-method',
+                    'route'    => '/cases/:uuid/update-method',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'updatedMethod',
+                    ],
+                ],
+            ],
+            'add_case_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add=lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addCaseLpa',
                     ],
                 ],
             ],
