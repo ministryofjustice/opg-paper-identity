@@ -23,8 +23,8 @@ class CaseData
     #[Validator(NotEmpty::class)]
     private string $personType;
 
-    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"])]
-    private string $dob;
+    #[Validator(Regex::class, options: ["pattern" => "/^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"])]
+    private ?string $dob;
 
     #[Validator(NotEmpty::class)]
     private string $firstName;
@@ -47,7 +47,7 @@ class CaseData
     /**
      * Factory method
      *
-     * @param array{personType: string, firstName: string, lastName: string, dob: string,
+     * @param array{personType: string, firstName: string, lastName: string, dob: ?string,
      *     lpas: array{}, address: array{} } $data
      */
     public static function fromArray(mixed $data): self
@@ -56,7 +56,7 @@ class CaseData
         $instance->personType = $data['personType'];
         $instance->firstName = $data['firstName'];
         $instance->lastName = $data['lastName'];
-        $instance->dob = $data['dob'];
+        $instance->dob = $data['dob'] ?? '';
         $instance->lpas = $data['lpas'];
         $instance->address = $data['address'];
 
