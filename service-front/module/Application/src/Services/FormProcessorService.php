@@ -15,6 +15,27 @@ class FormProcessorService
     {
     }
 
+    public function returnProcessed(
+        string $uuid,
+        string $template,
+        FormInterface $form,
+        array $responseData,
+        array $variables
+    ): array
+    {
+        $processed = [];
+
+        $processed['uuid'] = $uuid;
+        $processed['template'] = $template;
+        $processed['form'] = $form;
+        $processed['data'] = $responseData;
+        $processed['variables'] = [
+            'lpa_response' => $responseData
+        ];
+
+        return $processed;
+    }
+
     public function processDrivingLicencenForm(
         Parameters $formData,
         FormInterface $form,
@@ -109,18 +130,24 @@ class FormProcessorService
         string $uuid,
         Parameters $formData,
         FormInterface $form,
-        ViewModel $view,
         array $templates = []
-    ): ViewModel {
+    ): array {
         $form->setData($formData);
-        $validLpa = $form->isValid();
+        $formArray = $formData->toArray();
 
-        if ($validLpa) {
-            $formArray = $formData->toArray();
+        if ($form->isValid()) {
             $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
-            $view->setVariable('lpa_response', $responseData);
         }
-        return $view->setTemplate($templates['default']);
+
+        return $this->returnProcessed(
+            $uuid,
+            $templates['default'],
+            $form,
+            $responseData,
+            [
+                'lpa_response' => $responseData
+            ]
+        );
     }
 
     public function processFindPostOffice(

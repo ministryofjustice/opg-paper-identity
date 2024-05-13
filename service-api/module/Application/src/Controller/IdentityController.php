@@ -345,12 +345,13 @@ class IdentityController extends AbstractActionController
                         'Town' => 'Lancashire',
                         'Postcode' => 'LA1 1XN',
                         'Country' => 'United Kingdom',
-                    ]
+                    ],
                 ];
                 break;
             case 'M-0000-0000-0001':
                 $status = Response::STATUS_CODE_400;
                 $message = "This LPA has already been added to this ID check.";
+                $response['data']['Status'] = 'Already added';
                 break;
             case 'M-0000-0000-0003':
                 $status = Response::STATUS_CODE_400;
@@ -370,7 +371,7 @@ class IdentityController extends AbstractActionController
                 break;
             case 'M-0000-0000-0004':
                 $status = Response::STATUS_CODE_400;
-                $response['data']['Status'] = 'Complete';
+                $response['data']['Status'] = 'Already completed';
                 $message = "This LPA cannot be added as an ID check has already been
                  completed for this LPA.";
                 break;
@@ -382,7 +383,7 @@ class IdentityController extends AbstractActionController
                 break;
             case 'M-0000-0000-0006':
                 $status = Response::STATUS_CODE_400;
-                $response['data']['Status'] = 'Draft';
+                $response['data']['Status'] = 'Online';
                 $message = "This LPA cannot be added to this identity check because 
                 the certificate provider has signed this LPA online.";
                 break;
@@ -394,6 +395,7 @@ class IdentityController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['message'] = $message;
         $response['status'] = $status;
+        $response['uuid'] = $uuid;
         return new JsonModel($response);
     }
 
