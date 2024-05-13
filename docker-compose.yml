@@ -1,16 +1,15 @@
----
 services:
   sirius-mock:
-    image: outofcoffee/imposter
+    image: stoplight/prism:5
+    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
-      test: wget -O /dev/null -S 'http://localhost:8080/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      test: wget -O /dev/null -S 'http://0.0.0.0:4010/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
       interval: 15s
       timeout: 10s
       retries: 3
-      start_period: 30s
     volumes:
-      - ./docker/sirius:/opt/imposter/config
+      - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
 
   yoti-mock:
     image: outofcoffee/imposter
@@ -20,9 +19,10 @@ services:
       interval: 15s
       timeout: 10s
       retries: 3
-      start_period: 30s
     volumes:
       - ./docker/yoti:/opt/imposter/config
+    ports:
+      - 8334:8080
 
   api:
     image: paper-identity/api
@@ -40,7 +40,6 @@ services:
       interval: 15s
       timeout: 10s
       retries: 3
-      start_period: 30s
     volumes:
       - ./service-api:/var/www
       - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
@@ -80,7 +79,7 @@ services:
       - sirius-mock
     environment:
       - API_BASE_URI=http://api-web
-      - SIRIUS_BASE_URL=http://sirius-mock:8080 # http://host.docker.internal:8080 for real Sirius
+      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
       - SIRIUS_LOGIN_URL=http://localhost:8080
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
@@ -164,7 +163,7 @@ services:
       - ./service-front:/app
 
   localstack:
-    image: localstack/localstack:3.3
+    image: localstack/localstack:3.4
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"

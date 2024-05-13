@@ -36,13 +36,13 @@ paths:
     get:
       summary: Get an LPA
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CombinedLpa'
-        '401':
+                $ref: "#/components/schemas/CombinedLpa"
+        "401":
           description: Error
 components:
   schemas:
@@ -62,7 +62,9 @@ components:
           $ref: "#/components/schemas/DigitalLpa"
         opg.poas.lpastore:
           oneOf:
-            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-04/lpa.json
+            - allOf:
+                - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-10/lpa.json
+                - $ref: "#/components/schemas/LpaWithPostcodes"
             - null
       additionalProperties: false
     DigitalLpa:
@@ -77,3 +79,20 @@ components:
           type: string
           pattern: "M(-[0-9A-Z]{4}){3}"
           example: M-789Q-P4DF-4UX3
+    LpaWithPostcodes:
+      type: object
+      properties:
+        donor:
+          type: object
+          properties:
+            address:
+              type: object
+              required:
+                - postcode
+        certificateProvider:
+          type: object
+          properties:
+            address:
+              type: object
+              required:
+                - postcode
