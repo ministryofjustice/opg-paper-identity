@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
-use Application\Validators\LpaValidator;
+use Application\Validators\LpaUidValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
@@ -17,6 +17,6 @@ class LpaReferenceNumber
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(LpaValidator::class)]
+    #[Annotation\Validator(LpaUidValidator::class)]
     public string $lpa;
 }

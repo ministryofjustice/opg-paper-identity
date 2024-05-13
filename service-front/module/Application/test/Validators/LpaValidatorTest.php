@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Validators;
 
-use Application\Validators\LpaValidator;
+use Application\Validators\LpaUidValidator;
 use PHPUnit\Framework\TestCase;
 
 class LpaValidatorTest extends TestCase
 {
-    protected LpaValidator $lpaValidator;
+    protected LpaUidValidator $lpaValidator;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->lpaValidator = new LpaValidator();
+        $this->lpaValidator = new LpaUidValidator();
     }
 
     /**

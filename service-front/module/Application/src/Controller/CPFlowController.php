@@ -11,7 +11,7 @@ use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
-use Application\Validators\LpaValidator;
+use Application\Validators\LpaUidValidator;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
