@@ -126,6 +126,66 @@ class FormProcessorServiceTest extends TestCase
                 new Parameters(['lpa' => $alreadyAddedLpa]),
                 $form,
                 $templates
+            ],
+            [
+                $caseUuid,
+                $notFoundLpa,
+                [
+                    "uuid" => $caseUuid,
+                    "message" => "No LPA found.",
+                    "status" => 400,
+                    'data' => [
+                        "Status" => "Not found"
+                    ]
+                ],
+                new Parameters(['lpa' => $notFoundLpa]),
+                $form,
+                $templates
+            ],
+            [
+                $caseUuid,
+                $alreadyDoneLpa,
+                [
+                    "uuid" => $caseUuid,
+                    "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
+                    "status" => 400,
+                    'data' => [
+                        "Status" => "Already completed"
+                    ]
+                ],
+                new Parameters(['lpa' => $alreadyDoneLpa]),
+                $form,
+                $templates
+            ],
+            [
+                $caseUuid,
+                $draftLpa,
+                [
+                    "uuid" => $caseUuid,
+                    "message" => "This LPA cannot be added as it’s status is set to Draft. LPAs need to be in the In Progress status to be added to this ID check.",
+                    "status" => 400,
+                    'data' => [
+                        "Status" => "Draft"
+                    ]
+                ],
+                new Parameters(['lpa' => $draftLpa]),
+                $form,
+                $templates
+            ],
+            [
+                $caseUuid,
+                $onlineLpa,
+                [
+                    "uuid" => $caseUuid,
+                    "message" => "This LPA cannot be added to this identity check because the certificate provider has signed this LPA online.",
+                    "status" => 400,
+                    'data' => [
+                        "Status" => "Online"
+                    ]
+                ],
+                new Parameters(['lpa' => $onlineLpa]),
+                $form,
+                $templates
             ]
         ];
     }

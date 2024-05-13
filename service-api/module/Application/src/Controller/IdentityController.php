@@ -390,6 +390,7 @@ class IdentityController extends AbstractActionController
             default:
                 $status = Response::STATUS_CODE_400;
                 $message = "No LPA found.";
+                $response['data']['Status'] = 'Not found';
                 break;
         }
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
