@@ -6,7 +6,7 @@ namespace Application\Validators;
 
 use Laminas\Validator\AbstractValidator;
 
-class LpaValidator extends AbstractValidator
+class LpaUidValidator extends AbstractValidator
 {
     public const LPA = 'lpa';
     public const EMPTY = 'empty';
