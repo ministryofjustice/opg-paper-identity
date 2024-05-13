@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Http\Response;
 use Laminas\View\Model\JsonModel;
 
 /**
@@ -32,11 +33,20 @@ class YotiController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function getSessionAction(): JsonModel
+    public function getSessionStatusAction(): JsonModel
     {
         $sessionId = $this->params()->fromRoute('sessionId');
-        $data = [];
-        $data['response'] = $this->yotiService->retrieveResults($sessionId);
+
+        if (! $sessionId) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(['error' => 'Missing sessionId']);
+        }
+
+        $session = $this->yotiService->retrieveResults($sessionId);
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $data = ['status' => $session['state']];
+
         return new JsonModel($data);
     }
 

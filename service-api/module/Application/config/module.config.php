@@ -218,13 +218,13 @@ return [
                     ],
                 ],
             ],
-            'retrieve_yoti_session' => [
+            'retrieve_yoti_status' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service[/:sessionId]/retrieve-session',
+                    'route'    => '/counter-service[/:sessionId]/retrieve-status',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getSession',
+                        'action'     => 'getSessionStatus',
                     ],
                 ],
             ],

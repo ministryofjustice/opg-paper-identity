@@ -56,7 +56,7 @@ class IdentityController extends AbstractActionController
                 'lpas'          => ['SS' => $data['lpas']],
                 'address'       => ['SS' => $data['address']]
             ];
-            //todo do get insertData() to return a true or false and if false 
+            //todo do get insertData() to return a true or false and if false
             //send a failure response back to calling client
             $this->dataImportHandler->insertData('cases', $item);
 

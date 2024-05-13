@@ -27,8 +27,8 @@ class YotiService implements YotiServiceInterface
         $results = $this->client->post('/idverify/v1/lookup/uk-post-office', [
             'json' => ['search_string' => $postCode],
         ]);
-        
-        return $results;
+
+        return json_decode(strval($results->getBody()), true);
     }
 
     /**
@@ -48,13 +48,10 @@ class YotiService implements YotiServiceInterface
      */
     public function retrieveResults(string $sessionId): array
     {
-        //can either use client directly like below or use 
-        $results = $this->client->get('/idverify/v1/sessions/' . $sessionId, [
-            //any 'headers' or 'json' etc here
-        ]);
-        
-      
-        return $results;
+        //can either use client directly like below or use
+        $results = $this->client->get('/idverify/v1/sessions/' . $sessionId);
+
+        return json_decode(strval($results->getBody()), true);
     }
 
     /**
@@ -65,26 +62,5 @@ class YotiService implements YotiServiceInterface
     public function retrieveLetterPDF(string $sessionId): array
     {
         return [];
-    }
-    
-    public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
-    {
-        try {
-            $response = $this->client->request($verb, $uri, [
-                'headers' => $headers,
-                'json' => $data,
-                'debug' => true
-            ]);
-
-            $this->responseStatus = Response::STATUS_CODE_200;
-            $this->responseData = json_decode($response->getBody()->getContents(), true);
-
-            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
-                throw new OpgApiException($response->getReasonPhrase());
-            }
-            return $this->responseData;
-        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
     }
 }

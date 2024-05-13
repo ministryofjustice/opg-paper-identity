@@ -10,13 +10,13 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - ./docker/sirius:/opt/imposter/config2
+      - ./docker/sirius:/opt/imposter/config
 
   yoti-mock:
     image: outofcoffee/imposter
     restart: unless-stopped
     healthcheck:
-      test: wget -O /dev/null -S 'http://localhost:8002/idverify/v1/sessions/X' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      test: ["CMD", "imposter", "list", "-x"]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -31,8 +31,6 @@ services:
       dockerfile: Dockerfile
       target: production
     depends_on:
-      yoti-mock:
-        condition: service_started
       localstack:
         condition: service_healthy
     env_file:
@@ -117,7 +115,7 @@ services:
 
   api-web:
     build: nginx
-    depends_on: [api]
+    depends_on: [api, yoti-mock ]
     environment:
       APP_HOST: api
       APP_NAME: api
