@@ -49,12 +49,12 @@ class IdentityController extends AbstractActionController
             $uuid = Uuid::uuid4();
             $item = [
                 'id'            => ['S' => $uuid->toString()],
-                'personType'     => ['S' => $caseData->toArray()["personType"]],
-                'firstName'     => ['S' => $caseData->toArray()["firstName"]],
-                'lastName'      => ['S' => $caseData->toArray()["lastName"]],
-                'dob'           => ['S' => $caseData->toArray()["dob"]],
-                'lpas'          => ['SS' => $caseData->toArray()['lpas']],
-                'address'       => ['SS' => $caseData->toArray()['address']]
+                'personType'     => ['S' => $data["personType"]],
+                'firstName'     => ['S' => $data["firstName"]],
+                'lastName'      => ['S' => $data["lastName"]],
+                'dob'           => ['S' => $data["dob"]],
+                'lpas'          => ['SS' => $data['lpas']],
+                'address'       => ['SS' => $data['address']]
             ];
 
             $this->dataImportHandler->insertData('cases', $item);

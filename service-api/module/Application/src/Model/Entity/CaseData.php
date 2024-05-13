@@ -69,16 +69,4 @@ class CaseData
             ->setData(get_object_vars($this))
             ->isValid();
     }
-
-    public function toArray(): array
-    {
-        return [
-            'personType' => $this->personType,
-            'firstName' => $this->firstName,
-            'lastName' => $this->lastName,
-            'dob' => $this->dob,
-            'address' => $this->address,
-            'lpas' => $this->lpas,
-        ];
-    }
 }
