@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
-use Application\Validators\LPAValidator;
+use Application\Validators\LpaUidValidator;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\Annotation\Validator;
@@ -41,7 +41,7 @@ class CaseData
     /**
      * @var string[]
      */
-    #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LPAValidator::class]])]
+    #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
     private array $lpas;
 
     /**
@@ -68,5 +68,17 @@ class CaseData
             ->createForm(get_class($this))
             ->setData(get_object_vars($this))
             ->isValid();
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'personType' => $this->personType,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'dob' => $this->dob,
+            'address' => $this->address,
+            'lpas' => $this->lpas,
+        ];
     }
 }

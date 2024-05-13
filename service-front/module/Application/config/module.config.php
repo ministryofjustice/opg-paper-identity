@@ -35,7 +35,7 @@ return [
                 'options' => [
                     'route'    => '/start',
                     'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
+                        'controller' => Controller\IndexController::class,
                         'action'     => 'start',
                     ],
                 ],
@@ -230,10 +230,51 @@ return [
                     ],
                 ],
             ],
+            'cp_how_cp_confirms' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/cp/how-will-cp-confirm',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'howWillCpConfirm',
+                    ],
+                ],
+            ],
+            'cp_does_name_match_id' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/cp/does-name-match-id',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'doesNameMatchId',
+                    ],
+                ],
+            ],
+            'cp_confirm_lpas' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/cp/confirm-lpas',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'confirmLpas',
+                    ],
+                ],
+            ],
+            'cp_add_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '[/:uuid]/cp/add-lpa',
+                    'defaults' => [
+                        'controller' => Controller\CPFlowController::class,
+                        'action'     => 'addLpa',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
+            Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,

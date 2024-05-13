@@ -339,30 +339,12 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ]
         ];
 
-        $mockStubResponse = [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "1 Court Street, London, UK, SW1B 1BB",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-XYXY-YAGA-35G4"
-            ]
-        ];
-
         $this
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('stubDetailsResponse')
-            ->willReturn($mockStubResponse);
 
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
