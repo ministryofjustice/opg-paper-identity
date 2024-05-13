@@ -186,7 +186,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            return $this->formProcessorService->processDrivingLicencenForm(
+            return $this->formProcessorService->processDrivingLicenceForm(
                 $this->getRequest()->getPost(),
                 $form,
                 $view,

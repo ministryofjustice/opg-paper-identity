@@ -58,7 +58,6 @@ class FormProcessorServiceTest extends TestCase
             ->willReturn($responseData);
 
         $processed = $formProcessorService->findLpa($caseUuid, $formData, $form, $templates);
-        $this->assertIsArray($processed);
         $this->assertEquals($responseData, $processed['data']);
         $this->assertEquals($caseUuid, $processed['uuid']);
         $this->assertEquals($templates['default'], $processed['template']);
@@ -162,7 +161,8 @@ class FormProcessorServiceTest extends TestCase
                 $draftLpa,
                 [
                     "uuid" => $caseUuid,
-                    "message" => "This LPA cannot be added as it’s status is set to Draft. LPAs need to be in the In Progress status to be added to this ID check.",
+                    "message" => "This LPA cannot be added as it’s status is set to Draft. 
+                    LPAs need to be in the In Progress status to be added to this ID check.",
                     "status" => 400,
                     'data' => [
                         "Status" => "Draft"
@@ -177,7 +177,8 @@ class FormProcessorServiceTest extends TestCase
                 $onlineLpa,
                 [
                     "uuid" => $caseUuid,
-                    "message" => "This LPA cannot be added to this identity check because the certificate provider has signed this LPA online.",
+                    "message" => "This LPA cannot be added to this identity check because the 
+                    certificate provider has signed this LPA online.",
                     "status" => 400,
                     'data' => [
                         "Status" => "Online"

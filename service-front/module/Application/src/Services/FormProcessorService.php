@@ -21,22 +21,19 @@ class FormProcessorService
         FormInterface $form,
         array $responseData,
         array $variables
-    ): array
-    {
+    ): array {
         $processed = [];
 
         $processed['uuid'] = $uuid;
         $processed['template'] = $template;
         $processed['form'] = $form;
         $processed['data'] = $responseData;
-        $processed['variables'] = [
-            'lpa_response' => $responseData
-        ];
+        $processed['variables'] = $variables;
 
         return $processed;
     }
 
-    public function processDrivingLicencenForm(
+    public function processDrivingLicenceForm(
         Parameters $formData,
         FormInterface $form,
         ViewModel $view,
@@ -134,6 +131,7 @@ class FormProcessorService
     ): array {
         $form->setData($formData);
         $formArray = $formData->toArray();
+        $responseData = [];
 
         if ($form->isValid()) {
             $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
