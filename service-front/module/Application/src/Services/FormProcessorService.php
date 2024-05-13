@@ -6,21 +6,34 @@ namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Laminas\Stdlib\Parameters;
-use Laminas\Form\Form;
 use Laminas\Form\FormInterface;
 use Laminas\View\Model\ViewModel;
 
 class FormProcessorService
 {
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     * @param OpgApiServiceInterface $opgApiService
-     */
     public function __construct(private OpgApiServiceInterface $opgApiService)
     {
     }
 
-    public function processDrivingLicencenForm(
+    public function returnProcessed(
+        string $uuid,
+        string $template,
+        FormInterface $form,
+        array $responseData,
+        array $variables
+    ): array {
+        $processed = [];
+
+        $processed['uuid'] = $uuid;
+        $processed['template'] = $template;
+        $processed['form'] = $form;
+        $processed['data'] = $responseData;
+        $processed['variables'] = $variables;
+
+        return $processed;
+    }
+
+    public function processDrivingLicenceForm(
         Parameters $formData,
         FormInterface $form,
         ViewModel $view,
@@ -107,8 +120,32 @@ class FormProcessorService
             $view->setVariable('invalid_date', true);
         }
         $view->setVariable('details_open', true);
-        $form->setData($formData);
         return $view->setTemplate($templates['default']);
+    }
+
+    public function findLpa(
+        string $uuid,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates = []
+    ): array {
+        $form->setData($formData);
+        $formArray = $formData->toArray();
+        $responseData = [];
+
+        if ($form->isValid()) {
+            $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
+        }
+
+        return $this->returnProcessed(
+            $uuid,
+            $templates['default'],
+            $form,
+            $responseData,
+            [
+                'lpa_response' => $responseData
+            ]
+        );
     }
 
     public function processFindPostOffice(

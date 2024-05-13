@@ -1,11 +1,11 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <h1 class="govuk-heading-xl">Start</h1>
+        <h1 class="govuk-heading-xl">Certificate Provider Start</h1>
 
         <h3 class="govuk-heading-m">Begin identity verification process for {{ type_description }}</h3>
 
         <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+            <fieldset class="govuk-fieldset">
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
@@ -15,6 +15,7 @@
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
+                                {#                                <dd></dd> #}
                                 <dt class="govuk-summary-list__key">
                                     LPA reference number
                                 </dt>
@@ -33,10 +34,7 @@
                                         </label>
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        {{ details['FirstName'] }} {{ details['LastName'] }}
-                                    </dd>
-                                    <dd class="govuk-summary-list__value">
-                                        <a href="">Remove</a>
+                                        {{ details['Name'] }}
                                     </dd>
                                 </div>
                             {% endfor %}
@@ -45,6 +43,6 @@
                 </div>
             </fieldset>
         </div>
-        <a href="./{{ case }}/how-will-donor-confirm" class="govuk-button">Open case and continue</a>
+        <a href="./{{ case }}/how-will-cp-confirm" class="govuk-button">Open case and continue</a>
     </main>
 </div>
