@@ -17,7 +17,7 @@ services:
     image: outofcoffee/imposter
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "imposter", "list", "-x"]
+      test: [ "CMD", "imposter", "list", "-x" ]
       interval: 15s
       timeout: 10s
       retries: 3
@@ -35,10 +35,9 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
-    env_file:
-      ./service-api/docker-compose.env
+    env_file: ./service-api/docker-compose.env
     healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
       timeout: 10s
       retries: 3
@@ -55,10 +54,9 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
-    env_file:
-      ./service-api/docker-compose.env
+    env_file: ./service-api/docker-compose.env
     healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
       timeout: 10s
       retries: 3
@@ -77,14 +75,16 @@ services:
       context: service-front
       dockerfile: Dockerfile
     depends_on:
-      - api-web
-      - sirius-mock
+      api-web:
+        condition: service_healthy
+      sirius-mock:
+        condition: service_healthy
     environment:
       - API_BASE_URI=http://api-web
       - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
       - SIRIUS_LOGIN_URL=http://localhost:8080
     healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
       timeout: 10s
       retries: 3
@@ -101,7 +101,7 @@ services:
       dockerfile: Dockerfile
       target: development
     healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:8000
+      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
       timeout: 10s
       retries: 3
@@ -116,7 +116,9 @@ services:
 
   api-web:
     build: nginx
-    depends_on: [api]
+    depends_on:
+      api:
+        condition: service_healthy
     environment:
       APP_HOST: api
       APP_NAME: api
@@ -133,7 +135,9 @@ services:
 
   front-web:
     build: nginx
-    depends_on: [front]
+    depends_on:
+      front:
+        condition: service_healthy
     environment:
       APP_HOST: front
       APP_NAME: front
