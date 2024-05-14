@@ -17,6 +17,8 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Application\Forms\NationalInsuranceNumber;
+use Application\Services\DTO\FormProcessorRequestDto;
+use Application\Services\DTO\FormProcessorResponseDto;
 
 class CPFlowController extends AbstractActionController
 {
@@ -127,11 +129,11 @@ class CPFlowController extends AbstractActionController
                 $templates
             );
 
-            foreach ($processed['variables'] as $key => $variable) {
+            foreach ($processed->getVariables() as $key => $variable) {
                 $view->setVariable($key, $variable);
             }
-            $view->setVariable('form', $processed['form']);
-            return $view->setTemplate($processed['template']);
+            $view->setVariable('form', $processed->getForm());
+            return $view->setTemplate($processed->getTemplate());
         }
         return $view->setTemplate($templates['default']);
     }

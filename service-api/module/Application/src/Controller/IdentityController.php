@@ -343,7 +343,7 @@ class IdentityController extends AbstractActionController
                         'Line_1' => '82 Penny Street',
                         'Line_2' => 'Lancaster',
                         'Town' => 'Lancashire',
-                        'Postcode' => 'LA1 1XN',
+                        'PostOfficePostcode' => 'LA1 1XN',
                         'Country' => 'United Kingdom',
                     ],
                 ];
@@ -364,7 +364,7 @@ class IdentityController extends AbstractActionController
                         'Line_1' => '42 Mount Street',
                         'Line_2' => 'Hednesford',
                         'Town' => 'Cannock',
-                        'Postcode' => 'WS12 4DE',
+                        'PostOfficePostcode' => 'WS12 4DE',
                         'Country' => 'United Kingdom',
                     ]
                 ];

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Services\DTO\FormProcessorResponseDto;
 use Laminas\Stdlib\Parameters;
 use Laminas\Form\FormInterface;
 use Laminas\View\Model\ViewModel;
@@ -13,24 +14,6 @@ class FormProcessorService
 {
     public function __construct(private OpgApiServiceInterface $opgApiService)
     {
-    }
-
-    public function returnProcessed(
-        string $uuid,
-        string $template,
-        FormInterface $form,
-        array $responseData,
-        array $variables
-    ): array {
-        $processed = [];
-
-        $processed['uuid'] = $uuid;
-        $processed['template'] = $template;
-        $processed['form'] = $form;
-        $processed['data'] = $responseData;
-        $processed['variables'] = $variables;
-
-        return $processed;
     }
 
     public function processDrivingLicenceForm(
@@ -128,7 +111,7 @@ class FormProcessorService
         Parameters $formData,
         FormInterface $form,
         array $templates = []
-    ): array {
+    ): FormProcessorResponseDto {
         $form->setData($formData);
         $formArray = $formData->toArray();
         $responseData = [];
@@ -137,53 +120,64 @@ class FormProcessorService
             $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
         }
 
-        return $this->returnProcessed(
+        return new FormProcessorResponseDto(
             $uuid,
-            $templates['default'],
             $form,
             $responseData,
+            $templates['default'],
             [
                 'lpa_response' => $responseData
-            ]
+            ],
         );
     }
 
     public function processFindPostOffice(
         string $uuid,
         array $optionsdata,
+        FormInterface $form,
         Parameters $formObject,
-        ViewModel $view,
         array $detailsData
-    ): ViewModel {
+    ): FormProcessorResponseDto {
         $formData = $formObject->toArray();
-        $view->setVariable('next_page', $formData['next_page']);
+        $variables = [];
+
+        $variables['next_page'] = $formData['next_page'];
 
         if ($formData['next_page'] == '2') {
             if ($formData['postcode'] == 'alt') {
                 $postcode = $formData['alt_postcode'];
+                $form->setData(['postcode', $formData['alt_postcode']]);
             } else {
                 $postcode = $formData['postcode'];
+                $form->setData(['postcode', $formData['postcode']]);
             }
 
-            $response = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);
-
-            $view->setVariable('post_office_list', $response);
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);
+                $variables['post_office_list'] = $responseData;
+            }
         } elseif ($formData['next_page'] == '3') {
             $date = new \DateTime();
             $date->modify("+90 days");
             $deadline = $date->format("d M Y");
 
-            $postOfficeData = $this->opgApiService->getPostOfficeByCode($uuid, (int)$formData['postoffice']);
+            $responseData = $this->opgApiService->getPostOfficeByCode($uuid, (int)$formData['postoffice']);
 
-            $postOfficeAddress = explode(",", $postOfficeData['address']);
+            $postOfficeAddress = explode(",", $responseData['address']);
 
-            $view->setVariable('post_office_summary', true);
-            $view->setVariable('post_office_data', $postOfficeData);
-            $view->setVariable('post_office_address', $postOfficeAddress);
-            $view->setVariable('deadline', $deadline);
-            $view->setVariable('id_method', $optionsdata[$detailsData['idMethod']]);
+            $variables['post_office_summary'] = true;
+            $variables['post_office_data'] = $responseData;
+            $variables['post_office_address'] = $postOfficeAddress;
+            $variables['deadline'] = $deadline;
+            $variables['id_method'] = $optionsdata[$detailsData['idMethod']];
         }
 
-        return $view;
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            $responseData,
+            "",
+            $variables
+        );
     }
 }

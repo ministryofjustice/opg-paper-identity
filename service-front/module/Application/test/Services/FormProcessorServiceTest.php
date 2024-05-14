@@ -50,7 +50,6 @@ class FormProcessorServiceTest extends TestCase
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorService = new FormProcessorService($opgApiServiceMock);
 
-
         $opgApiServiceMock
             ->expects(self::once())
             ->method('findLpa')
@@ -58,11 +57,11 @@ class FormProcessorServiceTest extends TestCase
             ->willReturn($responseData);
 
         $processed = $formProcessorService->findLpa($caseUuid, $formData, $form, $templates);
-        $this->assertEquals($responseData, $processed['data']);
-        $this->assertEquals($caseUuid, $processed['uuid']);
-        $this->assertEquals($templates['default'], $processed['template']);
-        $this->assertArrayHasKey('lpa_response', $processed['variables']);
-        $this->assertEquals($processed['variables']['lpa_response'], $responseData);
+        $this->assertEquals($responseData, $processed->getResponseData());
+        $this->assertEquals($caseUuid, $processed->getUuid());
+        $this->assertEquals($templates['default'], $processed->getTemplate());
+        $this->assertArrayHasKey('lpa_response', $processed->getVariables());
+        $this->assertEquals($processed->getVariables()['lpa_response'], $responseData);
     }
 
 
@@ -88,7 +87,7 @@ class FormProcessorServiceTest extends TestCase
                     "Line_1" => "1082 Penny Street",
                     "Line_2" => "Lancaster",
                     "Town" => "Lancashire",
-                    "Postcode" => "LA1 1XN",
+                    "PostOfficePostcode" => "LA1 1XN",
                     "Country" => "United Kingdom"
                 ]
             ],

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Forms\PostOfficeNumericCode;
+use Application\Forms\PostOfficePostcode;
 use Application\Services\FormProcessorService;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
@@ -82,13 +84,19 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 return $this->redirect()->toRoute('post_office_route_not_available', ['uuid' => $uuid]);
             }
 
-            $view = $this->formProcessorService->processFindPostOffice(
+            $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+
+            $formProcessorResponseDto = $this->formProcessorService->processFindPostOffice(
                 $uuid,
                 $optionsdata,
+                $form,
                 $this->getRequest()->getPost(),
-                $view,
                 $detailsData
             );
+
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
         }
 
         $view->setVariable('options_data', $optionsdata);
@@ -111,13 +119,18 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 return $this->redirect()->toRoute('post_office_route_not_available', ['uuid' => $uuid]);
             }
 
-            $view = $this->formProcessorService->processFindPostOffice(
+            $form = (new AttributeBuilder())->createForm(PostOfficeNumericCode::class);
+
+            $formProcessorResponseDto = $this->formProcessorService->processFindPostOffice(
                 $uuid,
                 $optionsdata,
+                $form,
                 $this->getRequest()->getPost(),
-                $view,
                 $detailsData
             );
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
         }
 
         $view->setVariable('options_data', $optionsdata);
