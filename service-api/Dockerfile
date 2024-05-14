@@ -3,7 +3,6 @@ FROM php:8.3-fpm-alpine AS app
 RUN apk --no-cache add icu-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
   && docker-php-ext-enable sodium
-RUN pecl install apcu && docker-php-ext-enable apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
