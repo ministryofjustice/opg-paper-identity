@@ -66,7 +66,7 @@ class IndexController extends AbstractActionController
 //        die(json_encode($case));
 
         return $type === 'donor' ?
-            $this->redirect()->toRoute('how_donor_confirms', ['uuid' => $case['uuid']]) :
+            $this->redirect()->toRoute('root/how_donor_confirms', ['uuid' => $case['uuid']]) :
             $this->redirect()->toRoute('cp_how_cp_confirms', ['uuid' => $case['uuid']]);
     }
 
