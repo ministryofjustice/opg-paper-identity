@@ -57,7 +57,7 @@ class IdentityController extends AbstractActionController
                 'address'       => ['SS' => $data['address']]
             ];
 
-            $this->dataImportHandler->insertData('cases', $item);
+            $this->dataImportHandler->insertData($item);
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $uuid]);
         }
@@ -85,18 +85,6 @@ class IdentityController extends AbstractActionController
         }
 
         return new JsonModel(['error' => 'Invalid uuid']);
-    }
-
-    public function testdataAction(): JsonModel
-    {
-        $this->dataImportHandler->load();
-        $data = $this->dataQueryHandler->returnAll('cases');
-
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
-        return new JsonModel($data);
     }
 
     public function findByNameAction(): JsonModel
@@ -355,8 +343,8 @@ class IdentityController extends AbstractActionController
                 break;
             case 'M-0000-0000-0003':
                 $status = Response::STATUS_CODE_400;
-                $message = "This LPA cannot be added to this ID check because the 
-                certificate provider details on this LPA do not match.   
+                $message = "This LPA cannot be added to this ID check because the
+                certificate provider details on this LPA do not match.
                 Edit the certificate provider record in Sirius if appropriate and find again.";
                 $response['additional_data'] = [
                     'Name' => 'John Brian Adams',
@@ -378,13 +366,13 @@ class IdentityController extends AbstractActionController
             case 'M-0000-0000-0005':
                 $status = Response::STATUS_CODE_400;
                 $response['data']['Status'] = 'Draft';
-                $message = "This LPA cannot be added as it’s status is set to Draft. 
+                $message = "This LPA cannot be added as it’s status is set to Draft.
                 LPAs need to be in the In Progress status to be added to this ID check.";
                 break;
             case 'M-0000-0000-0006':
                 $status = Response::STATUS_CODE_400;
                 $response['data']['Status'] = 'Online';
-                $message = "This LPA cannot be added to this identity check because 
+                $message = "This LPA cannot be added to this identity check because
                 the certificate provider has signed this LPA online.";
                 break;
             default:
