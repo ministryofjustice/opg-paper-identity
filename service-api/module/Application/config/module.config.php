@@ -25,7 +25,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
 
-$tableName = getenv("PAPER_ID_BACK_DATA_TABLE_NAME");
+$tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
 if (! is_string($tableName) || empty($tableName)) {
     $tableName = 'identity-verify';

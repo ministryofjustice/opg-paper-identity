@@ -35,7 +35,7 @@ class DonorFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
@@ -99,22 +99,22 @@ class DonorFlowController extends AbstractActionController
             switch ($detailsData['idMethod']) {
                 case 'pn':
                     $this->redirect()
-                        ->toRoute("passport_number", ['uuid' => $uuid]);
+                        ->toRoute("root/passport_number", ['uuid' => $uuid]);
                     break;
 
                 case 'dln':
                     $this->redirect()
-                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+                        ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
                     break;
 
                 case 'nin':
                     $this->redirect()
-                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+                        ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
                     break;
 
                 case 'po':
                     $this->redirect()
-                        ->toRoute("post_office_documents", ['uuid' => $uuid]);
+                        ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     break;
 
                 default:

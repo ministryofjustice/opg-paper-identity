@@ -31,7 +31,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("find_post_office", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("root/find_post_office", ['uuid' => $uuid]);
         }
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
@@ -79,7 +79,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             if ($this->getRequest()->getPost('postoffice') == 'none') {
-                return $this->redirect()->toRoute('post_office_route_not_available', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
 
             $view = $this->formProcessorService->processFindPostOffice(
@@ -108,7 +108,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             if ($this->getRequest()->getPost('postoffice') == 'none') {
-                return $this->redirect()->toRoute('post_office_route_not_available', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
 
             $view = $this->formProcessorService->processFindPostOffice(
