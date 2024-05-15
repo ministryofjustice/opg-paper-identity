@@ -13,5 +13,8 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class TestValidator
 {
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public string $test;
 }

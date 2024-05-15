@@ -55,8 +55,6 @@ class FormProcessorHelper
         $variables = [];
         $template = $templates['default'];
 
-//        die(json_encode($formData));
-
         if ($validFormat) {
             $variables['nino_data'] = $formData;
             $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
@@ -84,17 +82,20 @@ class FormProcessorHelper
         $template = $templates['default'];
         $form->setData($formData);
         $validFormat = $form->isValid();
+        $formArray = $formData->toArray();
 
         if ($validFormat) {
             $variables['passport_data'] = $formData;
-            $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
+            $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
             $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
+        } else {
+            $validPassport = 'INVALID_FORMAT';
         }
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            [],
+            ['status' => $validPassport],
             $template,
             $variables
         );
@@ -107,7 +108,6 @@ class FormProcessorHelper
         array $templates = []
     ): FormProcessorResponseDto {
         $variables = [];
-        $template = '';
         $expiryDate = sprintf(
             "%s-%s-%s",
             $formData['passport_issued_year'],
@@ -170,6 +170,7 @@ class FormProcessorHelper
     ): FormProcessorResponseDto {
         $formData = $formObject->toArray();
         $variables = [];
+        $responseData = [];
 
         $variables['next_page'] = $formData['next_page'];
 

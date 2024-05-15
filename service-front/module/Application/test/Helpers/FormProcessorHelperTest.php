@@ -7,6 +7,8 @@ namespace ApplicationTest\Helpers;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
+use Application\Forms\PassportNumber;
+use Application\Forms\PassportDate;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\OpgApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -35,7 +37,7 @@ class FormProcessorHelperTest extends TestCase
         array $templates = [],
     ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
         $opgApiServiceMock
             ->expects(self::once())
@@ -43,7 +45,7 @@ class FormProcessorHelperTest extends TestCase
             ->with($caseUuid, $lpaNumber)
             ->willReturn($responseData);
 
-        $processed = $formProcessorService->findLpa($caseUuid, $formData, $form, $templates);
+        $processed = $formProcessorHelper->findLpa($caseUuid, $formData, $form, $templates);
         $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates['default'], $processed->getTemplate());
@@ -190,7 +192,7 @@ class FormProcessorHelperTest extends TestCase
         string $template,
     ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
         if ($formData['inDate'] == 'yes') {
             $opgApiServiceMock
@@ -199,9 +201,7 @@ class FormProcessorHelperTest extends TestCase
                 ->with($formData->toArray()['dln'])
                 ->willReturn($responseData['status']);
         }
-        $processed = $formProcessorService->processDrivingLicenceForm($caseUuid, $formData, $form, $templates);
-
-//        die (json_encode($processed->toArray()));
+        $processed = $formProcessorHelper->processDrivingLicenceForm($caseUuid, $formData, $form, $templates);
 
         $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
@@ -277,7 +277,7 @@ class FormProcessorHelperTest extends TestCase
         string $template,
     ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
         if ($template !== 'default') {
             $opgApiServiceMock
@@ -287,7 +287,7 @@ class FormProcessorHelperTest extends TestCase
                 ->willReturn($responseData['status']);
         }
 
-        $processed = $formProcessorService->processNationalInsuranceNumberForm($caseUuid, $formData, $form, $templates);
+        $processed = $formProcessorHelper->processNationalInsuranceNumberForm($caseUuid, $formData, $form, $templates);
 
         $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
@@ -347,6 +347,177 @@ class FormProcessorHelperTest extends TestCase
                 $form,
                 $templates,
                 'fail'
+            ],
+        ];
+    }
+
+
+    /**
+     * @dataProvider passportData
+     */
+    public function testProcessPassportNumberForm(
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates,
+        string $template,
+    ): void {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+
+        if ($template !== 'default') {
+            $opgApiServiceMock
+                ->expects(self::once())
+                ->method('checkPassportValidity')
+                ->with($formData->toArray()['passport'])
+                ->willReturn($responseData['status']);
+        }
+
+        $processed = $formProcessorHelper->processPassportForm($caseUuid, $formData, $form, $templates);
+
+        $this->assertEquals($responseData, $processed->getResponseData());
+        $this->assertEquals($caseUuid, $processed->getUuid());
+        $this->assertEquals($templates[$template], $processed->getTemplate());
+    }
+
+
+    public static function passportData(): array
+    {
+        $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
+        $goodNino = "123456787";
+        $badNino = "123456788";
+        $shortNino = "AA112233";
+        $insufficientNino = "123456789";
+
+        $mockSuccessResponseData = ["status" => "PASS"];
+        $mockFailResponseData = ["status" => "NO_MATCH"];
+        $mockNotEnoughDetailsResponseData = ["status" => "NOT_ENOUGH_DETAILS"];
+        $mockInvalidResponseData = ["status" => "INVALID_FORMAT"];
+
+        $form = (new AttributeBuilder())->createForm(PassportNumber::class);
+        $templates = [
+            'default' => 'application/pages/passport_number',
+            'success' => 'application/pages/passport_number_success',
+            'fail' => 'application/pages/passport_number_fail',
+        ];
+
+        return [
+            [
+                $caseUuid,
+                $mockInvalidResponseData,
+                new Parameters(['passport' => $shortNino, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'default'
+            ],
+            [
+                $caseUuid,
+                $mockSuccessResponseData,
+                new Parameters(['passport' => $goodNino, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'success'
+            ],
+            [
+                $caseUuid,
+                $mockFailResponseData,
+                new Parameters(['passport' => $badNino, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'fail'
+            ],
+            [
+                $caseUuid,
+                $mockNotEnoughDetailsResponseData,
+                new Parameters(['passport' => $insufficientNino, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'fail'
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider passportDateData
+     */
+    public function testProcessPassportDateForm(
+        string $caseUuid,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates,
+        string $template,
+        bool $validDate,
+    ): void {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+
+        $processed = $formProcessorHelper->processPassportDateForm($caseUuid, $formData, $form, $templates);
+
+        if ($validDate) {
+            $this->assertTrue($processed->getVariables()['valid_date']);
+        } else {
+            $this->assertTrue($processed->getVariables()['invalid_date']);
+        }
+
+        $this->assertTrue($processed->getVariables()['details_open']);
+        $this->assertEquals($caseUuid, $processed->getUuid());
+        $this->assertEquals($templates[$template], $processed->getTemplate());
+    }
+
+    public static function passportDateData(): array
+    {
+        $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
+
+        $currentDate = new \DateTime();
+        $periodNPass = 4;
+        $periodNFail = 6;
+
+        $today = $currentDate->format('Y-m-d');
+        $fourYearsAgo = $currentDate->sub(new \DateInterval("P{$periodNPass}Y"))->format('Y-m-d');
+        $sixYearsAgo = $currentDate->sub(new \DateInterval("P{$periodNFail}Y"))->format('Y-m-d');
+
+        $form = (new AttributeBuilder())->createForm(PassportDate::class);
+        $templates = [
+            'default' => 'application/pages/passport_number',
+        ];
+
+        return [
+            [
+                $caseUuid,
+                new Parameters([
+                    'passport_issued_year' => explode("-", $today)[0],
+                    'passport_issued_month' => explode("-", $today)[1],
+                    'passport_issued_day' => explode("-", $today)[2],
+                ]),
+                $form,
+                $templates,
+                'default',
+                true
+            ],
+            [
+                $caseUuid,
+                new Parameters([
+                    'passport_issued_year' => explode("-", $fourYearsAgo)[0],
+                    'passport_issued_month' => explode("-", $fourYearsAgo)[1],
+                    'passport_issued_day' => explode("-", $fourYearsAgo)[2],
+                ]),
+                $form,
+                $templates,
+                'default',
+                true
+            ],
+            [
+                $caseUuid,
+                new Parameters([
+                    'passport_issued_year' => explode("-", $sixYearsAgo)[0],
+                    'passport_issued_month' => explode("-", $sixYearsAgo)[1],
+                    'passport_issued_day' => explode("-", $sixYearsAgo)[2],
+                ]),
+                $form,
+                $templates,
+                'default',
+                false
             ],
         ];
     }
