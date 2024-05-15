@@ -6,6 +6,7 @@ namespace ApplicationTest\Helpers;
 
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
+use Application\Forms\NationalInsuranceNumber;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\OpgApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -191,7 +192,7 @@ class FormProcessorHelperTest extends TestCase
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
 
-        if($formData['inDate'] == 'yes') {
+        if ($formData['inDate'] == 'yes') {
             $opgApiServiceMock
                 ->expects(self::once())
                 ->method('checkDlnValidity')
@@ -264,4 +265,89 @@ class FormProcessorHelperTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider ninoData
+     */
+    public function testProcessNationalInsuranceNumberForm(
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates,
+        string $template,
+    ): void {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
+
+        if ($template !== 'default') {
+            $opgApiServiceMock
+                ->expects(self::once())
+                ->method('checkNinoValidity')
+                ->with($formData->toArray()['nino'])
+                ->willReturn($responseData['status']);
+        }
+
+        $processed = $formProcessorService->processNationalInsuranceNumberForm($caseUuid, $formData, $form, $templates);
+
+        $this->assertEquals($responseData, $processed->getResponseData());
+        $this->assertEquals($caseUuid, $processed->getUuid());
+        $this->assertEquals($templates[$template], $processed->getTemplate());
+    }
+
+
+    public static function ninoData(): array
+    {
+        $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
+        $goodNino = "AA 11 22 33 A";
+        $badNino = "AA 11 22 33 B";
+        $shortNino = "AA112233";
+        $insufficientNino = "AA 11 22 33 C";
+
+        $mockSuccessResponseData = ["status" => "PASS"];
+        $mockFailResponseData = ["status" => "NO_MATCH"];
+        $mockNotEnoughDetailsResponseData = ["status" => "NOT_ENOUGH_DETAILS"];
+        $mockInvalidResponseData = ["status" => "INVALID_FORMAT"];
+
+        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $templates = [
+            'default' => 'application/pages/national_insurance_number',
+            'success' => 'application/pages/national_insurance_success',
+            'fail' => 'application/pages/national_insurance_fail',
+        ];
+
+        return [
+            [
+                $caseUuid,
+                $mockInvalidResponseData,
+                new Parameters(['nino' => $shortNino]),
+                $form,
+                $templates,
+                'default'
+            ],
+            [
+                $caseUuid,
+                $mockSuccessResponseData,
+                new Parameters(['nino' => $goodNino]),
+                $form,
+                $templates,
+                'success'
+            ],
+            [
+                $caseUuid,
+                $mockFailResponseData,
+                new Parameters(['nino' => $badNino]),
+                $form,
+                $templates,
+                'fail'
+            ],
+            [
+                $caseUuid,
+                $mockNotEnoughDetailsResponseData,
+                new Parameters(['nino' => $insufficientNino]),
+                $form,
+                $templates,
+                'fail'
+            ],
+        ];
+    }
 }

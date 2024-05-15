@@ -19,8 +19,8 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper    $formProcessorHellper,
-        private readonly array                  $config,
+        private readonly FormProcessorHelper $formProcessorHellper,
+        private readonly array $config,
     ) {
     }
 

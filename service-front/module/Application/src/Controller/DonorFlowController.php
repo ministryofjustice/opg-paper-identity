@@ -21,8 +21,8 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper    $formProcessorHellper,
-        private readonly array                  $config,
+        private readonly FormProcessorHelper $formProcessorHellper,
+        private readonly array $config,
     ) {
     }
 
@@ -155,7 +155,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorHellper->processNationalInsuranceNumberForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,

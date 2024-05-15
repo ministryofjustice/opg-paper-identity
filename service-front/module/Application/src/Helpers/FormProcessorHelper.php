@@ -26,11 +26,11 @@ class FormProcessorHelper
         $variables = [];
         $template = $templates['default'];
         $formArray = $formData->toArray();
-        
+
         if ($validFormat) {
             $variables['dln_data'] = $formData;
             $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
-            $template = $validDln === 'PASS' ? $templates['success']: $templates['fail'];
+            $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
         } else {
             $validDln = 'INVALID_FORMAT';
         }
@@ -50,20 +50,25 @@ class FormProcessorHelper
         array $templates = []
     ): FormProcessorResponseDto {
         $form->setData($formData);
+        $formArray = $formData->toArray();
         $validFormat = $form->isValid();
         $variables = [];
         $template = $templates['default'];
 
+//        die(json_encode($formData));
+
         if ($validFormat) {
             $variables['nino_data'] = $formData;
-            $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
+            $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
 
-            $template = $validNino === 'PASS' ? $templates['success']: $templates['fail'];
+            $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
+        } else {
+            $validNino = 'INVALID_FORMAT';
         }
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            [],
+            ['status' => $validNino],
             $template,
             $variables
         );
@@ -84,7 +89,7 @@ class FormProcessorHelper
             $variables['passport_data'] = $formData;
             $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
 
-            $template = $validPassport === 'PASS' ? $templates['success']: $templates['fail'];
+            $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
         }
         return new FormProcessorResponseDto(
             $uuid,

@@ -17,8 +17,8 @@ class CPFlowController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper    $formProcessorHellper,
-        private readonly array                  $config,
+        private readonly FormProcessorHelper $formProcessorHellper,
+        private readonly array $config,
     ) {
     }
 
