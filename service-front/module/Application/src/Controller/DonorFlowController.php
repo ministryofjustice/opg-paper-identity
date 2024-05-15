@@ -157,14 +157,18 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            return $this->formProcessorService->processNationalInsuranceNumberForm(
+            $formProcessorResponseDto = $this->formProcessorService->processDrivingLicenceForm(
+                $uuid,
                 $this->getRequest()->getPost(),
                 $form,
-                $view,
                 $templates
             );
-        }
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
 
+            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+        }
         return $view->setTemplate($templates['default']);
     }
 
@@ -186,14 +190,19 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            return $this->formProcessorService->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorService->processDrivingLicenceForm(
+                $uuid,
                 $this->getRequest()->getPost(),
                 $form,
-                $view,
                 $templates
             );
-        }
 
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
+
+            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+        }
         return $view->setTemplate($templates['default']);
     }
 
@@ -223,23 +232,26 @@ class DonorFlowController extends AbstractActionController
             $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                return $this->formProcessorService->processPassportDateForm(
+                $formProcessorResponseDto = $this->formProcessorService->processPassportDateForm(
+                    $uuid,
                     $this->getRequest()->getPost(),
                     $dateSubForm,
-                    $view,
                     $templates
                 );
             } else {
                 $view->setVariable('passport_indate', ucwords($data['inDate']));
-                return $this->formProcessorService->processPassportForm(
+                $formProcessorResponseDto = $this->formProcessorService->processPassportForm(
+                    $uuid,
                     $this->getRequest()->getPost(),
                     $form,
-                    $view,
                     $templates
                 );
             }
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
+            return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
-
         return $view->setTemplate($templates['default']);
     }
 

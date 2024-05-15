@@ -8,7 +8,6 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Services\DTO\FormProcessorResponseDto;
 use Laminas\Stdlib\Parameters;
 use Laminas\Form\FormInterface;
-use Laminas\View\Model\ViewModel;
 
 class FormProcessorService
 {
@@ -17,74 +16,100 @@ class FormProcessorService
     }
 
     public function processDrivingLicenceForm(
+        string $uuid,
         Parameters $formData,
         FormInterface $form,
-        ViewModel $view,
         array $templates = []
-    ): ViewModel {
+    ): FormProcessorResponseDto {
         $form->setData($formData);
         $validFormat = $form->isValid();
+        $variables = [];
+        $template = $templates['default'];
 
         if ($validFormat) {
-            $view->setVariable('dln_data', $formData);
+            $variables['dln_data'] = $formData;
             $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
 
             if ($validDln === 'PASS') {
-                return $view->setTemplate($templates['success']);
+                $template = $templates['success'];
             }
-            return $view->setTemplate($templates['fail']);
+            $template = $templates['fail'];
         }
-        return $view->setTemplate($templates['default']);
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            [],
+            $template,
+            $variables
+        );
     }
 
     public function processNationalInsuranceNumberForm(
+        string $uuid,
         Parameters $formData,
         FormInterface $form,
-        ViewModel $view,
         array $templates = []
-    ): ViewModel {
+    ): FormProcessorResponseDto {
         $form->setData($formData);
         $validFormat = $form->isValid();
+        $variables = [];
+        $template = $templates['default'];
 
         if ($validFormat) {
-            $view->setVariable('nino_data', $formData);
+            $variables['nino_data'] = $formData;
             $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
             if ($validNino === 'PASS') {
-                return $view->setTemplate($templates['success']);
+                $template = $templates['success'];
             } else {
-                return $view->setTemplate($templates['fail']);
+                $template = $templates['fail'];
             }
         }
-        return $view->setTemplate($templates['default']);
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            [],
+            $template,
+            $variables
+        );
     }
 
     public function processPassportForm(
+        string $uuid,
         Parameters $formData,
         FormInterface $form,
-        ViewModel $view,
         array $templates = []
-    ): ViewModel {
+    ): FormProcessorResponseDto {
+        $variables = [];
+        $template = $templates['default'];
         $form->setData($formData);
         $validFormat = $form->isValid();
 
         if ($validFormat) {
-            $view->setVariable('passport_data', $formData);
+            $variables['passport_data'] = $formData;
             $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
             if ($validPassport === 'PASS') {
-                return $view->setTemplate($templates['success']);
+                $template = $templates['success'];
             } else {
-                return $view->setTemplate($templates['fail']);
+                $template = $templates['fail'];
             }
         }
-        return $view->setTemplate($templates['default']);
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            [],
+            $template,
+            $variables
+        );
     }
 
     public function processPassportDateForm(
+        string $uuid,
         Parameters $formData,
         FormInterface $form,
-        ViewModel $view,
         array $templates = []
-    ): ViewModel {
+    ): FormProcessorResponseDto {
+        $variables = [];
+        $template = '';
         $expiryDate = sprintf(
             "%s-%s-%s",
             $formData['passport_issued_year'],
@@ -98,12 +123,19 @@ class FormProcessorService
         $validDate = $form->isValid();
 
         if ($validDate) {
-            $view->setVariable('valid_date', true);
+            $variables['valid_date' ] = true;
         } else {
-            $view->setVariable('invalid_date', true);
+            $variables['invalid_date'] = true;
         }
-        $view->setVariable('details_open', true);
-        return $view->setTemplate($templates['default']);
+        $variables['details_open'] = true;
+        $template = $templates['default'];
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            [],
+            $template,
+            $variables
+        );
     }
 
     public function findLpa(
