@@ -41,6 +41,7 @@ ENV PHP_FPM_MAX_SPARE_SERVERS "4"
 ENV PHP_FPM_MEMORY_LIMIT "256M"
 
 USER "www-data"
+VOLUME ["/var/www/public"]
 
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY composer.json composer.json

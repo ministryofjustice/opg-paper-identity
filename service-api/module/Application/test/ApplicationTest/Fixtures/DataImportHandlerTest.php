@@ -56,7 +56,7 @@ class DataImportHandlerTest extends TestCase
         $this->loggerMock->expects($this->never())->method('error');
 
         // Call the insertData method with test data
-        $this->sut->insertData('cases', ['id' => '123', 'name' => 'John']);
+        $this->sut->insertData(['id' => '123', 'name' => 'John']);
     }
 
 
@@ -91,7 +91,7 @@ class DataImportHandlerTest extends TestCase
             );
 
         // Call the insertData method with test data
-        $this->sut->insertData('test_table', ['id' => '123', 'name' => 'John']);
+        $this->sut->insertData(['id' => '123', 'name' => 'John']);
     }
 
     /**

@@ -16,15 +16,6 @@ class DataQueryHandler
         private readonly string $tableName,
     ) {
     }
-    /**
-     * @psalm-suppress RiskyTruthyFalsyComparison
-     */
-    public function returnAll(string $tableName = null): array
-    {
-        $result = $this->dynamoDbClient->scan(['TableName' => $tableName ? : $this->tableName]);
-
-        return $this->returnUnmarshalResult($result);
-    }
 
     public function queryByName(string $name): array
     {
@@ -36,7 +27,7 @@ class DataQueryHandler
             ],
         ];
         $index = "name-index";
-        $result = $this->query($this->tableName, $nameKey, $index);
+        $result = $this->query($nameKey, $index);
 
         return $this->returnUnmarshalResult($result);
     }
@@ -50,7 +41,7 @@ class DataQueryHandler
                 ],
             ],
         ];
-        $result = $this->query('cases', $idKey);
+        $result = $this->query($idKey);
 
         return $this->returnUnmarshalResult($result);
     }
@@ -66,17 +57,16 @@ class DataQueryHandler
             ],
         ];
         $index = "id_number-index";
-        $result = $this->query($this->tableName, $idKey, $index);
+        $result = $this->query($idKey, $index);
 
         return $this->returnUnmarshalResult($result);
     }
     /**
-     * @param string $tableName
      * @param array<string, mixed> $key
      * @param string $dbIndex
      * @return Result
      */
-    public function query(string $tableName, $key, $dbIndex = ''): Result
+    public function query($key, $dbIndex = ''): Result
     {
         $expressionAttributeValues = [];
         $expressionAttributeNames = [];
@@ -109,7 +99,7 @@ class DataQueryHandler
             'ExpressionAttributeValues' => $expressionAttributeValues,
             'ExpressionAttributeNames' => $expressionAttributeNames,
             'KeyConditionExpression' => $keyConditionExpression,
-            'TableName' => $tableName,
+            'TableName' => $this->tableName,
             'IndexName' => $dbIndex,
         ];
 
