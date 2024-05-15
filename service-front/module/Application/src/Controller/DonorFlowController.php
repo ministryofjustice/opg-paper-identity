@@ -6,16 +6,14 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
-use Application\Forms\PassportNumber;
+use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
-use Application\Services\FormProcessorService;
-use Application\Services\SiriusApiService;
+use Application\Forms\PassportNumber;
+use Application\Helpers\FormProcessorHelper;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
-use Laminas\Form\Annotation\AttributeBuilder;
-use Application\Forms\NationalInsuranceNumber;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -23,8 +21,8 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorService $formProcessorService,
-        private readonly array $config,
+        private readonly FormProcessorHelper    $formProcessorHellper,
+        private readonly array                  $config,
     ) {
     }
 
@@ -157,7 +155,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorService->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -190,7 +188,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorService->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -232,7 +230,7 @@ class DonorFlowController extends AbstractActionController
             $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $formProcessorResponseDto = $this->formProcessorService->processPassportDateForm(
+                $formProcessorResponseDto = $this->formProcessorHellper->processPassportDateForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $dateSubForm,
@@ -240,7 +238,7 @@ class DonorFlowController extends AbstractActionController
                 );
             } else {
                 $view->setVariable('passport_indate', ucwords($data['inDate']));
-                $formProcessorResponseDto = $this->formProcessorService->processPassportForm(
+                $formProcessorResponseDto = $this->formProcessorHellper->processPassportForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $form,

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Application\Services;
+namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Services\DTO\FormProcessorResponseDto;
-use Laminas\Stdlib\Parameters;
+use Application\Helpers\DTO\FormProcessorResponseDto;
 use Laminas\Form\FormInterface;
+use Laminas\Stdlib\Parameters;
 
-class FormProcessorService
+class FormProcessorHelper
 {
     public function __construct(private OpgApiServiceInterface $opgApiService)
     {
@@ -25,20 +25,19 @@ class FormProcessorService
         $validFormat = $form->isValid();
         $variables = [];
         $template = $templates['default'];
-
+        $formArray = $formData->toArray();
+        
         if ($validFormat) {
             $variables['dln_data'] = $formData;
-            $validDln = $this->opgApiService->checkDlnValidity($formData['dln']);
-
-            if ($validDln === 'PASS') {
-                $template = $templates['success'];
-            }
-            $template = $templates['fail'];
+            $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
+            $template = $validDln === 'PASS' ? $templates['success']: $templates['fail'];
+        } else {
+            $validDln = 'INVALID_FORMAT';
         }
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            [],
+            ['status' => $validDln],
             $template,
             $variables
         );
@@ -58,11 +57,8 @@ class FormProcessorService
         if ($validFormat) {
             $variables['nino_data'] = $formData;
             $validNino = $this->opgApiService->checkNinoValidity($formData['nino']);
-            if ($validNino === 'PASS') {
-                $template = $templates['success'];
-            } else {
-                $template = $templates['fail'];
-            }
+
+            $template = $validNino === 'PASS' ? $templates['success']: $templates['fail'];
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -87,11 +83,8 @@ class FormProcessorService
         if ($validFormat) {
             $variables['passport_data'] = $formData;
             $validPassport = $this->opgApiService->checkPassportValidity($formData['passport']);
-            if ($validPassport === 'PASS') {
-                $template = $templates['success'];
-            } else {
-                $template = $templates['fail'];
-            }
+
+            $template = $validPassport === 'PASS' ? $templates['success']: $templates['fail'];
         }
         return new FormProcessorResponseDto(
             $uuid,

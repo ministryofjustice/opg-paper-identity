@@ -5,28 +5,20 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
-use Application\Forms\PassportNumber;
-use Application\Forms\PassportDate;
-use Application\Services\FormProcessorService;
-use Application\Services\SiriusApiService;
-use Application\Validators\LpaUidValidator;
+use Application\Helpers\FormProcessorHelper;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Laminas\Form\Annotation\AttributeBuilder;
-use Application\Forms\NationalInsuranceNumber;
-use Application\Services\DTO\FormProcessorRequestDto;
-use Application\Services\DTO\FormProcessorResponseDto;
 
 class CPFlowController extends AbstractActionController
 {
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorService $formProcessorService,
-        private readonly array $config,
+        private readonly FormProcessorHelper    $formProcessorHellper,
+        private readonly array                  $config,
     ) {
     }
 
@@ -122,7 +114,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('case_uuid', $uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $processed = $this->formProcessorService->findLpa(
+            $processed = $this->formProcessorHellper->findLpa(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,

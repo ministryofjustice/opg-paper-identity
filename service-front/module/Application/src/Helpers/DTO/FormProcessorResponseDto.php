@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\DTO;
+namespace Application\Helpers\DTO;
 
 use Laminas\Form\FormInterface;
-use Laminas\Stdlib\Parameters;
 
 class FormProcessorResponseDto
 {

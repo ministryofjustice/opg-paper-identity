@@ -7,13 +7,11 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\PostOfficeNumericCode;
 use Application\Forms\PostOfficePostcode;
-use Application\Services\FormProcessorService;
-use Application\Services\SiriusApiService;
+use Application\Helpers\FormProcessorHelper;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
-use Laminas\Form\Annotation\AttributeBuilder;
 
 class DonorPostOfficeFlowController extends AbstractActionController
 {
@@ -21,8 +19,8 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorService $formProcessorService,
-        private readonly array $config,
+        private readonly FormProcessorHelper    $formProcessorHellper,
+        private readonly array                  $config,
     ) {
     }
 
@@ -86,7 +84,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
             $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
 
-            $formProcessorResponseDto = $this->formProcessorService->processFindPostOffice(
+            $formProcessorResponseDto = $this->formProcessorHellper->processFindPostOffice(
                 $uuid,
                 $optionsdata,
                 $form,
@@ -121,7 +119,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
             $form = (new AttributeBuilder())->createForm(PostOfficeNumericCode::class);
 
-            $formProcessorResponseDto = $this->formProcessorService->processFindPostOffice(
+            $formProcessorResponseDto = $this->formProcessorHellper->processFindPostOffice(
                 $uuid,
                 $optionsdata,
                 $form,

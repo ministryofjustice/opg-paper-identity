@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Services\DTO;
+namespace ApplicationTest\Helpers\DTO;
 
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;

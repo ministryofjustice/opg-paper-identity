@@ -6,7 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
-use Application\Services\FormProcessorService;
+use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,7 +15,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
-    private FormProcessorService&MockObject $formProcessorService;
+    private FormProcessorHelper&MockObject $formProcessorService;
     private string $uuid;
 
     public function setUp(): void
@@ -26,7 +26,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
-        $this->formProcessorService = $this->createMock(FormProcessorService::class);
+        $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
 
         parent::setUp();
 
@@ -34,7 +34,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
-        $serviceManager->setService(FormProcessorService::class, $this->formProcessorService);
+        $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
     }
 
     public function testCPIdCheckReturnsPageWithData(): void

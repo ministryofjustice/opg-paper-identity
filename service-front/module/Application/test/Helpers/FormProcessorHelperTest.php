@@ -2,32 +2,18 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Services;
+namespace ApplicationTest\Helpers;
 
-use Application\Contracts\OpgApiServiceInterface;
-use Application\Exceptions\OpgApiException;
+use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
-use Application\Services\FormProcessorService;
-use Application\Services\SiriusApiService;
+use Application\Helpers\FormProcessorHelper;
+use Application\Services\OpgApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
-use Laminas\Stdlib\ArrayUtils;
 use Laminas\Stdlib\Parameters;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
-use GuzzleHttp\Client;
-use Laminas\View\Model\ViewModel;
-use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Http\Message\ResponseInterface;
-use Application\Services\OpgApiService;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\RequestException;
 use PHPUnit\Framework\TestCase;
-use Laminas\Http\Response as HttpResponse;
 
-class FormProcessorServiceTest extends TestCase
+class FormProcessorHelperTest extends TestCase
 {
 //    private OpgApiService|MockObject $opgApiService;
 
@@ -48,7 +34,7 @@ class FormProcessorServiceTest extends TestCase
         array $templates = [],
     ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorService = new FormProcessorService($opgApiServiceMock);
+        $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
 
         $opgApiServiceMock
             ->expects(self::once())
@@ -189,4 +175,93 @@ class FormProcessorServiceTest extends TestCase
             ]
         ];
     }
+
+
+    /**
+     * @dataProvider dlnData
+     */
+    public function testProcessDrivingLicenceForm(
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates,
+        string $template,
+    ): void {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorService = new FormProcessorHelper($opgApiServiceMock);
+
+        if($formData['inDate'] == 'yes') {
+            $opgApiServiceMock
+                ->expects(self::once())
+                ->method('checkDlnValidity')
+                ->with($formData->toArray()['dln'])
+                ->willReturn($responseData['status']);
+        }
+        $processed = $formProcessorService->processDrivingLicenceForm($caseUuid, $formData, $form, $templates);
+
+//        die (json_encode($processed->toArray()));
+
+        $this->assertEquals($responseData, $processed->getResponseData());
+        $this->assertEquals($caseUuid, $processed->getUuid());
+        $this->assertEquals($templates[$template], $processed->getTemplate());
+    }
+
+
+    public static function dlnData(): array
+    {
+        $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
+        $goodDln = "CHAPM301534MA9AY";
+        $badDln = "CHAPM301534MA9AY";
+        $insufficientDln = "CHAPM301534MA9AX";
+        $shortDln = "CHAPM301534MA9";
+
+        $mockSuccessResponseData = ["status" => "PASS"];
+        $mockFailResponseData = ["status" => "NO_MATCH"];
+        $mockNotEnoughDetailsResponseData = ["status" => "NOT_ENOUGH_DETAILS"];
+        $mockInvalidResponseData = ["status" => "INVALID_FORMAT"];
+
+        $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
+        $templates = [
+            'default' => 'application/pages/driving_licence_number',
+            'success' => 'application/pages/driving_licence_success',
+            'fail' => 'application/pages/driving_licence_fail',
+        ];
+
+        return [
+            [
+                $caseUuid,
+                $mockInvalidResponseData,
+                new Parameters(['dln' => $shortDln, 'inDate' => 'no']),
+                $form,
+                $templates,
+                'default'
+            ],
+            [
+                $caseUuid,
+                $mockSuccessResponseData,
+                new Parameters(['dln' => $goodDln, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'success'
+            ],
+            [
+                $caseUuid,
+                $mockFailResponseData,
+                new Parameters(['dln' => $badDln, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'fail'
+            ],
+            [
+                $caseUuid,
+                $mockNotEnoughDetailsResponseData,
+                new Parameters(['dln' => $insufficientDln, 'inDate' => 'yes']),
+                $form,
+                $templates,
+                'fail'
+            ],
+        ];
+    }
+
 }

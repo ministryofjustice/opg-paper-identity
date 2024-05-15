@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Services\DTO;
+namespace ApplicationTest\Helpers\DTO;
 
-use Application\Forms\LpaReferenceNumber;
+use Application\Helpers\DTO\FormProcessorRequestDto;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
-use Application\Services\DTO\FormProcessorRequestDto;
 
 class FormProcessorRequestDtoTest extends TestCase
 {
