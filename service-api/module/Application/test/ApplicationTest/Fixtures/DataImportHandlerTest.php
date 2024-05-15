@@ -56,7 +56,7 @@ class DataImportHandlerTest extends TestCase
         $this->loggerMock->expects($this->never())->method('error');
 
         // Call the insertData method with test data
-        $this->sut->insertData('cases', ['id' => '123', 'name' => 'John']);
+        $this->sut->insertData(['id' => '123', 'name' => 'John']);
     }
 
 
@@ -80,7 +80,7 @@ class DataImportHandlerTest extends TestCase
             ->method('error')
             ->with(
                 $this->stringContains(
-                    'Unable to save data [Test exception] to test_table'
+                    'Unable to save data [Test exception] to cases'
                 ),
                 $this->callback(function ($context) {
                     // Ensure the data passed to logger contains the correct item
@@ -91,7 +91,7 @@ class DataImportHandlerTest extends TestCase
             );
 
         // Call the insertData method with test data
-        $this->sut->insertData('test_table', ['id' => '123', 'name' => 'John']);
+        $this->sut->insertData(['id' => '123', 'name' => 'John']);
     }
 
     /**
