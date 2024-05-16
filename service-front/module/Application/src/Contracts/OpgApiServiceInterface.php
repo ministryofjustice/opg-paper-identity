@@ -31,4 +31,6 @@ interface OpgApiServiceInterface
     public function listPostOfficesByPostcode(string $uuid, string $postcode): array;
 
     public function getPostOfficeByCode(string $uuid, int $code): array;
+
+    public function addSearchPostcode(string $uuid, string $postcode): array;
 }

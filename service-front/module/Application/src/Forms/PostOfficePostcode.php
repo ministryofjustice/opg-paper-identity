@@ -18,5 +18,5 @@ class PostOfficePostcode
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(PostcodeValidator::class)]
-    public mixed $postcode;
+    public mixed $selected_postcode;
 }

@@ -291,6 +291,60 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function addSearchPostcodeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'searchPostcode',
+            'S',
+            $data['selected_postcode']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function addSelectedPostofficeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'selectedPostOffice',
+            'S',
+            $data['selected_postoffice']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
     public function findLpaAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');

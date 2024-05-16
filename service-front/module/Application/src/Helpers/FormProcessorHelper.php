@@ -177,11 +177,13 @@ class FormProcessorHelper
         if ($formData['next_page'] == '2') {
             if ($formData['postcode'] == 'alt') {
                 $postcode = $formData['alt_postcode'];
-                $form->setData(['postcode', $formData['alt_postcode']]);
             } else {
                 $postcode = $formData['postcode'];
-                $form->setData(['postcode', $formData['postcode']]);
             }
+            $formObject->set('selected_postcode', $postcode);
+            $form->setData($formObject);
+//            echo $form->isValid() ? "PASS": "FAIL";
+//            echo json_encode($form->getD: "ata());
 
             if ($form->isValid()) {
                 $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $postcode);

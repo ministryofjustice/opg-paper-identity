@@ -31,6 +31,11 @@ class PostcodeValidator extends AbstractValidator
 
     private function checkPattern(): int
     {
-        return preg_match('/^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$/', $this->value);
+
+        return preg_match(
+        // phpcs:ignore
+            '/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/',
+            $this->value
+        );
     }
 }
