@@ -63,7 +63,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('cp_how_cp_confirms');
+        $this->assertMatchedRouteName('root/cp_how_cp_confirms');
     }
 
     public function testNameMatchesIDPageWithData(): void
@@ -91,7 +91,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('cp_does_name_match_id');
+        $this->assertMatchedRouteName('root/cp_does_name_match_id');
     }
 
     public function testConfirmLpasPageWithData(): void
@@ -142,6 +142,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('cp_confirm_lpas');
+        $this->assertMatchedRouteName('root/cp_confirm_lpas');
     }
 }

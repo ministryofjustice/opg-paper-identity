@@ -55,7 +55,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 ]
             ],
             "three" => [
-                "question" => "What are the first two letters of the last name of another 
+                "question" => "What are the first two letters of the last name of another
                 person on the electoral register at your address?",
                 "number" => "three",
                 "prompts" => [
@@ -88,6 +88,6 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(KbvController::class); // as specified in router's controller name alias
         $this->assertControllerClass('KbvController');
-        $this->assertMatchedRouteName('id_verify_questions');
+        $this->assertMatchedRouteName('root/id_verify_questions');
     }
 }

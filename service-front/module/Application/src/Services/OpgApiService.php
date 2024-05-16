@@ -8,7 +8,6 @@ use Application\Contracts\OpgApiServiceInterface;
 use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
-use Monolog\Logger;
 
 class OpgApiService implements OpgApiServiceInterface
 {
@@ -32,8 +31,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'json' => $data,
-                'debug' => true
+                'json' => $data
             ]);
 
             $this->responseStatus = Response::STATUS_CODE_200;

@@ -34,7 +34,7 @@ class KbvController extends AbstractActionController
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
         if (is_array($questionsData) && array_key_exists('error', $questionsData)) {
-            return $this->redirect()->toRoute('thin_file_failure', ['uuid' => $uuid]);
+            return $this->redirect()->toRoute('root/thin_file_failure', ['uuid' => $uuid]);
         }
 
         $view->setVariable('questions_data', $questionsData);
@@ -53,12 +53,12 @@ class KbvController extends AbstractActionController
                     $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
                     if (! $check) {
-                        return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute('root/identity_check_failed', ['uuid' => $uuid]);
                     }
 
-                    return $this->redirect()->toRoute('identity_check_passed', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute('root/identity_check_passed', ['uuid' => $uuid]);
                 } catch (OpgApiException $exception) {
-                    return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute('root/identity_check_failed', ['uuid' => $uuid]);
                 }
             }
             $form->setData($formData);

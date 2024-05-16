@@ -70,7 +70,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('post_office_documents');
+        $this->assertMatchedRouteName('root/post_office_documents');
     }
 
     public function testFindPostOfficePage(): void
@@ -106,7 +106,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('find_post_office');
+        $this->assertMatchedRouteName('root/find_post_office');
     }
     public function testWhatHappensNextPageWithData(): void
     {
@@ -141,7 +141,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('what_happens_next');
+        $this->assertMatchedRouteName('root/what_happens_next');
     }
 
     public function testNationalInsuranceNumberReturnsPageWithData(): void
@@ -177,6 +177,6 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('post_office_route_not_available');
+        $this->assertMatchedRouteName('root/post_office_route_not_available');
     }
 }
