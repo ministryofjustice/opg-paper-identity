@@ -82,7 +82,7 @@ services:
     environment:
       - API_BASE_URI=http://api-web
       - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
-      - SIRIUS_LOGIN_URL=http://localhost:8080
+      - SIRIUS_PUBLIC_URL=http://localhost:8080
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
