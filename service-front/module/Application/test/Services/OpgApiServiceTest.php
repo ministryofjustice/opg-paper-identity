@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
-use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
-use Laminas\Stdlib\ArrayUtils;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Http\Message\ResponseInterface;
 use Application\Services\OpgApiService;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\RequestException;
 use PHPUnit\Framework\TestCase;
-use Laminas\Http\Response as HttpResponse;
+use Throwable;
 
 class OpgApiServiceTest extends TestCase
 {
@@ -31,11 +27,12 @@ class OpgApiServiceTest extends TestCase
 
     /**
      * @dataProvider detailsData
+     * @param class-string<Throwable>|null $expectedException
      */
-    public function testGetDetailsData(Client $client, array $responseData, bool $exception): void
+    public function testGetDetailsData(Client $client, ?array $responseData, ?string $expectedException): void
     {
-        if ($exception) {
-            $this->expectException(OpgApiException::class);
+        if ($expectedException !== null) {
+            $this->expectException($expectedException);
         }
 
         $this->opgApiService = new OpgApiService($client);
@@ -58,28 +55,38 @@ class OpgApiServiceTest extends TestCase
             ]
         ];
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+            new Response(200, [], json_encode($successMockResponseData)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
-        $failMockResponseData = ['Bad Request'];
         $failMock = new MockHandler([
-            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(400, [], json_encode(['Bad Request'])),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
+
+        $notFoundMock = new MockHandler([
+            new Response(404, [], json_encode(['error' => 'Case not found'])),
+        ]);
+        $handlerStack = HandlerStack::create($notFoundMock);
+        $notFoundClient = new Client(['handler' => $handlerStack]);
 
         return [
             [
                 $successClient,
                 $successMockResponseData,
-                false
+                null
             ],
             [
                 $failClient,
-                $failMockResponseData,
-                true
+                null,
+                OpgApiException::class,
+            ],
+            [
+                $notFoundClient,
+                null,
+                HttpException::class,
             ],
         ];
     }
@@ -446,7 +453,7 @@ class OpgApiServiceTest extends TestCase
             ],
             "three" => [
                 "id" => 3,
-                "question" => "What are the first two letters of the last name of another person 
+                "question" => "What are the first two letters of the last name of another person
                 on the electroal register at your address?",
                 "number" => "three",
                 "prompts" => [
