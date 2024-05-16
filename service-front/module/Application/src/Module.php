@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Exceptions\HttpException;
+use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -29,9 +31,16 @@ class Module
 
     public function onFinish(MvcEvent $event): void
     {
-        // If an exception was thrown, log it
         $exception = $event->getParam('exception');
-        if ($exception instanceof Throwable) {
+
+        if ($exception instanceof HttpException) {
+            // If an HttpException was thrown, use its status code
+            /** @var Response $response */
+            $response = $event->getResponse();
+
+            $response->setStatusCode($exception->getStatusCode());
+        } else if ($exception instanceof Throwable) {
+            // If any other exception was thrown, log it
             $serviceManager = $event->getApplication()->getServiceManager();
             $logger = $serviceManager->get(LoggerInterface::class);
 
