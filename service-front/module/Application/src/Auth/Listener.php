@@ -7,8 +7,10 @@ namespace Application\Auth;
 use Application\Services\SiriusApiService;
 use Laminas\EventManager\AbstractListenerAggregate;
 use Laminas\EventManager\EventManagerInterface;
+use Laminas\Http\Request;
 use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Uri\Uri;
 
 class Listener extends AbstractListenerAggregate
 {
@@ -39,13 +41,34 @@ class Listener extends AbstractListenerAggregate
         /** @var Response $response */
         $response = $e->getResponse();
 
-        if (! $this->siriusApi->checkAuth($e->getRequest())) {
+        /** @var Request $request */
+        $request = $e->getRequest();
+
+        if (! $this->siriusApi->checkAuth($request)) {
+            $redirect = $this->getRedirect($request);
+            $location = sprintf("Location: %s?redirect=%s", $this->loginUrl, urlencode($redirect));
+
             $response->setContent('unauthorised, please login at ' . $this->loginUrl);
-            $response->getHeaders()->addHeaderLine("Location: " . $this->loginUrl);
+            $response->getHeaders()->addHeaderLine($location);
             $response->setStatusCode(Response::STATUS_CODE_302);
             return $response;
         }
 
         return null;
+    }
+
+    private function getRedirect(Request $request): string
+    {
+        $path = $request->getUri()->getPath();
+        if ($path === null) {
+            return '';
+        }
+
+        $query = $request->getUri()->getQuery();
+        if ($query === null) {
+            return $path;
+        }
+
+        return $path . '?' . Uri::encodeQueryFragment($query);
     }
 }
