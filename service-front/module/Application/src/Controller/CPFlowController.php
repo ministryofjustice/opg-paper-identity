@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Forms\BirthDate;
 use Application\Forms\LpaReferenceNumber;
 use Application\Helpers\FormProcessorHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -29,10 +30,11 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("cp_does_name_match_id", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
 
 
 //
+
 //            switch ($formData['id_method']) {
 //                case 'pn':
 //                    $this->redirect()
@@ -66,7 +68,7 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp/how_will_the_cp_confirm');
     }
 
-    public function doesNameMatchIdAction(): ViewModel
+    public function nameMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['identity_methods'];
@@ -127,6 +129,52 @@ class CPFlowController extends AbstractActionController
             $view->setVariable('form', $processed->getForm());
             return $view->setTemplate($processed->getTemplate());
         }
+        return $view->setTemplate($templates['default']);
+    }
+
+    public function confirmDobAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $templates = [
+            'default' => 'application/pages/cp/confirm_dob',
+        ];
+        $uuid = $this->params()->fromRoute("uuid");
+        $form = (new AttributeBuilder())->createForm(BirthDate::class);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+            $date = sprintf(
+                "%s-%s-%s",
+                $params->get('dob_year'),
+                $params->get('dob_month'),
+                $params->get('dob_day'),
+            );
+            $params->set('date', $date);
+            $form->setData($params);
+
+            if ($form->isValid()) {
+                echo json_encode($form->getData());
+                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+            }
+            $view->setVariable('form', $form);
+        }
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate($templates['default']);
+    }
+
+    public function confirmAddressAction(): ViewModel
+    {
+        $view = new ViewModel();
+        $templates = [
+            'default' => 'application/pages/cp/confirm_address_match',
+        ];
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
         return $view->setTemplate($templates['default']);
     }
 }

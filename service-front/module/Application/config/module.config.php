@@ -251,13 +251,13 @@ return [
                             ],
                         ],
                     ],
-                    'cp_does_name_match_id' => [
+                    'cp_name_match_check' => [
                         'type'    => Segment::class,
                         'options' => [
-                            'route'    => '[/:uuid]/cp/does-name-match-id',
+                            'route'    => '[/:uuid]/cp/name-match-check',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
-                                'action'     => 'doesNameMatchId',
+                                'action'     => 'nameMatchCheck',
                             ],
                         ],
                     ],
@@ -278,6 +278,26 @@ return [
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action'     => 'addLpa',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_dob' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/cp/confirm-dob',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmDob',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_address' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/cp/confirm-address',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmAddress',
                             ],
                         ],
                     ],
