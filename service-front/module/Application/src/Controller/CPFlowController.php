@@ -165,15 +165,28 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate($templates['default']);
     }
 
-    public function confirmAddressAction(): ViewModel
+    public function confirmAddressAction(): ViewModel|Response
     {
         $view = new ViewModel();
+        $form = (new AttributeBuilder())->createForm(BirthDate::class);
         $templates = [
             'default' => 'application/pages/cp/confirm_address_match',
         ];
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
+
+        echo json_encode($detailsData);
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+            $form->setData($params);
+
+            if ($form->isValid()) {
+                echo json_encode($form->getData());
+                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+            }
+            $view->setVariable('form', $form);
+        }
 
         return $view->setTemplate($templates['default']);
     }
