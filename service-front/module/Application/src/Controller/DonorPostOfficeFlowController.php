@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Services\FormProcessorService;
-use Application\Services\SiriusApiService;
+use Application\Forms\PostOfficeNumericCode;
+use Application\Forms\PostOfficePostcode;
+use Application\Helpers\FormProcessorHelper;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
-use Laminas\Form\Annotation\AttributeBuilder;
 
 class DonorPostOfficeFlowController extends AbstractActionController
 {
@@ -19,7 +19,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorService $formProcessorService,
+        private readonly FormProcessorHelper $formProcessorHellper,
         private readonly array $config,
     ) {
     }
@@ -46,7 +46,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/post_office/post_office_documents');
     }
 
-    public function findPostOfficeAction(): ViewModel
+    public function findPostOfficeAction(): ViewModel|Response
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -58,6 +58,17 @@ class DonorPostOfficeFlowController extends AbstractActionController
         foreach ($detailsData['address'] as $line) {
             if (preg_match('/^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$/', $line)) {
                 $postcode = $line;
+            }
+        }
+
+        if (count($this->getRequest()->getPost())) {
+            $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+
+            if ($form->isValid()) {
+                $response = $this->opgApiService->addSearchPostcode($uuid, $postcode);
+                if ($response['result'] === 'Updated') {
+                    return $this->redirect()->toRoute('find_post_office_branch', ['uuid' => $uuid]);
+                }
             }
         }
 
@@ -77,18 +88,26 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        echo(json_encode($detailsData));
+
         if (count($this->getRequest()->getPost())) {
             if ($this->getRequest()->getPost('postoffice') == 'none') {
                 return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
 
-            $view = $this->formProcessorService->processFindPostOffice(
+            $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+
+            $formProcessorResponseDto = $this->formProcessorHellper->processFindPostOffice(
                 $uuid,
                 $optionsdata,
+                $form,
                 $this->getRequest()->getPost(),
-                $view,
                 $detailsData
             );
+
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
         }
 
         $view->setVariable('options_data', $optionsdata);
@@ -111,13 +130,18 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
 
-            $view = $this->formProcessorService->processFindPostOffice(
+            $form = (new AttributeBuilder())->createForm(PostOfficeNumericCode::class);
+
+            $formProcessorResponseDto = $this->formProcessorHellper->processFindPostOffice(
                 $uuid,
                 $optionsdata,
+                $form,
                 $this->getRequest()->getPost(),
-                $view,
                 $detailsData
             );
+            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
+                $view->setVariable($key, $variable);
+            }
         }
 
         $view->setVariable('options_data', $optionsdata);
