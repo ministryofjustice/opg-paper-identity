@@ -9,6 +9,11 @@
   <p class="govuk-body">
     Please use your browser to go back to the previous page, or return to the <a class="govuk-link" href="{{ SIRIUS_PUBLIC_URL }}">Sirius homepage</a>.
   </p>
+{% elseif exception.statusCode == 400 %}
+  <h1 class="govuk-heading-l">Invalid request</h1>
+  <p class="govuk-body">
+    {{ exception.message }}
+  </p>
 {% else %}
   <h1 class="govuk-heading-l">An error occurred</h1>
   <span class="govuk-caption-l">{{ message }}</span>
