@@ -206,6 +206,26 @@ return [
                     ],
                 ],
             ],
+            'add_search_postcode' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-search-postcode',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addSearchPostcode',
+                    ],
+                ],
+            ],
+            'add_selected_postoffice' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-selected-postoffice',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addSelectedPostoffice',
+                    ],
+                ],
+            ],
             'add_case_lpa' => [
                 'type'    => Segment::class,
                 'options' => [
