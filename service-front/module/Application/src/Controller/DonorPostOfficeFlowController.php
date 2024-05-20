@@ -51,10 +51,13 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+        $view->setVariable('form', $form);
 
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $postcode = "";
+
         foreach ($detailsData['address'] as $line) {
             if (preg_match('/^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$/', $line)) {
                 $postcode = $line;
@@ -62,8 +65,6 @@ class DonorPostOfficeFlowController extends AbstractActionController
         }
 
         if (count($this->getRequest()->getPost())) {
-            $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
-
             if ($form->isValid()) {
                 $response = $this->opgApiService->addSearchPostcode($uuid, $postcode);
                 if ($response['result'] === 'Updated') {
@@ -87,15 +88,13 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        echo(json_encode($detailsData));
+        $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+        $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
             if ($this->getRequest()->getPost('postoffice') == 'none') {
                 return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
-
-            $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
 
             $formProcessorResponseDto = $this->formProcessorHellper->processFindPostOffice(
                 $uuid,

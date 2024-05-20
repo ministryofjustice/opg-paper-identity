@@ -17,7 +17,7 @@ class CPFlowController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHellper,
+        private readonly FormProcessorHelper $formProcessorHelper,
         private readonly array $config,
     ) {
     }
@@ -114,7 +114,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('case_uuid', $uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $processed = $this->formProcessorHellper->findLpa(
+            $processed = $this->formProcessorHelper->findLpa(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,

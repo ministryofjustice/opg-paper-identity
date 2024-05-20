@@ -27,11 +27,6 @@ class FormProcessorResponseDto
         return $this->form;
     }
 
-    public function getResponseData(): array
-    {
-        return $this->responseData;
-    }
-
     public function getTemplate(): string
     {
         return $this->template;

@@ -161,9 +161,7 @@ class DonorFlowController extends AbstractActionController
                 $form,
                 $templates
             );
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
+            $view->setVariables($formProcessorResponseDto->getVariables());
 
             return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }

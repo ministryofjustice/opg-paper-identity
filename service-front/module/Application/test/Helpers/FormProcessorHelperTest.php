@@ -46,7 +46,6 @@ class FormProcessorHelperTest extends TestCase
             ->willReturn($responseData);
 
         $processed = $formProcessorHelper->findLpa($caseUuid, $formData, $form, $templates);
-        $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates['default'], $processed->getTemplate());
         $this->assertArrayHasKey('lpa_response', $processed->getVariables());
@@ -202,8 +201,6 @@ class FormProcessorHelperTest extends TestCase
                 ->willReturn($responseData['status']);
         }
         $processed = $formProcessorHelper->processDrivingLicenceForm($caseUuid, $formData, $form, $templates);
-
-        $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
     }
@@ -288,8 +285,6 @@ class FormProcessorHelperTest extends TestCase
         }
 
         $processed = $formProcessorHelper->processNationalInsuranceNumberForm($caseUuid, $formData, $form, $templates);
-
-        $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
     }
@@ -375,8 +370,6 @@ class FormProcessorHelperTest extends TestCase
         }
 
         $processed = $formProcessorHelper->processPassportForm($caseUuid, $formData, $form, $templates);
-
-        $this->assertEquals($responseData, $processed->getResponseData());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
     }

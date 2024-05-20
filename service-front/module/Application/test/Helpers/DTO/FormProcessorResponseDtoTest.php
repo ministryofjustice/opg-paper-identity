@@ -59,14 +59,6 @@ class FormProcessorResponseDtoTest extends TestCase
         );
     }
 
-    public function testGetResponseData(): void
-    {
-        $this->assertEquals(
-            $this->responseData,
-            $this->formProcessorResponseDto->getResponseData()
-        );
-    }
-
     public function testGetTemplates(): void
     {
         $this->assertEquals(
