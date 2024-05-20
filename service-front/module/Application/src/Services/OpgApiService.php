@@ -276,4 +276,17 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException('Post office reference code not found');
         }
     }
+
+    public function addSearchPostcode(string $uuid, string $postcode): array
+    {
+        $data = [
+            'selected_postcode' => $postcode
+        ];
+        try {
+            $this->makeApiRequest("/cases/$uuid/add-search-postcode", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
 }
