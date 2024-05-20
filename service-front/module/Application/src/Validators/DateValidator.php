@@ -35,7 +35,7 @@ class DateValidator extends AbstractValidator
             return false;
         }
 
-        if($date > new \DateTime()) {
+        if ($date > new \DateTime()) {
             $this->error(self::DATE_PAST);
             return false;
         }
