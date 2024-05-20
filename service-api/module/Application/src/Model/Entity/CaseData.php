@@ -71,7 +71,14 @@ class CaseData
     }
 
     /**
-     * @returns array{personType: "donor"|"certificateProvider", firstName: string, lastName: string, dob: string, address: string[], lpas: string[]}
+     * @returns array{
+     *     personType: "donor"|"certificateProvider",
+     *     firstName: string,
+     *     lastName: string,
+     *     dob: string,
+     *     address: string[],
+     *     lpas: string[]
+     * }
      */
     public function toArray(): array
     {
