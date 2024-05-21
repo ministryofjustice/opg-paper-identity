@@ -84,7 +84,8 @@ class IdentityController extends AbstractActionController
             return new JsonModel($data[0]);
         }
 
-        return new JsonModel(['error' => 'Invalid uuid']);
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+        return new JsonModel(['error' => 'Case not found']);
     }
 
     public function findByNameAction(): JsonModel

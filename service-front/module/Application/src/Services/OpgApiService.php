@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\HttpException;
 use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
+use GuzzleHttp\Exception\BadResponseException;
+use Throwable;
 
 class OpgApiService implements OpgApiServiceInterface
 {
@@ -42,13 +45,22 @@ class OpgApiService implements OpgApiServiceInterface
             }
             return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            throw new OpgApiException($exception->getMessage());
+            throw new OpgApiException($exception->getMessage(), 0, $exception);
         }
     }
 
     public function getDetailsData(string $uuid): array
     {
-        return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+        try {
+            return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+        } catch (OpgApiException $exception) {
+            $previous = $exception->getPrevious();
+            if ($previous instanceof BadResponseException && $previous->getResponse()->getStatusCode() === 404) {
+                throw new HttpException(404);
+            }
+
+            throw $exception;
+        }
     }
 
     public function getAddressVerificationData(): array

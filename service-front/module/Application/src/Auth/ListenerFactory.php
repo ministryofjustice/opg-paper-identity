@@ -15,7 +15,7 @@ class ListenerFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ) {
-        $siriusLoginUrl = getenv("SIRIUS_LOGIN_URL");
+        $siriusLoginUrl = getenv("SIRIUS_PUBLIC_URL");
 
         return new Listener(
             $container->get(SiriusApiService::class),
