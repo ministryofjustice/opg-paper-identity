@@ -341,19 +341,6 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function addSearchPostcode(string $uuid, string $postcode): array
-    {
-        $data = [
-            'selected_postcode' => $postcode
-        ];
-        try {
-            $this->makeApiRequest("/cases/$uuid/add-search-postcode", 'POST', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-        return $this->responseData;
-    }
-
     public function addSelectedPostOffice(string $uuid, string $postOffice): array
     {
         $data = [
