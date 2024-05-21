@@ -5,10 +5,19 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\HttpException;
 use Application\Services\SiriusApiService;
+use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+
+/**
+ * @psalm-import-type Lpa from SiriusApiService
+ * @psalm-import-type Address from SiriusApiService
+ *
+ * @psalm-type Identity array{first_name: string, last_name: string, dob: string, address: string[]}
+ */
 
 class IndexController extends AbstractActionController
 {
@@ -27,23 +36,20 @@ class IndexController extends AbstractActionController
 
     public function startAction(): Response
     {
+        /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
         $lpas = [];
         foreach ($lpasQuery as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data['opg.poas.lpastore'];
+            $lpas[] = $data;
         }
 
+        /** @var string $type */
         $type = $this->params()->fromQuery("personType");
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
         $detailsData = $this->processLpaResponse($type, $lpas[0]);
-        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
-
-        // Create a case in the API with the LPA UID and the actors' details
-
-        // Redirect to the "select which ID to use" page for this case
 
         $case = $this->opgApiService->createCase(
             $detailsData['first_name'],
@@ -54,35 +60,63 @@ class IndexController extends AbstractActionController
             $detailsData['address']
         );
 
-//        die(json_encode($case));
-
         return $type === 'donor' ?
             $this->redirect()->toRoute('root/how_donor_confirms', ['uuid' => $case['uuid']]) :
             $this->redirect()->toRoute('root/cp_how_cp_confirms', ['uuid' => $case['uuid']]);
     }
 
+    /**
+     * @param Lpa $data
+     * @return Identity
+     */
     private function processLpaResponse(string $type, array $data): array
     {
-        $parsedIdentity = [];
-
         if ($type === 'donor') {
-            $address = $this->processAddress($type, $data['donor']['address']);
-            $parsedIdentity['first_name'] = $data['donor']['firstNames'];
-            $parsedIdentity['last_name'] = $data['donor']['lastName'];
-            $parsedIdentity['dob'] = (new \DateTime($data['donor']['dateOfBirth']))->format("Y-m-d");
-            $parsedIdentity['address'] = $address;
-        } else {
-            $address = $this->processAddress($type, $data['certificateProvider']['address']);
-            $parsedIdentity['first_name'] = $data['certificateProvider']['firstNames'];
-            $parsedIdentity['last_name'] = $data['certificateProvider']['lastName'];
-            $parsedIdentity['dob'] = '1999-01-01'; //temp setting should be null in prod
-            $parsedIdentity['address'] = $address;
+            if (! empty($data['opg.poas.lpastore'])) {
+                $address = $this->processAddress($data['opg.poas.lpastore']['donor']['address']);
+
+                return [
+                    'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
+                    'last_name' => $data['opg.poas.lpastore']['donor']['lastName'],
+                    'dob' => (new DateTime($data['opg.poas.lpastore']['donor']['dateOfBirth']))->format("Y-m-d"),
+                    'address' => $address,
+                ];
+            }
+
+            $address = $this->processAddress($data['opg.poas.sirius']['donor']['address']);
+
+            return [
+                'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
+                'last_name' => $data['opg.poas.sirius']['donor']['surname'],
+                'dob' => (new DateTime($data['opg.poas.sirius']['donor']['dob']))->format("Y-m-d"),
+                'address' => $address,
+            ];
+        } elseif ($type === 'certificateProvider') {
+            if ($data['opg.poas.lpastore'] === null) {
+                throw new HttpException(
+                    400,
+                    'Cannot ID check this certificate provider as the LPA has not yet been submitted',
+                );
+            }
+
+            $address = $this->processAddress($data['opg.poas.lpastore']['certificateProvider']['address']);
+
+            return [
+                'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
+                'last_name' => $data['opg.poas.lpastore']['certificateProvider']['lastName'],
+                'dob' => '1000-01-01', //temp setting should be null in prod
+                'address' => $address,
+            ];
         }
-//        die(json_encode($parsedIdentity));
-        return $parsedIdentity;
+
+        throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    private function processAddress(string $type, array $siriusAddress): array
+    /**
+     * @param Address $siriusAddress
+     * @return string[]
+     */
+    private function processAddress(array $siriusAddress): array
     {
         $address = [];
 
@@ -90,19 +124,6 @@ class IndexController extends AbstractActionController
             $address[] = $line;
         }
 
-//        if ($type === 'donor') {
-//            $address[] = $siriusAddress['line1'];
-//            $address[] = $siriusAddress['line2'];
-////            $address['town'] = $siriusAddress['town'];
-//            $address[] = $siriusAddress['postcode'];
-//            $address[] = $siriusAddress['country'];
-//        } else {
-//            $address[] = $siriusAddress['line1'];
-//            $address[] = $siriusAddress['line2'];
-//            $address[] = $siriusAddress['line3'];
-////            $address['postcode'] = $siriusAddress['postcode'];
-//            $address[] = $siriusAddress['country'];
-//        }
         return $address;
     }
 }

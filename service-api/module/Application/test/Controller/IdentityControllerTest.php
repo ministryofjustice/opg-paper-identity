@@ -70,8 +70,25 @@ class IdentityControllerTest extends TestCase
 
     public function testDetailsWithUUID(): void
     {
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('getCaseByUUID')
+            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
+            ->willReturn([
+                ['id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'personType' => 'donor'],
+            ]);
+
         $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
         $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('details');
+    }
+
+    public function testDetailsWithNonexistentUUID(): void
+    {
+        $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
+        $this->assertResponseStatusCode(404);
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class);
         $this->assertControllerClass('IdentityController');

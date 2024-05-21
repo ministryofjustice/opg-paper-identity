@@ -45,6 +45,7 @@ class ListenerTest extends AbstractHttpControllerTestCase
         $event = $this->createMock(MvcEvent::class);
 
         $request = new Request();
+        $request->setUri('http://somehost/my/page?type=somevalue');
         $event->expects($this->once())->method("getRequest")->willReturn($request);
 
         $event->expects($this->once())->method("getResponse")->willReturn(new Response());
@@ -60,6 +61,8 @@ class ListenerTest extends AbstractHttpControllerTestCase
         $this->assertEquals(302, $response->getStatusCode());
         $location = $response->getHeaders()->get('Location');
         assert($location instanceof Location);
-        $this->assertEquals("http://login-url", $location->getFieldValue());
+
+        $expectedUrl = "http://login-url/auth?redirect=%2Fmy%2Fpage%3Ftype%3Dsomevalue";
+        $this->assertEquals($expectedUrl, $location->getFieldValue());
     }
 }
