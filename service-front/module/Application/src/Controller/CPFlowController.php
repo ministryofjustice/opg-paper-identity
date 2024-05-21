@@ -98,7 +98,7 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp/confirm_lpas');
     }
 
-    public function addLpaAction(): ViewModel
+    public function addLpaAction(): ViewModel|Response
     {
         $templates = [
             'default' => 'application/pages/cp/add_lpa',
@@ -116,18 +116,25 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('case_uuid', $uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $processed = $this->formProcessorHellper->findLpa(
-                $uuid,
-                $this->getRequest()->getPost(),
-                $form,
-                $templates
-            );
+            $formObject = $this->getRequest()->getPost();
 
-            foreach ($processed->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
+            if($formObject->get('lpa')) {
+                $processed = $this->formProcessorHellper->findLpa(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $form,
+                    $templates
+                );
+                $view->setVariables($processed->getVariables());
+                $view->setVariable('form', $processed->getForm());
+                return $view->setTemplate($processed->getTemplate());
+            } else {
+                $responseData = $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
+
+                if($responseData['result'] === 'Updated') {
+                    return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
+                }
             }
-            $view->setVariable('form', $processed->getForm());
-            return $view->setTemplate($processed->getTemplate());
         }
         return $view->setTemplate($templates['default']);
     }

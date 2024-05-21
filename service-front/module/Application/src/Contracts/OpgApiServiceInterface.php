@@ -33,4 +33,6 @@ interface OpgApiServiceInterface
     public function getPostOfficeByCode(string $uuid, int $code): array;
 
     public function addSearchPostcode(string $uuid, string $postcode): array;
+
+    public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array;
 }
