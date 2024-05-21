@@ -31,13 +31,10 @@ class FormProcessorHelper
             $variables['dln_data'] = $formData;
             $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
             $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
-        } else {
-            $validDln = 'INVALID_FORMAT';
         }
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            ['status' => $validDln],
             $template,
             $variables
         );
@@ -60,13 +57,10 @@ class FormProcessorHelper
             $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
 
             $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
-        } else {
-            $validNino = 'INVALID_FORMAT';
         }
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            ['status' => $validNino],
             $template,
             $variables
         );
@@ -89,13 +83,10 @@ class FormProcessorHelper
             $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
             $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
-        } else {
-            $validPassport = 'INVALID_FORMAT';
         }
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            ['status' => $validPassport],
             $template,
             $variables
         );
@@ -130,7 +121,6 @@ class FormProcessorHelper
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            [],
             $template,
             $variables
         );
@@ -153,7 +143,6 @@ class FormProcessorHelper
         return new FormProcessorResponseDto(
             $uuid,
             $form,
-            $responseData,
             $templates['default'],
             [
                 'lpa_response' => $responseData

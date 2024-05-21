@@ -193,9 +193,7 @@ class DonorFlowController extends AbstractActionController
                 $templates
             );
 
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
+            $view->setVariables($formProcessorResponseDto->getVariables());
 
             return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
@@ -243,9 +241,7 @@ class DonorFlowController extends AbstractActionController
                     $templates
                 );
             }
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
+            $view->setVariables($formProcessorResponseDto->getVariables());
             return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
         return $view->setTemplate($templates['default']);

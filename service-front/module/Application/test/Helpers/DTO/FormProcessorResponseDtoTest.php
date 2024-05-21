@@ -17,8 +17,6 @@ class FormProcessorResponseDtoTest extends TestCase
 
     private FormInterface $form;
 
-    private array $responseData;
-
     private string $template;
 
     private array $variables;
@@ -31,13 +29,11 @@ class FormProcessorResponseDtoTest extends TestCase
         $this->template = 'application/test';
         $this->uuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
 
-        $this->responseData = [];
         $this->variables = [];
 
         $this->formProcessorResponseDto = new FormProcessorResponseDto(
             $this->uuid,
             $this->form,
-            $this->responseData,
             $this->template,
             $this->variables
         );
@@ -81,7 +77,6 @@ class FormProcessorResponseDtoTest extends TestCase
             [
                 'uuid' => $this->uuid,
                 'form' => $this->form,
-                'responseData' => $this->responseData,
                 'template' => $this->template,
                 'variables' => [],
             ],
