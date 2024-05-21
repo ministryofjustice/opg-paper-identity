@@ -10,6 +10,9 @@ use Twig\TwigFilter;
 
 class TwigExtension extends AbstractExtension implements GlobalsInterface
 {
+    public function __construct(public readonly bool $debug) {
+    }
+
     public function getFilters()
     {
         $prefix = getenv("PREFIX");
@@ -26,6 +29,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
     {
         return [
             'SIRIUS_PUBLIC_URL' => getenv("SIRIUS_PUBLIC_URL"),
+            'DEBUG' => $this->debug,
         ];
     }
 }
