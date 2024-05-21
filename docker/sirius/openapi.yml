@@ -92,8 +92,28 @@ components:
             dob:
               type: string
               format: date
-            address:
-              $ref: "#/components/schemas/Address"
+            addressLine1:
+              type: string
+              x-faker: address.streetAddress
+            addressLine2:
+              type: string
+              x-faker: address.streetName
+            addressLine3:
+              type: string
+              x-faker: address.cityName
+            town:
+              type: string
+              x-faker: address.cityName
+            postcode:
+              type: string
+              x-faker:
+                helpers.replaceSymbols: "??# #??"
+            country:
+              type: string
+              format: ISO-3166-1
+              minLength: 2
+              maxLength: 2
+              x-faker: address.countryCode
     LpaWithPostcodes:
       type: object
       properties:
@@ -111,31 +131,3 @@ components:
               type: object
               required:
                 - postcode
-    Address:
-      type: object
-      required:
-        - line1
-        - country
-      properties:
-        line1:
-          type: string
-          x-faker: address.streetAddress
-        line2:
-          type: string
-          x-faker: address.streetName
-        line3:
-          type: string
-          x-faker: address.cityName
-        town:
-          type: string
-          x-faker: address.cityName
-        postcode:
-          type: string
-          x-faker:
-            helpers.replaceSymbols: "??# #??"
-        country:
-          type: string
-          format: ISO-3166-1
-          minLength: 2
-          maxLength: 2
-          x-faker: address.countryCode
