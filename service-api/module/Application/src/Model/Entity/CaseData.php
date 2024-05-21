@@ -70,6 +70,16 @@ class CaseData
             ->isValid();
     }
 
+    /**
+     * @returns array{
+     *     personType: "donor"|"certificateProvider",
+     *     firstName: string,
+     *     lastName: string,
+     *     dob: string,
+     *     address: string[],
+     *     lpas: string[]
+     * }
+     */
     public function toArray(): array
     {
         return [

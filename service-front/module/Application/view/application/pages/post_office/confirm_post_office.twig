@@ -1,7 +1,7 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <form method="POST" target="./find-post-office-branch">
+        <form method="POST">
             <h1 class="govuk-heading-xl">Confirm Post Office route</h1>
             <p class="govuk-body govuk-!-width-two-thirds">
                 We will send you a letter
@@ -32,7 +32,9 @@
                                 LPA Number(s)
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                UK national resident in UK
+                                {% for lpa in details_data.lpas %}
+                                    {{ lpa }} <br>
+                                {% endfor %}
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -43,7 +45,7 @@
                                 {{ id_method }}
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
+                                <a class="govuk-link" href="post-office-documents">Change<span class="govuk-visually-hidden"></span></a>
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -56,7 +58,7 @@
                                 {% endfor %}
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
+                                <a class="govuk-link" href="find-post-office">Change<span class="govuk-visually-hidden"></span></a>
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -65,6 +67,7 @@
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 {{ deadline }}
+                                <input type="hidden" name="deadline" value="{{ deadline }}">
                             </dd>
                             <dd class="govuk-summary-list__actions">
                                 <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
@@ -73,14 +76,17 @@
                     </dl>
                 </div>
             </div>
-
-            <input type="hidden" name="next_page" value="4">
-
+            {% if errors %}
+                <p id="postcode-error" class="govuk-error-message">
+                    {% for error in errors %}
+                        {{ error }}
+                    {% endfor %}
+                </p>
+            {% endif %}
             <p class="govuk-form-group">
-                <a href="./what-happens-next" class="govuk-button">Continue</a>
+                <input type="submit" class="govuk-button" value="Continue">
                 <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
             </p>
-
         </form>
     </main>
 </div>

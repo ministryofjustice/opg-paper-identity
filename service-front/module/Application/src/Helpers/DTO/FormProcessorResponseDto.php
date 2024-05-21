@@ -11,7 +11,6 @@ class FormProcessorResponseDto
     public function __construct(
         private string $uuid,
         private FormInterface $form,
-        private array $responseData,
         private string $template,
         private array $variables = [],
     ) {
@@ -25,11 +24,6 @@ class FormProcessorResponseDto
     public function getForm(): FormInterface
     {
         return $this->form;
-    }
-
-    public function getResponseData(): array
-    {
-        return $this->responseData;
     }
 
     public function getTemplate(): string
@@ -47,7 +41,6 @@ class FormProcessorResponseDto
         return [
             'uuid' => $this->uuid,
             'form' => $this->form,
-            'responseData' => $this->responseData,
             'template' => $this->template,
             'variables' => $this->variables,
         ];

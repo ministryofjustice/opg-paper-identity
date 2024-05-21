@@ -226,10 +226,20 @@ return [
                     ],
                 ],
             ],
+            'confirm_selected_postoffice' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/confirm-selected-postoffice',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'confirmSelectedPostoffice',
+                    ],
+                ],
+            ],
             'add_case_lpa' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/add-lpa/:lpa',
+                    'route'    => '/cases/:uuid/add=lpa/:lpa',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'addCaseLpa',
