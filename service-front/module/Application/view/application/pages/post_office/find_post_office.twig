@@ -1,7 +1,7 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <form method="POST" action="./find-post-office-branch">
+        <form method="POST">
                 <h1 class="govuk-heading-xl">Find a Post Office</h1>
                 <p class="govuk-body govuk-!-width-two-thirds">
                     Not all post offices provide this service, please confirm your postcode so I can find your nearest
@@ -9,25 +9,34 @@
                     office
                 </p>
 
-                <fieldset
-                        class="govuk-fieldset"
-{#                        aria-describedby="contact-hint"#}
-                >
-                    <div class="govuk-radios__item">
-                        <input
-                                class="govuk-radios__input"
-                                id="default"
-                                name="postcode"
-                                type="radio"
-                                value="{{ postcode }}"
-                                checked
-                                data-aria-controls="alt_postcode_div"
-                        />
-                        <label class="govuk-label govuk-radios__label" for="default">
-                            {{ postcode }} (default address)
-                        </label>
-                    </div>
+            <div class="govuk-form-group {% if form.get('selected_postcode').messages %}govuk-form-group--error{% endif %}">
+                <h2 class="govuk-label-wrapper">
+                    <label class="govuk-label govuk-label--m" for="postcode">
+                        Enter Postcode
+                    </label>
+                </h2>
+
+                {% if form.get('selected_postcode').messages %}
+                    <p id="postcode-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ form.get('selected_postcode').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+                <fieldset class="govuk-fieldset">
                     <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input
+                                    class="govuk-radios__input"
+                                    id="postcode"
+                                    name="postcode"
+                                    type="radio"
+                                    value="{{ default_postcode }}"
+                                    checked
+                            />
+                            <label class="govuk-label govuk-radios__label" for="default">
+                                {{ default_postcode }} (default address)
+                            </label>
+                        </div>
                         <div class="govuk-radios__item">
                             <input
                                     class="govuk-radios__input"
@@ -47,13 +56,13 @@
                                         class="govuk-input govuk-!-width-one-third"
                                         id="alt_postcode"
                                         name="alt_postcode"
-{#                                        aria-describedby="alt_postcode"#}
                                         aria-label="Alternate postcode"
                                 />
                             </div>
                         </div>
                     </div>
                 </fieldset>
+            </div>
 
                 <input type="hidden" name="next_page" value="2">
                 <p class="govuk-form-group">

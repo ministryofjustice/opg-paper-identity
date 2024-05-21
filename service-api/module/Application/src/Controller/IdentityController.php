@@ -49,12 +49,12 @@ class IdentityController extends AbstractActionController
             $uuid = Uuid::uuid4();
             $item = [
                 'id'            => ['S' => $uuid->toString()],
-                'personType'     => ['S' => $data["personType"]],
-                'firstName'     => ['S' => $data["firstName"]],
-                'lastName'      => ['S' => $data["lastName"]],
-                'dob'           => ['S' => $data["dob"]],
-                'lpas'          => ['SS' => $data['lpas']],
-                'address'       => ['SS' => $data['address']]
+                'personType'     => ['S' => $caseData->toArray()["personType"]],
+                'firstName'     => ['S' => $caseData->toArray()["firstName"]],
+                'lastName'      => ['S' => $caseData->toArray()["lastName"]],
+                'dob'           => ['S' => $caseData->toArray()["dob"]],
+                'lpas'          => ['SS' => $caseData->toArray()['lpas']],
+                'address'       => ['SS' => $caseData->toArray()['address']]
             ];
 
             $this->dataImportHandler->insertData($item);
@@ -292,6 +292,87 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function addSearchPostcodeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'searchPostcode',
+            'S',
+            $data['selected_postcode']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function addSelectedPostofficeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'selectedPostOffice',
+            'S',
+            $data['selected_postoffice']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function confirmSelectedPostofficeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'selectedPostOfficeDeadline',
+            'S',
+            $data['deadline']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
     public function findLpaAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
@@ -332,7 +413,7 @@ class IdentityController extends AbstractActionController
                         'Line_1' => '82 Penny Street',
                         'Line_2' => 'Lancaster',
                         'Town' => 'Lancashire',
-                        'Postcode' => 'LA1 1XN',
+                        'PostOfficePostcode' => 'LA1 1XN',
                         'Country' => 'United Kingdom',
                     ],
                 ];
@@ -353,7 +434,7 @@ class IdentityController extends AbstractActionController
                         'Line_1' => '42 Mount Street',
                         'Line_2' => 'Hednesford',
                         'Town' => 'Cannock',
-                        'Postcode' => 'WS12 4DE',
+                        'PostOfficePostcode' => 'WS12 4DE',
                         'Country' => 'United Kingdom',
                     ]
                 ];
