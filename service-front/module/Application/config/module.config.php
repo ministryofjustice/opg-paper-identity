@@ -301,6 +301,66 @@ return [
                             ],
                         ],
                     ],
+                    'cp_national_insurance_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/national-insurance-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'nationalInsuranceNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_driving_licence_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/driving-licence-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'drivingLicenceNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_passport_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/passport-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'passportNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_id_verify_questions' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/id-verify-questions',
+                            'defaults' => [
+                                'controller' => Controller\KbvController::class,
+                                'action'     => 'idVerifyQuestions',
+                            ],
+                        ],
+                    ],
+                    'cp_identity_check_passed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/identity-check-passed',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'identityCheckPassed',
+                            ],
+                        ],
+                    ],
+                    'cp_identity_check_failed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/identity-check-failed',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'identityCheckFailed',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
