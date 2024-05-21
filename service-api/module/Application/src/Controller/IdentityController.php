@@ -447,6 +447,7 @@ class IdentityController extends AbstractActionController
     {
 //        $uuid = $this->params()->fromRoute('uuid');
 //        $lpa = $this->params()->fromRoute('lpa');
+        $response = [];
         $response['result'] = "Updated";
         return new JsonModel($response);
     }
