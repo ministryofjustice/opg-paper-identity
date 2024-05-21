@@ -1,7 +1,7 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <form method="POST" action="find-post-office-branch">
+        <form method="POST">
                 <h1 class="govuk-heading-xl">Find a Post Office</h1>
                 <p class="govuk-body govuk-!-width-two-thirds">
                     Not all post offices provide this service, please confirm your postcode so I can find your nearest
@@ -30,11 +30,11 @@
                                     id="postcode"
                                     name="postcode"
                                     type="radio"
-                                    value="{{ postcode }}"
+                                    value="{{ default_postcode }}"
                                     checked
                             />
                             <label class="govuk-label govuk-radios__label" for="default">
-                                {{ postcode }} (default address)
+                                {{ default_postcode }} (default address)
                             </label>
                         </div>
                         <div class="govuk-radios__item">

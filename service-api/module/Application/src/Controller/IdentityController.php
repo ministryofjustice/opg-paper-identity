@@ -345,6 +345,33 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function confirmSelectedPostofficeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'selectedPostOfficeDeadline',
+            'S',
+            $data['deadline']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
     public function findLpaAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
