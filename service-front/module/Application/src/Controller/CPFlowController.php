@@ -118,7 +118,7 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formObject = $this->getRequest()->getPost();
 
-            if($formObject->get('lpa')) {
+            if ($formObject->get('lpa')) {
                 $processed = $this->formProcessorHellper->findLpa(
                     $uuid,
                     $this->getRequest()->getPost(),
@@ -131,7 +131,7 @@ class CPFlowController extends AbstractActionController
             } else {
                 $responseData = $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
 
-                if($responseData['result'] === 'Updated') {
+                if ($responseData['result'] === 'Updated') {
                     return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
                 }
             }
