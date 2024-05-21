@@ -53,8 +53,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     {
         $siriusData = ['donor' => [
             'firstname' => 'Lili', 'surname' => 'Laur', 'dob' => '2019-02-18',
-            'address' => ['line1' => '17 East Lane', 'line2' => 'Wickerham', 'postcode' => 'W1 3EJ', 'country' => 'GB'],
-        ]];
+            'addressLine1' => '17 East Lane', 'addressLine2' => 'Wickerham', 'town' => '', 'postcode' => 'W1 3EJ', 'country' => 'GB'],
+        ];
 
         $lpaStoreData = [
             'donor' => [
