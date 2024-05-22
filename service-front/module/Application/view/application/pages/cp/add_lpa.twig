@@ -1,4 +1,4 @@
-{% include 'layout/cp_id_check_banner.twig' with details_data %}
+{% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
 
@@ -45,7 +45,7 @@
             {% endif %}
         {% endif %}
 
-        <form method="POST">
+
             <h1 class="govuk-heading-xl">Find an LPA to add</h1>
 
             <p class="govuk-body">
@@ -60,7 +60,7 @@
                         {{ form.get('lpa').messages | join(', ', ' and ') }}
                     </p>
                 {% endif %}
-
+                <form method="POST">
                 <input
                         class="govuk-input govuk-!-width-one-third {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
                         id="lpa"
@@ -71,7 +71,7 @@
                         aria-describedby="lpa-hint {% if form.get('lpa').messages %}lpa-error{% endif %}"
                 />
                 <input type="submit" class="govuk-button" value="Find LPA">
-
+                </form>
 
                 {% if lpa_response %}
                     <div class="govuk-form-group">
@@ -110,15 +110,17 @@
                         </table>
                     </div>
                 {% endif %}
-
             </div>
             {% if lpa_response %}
+                <form method="POST">
                 {% if lpa_response['status'] == 200 %}
+                    <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['LPA_Number']  }}">
                     <input type="submit" class="govuk-button" value="Add LPA to this ID check">
                 {% endif %}
+                </form>
             {% endif %}
             <a href="./confirm-lpas" class="govuk-button govuk-button--secondary">Return to LPA list</a>
-        </form>
+
     </main>
 </div>
 
