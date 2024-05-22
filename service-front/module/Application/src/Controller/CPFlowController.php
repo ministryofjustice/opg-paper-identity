@@ -182,6 +182,7 @@ class CPFlowController extends AbstractActionController
             'nin' => 'root/cp_national_insurance_number',
             'pn' => 'root/cp_passport_number',
             'dln' => 'root/cp_driving_licence_number',
+            'po' => 'root/post_office_documents'
         ];
         $view = new ViewModel();
         $templates = [
@@ -190,10 +191,10 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-//        echo json_encode($detailsData);
-
+//        echo json_encode($routes[$detailsData['idMethod']]);
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
+
             if ($params->get('chosenAddress') == 'yes') {
                 return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
             } elseif ($params->get('chosenAddress') == 'no') {
