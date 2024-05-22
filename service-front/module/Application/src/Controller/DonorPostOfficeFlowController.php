@@ -119,7 +119,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
             } else {
                 $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formData['postoffice']);
 
-                echo json_encode($responseData);
+//                echo json_encode($responseData);
 
                 if ($responseData['result'] == 'Updated') {
                     return $this->redirect()->toRoute('root/confirm_post_office', ['uuid' => $uuid]);

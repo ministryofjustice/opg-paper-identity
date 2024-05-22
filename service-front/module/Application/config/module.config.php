@@ -253,13 +253,13 @@ return [
                             ],
                         ],
                     ],
-                    'cp_does_name_match_id' => [
+                    'cp_name_match_check' => [
                         'type'    => Segment::class,
                         'options' => [
-                            'route'    => '[/:uuid]/cp/does-name-match-id',
+                            'route'    => '[/:uuid]/cp/name-match-check',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
-                                'action'     => 'doesNameMatchId',
+                                'action'     => 'nameMatchCheck',
                             ],
                         ],
                     ],
@@ -280,6 +280,86 @@ return [
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action'     => 'addLpa',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_dob' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/cp/confirm-dob',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmDob',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_address' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/cp/confirm-address',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmAddress',
+                            ],
+                        ],
+                    ],
+                    'cp_national_insurance_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/national-insurance-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'nationalInsuranceNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_driving_licence_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/driving-licence-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'drivingLicenceNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_passport_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/passport-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'passportNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_id_verify_questions' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/id-verify-questions',
+                            'defaults' => [
+                                'controller' => Controller\KbvController::class,
+                                'action'     => 'idVerifyQuestions',
+                            ],
+                        ],
+                    ],
+                    'cp_identity_check_passed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/identity-check-passed',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'identityCheckPassed',
+                            ],
+                        ],
+                    ],
+                    'cp_identity_check_failed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/identity-check-failed',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'identityCheckFailed',
                             ],
                         ],
                     ],
@@ -341,7 +421,6 @@ return [
             'nin' => 'National Insurance number',
             'pn' => 'UK Passport (current or expired in the last 5 years)',
             'dln' => 'Driving licence (current)',
-
         ],
         'post_office_identity_methods' => [
             'po_ukp' => 'UK passport (up to 18m expired)',

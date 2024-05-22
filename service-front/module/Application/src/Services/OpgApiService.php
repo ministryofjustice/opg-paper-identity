@@ -200,7 +200,17 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function listPostOfficesByPostcode(string $uuid, string $postcode, int $page = 1): array
+    public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array
+    {
+        try {
+            $this->makeApiRequest("/cases/$uuid/add-lpa/$lpa", 'POST');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
+
+    public function listPostOfficesByPostcode(string $uuid, string $postcode): array
     {
 //        $data = [
 //            'postcode' => $postcode
