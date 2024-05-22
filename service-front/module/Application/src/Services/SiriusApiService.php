@@ -88,7 +88,6 @@ class SiriusApiService
                 'headers' => $headers,
             ]);
         } catch (GuzzleException $e) {
-            error_log($e->getMessage());
             return false;
         }
 
