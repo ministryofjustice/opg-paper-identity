@@ -363,6 +363,36 @@ return [
                             ],
                         ],
                     ],
+                    'cp_enter_address' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/enter-address',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'enterAddress',
+                            ],
+                        ],
+                    ],
+                    'cp_enter_address_manual' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/enter-address-manual',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'enterAddressManual',
+                            ],
+                        ],
+                    ],
+                    'cp_select_address' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/select-address',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'selectAddress',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],

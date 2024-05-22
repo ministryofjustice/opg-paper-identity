@@ -198,7 +198,7 @@ class CPFlowController extends AbstractActionController
             if ($params->get('chosenAddress') == 'yes') {
                 return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
             } elseif ($params->get('chosenAddress') == 'no') {
-                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/cp_enter_address', ['uuid' => $uuid]);
             }
         }
 
@@ -347,5 +347,41 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_failed');
+    }
+
+    public function enterAddressAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/cp/enter_address');
+    }
+
+    public function enterAddressManualAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/cp/enter_address_fields');
+    }
+
+    public function selectAddressAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/cp/select_address');
     }
 }
