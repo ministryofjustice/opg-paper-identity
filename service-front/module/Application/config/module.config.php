@@ -12,10 +12,12 @@ use Application\Factories\SiriusApiServiceFactory;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
+use Application\Views\TwigExtensionFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Psr\Log\LoggerInterface;
+use Twig\Extension\DebugExtension;
 
 $prefix = getenv("PREFIX");
 if (! is_string($prefix)) {
@@ -397,19 +399,21 @@ return [
         'aliases' => [
             Contracts\OpgApiServiceInterface::class => Services\OpgApiService::class,
         ],
-        'invokables' => [
-            TwigExtension::class => TwigExtension::class,
-        ],
         'factories' => [
             AuthListener::class => AuthListenerFactory::class,
+            LoggerInterface::class => LoggerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
-            LoggerInterface::class => LoggerFactory::class,
+            TwigExtension::class => TwigExtensionFactory::class,
         ],
     ],
-    'zend_twig'       => [
+    'zend_twig' => [
         'extensions' => [
             TwigExtension::class,
+            DebugExtension::class,
+        ],
+        'environment' => [
+            'debug' => filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN),
         ],
     ],
     'opg_settings' => [

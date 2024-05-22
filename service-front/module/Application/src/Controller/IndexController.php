@@ -83,7 +83,14 @@ class IndexController extends AbstractActionController
                 ];
             }
 
-            $address = $this->processAddress($data['opg.poas.sirius']['donor']['address']);
+            $address = $this->processAddress([
+                'line1' => $data['opg.poas.sirius']['donor']['addressLine1'],
+                'line2' => $data['opg.poas.sirius']['donor']['addressLine2'] ?? '',
+                'line3' => $data['opg.poas.sirius']['donor']['addressLine3'] ?? '',
+                'town' => $data['opg.poas.sirius']['donor']['town'] ?? '',
+                'postcode' => $data['opg.poas.sirius']['donor']['postcode'] ?? '',
+                'country' => $data['opg.poas.sirius']['donor']['country'],
+            ]);
 
             return [
                 'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
@@ -121,7 +128,9 @@ class IndexController extends AbstractActionController
         $address = [];
 
         foreach ($siriusAddress as $line) {
-            $address[] = $line;
+            if (! empty($line)) {
+                $address[] = $line;
+            }
         }
 
         return $address;

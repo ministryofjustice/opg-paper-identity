@@ -26,7 +26,13 @@ use Laminas\Stdlib\RequestInterface;
  *      firstname: string,
  *      surname: string,
  *      dob: string,
- *      address: Address,
+ *      addressLine1: string,
+ *      addressLine2?: string,
+ *      addressLine3?: string,
+ *      town?: string,
+ *      county?: string,
+ *      postcode?: string,
+ *      country: string,
  *    },
  *  },
  *  "opg.poas.lpastore": ?array{
@@ -82,7 +88,6 @@ class SiriusApiService
                 'headers' => $headers,
             ]);
         } catch (GuzzleException $e) {
-            error_log($e->getMessage());
             return false;
         }
 
