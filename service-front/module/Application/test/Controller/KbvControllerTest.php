@@ -31,7 +31,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider data
      */
-    public function testKbvQuestionsFormRenders($personType): void
+    public function testKbvQuestionsFormRenders(string $personType): void
     {
         $mockResponseData = [];
         $mockUuid = 'uuid';
@@ -113,7 +113,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/id_verify_questions');
     }
 
-    public static function data()
+    public static function data(): array
     {
         return [
             [
