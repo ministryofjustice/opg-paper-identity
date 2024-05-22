@@ -28,7 +28,10 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
     }
 
-    public function testKbvQuestionsFormRenders(): void
+    /**
+     * @dataProvider data
+     */
+    public function testKbvQuestionsFormRenders($personType): void
     {
         $mockResponseData = [];
         $mockUuid = 'uuid';
@@ -77,11 +80,6 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ]
         ];
 
-        $personTypes = [
-            'donor',
-            'certificateProvider'
-        ];
-
         $mockResponseDataIdDetails = [
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
@@ -91,7 +89,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
             ],
-            "personType" => $personTypes[array_rand($personTypes)]
+            "personType" => $personType
         ];
 
         $this
@@ -113,5 +111,17 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(KbvController::class); // as specified in router's controller name alias
         $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('root/id_verify_questions');
+    }
+
+    public static function data()
+    {
+        return [
+            [
+                'personType' => 'certificateProvider'
+            ],
+            [
+                'personType' => 'donor'
+            ]
+        ];
     }
 }
