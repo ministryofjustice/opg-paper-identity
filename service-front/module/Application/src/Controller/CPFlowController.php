@@ -180,8 +180,8 @@ class CPFlowController extends AbstractActionController
     {
         $routes = [
             'nin' => 'root/cp_national_insurance_number',
-            'pn' => 'cp_passport_number',
-            'dln' => 'cp_driving_licence_number',
+            'pn' => 'root/cp_passport_number',
+            'dln' => 'root/cp_driving_licence_number',
         ];
         $view = new ViewModel();
         $templates = [
