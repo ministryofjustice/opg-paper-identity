@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Model\Entity;
 
 use Application\Model\Entity\CaseData;
+use Laminas\Form\Annotation\AttributeBuilder;
 use PHPUnit\Framework\TestCase;
 
 class CaseDataTest extends TestCase
@@ -15,7 +16,12 @@ class CaseDataTest extends TestCase
     public function testIsValid(array $data, bool $expectedIsValidResult): void
     {
         $requestData = CaseData::fromArray($data);
-        $this->assertEquals($requestData->isValid(), $expectedIsValidResult);
+
+        $validator = (new AttributeBuilder())
+            ->createForm($requestData)
+            ->setData(get_object_vars($requestData));
+
+        $this->assertEquals($validator->isValid(), $expectedIsValidResult);
     }
 
     public static function isValidDataProvider(): array

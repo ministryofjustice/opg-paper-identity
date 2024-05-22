@@ -97,7 +97,7 @@ class IdentityControllerTest extends TestCase
 
     public function testDetailsWithNoUUID(): void
     {
-        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $response = '{"error":"Missing uuid"}';
         $this->dispatch('/identity/details', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
@@ -176,7 +176,7 @@ class IdentityControllerTest extends TestCase
 
         if ($result === "error") {
             $this->assertEquals(
-                '{"status":400,"type":"HTTP400","title":"Bad Request"}',
+                '{"error":"Missing UUID or unable to find case"}',
                 $this->getResponse()->getContent()
             )
             ;
@@ -224,7 +224,7 @@ class IdentityControllerTest extends TestCase
 
     public function testKBVQuestionsWithNoUUID(): void
     {
-        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $response = '{"error":"Missing UUID"}';
         $this->dispatch('/cases/kbv-questions', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
