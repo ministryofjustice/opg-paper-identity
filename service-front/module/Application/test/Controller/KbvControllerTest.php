@@ -77,6 +77,30 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ]
         ];
 
+        $personTypes = [
+            'donor',
+            'certificateProvider'
+        ];
+
+        $mockResponseDataIdDetails = [
+            "Name" => "Mary Anne Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => "Address line 1, line 2, Country, BN1 4OD",
+            "Role" => "Donor",
+            "LPA" => [
+                "PA M-1234-ABCB-XXXX",
+                "PW M-1234-ABCD-AAAA"
+            ],
+            "personType" => $personTypes[array_rand($personTypes)]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($mockUuid)
+            ->willReturn($mockResponseDataIdDetails);
+
         $this
             ->opgApiServiceMock
             ->expects(self::once())
