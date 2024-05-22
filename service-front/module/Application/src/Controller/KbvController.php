@@ -28,6 +28,13 @@ class KbvController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        if ($detailsData['personType'] == 'certificateProvider') {
+            $passRoute = "root/cp_identity_check_passed";
+            $failRoute = "root/cp_identity_check_failed";
+        } else {
+            $passRoute = "root/identity_check_passed";
+            $failRoute = "root/identity_check_failed";
+        }
         $view->setVariable('details_data', $detailsData);
 
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
@@ -53,12 +60,12 @@ class KbvController extends AbstractActionController
                     $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
                     if (! $check) {
-                        return $this->redirect()->toRoute('root/identity_check_failed', ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
                     }
 
-                    return $this->redirect()->toRoute('root/identity_check_passed', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
                 } catch (OpgApiException $exception) {
-                    return $this->redirect()->toRoute('root/identity_check_failed', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
                 }
             }
             $form->setData($formData);
