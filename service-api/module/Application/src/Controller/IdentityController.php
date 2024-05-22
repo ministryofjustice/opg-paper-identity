@@ -11,6 +11,7 @@ use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
@@ -45,7 +46,11 @@ class IdentityController extends AbstractActionController
 
         $caseData = CaseData::fromArray($data);
 
-        if ($caseData->isValid()) {
+        $validator = (new AttributeBuilder())
+            ->createForm($caseData)
+            ->setData(get_object_vars($caseData));
+
+        if ($validator->isValid()) {
             $uuid = Uuid::uuid4();
             $item = [
                 'id'            => ['S' => $uuid->toString()],
@@ -64,7 +69,11 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
 
-        return new JsonModel(['error' => 'Invalid data']);
+        return new JsonModel([
+            'type' => 'HTTP400',
+            'title'  => 'Invalid data',
+            'error' => $validator->getMessages(),
+        ]);
     }
 
     public function detailsAction(): JsonModel

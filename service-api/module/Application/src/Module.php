@@ -33,7 +33,7 @@ class Module
         /** @var Response */
         $response = $event->getResponse();
 
-        if ($response->getStatusCode() >= 400) {
+        if ($response->getStatusCode() >= 400 && empty($response->getBody())) {
             $exception = $event->getParam('exception');
             $problem = [
                 'status' => $response->getStatusCode(),
