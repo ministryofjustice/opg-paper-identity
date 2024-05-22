@@ -164,7 +164,7 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                echo json_encode($form->getData());
+//                echo json_encode($form->getData());
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
             $view->setVariable('form', $form);
@@ -190,7 +190,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-        echo json_encode($detailsData);
+//        echo json_encode($detailsData);
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
