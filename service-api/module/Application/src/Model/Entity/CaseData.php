@@ -6,7 +6,6 @@ namespace Application\Model\Entity;
 
 use Application\Validators\LpaUidValidator;
 use Laminas\Form\Annotation;
-use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
@@ -21,28 +20,30 @@ use Laminas\Validator\Regex;
 class CaseData
 {
     #[Validator(NotEmpty::class)]
-    private string $personType;
+    public string $personType;
 
-    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"])]
-    private string $dob;
+    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
+        Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
+    ]])]
+    public string $dob;
 
     #[Validator(NotEmpty::class)]
-    private string $firstName;
+    public string $firstName;
 
     #[Validator(NotEmpty::class)]
-    private string $lastName;
+    public string $lastName;
 
     /**
      * @var string[]
      */
     #[Validator(NotEmpty::class)]
-    private array $address;
+    public array $address;
 
     /**
      * @var string[]
      */
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
-    private array $lpas;
+    public array $lpas;
 
     /**
      * Factory method
@@ -61,13 +62,6 @@ class CaseData
         $instance->address = $data['address'];
 
         return $instance;
-    }
-    public function isValid(): bool
-    {
-        return (new AttributeBuilder())
-            ->createForm(get_class($this))
-            ->setData(get_object_vars($this))
-            ->isValid();
     }
 
     /**
