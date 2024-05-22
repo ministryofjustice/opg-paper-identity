@@ -41,4 +41,6 @@ interface OpgApiServiceInterface
     public function addSearchPostcode(string $uuid, string $postcode): array;
     public function addSelectedPostOffice(string $uuid, string $postOffice): array;
     public function confirmSelectedPostOffice(string $uuid, string $deadline): array;
+
+    public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array;
 }
