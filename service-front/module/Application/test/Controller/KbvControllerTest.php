@@ -29,7 +29,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     }
 
     /**
-     * @dataProvider data
+     * @dataProvider personTypeDataProvider
      */
     public function testKbvQuestionsFormRenders(string $personType): void
     {
@@ -113,7 +113,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/id_verify_questions');
     }
 
-    public static function data(): array
+    public static function personTypeDataProvider(): array
     {
         return [
             [
