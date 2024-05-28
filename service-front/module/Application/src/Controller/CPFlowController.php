@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\BirthDate;
+use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
@@ -195,6 +196,8 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
 
+//            die(json_encode($params));
+
             if ($params->get('chosenAddress') == 'yes') {
                 return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
             } elseif ($params->get('chosenAddress') == 'no') {
@@ -363,14 +366,28 @@ class CPFlowController extends AbstractActionController
 
     public function enterAddressManualAction(): ViewModel
     {
+        $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view = new ViewModel();
+        $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+
+            $form->setData($params);
+
+            if ($form->isValid()) {
+//                echo json_encode($form->getData());
+                $response = $this->opgApiService->saveAltAddress($uuid, $params);
+//                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+            }
+        }
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
 
-        return $view->setTemplate('application/pages/cp/enter_address_fields');
+        return $view->setTemplate('application/pages/cp/enter_address_manual');
     }
 
     public function selectAddressAction(): ViewModel
