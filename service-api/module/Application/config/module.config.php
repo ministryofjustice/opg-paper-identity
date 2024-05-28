@@ -239,7 +239,7 @@ return [
             'add_case_lpa' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/add=lpa/:lpa',
+                    'route'    => '/cases/:uuid/add-lpa/:lpa',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'addCaseLpa',
