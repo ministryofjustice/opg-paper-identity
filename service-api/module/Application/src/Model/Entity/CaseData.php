@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
+use JsonSerializable;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\Explode;
@@ -17,7 +19,7 @@ use Laminas\Validator\Regex;
  * Needed here due to false positive from Laminas’s uninitialised properties
  * @psalm-suppress UnusedProperty
  */
-class CaseData
+class CaseData implements JsonSerializable
 {
     #[Validator(NotEmpty::class)]
     public string $personType;
@@ -45,6 +47,13 @@ class CaseData
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
     public array $lpas;
 
+    public ?string $kbvQuestions = null;
+
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public bool $documentComplete = false;
+
     /**
      * Factory method
      *
@@ -71,18 +80,32 @@ class CaseData
      *     lastName: string,
      *     dob: string,
      *     address: string[],
-     *     lpas: string[]
+     *     lpas: string[],
+     *     kbvQuestions?: string,
+     *     documentComplete: bool
      * }
      */
     public function toArray(): array
     {
-        return [
+        $arr = [
             'personType' => $this->personType,
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'dob' => $this->dob,
             'address' => $this->address,
             'lpas' => $this->lpas,
+            'documentComplete' => $this->documentComplete,
         ];
+
+        if ($this->kbvQuestions !== null) {
+            $arr['kbvQuestions'] = $this->kbvQuestions;
+        }
+
+        return $arr;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
