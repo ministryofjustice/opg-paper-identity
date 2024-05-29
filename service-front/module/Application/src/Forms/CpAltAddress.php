@@ -22,7 +22,7 @@ class CpAltAddress
     public mixed $address_line_1;
 
     public mixed $address_line_2;
-    
+
     public mixed $address_line_3;
 
     /**
@@ -36,4 +36,6 @@ class CpAltAddress
      */
     #[Annotation\Validator(PostcodeValidator::class)]
     public mixed $postcode;
+
+    public mixed $country;
 }

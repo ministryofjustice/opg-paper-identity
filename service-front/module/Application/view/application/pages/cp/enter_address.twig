@@ -20,9 +20,7 @@
                 {{ form.get('postcode').messages | join(', ', ' and ') }}
             </p>
         {% endif %}
-
-
-
+        <label for="postcode" class="govuk-label">Enter postcode</label>
         <input
                 class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
                 id="postcode" name="postcode" type="text" autocomplete="postcode"

@@ -12,6 +12,7 @@ use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
+use Application\Forms\PostOfficePostcode;
 use Application\Helpers\FormProcessorHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -356,10 +357,20 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $view = new ViewModel();
-
         $view->setVariable('details_data', $detailsData);
+
+        $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+
+            if ($form->isValid()) {
+//                echo json_encode($form->getData());
+                $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params);
+//                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+            }
+        }
 
         return $view->setTemplate('application/pages/cp/enter_address');
     }

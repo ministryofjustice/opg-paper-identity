@@ -481,10 +481,91 @@ class IdentityController extends AbstractActionController
 
     public function addCaseLpaAction(): JsonModel
     {
-//        $uuid = $this->params()->fromRoute('uuid');
-//        $lpa = $this->params()->fromRoute('lpa');
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
+        try {
+            $lpas = $data[0]['lpas']->toArray();
+            if (! in_array($lpa, $lpas)) {
+                $lpas[] = $lpa;
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'lpas',
+                    'SS',
+                    $lpas
+                );
+                $response['result'] = "Updated";
+            } else {
+                $response['result'] = "LPA is already added to this case";
+            }
+        } catch (\Exception $exception) {
+            die($exception->getMessage());
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        return new JsonModel($response);
+    }
+    public function searchAddressByPostcodeAction(): JsonModel
+    {
+        $postcode = $this->params()->fromRoute('postcode');
+        $status = Response::STATUS_CODE_200;
+
+        $response = [
+            [
+                'address_line_1' => '1 Little Street',
+                'address_line_2' => '',
+                'address_line_3' => '',
+                'town' => 'London',
+                'postcode' => $postcode,
+                'country' => 'UK'
+            ],
+            [
+                'address_line_1' => '2 Little Street',
+                'address_line_2' => '',
+                'address_line_3' => '',
+                'town' => 'London',
+                'postcode' => $postcode,
+                'country' => 'UK'
+            ],
+            [
+                'address_line_1' => '3 Little Street',
+                'address_line_2' => '',
+                'address_line_3' => '',
+                'town' => 'London',
+                'postcode' => $postcode,
+                'country' => 'UK'
+            ],
+        ];
+
+        $this->getResponse()->setStatusCode($status);
+        return new JsonModel($response);
+    }
+
+    public function saveAlternateAddressToCaseAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'alternateAddress',
+            'SS',
+            $data
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Updated";
+
         return new JsonModel($response);
     }
 }
