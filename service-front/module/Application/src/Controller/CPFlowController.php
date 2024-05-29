@@ -12,6 +12,7 @@ use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
+use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
 use Application\Helpers\FormProcessorHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -24,7 +25,7 @@ class CPFlowController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHellper,
+        private readonly FormProcessorHelper $formProcessorHelper,
         private readonly array $config,
     ) {
     }
@@ -125,7 +126,7 @@ class CPFlowController extends AbstractActionController
             $formObject = $this->getRequest()->getPost();
 
             if ($formObject->get('lpa')) {
-                $processed = $this->formProcessorHellper->findLpa(
+                $processed = $this->formProcessorHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
@@ -227,7 +228,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processNationalInsuranceNumberForm(
+            $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -260,7 +261,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -302,7 +303,7 @@ class CPFlowController extends AbstractActionController
             $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $formProcessorResponseDto = $this->formProcessorHellper->processPassportDateForm(
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $dateSubForm,
@@ -310,7 +311,7 @@ class CPFlowController extends AbstractActionController
                 );
             } else {
                 $view->setVariable('passport_indate', ucwords($data['inDate']));
-                $formProcessorResponseDto = $this->formProcessorHellper->processPassportForm(
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $form,
@@ -359,16 +360,21 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
-
-        $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
+        $form = (new AttributeBuilder())->createForm(Postcode::class);
+        $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
+            $form->setData($params);
 
             if ($form->isValid()) {
 //                echo json_encode($form->getData());
-                $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params);
-//                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params['postcode']);
+                $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
+                echo json_encode($addressStrings);
+                $view->setVariable('addresses', $addressStrings);
+                $view->setVariable('addresses_count', count($addressStrings));
+                return $view->setTemplate('application/pages/cp/select_address');
             }
         }
 
@@ -391,6 +397,7 @@ class CPFlowController extends AbstractActionController
             if ($form->isValid()) {
 //                echo json_encode($form->getData());
                 $response = $this->opgApiService->saveAltAddress($uuid, $params);
+
 //                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
         }

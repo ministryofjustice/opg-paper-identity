@@ -383,16 +383,16 @@ return [
                             ],
                         ],
                     ],
-                    'cp_select_address' => [
-                        'type'    => Segment::class,
-                        'options' => [
-                            'route'    => '[/:uuid]/cp/select-address',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action'     => 'selectAddress',
-                            ],
-                        ],
-                    ],
+//                    'cp_select_address' => [
+//                        'type'    => Segment::class,
+//                        'options' => [
+//                            'route'    => '[/:uuid]/cp/select-address',
+//                            'defaults' => [
+//                                'controller' => Controller\CPFlowController::class,
+//                                'action'     => 'selectAddress',
+//                            ],
+//                        ],
+//                    ],
                 ],
             ],
         ],
