@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Fixtures;
 
+use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Result;
@@ -32,7 +33,7 @@ class DataQueryHandler
         return $this->returnUnmarshalResult($result);
     }
 
-    public function getCaseByUUID(string $uuid): array
+    public function getCaseByUUID(string $uuid): ?CaseData
     {
         $idKey = [
             'key' => [
@@ -43,7 +44,9 @@ class DataQueryHandler
         ];
         $result = $this->query($idKey);
 
-        return $this->returnUnmarshalResult($result);
+        $arr = $this->returnUnmarshalResult($result)[0];
+
+        return $arr ? CaseData::fromArray($arr) : null;
     }
 
     public function queryByIDNumber(string $idNumber): array
@@ -73,7 +76,7 @@ class DataQueryHandler
         $keyConditionExpression = "";
         $index = 1;
 
-        foreach ($key as $_name => $value) {
+        foreach ($key as $value) {
             if (! is_array($value)) {
                 throw new InvalidJsonException("Key value must be an array.");
             }
@@ -118,7 +121,12 @@ class DataQueryHandler
             /** @var array $record */
             foreach ($result['Items'] as $record) {
                 $marshal = new Marshaler();
-                $displayResults[] = $marshal->unmarshalItem($record);
+                $item = $marshal->unmarshalItem($record);
+
+                // Converts (nested) `SetValue` objects into native arrays
+                $item = json_decode(json_encode($item), true);
+
+                $displayResults[] = $item;
             }
         }
         return $displayResults;

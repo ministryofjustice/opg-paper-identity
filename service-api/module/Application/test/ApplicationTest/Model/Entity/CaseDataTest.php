@@ -15,13 +15,18 @@ class CaseDataTest extends TestCase
      */
     public function testIsValid(array $data, bool $expectedIsValidResult): void
     {
-        $requestData = CaseData::fromArray($data);
-
         $validator = (new AttributeBuilder())
-            ->createForm($requestData)
-            ->setData(get_object_vars($requestData));
+            ->createForm(CaseData::class)
+            ->setData($data);
 
-        $this->assertEquals($validator->isValid(), $expectedIsValidResult);
+        if ($expectedIsValidResult) {
+            $this->assertTrue(
+                $validator->isValid(),
+                'Data provided is not valid: ' . json_encode($validator->getMessages())
+            );
+        } else {
+            $this->assertFalse($validator->isValid());
+        }
     }
 
     public static function isValidDataProvider(): array
@@ -48,6 +53,9 @@ class CaseDataTest extends TestCase
             [array_merge($validData, ['lastName' => '']), false],
             [array_merge($validData, ['dob' => '11-11-2020']), false],
             [array_replace_recursive($validData, ['lpas' => ['xx']]), false],
+            [array_merge($validData, ['documentComplete' => true]), true],
+            [array_merge($validData, ['documentComplete' => false]), true],
+            [array_merge($validData, ['documentComplete' => 'grergiro']), false],
         ];
     }
 }
