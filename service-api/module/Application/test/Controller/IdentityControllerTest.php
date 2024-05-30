@@ -7,6 +7,7 @@ namespace ApplicationTest\Controller;
 use Application\Controller\IdentityController;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
+use Application\Model\Entity\CaseData;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
@@ -73,9 +74,14 @@ class IdentityControllerTest extends TestCase
         $this->dataQueryHandlerMock
             ->expects($this->once())->method('getCaseByUUID')
             ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
-            ->willReturn([
-                ['id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'personType' => 'donor'],
-            ]);
+            ->willReturn(CaseData::fromArray([
+                'personType' => 'donor',
+                'firstName' => '',
+                'lastName' => '',
+                'dob' => '',
+                'lpas' => [],
+                'address' => [],
+            ]));
 
         $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
         $this->assertResponseStatusCode(200);
@@ -97,7 +103,7 @@ class IdentityControllerTest extends TestCase
 
     public function testDetailsWithNoUUID(): void
     {
-        $response = '{"error":"Missing uuid"}';
+        $response = '{"title":"Missing uuid"}';
         $this->dispatch('/identity/details', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
@@ -154,7 +160,7 @@ class IdentityControllerTest extends TestCase
     /**
      * @dataProvider kbvAnswersData
      */
-    public function testKbvAnswers(string $uuid, array $provided, array $actual, string $result, int $status): void
+    public function testKbvAnswers(string $uuid, array $provided, CaseData $actual, string $result, int $status): void
     {
         if ($result !== 'error') {
             $this->dataQueryHandlerMock
@@ -203,16 +209,21 @@ class IdentityControllerTest extends TestCase
         $providedIncorrect = $provided;
         $providedIncorrect['answers']['two'] = 'incorrect answer';
 
-        $actual = [
-            '0' => [
-                'kbvQuestions' => json_encode([
-                    'one' => ['answer' => 'VoltWave'],
-                    'two' => ['answer' => 'Germanotta'],
-                    'tree' => ['answer' => 'July'],
-                    'four' => ['answer' => 'Pink']
-                ])
-            ]
-        ];
+        $actual = CaseData::fromArray([
+            'personType' => 'donor',
+            'firstName' => '',
+            'lastName' => '',
+            'dob' => '',
+            'lpas' => [],
+            'address' => [],
+        ]);
+
+        $actual->kbvQuestions = json_encode([
+            'one' => ['answer' => 'VoltWave'],
+            'two' => ['answer' => 'Germanotta'],
+            'tree' => ['answer' => 'July'],
+            'four' => ['answer' => 'Pink']
+        ]);
 
         return [
             [$uuid, $provided, $actual, 'pass', Response::STATUS_CODE_200],
@@ -239,18 +250,23 @@ class IdentityControllerTest extends TestCase
      */
     public function testKBVQuestionsWithVerifiedDocsCaseGeneratesQuestions(): void
     {
-        $caseData = [
-            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+        $caseData = CaseData::fromArray([
+            'personType' => '',
             'firstName' => 'test',
             'lastName' => 'name',
-            'documentComplete' => true,
-        ];
+            'dob' => '',
+            'lpas' => [],
+            'address' => [],
+        ]);
+
+        $caseData->documentComplete = true;
+
         $formattedQuestions = $this->formattedQuestions();
 
         $this->dataQueryHandlerMock
             ->expects($this->once())->method('getCaseByUUID')
             ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn([0 => $caseData]);
+            ->willReturn($caseData);
 
         $this->KBVServiceMock
             ->expects($this->once())->method('fetchFormattedQuestions')
@@ -270,18 +286,22 @@ class IdentityControllerTest extends TestCase
      */
     public function testKBVQuestionsWithVerifiedDocsCaseAndExistingQuestions(): void
     {
-        $caseData = [
-            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+        $caseData = CaseData::fromArray([
+            'personType' => '',
             'firstName' => 'test',
             'lastName' => 'name',
-            'documentComplete' => true,
-            'kbvQuestions' => json_encode($this->formattedQuestions())
-        ];
+            'dob' => '',
+            'lpas' => [],
+            'address' => [],
+        ]);
+
+        $caseData->kbvQuestions = json_encode($this->formattedQuestions());
+        $caseData->documentComplete = true;
 
         $this->dataQueryHandlerMock
             ->expects($this->once())->method('getCaseByUUID')
             ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn([0 => $caseData]);
+            ->willReturn($caseData);
 
         $this->KBVServiceMock
             ->expects($this->never())->method('fetchFormattedQuestions')
@@ -302,16 +322,18 @@ class IdentityControllerTest extends TestCase
     public function testKBVQuestionsWithUnVerifiedDocsCase(): void
     {
         $response = '{"error":"Document checks incomplete or unable to locate case"}';
-        $caseData = [
-            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+        $caseData = CaseData::fromArray([
+            'personType' => '',
             'firstName' => 'test',
             'lastName' => 'name',
-            'documentComplete' => false,
-        ];
+            'dob' => '',
+            'lpas' => [],
+            'address' => [],
+        ]);
 
         $this->dataQueryHandlerMock->expects($this->once())->method('getCaseByUUID')
             ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn([0 => $caseData]);
+            ->willReturn($caseData);
 
         $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
         $this->assertResponseStatusCode(200);

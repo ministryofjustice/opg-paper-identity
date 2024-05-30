@@ -11,10 +11,11 @@ use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\Problem;
+use Application\View\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\View\Model\JsonModel;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -69,11 +70,10 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
 
-        return new JsonModel([
-            'type' => 'HTTP400',
-            'title'  => 'Invalid data',
-            'error' => $validator->getMessages(),
-        ]);
+        return new JsonModel(new Problem(
+            'Invalid data',
+            extra: ['errors' => $validator->getMessages()],
+        ));
     }
 
     public function detailsAction(): JsonModel
@@ -83,18 +83,18 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(['error' => 'Missing uuid']);
+            return new JsonModel(new Problem('Missing uuid'));
         }
 
-        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        if (! empty($data)) {
-            return new JsonModel($data[0]);
+        if (! empty($case)) {
+            return new JsonModel($case);
         }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-        return new JsonModel(['error' => 'Case not found']);
+        return new JsonModel(new Problem('Case not found'));
     }
 
     public function findByNameAction(): JsonModel
@@ -203,9 +203,9 @@ class IdentityController extends AbstractActionController
             return new JsonModel($response);
         }
 
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid)?->toArray();
 
-        if (! $case || $case[0]['documentComplete'] === false) {
+        if (is_null($case) || $case['documentComplete'] === false) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             $response = [
                 "error" => "Document checks incomplete or unable to locate case"
@@ -217,8 +217,8 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        if (array_key_exists('kbvQuestions', $case[0])) {
-            $questions = json_decode($case[0]['kbvQuestions'], true);
+        if (array_key_exists('kbvQuestions', $case)) {
+            $questions = json_decode($case['kbvQuestions'], true);
 
             foreach ($questions as $number => $question) {
                 unset($question['answer']);
@@ -250,7 +250,7 @@ class IdentityController extends AbstractActionController
         $result = 'pass';
         $response = [];
 
-        if (! $uuid || ! $case) {
+        if (! $uuid || is_null($case)) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $response = [
                 "error" => "Missing UUID or unable to find case"
@@ -258,7 +258,7 @@ class IdentityController extends AbstractActionController
             return new JsonModel($response);
         }
 
-        $questions = json_decode($case[0]['kbvQuestions'], true);
+        $questions = json_decode($case['kbvQuestions'], true);
         //compare against all stored answers to ensure all answers passed
         foreach ($questions as $key => $question) {
             if (! isset($data['answers'][$key])) {
@@ -392,21 +392,21 @@ class IdentityController extends AbstractActionController
 
         //pending design decision - may need this code
 
-//        if($lpa == null || $lpa == '') {
-//            $status = Response::STATUS_CODE_400;
-//            $message = "Enter an LPA number to continue.";
-//            $response['message'] = $message;
-//            $response['status'] = $status;
-//            return new JsonModel($response);
-//        }
-//
-//        if (1 !== preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
-//            $status = Response::STATUS_CODE_400;
-//            $message = "Not a valid LPA number. Enter an LPA number to continue.";
-//            $response['message'] = $message;
-//            $response['status'] = $status;
-//            return new JsonModel($response);
-//        }
+        //        if($lpa == null || $lpa == '') {
+        //            $status = Response::STATUS_CODE_400;
+        //            $message = "Enter an LPA number to continue.";
+        //            $response['message'] = $message;
+        //            $response['status'] = $status;
+        //            return new JsonModel($response);
+        //        }
+        //
+        //        if (1 !== preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
+        //            $status = Response::STATUS_CODE_400;
+        //            $message = "Not a valid LPA number. Enter an LPA number to continue.";
+        //            $response['message'] = $message;
+        //            $response['status'] = $status;
+        //            return new JsonModel($response);
+        //        }
 
         switch ($lpa) {
             case 'M-0000-0000-0000':
