@@ -485,6 +485,7 @@ class IdentityController extends AbstractActionController
         $lpa = $this->params()->fromRoute('lpa');
         $data = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
+        $status = Response::STATUS_CODE_200;
         try {
             $lpas = $data[0]['lpas']->toArray();
             if (! in_array($lpa, $lpas)) {
@@ -500,10 +501,11 @@ class IdentityController extends AbstractActionController
                 $response['result'] = "LPA is already added to this case";
             }
         } catch (\Exception $exception) {
-            die($exception->getMessage());
+            $status = Response::STATUS_CODE_400;
+            $response['exception'] = $exception->getMessage();
         }
 
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $this->getResponse()->setStatusCode($status);
         return new JsonModel($response);
     }
     public function searchAddressByPostcodeAction(): JsonModel
@@ -547,23 +549,31 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
+        $status = Response::STATUS_CODE_200;
 
         if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
             $response = [
                 "error" => "Missing UUID"
             ];
             return new JsonModel($response);
         }
 
-        $this->dataImportHandler->updateCaseData(
-            $uuid,
-            'alternateAddress',
-            'SS',
-            $data
-        );
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'alternateAddress',
+                'SS',
+                $data
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+            return new JsonModel($response);
+        }
 
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $this->getResponse()->setStatusCode($status);
         $response['result'] = "Updated";
 
         return new JsonModel($response);

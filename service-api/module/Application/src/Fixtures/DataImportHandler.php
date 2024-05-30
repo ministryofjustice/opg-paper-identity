@@ -34,7 +34,7 @@ class DataImportHandler
         }
     }
 
-    public function updateCaseData(string $uuid, string $attrName, string $attrType, string $attrValue): void
+    public function updateCaseData(string $uuid, string $attrName, string $attrType, mixed $attrValue): void
     {
         $idKey = [
             'key' => [
