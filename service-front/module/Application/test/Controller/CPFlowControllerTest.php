@@ -6,7 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
-use Application\Services\FormProcessorService;
+use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,7 +15,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
-    private FormProcessorService&MockObject $formProcessorService;
+    private FormProcessorHelper&MockObject $formProcessorService;
     private string $uuid;
 
     public function setUp(): void
@@ -26,7 +26,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
-        $this->formProcessorService = $this->createMock(FormProcessorService::class);
+        $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
 
         parent::setUp();
 
@@ -34,7 +34,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
-        $serviceManager->setService(FormProcessorService::class, $this->formProcessorService);
+        $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
     }
 
     public function testCPIdCheckReturnsPageWithData(): void
@@ -63,7 +63,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('cp_how_cp_confirms');
+        $this->assertMatchedRouteName('root/cp_how_cp_confirms');
     }
 
     public function testNameMatchesIDPageWithData(): void
@@ -86,12 +86,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/cp/does-name-match-id", 'GET');
+        $this->dispatch("/$this->uuid/cp/name-match-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('cp_does_name_match_id');
+        $this->assertMatchedRouteName('root/cp_name_match_check');
     }
 
     public function testConfirmLpasPageWithData(): void
@@ -142,6 +142,108 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('cp_confirm_lpas');
+        $this->assertMatchedRouteName('root/cp_confirm_lpas');
+    }
+
+    public function testConfirmDobPageWithData(): void
+    {
+        $mockResponseDataIdDetails = [
+            "FirstName" => "Mary Anne",
+            "LastName" => "Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
+            "Role" => "cp",
+            "LPA" => [
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-XYXY-YAGA-35G4"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+//
+//        $mockLpasData = [
+//            [
+//                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
+//                'donor_name' => 'Mary Anne Chapman'
+//            ],
+//            [
+//                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+//                'donor_name' => 'Mary Anne Chapman'
+//            ]
+//        ];
+//
+//        $this
+//            ->opgApiServiceMock
+//            ->expects(self::once())
+//            ->method('getLpasByDonorData')
+//            ->willReturn($mockLpasData);
+
+        $this->dispatch("/$this->uuid/cp/confirm-dob", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_confirm_dob');
+    }
+
+    public function testConfirmAddressPageWithData(): void
+    {
+        $mockResponseDataIdDetails = [
+            "FirstName" => "Mary Anne",
+            "LastName" => "Chapman",
+            "DOB" => "01 May 1943",
+            "Address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
+            "Role" => "cp",
+            "LPA" => [
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-XYXY-YAGA-35G4"
+            ]
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+//        $mockLpasData = [
+//            [
+//                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
+//                'donor_name' => 'Mary Anne Chapman'
+//            ],
+//            [
+//                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+//                'donor_name' => 'Mary Anne Chapman'
+//            ]
+//        ];
+//
+//        $this
+//            ->opgApiServiceMock
+//            ->expects(self::once())
+//            ->method('getLpasByDonorData')
+//            ->willReturn($mockLpasData);
+
+        $this->dispatch("/$this->uuid/cp/confirm-address", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_confirm_address');
     }
 }

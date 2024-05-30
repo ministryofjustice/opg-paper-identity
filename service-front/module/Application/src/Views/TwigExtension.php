@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace Application\Views;
 
 use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
 
-class TwigExtension extends AbstractExtension
+class TwigExtension extends AbstractExtension implements GlobalsInterface
 {
+    public function __construct(public readonly bool $debug)
+    {
+    }
+
     public function getFilters()
     {
         $prefix = getenv("PREFIX");
@@ -18,6 +23,14 @@ class TwigExtension extends AbstractExtension
 
         return [
             new TwigFilter('basepath', fn (string $str) => $prefix . $str),
+        ];
+    }
+
+    public function getGlobals(): array
+    {
+        return [
+            'SIRIUS_PUBLIC_URL' => getenv("SIRIUS_PUBLIC_URL"),
+            'DEBUG' => $this->debug,
         ];
     }
 }

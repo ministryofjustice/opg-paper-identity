@@ -15,6 +15,10 @@
                 <p>The results of this identity check have been saved.</p>
             </div>
         </div>
-        <a href="./how-will-donor-confirm" class="govuk-button">Try a different method</a>
+        {% if details_data.personType == 'certificateProvider' %}
+            <a href="./how-will-cp-confirm" class="govuk-button">Try a different method</a>
+        {% else %}
+            <a href="./how-will-donor-confirm" class="govuk-button">Try a different method</a>
+        {% endif %}
     </main>
 </div>

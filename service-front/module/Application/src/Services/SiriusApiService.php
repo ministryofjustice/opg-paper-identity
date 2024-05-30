@@ -10,6 +10,47 @@ use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
 
+/**
+ * @psalm-type Address = array{
+ *  line1: string,
+ *  line2?: string,
+ *  line3?: string,
+ *  town?: string,
+ *  postcode?: string,
+ *  country: string,
+ * }
+ *
+ * @psalm-type Lpa = array{
+ *  "opg.poas.sirius": array{
+ *    donor: array{
+ *      firstname: string,
+ *      surname: string,
+ *      dob: string,
+ *      addressLine1: string,
+ *      addressLine2?: string,
+ *      addressLine3?: string,
+ *      town?: string,
+ *      county?: string,
+ *      postcode?: string,
+ *      country: string,
+ *    },
+ *  },
+ *  "opg.poas.lpastore": ?array{
+ *    donor: array{
+ *      firstNames: string,
+ *      lastName: string,
+ *      dateOfBirth: string,
+ *      address: Address,
+ *    },
+ *    certificateProvider: array{
+ *      firstNames: string,
+ *      lastName: string,
+ *      address: Address,
+ *    },
+ *  },
+ * }
+ */
+
 class SiriusApiService
 {
     public function __construct(
@@ -47,7 +88,6 @@ class SiriusApiService
                 'headers' => $headers,
             ]);
         } catch (GuzzleException $e) {
-            error_log($e->getMessage());
             return false;
         }
 
@@ -55,7 +95,7 @@ class SiriusApiService
     }
 
     /**
-     * @return array{"opg.poas.lpastore": array<string, mixed>}
+     * @return Lpa
      */
     public function getLpaByUid(string $uid, Request $request): array
     {

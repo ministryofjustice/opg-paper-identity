@@ -6,7 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorPostOfficeFlowController;
-use Application\Services\FormProcessorService;
+use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,7 +15,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
-    private FormProcessorService&MockObject $formProcessorService;
+    private FormProcessorHelper&MockObject $formProcessorService;
     private string $uuid;
 
     public function setUp(): void
@@ -26,7 +26,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
-        $this->formProcessorService = $this->createMock(FormProcessorService::class);
+        $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
 
         parent::setUp();
 
@@ -34,7 +34,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
-        $serviceManager->setService(FormProcessorService::class, $this->formProcessorService);
+        $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
     }
 
     public function testPstOfficeDocumentsPage(): void
@@ -70,7 +70,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('post_office_documents');
+        $this->assertMatchedRouteName('root/post_office_documents');
     }
 
     public function testFindPostOfficePage(): void
@@ -106,7 +106,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('find_post_office');
+        $this->assertMatchedRouteName('root/find_post_office');
     }
     public function testWhatHappensNextPageWithData(): void
     {
@@ -141,7 +141,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('what_happens_next');
+        $this->assertMatchedRouteName('root/what_happens_next');
     }
 
     public function testNationalInsuranceNumberReturnsPageWithData(): void
@@ -177,6 +177,6 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('post_office_route_not_available');
+        $this->assertMatchedRouteName('root/post_office_route_not_available');
     }
 }

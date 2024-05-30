@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Model\Entity;
 
 use Application\Model\Entity\CaseData;
+use Laminas\Form\Annotation\AttributeBuilder;
 use PHPUnit\Framework\TestCase;
 
 class CaseDataTest extends TestCase
@@ -14,8 +15,18 @@ class CaseDataTest extends TestCase
      */
     public function testIsValid(array $data, bool $expectedIsValidResult): void
     {
-        $requestData = CaseData::fromArray($data);
-        $this->assertEquals($requestData->isValid(), $expectedIsValidResult);
+        $validator = (new AttributeBuilder())
+            ->createForm(CaseData::class)
+            ->setData($data);
+
+        if ($expectedIsValidResult) {
+            $this->assertTrue(
+                $validator->isValid(),
+                'Data provided is not valid: ' . json_encode($validator->getMessages())
+            );
+        } else {
+            $this->assertFalse($validator->isValid());
+        }
     }
 
     public static function isValidDataProvider(): array
@@ -42,6 +53,9 @@ class CaseDataTest extends TestCase
             [array_merge($validData, ['lastName' => '']), false],
             [array_merge($validData, ['dob' => '11-11-2020']), false],
             [array_replace_recursive($validData, ['lpas' => ['xx']]), false],
+            [array_merge($validData, ['documentComplete' => true]), true],
+            [array_merge($validData, ['documentComplete' => false]), true],
+            [array_merge($validData, ['documentComplete' => 'grergiro']), false],
         ];
     }
 }

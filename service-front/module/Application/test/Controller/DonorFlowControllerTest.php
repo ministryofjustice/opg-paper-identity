@@ -6,7 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
-use Application\Services\FormProcessorService;
+use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,7 +15,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
-    private FormProcessorService&MockObject $formProcessorService;
+    private FormProcessorHelper&MockObject $formProcessorService;
     private string $uuid;
 
     public function setUp(): void
@@ -26,7 +26,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
-        $this->formProcessorService = $this->createMock(FormProcessorService::class);
+        $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
 
         parent::setUp();
 
@@ -34,7 +34,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
-        $serviceManager->setService(FormProcessorService::class, $this->formProcessorService);
+        $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
     }
 
     public function testDonorIdCheckReturnsPageWithData(): void
@@ -62,7 +62,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('donor_id_check');
+        $this->assertMatchedRouteName('root/donor_id_check');
     }
 
     public function testAddressVerificationReturnsPageWithData(): void
@@ -104,7 +104,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('address_verification');
+        $this->assertMatchedRouteName('root/address_verification');
     }
     public function testLpasByDonorReturnsPageWithData(): void
     {
@@ -130,7 +130,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('donor_lpa_check');
+        $this->assertMatchedRouteName('root/donor_lpa_check');
     }
 
     public function testNationalInsuranceNumberReturnsPageWithData(): void
@@ -158,7 +158,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('national_insurance_number');
+        $this->assertMatchedRouteName('root/national_insurance_number');
     }
 
     public function testDrivingLicenceNumberReturnsPageWithData(): void
@@ -186,7 +186,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('driving_licence_number');
+        $this->assertMatchedRouteName('root/driving_licence_number');
     }
 
     public function testHowWillDonorConfirmPage(): void
@@ -214,7 +214,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('how_donor_confirms');
+        $this->assertMatchedRouteName('root/how_donor_confirms');
     }
 
     public function testIdentityCheckPassedPage(): void
@@ -259,7 +259,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('identity_check_passed');
+        $this->assertMatchedRouteName('root/identity_check_passed');
     }
 
     public function testIdentityCheckFailedPage(): void
@@ -304,7 +304,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('identity_check_failed');
+        $this->assertMatchedRouteName('root/identity_check_failed');
     }
     public function testThinFileFailurePage(): void
     {
@@ -313,7 +313,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('thin_file_failure');
+        $this->assertMatchedRouteName('root/thin_file_failure');
     }
 
     public function testProvingIdentityPage(): void
@@ -323,7 +323,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('proving_identity');
+        $this->assertMatchedRouteName('root/proving_identity');
     }
 
     public function testDonorIdMatchPage(): void
@@ -351,6 +351,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('donor_details_match_check');
+        $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 }
