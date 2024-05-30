@@ -69,7 +69,7 @@ class YotiControllerTest extends TestCase
 
     public function testDetailsWithNoSession(): void
     {
-        $response = '{"status":400,"type":"HTTP400","title":"Bad Request"}';
+        $response = '{"error":"Missing sessionId"}';
         $this->dispatch('/counter-service/retrieve-status', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
