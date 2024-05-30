@@ -63,7 +63,14 @@ class IdentityController extends AbstractActionController
                 'address'       => ['SS' => $caseData->toArray()['address']]
             ];
 
-            $this->dataImportHandler->insertData($item);
+
+            $insert = $this->dataImportHandler->insertData($item);
+            
+            if (!$insert) {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_422);
+                return new JsonModel(['error' => 'Data save failed']);
+            }
+
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $uuid]);
         }
