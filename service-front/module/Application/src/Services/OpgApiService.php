@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\HttpException;
 use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
-use Monolog\Logger;
+use GuzzleHttp\Exception\BadResponseException;
+use Throwable;
 
 class OpgApiService implements OpgApiServiceInterface
 {
@@ -27,32 +29,12 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
-    public function stubDetailsResponse(): array
-    {
-        /**
-         * This is a temporary function to prevent the start page crashing with a 500 error
-         * now that the equivalent API function requires a UUID
-         */
-        return [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "1 Court Street, London, UK, SW1B 1BB",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-XYXY-YAGA-35G4"
-            ]
-        ];
-    }
-
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'json' => $data,
-                'debug' => true
+                'json' => $data
             ]);
 
             $this->responseStatus = Response::STATUS_CODE_200;
@@ -63,13 +45,22 @@ class OpgApiService implements OpgApiServiceInterface
             }
             return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
-            throw new OpgApiException($exception->getMessage());
+            throw new OpgApiException($exception->getMessage(), 0, $exception);
         }
     }
 
     public function getDetailsData(string $uuid): array
     {
-        return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+        try {
+            return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+        } catch (OpgApiException $exception) {
+            $previous = $exception->getPrevious();
+            if ($previous instanceof BadResponseException && $previous->getResponse()->getStatusCode() === 404) {
+                throw new HttpException(404);
+            }
+
+            throw $exception;
+        }
     }
 
     public function getAddressVerificationData(): array
@@ -161,22 +152,42 @@ class OpgApiService implements OpgApiServiceInterface
     public function createCase(
         string $firstname,
         string $lastname,
-        string $dob,
+        string|null $dob,
         string $personType,
         array $lpas,
         array $address,
     ): array {
-        return $this->makeApiRequest("/cases/create", 'POST', [
+
+        $data = [
             'firstName' => $firstname,
             'lastName' => $lastname,
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
             'address' => $address
-        ]);
+        ];
+        return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
-    public function updateIdMethod(string $uuid, string $method): void
+    public function findLpa(string $uuid, string $lpa): array
+    {
+        $uri = sprintf('cases/%s/find-lpa/%s', $uuid, strtoupper($lpa));
+
+        try {
+            $this->makeApiRequest(
+                $uri,
+                'GET',
+                [],
+                ['Content-Type' => 'application/json']
+            );
+        } catch (OpgApiException $opgApiException) {
+            return [$opgApiException->getMessage()];
+        }
+
+        return $this->responseData;
+    }
+
+    public function updateIdMethod(string $uuid, string $method): array
     {
         $data = [
             'idMethod' => $method
@@ -186,6 +197,17 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+        return $this->responseData;
+    }
+
+    public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array
+    {
+        try {
+            $this->makeApiRequest("/cases/$uuid/add-lpa/$lpa", 'POST');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
     }
 
     public function listPostOfficesByPostcode(string $uuid, string $postcode): array
@@ -195,6 +217,47 @@ class OpgApiService implements OpgApiServiceInterface
 //        ];
 //        try {
 //            $response = $this->makeApiRequest("/cases/$uuid/find-post-office", 'POST', $data);
+//            return $response['result'];
+//        } catch (OpgApiException $opgApiException) {
+//            throw new OpgApiException('Post office reference code not found');
+//        }
+
+        // NEED TO INCLUDE PAGINATION LOGIC HERE AS WELL
+
+        return [
+            12345672 => [
+                'name' => 'Hednesford',
+                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
+            ],
+            12345673 => [
+                'name' => 'Chadsmoor',
+                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
+            ],
+            12345674 => [
+                'name' => 'Hazelslade',
+                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
+            ],
+            12345675 => [
+                'name' => 'Wimblebury',
+                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
+            ],
+            12345676 => [
+                'name' => 'Heath Hayes',
+                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
+            ]
+        ];
+    }
+
+    public function searchPostOfficesByLocation(
+        string $uuid,
+        string $location,
+        int $page = 1
+    ): array {
+//        $data = [
+//            'postcode' => $postcode
+//        ];
+//        try {
+//            $response = $this->makeApiRequest("/cases/$uuid/search-post-office-by-location", 'POST', $data);
 //            return $response['result'];
 //        } catch (OpgApiException $opgApiException) {
 //            throw new OpgApiException('Post office reference code not found');
@@ -263,5 +326,45 @@ class OpgApiService implements OpgApiServiceInterface
         } else {
             throw new OpgApiException('Post office reference code not found');
         }
+    }
+
+    public function addSearchPostcode(string $uuid, string $postcode): array
+    {
+        $data = [
+            'selected_postcode' => $postcode
+        ];
+        try {
+            $this->makeApiRequest("/cases/$uuid/add-search-postcode", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
+
+    public function addSelectedPostOffice(string $uuid, string $postOffice): array
+    {
+        $data = [
+            'selected_postoffice' => $postOffice
+        ];
+        try {
+            $this->makeApiRequest("/cases/$uuid/add-selected-postoffice", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
+
+
+    public function confirmSelectedPostOffice(string $uuid, string $deadline): array
+    {
+        $data = [
+            'deadline' => $deadline
+        ];
+        try {
+            $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
     }
 }

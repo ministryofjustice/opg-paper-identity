@@ -6,16 +6,14 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\DrivingLicenceNumber;
-use Application\Forms\PassportNumber;
+use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
-use Application\Services\FormProcessorService;
-use Application\Services\SiriusApiService;
+use Application\Forms\PassportNumber;
+use Application\Helpers\FormProcessorHelper;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\ViewModel;
-use Laminas\Form\Annotation\AttributeBuilder;
-use Application\Forms\NationalInsuranceNumber;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -23,45 +21,9 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
-        private readonly FormProcessorService $formProcessorService,
+        private readonly FormProcessorHelper $formProcessorHellper,
         private readonly array $config,
     ) {
-    }
-
-    public function startAction(): ViewModel
-    {
-        $lpasQuery = $this->params()->fromQuery("lpas");
-        $lpas = [];
-        foreach ($lpasQuery as $lpaUid) {
-            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data['opg.poas.lpastore'];
-        }
-
-        $detailsData = $this->opgApiService->stubDetailsResponse();
-
-        $firstName = $detailsData['FirstName'];
-        $lastName = $detailsData['LastName'];
-        $type = $this->params()->fromQuery("personType");
-        $dob = (new \DateTime($detailsData['DOB']))->format("Y-m-d");
-        $address = explode(', ', $detailsData['Address']);
-        // Find the details of the actor (donor or certificate provider, based on URL) that we need to ID check them
-
-        // Create a case in the API with the LPA UID and the actors' details
-
-        // Redirect to the "select which ID to use" page for this case
-
-        $case = $this->opgApiService->createCase($firstName, $lastName, $dob, $type, $lpasQuery, $address);
-
-        $view = new ViewModel([
-            'lpaUids' => $this->params()->fromQuery("lpas"),
-            'type' => $type,
-            'lpas' => $lpas,
-            'case' => $case['uuid'],
-            'details' => $detailsData,
-        ]);
-
-        return $view->setTemplate('application/pages/start');
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -71,7 +33,7 @@ class DonorFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("donor_details_match_check", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
@@ -93,8 +55,6 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
-        $stubDetailsData = $this->opgApiService->stubDetailsResponse();
-        $detailsData['address'] = explode(', ', $stubDetailsData['Address']);
 
         $view = new ViewModel();
 
@@ -137,22 +97,22 @@ class DonorFlowController extends AbstractActionController
             switch ($detailsData['idMethod']) {
                 case 'pn':
                     $this->redirect()
-                        ->toRoute("passport_number", ['uuid' => $uuid]);
+                        ->toRoute("root/passport_number", ['uuid' => $uuid]);
                     break;
 
                 case 'dln':
                     $this->redirect()
-                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
+                        ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
                     break;
 
                 case 'nin':
                     $this->redirect()
-                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
+                        ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
                     break;
 
                 case 'po':
                     $this->redirect()
-                        ->toRoute("post_office_documents", ['uuid' => $uuid]);
+                        ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     break;
 
                 default:
@@ -195,14 +155,16 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            return $this->formProcessorService->processNationalInsuranceNumberForm(
+            $formProcessorResponseDto = $this->formProcessorHellper->processNationalInsuranceNumberForm(
+                $uuid,
                 $this->getRequest()->getPost(),
                 $form,
-                $view,
                 $templates
             );
-        }
+            $view->setVariables($formProcessorResponseDto->getVariables());
 
+            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+        }
         return $view->setTemplate($templates['default']);
     }
 
@@ -224,14 +186,17 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            return $this->formProcessorService->processDrivingLicencenForm(
+            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
+                $uuid,
                 $this->getRequest()->getPost(),
                 $form,
-                $view,
                 $templates
             );
-        }
 
+            $view->setVariables($formProcessorResponseDto->getVariables());
+
+            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+        }
         return $view->setTemplate($templates['default']);
     }
 
@@ -261,23 +226,24 @@ class DonorFlowController extends AbstractActionController
             $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                return $this->formProcessorService->processPassportDateForm(
+                $formProcessorResponseDto = $this->formProcessorHellper->processPassportDateForm(
+                    $uuid,
                     $this->getRequest()->getPost(),
                     $dateSubForm,
-                    $view,
                     $templates
                 );
             } else {
                 $view->setVariable('passport_indate', ucwords($data['inDate']));
-                return $this->formProcessorService->processPassportForm(
+                $formProcessorResponseDto = $this->formProcessorHellper->processPassportForm(
+                    $uuid,
                     $this->getRequest()->getPost(),
                     $form,
-                    $view,
                     $templates
                 );
             }
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
-
         return $view->setTemplate($templates['default']);
     }
 

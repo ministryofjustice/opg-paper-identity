@@ -25,7 +25,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
 
-$tableName = getenv("PAPER_ID_BACK_DATA_TABLE_NAME");
+$tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
 if (! is_string($tableName) || empty($tableName)) {
     $tableName = 'identity-verify';
@@ -159,7 +159,7 @@ return [
             'get_kbv_questions' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-questions',
+                    'route'    => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'getKbvQuestions',
@@ -169,7 +169,7 @@ return [
             'check_kbv_answers' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-answers',
+                    'route'    => '/cases/:uuid/kbv-answers',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'checkKbvAnswers',
@@ -186,13 +186,63 @@ return [
                     ],
                 ],
             ],
+            'find_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/find-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findLpa',
+                    ],
+                ],
+            ],
             'update_case_method' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/update-method',
+                    'route'    => '/cases/:uuid/update-method',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'updatedMethod',
+                    ],
+                ],
+            ],
+            'add_search_postcode' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-search-postcode',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addSearchPostcode',
+                    ],
+                ],
+            ],
+            'add_selected_postoffice' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-selected-postoffice',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addSelectedPostoffice',
+                    ],
+                ],
+            ],
+            'confirm_selected_postoffice' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/confirm-selected-postoffice',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'confirmSelectedPostoffice',
+                    ],
+                ],
+            ],
+            'add_case_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addCaseLpa',
                     ],
                 ],
             ],

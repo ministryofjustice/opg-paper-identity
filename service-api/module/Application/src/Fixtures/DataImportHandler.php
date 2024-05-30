@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Application\Fixtures;
 
 use Aws\DynamoDb\DynamoDbClient;
-use Aws\DynamoDb\Exception\DynamoDbException;
-use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
 
@@ -64,17 +62,17 @@ class DataImportHandler
         }
     }
 
-    public function insertData(string $tablename, array $item): bool
+    public function insertData(array $item): bool
     {
         $params = [
-            'TableName' => $tablename,
+            'TableName' => $this->tableName,
             'Item' => $item
         ];
         try {
             $this->dynamoDbClient->putItem($params);
             return true;
         } catch (AwsException $e) {
-            $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $tablename, [
+            $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $this->tableName, [
                 'data' => $item
             ]);
             return false;
@@ -93,7 +91,7 @@ class DataImportHandler
         try {
             $this->dynamoDbClient->updateItem([
                 'Key' => $idKey['key'],
-                'TableName' => 'cases',
+                'TableName' => $this->tableName,
                 'UpdateExpression' => "set #NV=:NV",
                 'ExpressionAttributeNames' => [
                     '#NV' => $attrName,

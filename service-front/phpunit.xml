@@ -27,7 +27,7 @@
     <php>
         <env name="API_BASE_URI" value="API_BASE_URI" />
         <env name="SIRIUS_BASE_URL" value="SIRIUS_BASE_URL" />
-        <env name="SIRIUS_LOGIN_URL" value="SIRIUS_LOGIN_URL" />
+        <env name="SIRIUS_PUBLIC_URL" value="SIRIUS_PUBLIC_URL" />
         <env name="DISABLE_AUTH_LISTENER" value="1"/>
     </php>
 </phpunit>

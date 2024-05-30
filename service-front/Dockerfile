@@ -19,21 +19,20 @@ RUN mkdir /app
 WORKDIR /var/www
 
 RUN apk --no-cache add fcgi icu-dev autoconf linux-headers $PHPIZE_DEPS \
-&& docker-php-ext-install opcache intl \
-&& docker-php-ext-enable sodium
+    && docker-php-ext-install opcache intl \
+    && docker-php-ext-enable sodium
 
 # Patch curl Vulnerability 20230220
 RUN apk upgrade --no-cache libxml2
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
 COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 RUN mkdir /tmp/cache &&\
-chown -R www-data /tmp/cache &&\
-chown -R www-data /var/www/
+    chown -R www-data /tmp/cache &&\
+    chown -R www-data /var/www/
 
 ENV PHP_FPM_MAX_CHILDREN "8"
 ENV PHP_FPM_MAX_START_CHILDREN "4"
@@ -42,14 +41,15 @@ ENV PHP_FPM_MAX_SPARE_SERVERS "4"
 ENV PHP_FPM_MEMORY_LIMIT "256M"
 
 USER "www-data"
+VOLUME ["/var/www/public"]
 
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY composer.json composer.json
 COPY composer.lock composer.lock
 
 RUN composer check-platform-reqs &&\
-composer install --prefer-dist --no-dev --no-interaction --no-scripts &&\
-composer dumpautoload -o
+    composer install --prefer-dist --no-dev --no-interaction --no-scripts &&\
+    composer dumpautoload -o
 
 COPY public public
 COPY --from=asset-env /app/public public
@@ -63,7 +63,7 @@ RUN pecl install pcov && docker-php-ext-enable pcov;
 
 USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
-composer dumpautoload -o
+    composer dumpautoload -o
 
 COPY phpcs.xml phpcs.xml
 COPY phpunit.xml phpunit.xml

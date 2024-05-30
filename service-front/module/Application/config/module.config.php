@@ -12,221 +12,356 @@ use Application\Factories\SiriusApiServiceFactory;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
+use Application\Views\TwigExtensionFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Psr\Log\LoggerInterface;
+use Twig\Extension\DebugExtension;
+
+$prefix = getenv("PREFIX");
+if (! is_string($prefix)) {
+    $prefix = '';
+}
 
 return [
     'router' => [
         'routes' => [
-            'home' => [
-                'type'    => Literal::class,
+            'root' => [
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
-                    ],
+                    'route' => $prefix,
                 ],
-            ],
-            'start' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/start',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'start',
+                'child_routes' => [
+                    'home' => [
+                        'type'    => Literal::class,
+                        'options' => [
+                            'route'    => '/',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'index',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'donor_id_check' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/donor-id-check',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'donorIdCheck',
+                    'start' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/start',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'start',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'donor_lpa_check' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/donor-lpa-check',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'donorLpaCheck',
+                    'donor_id_check' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/donor-id-check',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'donorIdCheck',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'how_donor_confirms' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/how-will-donor-confirm',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'howWillDonorConfirm',
+                    'donor_lpa_check' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/donor-lpa-check',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'donorLpaCheck',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'donor_details_match_check' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/donor-details-match-check',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'donorDetailsMatchCheck',
+                    'how_donor_confirms' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/how-will-donor-confirm',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'howWillDonorConfirm',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'address_verification' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/address_verification',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'addressVerification',
+                    'donor_details_match_check' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/donor-details-match-check',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'donorDetailsMatchCheck',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'national_insurance_number' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/national-insurance-number',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'nationalInsuranceNumber',
+                    'address_verification' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/address_verification',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'addressVerification',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'driving_licence_number' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/driving-licence-number',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'drivingLicenceNumber',
+                    'national_insurance_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/national-insurance-number',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'nationalInsuranceNumber',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'passport_number' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/passport-number',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'passportNumber',
+                    'driving_licence_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/driving-licence-number',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'drivingLicenceNumber',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'id_verify_questions' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/id-verify-questions',
-                    'defaults' => [
-                        'controller' => Controller\KbvController::class,
-                        'action'     => 'idVerifyQuestions',
+                    'passport_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/passport-number',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'passportNumber',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'identity_check_passed' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/identity-check-passed',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'identityCheckPassed',
+                    'id_verify_questions' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/id-verify-questions',
+                            'defaults' => [
+                                'controller' => Controller\KbvController::class,
+                                'action'     => 'idVerifyQuestions',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'identity_check_failed' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/identity-check-failed',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'identityCheckFailed',
+                    'identity_check_passed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/identity-check-passed',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'identityCheckPassed',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'thin_file_failure' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/thin-file-failure',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'thinFileFailure',
+                    'identity_check_failed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/identity-check-failed',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'identityCheckFailed',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'proving_identity' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/proving-identity',
-                    'defaults' => [
-                        'controller' => Controller\DonorFlowController::class,
-                        'action'     => 'provingIdentity',
+                    'thin_file_failure' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/thin-file-failure',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'thinFileFailure',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'post_office_documents' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/post-office-documents',
-                    'defaults' => [
-                        'controller' => Controller\DonorPostOfficeFlowController::class,
-                        'action'     => 'postOfficeDocuments',
+                    'proving_identity' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/proving-identity',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'provingIdentity',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'find_post_office' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/find-post-office',
-                    'defaults' => [
-                        'controller' => Controller\DonorPostOfficeFlowController::class,
-                        'action'     => 'findPostOffice',
+                    'post_office_documents' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/post-office-documents',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'postOfficeDocuments',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'find_post_office_branch' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/find-post-office-branch',
-                    'defaults' => [
-                        'controller' => Controller\DonorPostOfficeFlowController::class,
-                        'action'     => 'findPostOfficeBranch',
+                    'find_post_office' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/find-post-office',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'findPostOffice',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'confirm_post_office' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/confirm-post-office',
-                    'defaults' => [
-                        'controller' => Controller\DonorPostOfficeFlowController::class,
-                        'action'     => 'confirmPostOffice',
+                    'find_post_office_branch' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/find-post-office-branch',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'findPostOfficeBranch',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'what_happens_next' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/what-happens-next',
-                    'defaults' => [
-                        'controller' => Controller\DonorPostOfficeFlowController::class,
-                        'action'     => 'whatHappensNext',
+                    'confirm_post_office' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/confirm-post-office',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'confirmPostOffice',
+                            ],
+                        ],
                     ],
-                ],
-            ],
-            'post_office_route_not_available' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '[/:uuid]/post-office-route-not-available',
-                    'defaults' => [
-                        'controller' => Controller\DonorPostOfficeFlowController::class,
-                        'action'     => 'postOfficeRouteNotAvailable',
+                    'what_happens_next' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/what-happens-next',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'whatHappensNext',
+                            ],
+                        ],
+                    ],
+                    'post_office_route_not_available' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/post-office-route-not-available',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'postOfficeRouteNotAvailable',
+                            ],
+                        ],
+                    ],
+                    'cp_how_cp_confirms' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/how-will-cp-confirm',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'howWillCpConfirm',
+                            ],
+                        ],
+                    ],
+                    'cp_name_match_check' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/name-match-check',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'nameMatchCheck',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_lpas' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/confirm-lpas',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmLpas',
+                            ],
+                        ],
+                    ],
+                    'cp_add_lpa' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/add-lpa',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'addLpa',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_dob' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/cp/confirm-dob',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmDob',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_address' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/cp/confirm-address',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'confirmAddress',
+                            ],
+                        ],
+                    ],
+                    'cp_national_insurance_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/national-insurance-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'nationalInsuranceNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_driving_licence_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/driving-licence-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'drivingLicenceNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_passport_number' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/passport-number',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'passportNumber',
+                            ],
+                        ],
+                    ],
+                    'cp_id_verify_questions' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/id-verify-questions',
+                            'defaults' => [
+                                'controller' => Controller\KbvController::class,
+                                'action'     => 'idVerifyQuestions',
+                            ],
+                        ],
+                    ],
+                    'cp_identity_check_passed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/identity-check-passed',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'identityCheckPassed',
+                            ],
+                        ],
+                    ],
+                    'cp_identity_check_failed' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/identity-check-failed',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'identityCheckFailed',
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -234,6 +369,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
+            Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
@@ -263,19 +399,21 @@ return [
         'aliases' => [
             Contracts\OpgApiServiceInterface::class => Services\OpgApiService::class,
         ],
-        'invokables' => [
-            TwigExtension::class => TwigExtension::class,
-        ],
         'factories' => [
             AuthListener::class => AuthListenerFactory::class,
+            LoggerInterface::class => LoggerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
-            LoggerInterface::class => LoggerFactory::class,
+            TwigExtension::class => TwigExtensionFactory::class,
         ],
     ],
-    'zend_twig'       => [
+    'zend_twig' => [
         'extensions' => [
             TwigExtension::class,
+            DebugExtension::class,
+        ],
+        'environment' => [
+            'debug' => filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN),
         ],
     ],
     'opg_settings' => [
@@ -283,7 +421,6 @@ return [
             'nin' => 'National Insurance number',
             'pn' => 'UK Passport (current or expired in the last 5 years)',
             'dln' => 'Driving licence (current)',
-
         ],
         'post_office_identity_methods' => [
             'po_ukp' => 'UK passport (up to 18m expired)',

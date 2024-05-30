@@ -1,0 +1,48 @@
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <h1 class="govuk-heading-xl">Certificate Provider Start</h1>
+
+        <h3 class="govuk-heading-m">Begin identity verification process for {{ type_description }}</h3>
+
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            LPA List
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                {#                                <dd></dd> #}
+                                <dt class="govuk-summary-list__key">
+                                    LPA reference number
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Donor
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Action
+                                </dt>
+                            </div>
+                            {% for datum in lpaUids %}
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        <label class="govuk-label govuk-checkboxes__label" for="lpa_check_{{ datum }}">
+                                            {{ datum }}
+                                        </label>
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        {{ details['Name'] }}
+                                    </dd>
+                                </div>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <a href="./{{ case }}/how-will-cp-confirm" class="govuk-button">Open case and continue</a>
+    </main>
+</div>

@@ -19,8 +19,10 @@ $govuk-assets-path: "../assets/";
   padding: govuk-spacing(3);
   margin-top: govuk-spacing(4);
   margin-bottom: govuk-spacing(4);
+  border-left: 7px solid #1D70B8;
+  clear: both;
 }
 
 .app-text-gray {
-  color:  $govuk-secondary-text-colour;
+  color: $govuk-secondary-text-colour;
 }
