@@ -7,6 +7,7 @@ namespace Application\Fixtures;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
+use Aws\DynamoDb\Marshaler;
 
 class DataImportHandler
 {
@@ -21,6 +22,7 @@ class DataImportHandler
 
     /**
      * @throws \Exception
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function load(): void
     {

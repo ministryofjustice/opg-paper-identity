@@ -65,8 +65,8 @@ class IdentityController extends AbstractActionController
 
 
             $insert = $this->dataImportHandler->insertData($item);
-            
-            if (!$insert) {
+
+            if (! $insert) {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_422);
                 return new JsonModel(['error' => 'Data save failed']);
             }
