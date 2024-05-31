@@ -55,15 +55,15 @@ class IdentityController extends AbstractActionController
             $uuid = Uuid::uuid4();
             $item = [
                 'id'            => ['S' => $uuid->toString()],
-                'personType'     => ['S' => $caseData->toArray()["personType"]],
-                'firstName'     => ['S' => $caseData->toArray()["firstName"]],
-                'lastName'      => ['S' => $caseData->toArray()["lastName"]],
-                'lpas'          => ['SS' => $caseData->toArray()['lpas']],
-                'address'       => ['SS' => $caseData->toArray()['address']]
+                'personType'     => ['S' => $caseData->personType],
+                'firstName'     => ['S' => $caseData->firstName],
+                'lastName'      => ['S' => $caseData->lastName],
+                'lpas'          => ['SS' => $caseData->lpas],
+                'address'       => ['SS' => $caseData->address]
             ];
 
-            if ($caseData->toArray()["dob"]) {
-                $item['dob'] = ['S' => $caseData->toArray()["dob"]];
+            if ($caseData->dob) {
+                $item['dob'] = ['S' => $caseData->dob];
             }
 
             $insert = $this->dataImportHandler->insertData($item);
@@ -214,9 +214,9 @@ class IdentityController extends AbstractActionController
             return new JsonModel($response);
         }
 
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid)?->toArray();
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        if (is_null($case) || $case['documentComplete'] === false) {
+        if (is_null($case) || $case->documentComplete === false) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             $response = [
                 "error" => "Document checks incomplete or unable to locate case"
@@ -228,8 +228,8 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        if (array_key_exists('kbvQuestions', $case)) {
-            $questions = json_decode($case['kbvQuestions'], true);
+        if (! is_null($case->kbvQuestions)) {
+            $questions = json_decode($case->kbvQuestions, true);
 
             foreach ($questions as $number => $question) {
                 unset($question['answer']);
@@ -255,8 +255,7 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid)?->toArray();
-
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
         $result = 'pass';
         $response = [];
@@ -269,7 +268,7 @@ class IdentityController extends AbstractActionController
             return new JsonModel($response);
         }
 
-        $questions = json_decode($case['kbvQuestions'], true);
+        $questions = json_decode($case->kbvQuestions, true);
         //compare against all stored answers to ensure all answers passed
         foreach ($questions as $key => $question) {
             if (! isset($data['answers'][$key])) {
