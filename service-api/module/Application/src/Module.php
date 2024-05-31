@@ -33,7 +33,9 @@ class Module
         /** @var Response */
         $response = $event->getResponse();
 
-        if ($response->getStatusCode() >= 400 && empty($response->getBody())) {
+        $def = '{"content":{"message":"An error occurred during execution; please try again later.","exception":{},"display_exceptions":false}}';
+
+        if ($response->getStatusCode() >= 400 && (empty($response->getBody()) || $response->getBody() === $def)) {
             $exception = $event->getParam('exception');
             $problem = [
                 'status' => $response->getStatusCode(),
