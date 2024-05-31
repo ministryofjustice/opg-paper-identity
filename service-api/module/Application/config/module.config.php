@@ -266,6 +266,16 @@ return [
                     ],
                 ],
             ],
+            'complete_document' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/complete-document',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'setDocumentComplete',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

@@ -57,7 +57,7 @@ class CaseData implements JsonSerializable
     /**
      * @var string[]
      */
-    public array $alternateAddress = [];
+    public ?array $alternateAddress = [];
 
     public ?string $selectedPostOfficeDeadline = null;
 
@@ -117,7 +117,7 @@ class CaseData implements JsonSerializable
             'alternateAddress' => $this->alternateAddress,
             'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
             'selectedPostOffice' => $this->selectedPostOffice,
-           'searchPostcode' => $this->searchPostcode,
+            'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
         ];
 

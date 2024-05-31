@@ -160,8 +160,12 @@ class IdentityControllerTest extends TestCase
     /**
      * @dataProvider kbvAnswersData
      */
-    public function testKbvAnswers(string $uuid, array $provided, CaseData $actual, string $result, int $status): void
-    {
+    public function testKbvAnswers(
+        string $uuid,
+        array $provided,
+        CaseData $actual,
+        string $result,
+    ): void {
         if ($result !== 'error') {
             $this->dataQueryHandlerMock
                 ->expects($this->once())->method('getCaseByUUID')
