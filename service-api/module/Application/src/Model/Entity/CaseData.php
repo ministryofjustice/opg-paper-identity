@@ -55,6 +55,20 @@ class CaseData implements JsonSerializable
     public bool $documentComplete = false;
 
     /**
+     * @var string[]
+     */
+    public array $alternateAddress = [];
+
+    public ?string $selectedPostOfficeDeadline = null;
+
+    public ?string $selectedPostOffice = null;
+
+    public ?string $searchPostcode = null;
+
+    public ?string $idMethod = null;
+
+
+    /**
      * Factory method
      *
      * @param array{personType: string, firstName: string, lastName: string, dob: string,
@@ -69,6 +83,11 @@ class CaseData implements JsonSerializable
         $instance->dob = $data['dob'];
         $instance->lpas = $data['lpas'];
         $instance->address = $data['address'];
+        $instance->alternateAddress = $data['alternateAddress'] ?? [];
+        $instance->selectedPostOfficeDeadline = $data['selectedPostOfficeDeadline'] ?? "";
+        $instance->selectedPostOffice = $data['selectedPostOffice'] ?? "";
+        $instance->searchPostcode = $data['searchPostcode'] ?? "";
+        $instance->idMethod = $data['idMethod'] ?? "";
 
         return $instance;
     }
@@ -95,6 +114,11 @@ class CaseData implements JsonSerializable
             'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
+            'alternateAddress' => $this->alternateAddress,
+            'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
+            'selectedPostOffice' => $this->selectedPostOffice,
+           'searchPostcode' => $this->searchPostcode,
+            'idMethod' => $this->idMethod,
         ];
 
         if ($this->kbvQuestions !== null) {

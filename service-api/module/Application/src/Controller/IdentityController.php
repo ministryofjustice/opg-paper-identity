@@ -487,7 +487,7 @@ class IdentityController extends AbstractActionController
         $response = [];
         $status = Response::STATUS_CODE_200;
         try {
-            $lpas = $data[0]['lpas']->toArray();
+            $lpas = $data->lpas;
             if (! in_array($lpa, $lpas)) {
                 $lpas[] = $lpa;
                 $this->dataImportHandler->updateCaseData(
@@ -564,8 +564,8 @@ class IdentityController extends AbstractActionController
             $this->dataImportHandler->updateCaseData(
                 $uuid,
                 'alternateAddress',
-                'SS',
-                $data
+                'M',
+                array_map(fn ($v) => ['S' => $v], $data),
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
