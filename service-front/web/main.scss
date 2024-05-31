@@ -26,3 +26,8 @@ $govuk-assets-path: "../assets/";
 .app-text-gray {
   color: $govuk-secondary-text-colour;
 }
+
+.app-main-wrapper {
+  padding-top:1px;
+  padding-bottom:40px;
+}
