@@ -73,39 +73,8 @@ class CaseData implements JsonSerializable
         return $instance;
     }
 
-    /**
-     * @returns array{
-     *     personType: "donor"|"certificateProvider",
-     *     firstName: string,
-     *     lastName: string,
-     *     dob: string,
-     *     address: string[],
-     *     lpas: string[],
-     *     kbvQuestions?: string,
-     *     documentComplete: bool
-     * }
-     */
-    public function toArray(): array
-    {
-        $arr = [
-            'personType' => $this->personType,
-            'firstName' => $this->firstName,
-            'lastName' => $this->lastName,
-            'dob' => $this->dob,
-            'address' => $this->address,
-            'lpas' => $this->lpas,
-            'documentComplete' => $this->documentComplete,
-        ];
-
-        if ($this->kbvQuestions !== null) {
-            $arr['kbvQuestions'] = $this->kbvQuestions;
-        }
-
-        return $arr;
-    }
-
     public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return get_object_vars($this);
     }
 }
