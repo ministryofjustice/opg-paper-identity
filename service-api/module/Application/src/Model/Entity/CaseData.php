@@ -25,7 +25,7 @@ class CaseData implements JsonSerializable
     public string $personType;
 
     #[Annotation\Required(false)]
-    #[Validator(Regex::class, options: ["pattern" => "/^NA$|^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
+    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
         Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
     ]])]
     public ?string $dob;
@@ -67,7 +67,7 @@ class CaseData implements JsonSerializable
         $instance->personType = $data['personType'];
         $instance->firstName = $data['firstName'];
         $instance->lastName = $data['lastName'];
-        $instance->dob = $data['dob'] ?? 'NA';
+        $instance->dob = $data['dob'] ?? null;
         $instance->lpas = $data['lpas'];
         $instance->address = $data['address'];
 
