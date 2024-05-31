@@ -73,7 +73,7 @@ class CaseData implements JsonSerializable
 
         return $instance;
     }
-    
+
     public function jsonSerialize(): array
     {
         return get_object_vars($this);

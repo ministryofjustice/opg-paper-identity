@@ -62,7 +62,7 @@ class IdentityController extends AbstractActionController
                 'address'       => ['SS' => $caseData->address]
             ];
 
-            if ($caseData->dob) {
+            if ($caseData->dob != null) {
                 $item['dob'] = ['S' => $caseData->dob];
             }
 
