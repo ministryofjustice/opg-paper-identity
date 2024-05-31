@@ -52,20 +52,11 @@ class IdentityController extends AbstractActionController
             ->setData(get_object_vars($caseData));
 
         if ($validator->isValid()) {
-            $uuid = Uuid::uuid4();
-            $item = [
-                'id'            => ['S' => $uuid->toString()],
-                'personType'     => ['S' => $caseData->personType],
-                'firstName'     => ['S' => $caseData->firstName],
-                'lastName'      => ['S' => $caseData->lastName],
-                'dob'           => ['S' => $caseData->dob],
-                'lpas'          => ['SS' => $caseData->lpas],
-                'address'       => ['SS' => $caseData->address]
-            ];
+            $caseData->id = strval(Uuid::uuid4());
 
-            $this->dataImportHandler->insertData($item);
+            $this->dataImportHandler->insertData($caseData);
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-            return new JsonModel(['uuid' => $uuid]);
+            return new JsonModel(['uuid' => $caseData->id]);
         }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
