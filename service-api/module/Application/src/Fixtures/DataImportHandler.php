@@ -7,6 +7,7 @@ namespace Application\Fixtures;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
+use Aws\DynamoDb\Marshaler;
 
 class DataImportHandler
 {
@@ -19,7 +20,51 @@ class DataImportHandler
     ) {
     }
 
-    public function insertData(array $item): void
+    /**
+     * @throws \Exception
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    public function load(): void
+    {
+        if (! file_exists(self::DATA_FILE_PATH) || ! is_readable(self::DATA_FILE_PATH)) {
+            throw new \Exception("File does not exist or is not readable");
+        }
+        $data = file_get_contents(self::DATA_FILE_PATH);
+
+        if ($data === false) {
+            throw new \Exception("Failed to read JSON data");
+        }
+        /**
+         * @var mixed $batch
+         */
+        $batch = json_decode($data);
+        if (is_array($batch)) {
+            $this->importData($batch);
+        }
+    }
+
+    public function importData(array $data): void
+    {
+        $marshal = new Marshaler();
+        /**
+         * @var array $item
+         */
+        foreach ($data as $item) {
+            $params = [
+                'TableName' => $this->tableName,
+                'Item' => $marshal->marshalItem($item)
+            ];
+
+            try {
+                $this->dynamoDbClient->putItem($params);
+            } catch (AwsException $e) {
+                // Handle errors
+                echo "Error: " . $e->getMessage();
+            }
+        }
+    }
+
+    public function insertData(array $item): bool
     {
         $params = [
             'TableName' => $this->tableName,
@@ -27,10 +72,12 @@ class DataImportHandler
         ];
         try {
             $this->dynamoDbClient->putItem($params);
+            return true;
         } catch (AwsException $e) {
             $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $this->tableName, [
                 'data' => $item
             ]);
+            return false;
         }
     }
 

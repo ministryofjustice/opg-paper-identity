@@ -58,12 +58,23 @@ class IdentityController extends AbstractActionController
                 'personType'     => ['S' => $caseData->toArray()["personType"]],
                 'firstName'     => ['S' => $caseData->toArray()["firstName"]],
                 'lastName'      => ['S' => $caseData->toArray()["lastName"]],
-                'dob'           => ['S' => $caseData->toArray()["dob"]],
                 'lpas'          => ['SS' => $caseData->toArray()['lpas']],
                 'address'       => ['SS' => $caseData->toArray()['address']]
             ];
 
-            $this->dataImportHandler->insertData($item);
+            if ($caseData->toArray()["dob"]) {
+                $item['dob'] = ['S' => $caseData->toArray()["dob"]];
+            }
+
+            $insert = $this->dataImportHandler->insertData($item);
+
+            if (! $insert) {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_422);
+                return new JsonModel(new Problem(
+                    'Data save failed / invalid data format'
+                ));
+            }
+
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $uuid]);
         }
