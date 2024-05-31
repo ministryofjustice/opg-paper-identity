@@ -24,10 +24,11 @@ class CaseData implements JsonSerializable
     #[Validator(NotEmpty::class)]
     public string $personType;
 
+    #[Annotation\Required(false)]
     #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
         Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
     ]])]
-    public string $dob;
+    public ?string $dob;
 
     #[Validator(NotEmpty::class)]
     public string $firstName;
@@ -57,7 +58,7 @@ class CaseData implements JsonSerializable
     /**
      * Factory method
      *
-     * @param array{personType: string, firstName: string, lastName: string, dob: string,
+     * @param array{personType: string, firstName: string, lastName: string, dob: ?string,
      *     lpas: array{}, address: array{} } $data
      */
     public static function fromArray(mixed $data): self
@@ -66,13 +67,13 @@ class CaseData implements JsonSerializable
         $instance->personType = $data['personType'];
         $instance->firstName = $data['firstName'];
         $instance->lastName = $data['lastName'];
-        $instance->dob = $data['dob'];
+        $instance->dob = $data['dob'] ?? null;
         $instance->lpas = $data['lpas'];
         $instance->address = $data['address'];
 
         return $instance;
     }
-
+    
     public function jsonSerialize(): array
     {
         return get_object_vars($this);
