@@ -121,12 +121,8 @@ class DataQueryHandler
             /** @var array $record */
             foreach ($result['Items'] as $record) {
                 $marshal = new Marshaler();
-                $item = $marshal->unmarshalItem($record);
-
-                // Converts (nested) `SetValue` objects into native arrays
-                $item = json_decode(json_encode($item), true);
-
-                $displayResults[] = $item;
+                $json = $marshal->unmarshalJson($record);
+                $displayResults[] = json_decode($json, true);
             }
         }
         return $displayResults;
