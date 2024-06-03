@@ -57,6 +57,8 @@ jobs:
             service_name: api
           - image_app_name: paper-identity/front
             service_name: front
+          - image_app_name: paper-identity/yoti-mock
+            service_name: yoti-mock
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4

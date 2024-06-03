@@ -12,7 +12,10 @@ services:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
 
   yoti-mock:
-    image: outofcoffee/imposter
+    image: paper-identity/yoti-mock
+    build:
+      context: docker/yoti
+      dockerfile: Dockerfile
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "imposter", "list", "-x" ]
