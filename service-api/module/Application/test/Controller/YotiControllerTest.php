@@ -69,7 +69,6 @@ class YotiControllerTest extends TestCase
 
     public function testDetailsWithNouuid(): void
     {
-        $response = '{"error":"Missing uuid"}';
         $this->dispatch('/counter-service/retrieve-status', 'GET');
         $this->assertResponseStatusCode(404);
     }
