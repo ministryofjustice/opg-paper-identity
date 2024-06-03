@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application;
 
+use App\Http\Controllers\Controller;
 use Application\Aws\DynamoDbClientFactory;
+use Application\Controller\YotiController;
 use Application\Factories\LoggerFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
@@ -17,6 +19,8 @@ use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
+use Application\Yoti\YotiServiceFactory;
+use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -206,6 +210,46 @@ return [
                     ],
                 ],
             ],
+            'find_postoffice_branches' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/branches',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'findPostOffice',
+                    ],
+                ],
+            ],
+            'create_yoti_session' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/create-session',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'createSession',
+                    ],
+                ],
+            ],
+            'retrieve_yoti_status' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/retrieve-status',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getSessionStatus',
+                    ],
+                ],
+            ],
+            'retrieve_pdf_letter' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/retrieve-letter',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getPDFLetter',
+                    ],
+                ]
+            ],
             'add_search_postcode' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -243,6 +287,7 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'addCaseLpa',
+
                     ],
                 ],
             ],
@@ -254,7 +299,8 @@ return [
         ],
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\IdentityController::class => LazyControllerAbstractFactory::class
+            Controller\IdentityController::class => LazyControllerAbstractFactory::class,
+            Controller\YotiController::class => LazyControllerAbstractFactory::class
         ],
     ],
 
@@ -277,7 +323,8 @@ return [
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
-            KBVServiceInterface::class => KBVServiceFactory::class
+            KBVServiceInterface::class => KBVServiceFactory::class,
+            YotiServiceInterface::class => YotiServiceFactory::class
         ],
     ],
     'view_manager' => [
