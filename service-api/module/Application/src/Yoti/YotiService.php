@@ -38,7 +38,13 @@ class YotiService implements YotiServiceInterface
      */
     public function createSession(array $sessionData): array
     {
-        return [];
+        $results = $this->client->post('/idverify/v1/sessions', [
+            'json' => $sessionData,
+        ]);
+
+        $result = json_decode(strval($results->getBody()), true);
+
+        return ["status" => $results->getStatusCode(), "data" => $result];
     }
 
     /**

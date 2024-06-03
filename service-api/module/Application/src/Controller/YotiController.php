@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Fixtures\DataImportHandler;
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
@@ -16,7 +17,8 @@ use Laminas\View\Model\JsonModel;
 class YotiController extends AbstractActionController
 {
     public function __construct(
-        private readonly YotiServiceInterface $yotiService
+        private readonly YotiServiceInterface $yotiService,
+        private readonly DataImportHandler $dataImportHandler,
     ) {
     }
 
@@ -28,9 +30,20 @@ class YotiController extends AbstractActionController
     }
     public function createSessionAction(array $sessionData): JsonModel
     {
-        $data = [];
-        $data['response'] = $this->yotiService->createSession($sessionData);
-        return new JsonModel($data);
+        $uuid = $this->params()->fromRoute('uuid');
+        //@TODO authenticate if not using mock?
+        $result = $this->yotiService->createSession($sessionData);
+        //save sessionId back to caseData
+        if ($result["status"] < 400) {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'sessionId',
+                'S',
+                $result["data"]["session_id"]
+            );
+        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_204);
+        return new JsonModel(null);
     }
 
     public function getSessionStatusAction(): JsonModel
