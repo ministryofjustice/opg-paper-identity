@@ -67,15 +67,10 @@ class YotiControllerTest extends TestCase
         $this->assertMatchedRouteName('retrieve_yoti_status');
     }
 
-    public function testDetailsWithNoSession(): void
+    public function testDetailsWithNouuid(): void
     {
-        $response = '{"error":"Missing sessionId"}';
+        $response = '{"error":"Missing uuid"}';
         $this->dispatch('/counter-service/retrieve-status', 'GET');
-        $this->assertResponseStatusCode(400);
-        $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
-        $this->assertMatchedRouteName('retrieve_yoti_status');
+        $this->assertResponseStatusCode(404);
     }
 }

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Application;
 
-use App\Http\Controllers\Controller;
 use Application\Aws\DynamoDbClientFactory;
-use Application\Controller\YotiController;
 use Application\Factories\LoggerFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;

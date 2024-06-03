@@ -48,13 +48,14 @@ class YotiController extends AbstractActionController
 
     public function getSessionStatusAction(): JsonModel
     {
-        $sessionId = $this->params()->fromRoute('sessionId');
+        $uuid = $this->params()->fromRoute('uuid');
 
-        if (! $sessionId) {
+        if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(['error' => 'Missing sessionId']);
+            return new JsonModel(['error' => 'Missing uuid']);
         }
-
+        //@TODO look up actual sessionId from case and case where this is not created
+        $sessionId = 'AJDAHDFSH';
         $session = $this->yotiService->retrieveResults($sessionId);
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
