@@ -28,12 +28,33 @@ class Module
         $eventManager->attach(MvcEvent::EVENT_FINISH, [$this, 'onFinish'], 1000000);
     }
 
+    /**
+     * Determines whether the error response is the default Laminas
+     * error message, so that we can overwrite that
+     */
+    private function isGenericErrorResponse(string $body): bool
+    {
+        $obj = json_decode($body, true);
+        if (! is_array($obj)) {
+            return true;
+        }
+
+        if (! isset($obj['title'])) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function onFinish(MvcEvent $event): void
     {
         /** @var Response */
         $response = $event->getResponse();
 
-        if ($response->getStatusCode() >= 400 && empty($response->getBody())) {
+        if (
+            $response->getStatusCode() >= 400 &&
+            (empty($response->getBody()) || $this->isGenericErrorResponse($response->getBody()))
+        ) {
             $exception = $event->getParam('exception');
             $problem = [
                 'status' => $response->getStatusCode(),
