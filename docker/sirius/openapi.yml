@@ -44,6 +44,53 @@ paths:
                 $ref: "#/components/schemas/CombinedLpa"
         "401":
           description: Error
+  /api/v1/postcode-lookup:
+    parameters:
+      - name: postcode
+        in: query
+        required: true
+        schema:
+          type: string
+          nullable: false
+    get:
+      summary: Lookup addresses based on a post code
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - addressLine1
+                    - addressLine2
+                    - addressLine3
+                    - town
+                    - postcode
+                    - description
+                  properties:
+                    addressLine1:
+                      type: string
+                      x-faker: address.streetAddress
+                    addressLine2:
+                      type: string
+                      x-faker: address.streetName
+                    addressLine3:
+                      type: string
+                      x-faker: address.cityName
+                    town:
+                      type: string
+                      x-faker: address.cityName
+                    postcode:
+                      type: string
+                      x-faker:
+                        helpers.replaceSymbols: "??# #??"
+                    description:
+                      type: string
+                      x-faker:
+                        fake: "A concatenation of the address lines"
 components:
   schemas:
     User:
