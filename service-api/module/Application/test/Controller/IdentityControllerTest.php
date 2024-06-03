@@ -181,11 +181,8 @@ class IdentityControllerTest extends TestCase
         $this->assertMatchedRouteName('check_kbv_answers');
 
         if ($result === "error") {
-            $this->assertEquals(
-                '{"error":"Missing UUID or unable to find case"}',
-                $this->getResponse()->getContent()
-            )
-            ;
+            $response = json_decode($this->getResponse()->getContent(), true);
+            $this->assertEquals('Missing UUID or unable to find case', $response['title']);
         } else {
             $this->assertEquals('{"result":"' . $result . '"}', $this->getResponse()->getContent());
         }
@@ -235,14 +232,15 @@ class IdentityControllerTest extends TestCase
 
     public function testKBVQuestionsWithNoUUID(): void
     {
-        $response = '{"error":"Missing UUID"}';
         $this->dispatch('/cases/kbv-questions', 'GET');
         $this->assertResponseStatusCode(400);
-        $this->assertEquals($response, $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class);
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('get_kbv_questions');
+
+        $response = json_decode($this->getResponse()->getContent(), true);
+        $this->assertEquals('Missing UUID', $response['title']);
     }
 
     /**
