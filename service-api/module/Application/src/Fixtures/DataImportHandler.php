@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Fixtures;
 
+use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
 
@@ -19,12 +21,16 @@ class DataImportHandler
     ) {
     }
 
-    public function insertData(array $item): void
+    public function insertData(CaseData $item): void
     {
+        $marsheler = new Marshaler();
+        $encoded = $marsheler->marshalItem($item->jsonSerialize());
+
         $params = [
             'TableName' => $this->tableName,
-            'Item' => $item
+            'Item' => $encoded
         ];
+
         try {
             $this->dynamoDbClient->putItem($params);
         } catch (AwsException $e) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Fixtures;
 
 use Application\Fixtures\DataImportHandler;
+use Application\Model\Entity\CaseData;
 use Aws\CommandInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
@@ -37,6 +38,8 @@ class DataImportHandlerTest extends TestCase
      */
     public function testInsertData(): void
     {
+        $case = CaseData::fromArray(['firstName' => 'Maria', 'lastName' => 'Neldon']);
+
         // Stubbing the putItem method of DynamoDB client
         $this->dynamoDbClientMock->expects($this->once())
             ->method('__call')
@@ -47,7 +50,8 @@ class DataImportHandlerTest extends TestCase
                     $input = $params[0];
                     $this->assertEquals('cases', $input['TableName']);
                     $this->assertArrayHasKey('Item', $input);
-                    $this->assertEquals(['id' => '123', 'name' => 'John'], $input['Item']);
+                    $this->assertEquals(['S' => 'Maria'], $input['Item']['firstName']);
+                    $this->assertEquals(['S' => 'Neldon'], $input['Item']['lastName']);
                     return true;
                 })
             );
@@ -56,7 +60,7 @@ class DataImportHandlerTest extends TestCase
         $this->loggerMock->expects($this->never())->method('error');
 
         // Call the insertData method with test data
-        $this->sut->insertData(['id' => '123', 'name' => 'John']);
+        $this->sut->insertData($case);
     }
 
 
@@ -67,6 +71,8 @@ class DataImportHandlerTest extends TestCase
      */
     public function testInsertDataWithException(): void
     {
+        $caseData = CaseData::fromArray(['firstName' => 'Maria', 'lastName' => 'Neldon']);
+
         $commandMock = $this->createMock(CommandInterface::class);
 
         // Stubbing the putItem method of DynamoDB client to throw an exception
@@ -82,16 +88,16 @@ class DataImportHandlerTest extends TestCase
                 $this->stringContains(
                     'Unable to save data [Test exception] to cases'
                 ),
-                $this->callback(function ($context) {
+                $this->callback(function ($context) use ($caseData) {
                     // Ensure the data passed to logger contains the correct item
                     $this->assertArrayHasKey('data', $context);
-                    $this->assertEquals(['id' => '123', 'name' => 'John'], $context['data']);
+                    $this->assertEquals($caseData, $context['data']);
                     return true;
                 })
             );
 
         // Call the insertData method with test data
-        $this->sut->insertData(['id' => '123', 'name' => 'John']);
+        $this->sut->insertData($caseData);
     }
 
     /**
