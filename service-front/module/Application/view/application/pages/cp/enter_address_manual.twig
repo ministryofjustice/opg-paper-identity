@@ -1,6 +1,6 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
 <h1 class="govuk-heading-xl govuk-!-width-two-thirds">What is the address on the ID document?</h1>
-<form method="POST" target="">
+<form method="POST" action="./confirm-address">
     <div class="govuk-form-group {% if form.get('address_line_1').messages %}govuk-form-group--error{% endif %}">
         {% if form.get('address_line_1').messages %}
             <p id="address_line_1-error" class="govuk-error-message">

@@ -379,4 +379,16 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+
+    public function addSelectedAltAddress(string $uuid, array $data): array
+    {
+        $url = sprintf("/cases/%s/save-alternate-address-to-case", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
 }

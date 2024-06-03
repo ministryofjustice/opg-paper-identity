@@ -194,16 +194,17 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-//        echo json_encode($routes[$detailsData['idMethod']]);
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
 
-//            die(json_encode($params));
+            if($params->get('confirm_alt') == '1') {
+                return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
+            }
 
             if ($params->get('chosenAddress') == 'yes') {
                 return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
             } elseif ($params->get('chosenAddress') == 'no') {
-                return $this->redirect()->toRoute('root/cp_enter_address', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
             }
         }
 
@@ -354,7 +355,7 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/identity_check_failed');
     }
 
-    public function enterAddressAction(): ViewModel
+    public function enterPostcodeAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -371,7 +372,6 @@ class CPFlowController extends AbstractActionController
 //                echo json_encode($form->getData());
                 $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params['postcode']);
                 $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
-                echo json_encode($addressStrings);
                 $view->setVariable('addresses', $addressStrings);
                 $view->setVariable('addresses_count', count($addressStrings));
                 return $view->setTemplate('application/pages/cp/select_address');
@@ -381,13 +381,36 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp/enter_address');
     }
 
-    public function enterAddressManualAction(): ViewModel
+    public function selectAddressAction(): ViewModel|Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+
+            $structuredAddress = json_decode($params->get('address_json'), true);
+
+            $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+
+            if ($response) {
+                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+            }
+        }
+        return $view->setTemplate('application/pages/cp/select_address');
+    }
+
+    public function enterAddressManualAction(): ViewModel|Response
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
+        $form->setData($detailsData['alternateAddress']);
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
@@ -395,10 +418,10 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-//                echo json_encode($form->getData());
-                $response = $this->opgApiService->saveAltAddress($uuid, $params);
-
-//                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                $response = $this->opgApiService->addSelectedAltAddress($uuid, $params->toArray());
+                if ($response) {
+                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                }
             }
         }
 
@@ -406,17 +429,5 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/cp/enter_address_manual');
-    }
-
-    public function selectAddressAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view = new ViewModel();
-
-        $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/cp/select_address');
     }
 }

@@ -363,13 +363,13 @@ return [
                             ],
                         ],
                     ],
-                    'cp_enter_address' => [
+                    'cp_enter_postcode' => [
                         'type'    => Segment::class,
                         'options' => [
-                            'route'    => '[/:uuid]/cp/enter-address',
+                            'route'    => '[/:uuid]/cp/enter-postcode',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
-                                'action'     => 'enterAddress',
+                                'action'     => 'enterPostcode',
                             ],
                         ],
                     ],
@@ -383,16 +383,16 @@ return [
                             ],
                         ],
                     ],
-//                    'cp_select_address' => [
-//                        'type'    => Segment::class,
-//                        'options' => [
-//                            'route'    => '[/:uuid]/cp/select-address',
-//                            'defaults' => [
-//                                'controller' => Controller\CPFlowController::class,
-//                                'action'     => 'selectAddress',
-//                            ],
-//                        ],
-//                    ],
+                    'cp_select_address' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/select-address',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'selectAddress',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],

@@ -164,7 +164,10 @@ class FormProcessorHelper
                 }
                 return $str;
             };
-            $stringified[$key] = substr(
+//            $arr['key'] = $key;
+            $index = json_encode($arr);
+
+            $stringified[$index] = substr(
                 $string($arr),
                 0,
                 strlen($string($arr)) - 2

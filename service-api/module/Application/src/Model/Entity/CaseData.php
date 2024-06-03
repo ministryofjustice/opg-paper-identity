@@ -101,7 +101,13 @@ class CaseData implements JsonSerializable
      *     address: string[],
      *     lpas: string[],
      *     kbvQuestions?: string,
-     *     documentComplete: bool
+     *     documentComplete: bool,
+     *     alternateAddress?: string[],
+     *     selectedPostOfficeDeadline?:  string,
+     *     selectedPostOffice?: string,
+     *     searchPostcode?: string,
+     *     idMethod?: string
+     *     kbvQuestions?: string[]
      * }
      */
     public function toArray(): array
