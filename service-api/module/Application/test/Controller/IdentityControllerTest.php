@@ -165,6 +165,7 @@ class IdentityControllerTest extends TestCase
         array $provided,
         CaseData $actual,
         string $result,
+        int $status
     ): void {
         if ($result !== 'error') {
             $this->dataQueryHandlerMock

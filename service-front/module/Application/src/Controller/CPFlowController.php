@@ -197,7 +197,7 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
 
-            if($params->get('confirm_alt') == '1') {
+            if ($params->get('confirm_alt') == '1') {
                 return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
             }
 
