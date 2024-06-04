@@ -20,9 +20,13 @@ class CpAltAddress
      */
     #[Annotation\Validator(AddressFieldValidator::class)]
     public mixed $address_line_1;
-
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public mixed $address_line_2;
-
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public mixed $address_line_3;
 
     /**
@@ -36,6 +40,8 @@ class CpAltAddress
      */
     #[Annotation\Validator(PostcodeValidator::class)]
     public mixed $postcode;
-
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public mixed $country;
 }

@@ -114,6 +114,7 @@ class CaseData implements JsonSerializable
     public function toArray(): array
     {
         $arr = [
+            'id' => $this->id,
             'personType' => $this->personType,
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,

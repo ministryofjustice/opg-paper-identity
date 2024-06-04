@@ -21,7 +21,7 @@ class DataImportHandler
     ) {
     }
 
-    public function insertData(CaseData $item): void
+    public function insertData(CaseData $item): string
     {
         $marsheler = new Marshaler();
         $encoded = $marsheler->marshalItem($item->jsonSerialize());
@@ -33,14 +33,19 @@ class DataImportHandler
 
         try {
             $this->dynamoDbClient->putItem($params);
+            return 'Success';
         } catch (AwsException $e) {
             $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $this->tableName, [
                 'data' => $item
             ]);
+            return $e->getMessage();
         }
     }
 
-    public function updateCaseData(string $uuid, string $attrName, string $attrType, mixed $attrValue): void
+    /**
+     * @psalm-suppress PossiblyUnusedReturnValue
+     */
+    public function updateCaseData(string $uuid, string $attrName, string $attrType, mixed $attrValue): string
     {
         $idKey = [
             'key' => [
@@ -63,10 +68,12 @@ class DataImportHandler
                     ]
                 ],
             ]);
+            return 'Success';
         } catch (AwsException $e) {
             $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
                 'data' => [$attrName => $attrValue]
             ]);
+            return $e->getMessage();
         }
     }
 }

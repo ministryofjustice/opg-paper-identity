@@ -154,8 +154,8 @@ class FormProcessorHelper
     {
         $stringified = [];
 
-        foreach ($addresses as $key => $arr) {
-            $string = function ($arr) {
+        foreach ($addresses as $arr) {
+            $string = function (array $arr): string {
                 $str = "";
                 foreach ($arr as $line) {
                     if (strlen($line) > 0) {
@@ -164,7 +164,6 @@ class FormProcessorHelper
                 }
                 return $str;
             };
-//            $arr['key'] = $key;
             $index = json_encode($arr);
 
             $stringified[$index] = substr(

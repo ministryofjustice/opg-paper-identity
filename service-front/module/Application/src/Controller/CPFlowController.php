@@ -369,8 +369,10 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-//                echo json_encode($form->getData());
-                $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params['postcode']);
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
+                $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params->get('postcode'));
                 $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
                 $view->setVariable('addresses', $addressStrings);
                 $view->setVariable('addresses_count', count($addressStrings));
@@ -418,6 +420,9 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
                 $response = $this->opgApiService->addSelectedAltAddress($uuid, $params->toArray());
                 if ($response) {
                     return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);

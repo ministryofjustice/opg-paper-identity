@@ -54,7 +54,14 @@ class IdentityController extends AbstractActionController
         if ($validator->isValid()) {
             $caseData->id = strval(Uuid::uuid4());
 
-            $this->dataImportHandler->insertData($caseData);
+            $response = $this->dataImportHandler->insertData($caseData);
+            if (! $response == 'Success') {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                return new JsonModel([
+                    'uuid' => null,
+                    'error' => $response
+                ]);
+            }
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $caseData->id]);
         }
@@ -459,6 +466,9 @@ class IdentityController extends AbstractActionController
         $response = [];
         $status = Response::STATUS_CODE_200;
         try {
+            /**
+             * @psalm-suppress PossiblyNullPropertyFetch
+             */
             $lpas = $data->lpas;
             if (! in_array($lpa, $lpas)) {
                 $lpas[] = $lpa;
@@ -537,7 +547,9 @@ class IdentityController extends AbstractActionController
                 $uuid,
                 'alternateAddress',
                 'M',
-                array_map(fn ($v) => ['S' => $v], $data),
+                array_map(fn (array $v) => [
+                    'S' => $v
+                ], $data),
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
@@ -554,7 +566,7 @@ class IdentityController extends AbstractActionController
     public function setDocumentCompleteAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
+        //$data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
         $status = Response::STATUS_CODE_200;
 
