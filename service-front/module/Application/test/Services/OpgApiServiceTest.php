@@ -820,8 +820,12 @@ class OpgApiServiceTest extends TestCase
      * @dataProvider setDocumentCompleteData
      * @return void
      */
-    public function testSetDocumentCompleteMethod(array $data, Client $client, array $responseData, bool $exception): void
-    {
+    public function testSetDocumentCompleteMethod(
+        array $data,
+        Client $client,
+        array $responseData,
+        bool $exception
+    ): void {
         if ($exception) {
             $this->expectException(OpgApiException::class);
         }
@@ -829,7 +833,11 @@ class OpgApiServiceTest extends TestCase
 
         $response = $this->opgApiService->updateCaseSetDocumentComplete($data['uuid']);
 
-        $this->assertEquals($responseData, $response);
+        if ($exception) {
+            $this->assertStringContainsString('Client error:', json_encode($response));
+        } else {
+            $this->assertEquals($responseData, $response);
+        }
     }
 
     public static function setDocumentCompleteData(): array
@@ -844,7 +852,9 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
-        $failMockResponseData = ['Bad Request'];
+        $failMockResponseData = [
+            'Client error: `'
+        ];
         $failMock = new MockHandler([
             new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
         ]);

@@ -252,7 +252,6 @@ class DonorFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $this->opgApiService->updateCaseSetDocumentComplete($uuid);
 
         $view = new ViewModel();
 
