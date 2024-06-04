@@ -47,4 +47,6 @@ interface OpgApiServiceInterface
     public function searchAddressesByPostcode(string $uuid, string $postcode): array;
 
     public function addSelectedAltAddress(string $uuid, array $data): array;
+
+    public function updateCaseSetDocumentComplete(string $uuid): array;
 }
