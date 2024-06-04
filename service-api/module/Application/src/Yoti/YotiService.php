@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
+use Application\Exceptions\YotiException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Laminas\Http\Response;
 
 /**
  * @psalm-suppress PossiblyUnusedProperty
@@ -21,14 +24,22 @@ class YotiService implements YotiServiceInterface
      * @param string $postCode
      * @return array
      * Get post offices near the location
+     * @throws GuzzleException
+     * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array
     {
-        $results = $this->client->post('/idverify/v1/lookup/uk-post-office', [
-            'json' => ['search_string' => $postCode],
-        ]);
-
-        return json_decode(strval($results->getBody()), true);
+        try {
+            $results = $this->client->post('/idverify/v1/lookup/uk-post-office', [
+                'json' => ['SearchString' => $postCode],
+            ]);
+            if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new YotiException($results->getReasonPhrase());
+            }
+            return json_decode(strval($results->getBody()), true);
+        } catch (GuzzleException $e) {
+            return ["error" => $e->getMessage()];
+        }
     }
 
     /**

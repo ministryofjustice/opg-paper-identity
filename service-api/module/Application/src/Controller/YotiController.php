@@ -8,7 +8,7 @@ use Application\Fixtures\DataImportHandler;
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
-use Laminas\View\Model\JsonModel;
+use Application\View\JsonModel;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -22,10 +22,20 @@ class YotiController extends AbstractActionController
     ) {
     }
 
-    public function findPostOfficeAction(string $postCode): JsonModel
+    public function findPostOfficeAction(): JsonModel
     {
         $branches = [];
-        $branches["locations"] = $this->yotiService->postOfficeBranch($postCode);
+        $data = json_decode($this->getRequest()->getContent(), true);
+
+        $branchList = $this->yotiService->postOfficeBranch($data["search_string"]);
+
+        foreach ($branchList['branches'] as $branch) {
+            $branches[$branch["fad_code"]] = [
+                "name" => $branch["name"],
+                "address" => $branch["address"] . ", " . $branch["postcode"]
+            ];
+        }
+
         return new JsonModel($branches);
     }
     public function createSessionAction(array $sessionData): JsonModel
