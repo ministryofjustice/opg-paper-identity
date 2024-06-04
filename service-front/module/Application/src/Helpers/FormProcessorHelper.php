@@ -31,6 +31,7 @@ class FormProcessorHelper
             $variables['dln_data'] = $formData;
             $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
             $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
+            $validDln === 'PASS' && $this->opgApiService->updateCaseSetDocumentComplete($uuid);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -57,6 +58,7 @@ class FormProcessorHelper
             $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
 
             $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
+            $validNino === 'PASS' && $this->opgApiService->updateCaseSetDocumentComplete($uuid);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -83,6 +85,7 @@ class FormProcessorHelper
             $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
             $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
+            $validPassport === 'PASS' && $this->opgApiService->updateCaseSetDocumentComplete($uuid);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -112,7 +115,7 @@ class FormProcessorHelper
         $validDate = $form->isValid();
 
         if ($validDate) {
-            $variables['valid_date' ] = true;
+            $variables['valid_date'] = true;
         } else {
             $variables['invalid_date'] = true;
         }
@@ -148,5 +151,30 @@ class FormProcessorHelper
                 'lpa_response' => $responseData
             ],
         );
+    }
+
+    public function stringifyAddresses(array $addresses): array
+    {
+        $stringified = [];
+
+        foreach ($addresses as $arr) {
+            $string = function (array $arr): string {
+                $str = "";
+                foreach ($arr as $line) {
+                    if (strlen($line) > 0) {
+                        $str .= $line . ", ";
+                    }
+                }
+                return $str;
+            };
+            $index = json_encode($arr);
+
+            $stringified[$index] = substr(
+                $string($arr),
+                0,
+                strlen($string($arr)) - 2
+            );
+        }
+        return $stringified;
     }
 }

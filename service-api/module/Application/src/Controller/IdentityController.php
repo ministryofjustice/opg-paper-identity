@@ -54,7 +54,14 @@ class IdentityController extends AbstractActionController
         if ($validator->isValid()) {
             $caseData->id = strval(Uuid::uuid4());
 
-            $this->dataImportHandler->insertData($caseData);
+            $response = $this->dataImportHandler->insertData($caseData);
+            if (! $response == 'Success') {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                return new JsonModel([
+                    'uuid' => null,
+                    'error' => $response
+                ]);
+            }
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $caseData->id]);
         }
@@ -453,10 +460,141 @@ class IdentityController extends AbstractActionController
 
     public function addCaseLpaAction(): JsonModel
     {
-        //        $uuid = $this->params()->fromRoute('uuid');
-        //        $lpa = $this->params()->fromRoute('lpa');
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
+        $status = Response::STATUS_CODE_200;
+        try {
+            /**
+             * @psalm-suppress PossiblyNullPropertyFetch
+             */
+            $lpas = $data->lpas;
+            if (! in_array($lpa, $lpas)) {
+                $lpas[] = $lpa;
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'lpas',
+                    'SS',
+                    $lpas
+                );
+                $response['result'] = "Updated";
+            } else {
+                $response['result'] = "LPA is already added to this case";
+            }
+        } catch (\Exception $exception) {
+            $status = Response::STATUS_CODE_400;
+            $response['exception'] = $exception->getMessage();
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        return new JsonModel($response);
+    }
+    public function searchAddressByPostcodeAction(): JsonModel
+    {
+        $postcode = $this->params()->fromRoute('postcode');
+        $status = Response::STATUS_CODE_200;
+
+        $response = [
+            [
+                'address_line_1' => '1 Little Street',
+                'address_line_2' => '',
+                'address_line_3' => '',
+                'town' => 'London',
+                'postcode' => $postcode,
+                'country' => 'UK'
+            ],
+            [
+                'address_line_1' => '2 Little Street',
+                'address_line_2' => '',
+                'address_line_3' => '',
+                'town' => 'London',
+                'postcode' => $postcode,
+                'country' => 'UK'
+            ],
+            [
+                'address_line_1' => '3 Little Street',
+                'address_line_2' => '',
+                'address_line_3' => '',
+                'town' => 'London',
+                'postcode' => $postcode,
+                'country' => 'UK'
+            ],
+        ];
+
+        $this->getResponse()->setStatusCode($status);
+        return new JsonModel($response);
+    }
+
+    public function saveAlternateAddressToCaseAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'alternateAddress',
+                'M',
+                array_map(fn (array $v) => [
+                    'S' => $v
+                ], $data),
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+            return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
         $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function setDocumentCompleteAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        //$data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'documentComplete',
+                'BOOL',
+                true
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+            return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
         return new JsonModel($response);
     }
 }

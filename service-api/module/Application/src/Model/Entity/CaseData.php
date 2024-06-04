@@ -62,6 +62,20 @@ class CaseData implements JsonSerializable
     public bool $documentComplete = false;
 
     /**
+     * @var string[]
+     */
+    public ?array $alternateAddress = [];
+
+    public ?string $selectedPostOfficeDeadline = null;
+
+    public ?string $selectedPostOffice = null;
+
+    public ?string $searchPostcode = null;
+
+    public ?string $idMethod = null;
+
+
+    /**
      * @param array<string, mixed> $data
      */
     public static function fromArray(mixed $data): self
@@ -79,8 +93,51 @@ class CaseData implements JsonSerializable
         return $instance;
     }
 
+    /**
+     * @returns array{
+     *     personType: "donor"|"certificateProvider",
+     *     firstName: string,
+     *     lastName: string,
+     *     dob: string,
+     *     address: string[],
+     *     lpas: string[],
+     *     kbvQuestions?: string,
+     *     documentComplete: bool,
+     *     alternateAddress?: string[],
+     *     selectedPostOfficeDeadline?:  string,
+     *     selectedPostOffice?: string,
+     *     searchPostcode?: string,
+     *     idMethod?: string
+     *     kbvQuestions?: string[]
+     * }
+     */
+    public function toArray(): array
+    {
+        $arr = [
+            'id' => $this->id,
+            'personType' => $this->personType,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'dob' => $this->dob,
+            'address' => $this->address,
+            'lpas' => $this->lpas,
+            'documentComplete' => $this->documentComplete,
+            'alternateAddress' => $this->alternateAddress,
+            'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
+            'selectedPostOffice' => $this->selectedPostOffice,
+            'searchPostcode' => $this->searchPostcode,
+            'idMethod' => $this->idMethod,
+        ];
+
+        if ($this->kbvQuestions !== null) {
+            $arr['kbvQuestions'] = $this->kbvQuestions;
+        }
+
+        return $arr;
+    }
+
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        return $this->toArray();
     }
 }

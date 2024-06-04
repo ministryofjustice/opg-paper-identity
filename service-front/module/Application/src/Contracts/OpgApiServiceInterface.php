@@ -43,4 +43,10 @@ interface OpgApiServiceInterface
     public function confirmSelectedPostOffice(string $uuid, string $deadline): array;
 
     public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array;
+
+    public function searchAddressesByPostcode(string $uuid, string $postcode): array;
+
+    public function addSelectedAltAddress(string $uuid, array $data): array;
+
+    public function updateCaseSetDocumentComplete(string $uuid): array;
 }
