@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Model\Entity;
 
 use Application\Model\Entity\CaseData;
+use Application\Model\IdMethod;
 use Laminas\Form\Annotation\AttributeBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -56,6 +57,10 @@ class CaseDataTest extends TestCase
             [array_merge($validData, ['documentComplete' => true]), true],
             [array_merge($validData, ['documentComplete' => false]), true],
             [array_merge($validData, ['documentComplete' => 'grergiro']), false],
+            [array_merge($validData, ['idMethod' => IdMethod::PassportNumber]), true],
+            [array_merge($validData, ['idMethod' => IdMethod::PostOfficeWithEUDrivingLicense]), true],
+            [array_merge($validData, ['idMethod' => IdMethod::OnBehalf]), true],
+            [array_merge($validData, ['idMethod' => 'other']), false],
         ];
     }
 }
