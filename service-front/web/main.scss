@@ -31,3 +31,33 @@ $govuk-assets-path: "../assets/";
   padding-top:1px;
   padding-bottom:40px;
 }
+
+.app-button-no-v-align {
+  font-family:"GDS Transport",arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-weight:400;
+  font-size:1rem;
+  line-height:1.1875;
+  box-sizing:border-box;
+  display:inline-block;
+  position:relative;
+  width:100%;
+  margin-top:0;
+  margin-right:0;
+  margin-left:0;
+  margin-bottom:22px;
+  padding:8px 10px 7px;
+  border:2px solid rgba(0,0,0,0);
+  border-radius:0;
+  color:#000;
+  background-color:#f3f2f1;
+  box-shadow:0 2px 0 #002d18;
+  text-align:center;
+  cursor:pointer;
+  -webkit-appearance:none
+}
+
+.app-moj-banner {
+  border: 2px solid !important;
+}
