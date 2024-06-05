@@ -31,7 +31,9 @@ class FormProcessorHelper
             $variables['dln_data'] = $formData;
             $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
             $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
-            $validDln === 'PASS' && $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            if ($validDln === 'PASS') {
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            }
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -58,7 +60,9 @@ class FormProcessorHelper
             $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
 
             $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
-            $validNino === 'PASS' && $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            if ($validNino === 'PASS') {
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            }
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -85,7 +89,9 @@ class FormProcessorHelper
             $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
             $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
-            $validPassport === 'PASS' && $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            if ($validPassport === 'PASS') {
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            }
         }
         return new FormProcessorResponseDto(
             $uuid,

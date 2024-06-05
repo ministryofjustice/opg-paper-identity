@@ -54,13 +54,11 @@ class IdentityController extends AbstractActionController
         if ($validator->isValid()) {
             $caseData->id = strval(Uuid::uuid4());
 
-            $response = $this->dataImportHandler->insertData($caseData);
-            if (! $response == 'Success') {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-                return new JsonModel([
-                    'uuid' => null,
-                    'error' => $response
-                ]);
+            try {
+                $this->dataImportHandler->insertData($caseData);
+            } catch (\Exception $exception) {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+                return new JsonModel(new Problem($exception->getMessage()));
             }
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $caseData->id]);

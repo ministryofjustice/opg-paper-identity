@@ -23,7 +23,7 @@
         <label for="postcode" class="govuk-label">Enter postcode</label>
         <input
                 class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
-                id="postcode" name="postcode" type="text" autocomplete="postcode"
+                id="postcode" name="postcode" type="text"
                 value="{{ form.get('postcode').value }}"
                 aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
         />

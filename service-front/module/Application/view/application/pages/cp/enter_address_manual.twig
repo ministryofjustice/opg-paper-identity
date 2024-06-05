@@ -11,7 +11,7 @@
         <label for="address_line_1" class="govuk-label">Address line 1</label>
         <input
                 class="govuk-input govuk-!-width-one-third {% if form.get('address_line_1').messages %}govuk-input--error{% endif %}"
-                id="address_line_1" name="address_line_1" type="text" autocomplete="address_line_1"
+                id="address_line_1" name="address_line_1" type="text"
                 value="{{ form.get('address_line_1').value }}"
                 aria-describedby="address_line_1-hint {% if form.get('address_line_1').messages %}address_line_1-error{% endif %}"
         />
@@ -21,7 +21,7 @@
         <label for="address_line_2" class="govuk-label">Address line 2 (optional)</label>
         <input
                 class="govuk-input govuk-!-width-one-third"
-                id="address_line_2" name="address_line_2" type="text" autocomplete="address_line_2"
+                id="address_line_2" name="address_line_2" type="text"
                 value="{{ form.get('address_line_2').value }}"
                 aria-describedby="address_line_2-hint"
         />
@@ -31,7 +31,7 @@
         <label for="address_line_3" class="govuk-label">Address line 3 (optional)</label>
         <input
                 class="govuk-input govuk-!-width-one-third"
-                id="address_line_3" name="address_line_3" type="text" autocomplete="address_line_3"
+                id="address_line_3" name="address_line_3" type="text"
                 value="{{ form.get('address_line_3').value }}"
                 aria-describedby="address_line_3-hint"
         />
@@ -47,7 +47,7 @@
         <label for="town" class="govuk-label">Town or City</label>
         <input
                 class="govuk-input govuk-!-width-one-third {% if form.get('town').messages %}govuk-input--error{% endif %}"
-                id="town" name="town" type="text" autocomplete="town"
+                id="town" name="town" type="text"
                 value="{{ form.get('town').value }}"
                 aria-describedby="town-hint {% if form.get('town').messages %}town-error{% endif %}"
         />
@@ -63,7 +63,7 @@
         <label for="postcode" class="govuk-label">Postcode</label>
         <input
                 class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
-                id="postcode" name="postcode" type="text" autocomplete="postcode"
+                id="postcode" name="postcode" type="text"
                 value="{{ form.get('postcode').value }}"
                 aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
         />

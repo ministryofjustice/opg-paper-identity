@@ -25,21 +25,11 @@ class AddressFieldValidator extends AbstractValidator
 
         $this->setValue($value);
 
-        if (! $this->lpaValidity()) {
+        if (preg_match('/[A-Za-z0-9\'.-s,]/', $this->value) !== 1) {
             $this->error(self::ADDRESS);
             return false;
         }
 
         return true;
-    }
-
-    private function lpaValidity(): bool
-    {
-        /** @var string $this->>value */
-        if (1 === preg_match('/[A-Za-z0-9\'.-s,]/', $this->value)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

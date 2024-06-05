@@ -21,7 +21,7 @@ class DataImportHandler
     ) {
     }
 
-    public function insertData(CaseData $item): string
+    public function insertData(CaseData $item): void
     {
         $marsheler = new Marshaler();
         $encoded = $marsheler->marshalItem($item->jsonSerialize());
@@ -33,12 +33,10 @@ class DataImportHandler
 
         try {
             $this->dynamoDbClient->putItem($params);
-            return 'Success';
         } catch (AwsException $e) {
             $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $this->tableName, [
                 'data' => $item
             ]);
-            return $e->getMessage();
         }
     }
 

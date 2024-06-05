@@ -20,7 +20,7 @@ $govuk-assets-path: "../assets/";
   margin-top: govuk-spacing(4);
   margin-bottom: govuk-spacing(4);
   border-left: 7px solid #1D70B8;
-  background-color: #F3F2F1;
+  background-color: govuk-colour("light-grey");
   clear: both;
 }
 
