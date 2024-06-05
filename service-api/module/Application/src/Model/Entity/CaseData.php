@@ -70,16 +70,18 @@ class CaseData implements JsonSerializable
     /**
      * @var string[]
      */
+    #[Annotation\Required(false)]
     public ?array $alternateAddress = [];
 
+    #[Annotation\Required(false)]
     public ?string $selectedPostOfficeDeadline = null;
 
+
+    #[Annotation\Required(false)]
     public ?string $selectedPostOffice = null;
 
+    #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
-
-    public ?string $idMethod = null;
-
 
     /**
      * @param array<string, mixed> $data
