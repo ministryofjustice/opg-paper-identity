@@ -22,11 +22,19 @@ class YotiController extends AbstractActionController
     ) {
     }
 
+    /**
+     * @return JsonModel
+     * @psalm-suppress PossiblyInvalidArgument
+     */
     public function findPostOfficeAction(): JsonModel
     {
         $branches = [];
         $data = json_decode($this->getRequest()->getContent(), true);
 
+        if (! isset($data["search_string"])) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(['error' => 'Missing postCode']);
+        }
         $branchList = $this->yotiService->postOfficeBranch($data["search_string"]);
 
         foreach ($branchList['branches'] as $branch) {
@@ -35,7 +43,7 @@ class YotiController extends AbstractActionController
                 "address" => $branch["address"] . ", " . $branch["postcode"]
             ];
         }
-
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($branches);
     }
     public function createSessionAction(array $sessionData): JsonModel

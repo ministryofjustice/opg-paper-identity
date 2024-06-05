@@ -6,6 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Controller\YotiController;
 use Application\Yoti\YotiService;
+use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
@@ -36,7 +37,7 @@ class YotiControllerTest extends TestCase
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(YotiService::class, $this->YotiServiceMock);
+        $serviceManager->setService(YotiServiceInterface::class, $this->YotiServiceMock);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -71,5 +72,78 @@ class YotiControllerTest extends TestCase
     {
         $this->dispatch('/counter-service/retrieve-status', 'GET');
         $this->assertResponseStatusCode(404);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testBranchSearchNoPostCode(): void
+    {
+        $this->dispatchJSON('/counter-service/branches', 'POST', []);
+        $this->assertResponseStatusCode(400);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testBranchReturnFormat(): void
+    {
+        $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. Neots, Cambridgeshire, PE19 1NL"},"12345675":{"name":"Hampstead","address":"66 High Street, Hampstead Heath, London, NW3 6LR"}}';
+        $this->YotiServiceMock
+            ->expects($this->once())->method('postOfficeBranch')
+            ->with('NW1 4PG')
+            ->willReturn($this->branchesArray());
+
+        $this->dispatchJSON('/counter-service/branches', 'POST', ['search_string' => 'NW1 4PG']);
+        $this->assertResponseStatusCode(200);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('find_postoffice_branches');
+    }
+
+    public function dispatchJSON(string $path, string $method, mixed $data = null): void
+    {
+        $headers = new Headers();
+        $headers->addHeaderLine('Accept', 'application/json');
+        $headers->addHeaderLine('Content-Type', 'application/json');
+
+        /** @var HttpRequest $request */
+        $request = $this->getRequest();
+        $request->setHeaders($headers);
+        $request->setContent(is_string($data) ? $data : json_encode($data));
+
+        $this->dispatch($path, $method);
+    }
+
+    public function branchesArray(): array
+    {
+        return [
+            'branches' => [
+                [
+                    "type" => "UK_POST_OFFICE",
+                    "fad_code" => "12345678",
+                    "name" => "St Neots",
+                    "address" => "35 High Street, St. Neots, Cambridgeshire",
+                    "postcode" => "PE19 1NL",
+                    "location" => [
+                        "latitude" => 52.22864,
+                        "longitude" => -0.26762
+                    ]
+                ],
+                [
+                    "type" => "UK_POST_OFFICE",
+                    "fad_code" => "12345675",
+                    "name" => "Hampstead",
+                    "address" => "66 High Street, Hampstead Heath, London",
+                    "postcode" => "NW3 6LR",
+                    "location" => [
+                        "latitude" => 52.22864,
+                        "longitude" => -0.26762
+                    ]
+                ]
+            ]
+        ];
     }
 }
