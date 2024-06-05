@@ -75,6 +75,7 @@ class IdentityControllerTest extends TestCase
             ->expects($this->once())->method('getCaseByUUID')
             ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
             ->willReturn(CaseData::fromArray([
+                'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'personType' => 'donor',
                 'firstName' => '',
                 'lastName' => '',
@@ -160,8 +161,13 @@ class IdentityControllerTest extends TestCase
     /**
      * @dataProvider kbvAnswersData
      */
-    public function testKbvAnswers(string $uuid, array $provided, CaseData $actual, string $result, int $status): void
-    {
+    public function testKbvAnswers(
+        string $uuid,
+        array $provided,
+        CaseData $actual,
+        string $result,
+        int $status
+    ): void {
         if ($result !== 'error') {
             $this->dataQueryHandlerMock
                 ->expects($this->once())->method('getCaseByUUID')
