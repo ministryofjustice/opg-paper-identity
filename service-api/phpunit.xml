@@ -37,5 +37,6 @@
         <env name="AWS_DYNAMODB_TABLE_NAME" value="cases" />
         <env name="MOCK_KBV_API" value="true" />
         <env name="EXPERIAN_BASE_URL" value="EXPERIAN_BASE_URL" />
+        <env name="YOTI_BASE_URL" value="http://yoti-mock:8080" />
     </php>
 </phpunit>
