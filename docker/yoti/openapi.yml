@@ -15,6 +15,7 @@ paths:
     post:
       summary: Given a supplied postcode locate Post Office branches near it
       requestBody:
+        required: true
         description: The searchString ( post code )
         content:
           application/json:
@@ -26,18 +27,17 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                 $ref: '#/components/schemas/Branch'
+                 $ref: '#/components/schemas/Branches'
               example:
-                type: UK_POST_OFFICE
-                fad_code: 12345677
-                name: St Neots
-                address: 34 High Street, Notts
-                postcode: PE10 1NL
-                location:
-                  latitude: 53.22864,
-                  longitude: -0.36762
+                branches:
+                  type: UK_POST_OFFICE,
+                  fad_code: 12345677,
+                  name: St Neots,
+                  address: 34 High Street, Notts,
+                  postcode: PE10 1NL,
+                  location:
+                    latitude: 53.22864,
+                    longitude: -0.36762
 
 
   /idverify/v1/sessions:
@@ -192,12 +192,13 @@ paths:
 components:
   schemas:
     SearchString:
-      type: object
-      properties:
-        search_string:
-          type: string
-          pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
-          example: BN1 4TB
+      type: string
+      pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
+      example: BN1 4TB
+    Branches:
+      type: array
+      items:
+        $ref: "#/components/schemas/Branch"
     Branch:
       type: object
       properties:
