@@ -8,11 +8,14 @@ use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
+use InvalidArgumentException;
+use Laminas\Form\Annotation\AttributeBuilder;
+use Laminas\InputFilter\InputInterface;
 use Psr\Log\LoggerInterface;
 
 class DataImportHandler
 {
-    public final const DATA_FILE_PATH = __DIR__ . '/Data/sampleData.json';
+    final public const DATA_FILE_PATH = __DIR__ . '/Data/sampleData.json';
 
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
@@ -40,11 +43,25 @@ class DataImportHandler
         }
     }
 
-    /**
-     * @psalm-suppress PossiblyUnusedReturnValue
-     */
-    public function updateCaseData(string $uuid, string $attrName, string $attrType, mixed $attrValue): string
+    public function updateCaseData(string $uuid, string $attrName, string $attrType, mixed $attrValue): void
     {
+        if (! property_exists(CaseData::class, $attrName)) {
+            throw new InvalidArgumentException(sprintf('CaseData has no such property "%s"', $attrName));
+        }
+
+        $inputFilter = (new AttributeBuilder())
+            ->createForm(CaseData::class)
+            ->getInputFilter();
+        $input = $inputFilter->get($attrName);
+
+        if ($input instanceof InputInterface) {
+            $input->setValue($attrValue);
+
+            if (! $input->isValid()) {
+                throw new InvalidArgumentException(sprintf('"%s" is not a valid value for %s', $attrValue, $attrName));
+            }
+        }
+
         $idKey = [
             'key' => [
                 'id' => [
@@ -52,6 +69,7 @@ class DataImportHandler
                 ],
             ],
         ];
+
         try {
             $this->dynamoDbClient->updateItem([
                 'Key' => $idKey['key'],
@@ -66,12 +84,10 @@ class DataImportHandler
                     ]
                 ],
             ]);
-            return 'Success';
         } catch (AwsException $e) {
             $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
                 'data' => [$attrName => $attrValue]
             ]);
-            return $e->getMessage();
         }
     }
 }

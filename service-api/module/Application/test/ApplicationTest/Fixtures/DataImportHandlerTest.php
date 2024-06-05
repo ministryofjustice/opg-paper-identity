@@ -6,9 +6,11 @@ namespace ApplicationTest\Fixtures;
 
 use Application\Fixtures\DataImportHandler;
 use Application\Model\Entity\CaseData;
+use Application\Model\IdMethod;
 use Aws\CommandInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
+use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -201,7 +203,32 @@ class DataImportHandlerTest extends TestCase
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'idMethod',
             'S',
-            'passport'
+            IdMethod::PassportNumber
+        );
+    }
+
+    /**
+     * @throws Exception
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUpdateCaseDataWithBadData(): void
+    {
+        $this->dynamoDbClientMock->expects($this->never())
+            ->method('__call');
+
+        // Expect the logger to be called if an exception occurs
+        $this->loggerMock->expects($this->never())->method('error');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('"an invalid value" is not a valid value for idMethod');
+
+        // Call the updateCaseData method with test data
+        $this->sut->updateCaseData(
+            'a9bc8ab8-389c-4367-8a9b-762ab3050491',
+            'idMethod',
+            'S',
+            'an invalid value'
         );
     }
 }

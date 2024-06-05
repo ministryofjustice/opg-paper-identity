@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Model\IdMethod;
+use Application\Validators\Enum;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
 use Exception;
@@ -60,6 +62,10 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public bool $documentComplete = false;
+
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(Enum::class, options: ['enum' => IdMethod::class])]
+    public ?string $idMethod = null;
 
     /**
      * @var string[]
