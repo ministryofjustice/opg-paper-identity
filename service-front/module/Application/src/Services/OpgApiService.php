@@ -368,18 +368,6 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function searchAddressesByPostcode(string $uuid, string $postcode): array
-    {
-        $url = sprintf("/cases/%s/search-address-by-postcode/%s", $uuid, $postcode);
-
-        try {
-            $this->makeApiRequest($url, 'GET');
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-        return $this->responseData;
-    }
-
     public function addSelectedAltAddress(string $uuid, array $data): array
     {
         $url = sprintf("/cases/%s/save-alternate-address-to-case", $uuid);

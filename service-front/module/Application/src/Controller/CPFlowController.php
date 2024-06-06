@@ -19,6 +19,7 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Services\SiriusApiService;
 
 class CPFlowController extends AbstractActionController
 {
@@ -26,6 +27,7 @@ class CPFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
     ) {
     }
@@ -372,7 +374,7 @@ class CPFlowController extends AbstractActionController
                 /**
                  * @psalm-suppress InvalidMethodCall
                  */
-                $response = $this->opgApiService->searchAddressesByPostcode($uuid, $params->get('postcode'));
+                $response = $this->siriusApiService->searchAddressesByPostcode($params->get('postcode'), $this->getRequest());
                 $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
                 $view->setVariable('addresses', $addressStrings);
                 $view->setVariable('addresses_count', count($addressStrings));
