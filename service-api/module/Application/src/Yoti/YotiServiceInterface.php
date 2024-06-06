@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
+use Application\Exceptions\YotiException;
+
 interface YotiServiceInterface
 {
     /**
      * @param string $postCode
      * @return array
      * Get post offices near the location
+     * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array;
 

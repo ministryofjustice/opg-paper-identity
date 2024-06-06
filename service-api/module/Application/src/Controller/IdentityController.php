@@ -54,8 +54,6 @@ class IdentityController extends AbstractActionController
         if ($validator->isValid()) {
             $caseData->id = strval(Uuid::uuid4());
 
-            //todo do get insertData() to return a true or false and if false
-
             $this->dataImportHandler->insertData($caseData);
 
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);

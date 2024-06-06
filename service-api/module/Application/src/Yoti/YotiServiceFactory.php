@@ -7,6 +7,7 @@ namespace Application\Yoti;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class YotiServiceFactory implements FactoryInterface
@@ -28,6 +29,6 @@ class YotiServiceFactory implements FactoryInterface
         }
         $client = new Client(['base_uri' => $baseUri]);
 
-        return new YotiService($client);
+        return new YotiService($client, $container->get(LoggerInterface::class));
     }
 }

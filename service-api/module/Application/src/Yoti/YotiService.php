@@ -8,6 +8,7 @@ use Application\Exceptions\YotiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
+use Psr\Log\LoggerInterface;
 
 /**
  * @psalm-suppress PossiblyUnusedProperty
@@ -16,15 +17,27 @@ use Laminas\Http\Response;
 class YotiService implements YotiServiceInterface
 {
     public function __construct(
-        public readonly Client $client
+        public readonly Client $client,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
     /**
      * @param string $postCode
-     * @return array
+     * @return array{
+     *      branches: array{
+     *          type: string,
+     *          fad_code: string,
+     *          name: string,
+     *          address: string,
+     *          postcode: string,
+     *          location: array{
+     *              latitude: float,
+     *              longitude: float
+     *          }
+     *      }[]
+     *  }
      * Get post offices near the location
-     * @throws GuzzleException
      * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array
@@ -34,11 +47,17 @@ class YotiService implements YotiServiceInterface
                 'json' => ['SearchString' => $postCode],
             ]);
             if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
-                throw new YotiException($results->getReasonPhrase());
+                $this->logger->error('Post Office Lookup unsuccessful ', [
+                    'data' => [ 'Post Code' => $postCode]
+                ]);
+                throw new YotiException("FM INT: " . $results->getReasonPhrase());
             }
             return json_decode(strval($results->getBody()), true);
         } catch (GuzzleException $e) {
-            return ["error" => $e->getMessage()];
+            $this->logger->error('Unable to connect to Post Office Service [' . $e->getMessage() . '] ', [
+                'data' => [ 'Post Code' => $postCode]
+            ]);
+            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
     }
 

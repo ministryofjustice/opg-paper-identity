@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Exceptions\YotiException;
 use Application\Fixtures\DataImportHandler;
+use Application\Model\Entity\Problem;
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
@@ -12,6 +14,7 @@ use Application\View\JsonModel;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
+ * @psalm-suppress InvalidArgument
  * Needed here due to false positive from Laminas’s uninitialised properties
  */
 class YotiController extends AbstractActionController
@@ -33,15 +36,22 @@ class YotiController extends AbstractActionController
 
         if (! isset($data["search_string"])) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(['error' => 'Missing postCode']);
+            return new JsonModel(new Problem('Missing postCode'));
         }
-        $branchList = $this->yotiService->postOfficeBranch($data["search_string"]);
-
-        foreach ($branchList['branches'] as $branch) {
-            $branches[$branch["fad_code"]] = [
-                "name" => $branch["name"],
-                "address" => $branch["address"] . ", " . $branch["postcode"]
-            ];
+        try {
+            $branchList = $this->yotiService->postOfficeBranch($data["search_string"]);
+            foreach ($branchList['branches'] as $branch) {
+                $branches[$branch["fad_code"]] = [
+                    "name" => $branch["name"],
+                    "address" => $branch["address"] . ", " . $branch["postcode"]
+                ];
+            }
+        } catch (YotiException $e) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem(
+                'Service issue',
+                extra: ['errors' => $e->getMessage()],
+            ));
         }
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($branches);
