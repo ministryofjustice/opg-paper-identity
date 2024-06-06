@@ -55,6 +55,7 @@ class IdentityController extends AbstractActionController
             $caseData->id = strval(Uuid::uuid4());
 
             $this->dataImportHandler->insertData($caseData);
+
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $caseData->id]);
         }
