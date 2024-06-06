@@ -34,8 +34,14 @@ $govuk-assets-path: "../assets/";
 
 .app-moj-banner {
   border: 2px solid !important;
+  padding:5px;
+  margin-bottom:10px;
 }
 
 .app-button--align-baseline {
   vertical-align: baseline !important;
+}
+
+.table-header {
+  background-color: $govuk-border-colour;
 }
