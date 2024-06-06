@@ -27,3 +27,22 @@ $govuk-assets-path: "../assets/";
 .app-text-gray {
   color: $govuk-secondary-text-colour;
 }
+
+.app-main-wrapper {
+  padding-top:1px;
+  padding-bottom:40px;
+}
+
+.app-moj-banner {
+  border: 2px solid !important;
+  padding:5px;
+  margin-bottom:10px;
+}
+
+.app-button--align-baseline {
+  vertical-align: baseline !important;
+}
+
+.table-header {
+  background-color: $govuk-border-colour;
+}
