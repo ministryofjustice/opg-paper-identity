@@ -545,7 +545,7 @@ class IdentityController extends AbstractActionController
                 $uuid,
                 'alternateAddress',
                 'M',
-                array_map(fn (array $v) => [
+                array_map(fn (mixed $v) => [
                     'S' => $v
                 ], $data),
             );
