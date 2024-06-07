@@ -374,7 +374,10 @@ class CPFlowController extends AbstractActionController
                 /**
                  * @psalm-suppress InvalidMethodCall
                  */
-                $response = $this->siriusApiService->searchAddressesByPostcode($params->get('postcode'), $this->getRequest());
+                $response = $this->siriusApiService->searchAddressesByPostcode(
+                    $params->get('postcode'),
+                    $this->getRequest()
+                );
                 $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
                 $view->setVariable('addresses', $addressStrings);
                 $view->setVariable('addresses_count', count($addressStrings));
