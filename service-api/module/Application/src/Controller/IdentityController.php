@@ -488,41 +488,6 @@ class IdentityController extends AbstractActionController
         $this->getResponse()->setStatusCode($status);
         return new JsonModel($response);
     }
-    public function searchAddressByPostcodeAction(): JsonModel
-    {
-        $postcode = $this->params()->fromRoute('postcode');
-        $status = Response::STATUS_CODE_200;
-
-        $response = [
-            [
-                'address_line_1' => '1 Little Street',
-                'address_line_2' => '',
-                'address_line_3' => '',
-                'town' => 'London',
-                'postcode' => $postcode,
-                'country' => 'UK'
-            ],
-            [
-                'address_line_1' => '2 Little Street',
-                'address_line_2' => '',
-                'address_line_3' => '',
-                'town' => 'London',
-                'postcode' => $postcode,
-                'country' => 'UK'
-            ],
-            [
-                'address_line_1' => '3 Little Street',
-                'address_line_2' => '',
-                'address_line_3' => '',
-                'town' => 'London',
-                'postcode' => $postcode,
-                'country' => 'UK'
-            ],
-        ];
-
-        $this->getResponse()->setStatusCode($status);
-        return new JsonModel($response);
-    }
 
     public function saveAlternateAddressToCaseAction(): JsonModel
     {
