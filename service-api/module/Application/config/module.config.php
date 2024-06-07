@@ -246,6 +246,16 @@ return [
                     ],
                 ],
             ],
+            'remove_case_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/remove-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'removeCaseLpa',
+                    ],
+                ],
+            ],
             'search_address_by_postcode' => [
                 'type'    => Segment::class,
                 'options' => [
