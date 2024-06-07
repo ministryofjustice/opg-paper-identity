@@ -378,6 +378,7 @@ class CPFlowController extends AbstractActionController
                     $params->get('postcode'),
                     $this->getRequest()
                 );
+                echo json_encode($response);
                 $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
                 $view->setVariable('addresses', $addressStrings);
                 $view->setVariable('addresses_count', count($addressStrings));

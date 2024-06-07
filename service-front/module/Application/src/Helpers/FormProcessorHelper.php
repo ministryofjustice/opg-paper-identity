@@ -16,11 +16,12 @@ class FormProcessorHelper
     }
 
     public function processDrivingLicenceForm(
-        string $uuid,
-        Parameters $formData,
+        string        $uuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
+        array         $templates = []
+    ): FormProcessorResponseDto
+    {
         $form->setData($formData);
         $validFormat = $form->isValid();
         $variables = [];
@@ -44,11 +45,12 @@ class FormProcessorHelper
     }
 
     public function processNationalInsuranceNumberForm(
-        string $uuid,
-        Parameters $formData,
+        string        $uuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
+        array         $templates = []
+    ): FormProcessorResponseDto
+    {
         $form->setData($formData);
         $formArray = $formData->toArray();
         $validFormat = $form->isValid();
@@ -73,11 +75,12 @@ class FormProcessorHelper
     }
 
     public function processPassportForm(
-        string $uuid,
-        Parameters $formData,
+        string        $uuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
+        array         $templates = []
+    ): FormProcessorResponseDto
+    {
         $variables = [];
         $template = $templates['default'];
         $form->setData($formData);
@@ -102,11 +105,12 @@ class FormProcessorHelper
     }
 
     public function processPassportDateForm(
-        string $uuid,
-        Parameters $formData,
+        string        $uuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
+        array         $templates = []
+    ): FormProcessorResponseDto
+    {
         $variables = [];
         $expiryDate = sprintf(
             "%s-%s-%s",
@@ -136,11 +140,12 @@ class FormProcessorHelper
     }
 
     public function findLpa(
-        string $uuid,
-        Parameters $formData,
+        string        $uuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
+        array         $templates = []
+    ): FormProcessorResponseDto
+    {
         $form->setData($formData);
         $formArray = $formData->toArray();
         $responseData = [];
@@ -164,9 +169,12 @@ class FormProcessorHelper
         $stringified = [];
 
         foreach ($addresses as $arr) {
+            if (array_key_exists('description', $arr)) {
+                unset($arr['description']);
+            }
             $string = function (array $arr): string {
                 $str = "";
-                foreach ($arr as $line) {
+                foreach ($arr as $key => $line) {
                     if (strlen($line) > 0) {
                         $str .= $line . ", ";
                     }
