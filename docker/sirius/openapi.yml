@@ -77,7 +77,7 @@ paths:
                     addressLine2:
                       type: string
                       x-faker: address.streetName
-                    address_lLine_3:
+                    addressLine3:
                       type: string
                       x-faker: address.cityName
                     town:
