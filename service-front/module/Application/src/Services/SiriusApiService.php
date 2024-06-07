@@ -26,9 +26,9 @@ use Laminas\Stdlib\RequestInterface;
  *      firstname: string,
  *      surname: string,
  *      dob: string,
- *      addressLine1: string,
- *      addressLine2?: string,
- *      addressLine3?: string,
+ *      address_line_1: string,
+ *      address_line_2?: string,
+ *      address_line_3?: string,
  *      town?: string,
  *      county?: string,
  *      postcode?: string,
@@ -100,6 +100,15 @@ class SiriusApiService
     public function getLpaByUid(string $uid, Request $request): array
     {
         $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+            'headers' => $this->getAuthHeaders($request),
+        ]);
+
+        return json_decode(strval($response->getBody()), true);
+    }
+
+    public function searchAddressesByPostcode(string $postcode, Request $request): array
+    {
+        $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
             'headers' => $this->getAuthHeaders($request),
         ]);
 

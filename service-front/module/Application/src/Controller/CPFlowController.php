@@ -6,23 +6,28 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Forms\BirthDate;
+use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
+use Application\Forms\Postcode;
+use Application\Forms\PostOfficePostcode;
 use Application\Helpers\FormProcessorHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Services\SiriusApiService;
 
 class CPFlowController extends AbstractActionController
 {
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHellper,
+        private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
     ) {
     }
@@ -123,7 +128,7 @@ class CPFlowController extends AbstractActionController
             $formObject = $this->getRequest()->getPost();
 
             if ($formObject->get('lpa')) {
-                $processed = $this->formProcessorHellper->findLpa(
+                $processed = $this->formProcessorHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
@@ -191,14 +196,17 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-//        echo json_encode($routes[$detailsData['idMethod']]);
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
+
+            if ($params->get('confirm_alt') == '1') {
+                return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
+            }
 
             if ($params->get('chosenAddress') == 'yes') {
                 return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
             } elseif ($params->get('chosenAddress') == 'no') {
-                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
             }
         }
 
@@ -223,7 +231,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processNationalInsuranceNumberForm(
+            $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -256,7 +264,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -298,7 +306,7 @@ class CPFlowController extends AbstractActionController
             $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $formProcessorResponseDto = $this->formProcessorHellper->processPassportDateForm(
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $dateSubForm,
@@ -306,7 +314,7 @@ class CPFlowController extends AbstractActionController
                 );
             } else {
                 $view->setVariable('passport_indate', ucwords($data['inDate']));
-                $formProcessorResponseDto = $this->formProcessorHellper->processPassportForm(
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $form,
@@ -347,5 +355,90 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_failed');
+    }
+
+    public function enterPostcodeAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+        $form = (new AttributeBuilder())->createForm(Postcode::class);
+        $view->setVariable('form', $form);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+            $form->setData($params);
+
+            if ($form->isValid()) {
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
+                $response = $this->siriusApiService->searchAddressesByPostcode(
+                    $params->get('postcode'),
+                    $this->getRequest()
+                );
+                echo json_encode($response);
+                $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
+                $view->setVariable('addresses', $addressStrings);
+                $view->setVariable('addresses_count', count($addressStrings));
+                return $view->setTemplate('application/pages/cp/select_address');
+            }
+        }
+
+        return $view->setTemplate('application/pages/cp/enter_address');
+    }
+
+    public function selectAddressAction(): ViewModel|Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+
+            $structuredAddress = json_decode($params->get('address_json'), true);
+
+            $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+
+            if ($response) {
+                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+            }
+        }
+        return $view->setTemplate('application/pages/cp/select_address');
+    }
+
+    public function enterAddressManualAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
+        $form->setData($detailsData['alternateAddress']);
+
+        if (count($this->getRequest()->getPost())) {
+            $params = $this->getRequest()->getPost();
+
+            $form->setData($params);
+
+            if ($form->isValid()) {
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
+                $response = $this->opgApiService->addSelectedAltAddress($uuid, $params->toArray());
+                if ($response) {
+                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                }
+            }
+        }
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+
+        return $view->setTemplate('application/pages/cp/enter_address_manual');
     }
 }

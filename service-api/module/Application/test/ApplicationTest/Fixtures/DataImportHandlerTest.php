@@ -18,8 +18,8 @@ use Psr\Log\LoggerInterface;
 
 class DataImportHandlerTest extends TestCase
 {
-    private DynamoDbClient | MockObject $dynamoDbClientMock;
-    private LoggerInterface | MockObject $loggerMock;
+    private DynamoDbClient|MockObject $dynamoDbClientMock;
+    private LoggerInterface|MockObject $loggerMock;
     private DataImportHandler $sut;
 
     public function setUp(): void
@@ -40,7 +40,19 @@ class DataImportHandlerTest extends TestCase
      */
     public function testInsertData(): void
     {
-        $case = CaseData::fromArray(['firstName' => 'Maria', 'lastName' => 'Neldon']);
+        $case = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'firstName' => 'Maria',
+            'lastName' => 'Neldon',
+            'personType' => 'donor',
+            'dob' => '1980-01-01',
+            'address' => [
+                '1 Street',
+                'Town',
+                'Postcode'
+            ],
+            'lpas' => []
+        ]);
 
         // Stubbing the putItem method of DynamoDB client
         $this->dynamoDbClientMock->expects($this->once())
@@ -73,7 +85,19 @@ class DataImportHandlerTest extends TestCase
      */
     public function testInsertDataWithException(): void
     {
-        $caseData = CaseData::fromArray(['firstName' => 'Maria', 'lastName' => 'Neldon']);
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'firstName' => 'Maria',
+            'lastName' => 'Neldon',
+            'personType' => 'donor',
+            'dob' => '1980-01-01',
+            'address' => [
+                '1 Street',
+                'Town',
+                'Postcode'
+            ],
+            'lpas' => []
+        ]);
 
         $commandMock = $this->createMock(CommandInterface::class);
 
@@ -135,15 +159,15 @@ class DataImportHandlerTest extends TestCase
             'S',
             json_encode([
                 'one' => [
-                'number' => 'one',
-                'question' => 'Who is your electricity provider?',
-                'prompts' => [
-                    0 => 'VoltWave',
-                    1 => 'Glow Electric',
-                    2 => 'Powergrid Utilities',
-                    3 => 'Bright Bristol Power'
-                ],
-                'answer' => 'VoltWave'
+                    'number' => 'one',
+                    'question' => 'Who is your electricity provider?',
+                    'prompts' => [
+                        0 => 'VoltWave',
+                        1 => 'Glow Electric',
+                        2 => 'Powergrid Utilities',
+                        3 => 'Bright Bristol Power'
+                    ],
+                    'answer' => 'VoltWave'
                 ],
             ])
         );
