@@ -489,6 +489,41 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function removeCaseLpaAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+        try {
+            /**
+             * @psalm-suppress PossiblyNullPropertyFetch
+             */
+            $lpas = $data->lpas;
+            if (in_array($lpa, $lpas)) {
+                if (($key = array_search($lpa, $lpas)) !== false) {
+                    unset($lpas[$key]);
+                }
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'lpas',
+                    'SS',
+                    $lpas
+                );
+                $response['result'] = "Removed";
+            } else {
+                $response['result'] = "LPA is not added to this case";
+            }
+        } catch (\Exception $exception) {
+            $status = Response::STATUS_CODE_400;
+            $response['exception'] = $exception->getMessage();
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        return new JsonModel($response);
+    }
+
     public function saveAlternateAddressToCaseAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
