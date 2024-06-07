@@ -143,6 +143,153 @@ paths:
               schema:
                 $ref: "#/components/schemas/VerifyResponse"
 
+  /identity/validate_driving_licence:
+    parameters:
+      - name: dln
+        in: path
+        description: The Driving license to validate
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: validateDrivingLicence
+      summary: Verify the provided Driving number
+      description: Verify the provided Driving license number
+      tags: [ ]
+      requestBody:
+        description: Request with Dln number
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+
+      responses:
+        "200":
+          description: Dln OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        "400":
+          description: Invalid Dln
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /identity/validate_passport:
+    parameters:
+      - name: passport
+        in: path
+        description: The Passport to validate
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: validatePassport
+      summary: Verify the provided Passport number
+      description: Verify the provided Passport number
+      tags: [ ]
+      requestBody:
+        description: Request with Passport number
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+
+      responses:
+        "200":
+          description: Passport OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        "400":
+          description: Invalid passport
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /cases/[:uuid/]kbv-questions:
+    parameters:
+      - name: uuid
+        in: path
+        description: The case uuid
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getKbvQuestions
+      summary: Returns the KBV questions
+      description: If already exists for case, this return the KBV questions assigned to a case, otherwise it creates
+        and then assigns the questions to case. The return payload always omits the answers.
+        Returns error message if unable to retrieve case or document check is incomplete
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/kbvQuestions"
+        "400":
+          description: Missing UUID
+          content:
+            application/problem+json:
+              schema:
+                type: string
+
+  /cases/:uuid/kbv-answers:
+    parameters:
+      - name: uuid
+        in: path
+        description: The case UUID
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: checkKbvAnswers
+      summary: Verify the provided answers are correct
+      description: Verify the provided answers against correct stored answers
+      tags: [ ]
+      requestBody:
+        description: Request with 4 answers
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                properties:
+                  one:
+                    type: string
+                  two:
+                    type: string
+                  three:
+                    type: string
+                  four:
+                    type: string
+      responses:
+        "200":
+          description: Answers result
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - ["pass", "fail"]
+
+        "400":
+          description: Invalid format / missing UUID
+          content:
+            application/problem+json:
+              schema:
+                type: string
+
+
 tags:
   - name: otm
     description: Operations used for test and mock purposes
@@ -150,6 +297,25 @@ tags:
     description: Operations which should no longer be used
 components:
   schemas:
+    kbvQuestions:
+      type: array
+      properties:
+        number:
+          type: string
+        question:
+          $ref: "#/components/schemas/Question"
+    Question:
+      type: object
+      properties:
+        number:
+          type: string
+          enum:
+            - ["one", "two", "three", "four"]
+        question:
+          type: string
+        prompts:
+          type: array
+
     VerifyResponse:
       type: array
       properties:
