@@ -1,0 +1,84 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
+<h1 class="govuk-heading-xl govuk-!-width-two-thirds">What is the address on the ID document?</h1>
+<form method="POST" action="./confirm-address">
+    <div class="govuk-form-group {% if form.get('addressLine1').messages %}govuk-form-group--error{% endif %}">
+        {% if form.get('addressLine1').messages %}
+            <p id="addressLine1-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ form.get('addressLine1').messages | join(', ', ' and ') }}
+            </p>
+        {% endif %}
+        <label for="addressLine1" class="govuk-label">Address line 1</label>
+        <input
+                class="govuk-input govuk-!-width-one-third {% if form.get('addressLine1').messages %}govuk-input--error{% endif %}"
+                id="addressLine1" name="addressLine1" type="text"
+                value="{{ form.get('addressLine1').value }}"
+                aria-describedby="addressLine1-hint {% if form.get('addressLine1').messages %}addressLine1-error{% endif %}"
+        />
+    </div>
+
+    <div class="govuk-form-group">
+        <label for="addressLine2" class="govuk-label">Address line 2 (optional)</label>
+        <input
+                class="govuk-input govuk-!-width-one-third"
+                id="addressLine2" name="addressLine2" type="text"
+                value="{{ form.get('addressLine2').value }}"
+                aria-describedby="addressLine2-hint"
+        />
+    </div>
+
+    <div class="govuk-form-group">
+        <label for="addressLine3" class="govuk-label">Address line 3 (optional)</label>
+        <input
+                class="govuk-input govuk-!-width-one-third"
+                id="addressLine3" name="addressLine3" type="text"
+                value="{{ form.get('addressLine3').value }}"
+                aria-describedby="addressLine3-hint"
+        />
+    </div>
+
+    <div class="govuk-form-group {% if form.get('town').messages %}govuk-form-group--error{% endif %}">
+        {% if form.get('town').messages %}
+            <p id="town-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ form.get('town').messages | join(', ', ' and ') }}
+            </p>
+        {% endif %}
+        <label for="town" class="govuk-label">Town or City</label>
+        <input
+                class="govuk-input govuk-!-width-one-third {% if form.get('town').messages %}govuk-input--error{% endif %}"
+                id="town" name="town" type="text"
+                value="{{ form.get('town').value }}"
+                aria-describedby="town-hint {% if form.get('town').messages %}town-error{% endif %}"
+        />
+    </div>
+
+    <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
+        {% if form.get('postcode').messages %}
+            <p id="postcode-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ form.get('postcode').messages | join(', ', ' and ') }}
+            </p>
+        {% endif %}
+        <label for="postcode" class="govuk-label">Postcode</label>
+        <input
+                class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
+                id="postcode" name="postcode" type="text"
+                value="{{ form.get('postcode').value }}"
+                aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
+        />
+    </div>
+
+    <div class="govuk-form-group">
+        <label for="country" class="govuk-label">Country</label>
+        <select class="govuk-select" id="country" name="country">
+            <option value="uk" selected>United Kingdom</option>
+            <option value="france">France</option>
+            <option value="spain">Spain</option>
+            <option value="ireland">Ireland</option>
+        </select>
+    </div>
+
+
+    <button class="govuk-button" data-module="govuk-button">Continue</button>
+</form>
