@@ -25,37 +25,60 @@
 
                 <p class="govuk-body">
                     {% for line in details_data.address %}
-                        {{ line }}<br>
+                        {% if line > 0 %}
+                            {{ line }}<br>
+                        {% endif %}
                     {% endfor %}
                 </p>
             </div>
 
-            <div class="govuk-form-group govuk-!-width-two-thirds">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                        <h3 class="govuk-fieldset__heading">
-                            Is this the address for the chosen ID document?
-                        </h3>
-                    </legend>
-                    <div class="govuk-radios" data-module="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="chosenAddressYes" name="chosenAddress" type="radio"
-                                   value="yes">
-                            <label class="govuk-label govuk-radios__label" for="chosenAddressYes">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="chosenAddressNo" name="chosenAddress" type="radio"
-                                   value="no">
-                            <label class="govuk-label govuk-radios__label" for="chosenAddressNo">
-                                No
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
+            {% if details_data.alternateAddress %}
 
-            </div>
+                <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
+                    <h2 class="govuk-heading-m">Address for identity check</h2>
+
+                    <p class="govuk-body">
+                        {% for line in details_data.alternateAddress %}
+                            {% if line > 0 %}
+                                {{ line }}<br>
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="govuk-body">
+                        <a href="./enter-address-manual">Edit this address</a>
+                    </p>
+                    <input type="hidden" name="confirm_alt" value="1">
+                </div>
+            {% else %}
+                <div class="govuk-form-group govuk-!-width-two-thirds">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h3 class="govuk-fieldset__heading">
+                                Is this the address for the chosen ID document?
+                            </h3>
+                        </legend>
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="chosenAddressYes" name="chosenAddress"
+                                       type="radio"
+                                       value="yes">
+                                <label class="govuk-label govuk-radios__label" for="chosenAddressYes">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="chosenAddressNo" name="chosenAddress"
+                                       type="radio"
+                                       value="no">
+                                <label class="govuk-label govuk-radios__label" for="chosenAddressNo">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+            {% endif %}
             <input type="submit" class="govuk-button" value="Continue">
         </form>
 

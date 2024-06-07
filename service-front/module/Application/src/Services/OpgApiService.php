@@ -203,7 +203,11 @@ class OpgApiService implements OpgApiServiceInterface
     public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array
     {
         try {
-            $this->makeApiRequest("/cases/$uuid/add-lpa/$lpa", 'POST');
+            if ($remove) {
+                $this->makeApiRequest("/cases/$uuid/remove-lpa/$lpa", 'POST');
+            } else {
+                $this->makeApiRequest("/cases/$uuid/add-lpa/$lpa", 'POST');
+            }
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
@@ -362,6 +366,30 @@ class OpgApiService implements OpgApiServiceInterface
         ];
         try {
             $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
+
+    public function addSelectedAltAddress(string $uuid, array $data): array
+    {
+        $url = sprintf("/cases/%s/save-alternate-address-to-case", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
+
+    public function updateCaseSetDocumentComplete(string $uuid): array
+    {
+        $url = sprintf("/cases/%s/complete-document", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
