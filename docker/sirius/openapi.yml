@@ -15,13 +15,13 @@ paths:
     get:
       summary: Get current user
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '401':
+                $ref: "#/components/schemas/User"
+        "401":
           description: Error
   /api/v1/digital-lpas/{uid}:
     parameters:
@@ -36,14 +36,61 @@ paths:
     get:
       summary: Get an LPA
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CombinedLpa'
-        '401':
+                $ref: "#/components/schemas/CombinedLpa"
+        "401":
           description: Error
+  /api/v1/postcode-lookup:
+    parameters:
+      - name: postcode
+        in: query
+        required: true
+        schema:
+          type: string
+          nullable: false
+    get:
+      summary: Lookup addresses based on a post code
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - addressLine1
+                    - addressLine2
+                    - addressLine3
+                    - town
+                    - postcode
+                    - description
+                  properties:
+                    addressLine1:
+                      type: string
+                      x-faker: address.streetAddress
+                    addressLine2:
+                      type: string
+                      x-faker: address.streetName
+                    addressLine3:
+                      type: string
+                      x-faker: address.cityName
+                    town:
+                      type: string
+                      x-faker: address.cityName
+                    postcode:
+                      type: string
+                      x-faker:
+                        helpers.replaceSymbols: "??# #??"
+                    description:
+                      type: string
+                      x-faker:
+                        fake: "A concatenation of the address lines"
 components:
   schemas:
     User:
@@ -51,8 +98,6 @@ components:
       properties:
         id: int
     CombinedLpa:
-      allOf:
-        - $ref: "#/components/schemas/DigitalLpa"
       type: object
       required:
         - opg.poas.sirius
@@ -62,13 +107,17 @@ components:
           $ref: "#/components/schemas/DigitalLpa"
         opg.poas.lpastore:
           oneOf:
-            - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/openapi/openapi.yaml#/components/schemas/Lpa
+            - allOf:
+                - $ref: https://raw.githubusercontent.com/ministryofjustice/opg-data-lpa-store/main/docs/schemas/2024-10/lpa.json
+                - $ref: "#/components/schemas/LpaWithPostcodes"
             - null
       additionalProperties: false
     DigitalLpa:
       type: object
       required:
+        - id
         - uId
+        - donor
       properties:
         id:
           type: integer
@@ -77,3 +126,55 @@ components:
           type: string
           pattern: "M(-[0-9A-Z]{4}){3}"
           example: M-789Q-P4DF-4UX3
+        donor:
+          required: [firstname, surname, dob, address]
+          type: object
+          properties:
+            firstname:
+              type: string
+              x-faker: name.firstName
+            surname:
+              type: string
+              x-faker: name.lastName
+            dob:
+              type: string
+              format: date
+            addressLine1:
+              type: string
+              x-faker: address.streetAddress
+            addressLine2:
+              type: string
+              x-faker: address.streetName
+            addressLine3:
+              type: string
+              x-faker: address.cityName
+            town:
+              type: string
+              x-faker: address.cityName
+            postcode:
+              type: string
+              x-faker:
+                helpers.replaceSymbols: "??# #??"
+            country:
+              type: string
+              format: ISO-3166-1
+              minLength: 2
+              maxLength: 2
+              x-faker: address.countryCode
+    LpaWithPostcodes:
+      type: object
+      properties:
+        donor:
+          type: object
+          properties:
+            address:
+              type: object
+              required:
+                - postcode
+        certificateProvider:
+          type: object
+          properties:
+            address:
+              type: object
+              required:
+                - postcode

@@ -1,0 +1,71 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+
+        <h1 class="govuk-heading-xl">Find a branch</h1>
+        <p class="govuk-body govuk-!-width-two-thirds">
+            Not all post offices provide this service, please confirm your postcode so I can find your nearest
+            post
+            office
+        </p>
+
+        <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
+        <form method="POST">
+            <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                    <label class="govuk-label govuk-label--s app-text-gray govuk-body" for="location">
+                        Enter a postcode, town, or street name
+                    </label>
+                </h1>
+                <input class="govuk-input govuk-!-width-one-third" id="location" name="location"
+                       type="text">
+                <input type="submit" class="govuk-button govuk-button--secondary" value="Search" />
+            </div>
+        </form>
+        <form method="POST">
+            <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                {% for index, item in post_office_list %}
+                    <div class="govuk-radios__item">
+                        <input
+                                class="govuk-radios__input"
+                                id="{{ index }}"
+                                name="postoffice"
+                                type="radio"
+                                value="{{ index }}"
+                                data-aria-controls="default"
+                        />
+                        <label class="govuk-label govuk-radios__label" for="{{ index }}">
+                            {{ item.name }} <br>
+                            {{ item.address }} <br>
+                        </label>
+                    </div>
+                {% endfor %}
+                <div class="govuk-form-group">
+                    <a href="#" class="govuk-link">See more</a>
+                </div>
+                <div class="govuk-form-group">
+                    <div class="govuk-radios__item">
+                        <input
+                                class="govuk-radios__input"
+                                id="default"
+                                name="postoffice"
+                                type="radio"
+                                value="none"
+                                data-aria-controls="default"
+                        />
+                        <label class="govuk-label govuk-radios__label" for="default">
+                            None of the above
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <input type="hidden" name="next_page" value="3">
+
+            <p class="govuk-form-group">
+                <input type="submit" class="govuk-button" value="Continue"/>
+                <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+            </p>
+        </form>
+    </main>
+</div>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Fixtures;
 
+use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Result;
@@ -17,13 +18,6 @@ class DataQueryHandler
     ) {
     }
 
-    public function returnAll(): array
-    {
-        $result = $this->dynamoDbClient->scan(['TableName' => $this->tableName]);
-
-        return $this->returnUnmarshalResult($result);
-    }
-
     public function queryByName(string $name): array
     {
         $nameKey = [
@@ -34,9 +28,25 @@ class DataQueryHandler
             ],
         ];
         $index = "name-index";
-        $result = $this->query($this->tableName, $nameKey, $index);
+        $result = $this->query($nameKey, $index);
 
         return $this->returnUnmarshalResult($result);
+    }
+
+    public function getCaseByUUID(string $uuid): ?CaseData
+    {
+        $idKey = [
+            'key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+        ];
+        $result = $this->query($idKey);
+
+        $arr = $this->returnUnmarshalResult($result)[0];
+
+        return $arr ? CaseData::fromArray($arr) : null;
     }
 
     public function queryByIDNumber(string $idNumber): array
@@ -50,24 +60,23 @@ class DataQueryHandler
             ],
         ];
         $index = "id_number-index";
-        $result = $this->query($this->tableName, $idKey, $index);
+        $result = $this->query($idKey, $index);
 
         return $this->returnUnmarshalResult($result);
     }
     /**
-     * @param string $tableName
      * @param array<string, mixed> $key
      * @param string $dbIndex
      * @return Result
      */
-    public function query(string $tableName, $key, $dbIndex = ''): Result
+    public function query($key, $dbIndex = ''): Result
     {
         $expressionAttributeValues = [];
         $expressionAttributeNames = [];
         $keyConditionExpression = "";
         $index = 1;
 
-        foreach ($key as $_name => $value) {
+        foreach ($key as $value) {
             if (! is_array($value)) {
                 throw new InvalidJsonException("Key value must be an array.");
             }
@@ -93,9 +102,13 @@ class DataQueryHandler
             'ExpressionAttributeValues' => $expressionAttributeValues,
             'ExpressionAttributeNames' => $expressionAttributeNames,
             'KeyConditionExpression' => $keyConditionExpression,
-            'TableName' => $tableName,
+            'TableName' => $this->tableName,
             'IndexName' => $dbIndex,
         ];
+
+        if ($dbIndex === '') {
+            unset($query['IndexName']);
+        }
 
         return $this->dynamoDbClient->query($query);
     }
@@ -108,7 +121,8 @@ class DataQueryHandler
             /** @var array $record */
             foreach ($result['Items'] as $record) {
                 $marshal = new Marshaler();
-                $displayResults[] = $marshal->unmarshalItem($record);
+                $json = $marshal->unmarshalJson($record);
+                $displayResults[] = json_decode($json, true);
             }
         }
         return $displayResults;

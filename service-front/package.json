@@ -8,7 +8,6 @@
     "build:css": "sass --load-path . --style compressed web/main.scss public/css/all.css",
     "build:assets": "mkdir -p public/assets/images public/assets/fonts && cp node_modules/govuk-frontend/dist/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* web/assets/* public/assets/images && cp node_modules/govuk-frontend/dist/govuk/assets/fonts/* public/assets/fonts",
     "clean": "rm -rf web/static",
-    "cypress": "cypress open",
     "lint": "prettier --check .",
     "prettier": "prettier --write",
     "watch": "yarn build:js --watch=forever & yarn build:css --watch"
@@ -18,12 +17,8 @@
     "govuk-frontend": "^5.0.0"
   },
   "devDependencies": {
-    "esbuild": "^0.20.0",
+    "esbuild": "^0.21.0",
     "prettier": "^3.0.0",
-    "sass": "^1.26.11",
-    "cypress": "13.7.1"
-  },
-  "resolutions": {
-    "colors": "1.4.0"
+    "sass": "^1.26.11"
   }
 }

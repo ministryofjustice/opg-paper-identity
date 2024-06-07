@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
-use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\IndexController;
+use Application\Services\OpgApiService;
+use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
+/**
+ * @psalm-import-type Lpa from SiriusApiService
+ */
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
-    private OpgApiServiceInterface&MockObject $opgApiServiceMock;
-
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../config/application.config.php');
-
-        $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
 
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
     }
 
     public function testIndexActionCanBeAccessed(): void
@@ -33,7 +31,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('home');
+        $this->assertMatchedRouteName('root/home');
     }
 
     public function testIndexActionViewModelTemplateRenderedWithinLayout(): void
@@ -48,283 +46,154 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertResponseStatusCode(404);
     }
 
-    public function testDonorIdCheckReturnsPageWithData(): void
+    /**
+     * @return array<string, array{Lpa, string, array<mixed>}>
+     */
+    public static function startActionDataProvider(): array
     {
-        $mockResponseDataIdOptions = [
-            "Passport",
-            "Driving Licence",
-            "National Insurance Number"
+        $siriusData = ['donor' => [
+            'firstname' => 'Lili', 'surname' => 'Laur', 'dob' => '2019-02-18',
+            'addressLine1' => '17 East Lane', 'addressLine2' => 'Wickerham',
+            'town' => '', 'postcode' => 'W1 3EJ', 'country' => 'GB'],
         ];
 
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getIdOptionsData')
-            ->willReturn($mockResponseDataIdOptions);
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch('/donor-id-check', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('donor_id_check');
-    }
-
-    public function testAddressVerificationReturnsPageWithData(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getAddressVerificationData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/address_verification', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('address_verification');
-    }
-    public function testLpasByDonorReturnsPageWithData(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
+        $lpaStoreData = [
+            'donor' => [
+                'firstNames' => 'Lilith', 'lastName' => 'Laur', 'dateOfBirth' => '2009-02-18',
+                'address' => [
+                    'line1' => 'Unit 15', 'line2' => 'Uberior House', 'town' => 'Edinburgh',
+                    'postcode' => 'EH1 2EJ', 'country' => 'GB',
+                ],
             ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/donor-lpa-check', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('donor_lpa_check');
-    }
-
-    public function testNationalInsuranceNumberReturnsPageWithData(): void
-    {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch('/national-insurance-number', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('national_insurance_number');
-    }
-
-    public function testDrivingLicenceNumberReturnsPageWithData(): void
-    {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch('/driving-licence-number', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('driving_licence_number');
-    }
-
-    public function testHowWillDonorConfirmPage(): void
-    {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getIdOptionsData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch('/how-will-donor-confirm', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('how_donor_confirms');
-    }
-
-    public function testIdentityCheckPassedPage(): void
-    {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->willReturn($mockResponseDataIdDetails);
-
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
+            'certificateProvider' => [
+                'firstNames' => 'x', 'lastName' => 'x',
+                'address' => ['line1' => '16a Avenida Lucana', 'line2' => 'Cordón', 'country' => 'ES'],
             ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
         ];
 
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/identity-check-passed', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('identity_check_passed');
-    }
-
-    public function testIdentityCheckFailedPage(): void
-    {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->willReturn($mockResponseDataIdDetails);
-
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
+        return [
+            'draft, donor' => [
+                [
+                    'opg.poas.sirius' => $siriusData,
+                    'opg.poas.lpastore' => null
+                ],
+                'donor',
+                [
+                    'Lili', 'Laur', '2019-02-18', 'donor', ['M-1234-5678-90AB'],
+                    ['17 East Lane', 'Wickerham', 'W1 3EJ', 'GB'],
+                ]
             ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
+            'executed, donor' => [
+                [
+                    'opg.poas.sirius' => $siriusData,
+                    'opg.poas.lpastore' => $lpaStoreData
+                ],
+                'donor',
+                [
+                    'Lilith', 'Laur', '2009-02-18', 'donor', ['M-1234-5678-90AB'],
+                    ['Unit 15', 'Uberior House', 'Edinburgh', 'EH1 2EJ', 'GB'],
+                ]
+            ],
+            'executed, cp' => [
+                [
+                    'opg.poas.sirius' => $siriusData,
+                    'opg.poas.lpastore' => $lpaStoreData
+                ],
+                'certificateProvider',
+                [
+                    'x', 'x', '1000-01-01', 'certificateProvider', ['M-1234-5678-90AB'],
+                    ['16a Avenida Lucana', 'Cordón', 'ES'],
+                ]
+            ],
         ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $this->dispatch('/identity-check-failed', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('identity_check_failed');
     }
 
-    public function testThinFileFailurePage(): void
+    /**
+     * @dataProvider startActionDataProvider
+     * @param Lpa $lpa
+     * @return void
+     */
+    public function testStartAction($lpa, string $type, array $createCaseArgs): void
     {
-        $this->dispatch('/thin-file-failure', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IndexController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IndexController');
-        $this->assertMatchedRouteName('thin_file_failure');
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $opgApiService = $this->createMock(OpgApiService::class);
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setService(SiriusApiService::class, $siriusApiService);
+        $serviceManager->setService(OpgApiService::class, $opgApiService);
+
+        $siriusApiService->expects($this->once())
+            ->method('getLpaByUid')
+            ->willReturn($lpa);
+
+        $opgApiService->expects($this->once())
+            ->method('createCase')
+            ->with(...$createCaseArgs)
+            ->willReturn(['uuid' => 'e9a50129-aebf-4bbc-a5cb-916d42ee2e56']);
+
+        $this->dispatch('/start?personType=' . $type . '&lpas[]=M-1234-5678-90AB', 'GET');
+        $this->assertResponseStatusCode(302);
+        $this->assertResponseHeaderRegex('Location', '/e9a50129-aebf-4bbc-a5cb-916d42ee2e56/');
+    }
+
+    /**
+     * If the LPA has not yet been executed, we don't have any CP details and we can't do their ID check
+     */
+    public function testStartActionFailsForDraftCPs(): void
+    {
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $opgApiService = $this->createMock(OpgApiService::class);
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setService(SiriusApiService::class, $siriusApiService);
+        $serviceManager->setService(OpgApiService::class, $opgApiService);
+
+        $draftLpa = [
+            'opg.poas.sirius' => [],
+            'opg.poas.lpastore' => null
+        ];
+
+        $siriusApiService->expects($this->once())
+            ->method('getLpaByUid')
+            ->willReturn($draftLpa);
+
+        $opgApiService->expects($this->never())
+            ->method('createCase');
+
+        $this->dispatch('/start?personType=certificateProvider&lpas[]=M-1234-5678-90AB', 'GET');
+        $this->assertResponseStatusCode(400);
+        $this->assertStringContainsString(
+            'Cannot ID check this certificate provider as the LPA has not yet been submitted',
+            $this->getResponse()->getBody()
+        );
+    }
+
+    public function testStartActionFailsWithInvalidType(): void
+    {
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $opgApiService = $this->createMock(OpgApiService::class);
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setService(SiriusApiService::class, $siriusApiService);
+        $serviceManager->setService(OpgApiService::class, $opgApiService);
+
+        $draftLpa = [
+            'opg.poas.sirius' => [],
+            'opg.poas.lpastore' => null
+        ];
+
+        $siriusApiService->expects($this->once())
+            ->method('getLpaByUid')
+            ->willReturn($draftLpa);
+
+        $opgApiService->expects($this->never())
+            ->method('createCase');
+
+        $this->dispatch('/start?personType=invalid&lpas[]=M-1234-5678-90AB', 'GET');
+        $this->assertResponseStatusCode(400);
+        $this->assertStringContainsString(
+            'Person type &quot;invalid&quot; is not valid',
+            $this->getResponse()->getBody()
+        );
     }
 }

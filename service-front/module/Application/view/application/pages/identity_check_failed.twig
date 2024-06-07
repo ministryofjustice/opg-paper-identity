@@ -1,5 +1,6 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
+    <main class="govuk-main-wrapper govuk-!-width-two-thirds">
         <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
 
             <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -14,6 +15,10 @@
                 <p>The results of this identity check have been saved.</p>
             </div>
         </div>
-        <a href="./donor-id-check" class="govuk-button">Try a different method</a>
+        {% if details_data.personType == 'certificateProvider' %}
+            <a href="./how-will-cp-confirm" class="govuk-button">Try a different method</a>
+        {% else %}
+            <a href="./how-will-donor-confirm" class="govuk-button">Try a different method</a>
+        {% endif %}
     </main>
 </div>

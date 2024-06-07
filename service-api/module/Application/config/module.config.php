@@ -6,6 +6,8 @@ namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
 use Application\Factories\LoggerFactory;
+use Application\KBV\KBVServiceFactory;
+use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
@@ -23,7 +25,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
 
-$tableName = getenv("PAPER_ID_BACK_DATA_TABLE_NAME");
+$tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
 if (! is_string($tableName) || empty($tableName)) {
     $tableName = 'identity-verify';
@@ -32,139 +34,132 @@ if (! is_string($tableName) || empty($tableName)) {
 return [
     'router' => [
         'routes' => [
-            'api' => [
-                'type' => Segment::class,
+            'home' => [
+                'type'    => Literal::class,
                 'options' => [
-                    'route' => '/api',
+                    'route'    => '/',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'index',
+                    ],
                 ],
-                'child_routes' => [
-                    'home' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/',
-                            'defaults' => [
-                                'controller' => Controller\IndexController::class,
-                                'action'     => 'index',
-                            ],
-                        ],
+            ],
+            'application' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/application[/:action]',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'index',
                     ],
-                    'application' => [
-                        'type'    => Segment::class,
-                        'options' => [
-                            'route'    => '/application[/:action]',
-                            'defaults' => [
-                                'controller' => Controller\IndexController::class,
-                                'action'     => 'index',
-                            ],
-                        ],
+                ],
+            ],
+            'details' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/details',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'details',
                     ],
-                    'method' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/method',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'method',
-                            ],
-                        ],
+                ],
+            ],
+            'testdata' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/testdata',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'testdata',
                     ],
-                    'details' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/details',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'details',
-                            ],
-                        ],
+                ],
+            ],
+            'findbyname' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/findbyname',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findByName',
                     ],
-                    'testdata' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/testdata',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'testdata',
-                            ],
-                        ],
+                ],
+            ],
+            'findbyidnumber' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/findbyidnumber',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findByIdNumber',
                     ],
-                    'findbyname' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/findbyname',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'findByName',
-                            ],
-                        ],
-                    ],
-                    'findbyidnumber' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/findbyidnumber',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'findByIdNumber',
-                            ],
-                        ],
-                    ],
+                ],
+            ],
 
-                    'address_verification' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/address_verification',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'addressVerification',
-                            ],
-                        ],
+            'create_case' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/create',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'create',
                     ],
-                    'list_lpas' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/list_lpas',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'listLpas',
-                            ],
-                        ],
+                ],
+            ],
+
+            'address_verification' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/address_verification',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addressVerification',
                     ],
-                    'validate_nino' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/validate_nino',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'verifyNino',
-                            ],
-                        ],
+                ],
+            ],
+            'list_lpas' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/list_lpas',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'listLpas',
                     ],
-                    'validate_driving_licence' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/validate_driving_licence',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'validateDrivingLicence',
-                            ],
-                        ],
+                ],
+            ],
+            'validate_nino' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_nino',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'verifyNino',
                     ],
-                    'validate_passport' => [
-                        'type'    => Literal::class,
-                        'options' => [
-                            'route'    => '/identity/validate_passport',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action'     => 'validatePassport',
-                            ],
-                        ],
+                ],
+            ],
+            'validate_driving_licence' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_driving_licence',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validateDrivingLicence',
+                    ],
+                ],
+            ],
+            'validate_passport' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/identity/validate_passport',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'validatePassport',
                     ],
                 ],
             ],
             'get_kbv_questions' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-questions',
+                    'route'    => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'getKbvQuestions',
@@ -174,10 +169,80 @@ return [
             'check_kbv_answers' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases[/:uuid]/kbv-answers',
+                    'route'    => '/cases/:uuid/kbv-answers',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'checkKbvAnswers',
+                    ],
+                ],
+            ],
+            'create' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/create',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'create',
+                    ],
+                ],
+            ],
+            'find_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/find-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'findLpa',
+                    ],
+                ],
+            ],
+            'update_case_method' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/update-method',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'updatedMethod',
+                    ],
+                ],
+            ],
+            'add_search_postcode' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-search-postcode',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addSearchPostcode',
+                    ],
+                ],
+            ],
+            'add_selected_postoffice' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-selected-postoffice',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addSelectedPostoffice',
+                    ],
+                ],
+            ],
+            'confirm_selected_postoffice' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/confirm-selected-postoffice',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'confirmSelectedPostoffice',
+                    ],
+                ],
+            ],
+            'add_case_lpa' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/add-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'addCaseLpa',
                     ],
                 ],
             ],
@@ -205,12 +270,14 @@ return [
             ),
             DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
                 $serviceLocator->get(DynamoDbClient::class),
-                $tableName
+                $tableName,
+                $serviceLocator->get(LoggerInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
-            PassportValidatorInterface::class => PassportValidatorFactory::class
+            PassportValidatorInterface::class => PassportValidatorFactory::class,
+            KBVServiceInterface::class => KBVServiceFactory::class
         ],
     ],
     'view_manager' => [

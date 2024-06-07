@@ -27,11 +27,21 @@ class KbvController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
 
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        if ($detailsData['personType'] == 'certificateProvider') {
+            $passRoute = "root/cp_identity_check_passed";
+            $failRoute = "root/cp_identity_check_failed";
+        } else {
+            $passRoute = "root/identity_check_passed";
+            $failRoute = "root/identity_check_failed";
+        }
+        $view->setVariable('details_data', $detailsData);
+
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
-        if (array_key_exists('error', $questionsData)) {
-            return $this->redirect()->toRoute('thin_file_failure', ['uuid' => $uuid]);
+        if (is_array($questionsData) && array_key_exists('error', $questionsData)) {
+            return $this->redirect()->toRoute('root/thin_file_failure', ['uuid' => $uuid]);
         }
 
         $view->setVariable('questions_data', $questionsData);
@@ -50,12 +60,12 @@ class KbvController extends AbstractActionController
                     $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
                     if (! $check) {
-                        return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
                     }
 
-                    return $this->redirect()->toRoute('identity_check_passed', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
                 } catch (OpgApiException $exception) {
-                    return $this->redirect()->toRoute('identity_check_failed', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
                 }
             }
             $form->setData($formData);

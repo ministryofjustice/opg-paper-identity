@@ -7,11 +7,16 @@ namespace Application\Controller;
 use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
+use Application\KBV\KBVServiceInterface;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
+use Application\Model\Entity\Problem;
+use Application\View\JsonModel;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\View\Model\JsonModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -26,7 +31,8 @@ class IdentityController extends AbstractActionController
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
-        private readonly PassportValidator $passportService
+        private readonly PassportValidator $passportService,
+        private readonly KBVServiceInterface $KBVService
     ) {
     }
 
@@ -35,44 +41,51 @@ class IdentityController extends AbstractActionController
         return new JsonModel();
     }
 
-    public function createAction(): void
+    public function createAction(): JsonModel
     {
-    }
+        $data = json_decode($this->getRequest()->getContent(), true);
 
-    public function methodAction(): JsonModel
-    {
-        $data = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number'
-        ];
+        $caseData = CaseData::fromArray($data);
 
-        return new JsonModel($data);
+        $validator = (new AttributeBuilder())
+            ->createForm($caseData)
+            ->setData(get_object_vars($caseData));
+
+        if ($validator->isValid()) {
+            $caseData->id = strval(Uuid::uuid4());
+
+            $this->dataImportHandler->insertData($caseData);
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            return new JsonModel(['uuid' => $caseData->id]);
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
+        return new JsonModel(new Problem(
+            'Invalid data',
+            extra: ['errors' => $validator->getMessages()],
+        ));
     }
 
     public function detailsAction(): JsonModel
     {
-        $data = [
-            'Name' => 'Mary Anne Chapman',
-            'DOB' => '01 May 1943',
-            'Address' => 'Address line 1, line 2, Country, BN1 4OD',
-            'Role' => 'Donor',
-            'LPA' => ['PA M-1234-ABCB-XXXX', 'PW M-1234-ABCD-AAAA']
-        ];
+        /** @var string $uuid */
+        $uuid = $this->getRequest()->getQuery('uuid');
 
-        return new JsonModel($data);
-    }
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing uuid'));
+        }
 
-    public function testdataAction(): JsonModel
-    {
-        $this->dataImportHandler->load();
-        $data = $this->dataQueryHandler->returnAll();
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
-        return new JsonModel($data);
+        if (! empty($case)) {
+            return new JsonModel($case);
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+        return new JsonModel(new Problem('Case not found'));
     }
 
     public function findByNameAction(): JsonModel
@@ -116,13 +129,13 @@ class IdentityController extends AbstractActionController
     {
         $data = [
             [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
+                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
                 'donor_name' => 'Mary Anne Chapman'
             ],
-//            [
-//                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
+            [
+                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
+                'donor_name' => 'Mary Anne Chapman'
+            ]
         ];
 
         return new JsonModel($data);
@@ -130,26 +143,22 @@ class IdentityController extends AbstractActionController
 
     public function verifyNinoAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
+
         $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
         $response = [
-            'status' => $ninoStatus,
-            'nino' => $data['nino']
+            'status' => $ninoStatus
         ];
 
-        if ($ninoStatus === 'NINO check complete') {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         return new JsonModel($response);
     }
 
     public function validateDrivingLicenceAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
+        $data = json_decode($this->getRequest()->getContent(), true);
         $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
         $response = [
@@ -162,8 +171,8 @@ class IdentityController extends AbstractActionController
 
     public function validatePassportAction(): JsonModel
     {
-        $data = $this->getRequest()->getPost();
-        $passportStatus = $this->passportService->validatePassport($data['passport']);
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $passportStatus = $this->passportService->validatePassport(intval($data['passport']));
 
         $response = [
             'status' => $passportStatus
@@ -177,92 +186,277 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
 
-        if ($uuid !== '49895f88-501b-4491-8381-e8aeeaef177d') {
-            /**
-             * @psalm-suppress PossiblyUndefinedVariable
-             */
-            $response[$uuid] = [
-                "error" => "thin_file_error"
-            ];
-            return new JsonModel($response[$uuid]);
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing UUID'));
         }
 
-        /**
-         * @psalm-suppress PossiblyUndefinedVariable
-         */
-        $response[$uuid] = [
-            "one" => [
-                "question" => "Who provides your mortgage?",
-                "number" => "one",
-                "prompts" => [
-                    0 => "Nationwide",
-                    1 => "Halifax",
-                    2 => "Lloyds",
-                    3 => "HSBC",
-                ]
-            ],
-            "two" => [
-                "question" => "Who provides your personal mobile contract?",
-                "number" => "two",
-                "prompts" => [
-                    0 => "EE",
-                    1 => "Vodafone",
-                    2 => "BT",
-                    3 => "iMobile",
-                ]
-            ],
-            "three" => [
-                "question" => "What are the first two letters of the last name of another 
-                person on the electoral register at your address?",
-                "number" => "three",
-                "prompts" => [
-                    0 => "Ka",
-                    1 => "Ch",
-                    2 => "Jo",
-                    3 => "None of the above",
-                ]
-            ],
-            "four" => [
-                "question" => "Who provides your current account?",
-                "number" => "four",
-                "prompts" => [
-                    0 => "Santander",
-                    1 => "HSBC",
-                    2 => "Halifax",
-                    3 => "Nationwide",
-                ]
-            ]
-        ];
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        return new JsonModel($response[$uuid]);
+        if (is_null($case) || $case->documentComplete === false) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            $response = [
+                "error" => "Document checks incomplete or unable to locate case"
+            ];
+            return new JsonModel($response);
+        }
+
+        $questionsWithoutAnswers = [];
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+        if (! is_null($case->kbvQuestions)) {
+            $questions = json_decode($case->kbvQuestions, true);
+
+            foreach ($questions as $number => $question) {
+                unset($question['answer']);
+                $questionsWithoutAnswers[$number] = $question;
+            }
+            //revisit formatting here, special character outputs
+            return new JsonModel($questionsWithoutAnswers);
+        } else {
+            $questions = $this->KBVService->fetchFormattedQuestions($uuid);
+
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'kbvQuestions',
+                'S',
+                json_encode($questions['formattedQuestions'])
+            );
+        }
+
+        return new JsonModel($questions['questionsWithoutAnswers']);
     }
 
     public function checkKbvAnswersAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        $answers = [];
-        $data = $this->getRequest()->getPost();
         $result = 'pass';
+        $response = [];
 
-        $answers[$uuid] = [
-            "one" => "Nationwide",
-            "two" => "EE",
-            "three" => "Ka",
-            "four" => "Santander",
-        ];
+        if (! $uuid || is_null($case)) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem("Missing UUID or unable to find case"));
+        }
 
-        foreach ($data['answers'] as $key => $value) {
-            if ($value != $answers[$uuid][$key]) {
+        $questions = json_decode($case->kbvQuestions, true);
+        //compare against all stored answers to ensure all answers passed
+        foreach ($questions as $key => $question) {
+            if (! isset($data['answers'][$key])) {
+                $result = 'fail';
+            } elseif ($data['answers'][$key] != $question['answer']) {
                 $result = 'fail';
             }
         }
 
-        /**
-         * @psalm-suppress PossiblyUndefinedVariable
-         */
         $response['result'] = $result;
 
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        return new JsonModel($response);
+    }
+
+    public function updatedMethodAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem("Missing UUID"));
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'idMethod',
+            'S',
+            $data['idMethod']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function addSearchPostcodeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing UUID'));
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'searchPostcode',
+            'S',
+            $data['selected_postcode']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function addSelectedPostofficeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing UUID'));
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'selectedPostOffice',
+            'S',
+            $data['selected_postoffice']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function confirmSelectedPostofficeAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing UUID'));
+        }
+
+        $this->dataImportHandler->updateCaseData(
+            $uuid,
+            'selectedPostOfficeDeadline',
+            'S',
+            $data['deadline']
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function findLpaAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+        $status = Response::STATUS_CODE_200;
+
+        $response = [];
+
+        //pending design decision - may need this code
+
+        //        if($lpa == null || $lpa == '') {
+        //            $status = Response::STATUS_CODE_400;
+        //            $message = "Enter an LPA number to continue.";
+        //            $response['message'] = $message;
+        //            $response['status'] = $status;
+        //            return new JsonModel($response);
+        //        }
+        //
+        //        if (1 !== preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
+        //            $status = Response::STATUS_CODE_400;
+        //            $message = "Not a valid LPA number. Enter an LPA number to continue.";
+        //            $response['message'] = $message;
+        //            $response['status'] = $status;
+        //            return new JsonModel($response);
+        //        }
+
+        switch ($lpa) {
+            case 'M-0000-0000-0000':
+                $message = 'Success';
+                $response['data'] = [
+                    'case_uuid' => $uuid,
+                    "LPA_Number" => $lpa,
+                    "Type_Of_LPA" => "Personal welfare",
+                    "Donor" => "Mary Ann Chapman",
+                    "Status" => "Processing",
+                    "CP_Name" => "David Smith",
+                    "CP_Address" => [
+                        'Line_1' => '82 Penny Street',
+                        'Line_2' => 'Lancaster',
+                        'Town' => 'Lancashire',
+                        'PostOfficePostcode' => 'LA1 1XN',
+                        'Country' => 'United Kingdom',
+                    ],
+                ];
+                break;
+            case 'M-0000-0000-0001':
+                $status = Response::STATUS_CODE_400;
+                $message = "This LPA has already been added to this ID check.";
+                $response['data']['Status'] = 'Already added';
+                break;
+            case 'M-0000-0000-0003':
+                $status = Response::STATUS_CODE_400;
+                $message = "This LPA cannot be added to this ID check because the
+                certificate provider details on this LPA do not match.
+                Edit the certificate provider record in Sirius if appropriate and find again.";
+                $response['additional_data'] = [
+                    'Name' => 'John Brian Adams',
+                    'Address' => [
+                        'Line_1' => '42 Mount Street',
+                        'Line_2' => 'Hednesford',
+                        'Town' => 'Cannock',
+                        'PostOfficePostcode' => 'WS12 4DE',
+                        'Country' => 'United Kingdom',
+                    ]
+                ];
+                break;
+            case 'M-0000-0000-0004':
+                $status = Response::STATUS_CODE_400;
+                $response['data']['Status'] = 'Already completed';
+                $message = "This LPA cannot be added as an ID check has already been
+                 completed for this LPA.";
+                break;
+            case 'M-0000-0000-0005':
+                $status = Response::STATUS_CODE_400;
+                $response['data']['Status'] = 'Draft';
+                $message = "This LPA cannot be added as it’s status is set to Draft.
+                LPAs need to be in the In Progress status to be added to this ID check.";
+                break;
+            case 'M-0000-0000-0006':
+                $status = Response::STATUS_CODE_400;
+                $response['data']['Status'] = 'Online';
+                $message = "This LPA cannot be added to this identity check because
+                the certificate provider has signed this LPA online.";
+                break;
+            default:
+                $status = Response::STATUS_CODE_400;
+                $message = "No LPA found.";
+                $response['data']['Status'] = 'Not found';
+                break;
+        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['message'] = $message;
+        $response['status'] = $status;
+        $response['uuid'] = $uuid;
+        return new JsonModel($response);
+    }
+
+    public function addCaseLpaAction(): JsonModel
+    {
+        //        $uuid = $this->params()->fromRoute('uuid');
+        //        $lpa = $this->params()->fromRoute('lpa');
+        $response = [];
+        $response['result'] = "Updated";
         return new JsonModel($response);
     }
 }

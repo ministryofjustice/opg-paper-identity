@@ -1,0 +1,127 @@
+{% include 'layout/id_check_banner.twig' with details_data %}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+
+        {% if form.get('lpa').messages %}
+            <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+                <p class="govuk-body">
+                    <b>There is a problem</b>
+                </p>
+                <div class="moj-banner__message">
+                    Enter a valid LPA number to continue.
+                </div>
+            </div>
+        {% endif %}
+
+        {% if lpa_response %}
+            {% if lpa_response['status'] == 400 %}
+
+                <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+                    <p class="govuk-body">
+                        <b>There is a problem</b>
+                    </p>
+                    <div class="moj-banner__message">
+                        {{ lpa_response['message'] }}
+
+                        {% if lpa_response['additional_data'] %}
+                            <br><br>This ID check is for:
+                        <table class="govuk-table govuk-!-width-one-half">
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Name</th>
+                                <td class="govuk-table__cell">{{ lpa_response['additional_data']['Name'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Address</th>
+                                <td class="govuk-table__cell">
+                                    {% for line in lpa_response['additional_data']['Address'] %}
+                                        {{ line }}<br>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+
+            <h1 class="govuk-heading-xl">Find an LPA to add</h1>
+
+            <p class="govuk-body">
+                LPA reference numbers are 12 numbers long. For
+                <br>
+                example: M-0000-0000-0000
+            </p>
+            <div class="govuk-form-group {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
+                {% if form.get('lpa').messages %}
+                    <p id="lpa-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ form.get('lpa').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+                <form method="POST">
+                <input
+                        class="govuk-input govuk-!-width-one-third {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
+                        id="lpa"
+                        name="lpa"
+                        type="text"
+                        autocomplete="lpa"
+                        value="{{ form.get('lpa').value }}"
+                        aria-describedby="lpa-hint {% if form.get('lpa').messages %}lpa-error{% endif %}"
+                />
+                <input type="submit" class="govuk-button" value="Find LPA">
+                </form>
+
+                {% if lpa_response %}
+                    <div class="govuk-form-group">
+                        <table class="govuk-table govuk-!-width-two-thirds">
+                            <caption class="govuk-table__caption govuk-table__caption--m">Results</caption>
+                            <tbody class="govuk-table__body">
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">LPA Number</th>
+                                <td class="govuk-table__cell">{{ lpa_response['data']['LPA_Number'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Type of LPA</th>
+                                <td class="govuk-table__cell">{{ lpa_response['data']['Type_Of_LPA'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Donor</th>
+                                <td class="govuk-table__cell">{{ lpa_response['data']['Donor'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Status</th>
+                                <td class="govuk-table__cell">{{ lpa_response['data']['Status'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">CP Name</th>
+                                <td class="govuk-table__cell">{{ lpa_response['data']['CP_Name'] }}</td>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">CP Address</th>
+                                <td class="govuk-table__cell">
+                                    {% for line in lpa_response['data']['CP_Address'] %}
+                                    {{ line }}<br>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+            {% if lpa_response %}
+                <form method="POST">
+                {% if lpa_response['status'] == 200 %}
+                    <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['LPA_Number']  }}">
+                    <input type="submit" class="govuk-button" value="Add LPA to this ID check">
+                {% endif %}
+                </form>
+            {% endif %}
+            <a href="./confirm-lpas" class="govuk-button govuk-button--secondary">Return to LPA list</a>
+
+    </main>
+</div>
+
+

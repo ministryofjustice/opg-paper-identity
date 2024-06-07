@@ -1,0 +1,12 @@
+plugin: openapi
+specFile: openapi.yml
+
+validation:
+  request: true
+
+resources:
+  - path: "/idverify/v1/sessions/{sessionId}"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: useJsonFile.groovy
