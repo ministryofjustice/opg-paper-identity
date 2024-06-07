@@ -71,10 +71,10 @@ paths:
                     - postcode
                     - description
                   properties:
-                    address_line_1:
+                    addressLine1:
                       type: string
                       x-faker: address.streetAddress
-                    address_line_2:
+                    addressLine2:
                       type: string
                       x-faker: address.streetName
                     address_lLine_3:
