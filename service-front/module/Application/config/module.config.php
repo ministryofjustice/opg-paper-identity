@@ -393,6 +393,16 @@ return [
                             ],
                         ],
                     ],
+                    'remove_lpa' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action'     => 'removeLpa',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],

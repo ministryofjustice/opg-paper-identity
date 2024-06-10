@@ -502,14 +502,17 @@ class IdentityController extends AbstractActionController
              */
             $lpas = $data->lpas;
             if (in_array($lpa, $lpas)) {
-                if (($key = array_search($lpa, $lpas)) !== false) {
-                    unset($lpas[$key]);
+                $keptLpas = [];                 //this is inelegant but works, while popping the
+                foreach ($lpas as $keptLpa) {   //value out of the existing array breaks the code
+                    if ($keptLpa !== $lpa) {
+                        $keptLpas[] = $keptLpa;
+                    }
                 }
                 $this->dataImportHandler->updateCaseData(
                     $uuid,
                     'lpas',
                     'SS',
-                    $lpas
+                    $keptLpas
                 );
                 $response['result'] = "Removed";
             } else {

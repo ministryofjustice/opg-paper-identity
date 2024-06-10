@@ -22,11 +22,21 @@
                             </tr>
                             </thead>
                             <tbody class="govuk-table__body">
-                            {% for datum in data %}
+                            {% for datum in lpas %}
                                 <tr class="govuk-table__row">
-                                    <td class="govuk-table__cell">{{ datum['lpa_ref'] }}</td>
-                                    <td class="govuk-table__cell">{{ datum['donor_name'] }}</td>
-                                    <td class="govuk-table__cell"><a href="">Remove</a></td>
+                                    <td class="govuk-table__cell">{{ datum }}</td>
+                                    <td class="govuk-table__cell">
+                                        {{ details_data['firstName'] }}
+                                        {{ details_data['lastName'] }}
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        <a
+                                                {% if lpa_count == 1 %}
+                                                disabled href="#"
+                                                {% else %}
+                                                href="./remove-lpa/{{ datum }}"
+                                                {% endif %}
+                                        >Remove</a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
