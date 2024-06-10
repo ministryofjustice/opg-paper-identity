@@ -1,0 +1,426 @@
+openapi: "3.0.3"
+info:
+  version: 1.0.0
+  title: OPG Paper ID
+  description: Internal PaperID API used by frontend applications
+  contact:
+    name: MOJ Digital / Office of the Public Guardian
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8001/
+    description: local
+paths:
+  /identity/method:
+    get:
+      operationId: method
+      summary: Returns supported methods
+      description: Array of ID verification methods available
+      tags: [otm]
+      responses:
+        "200":
+          description: The list of ID methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/details:
+    get:
+      operationId: details
+      summary: Return a specific person details ( to be replaced by case person or person type )
+      description: Array of person details
+      tags: [otm]
+      responses:
+        "200":
+          description: Person name and address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "404":
+          description: Unknown case
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemResponse"
+
+  /identity/findbyname:
+    get:
+      operationId: findByName
+      summary: Return a specific person details ( to be replaced by more specific implementation )
+      description: Array of person details, or empty array
+      tags: [ otm ]
+      responses:
+        "200":
+          description: Person name and address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/findbyidnumber:
+    get:
+      operationId: findByIdNumber
+      summary: Return a specific person details ( test purposes )
+      description: Array of person details
+      tags: [ otm ]
+      responses:
+        "200":
+          description: Person name and address
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/address_verification:
+    get:
+      operationId: addressVerification
+      summary: Returns supported methods to verify Address ( test purposes )
+      description: Array of Address verification methods available
+      tags: [otm]
+      responses:
+        "200":
+          description: The list of verification methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/list_lpas:
+    get:
+      operationId: listLpas
+      summary: Returns sample LPAs
+      description: Sample selection of LPAs ( for testing purposes? )
+      tags: [otm]
+      responses:
+        "200":
+          description: The list lpas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /identity/validate_nino:
+    parameters:
+      - name: nino
+        in: path
+        description: The Nino to validate
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: verifyNino
+      summary: Verify the provided National Insurance number
+      description: Verify the provided National Insurance number
+      tags: []
+      requestBody:
+        description: Request with Nino number
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+
+      responses:
+        "200":
+          description: NINO OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        "400":
+          description: Invalid NINO
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /identity/validate_driving_licence:
+    parameters:
+      - name: dln
+        in: path
+        description: The Driving license to validate
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: validateDrivingLicence
+      summary: Verify the provided Driving number
+      description: Verify the provided Driving license number
+      tags: [ ]
+      requestBody:
+        description: Request with Dln number
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+
+      responses:
+        "200":
+          description: Dln OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        "400":
+          description: Invalid Dln
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /identity/validate_passport:
+    parameters:
+      - name: passport
+        in: path
+        description: The Passport to validate
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: validatePassport
+      summary: Verify the provided Passport number
+      description: Verify the provided Passport number
+      tags: [ ]
+      requestBody:
+        description: Request with Passport number
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+
+      responses:
+        "200":
+          description: Passport OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        "400":
+          description: Invalid passport
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /cases/[:uuid/]kbv-questions:
+    parameters:
+      - name: uuid
+        in: path
+        description: The case uuid
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getKbvQuestions
+      summary: Returns the KBV questions
+      description: If already exists for case, this return the KBV questions assigned to a case, otherwise it creates
+        and then assigns the questions to case. The return payload always omits the answers.
+        Returns error message if unable to retrieve case or document check is incomplete
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/kbvQuestions"
+        "400":
+          description: Missing UUID
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemResponse"
+
+  /cases/:uuid/kbv-answers:
+    parameters:
+      - name: uuid
+        in: path
+        description: The case UUID
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: checkKbvAnswers
+      summary: Verify the provided answers are correct
+      description: Verify the provided answers against correct stored answers
+      tags: [ ]
+      requestBody:
+        description: Request with 4 answers
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                properties:
+                  one:
+                    type: string
+                  two:
+                    type: string
+                  three:
+                    type: string
+                  four:
+                    type: string
+      responses:
+        "200":
+          description: Answers result
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                  - ["pass", "fail"]
+
+        "400":
+          description: Invalid format / missing UUID
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemResponse"
+
+  /cases/create:
+    post:
+      operationId: create
+      summary: Create a new case
+      description: Creates a new case against selected LPAs
+      tags: [ ]
+      requestBody:
+        description: Case data with person and LPA details
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                properties:
+                  firstName:
+                    type: string
+                  lastName:
+                    type: string
+                  personType:
+                    type: string
+                  address:
+                    type: array
+                  lpas:
+                    type: array
+                  documentComplete:
+                    type: boolean
+                    default: false
+      responses:
+        "200":
+          description: New Case UUID
+          content:
+            application/json:
+              schema:
+                type: string
+
+        "400":
+          description: Invalid case data
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemResponse"
+
+  /cases/:uuid/update-method:
+    parameters:
+      - name: uuid
+        in: path
+        description: The case UUID
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: updatedMethod
+      summary: Update a particular case with verification method
+      description: Update verification method used for a case
+      tags: [ ]
+      requestBody:
+        description: the selected method of verification
+        content:
+          text/plain:
+            schema:
+              type: string
+
+      responses:
+        "200":
+          description: Status result
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  result:
+                   type: string
+
+        "400":
+          description: Invalid format / missing UUID
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemResponse"
+
+
+tags:
+  - name: otm
+    description: Operations used for test and mock purposes
+  - name: deprecated
+    description: Operations which should no longer be used
+components:
+  schemas:
+    kbvQuestions:
+      type: array
+      properties:
+        number:
+          type: string
+        question:
+          $ref: "#/components/schemas/Question"
+    Question:
+      type: object
+      properties:
+        number:
+          type: string
+          enum:
+            - ["one", "two", "three", "four"]
+        question:
+          type: string
+        prompts:
+          type: array
+
+    ProblemResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        type:
+          type: string
+        detail:
+          type: string
+        extra:
+          type: array
+
+    VerifyResponse:
+      type: array
+      properties:
+        status:
+          type: string
+        nino:
+          type: string
+
