@@ -204,10 +204,11 @@ class OpgApiService implements OpgApiServiceInterface
     {
         try {
             if ($remove) {
-                $this->makeApiRequest("/cases/$uuid/remove-lpa/$lpa", 'POST');
+                $url = sprintf("/cases/%s/remove-lpa/%s", $uuid, $lpa);
             } else {
-                $this->makeApiRequest("/cases/$uuid/add-lpa/$lpa", 'POST');
+                $url = sprintf("/cases/%s/add-lpa/%s", $uuid, $lpa);
             }
+            $this->makeApiRequest($url, 'POST');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
