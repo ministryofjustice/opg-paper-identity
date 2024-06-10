@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Model\IdMethod;
+use Application\Validators\Enum;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
+use Exception;
 use JsonSerializable;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
+use Laminas\Validator\Uuid;
 
 /**
  * DTO for holding data required to make new case entry post
@@ -21,6 +25,11 @@ use Laminas\Validator\Regex;
  */
 class CaseData implements JsonSerializable
 {
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Validator(Uuid::class)]
+    public string $id;
+
     #[Validator(NotEmpty::class)]
     public string $personType;
 
@@ -55,27 +64,89 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public bool $documentComplete = false;
 
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(Enum::class, options: ['enum' => IdMethod::class])]
+    public ?string $idMethod = null;
+
     /**
-     * Factory method
-     *
-     * @param array{personType: string, firstName: string, lastName: string, dob: ?string,
-     *     lpas: array{}, address: array{} } $data
+     * @var string[]
+     */
+    #[Annotation\Required(false)]
+    public ?array $alternateAddress = [];
+
+    #[Annotation\Required(false)]
+    public ?string $selectedPostOfficeDeadline = null;
+
+
+    #[Annotation\Required(false)]
+    public ?string $selectedPostOffice = null;
+
+    #[Annotation\Required(false)]
+    public ?string $searchPostcode = null;
+
+    /**
+     * @param array<string, mixed> $data
      */
     public static function fromArray(mixed $data): self
     {
         $instance = new self();
-        $instance->personType = $data['personType'];
-        $instance->firstName = $data['firstName'];
-        $instance->lastName = $data['lastName'];
-        $instance->dob = $data['dob'] ?? null;
-        $instance->lpas = $data['lpas'];
-        $instance->address = $data['address'];
+
+        foreach ($data as $key => $value) {
+            if (! property_exists($instance, $key)) {
+                throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
+            }
+
+            $instance->{$key} = $value;
+        }
 
         return $instance;
     }
 
+    /**
+     * @returns array{
+     *     personType: "donor"|"certificateProvider",
+     *     firstName: string,
+     *     lastName: string,
+     *     dob: string,
+     *     address: string[],
+     *     lpas: string[],
+     *     kbvQuestions?: string,
+     *     documentComplete: bool,
+     *     alternateAddress?: string[],
+     *     selectedPostOfficeDeadline?:  string,
+     *     selectedPostOffice?: string,
+     *     searchPostcode?: string,
+     *     idMethod?: string
+     *     kbvQuestions?: string[]
+     * }
+     */
+    public function toArray(): array
+    {
+        $arr = [
+            'id' => $this->id,
+            'personType' => $this->personType,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'dob' => $this->dob,
+            'address' => $this->address,
+            'lpas' => $this->lpas,
+            'documentComplete' => $this->documentComplete,
+            'alternateAddress' => $this->alternateAddress,
+            'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
+            'selectedPostOffice' => $this->selectedPostOffice,
+            'searchPostcode' => $this->searchPostcode,
+            'idMethod' => $this->idMethod,
+        ];
+
+        if ($this->kbvQuestions !== null) {
+            $arr['kbvQuestions'] = $this->kbvQuestions;
+        }
+
+        return $arr;
+    }
+
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        return $this->toArray();
     }
 }

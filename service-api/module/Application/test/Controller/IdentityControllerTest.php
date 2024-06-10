@@ -75,6 +75,7 @@ class IdentityControllerTest extends TestCase
             ->expects($this->once())->method('getCaseByUUID')
             ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
             ->willReturn(CaseData::fromArray([
+                'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'personType' => 'donor',
                 'firstName' => '',
                 'lastName' => '',
@@ -160,8 +161,13 @@ class IdentityControllerTest extends TestCase
     /**
      * @dataProvider kbvAnswersData
      */
-    public function testKbvAnswers(string $uuid, array $provided, CaseData $actual, string $result, int $status): void
-    {
+    public function testKbvAnswers(
+        string $uuid,
+        array $provided,
+        CaseData $actual,
+        string $result,
+        int $status
+    ): void {
         if ($result !== 'error') {
             $this->dataQueryHandlerMock
                 ->expects($this->once())->method('getCaseByUUID')
@@ -181,11 +187,8 @@ class IdentityControllerTest extends TestCase
         $this->assertMatchedRouteName('check_kbv_answers');
 
         if ($result === "error") {
-            $this->assertEquals(
-                '{"error":"Missing UUID or unable to find case"}',
-                $this->getResponse()->getContent()
-            )
-            ;
+            $response = json_decode($this->getResponse()->getContent(), true);
+            $this->assertEquals('Missing UUID or unable to find case', $response['title']);
         } else {
             $this->assertEquals('{"result":"' . $result . '"}', $this->getResponse()->getContent());
         }
@@ -235,14 +238,15 @@ class IdentityControllerTest extends TestCase
 
     public function testKBVQuestionsWithNoUUID(): void
     {
-        $response = '{"error":"Missing UUID"}';
         $this->dispatch('/cases/kbv-questions', 'GET');
         $this->assertResponseStatusCode(400);
-        $this->assertEquals($response, $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class);
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('get_kbv_questions');
+
+        $response = json_decode($this->getResponse()->getContent(), true);
+        $this->assertEquals('Missing UUID', $response['title']);
     }
 
     /**
