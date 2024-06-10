@@ -60,7 +60,7 @@ class DataImportHandler
             if (! $input->isValid()) {
                 throw new InvalidArgumentException(sprintf(
                     '"%s" is not a valid value for %s',
-                    is_string($attrValue) ? $attrValue: json_encode($attrValue),
+                    is_string($attrValue) ? $attrValue : json_encode($attrValue),
                     $attrName
                 ));
             }
