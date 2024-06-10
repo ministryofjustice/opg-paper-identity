@@ -449,7 +449,12 @@ class IdentityController extends AbstractActionController
                 the certificate provider has signed this LPA online.";
                 break;
             default:
-                $case = $this->dataQueryHandler->getCaseByUUID($uuid)->toArray();
+                /**
+                 * @psalm-suppress PossiblyNullReference
+                 */
+                $case = $this->dataQueryHandler->getCaseByUUID($uuid) ?
+                    $this->dataQueryHandler->getCaseByUUID($uuid)->toArray() :
+                    [];
                 $status = Response::STATUS_CODE_200;
                 $message = "Success.";
                 $response['data'] = [
