@@ -108,22 +108,36 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     }
     public function testLpasByDonorReturnsPageWithData(): void
     {
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
+        $mockResponseDataIdDetails = [
+            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
+            "personType" => "certificateProvider",
+            "firstName" => "Mary Anne",
+            "lastName" => "Chapman",
+            "dob" => "01 May 1943",
+            "address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
             ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+                "M-XYXY-YAGA-35G4"
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin"
         ];
 
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
 
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
