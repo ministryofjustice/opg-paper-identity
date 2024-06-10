@@ -6,6 +6,7 @@ namespace Application\Fixtures;
 
 use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
 use Psr\Log\LoggerInterface;
