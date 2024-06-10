@@ -1,5 +1,3 @@
----
-
 services:
   sirius-mock:
     image: stoplight/prism:5
@@ -56,6 +54,8 @@ services:
       target: development
     depends_on:
       localstack:
+        condition: service_healthy
+      yoti-mock:
         condition: service_healthy
     env_file: ./service-api/docker-compose.env
     healthcheck:
@@ -122,6 +122,8 @@ services:
     build: nginx
     depends_on:
       api:
+        condition: service_healthy
+      yoti-mock:
         condition: service_healthy
     environment:
       APP_HOST: api
