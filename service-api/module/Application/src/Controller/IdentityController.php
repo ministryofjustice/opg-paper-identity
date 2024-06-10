@@ -409,6 +409,11 @@ class IdentityController extends AbstractActionController
                 $message = "This LPA has already been added to this ID check.";
                 $response['data']['Status'] = 'Already added';
                 break;
+            case 'M-0000-0000-0002':
+                $status = Response::STATUS_CODE_400;
+                $message = "No LPA found.";
+                $response['data']['Status'] = 'Not found';
+                break;
             case 'M-0000-0000-0003':
                 $status = Response::STATUS_CODE_400;
                 $message = "This LPA cannot be added to this ID check because the
@@ -444,9 +449,18 @@ class IdentityController extends AbstractActionController
                 the certificate provider has signed this LPA online.";
                 break;
             default:
-                $status = Response::STATUS_CODE_400;
-                $message = "No LPA found.";
-                $response['data']['Status'] = 'Not found';
+                $case = $this->dataQueryHandler->getCaseByUUID($uuid)->toArray();
+                $status = Response::STATUS_CODE_200;
+                $message = "Success.";
+                $response['data'] = [
+                    'case_uuid' => $uuid,
+                    "LPA_Number" => $lpa,
+                    "Type_Of_LPA" => "Personal welfare",
+                    "Donor" => "Mary Ann Chapman",
+                    "Status" => "Processing",
+                    "CP_Name" => $case['firstName'] . " " . $case['lastName'],
+                    "CP_Address" => $case['address']
+                ];
                 break;
         }
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
