@@ -12,7 +12,6 @@ use InvalidArgumentException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\InputFilter\InputInterface;
 use Psr\Log\LoggerInterface;
-use Aws\DynamoDb\Marshaler;
 
 class DataImportHandler
 {

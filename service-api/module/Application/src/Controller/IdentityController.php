@@ -281,7 +281,7 @@ class IdentityController extends AbstractActionController
                 'S',
                 $data['idMethod']
             );
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));
         }
@@ -309,7 +309,7 @@ class IdentityController extends AbstractActionController
                 'S',
                 $data['selected_postcode']
             );
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));
         }
@@ -337,7 +337,7 @@ class IdentityController extends AbstractActionController
                 'S',
                 $data['selected_postoffice']
             );
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));
         }
@@ -365,7 +365,7 @@ class IdentityController extends AbstractActionController
                 'S',
                 $data['deadline']
             );
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));
         }
