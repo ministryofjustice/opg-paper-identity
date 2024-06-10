@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Model\IdMethod;
+use Application\Validators\Enum;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
 use Exception;
@@ -61,6 +63,26 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public bool $documentComplete = false;
 
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(Enum::class, options: ['enum' => IdMethod::class])]
+    public ?string $idMethod = null;
+
+    /**
+     * @var string[]
+     */
+    #[Annotation\Required(false)]
+    public ?array $alternateAddress = [];
+
+    #[Annotation\Required(false)]
+    public ?string $selectedPostOfficeDeadline = null;
+
+
+    #[Annotation\Required(false)]
+    public ?string $selectedPostOffice = null;
+
+    #[Annotation\Required(false)]
+    public ?string $searchPostcode = null;
+
     /**
      * @param array<string, mixed> $data
      */
@@ -79,8 +101,51 @@ class CaseData implements JsonSerializable
         return $instance;
     }
 
+    /**
+     * @returns array{
+     *     personType: "donor"|"certificateProvider",
+     *     firstName: string,
+     *     lastName: string,
+     *     dob: string,
+     *     address: string[],
+     *     lpas: string[],
+     *     kbvQuestions?: string,
+     *     documentComplete: bool,
+     *     alternateAddress?: string[],
+     *     selectedPostOfficeDeadline?:  string,
+     *     selectedPostOffice?: string,
+     *     searchPostcode?: string,
+     *     idMethod?: string
+     *     kbvQuestions?: string[]
+     * }
+     */
+    public function toArray(): array
+    {
+        $arr = [
+            'id' => $this->id,
+            'personType' => $this->personType,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'dob' => $this->dob,
+            'address' => $this->address,
+            'lpas' => $this->lpas,
+            'documentComplete' => $this->documentComplete,
+            'alternateAddress' => $this->alternateAddress,
+            'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
+            'selectedPostOffice' => $this->selectedPostOffice,
+            'searchPostcode' => $this->searchPostcode,
+            'idMethod' => $this->idMethod,
+        ];
+
+        if ($this->kbvQuestions !== null) {
+            $arr['kbvQuestions'] = $this->kbvQuestions;
+        }
+
+        return $arr;
+    }
+
     public function jsonSerialize(): array
     {
-        return get_object_vars($this);
+        return $this->toArray();
     }
 }

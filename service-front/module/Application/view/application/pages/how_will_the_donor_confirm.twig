@@ -1,6 +1,6 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
+<div class="govuk-width-container govuk-!-padding-top-5">
+
         <form method="POST">
             <h1 class="govuk-heading-xl govuk-!-width-two-thirds">How will they confirm their identity</h1>
 
@@ -25,9 +25,11 @@
             <div class="govuk-form-group">
                 <h2 class="govuk-heading-m">If unable to ID over the phone</h2>
                 <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
-                           value="OnBehalf">
-                    <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their identity on donor's behalf</label>
+                    <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
+                           value="po">
+                    <label class="govuk-label govuk-radios__label" for="PostOffice">
+                        Post Office (current UK / EU / international passport or driving licence)
+                    </label>
                 </div>
             </div>
             <details class="govuk-details">
@@ -39,11 +41,9 @@
                 <div class="govuk-details__text">
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
-                                   value="po">
-                            <label class="govuk-label govuk-radios__label" for="PostOffice">
-                                Post Office (current UK / EU / international passport or driving licence)
-                            </label>
+                            <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
+                                   value="OnBehalf">
+                            <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their identity on donor's behalf</label>
                         </div>
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
@@ -56,5 +56,5 @@
 
             <input type="submit" class="govuk-button" value="Continue">
         </form>
-    </main>
+
 </div>

@@ -105,4 +105,13 @@ class SiriusApiService
 
         return json_decode(strval($response->getBody()), true);
     }
+
+    public function searchAddressesByPostcode(string $postcode, Request $request): array
+    {
+        $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
+            'headers' => $this->getAuthHeaders($request),
+        ]);
+
+        return json_decode(strval($response->getBody()), true);
+    }
 }

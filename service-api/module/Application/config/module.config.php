@@ -289,6 +289,36 @@ return [
                     ],
                 ],
             ],
+            'search_address_by_postcode' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/search-address-by-postcode/:postcode',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'searchAddressByPostcode',
+                    ],
+                ],
+            ],
+            'save_alternate_address_to_case' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/save-alternate-address-to-case',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'saveAlternateAddressToCase',
+                    ],
+                ],
+            ],
+            'complete_document' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cases/:uuid/complete-document',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'setDocumentComplete',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

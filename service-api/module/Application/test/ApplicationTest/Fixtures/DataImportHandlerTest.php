@@ -6,9 +6,11 @@ namespace ApplicationTest\Fixtures;
 
 use Application\Fixtures\DataImportHandler;
 use Application\Model\Entity\CaseData;
+use Application\Model\IdMethod;
 use Aws\CommandInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
+use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,8 +18,8 @@ use Psr\Log\LoggerInterface;
 
 class DataImportHandlerTest extends TestCase
 {
-    private DynamoDbClient | MockObject $dynamoDbClientMock;
-    private LoggerInterface | MockObject $loggerMock;
+    private DynamoDbClient|MockObject $dynamoDbClientMock;
+    private LoggerInterface|MockObject $loggerMock;
     private DataImportHandler $sut;
 
     public function setUp(): void
@@ -38,7 +40,19 @@ class DataImportHandlerTest extends TestCase
      */
     public function testInsertData(): void
     {
-        $case = CaseData::fromArray(['firstName' => 'Maria', 'lastName' => 'Neldon']);
+        $case = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'firstName' => 'Maria',
+            'lastName' => 'Neldon',
+            'personType' => 'donor',
+            'dob' => '1980-01-01',
+            'address' => [
+                '1 Street',
+                'Town',
+                'Postcode'
+            ],
+            'lpas' => []
+        ]);
 
         // Stubbing the putItem method of DynamoDB client
         $this->dynamoDbClientMock->expects($this->once())
@@ -71,7 +85,19 @@ class DataImportHandlerTest extends TestCase
      */
     public function testInsertDataWithException(): void
     {
-        $caseData = CaseData::fromArray(['firstName' => 'Maria', 'lastName' => 'Neldon']);
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'firstName' => 'Maria',
+            'lastName' => 'Neldon',
+            'personType' => 'donor',
+            'dob' => '1980-01-01',
+            'address' => [
+                '1 Street',
+                'Town',
+                'Postcode'
+            ],
+            'lpas' => []
+        ]);
 
         $commandMock = $this->createMock(CommandInterface::class);
 
@@ -133,15 +159,15 @@ class DataImportHandlerTest extends TestCase
             'S',
             json_encode([
                 'one' => [
-                'number' => 'one',
-                'question' => 'Who is your electricity provider?',
-                'prompts' => [
-                    0 => 'VoltWave',
-                    1 => 'Glow Electric',
-                    2 => 'Powergrid Utilities',
-                    3 => 'Bright Bristol Power'
-                ],
-                'answer' => 'VoltWave'
+                    'number' => 'one',
+                    'question' => 'Who is your electricity provider?',
+                    'prompts' => [
+                        0 => 'VoltWave',
+                        1 => 'Glow Electric',
+                        2 => 'Powergrid Utilities',
+                        3 => 'Bright Bristol Power'
+                    ],
+                    'answer' => 'VoltWave'
                 ],
             ])
         );
@@ -177,7 +203,32 @@ class DataImportHandlerTest extends TestCase
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'idMethod',
             'S',
-            'passport'
+            IdMethod::PassportNumber
+        );
+    }
+
+    /**
+     * @throws Exception
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUpdateCaseDataWithBadData(): void
+    {
+        $this->dynamoDbClientMock->expects($this->never())
+            ->method('__call');
+
+        // Expect the logger to be called if an exception occurs
+        $this->loggerMock->expects($this->never())->method('error');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('"an invalid value" is not a valid value for idMethod');
+
+        // Call the updateCaseData method with test data
+        $this->sut->updateCaseData(
+            'a9bc8ab8-389c-4367-8a9b-762ab3050491',
+            'idMethod',
+            'S',
+            'an invalid value'
         );
     }
 }
