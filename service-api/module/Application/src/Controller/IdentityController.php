@@ -547,7 +547,7 @@ class IdentityController extends AbstractActionController
             }
         } catch (\Exception $exception) {
             $status = Response::STATUS_CODE_400;
-            $response['exception'] = $exception->getMessage();
+$response = new Problem('Cannot remove LPA from case', extra: [exception => $exception->getMessage()]);
         }
 
         $this->getResponse()->setStatusCode($status);
