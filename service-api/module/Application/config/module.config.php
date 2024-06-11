@@ -238,11 +238,23 @@ return [
             ],
             'add_case_lpa' => [
                 'type'    => Segment::class,
+                'verb' => 'put',
                 'options' => [
-                    'route'    => '/cases/:uuid/add-lpa/:lpa',
+                    'route'    => '/cases/:uuid/lpas/:lpa',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action'     => 'addCaseLpa',
+                    ],
+                ],
+            ],
+            'remove_case_lpa' => [
+                'type'    => Segment::class,
+                'verb' => 'delete',
+                'options' => [
+                    'route'    => '/cases/:uuid/lpas/:lpa',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action'     => 'removeCaseLpa',
                     ],
                 ],
             ],
