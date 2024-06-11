@@ -5,11 +5,11 @@
         <form method="POST" target="">
             <h2 class="govuk-heading-m">Name on licence</h2>
             <p class="govuk-body">
-                {{ details_data.Name }}
+                {{ details_data.firstName }} {{ details_data.lastName }}
             </p>
             <h2 class="govuk-heading-m">Date of birth</h2>
             <p class="govuk-body">
-                {{ details_data.DOB }}
+                {{ details_data.dob }}
             </p>
             <div class="govuk-form-group {% if form.get('dln').messages %}govuk-form-group--error{% endif %}">
                 <h2 class="govuk-label-wrapper">

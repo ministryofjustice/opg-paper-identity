@@ -4,11 +4,11 @@
         <h1 class="govuk-heading-xl">National insurance number</h1>
         <h2 class="govuk-heading-m">Name</h2>
         <p class="govuk-body">
-            {{ details_data.Name }}
+            {{ details_data.firstName }} {{ details_data.lastName }}
         </p>
         <h2 class="govuk-heading-m">Date of birth</h2>
         <p class="govuk-body">
-            {{ details_data.DOB }}
+            {{ details_data.dob }}
         </p>
 
         <div class="govuk-form-group {% if form.get('nino').messages %}govuk-form-group--error{% endif %}">
