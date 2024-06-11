@@ -97,8 +97,6 @@ class CPFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
-
         $view = new ViewModel();
 
         $view->setVariable('lpas', $detailsData['lpas']);

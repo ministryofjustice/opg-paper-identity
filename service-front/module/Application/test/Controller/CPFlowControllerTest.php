@@ -128,23 +128,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-//        $mockLpasData = [
-//            [
-//                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ],
-//            [
-//                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
-//        ];
-//
-//        $this
-//            ->opgApiServiceMock
-//            ->expects(self::once())
-//            ->method('getLpasByDonorData')
-//            ->willReturn($mockLpasData);
-
         $this->dispatch("/$this->uuid/cp/confirm-lpas", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -178,23 +161,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
-//
-//        $mockLpasData = [
-//            [
-//                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ],
-//            [
-//                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
-//        ];
-//
-//        $this
-//            ->opgApiServiceMock
-//            ->expects(self::once())
-//            ->method('getLpasByDonorData')
-//            ->willReturn($mockLpasData);
 
         $this->dispatch("/$this->uuid/cp/confirm-dob", 'GET');
         $this->assertResponseStatusCode(200);
@@ -229,23 +195,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
-
-//        $mockLpasData = [
-//            [
-//                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ],
-//            [
-//                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
-//                'donor_name' => 'Mary Anne Chapman'
-//            ]
-//        ];
-//
-//        $this
-//            ->opgApiServiceMock
-//            ->expects(self::once())
-//            ->method('getLpasByDonorData')
-//            ->willReturn($mockLpasData);
 
         $this->dispatch("/$this->uuid/cp/confirm-address", 'GET');
         $this->assertResponseStatusCode(200);
