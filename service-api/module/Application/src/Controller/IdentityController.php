@@ -367,6 +367,14 @@ class IdentityController extends AbstractActionController
 
         $response = [];
 
+        try {
+            return new JsonModel($this->dataQueryHandler->query(['lpas' => [$lpa]]));
+        } catch (\Exception $exception) {
+            return new JsonModel([$exception->getMessage()
+            ]);
+        }
+
+
         //pending design decision - may need this code
 
         //        if($lpa == null || $lpa == '') {
