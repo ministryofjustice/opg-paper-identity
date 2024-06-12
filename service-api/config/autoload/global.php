@@ -19,4 +19,5 @@ return [
             'ViewJsonStrategy',
         ],
     ],
+    'secrets_environment' => getenv('SECRETS_MANAGER_PREFIX') ?: '',
 ];
