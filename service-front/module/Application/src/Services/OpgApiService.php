@@ -202,13 +202,15 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array
     {
+        $verb = 'PUT';
         try {
             if ($remove) {
-                $url = sprintf("/cases/%s/remove-lpa/%s", $uuid, $lpa);
+                $url = sprintf("/cases/%s/lpas/%s", $uuid, $lpa);
+                $verb = 'DELETE';
             } else {
-                $url = sprintf("/cases/%s/add-lpa/%s", $uuid, $lpa);
+                $url = sprintf("/cases/%s/lpas/%s", $uuid, $lpa);
             }
-            $this->makeApiRequest($url, 'POST');
+            $this->makeApiRequest($url, $verb);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
