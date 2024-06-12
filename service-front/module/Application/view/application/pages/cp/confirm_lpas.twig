@@ -31,13 +31,14 @@
                                 {% for datum in lpas %}
                                     <div class="govuk-summary-list__row">
                                         <dd class="govuk-summary-list__value">
-                                            {{ datum.lpa_ref }}
+                                            {{ datum }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            {{ datum.donor_name }}
+                                            {{ details_data.firstName }}
+                                            {{ details_data.lastName }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            <a href="">Remove</a>
+                                            <a href="./remove-lpa/{{ datum }}">Remove</a>
                                         </dd>
                                     </div>
                                 {% endfor %}
