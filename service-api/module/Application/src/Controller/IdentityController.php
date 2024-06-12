@@ -364,9 +364,7 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $lpa = $this->params()->fromRoute('lpa');
         $status = Response::STATUS_CODE_200;
-
         $response = [];
-
         //pending design decision - may need this code
 
         //        if($lpa == null || $lpa == '') {
@@ -409,6 +407,11 @@ class IdentityController extends AbstractActionController
                 $message = "This LPA has already been added to this ID check.";
                 $response['data']['Status'] = 'Already added';
                 break;
+            case 'M-0000-0000-0002':
+                $status = Response::STATUS_CODE_400;
+                $message = "No LPA found.";
+                $response['data']['Status'] = 'Not found';
+                break;
             case 'M-0000-0000-0003':
                 $status = Response::STATUS_CODE_400;
                 $message = "This LPA cannot be added to this ID check because the
@@ -444,9 +447,23 @@ class IdentityController extends AbstractActionController
                 the certificate provider has signed this LPA online.";
                 break;
             default:
-                $status = Response::STATUS_CODE_400;
-                $message = "No LPA found.";
-                $response['data']['Status'] = 'Not found';
+                /**
+                 * @psalm-suppress PossiblyNullReference
+                 */
+                $case = $this->dataQueryHandler->getCaseByUUID($uuid) ?
+                    $this->dataQueryHandler->getCaseByUUID($uuid)->toArray() :
+                    [];
+                $status = Response::STATUS_CODE_200;
+                $message = "Success.";
+                $response['data'] = [
+                    'case_uuid' => $uuid,
+                    "LPA_Number" => $lpa,
+                    "Type_Of_LPA" => "Personal welfare",
+                    "Donor" => "Mary Ann Chapman",
+                    "Status" => "Processing",
+                    "CP_Name" => $case['firstName'] . " " . $case['lastName'],
+                    "CP_Address" => $case['address']
+                ];
                 break;
         }
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
@@ -483,6 +500,44 @@ class IdentityController extends AbstractActionController
         } catch (\Exception $exception) {
             $status = Response::STATUS_CODE_400;
             $response['exception'] = $exception->getMessage();
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        return new JsonModel($response);
+    }
+
+    public function removeCaseLpaAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $lpa = $this->params()->fromRoute('lpa');
+        $data = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+        try {
+            /**
+             * @psalm-suppress PossiblyNullPropertyFetch
+             */
+            $lpas = $data->lpas;
+            if (in_array($lpa, $lpas)) {
+                $keptLpas = [];                 //this is inelegant but works, while popping the
+                foreach ($lpas as $keptLpa) {   //value out of the existing array breaks the code
+                    if ($keptLpa !== $lpa) {
+                        $keptLpas[] = $keptLpa;
+                    }
+                }
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'lpas',
+                    'SS',
+                    $keptLpas
+                );
+                $response['result'] = "Removed";
+            } else {
+                $response['result'] = "LPA is not added to this case";
+            }
+        } catch (\Exception $exception) {
+            $status = Response::STATUS_CODE_400;
+            $response = new Problem('Cannot remove LPA from case', extra: ['exception' => $exception->getMessage()]);
         }
 
         $this->getResponse()->setStatusCode($status);

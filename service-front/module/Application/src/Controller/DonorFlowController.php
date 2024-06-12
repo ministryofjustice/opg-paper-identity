@@ -81,13 +81,12 @@ class DonorFlowController extends AbstractActionController
     public function donorLpaCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $data = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $view = new ViewModel();
 
-        $view->setVariable('data', $data);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('lpas', $detailsData['lpas']);
+        $view->setVariable('lpa_count', count($detailsData['lpas']));
 
         if (count($this->getRequest()->getPost())) {
 //            $data = $this->getRequest()->getPost();
@@ -297,5 +296,15 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/proving_identity');
+    }
+
+    public function removeLpaAction(): Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpa = $this->params()->fromRoute("lpa");
+
+        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
+
+        return $this->redirect()->toRoute("root/donor_lpa_check", ['uuid' => $uuid]);
     }
 }
