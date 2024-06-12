@@ -46,13 +46,14 @@ class LpaHelper
     public function __construct(
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataImportHandler $dataImportHandler,
-    ) {}
+    ) {
+    }
 
     public function getLpasByUuid(string $uuid): array|null
     {
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        if($caseData) {
+        if ($caseData) {
             return $caseData->lpas;
         } else {
             return null;
@@ -63,7 +64,7 @@ class LpaHelper
     {
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        if($caseData) {
+        if ($caseData) {
             return $caseData->lpas;
         } else {
             return null;
@@ -72,12 +73,10 @@ class LpaHelper
 
     public function addLpaByCase(string $uuid, string $lpa): CaseData
     {
-
     }
 
     public function removeLpaByCase(string $uuid, string $lpa): CaseData
     {
-
     }
 
 
@@ -196,5 +195,4 @@ class LpaHelper
         $response['uuid'] = $uuid;
         return new JsonModel($response);
     }
-
 }
