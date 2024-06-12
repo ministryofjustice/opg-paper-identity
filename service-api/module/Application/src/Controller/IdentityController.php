@@ -364,17 +364,7 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $lpa = $this->params()->fromRoute('lpa');
         $status = Response::STATUS_CODE_200;
-
         $response = [];
-
-        try {
-            return new JsonModel($this->dataQueryHandler->query(['lpas' => [$lpa]]));
-        } catch (\Exception $exception) {
-            return new JsonModel([$exception->getMessage()
-            ]);
-        }
-
-
         //pending design decision - may need this code
 
         //        if($lpa == null || $lpa == '') {
@@ -547,7 +537,7 @@ class IdentityController extends AbstractActionController
             }
         } catch (\Exception $exception) {
             $status = Response::STATUS_CODE_400;
-            $response = new Problem('Cannot remove LPA from case', extra: [exception => $exception->getMessage()]);
+            $response = new Problem('Cannot remove LPA from case', extra: ['exception' => $exception->getMessage()]);
         }
 
         $this->getResponse()->setStatusCode($status);
