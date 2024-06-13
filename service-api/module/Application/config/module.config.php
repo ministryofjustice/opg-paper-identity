@@ -19,9 +19,12 @@ use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
+use Application\Yoti\YotiServiceFactory;
+use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
+use Laminas\Router\Http\Method;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
@@ -37,244 +40,305 @@ return [
     'router' => [
         'routes' => [
             'home' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/',
+                    'route' => '/',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ],
                 ],
             ],
             'application' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route' => '/application[/:action]',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ],
                 ],
             ],
             'details' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/details',
+                    'route' => '/identity/details',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'details',
+                        'action' => 'details',
                     ],
                 ],
             ],
             'testdata' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/testdata',
+                    'route' => '/identity/testdata',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'testdata',
+                        'action' => 'testdata',
                     ],
                 ],
             ],
             'findbyname' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/findbyname',
+                    'route' => '/identity/findbyname',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'findByName',
+                        'action' => 'findByName',
                     ],
                 ],
             ],
             'findbyidnumber' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/findbyidnumber',
+                    'route' => '/identity/findbyidnumber',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'findByIdNumber',
+                        'action' => 'findByIdNumber',
                     ],
                 ],
             ],
 
             'create_case' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/create',
+                    'route' => '/identity/create',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'create',
+                        'action' => 'create',
                     ],
                 ],
             ],
 
             'address_verification' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/address_verification',
+                    'route' => '/identity/address_verification',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'addressVerification',
+                        'action' => 'addressVerification',
                     ],
                 ],
             ],
             'list_lpas' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/list_lpas',
+                    'route' => '/identity/list_lpas',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'listLpas',
+                        'action' => 'listLpas',
                     ],
                 ],
             ],
             'validate_nino' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/validate_nino',
+                    'route' => '/identity/validate_nino',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'verifyNino',
+                        'action' => 'verifyNino',
                     ],
                 ],
             ],
             'validate_driving_licence' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/validate_driving_licence',
+                    'route' => '/identity/validate_driving_licence',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'validateDrivingLicence',
+                        'action' => 'validateDrivingLicence',
                     ],
                 ],
             ],
             'validate_passport' => [
-                'type'    => Literal::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/identity/validate_passport',
+                    'route' => '/identity/validate_passport',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'validatePassport',
+                        'action' => 'validatePassport',
                     ],
                 ],
             ],
             'get_kbv_questions' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/[:uuid/]kbv-questions',
+                    'route' => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'getKbvQuestions',
+                        'action' => 'getKbvQuestions',
                     ],
                 ],
             ],
             'check_kbv_answers' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/kbv-answers',
+                    'route' => '/cases/:uuid/kbv-answers',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'checkKbvAnswers',
+                        'action' => 'checkKbvAnswers',
                     ],
                 ],
             ],
             'create' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/create',
+                    'route' => '/cases/create',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'create',
+                        'action' => 'create',
                     ],
                 ],
             ],
             'find_lpa' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/find-lpa/:lpa',
+                    'route' => '/cases/:uuid/find-lpa/:lpa',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'findLpa',
+                        'action' => 'findLpa',
                     ],
                 ],
             ],
             'update_case_method' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/update-method',
+                    'route' => '/cases/:uuid/update-method',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'updatedMethod',
+                        'action' => 'updatedMethod',
                     ],
                 ],
             ],
-            'add_search_postcode' => [
+            'find_postoffice_branches' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/add-search-postcode',
+                    'route'    => '/counter-service/branches',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'findPostOffice',
+                    ],
+                ],
+            ],
+            'create_yoti_session' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/create-session',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'createSession',
+                    ],
+                ],
+            ],
+            'retrieve_yoti_status' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/retrieve-status',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getSessionStatus',
+                    ],
+                ],
+            ],
+            'retrieve_pdf_letter' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/retrieve-letter',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'getPDFLetter',
+                    ],
+                ]
+            ],
+            'add_search_postcode' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/add-search-postcode',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'addSearchPostcode',
+                        'action' => 'addSearchPostcode',
                     ],
                 ],
             ],
             'add_selected_postoffice' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/add-selected-postoffice',
+                    'route' => '/cases/:uuid/add-selected-postoffice',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'addSelectedPostoffice',
+                        'action' => 'addSelectedPostoffice',
                     ],
                 ],
             ],
             'confirm_selected_postoffice' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/confirm-selected-postoffice',
+                    'route' => '/cases/:uuid/confirm-selected-postoffice',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'confirmSelectedPostoffice',
+                        'action' => 'confirmSelectedPostoffice',
                     ],
                 ],
             ],
-            'add_case_lpa' => [
-                'type'    => Segment::class,
+            'change_case_lpa' => [
+                'type' => Segment::class,
+                'verb' => 'put',
                 'options' => [
-                    'route'    => '/cases/:uuid/add-lpa/:lpa',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action'     => 'addCaseLpa',
+                    'route' => '/cases/:uuid/lpas/:lpa',
+                    'child_routes' => [
+                        'put' => [
+                            'type' => Method::class,
+                            'options' => [
+                                'verb' => 'put',
+                                'defaults' => [
+                                    'controller' => Controller\IdentityController::class,
+                                    'action' => 'addCaseLpa',
+                                ],
+                            ],
+                            'may_terminate' => true,
+                        ],
+                        'delete' => [
+                            'type' => Method::class,
+                            'options' => [
+                                'verb' => 'delete',
+                                'defaults' => [
+                                    'controller' => Controller\IdentityController::class,
+                                    'action' => 'removeCaseLpa',
+                                ],
+                            ],
+                            'may_terminate' => true,
+                        ],
                     ],
                 ],
             ],
             'search_address_by_postcode' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/search-address-by-postcode/:postcode',
+                    'route' => '/cases/:uuid/search-address-by-postcode/:postcode',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'searchAddressByPostcode',
+                        'action' => 'searchAddressByPostcode',
                     ],
                 ],
             ],
             'save_alternate_address_to_case' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/save-alternate-address-to-case',
+                    'route' => '/cases/:uuid/save-alternate-address-to-case',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'saveAlternateAddressToCase',
+                        'action' => 'saveAlternateAddressToCase',
                     ],
                 ],
             ],
             'complete_document' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/cases/:uuid/complete-document',
+                    'route' => '/cases/:uuid/complete-document',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action'     => 'setDocumentComplete',
+                        'action' => 'setDocumentComplete',
                     ],
                 ],
             ],
@@ -286,7 +350,8 @@ return [
         ],
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
-            Controller\IdentityController::class => LazyControllerAbstractFactory::class
+            Controller\IdentityController::class => LazyControllerAbstractFactory::class,
+            Controller\YotiController::class => LazyControllerAbstractFactory::class
         ],
     ],
 
@@ -310,14 +375,15 @@ return [
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
-            AwsSecretsCache::class => AwsSecretsCacheFactory::class
+            AwsSecretsCache::class => AwsSecretsCacheFactory::class,
+            YotiServiceInterface::class => YotiServiceFactory::class
         ],
     ],
     'view_manager' => [
-        'template_map'             => [
-            'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
-            '404'                     => __DIR__ . '/../view/error/error.json',
-            'error'                   => __DIR__ . '/../view/error/error.json',
+        'template_map' => [
+            'layout/layout' => __DIR__ . '/../view/layout/layout.phtml',
+            '404' => __DIR__ . '/../view/error/error.json',
+            'error' => __DIR__ . '/../view/error/error.json',
         ],
         'strategies' => [
             'ViewJsonStrategy',

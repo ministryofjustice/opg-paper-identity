@@ -1,0 +1,37 @@
+{
+  "branches": [
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "12345678",
+      "name": "St Neots",
+      "address": "35 High Street, St. Neots, Cambridgeshire",
+      "postcode": "PE19 1NL",
+      "location": {
+        "latitude": 52.22864,
+        "longitude": -0.26762
+      }
+    },
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "12345677",
+      "name": "St Pauls",
+      "address": "3 St Pauls Way, St. Pauls, Nottinghamshire",
+      "postcode": "NT 1NL",
+      "location": {
+        "latitude": 51.22864,
+        "longitude": -0.36762
+      }
+    },
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "12345676",
+      "name": "Hampstead",
+      "address": "66 High Street, Hampstead Heath, LONON",
+      "postcode": "NW3 6LR",
+      "location": {
+        "latitude": 51.56808,
+        "longitude": 0.1629
+      }
+    }
+  ]
+}

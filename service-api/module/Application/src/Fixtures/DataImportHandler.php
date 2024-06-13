@@ -58,7 +58,11 @@ class DataImportHandler
             $input->setValue($attrValue);
 
             if (! $input->isValid()) {
-                throw new InvalidArgumentException(sprintf('"%s" is not a valid value for %s', $attrValue, $attrName));
+                throw new InvalidArgumentException(sprintf(
+                    '"%s" is not a valid value for %s',
+                    is_string($attrValue) ? $attrValue : json_encode($attrValue),
+                    $attrName
+                ));
             }
         }
 
