@@ -19,5 +19,5 @@ return [
             'ViewJsonStrategy',
         ],
     ],
-    'secrets_environment' => getenv('SECRETS_MANAGER_PREFIX') ?: '',
+    'secrets_prefix' => (string) getenv('SECRETS_MANAGER_PREFIX') ?: 'local/paper-identity/',
 ];

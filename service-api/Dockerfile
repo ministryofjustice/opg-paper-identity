@@ -2,8 +2,8 @@ FROM php:8.3-fpm-alpine AS app
 
 RUN apk --no-cache add fcgi icu-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
-  && docker-php-ext-enable sodium \
-RUN pecl install apcu && docker-php-ext-enable apcu
+  && docker-php-ext-enable sodium
+RUN pecl install apcu && docker-php-ext-enable apcu && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
 
 WORKDIR /var/www/
 
@@ -11,7 +11,6 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
-
 
 RUN mkdir /tmp/cache &&\
   chown -R www-data /tmp/cache &&\

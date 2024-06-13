@@ -7,6 +7,9 @@ namespace Application\Aws\Secrets;
 use RuntimeException;
 use Stringable;
 
+/**
+ * @psalm-suppress PossiblyUnusedMethod
+ */
 class AwsSecret implements Stringable
 {
     private static ?AwsSecretsCache $cache = null;

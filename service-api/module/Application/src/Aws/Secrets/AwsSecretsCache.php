@@ -6,6 +6,7 @@ namespace Application\Aws\Secrets;
 
 use Application\Aws\Secrets\Exception\InvalidSecretResponseException;
 use Aws\SecretsManager\SecretsManagerClient;
+use Laminas\Cache\Exception\ExceptionInterface;
 use Laminas\Cache\Storage\StorageInterface;
 
 class AwsSecretsCache
@@ -13,15 +14,19 @@ class AwsSecretsCache
     private const NAMESPACE_AWS = 'aws';
 
     public function __construct(
-        private readonly string $environment,
+        private readonly string $prefix,
         private readonly StorageInterface $storage,
         private readonly SecretsManagerClient $client
     ) {
     }
 
+    /**
+     * @throws ExceptionInterface
+     * @throws InvalidSecretResponseException
+     */
     public function getValue(string $name): string
     {
-        $name = $this->environment . '/' . $name;
+        $name = $this->prefix . '/' . $name;
         $key = self::NAMESPACE_AWS . ':' . $name;
 
         if ($this->storage->hasItem($key)) {
@@ -33,17 +38,24 @@ class AwsSecretsCache
         return $value;
     }
 
+    /**
+     * @psalm-suppress NullableReturnStatement
+     * @param string $name
+     * @return string
+     * @throws InvalidSecretResponseException
+     */
     protected function getValueFromAWS(string $name): string
     {
         $result = $this->client->getSecretValue([
             'SecretId' => $name,
         ]);
-
         $secret = false;
         if (isset($result['SecretString'])) {
             $secret = $result['SecretString'];
         } elseif (isset($result['SecretBinary'])) {
-            $secret = base64_decode($result['SecretBinary']);
+            /** @var string $secretBinary */
+            $secretBinary = $result['SecretBinary'];
+            $secret = base64_decode($secretBinary);
         }
 
         if ($secret === false) {
@@ -51,14 +63,5 @@ class AwsSecretsCache
         }
 
         return $secret;
-    }
-
-    public function clearCache(string $name): bool
-    {
-        $key = self::NAMESPACE_AWS . ':' . $name;
-        if ($this->storage->hasItem($key)) {
-            return $this->storage->removeItem($key);
-        }
-        return false;
     }
 }

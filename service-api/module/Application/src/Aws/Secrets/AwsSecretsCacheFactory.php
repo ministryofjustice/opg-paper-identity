@@ -28,6 +28,6 @@ class AwsSecretsCacheFactory implements FactoryInterface
 
         $secretsManagerClient = new SecretsManagerClient($config['aws']);
 
-        return new AwsSecretsCache($config['secrets_environment'], $storage, $secretsManagerClient);
+        return new AwsSecretsCache($config['secrets_prefix'], $storage, $secretsManagerClient);
     }
 }
