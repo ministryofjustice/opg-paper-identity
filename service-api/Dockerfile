@@ -3,7 +3,9 @@ FROM php:8.3-fpm-alpine AS app
 RUN apk --no-cache add fcgi icu-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
   && docker-php-ext-enable sodium
-RUN pecl install apcu && docker-php-ext-enable apcu && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
+RUN pecl install apcu && docker-php-ext-enable apcu &&  \
+    echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini \
+    echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
 
 WORKDIR /var/www/
 
