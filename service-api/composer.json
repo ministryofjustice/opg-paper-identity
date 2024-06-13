@@ -15,8 +15,10 @@
     ],
     "require": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+        "ext-apcu": "*",
         "aws/aws-sdk-php": "^3.300",
         "guzzlehttp/guzzle": "^7.8",
+        "laminas/laminas-cache-storage-adapter-apcu": "^2.5",
         "laminas/laminas-component-installer": "^3.4.0",
         "laminas/laminas-development-mode": "^3.12.0",
         "laminas/laminas-form": "^3.19",
@@ -81,6 +83,9 @@
             "laminas/laminas-component-installer": true,
             "laminas/laminas-skeleton-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "platform": {
+            "ext-apcu": "5.1.10"
         }
     }
 }
