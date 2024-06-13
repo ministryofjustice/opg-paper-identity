@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Aws\Secrets\AwsSecret;
+use Application\Aws\Secrets\AwsSecretsCache;
 use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
+use Laminas\ServiceManager\ServiceManager;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -26,6 +29,13 @@ class Module
     {
         $eventManager = $event->getApplication()->getEventManager();
         $eventManager->attach(MvcEvent::EVENT_FINISH, [$this, 'onFinish'], 1000000);
+
+        $application = $event->getApplication();
+        /** @var ServiceManager $serviceManager */
+        $serviceManager = $application->getServiceManager();
+        /** @var AwsSecretsCache $secretsCache */
+        $secretsCache = $serviceManager->get(AwsSecretsCache::class);
+        AwsSecret::setCache($secretsCache);
     }
 
     /**
