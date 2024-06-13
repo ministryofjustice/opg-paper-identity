@@ -91,6 +91,26 @@ paths:
                       type: string
                       x-faker:
                         fake: "A concatenation of the address lines"
+  /api/v1/lpa-lookup:
+    parameters:
+      - name: lpa
+        in: query
+        required: true
+        schema:
+          type: string
+          nullable: false
+          pattern: (M(-[A-Z0-9]{4}){3})
+    get:
+      summary: Lookup LPA based on an LPA reference
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CombinedLpa"
+        "401":
+          description: Error
 components:
   schemas:
     User:

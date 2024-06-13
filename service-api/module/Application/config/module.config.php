@@ -97,7 +97,6 @@ return [
                     ],
                 ],
             ],
-
             'create_case' => [
                 'type' => Literal::class,
                 'options' => [
@@ -108,7 +107,6 @@ return [
                     ],
                 ],
             ],
-
             'address_verification' => [
                 'type' => Literal::class,
                 'options' => [

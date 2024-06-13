@@ -114,4 +114,13 @@ class SiriusApiService
 
         return json_decode(strval($response->getBody()), true);
     }
+
+    public function getLpaByLpaRef(string $lpaRef, Request $request): array
+    {
+        $response = $this->client->get('/api/v1/lpa-lookup?lpa=' . $lpaRef, [
+            'headers' => $this->getAuthHeaders($request),
+        ]);
+
+        return json_decode(strval($response->getBody()), true);
+    }
 }

@@ -128,11 +128,13 @@ class CPFlowController extends AbstractActionController
             $formObject = $this->getRequest()->getPost();
 
             if ($formObject->get('lpa')) {
+                $siriusCheck = $this->siriusApiService->getLpaByLpaRef($formObject->get('lpa'), $this->getRequest());
                 $processed = $this->formProcessorHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
-                    $templates
+                    $siriusCheck,
+                    $templates,
                 );
                 $view->setVariables($processed->getVariables());
                 $view->setVariable('form', $processed->getForm());
