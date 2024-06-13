@@ -677,7 +677,7 @@ class OpgApiServiceTest extends TestCase
                 "Line_1" => "82 Penny Street",
                 "Line_2" => "Lancaster",
                 "Town" => "Lancashire",
-                "PostOfficePostcode" => "LA1 1XN",
+                "Postcode" => "LA1 1XN",
                 "Country" => "United Kingdom"
             ],
             "message" => "Success",

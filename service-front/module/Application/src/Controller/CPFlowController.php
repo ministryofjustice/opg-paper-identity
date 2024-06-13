@@ -129,6 +129,7 @@ class CPFlowController extends AbstractActionController
 
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByLpaRef($formObject->get('lpa'), $this->getRequest());
+//                echo json_encode($siriusCheck);
                 $processed = $this->formProcessorHelper->findLpa(
                     $uuid,
                     $formObject,

@@ -13,10 +13,8 @@ use Laminas\Stdlib\Parameters;
 class FormProcessorHelper
 {
     public function __construct(
-        private OpgApiServiceInterface $opgApiService,
-        private SiriusApiService $siriusApiService
-    )
-    {
+        private OpgApiServiceInterface $opgApiService
+    ) {
     }
 
     public function processDrivingLicenceForm(
@@ -151,7 +149,10 @@ class FormProcessorHelper
         $responseData = [];
 
         if ($form->isValid()) {
-            $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
+            $opgCheck = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
+//            echo json_encode($opgCheck);
+//            $nameCheck = $this->compareCpRecords($responseData, $siriusCheck);
+            $siriusCheck;
         }
 
         return new FormProcessorResponseDto(
@@ -159,7 +160,7 @@ class FormProcessorHelper
             $form,
             $templates['default'],
             [
-                'lpa_response' => $responseData
+                'lpa_response' => $opgCheck
             ],
         );
     }
@@ -190,5 +191,39 @@ class FormProcessorHelper
             );
         }
         return $stringified;
+    }
+
+    public function compareCpRecords(array $opgCheck, array $siriusCheck): array
+    {
+        $response = [
+            'name_match' => false,
+            'address_match' => false,
+            'error' => false,
+            'info' => null
+        ];
+
+        try {
+            $checkName = $siriusCheck['opg.poas.lpastore']['certificateProvider']['firstNames'] . " " .
+                $siriusCheck['opg.poas.lpastore']['certificateProvider']['lastName'];
+
+            $siriusCpAddress = $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
+            $opgCpAddress = $opgCheck['data']['CP_Address'];
+
+            if (
+                $siriusCpAddress['postcode'] == $opgCpAddress['Postcode'] &&
+                $siriusCpAddress['line1'] == $opgCpAddress['Line_1'] &&
+                $siriusCpAddress['country'] == $opgCpAddress['Country']
+            ) {
+                $response['address_match'] = true;
+            }
+
+            if ($checkName == $opgCheck['data']['CP_Name']) {
+                $response['name_match'] = true;
+            }
+        } catch (\Exception $exception) {
+            $response['error'] = true;
+            $response['info'] = $exception->getMessage();
+        }
+        return $response;
     }
 }

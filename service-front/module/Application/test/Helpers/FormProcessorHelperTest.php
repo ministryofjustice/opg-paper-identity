@@ -45,7 +45,13 @@ class FormProcessorHelperTest extends TestCase
             ->with($caseUuid, $lpaNumber)
             ->willReturn($responseData);
 
-        $processed = $formProcessorHelper->findLpa($caseUuid, $formData, $form, $templates);
+        $processed = $formProcessorHelper->findLpa(
+            $caseUuid,
+            $formData,
+            $form,
+            self::siriusLpaResponse(),
+            $templates
+        );
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates['default'], $processed->getTemplate());
         $this->assertArrayHasKey('lpa_response', $processed->getVariables());
@@ -75,7 +81,7 @@ class FormProcessorHelperTest extends TestCase
                     "Line_1" => "1082 Penny Street",
                     "Line_2" => "Lancaster",
                     "Town" => "Lancashire",
-                    "PostOfficePostcode" => "LA1 1XN",
+                    "Postcode" => "LA1 1XN",
                     "Country" => "United Kingdom"
                 ]
             ],
@@ -512,6 +518,202 @@ class FormProcessorHelperTest extends TestCase
                 'default',
                 false
             ],
+        ];
+    }
+
+    /**
+     * @dataProvider idCompareData
+     */
+    public function testIdCompare($siriusData, $opgData, $nameMatch, $addressMatch)
+    {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+
+        $result = $formProcessorHelper->compareCpRecords($opgData, $siriusData);
+
+        $this->assertEquals($nameMatch, $result['name_match']);
+        $this->assertEquals($addressMatch, $result['address_match']);
+    }
+
+    private static function siriusLpaResponse(): array
+    {
+        return json_decode('{
+          "opg.poas.lpastore": {
+            "attorneys": [
+              {
+                "dateOfBirth": "1908-02-14",
+                "status": "active",
+                "channel": "online",
+                "uid": "8fed212b-38e4-644a-47ef-83e8e289eece",
+                "firstNames": "Alejandrin",
+                "lastName": "Collins",
+                "address": {
+                  "line1": "166 Alisha Overpass",
+                  "country": "AO",
+                  "town": "Dubuque",
+                  "line2": "Jazmin Mission"
+                },
+                "email": "Jermey21@yahoo.com"
+              },
+              {
+                "dateOfBirth": "1916-08-26",
+                "status": "replacement",
+                "channel": "online",
+                "uid": "d56dcbc6-15e4-202b-480e-cf144713ffd7",
+                "firstNames": "Cruz",
+                "lastName": "Hills",
+                "address": {
+                  "line1": "943 Kaci Mountain",
+                  "country": "MK",
+                  "line3": "Salem",
+                  "town": "Country Club"
+                },
+                "email": "Tressa_Brown41@hotmail.com"
+              },
+              {
+                "dateOfBirth": "1900-05-21",
+                "status": "removed",
+                "channel": "paper",
+                "uid": "c0674a52-6eb1-7655-5139-78998cca65aa",
+                "firstNames": "Dudley",
+                "lastName": "Pfeffer",
+                "address": {
+                  "line1": "629 America Street",
+                  "country": "MN",
+                  "line3": "The Villages",
+                  "line2": "Shakira Roads"
+                },
+                "email": "Stella.Jakubowski51@gmail.com"
+              }
+            ],
+            "certificateProvider": {
+              "address": {
+                "country": "United Kingdom",
+                "line1": "82 Penny Street",
+                "line2": "Lancaster",
+                "line3": "Lancashire",
+                "postcode": "LA1 1XN"
+              },
+              "channel": "online",
+              "email": "Elton95@hotmail.com",
+              "firstNames": "David",
+              "lastName": "Smith",
+              "phone": "cillum",
+              "uid": "db71d0ce-d680-88c2-fa59-3c76b0b43864"
+            },
+            "channel": "paper",
+            "donor": {
+              "address": {
+                "country": "UM",
+                "line1": "7095 VonRueden Crossing",
+                "line2": "Lancaster",
+                "postcode": "PZ4 2SC",
+                "town": "Ann Arbor"
+              },
+              "dateOfBirth": "1898-01-06",
+              "email": "Ronny_Schultz73@gmail.com",
+              "firstNames": "Esperanza",
+              "lastName": "Walter",
+              "otherNamesKnownBy": "Mrs. Laurie Schuppe",
+              "uid": "07aff050-2700-66ae-c3ce-b96e4bc6b7d2"
+            },
+            "howReplacementAttorneysMakeDecisionsDetails": "enim eu",
+            "howReplacementAttorneysStepIn": "another-way",
+            "lifeSustainingTreatmentOption": "option-b",
+            "lpaType": "property-and-affairs",
+            "peopleToNotify": [
+              {
+                "uid": "557a971e-cae3-25ea-151d-5fde6ec5fe21",
+                "firstNames": "Eden",
+                "lastName": "Kuhn",
+                "address": {
+                  "line1": "56713 Archibald Unions",
+                  "country": "PL",
+                  "line2": "Golda Mews",
+                  "line3": "Thousand Oaks"
+                }
+              },
+              {
+                "uid": "1cba68d2-3e93-8340-57a6-63aaf04f6e19",
+                "firstNames": "Jaylan",
+                "lastName": "Turcotte",
+                "address": {
+                  "line1": "4705 Ebony Cape",
+                  "country": "MR",
+                  "postcode": "GH1 4FZ",
+                  "line3": "Nashua"
+                }
+              }
+            ],
+            "registrationDate": "1918-08-28",
+            "signedAt": "1956-06-30T03:57:57.0Z",
+            "status": "registered",
+            "uid": "M-804C-XHAD-59UQ",
+            "updatedAt": "1913-04-09T10:18:35.0Z",
+            "whenTheLpaCanBeUsed": "when-capacity-lost"
+          },
+          "opg.poas.sirius": {
+            "donor": {
+              "addressLine3": "Moline",
+              "dob": "1910-12-22",
+              "firstname": "Kitty",
+              "postcode": "JO2 5XI",
+              "surname": "Jenkins",
+              "town": "Janesville"
+            },
+            "id": 72757966,
+            "uId": "M-5P78-MEPH-8L4F"
+          }
+        }', true);
+    }
+
+    private static function opgLpaResponse(): array
+    {
+        return json_decode('{
+          "data": {
+            "case_uuid": "284afff7-cf11-4b2d-a3fb-00bf98322f37",
+            "LPA_Number": "M-0000-0000-0000",
+            "Type_Of_LPA": "Personal welfare",
+            "Donor": "Mary Ann Chapman",
+            "Status": "Processing",
+            "CP_Name": "David Smith",
+            "CP_Address": {
+              "Line_1": "82 Penny Street",
+              "Line_2": "Lancaster",
+              "Town": "Lancashire",
+              "Postcode": "LA1 1XN",
+              "Country": "United Kingdom"
+            }
+          },
+          "message": "Success",
+          "status": 200,
+          "uuid": "284afff7-cf11-4b2d-a3fb-00bf98322f37"
+        }', true);
+    }
+
+    public static function idCompareData(): array
+    {
+        $olr = self::opgLpaResponse();
+        $slr = self::siriusLpaResponse();
+
+        $olr['data']['CP_Name'] = "John Doe";
+        $slr['opg.poas.lpastore']['certificateProvider']['address'] = [
+            'line1' => "", 'line2' => "", 'line3' => "", 'town' => "", 'postcode' => "", 'country' => ""
+        ];
+
+        return [
+            [
+                self::siriusLpaResponse(),
+                self::opgLpaResponse(),
+                true,
+                true
+            ],
+            [
+                $slr,
+                $olr,
+                false,
+                false
+            ]
         ];
     }
 }
