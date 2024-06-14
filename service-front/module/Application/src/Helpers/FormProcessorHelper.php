@@ -151,7 +151,7 @@ class FormProcessorHelper
         if ($form->isValid()) {
             $opgCheck = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
 //            echo json_encode($opgCheck);
-//            $nameCheck = $this->compareCpRecords($responseData, $siriusCheck);
+            $nameCheck = $this->compareCpRecords($responseData, $siriusCheck);
             $siriusCheck;
         }
 
