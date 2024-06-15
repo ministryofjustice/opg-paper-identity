@@ -368,6 +368,8 @@ class IdentityController extends AbstractActionController
 
         $response['data'] = $this->dataQueryHandler->getCasesByLpa($lpa);
 
+
+
         //pending design decision - may need this code
 
         //        if($lpa == null || $lpa == '') {

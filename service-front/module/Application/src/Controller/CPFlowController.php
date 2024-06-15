@@ -135,6 +135,7 @@ class CPFlowController extends AbstractActionController
                     $formObject,
                     $form,
                     $siriusCheck,
+                    $detailsData,
                     $templates,
                 );
                 $view->setVariables($processed->getVariables());

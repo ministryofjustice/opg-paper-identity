@@ -142,6 +142,7 @@ class FormProcessorHelper
         Parameters $formData,
         FormInterface $form,
         array $siriusCheck,
+        array $detailsData,
         array $templates = []
     ): FormProcessorResponseDto {
         $form->setData($formData);
@@ -149,9 +150,9 @@ class FormProcessorHelper
         $responseData = [];
 
         if ($form->isValid()) {
-            $opgCheck = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
+            $opgCheck = $this->opgApiService->getDetailsData($uuid);
 //            echo json_encode($opgCheck);
-            $nameCheck = $this->compareCpRecords($responseData, $siriusCheck);
+            $nameCheck = $this->compareCpRecords($detailsData, $siriusCheck);
             $siriusCheck;
         }
 
@@ -193,7 +194,7 @@ class FormProcessorHelper
         return $stringified;
     }
 
-    public function compareCpRecords(array $opgCheck, array $siriusCheck): array
+    public function compareCpRecords(array $detailsData, array $siriusCheck): array
     {
         $response = [
             'name_match' => false,
@@ -207,17 +208,17 @@ class FormProcessorHelper
                 $siriusCheck['opg.poas.lpastore']['certificateProvider']['lastName'];
 
             $siriusCpAddress = $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
-            $opgCpAddress = $opgCheck['data']['CP_Address'];
+            $opgCpAddress = $detailsData['address'];
 
             if (
-                $siriusCpAddress['postcode'] == $opgCpAddress['Postcode'] &&
-                $siriusCpAddress['line1'] == $opgCpAddress['Line_1'] &&
-                $siriusCpAddress['country'] == $opgCpAddress['Country']
+                $siriusCpAddress['postcode'] == $opgCpAddress[3] &&
+                $siriusCpAddress['line1'] == $opgCpAddress[0]
+//                $siriusCpAddress['country'] == $opgCpAddress['Country']
             ) {
                 $response['address_match'] = true;
             }
 
-            if ($checkName == $opgCheck['data']['CP_Name']) {
+            if ($checkName == $detailsData['firstName'] . " ". $detailsData['lastName']) {
                 $response['name_match'] = true;
             }
         } catch (\Exception $exception) {

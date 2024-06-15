@@ -29,13 +29,14 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider lpaData
      */
     public function testFindLpa(
-        string $caseUuid,
-        string $lpaNumber,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        string        $lpaNumber,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates = [],
-    ): void {
+        array         $templates = [],
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -50,6 +51,7 @@ class FormProcessorHelperTest extends TestCase
             $formData,
             $form,
             self::siriusLpaResponse(),
+            self::opgCaseResponse(),
             $templates
         );
         $this->assertEquals($caseUuid, $processed->getUuid());
@@ -189,13 +191,14 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider dlnData
      */
     public function testProcessDrivingLicenceForm(
-        string $caseUuid,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-    ): void {
+        array         $templates,
+        string        $template,
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -272,13 +275,14 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider ninoData
      */
     public function testProcessNationalInsuranceNumberForm(
-        string $caseUuid,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-    ): void {
+        array         $templates,
+        string        $template,
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -357,13 +361,14 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider passportData
      */
     public function testProcessPassportNumberForm(
-        string $caseUuid,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-    ): void {
+        array         $templates,
+        string        $template,
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -441,13 +446,14 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider passportDateData
      */
     public function testProcessPassportDateForm(
-        string $caseUuid,
-        Parameters $formData,
+        string        $caseUuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-        bool $validDate,
-    ): void {
+        array         $templates,
+        string        $template,
+        bool          $validDate,
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -667,36 +673,40 @@ class FormProcessorHelperTest extends TestCase
         }', true);
     }
 
-    private static function opgLpaResponse(): array
+    private static function opgCaseResponse(): array
     {
         return json_decode('{
-          "data": {
-            "case_uuid": "284afff7-cf11-4b2d-a3fb-00bf98322f37",
-            "LPA_Number": "M-0000-0000-0000",
-            "Type_Of_LPA": "Personal welfare",
-            "Donor": "Mary Ann Chapman",
-            "Status": "Processing",
-            "CP_Name": "David Smith",
-            "CP_Address": {
-              "Line_1": "82 Penny Street",
-              "Line_2": "Lancaster",
-              "Town": "Lancashire",
-              "Postcode": "LA1 1XN",
-              "Country": "United Kingdom"
-            }
-          },
-          "message": "Success",
-          "status": 200,
-          "uuid": "284afff7-cf11-4b2d-a3fb-00bf98322f37"
+            "id": "b4d3a25f-d867-4d26-9213-f67ad3b68caf",
+            "personType": "cp",
+            "firstName": "David",
+            "lastName": "Smith",
+            "dob": "1999-01-01",
+            "address": [
+                "82 Penny Street",
+                "Lancaster",
+                "Lancashire",
+                "LA1 1XN"
+            ],
+            "lpas": [
+                "M-XYXY-YAGA-35G3",
+                "M-VGAS-OAGA-34G9"
+            ],
+            "documentComplete": false,
+            "alternateAddress": [],
+            "selectedPostOfficeDeadline": null,
+            "selectedPostOffice": null,
+            "searchPostcode": null,
+            "idMethod": null
         }', true);
     }
 
     public static function idCompareData(): array
     {
-        $olr = self::opgLpaResponse();
+        $olr = self::opgCaseResponse();
         $slr = self::siriusLpaResponse();
 
-        $olr['data']['CP_Name'] = "John Doe";
+        $olr['data']['firstName'] = "John";
+        $olr['data']['lastName'] = "Doe";
         $slr['opg.poas.lpastore']['certificateProvider']['address'] = [
             'line1' => "", 'line2' => "", 'line3' => "", 'town' => "", 'postcode' => "", 'country' => ""
         ];
@@ -704,7 +714,7 @@ class FormProcessorHelperTest extends TestCase
         return [
             [
                 self::siriusLpaResponse(),
-                self::opgLpaResponse(),
+                self::opgCaseResponse(),
                 true,
                 true
             ],
