@@ -15,6 +15,7 @@ use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -28,6 +29,7 @@ class CPFlowController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
+        private readonly LpaFormHelper $lpaFormHelper,
         private readonly array $config,
     ) {
     }
@@ -130,7 +132,7 @@ class CPFlowController extends AbstractActionController
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByLpaRef($formObject->get('lpa'), $this->getRequest());
 //                echo json_encode($siriusCheck);
-                $processed = $this->formProcessorHelper->findLpa(
+                $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
