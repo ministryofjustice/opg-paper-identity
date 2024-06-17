@@ -75,10 +75,6 @@ class IdentityController extends AbstractActionController
 
     public function detailsAction(): JsonModel
     {
-        $pemTest = new AwsSecret('yoti/certificate');
-
-        var_dump($pemTest->getValue()); die;
-
         /** @var string $uuid */
         $uuid = $this->getRequest()->getQuery('uuid');
 

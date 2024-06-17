@@ -6,7 +6,7 @@ namespace Yoti\Http;
 
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\StreamInterface;
-use Yoti\Util\Json;
+
 
 class Payload
 {
@@ -34,13 +34,14 @@ class Payload
     }
 
     /**
+     * @psalm-suppress PossiblyUnusedMethod
      * @param mixed $jsonData
      *
      * @return \Yoti\Http\Payload
      */
     public static function fromJsonData($jsonData): self
     {
-        return static::fromString(Json::encode($jsonData));
+        return static::fromString(json_encode($jsonData));
     }
 
     /**
@@ -65,7 +66,7 @@ class Payload
 
     /**
      * Get payload as stream.
-     *
+     * @psalm-suppress PossiblyUnusedMethod
      * @return \Psr\Http\Message\StreamInterface
      */
     public function toStream(): StreamInterface
