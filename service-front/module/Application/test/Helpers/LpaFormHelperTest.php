@@ -186,7 +186,7 @@ class LpaFormHelperTest extends TestCase
     /**
      * @dataProvider idCompareData
      */
-    public function testIdCompare($siriusData, $opgData, $nameMatch, $addressMatch)
+    public function testIdCompare($siriusData, $opgData, $nameMatch, $addressMatch): void
     {
 //        $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $lpaFormHelper = new LpaFormHelper();
@@ -387,7 +387,7 @@ class LpaFormHelperTest extends TestCase
     /**
      * @dataProvider statusData
      */
-    public function testCheckStatus($siriusData, $error, $message)
+    public function testCheckStatus($siriusData, $error, $message): void
     {
         $lpaFormHelper = new LpaFormHelper();
 
@@ -442,5 +442,50 @@ class LpaFormHelperTest extends TestCase
         }
 
         return $return;
+    }
+
+    public function testGetAddressFromSiriusResponse(): void
+    {
+        $slr = self::siriusLpaResponse();
+
+        $address = [
+            "country" => "United Kingdom",
+            "line1" => "82 Penny Street",
+            "line2" => "Lancaster",
+            "line3" => "Lancashire",
+            "postcode" => "LA1 1XN"
+        ];
+
+        $lpaFormHelper = new LpaFormHelper();
+
+        $result = $lpaFormHelper->getCpAddressFromSiriusResponse($slr);
+
+        $this->assertEquals($address, $result);
+    }
+
+    public function tstGetNameFromSiriusResponse()
+    {
+        $name = "Kitty Jenkins";
+
+        $slr = self::siriusLpaResponse();
+
+        $lpaFormHelper = new LpaFormHelper();
+
+        $result = $lpaFormHelper->getDonorNameFromSiriusResponse($slr);
+
+        $this->assertEquals($name, $result);
+    }
+
+    public function tstGetLpaTypeFromSiriusResponse()
+    {
+        $type = "property-and-affairs";
+
+        $slr = self::siriusLpaResponse();
+
+        $lpaFormHelper = new LpaFormHelper();
+
+        $result = $lpaFormHelper->getLpaTypeFromSiriusResponse($slr);
+
+        $this->assertEquals($type, $result);
     }
 }

@@ -51,12 +51,12 @@ class LpaFormHelper
         );
     }
 
-    public function getCpAddressFromSiriusResponse(array $siriusCheck): string
+    public function getCpAddressFromSiriusResponse(array $siriusCheck): array
     {
         try {
             return $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
         } catch (\Exception $exception) {
-            return $exception->getMessage();
+            return [$exception->getMessage()];
         }
     }
 
