@@ -29,9 +29,9 @@ class AwsSecretsCache
         $name = $this->prefix . '/' . $name;
         $key = self::NAMESPACE_AWS . ':' . $name;
 
-        /*if ($this->storage->hasItem($key)) {
+        if ($this->storage->hasItem($key)) {
             return $this->storage->getItem($key);
-        } */
+        }
 
         $value = $this->getValueFromAWS($name);
         $this->storage->setItem($key, $value);
