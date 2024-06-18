@@ -157,14 +157,13 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider dlnData
      */
     public function testProcessDrivingLicenceForm(
-        string        $caseUuid,
-        array         $responseData,
-        Parameters    $formData,
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
         FormInterface $form,
-        array         $templates,
-        string        $template,
-    ): void
-    {
+        array $templates,
+        string $template,
+    ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -241,14 +240,13 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider ninoData
      */
     public function testProcessNationalInsuranceNumberForm(
-        string        $caseUuid,
-        array         $responseData,
-        Parameters    $formData,
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
         FormInterface $form,
-        array         $templates,
-        string        $template,
-    ): void
-    {
+        array $templates,
+        string $template,
+    ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -326,14 +324,13 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider passportData
      */
     public function testProcessPassportNumberForm(
-        string        $caseUuid,
-        array         $responseData,
-        Parameters    $formData,
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
         FormInterface $form,
-        array         $templates,
-        string        $template,
-    ): void
-    {
+        array $templates,
+        string $template,
+    ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -411,14 +408,13 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider passportDateData
      */
     public function testProcessPassportDateForm(
-        string        $caseUuid,
-        Parameters    $formData,
+        string $caseUuid,
+        Parameters $formData,
         FormInterface $form,
-        array         $templates,
-        string        $template,
-        bool          $validDate,
-    ): void
-    {
+        array $templates,
+        string $template,
+        bool $validDate,
+    ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 

@@ -55,7 +55,7 @@ class LpaFormHelper
     {
         try {
             return $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
-        }   catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return $exception->getMessage();
         }
     }
@@ -64,7 +64,7 @@ class LpaFormHelper
     {
         try {
             return $siriusCheck['opg.poas.lpastore']['lpaType'];
-        }   catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return $exception->getMessage();
         }
     }
@@ -75,7 +75,7 @@ class LpaFormHelper
             return $siriusCheck['opg.poas.sirius']['donor']['firstname'] .
                 " " .
                 $siriusCheck['opg.poas.sirius']['donor']['surname'];
-        }   catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return $exception->getMessage();
         }
     }
@@ -104,7 +104,7 @@ class LpaFormHelper
                 $response['address_match'] = true;
             }
 
-            if ($checkName == $detailsData['firstName'] . " ". $detailsData['lastName']) {
+            if ($checkName == $detailsData['firstName'] . " " . $detailsData['lastName']) {
                 $response['name_match'] = true;
                 $response['name'] = $checkName;
             }
