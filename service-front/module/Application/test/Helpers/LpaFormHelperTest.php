@@ -21,103 +21,110 @@ class LpaFormHelperTest extends TestCase
     /**
      * @dataProvider lpaData
      */
-//    public function testFindLpa(
-//        string        $caseUuid,
-//        string        $lpaNumber,
-//        array         $responseData,
-//        Parameters    $formData,
-//        FormInterface $form,
-//        array $siriusLpaResponse,
-//        array $opgCaseResponse,
-//        array         $templates = [],
-//    ): void
-//    {
-////        $opgApiServiceMock = $this->createMock(OpgApiService::class);
-//        $lpaFormHelper = new LpaFormHelper();
-//
-////        $lpaFormHelper
-////            ->expects(self::once())
-////            ->method('getDetailsData')
-////            ->with($caseUuid)
-////            ->willReturn($responseData);
-//
-//        $processed = $lpaFormHelper->findLpa(
-//            $caseUuid,
-//            $formData,
-//            $form,
-//            $siriusLpaResponse,
-//            $opgCaseResponse,
-//            $templates
-//        );
-//        $this->assertEquals($caseUuid, $processed->getUuid());
-//        $this->assertEquals($templates['default'], $processed->getTemplate());
-//        $this->assertArrayHasKey('lpa_response', $processed->getVariables());
-//        $this->assertEquals($processed->getVariables()['lpa_response'], $responseData);
-//    }
+    public function testFindLpa(
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
+        FormInterface $form,
+        array $siriusLpaResponse,
+        array $opgCaseResponse,
+    ): void {
+        $lpaFormHelper = new LpaFormHelper();
+
+        $processed = $lpaFormHelper->findLpa(
+            $caseUuid,
+            $formData,
+            $form,
+            $siriusLpaResponse,
+            $opgCaseResponse,
+        );
+        $this->assertEquals($caseUuid, $processed->getUuid());
+        $this->assertArrayHasKey('lpa_response', $processed->getVariables());
+        $this->assertEquals($processed->getVariables()['lpa_response'], $responseData);
+    }
 
 
     public static function lpaData(): array
     {
+        $slr = self::siriusLpaResponse();
+        $olr = self::opgCaseResponse();
+
         $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
         $goodLpa = "M-0000-0000-0000";
-        $alreadyAddedLpa = "M-0000-0000-0001";
-        $notFoundLpa = "M-0000-0000-0002";
+        $alreadyAddedLpa = "M-XYXY-YAGA-35G3";
+//        $notFoundLpa = "M-0000-0000-0002";
+
         $alreadyDoneLpa = "M-0000-0000-0004";
+        $slrComplete = $slr;
+        $slrComplete['opg.poas.sirius']['uId'] = $alreadyDoneLpa;
+        $slrComplete['opg.poas.lpastore']['status'] = 'Complete';
+
         $draftLpa = "M-0000-0000-0005";
+        $slrDraft = $slr;
+        $slrDraft['opg.poas.sirius']['uId'] = $draftLpa;
+        $slrDraft['opg.poas.lpastore']['status'] = 'Draft';
+
         $onlineLpa = "M-0000-0000-0006";
+        $slrOnline = $slr;
+        $slrOnline['opg.poas.sirius']['uId'] = $onlineLpa;
+        $slrOnline['opg.poas.lpastore']['status'] = 'Online';
+
+        $noMatchLpa = "M-0000-0000-0006";
+        $slrNoMatch = $slr;
+        $slrNoMatch['opg.poas.sirius']['uId'] = $noMatchLpa;
+        $slrNoMatch['opg.poas.lpastore']['status'] = 'No Match';
+        $slrNoMatch['opg.poas.sirius']['certificateProvider']['address'] = [
+            'line1' => '81 Penny Street',
+            'line2' => 'Lancaster',
+            'line3' => 'Lancashire',
+            'postcode' => 'LA1 2XN',
+            'country' => 'United Kingdom',
+        ];
+        $slrNoMatch['opg.poas.sirius']['certificateProvider']['firstNames'] = "Daniel";
 
         $mockResponseData = [
             "data" => [
                 "case_uuid" => $caseUuid,
                 "LPA_Number" => $goodLpa,
-                "Type_Of_LPA" => "Personal welfare",
-                "Donor" => "Mary Ann Chapman",
+                "Type_Of_LPA" => "property-and-affairs",
+                "Donor" => "Kitty Jenkins",
                 "Status" => "Processing",
                 "CP_Name" => "David Smith",
                 "CP_Address" => [
-                    "Line_1" => "1082 Penny Street",
-                    "Line_2" => "Lancaster",
-                    "Town" => "Lancashire",
-                    "Postcode" => "LA1 1XN",
-                    "Country" => "United Kingdom"
+                    'line1' => '82 Penny Street',
+                    'line2' => 'Lancaster',
+                    'line3' => 'Lancashire',
+                    'postcode' => 'LA1 1XN',
+                    'country' => 'United Kingdom',
                 ]
             ],
-            "message" => "Success",
-            "status" => 200
+            "message" => "",
+            "status" => "Success",
         ];
 
         $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
         $params = new Parameters(['lpa' => $mockResponseData['data']['LPA_Number']]);
-        $templates = [
-            'default' => 'application/pages/cp/add_lpa',
-        ];
 
         return [
             [
                 $caseUuid,
-                $goodLpa,
                 $mockResponseData,
                 $params,
                 $form,
-                self::siriusLpaResponse(),
-                self::opgCaseResponse(),
-                $templates
+                $slr,
+                $olr,
             ],
-//            [
-//                $caseUuid,
-//                $alreadyAddedLpa,
-//                [
-//                    "uuid" => $caseUuid,
-//                    "message" => "This LPA has already been added to this ID check.",
-//                    "status" => 400,
-//                    'data' => [
-//                        "Status" => "Already added"
-//                    ]
-//                ],
-//                new Parameters(['lpa' => $alreadyAddedLpa]),
-//                $form,
-//                $templates
-//            ],
+            [
+                $caseUuid,
+                [
+                    "message" => "This LPA has already been added to this ID check.",
+                    "status" => "Already added"
+                ],
+                new Parameters(['lpa' => $alreadyAddedLpa]),
+                $form,
+                $slr,
+                $olr,
+            ],
 //            [
 //                $caseUuid,
 //                $notFoundLpa,
@@ -131,64 +138,70 @@ class LpaFormHelperTest extends TestCase
 //                ],
 //                new Parameters(['lpa' => $notFoundLpa]),
 //                $form,
+//                $olr,
+//                $slr,
 //                $templates
 //            ],
-//            [
-//                $caseUuid,
-//                $alreadyDoneLpa,
-//                [
-//                    "uuid" => $caseUuid,
-//                    "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
-//                    "status" => 400,
-//                    'data' => [
-//                        "Status" => "Already completed"
-//                    ]
-//                ],
-//                new Parameters(['lpa' => $alreadyDoneLpa]),
-//                $form,
-//                $templates
-//            ],
-//            [
-//                $caseUuid,
-//                $draftLpa,
-//                [
-//                    "uuid" => $caseUuid,
-//                    "message" => "This LPA cannot be added as it’s status is set to Draft.
-//                    LPAs need to be in the In Progress status to be added to this ID check.",
-//                    "status" => 400,
-//                    'data' => [
-//                        "Status" => "Draft"
-//                    ]
-//                ],
-//                new Parameters(['lpa' => $draftLpa]),
-//                $form,
-//                $templates
-//            ],
-//            [
-//                $caseUuid,
-//                $onlineLpa,
-//                [
-//                    "uuid" => $caseUuid,
-//                    "message" => "This LPA cannot be added to this identity check because the
-//                    certificate provider has signed this LPA online.",
-//                    "status" => 400,
-//                    'data' => [
-//                        "Status" => "Online"
-//                    ]
-//                ],
-//                new Parameters(['lpa' => $onlineLpa]),
-//                $form,
-//                $templates
-//            ]
+            [
+                $caseUuid,
+                [
+                    "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
+                    "status" => "Complete",
+                ],
+                new Parameters(['lpa' => $alreadyDoneLpa]),
+                $form,
+                $slrComplete,
+                $olr,
+            ],
+            [
+                $caseUuid,
+                [
+                    "message" => "This LPA cannot be added as it’s status is set to Draft.
+                    LPAs need to be in the In Progress status to be added to this ID check.",
+                    "status" => "Draft",
+                ],
+                new Parameters(['lpa' => $draftLpa]),
+                $form,
+                $slrDraft,
+                $olr,
+            ],
+            [
+                $caseUuid,
+                [
+                    "message" => "This LPA cannot be added to this identity check because
+                    the certificate provider has signed this LPA online.",
+                    "status" => "Online",
+                ],
+                new Parameters(['lpa' => $onlineLpa]),
+                $form,
+                $slrOnline,
+                $olr,
+            ],
+            [
+                $caseUuid,
+                [
+                    "message" => "This LPA cannot be added to this ID check because the
+                    certificate provider details on this LPA do not match.
+                    Edit the certificate provider record in Sirius if appropriate and find again.",
+                    "status" => "No Match",
+                ],
+                new Parameters(['lpa' => $onlineLpa]),
+                $form,
+                $slrNoMatch,
+                $olr,
+            ]
         ];
     }
 
     /**
      * @dataProvider idCompareData
      */
-    public function testIdCompare($siriusData, $opgData, $nameMatch, $addressMatch): void
-    {
-//        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+    public function testIdCompare(
+        array $siriusData,
+        array $opgData,
+        bool $nameMatch,
+        bool $addressMatch
+    ): void {
         $lpaFormHelper = new LpaFormHelper();
 
         $result = $lpaFormHelper->compareCpRecords($opgData, $siriusData);
@@ -387,8 +400,11 @@ class LpaFormHelperTest extends TestCase
     /**
      * @dataProvider statusData
      */
-    public function testCheckStatus($siriusData, $error, $message): void
-    {
+    public function testCheckStatus(
+        array $siriusData,
+        bool $error,
+        string $message
+    ): void {
         $lpaFormHelper = new LpaFormHelper();
 
         $result = $lpaFormHelper->checkStatus($siriusData);
@@ -401,11 +417,7 @@ class LpaFormHelperTest extends TestCase
     {
         $slr = self::siriusLpaResponse();
 
-        $return[] = [
-            $slr,
-            false,
-            ""
-        ];
+        $return = [];
 
         $errors = [
             "nm" => [
@@ -416,7 +428,7 @@ class LpaFormHelperTest extends TestCase
                 "additional_data" => ""
             ],
             "ac" => [
-                "status" => "Already Complete",
+                "status" => "Complete",
                 "error" => "This LPA cannot be added as an ID check has already been completed for this LPA."
             ],
             "dd" => [
@@ -425,7 +437,7 @@ class LpaFormHelperTest extends TestCase
                     LPAs need to be in the In Progress status to be added to this ID check."
             ],
             "ol" => [
-                "status" => "Started Online",
+                "status" => "Online",
                 "error" => "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online."
             ],
@@ -440,6 +452,11 @@ class LpaFormHelperTest extends TestCase
                 $error['error']
             ];
         }
+        $return[] = [
+            $slr,
+            false,
+            ""
+        ];
 
         return $return;
     }
@@ -463,7 +480,7 @@ class LpaFormHelperTest extends TestCase
         $this->assertEquals($address, $result);
     }
 
-    public function tstGetNameFromSiriusResponse()
+    public function testGetNameFromSiriusResponse(): void
     {
         $name = "Kitty Jenkins";
 
@@ -476,7 +493,7 @@ class LpaFormHelperTest extends TestCase
         $this->assertEquals($name, $result);
     }
 
-    public function tstGetLpaTypeFromSiriusResponse()
+    public function testGetLpaTypeFromSiriusResponse(): void
     {
         $type = "property-and-affairs";
 

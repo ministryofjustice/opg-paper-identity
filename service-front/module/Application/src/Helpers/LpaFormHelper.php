@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
-use Application\Helpers\DTO\FormProcessorResponseDto;
+use Application\Helpers\DTO\LpaFormHelperResponseDto;
 use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use Laminas\Http\Response;
 
 class LpaFormHelper
 {
@@ -17,34 +18,58 @@ class LpaFormHelper
         FormInterface $form,
         array $siriusCheck,
         array $detailsData,
-        array $templates = []
-    ): FormProcessorResponseDto {
+    ): LpaFormHelperResponseDto {
         $form->setData($formData);
         $result = [];
 
         if ($form->isValid()) {
+            if (! $this->checkLpaNotadded($form->get('lpa')->getValue(), $detailsData)) {
+                $result = [
+                    'status' => 'Already added',
+                    'message' => "This LPA has already been added to this ID check.",
+                ];
+                return new LpaFormHelperResponseDto(
+                    $uuid,
+                    $form,
+                    [
+                        'lpa_response' => $result
+                    ],
+                );
+            }
+
             $idCheck = $this->compareCpRecords($detailsData, $siriusCheck);
             $statusCheck = $this->checkStatus($siriusCheck);
 
             if ($idCheck['error'] === false && $statusCheck['error'] === false) {
-                $result['status'] = 200;
-                $result['message'] = "Success";
+                $result['status'] = "Success";
+                $result['message'] = "";
                 $result['data'] = [
                     "case_uuid" => $uuid,
-                    "LPA_Number" => $form->get('lpa'),
+                    "LPA_Number" => $form->get('lpa')->getValue(),
                     "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                     "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
                     "Status" => $statusCheck['status'],
                     "CP_Name" => $idCheck['name'],
                     "CP_Address" => $this->getCpAddressFromSiriusResponse($siriusCheck)
                 ];
+            } elseif ($statusCheck['error'] === true) {
+                $result['status'] = $statusCheck['status'];
+                $result['message'] = $statusCheck['message'];
+            } elseif ($idCheck['error'] === true) {
+                $result['status'] = $idCheck['status'];
+                $result['message'] = $idCheck['message'];
+                $result['additional_data'] = [
+                    'name' => $idCheck['name'],
+                    'address' => $idCheck['address'],
+                    'name_match' => $idCheck['name_match'],
+                    'address_match' => $idCheck['address_match']
+                ];
             }
         }
 
-        return new FormProcessorResponseDto(
+        return new LpaFormHelperResponseDto(
             $uuid,
             $form,
-            $templates['default'],
             [
                 'lpa_response' => $result
             ],
@@ -86,6 +111,7 @@ class LpaFormHelper
             'name_match' => false,
             'address_match' => false,
             'name' => "",
+            'address' => [],
             'error' => false,
             'info' => null
         ];
@@ -96,17 +122,22 @@ class LpaFormHelper
 
             $siriusCpAddress = $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
             $opgCpAddress = $detailsData['address'];
+            $response['name'] = $checkName;
+            $response['address'] = $siriusCpAddress;
 
             if (
                 $siriusCpAddress['postcode'] == $opgCpAddress[3] &&
                 $siriusCpAddress['line1'] == $opgCpAddress[0]
             ) {
                 $response['address_match'] = true;
+            } else {
+                $response['error'] = true;
             }
 
             if ($checkName == $detailsData['firstName'] . " " . $detailsData['lastName']) {
                 $response['name_match'] = true;
-                $response['name'] = $checkName;
+            } else {
+                $response['error'] = true;
             }
         } catch (\Exception $exception) {
             $response['error'] = true;
@@ -128,19 +159,20 @@ class LpaFormHelper
         ) {
             $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
             if (
-                $response['status'] == 'Already Complete' ||
-                $response['status'] == 'registered' ||
-                $response['status'] == 'in progress'
+                $response['status'] == 'Complete' ||
+                $response['status'] == 'Registered' ||
+                $response['status'] == 'In progress'
             ) {
                 $response['error'] = true;
-                $response['message'] = "This LPA cannot be added as an ID check has already been completed for this LPA.";
+                $response['message'] = "This LPA cannot be added as an ID" .
+                " check has already been completed for this LPA.";
             }
             if ($response['status'] == 'Draft') {
                 $response['error'] = true;
                 $response['message'] = "This LPA cannot be added as it’s status is set to Draft.
                     LPAs need to be in the In Progress status to be added to this ID check.";
             }
-            if ($response['status'] == 'Started Online') {
+            if ($response['status'] == 'Online') {
                 $response['error'] = true;
                 $response['message'] = "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online.";
@@ -156,5 +188,19 @@ class LpaFormHelper
             $response['message'] = "No LPA Found.";
         }
         return $response;
+    }
+
+    public function checkLpaNotAdded(string $lpa, array $detailsData): bool
+    {
+        try {
+            foreach ($detailsData['lpas'] as $existingLpa) {
+                if ($lpa == $existingLpa) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 }

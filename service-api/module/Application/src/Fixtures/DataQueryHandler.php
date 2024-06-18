@@ -49,26 +49,6 @@ class DataQueryHandler
         return $arr ? CaseData::fromArray($arr) : null;
     }
 
-    public function getCasesByLpa(string $lpa): ?array
-    {
-        try {
-            $idKey = [
-                'key' => [
-                    'lpas' => [
-                        'S' => $lpa,
-                    ],
-                ],
-            ];
-            $result = $this->query($idKey);
-
-            $arr = $this->returnUnmarshalResult($result)[0];
-
-            return $arr;
-        } catch (\Exception $exception) {
-            return ['error' => $exception->getMessage()];
-        }
-    }
-
     public function queryByIDNumber(string $idNumber): array
     {
         //return some subset of data

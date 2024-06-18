@@ -111,9 +111,6 @@ class CPFlowController extends AbstractActionController
 
     public function addLpaAction(): ViewModel|Response
     {
-        $templates = [
-            'default' => 'application/pages/cp/add_lpa',
-        ];
         $uuid = $this->params()->fromRoute("uuid");
         $lpas = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -130,19 +127,20 @@ class CPFlowController extends AbstractActionController
             $formObject = $this->getRequest()->getPost();
 
             if ($formObject->get('lpa')) {
-                $siriusCheck = $this->siriusApiService->getLpaByLpaRef($formObject->get('lpa'), $this->getRequest());
-//                echo json_encode($siriusCheck);
+                $siriusCheck = $this->siriusApiService->getLpaByUid(
+                    $formObject->get('lpa')->getValue(),
+                    $this->getRequest()
+                );
                 $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
                     $siriusCheck,
                     $detailsData,
-                    $templates,
                 );
                 $view->setVariables($processed->getVariables());
                 $view->setVariable('form', $processed->getForm());
-                return $view->setTemplate($processed->getTemplate());
+                return $view->setTemplate('application/pages/cp/add_lpa');
             } else {
                 $responseData = $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
 
@@ -151,7 +149,7 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
-        return $view->setTemplate($templates['default']);
+        return $view->setTemplate('application/pages/cp/add_lpa');
     }
 
     public function confirmDobAction(): ViewModel|Response
