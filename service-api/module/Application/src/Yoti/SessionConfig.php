@@ -77,7 +77,7 @@ class SessionConfig {
                     "type" => "DOCUMENT_RESTRICTIONS",
                     "inclusion" => "WHITELIST",
                     "documents" => [
-                        "country_codes" => "GBP",
+                        "country_codes" => "GBR",
                         "document_types" => $this->getDocType($case->idMethod)
                     ]
                 ]
@@ -88,15 +88,11 @@ class SessionConfig {
                 "given_names" => $case->firstName,
                 "family_name" => $case->lastName,
                 "date_of_birth" => $case->dob,
-                "structured_postal_address" => ,
+                "structured_postal_address" => $this->addressFormatted($case->address),
             ]
         ];
-        $sessionConfig[""];
-        $sessionConfig[""];
 
-        //update CaseData with changes
-        $case->authToken = $authToken;
-
+        //@TODO client to save the $authToken back to $case
         return $sessionConfig;
 
 
@@ -113,7 +109,7 @@ class SessionConfig {
         return $currentDate->format(DateTime::ATOM);
     }
 
-    public function getDocType($idMethod): string
+    public function getDocType(string $idMethod): string
     {
         $drivingLicenceOptions = array("po_ukd", "po_eud");
         if (in_array($idMethod, $drivingLicenceOptions)) {
@@ -123,9 +119,17 @@ class SessionConfig {
         }
     }
 
-    public function addressFormatted($address): array
+    public function addressFormatted(array $address): array
     {
+        $address = [];
+        $address["address_format"] = "1";
+        $address["address_line_1"] = $address['line1'];
+        $address["address_line_2"] = $address['line2'];
+        $address["country"] = $address['country'];
+        $address["country_iso"] = "GBR";
+        $address["postal_code"] = $address['postcode'];
 
+        return $address;
     }
 
 }
