@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Aws\Secrets;
 
-use Application\Aws\Secrets\Exception\InvalidSecretResponseException;
+use Application\Aws\Secrets\Exception\InvalidSecretsResponseException;
 use Aws\SecretsManager\SecretsManagerClient;
 use Laminas\Cache\Exception\ExceptionInterface;
 use Laminas\Cache\Storage\StorageInterface;
@@ -22,7 +22,7 @@ class AwsSecretsCache
 
     /**
      * @throws ExceptionInterface
-     * @throws InvalidSecretResponseException
+     * @throws InvalidSecretsResponseException
      */
     public function getValue(string $name): string
     {
@@ -42,7 +42,7 @@ class AwsSecretsCache
      * @psalm-suppress NullableReturnStatement
      * @param string $name
      * @return string
-     * @throws InvalidSecretResponseException
+     * @throws InvalidSecretsResponseException
      */
     protected function getValueFromAWS(string $name): string
     {
@@ -59,7 +59,7 @@ class AwsSecretsCache
         }
 
         if ($secret === false) {
-            throw new InvalidSecretResponseException('No value returned for requested key ' . $name);
+            throw new InvalidSecretsResponseException('No value returned for requested key ' . $name);
         }
 
         return $secret;

@@ -6,6 +6,6 @@ namespace Application\Aws\Secrets\Exception;
 
 use Exception;
 
-class InvalidSecretResponseException extends Exception
+class InvalidSecretsResponseException extends Exception
 {
 }
