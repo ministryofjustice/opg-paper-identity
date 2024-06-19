@@ -67,21 +67,22 @@ class LpaFormHelper
                     'name' => $idCheck['name'],
                     'address' => $idCheck['address'],
                     'name_match' => $idCheck['name_match'],
-                    'address_match' => $idCheck['address_match']
+                    'address_match' => $idCheck['address_match'],
+                    'error' => $idCheck['error']
                 ];
             } else {
                 $result['status'] = "Success";
                 $result['message'] = "";
-                $result['data'] = [
-                    "case_uuid" => $uuid,
-                    "LPA_Number" => $form->get('lpa')->getValue(),
-                    "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
-                    "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                    "Status" => $statusCheck['status'],
-                    "CP_Name" => $idCheck['name'],
-                    "CP_Address" => $this->getCpAddressFromSiriusResponse($siriusCheck)
-                ];
             }
+            $result['data'] = [
+                "case_uuid" => $uuid,
+                "LPA_Number" => $form->get('lpa')->getValue(),
+                "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
+                "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
+                "Status" => $statusCheck['status'],
+                "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
+                "CP_Address" => $detailsData['address']
+            ];
         }
 
         return new LpaFormHelperResponseDto(
@@ -127,8 +128,8 @@ class LpaFormHelper
         $response = [
             'name_match' => false,
             'address_match' => false,
-            'name' => "",
-            'address' => [],
+//            'name' => "",
+//            'address' => [],
             'error' => false,
             'info' => null
         ];

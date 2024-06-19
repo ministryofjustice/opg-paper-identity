@@ -138,6 +138,7 @@ class CPFlowController extends AbstractActionController
                     $siriusCheck,
                     $detailsData,
                 );
+                echo json_encode($processed->getVariables());
                 $view->setVariables($processed->getVariables());
                 $view->setVariable('form', $processed->getForm());
                 return $view->setTemplate('application/pages/cp/add_lpa');
@@ -173,7 +174,6 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-//                echo json_encode($form->getData());
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
             $view->setVariable('form', $form);
