@@ -24,6 +24,9 @@ class AwsSecretsCacheTest extends TestCase
         $this->sut = new AwsSecretsCache('local', $this->storage, $this->client);
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
     public function testGetSecretHitsExistingStorage(): void
     {
         $this->storage->expects(self::once())
@@ -53,6 +56,8 @@ class AwsSecretsCacheTest extends TestCase
 
     /**
      * @dataProvider awsResponseProvider
+     * @psalm-suppress PossiblyUndefinedMethod
+     * @psalm-suppress UndefinedMagicMethod
      */
     public function testGetUncachedSecretFromAws(array $awsResponse): void
     {
@@ -73,6 +78,10 @@ class AwsSecretsCacheTest extends TestCase
         self::assertEquals('secret', $this->sut->getValue('test'));
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedMethod
+     * @psalm-suppress UndefinedMagicMethod
+     */
     public function testGetSecretNonExisting(): void
     {
         $this->expectException(InvalidSecretsResponseException::class);
