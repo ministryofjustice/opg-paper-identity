@@ -23,6 +23,23 @@ class LpaFormHelper
         $result = [];
 
         if ($form->isValid()) {
+
+            if(!array_key_exists('opg.poas.lpastore', $siriusCheck) ||
+                empty($siriusCheck['opg.poas.lpastore'])
+            ) {
+                $result = [
+                    'status' => 'Not Found',
+                    'message' => "No LPA found.",
+                ];
+                return new LpaFormHelperResponseDto(
+                    $uuid,
+                    $form,
+                    [
+                        'lpa_response' => $result
+                    ],
+                );
+            }
+
             if (! $this->checkLpaNotadded($form->get('lpa')->getValue(), $detailsData)) {
                 $result = [
                     'status' => 'Already added',

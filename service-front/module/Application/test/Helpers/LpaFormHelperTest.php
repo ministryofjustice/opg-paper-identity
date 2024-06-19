@@ -52,7 +52,11 @@ class LpaFormHelperTest extends TestCase
         $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
         $goodLpa = "M-0000-0000-0000";
         $alreadyAddedLpa = "M-XYXY-YAGA-35G3";
-//        $notFoundLpa = "M-0000-0000-0002";
+
+        $notFoundLpa = "M-0000-0000-0002";
+        $slrNotFound = $slr;
+        $slrNotFound['opg.poas.lpastore'] = [];
+        $slrNotFound['opg.poas.sirius'] = [];
 
         $alreadyDoneLpa = "M-0000-0000-0004";
         $slrComplete = $slr;
@@ -125,23 +129,17 @@ class LpaFormHelperTest extends TestCase
                 $slr,
                 $olr,
             ],
-//            [
-//                $caseUuid,
-//                $notFoundLpa,
-//                [
-//                    "uuid" => $caseUuid,
-//                    "message" => "No LPA found.",
-//                    "status" => 400,
-//                    'data' => [
-//                        "Status" => "Not found"
-//                    ]
-//                ],
-//                new Parameters(['lpa' => $notFoundLpa]),
-//                $form,
-//                $olr,
-//                $slr,
-//                $templates
-//            ],
+            [
+                $notFoundLpa,
+                [
+                    "message" => "No LPA found.",
+                    "status" => 'Not Found',
+                ],
+                new Parameters(['lpa' => $notFoundLpa]),
+                $form,
+                $olr,
+                $slrNotFound,
+            ],
             [
                 $caseUuid,
                 [
