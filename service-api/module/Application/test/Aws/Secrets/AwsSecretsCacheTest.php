@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Aws\Secrets;
 
 use Application\Aws\Secrets\AwsSecretsCache;
-use Application\Aws\Secrets\Exception\InvalidSecretsResponseException;
+use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;
 use Aws\SecretsManager\SecretsManagerClient;
 use Laminas\Cache\Storage\StorageInterface;
 use PHPUnit\Framework\MockObject\MockObject;

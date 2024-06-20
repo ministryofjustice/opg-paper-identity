@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Aws\Secrets\Exception;
+namespace Application\Aws\Secrets\Exceptions;
 
 use Exception;
 

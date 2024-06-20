@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yoti\Http;
+namespace Application\Yoti\Http;
 
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\StreamInterface;

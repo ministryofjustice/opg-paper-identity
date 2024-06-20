@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Aws\Secrets;
 
-use Application\Aws\Secrets\Exception\InvalidSecretsResponseException;
+use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;
 use Aws\SecretsManager\SecretsManagerClient;
 use Laminas\Cache\Exception\ExceptionInterface;
 use Laminas\Cache\Storage\StorageInterface;

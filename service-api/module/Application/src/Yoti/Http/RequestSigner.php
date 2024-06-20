@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yoti\Http;
+namespace Application\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
-use Yoti\Http\Exception\RequestSignException;
+use Application\Yoti\Http\Exception\PemFileException;
+use Application\Yoti\Http\Exception\RequestSignException;
+use Application\Yoti\Http\Payload;
 
 /**
  * Suppress pslam error til class is used
@@ -28,18 +30,23 @@ class RequestSigner
      * @return string The generated signature, base64 encoded.
      *
      * @throws RequestSignException If the signing process fails.
+     * @throws PemFileException
      */
     public static function generateSignature(
         string $endpoint,
         string $httpMethod,
+        AwsSecret $pemFile,
         Payload $payload = null
     ): string {
         $messageToSign = "{$httpMethod}&$endpoint";
         if ($payload instanceof Payload) {
             $messageToSign .= "&{$payload->toBase64()}";
         }
+        //$pemFile = new AwsSecret('yoti/certificate');
 
-        $pemFile = new AwsSecret('yoti/certificate');
+        if (! $pemFile || $pemFile->getValue() == '') {
+            throw new PemFileException('Unable to get pemFile or is empty');
+        }
 
         openssl_sign($messageToSign, $signature, $pemFile->getValue(), OPENSSL_ALGO_SHA256);
 
