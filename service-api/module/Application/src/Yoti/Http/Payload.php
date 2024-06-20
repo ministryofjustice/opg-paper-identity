@@ -36,7 +36,7 @@ class Payload
      * @psalm-suppress PossiblyUnusedMethod
      * @param mixed $jsonData
      *
-     * @return \Yoti\Http\Payload
+     * @return Payload
      */
     public static function fromJsonData($jsonData): self
     {
@@ -46,7 +46,7 @@ class Payload
     /**
      * @param string $string
      *
-     * @return \Yoti\Http\Payload
+     * @return Payload
      */
     public static function fromString(string $string): self
     {
@@ -55,8 +55,7 @@ class Payload
 
     /**
      * @param \Psr\Http\Message\StreamInterface $stream
-     *
-     * @return \Yoti\Http\Payload
+     * @return Payload
      */
     public static function fromStream(StreamInterface $stream): self
     {

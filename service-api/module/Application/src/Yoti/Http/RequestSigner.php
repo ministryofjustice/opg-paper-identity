@@ -42,12 +42,10 @@ class RequestSigner
         if ($payload instanceof Payload) {
             $messageToSign .= "&{$payload->toBase64()}";
         }
-        //$pemFile = new AwsSecret('yoti/certificate');
 
-        if (! $pemFile || $pemFile->getValue() == '') {
+        if ($pemFile->getValue() === '') {
             throw new PemFileException('Unable to get pemFile or is empty');
         }
-
         openssl_sign($messageToSign, $signature, $pemFile->getValue(), OPENSSL_ALGO_SHA256);
 
         if (! $signature) {

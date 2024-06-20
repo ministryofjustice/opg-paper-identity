@@ -29,8 +29,10 @@ class RequestSignerTest extends TestCase
 
     /**
      * @covers ::generateSignature
+     * @psalm-suppress PossiblyUndefinedMethod
+     * @psalm-suppress PossiblyInvalidArgument
      */
-    public function testGenerateSignature()
+    public function testGenerateSignature(): void
     {
         $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
 
@@ -52,8 +54,11 @@ class RequestSignerTest extends TestCase
 
         $this->assertEquals(1, $verify);
     }
-
-    public function testGenerateSignatureWithoutPayload()
+    /**
+     * @psalm-suppress PossiblyUndefinedMethod
+     * @psalm-suppress PossiblyInvalidArgument
+     */
+    public function testGenerateSignatureWithoutPayload(): void
     {
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
@@ -68,11 +73,13 @@ class RequestSignerTest extends TestCase
 
         // Assert the signature is a base64 encoded string
         $this->assertNotEmpty($signature);
-        $this->assertIsString($signature);
         $this->assertTrue(base64_decode($signature, true) !== false);
     }
-
-    public function testGenerateSignatureEmptyPemFileThrowsException()
+    /**
+     * @psalm-suppress PossiblyUndefinedMethod
+     * @psalm-suppress PossiblyInvalidArgument
+     */
+    public function testGenerateSignatureEmptyPemFileThrowsException(): void
     {
         $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
 
