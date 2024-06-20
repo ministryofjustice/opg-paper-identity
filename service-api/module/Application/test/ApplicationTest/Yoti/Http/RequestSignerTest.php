@@ -61,7 +61,10 @@ class RequestSignerTest extends TestCase
 
         // Generate signature
         $signature = RequestSigner::generateSignature(
-            '/api/endpoint', 'GET', $this->pemFileMock);
+            '/api/endpoint',
+            'GET',
+            $this->pemFileMock
+        );
 
         // Assert the signature is a base64 encoded string
         $this->assertNotEmpty($signature);
@@ -78,7 +81,10 @@ class RequestSignerTest extends TestCase
         $this->expectException(PemFileException::class);
 
         RequestSigner::generateSignature(
-            '/api/endpoint', 'POST', $this->pemFileMock, $this->payloadMock);
-
+            '/api/endpoint',
+            'POST',
+            $this->pemFileMock,
+            $this->payloadMock
+        );
     }
 }
