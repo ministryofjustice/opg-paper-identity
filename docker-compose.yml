@@ -1,31 +1,34 @@
 services:
   sirius-mock:
-    image: stoplight/prism:5
-    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
+#    image: stoplight/prism:5
+    image: outofcoffee/imposter
+#    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
-      test: wget -O /dev/null -S 'http://0.0.0.0:4010/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+#      test: wget -O /dev/null -S 'http://0.0.0.0:4010/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      test: wget -O /dev/null -S 'http://localhost:8080/api/v1/users/current' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
       interval: 15s
       timeout: 10s
       retries: 3
     volumes:
-      - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
+#      - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
+      - ./docker/sirius:/opt/imposter/config
 
-  yoti-mock:
-    image: paper-identity/yoti-mock
-    build:
-      context: docker/yoti
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - ./docker/yoti:/opt/imposter/config
-    ports:
-      - 8334:8080
+#  yoti-mock:
+#    image: paper-identity/yoti-mock
+#    build:
+#      context: docker/yoti
+#      dockerfile: Dockerfile
+#    restart: unless-stopped
+#    healthcheck:
+#      test: [ "CMD", "imposter", "list", "-x" ]
+#      interval: 15s
+#      timeout: 10s
+#      retries: 3
+#    volumes:
+#      - ./docker/yoti:/opt/imposter/config
+#    ports:
+#      - 8334:8080
 
   api:
     image: paper-identity/api
@@ -55,8 +58,8 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
-      yoti-mock:
-        condition: service_healthy
+#      yoti-mock:
+#        condition: service_healthy
     env_file: ./service-api/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
@@ -84,7 +87,9 @@ services:
         condition: service_healthy
     environment:
       - API_BASE_URI=http://api-web
-      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
+#      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
+      - SIRIUS_BASE_URL=http://sirius-mock:8080 # http://host.docker.internal:8080 for real Sirius
+
       - SIRIUS_PUBLIC_URL=http://localhost:8080
       - APP_DEBUG=1
     healthcheck:
@@ -123,8 +128,8 @@ services:
     depends_on:
       api:
         condition: service_healthy
-      yoti-mock:
-        condition: service_healthy
+#      yoti-mock:
+#        condition: service_healthy
     environment:
       APP_HOST: api
       APP_NAME: api
