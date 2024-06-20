@@ -4,6 +4,8 @@ info:
   description: Backwards engineered and limited to what we need to mock; deprecate if notifications provide an api spec
   version: 0.1.0
 servers:
+#  - url: http://localhost:8080
+#    description: Local Imposter server
   - url: http://localhost:8080
     description: Local Imposter server
 x-json-schema-faker:
