@@ -194,7 +194,7 @@ class LpaFormHelperTest extends TestCase
                 $caseUuid,
                 [
                     "message" => "This LPA cannot be added to this ID check because the" .
-                        "certificate provider details on this LPA do not match." .
+                        " certificate provider details on this LPA do not match." .
                         "Edit the certificate provider record in Sirius if appropriate and find again.",
                     "status" => "no match",
                     "additional_data" => [

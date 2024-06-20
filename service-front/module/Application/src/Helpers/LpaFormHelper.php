@@ -158,7 +158,7 @@ class LpaFormHelper
             ) {
                 $response['address_match'] = true;
             } else {
-                $response['message'] = "This LPA cannot be added to this ID check because the" .
+                $response['message'] = "This LPA cannot be added to this ID check because the " .
                     "certificate provider details on this LPA do not match." .
                     "Edit the certificate provider record in Sirius if appropriate and find again.";
             }
@@ -167,7 +167,7 @@ class LpaFormHelper
                 $response['name_match'] = true;
             } else {
                 $response['message'] = "This LPA cannot be added to this ID check because the" .
-                    "certificate provider details on this LPA do not match." .
+                    " certificate provider details on this LPA do not match." .
                     "Edit the certificate provider record in Sirius if appropriate and find again.";
             }
             if (! $response['address_match'] || ! $response['name_match']) {
