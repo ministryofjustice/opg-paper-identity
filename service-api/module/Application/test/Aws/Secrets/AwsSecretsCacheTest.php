@@ -85,7 +85,7 @@ class AwsSecretsCacheTest extends TestCase
     public function testGetSecretNonExisting(): void
     {
         $this->expectException(InvalidSecretsResponseException::class);
-        $this->expectExceptionMessage('No value returned for requested key test');
+        $this->expectExceptionMessage('No value returned for requested key local/test');
 
         $this->storage->expects(self::once())
             ->method('hasItem')
