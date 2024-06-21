@@ -13,7 +13,7 @@ use Ramsey\Uuid\Uuid;
 
 class SessionConfigTest extends TestCase
 {
-    private CaseData|MockObject $caseMock;
+    private CaseData $caseMock;
     private SessionConfig $sut;
     private string $uuid;
     public function setUp(): void
@@ -29,7 +29,7 @@ class SessionConfigTest extends TestCase
             'idMethod' => 'po_ukp',
             'address' => [
                 'line1' => '123 long street',
-                'line2'=> 'Kings Cross',
+                'line2' => 'Kings Cross',
                 'postcode' => 'NW1 1SP',
                 'country' => 'England'
             ],
@@ -53,6 +53,7 @@ class SessionConfigTest extends TestCase
         $currentDate->modify('+30 days');
         $currentDate->setTime(22, 0, 0);
 
+        $sessionConfig = [];
         $sessionConfig["session_deadline"] = $currentDate->format(DateTime::ATOM);
         $sessionConfig["resources_ttl"] = '604800';
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
@@ -140,6 +141,4 @@ class SessionConfigTest extends TestCase
 
         return $sessionConfig;
     }
-
-
 }

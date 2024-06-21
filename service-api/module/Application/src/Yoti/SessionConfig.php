@@ -8,7 +8,8 @@ use Application\Model\Entity\CaseData;
 use DateTime;
 use Ramsey\Uuid\Uuid;
 
-class SessionConfig {
+class SessionConfig
+{
     public function build(CaseData $case, string $uuid): array
     {
         //@todo need to throw exceptions if expected/required $casedata is not present?
@@ -95,7 +96,6 @@ class SessionConfig {
 
         //@TODO client to save the $authToken back to $case
         return $sessionConfig;
-
     }
 
     public function deadlineDate(): string
@@ -109,9 +109,9 @@ class SessionConfig {
         return $currentDate->format(DateTime::ATOM);
     }
 
-    public function getDocType(string $idMethod): string
+    public function getDocType(?string $idMethod): string
     {
-        $drivingLicenceOptions = array("po_ukd", "po_eud");
+        $drivingLicenceOptions = ["po_ukd", "po_eud"];
         if (in_array($idMethod, $drivingLicenceOptions)) {
             return "DRIVING_LICENCE";
         } else {
@@ -131,5 +131,4 @@ class SessionConfig {
 
         return $addressFormat;
     }
-
 }

@@ -68,7 +68,13 @@ class YotiService implements YotiServiceInterface
      */
     public function createSession(array $sessionData): array
     {
+        //need to use the RequestSigner for the signature here that is on another branch
+        $headers = [
+            'X-Yoti-Auth-Digest' => ''
+        ];
+
         $results = $this->client->post('/idverify/v1/sessions', [
+            'headers' => $headers,
             'json' => $sessionData,
         ]);
 
