@@ -1,7 +1,7 @@
 services:
   sirius-mock:
 #    image: stoplight/prism:5
-    image: outofcoffee/imposter
+    image: outofcoffee/imposter-all
 #    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
@@ -88,9 +88,7 @@ services:
         condition: service_healthy
     environment:
       - API_BASE_URI=http://api-web
-#      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
-      - SIRIUS_BASE_URL=http://sirius-mock:8080 # http://host.docker.internal:8080 for real Sirius
-
+      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
       - SIRIUS_PUBLIC_URL=http://localhost:8080
       - APP_DEBUG=1
     healthcheck:
