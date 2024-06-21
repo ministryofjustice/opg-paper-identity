@@ -44,6 +44,15 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
+//        die(json_encode($lpas));
+
+        if (!$this->checkLpaDonorDetails($lpas)) {
+//            throw new HttpException(
+//                400,
+//                'These LPAs appear to relate to different donors.',
+//            );
+        }
+
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
         /**
@@ -73,7 +82,7 @@ class IndexController extends AbstractActionController
     {
         if ($type === 'donor') {
             if (! empty($data['opg.poas.lpastore'])) {
-                $address = $this->processAddress($data['opg.poas.lpastore']['donor']['address']);
+                $address = $data['opg.poas.lpastore']['donor']['address'];
 
                 return [
                     'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
@@ -83,14 +92,14 @@ class IndexController extends AbstractActionController
                 ];
             }
 
-            $address = $this->processAddress([
+            $address = [
                 'line1' => $data['opg.poas.sirius']['donor']['addressLine1'],
                 'line2' => $data['opg.poas.sirius']['donor']['addressLine2'] ?? '',
                 'line3' => $data['opg.poas.sirius']['donor']['addressLine3'] ?? '',
                 'town' => $data['opg.poas.sirius']['donor']['town'] ?? '',
                 'postcode' => $data['opg.poas.sirius']['donor']['postcode'] ?? '',
                 'country' => $data['opg.poas.sirius']['donor']['country'],
-            ]);
+            ];
 
             return [
                 'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
@@ -106,7 +115,7 @@ class IndexController extends AbstractActionController
                 );
             }
 
-            $address = $this->processAddress($data['opg.poas.lpastore']['certificateProvider']['address']);
+            $address = $data['opg.poas.lpastore']['certificateProvider']['address'];
 
             return [
                 'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
@@ -127,12 +136,52 @@ class IndexController extends AbstractActionController
     {
         $address = [];
 
-        foreach ($siriusAddress as $line) {
-            if (! empty($line)) {
+        foreach ($siriusAddress as $key => $line) {
+
                 $address[] = $line;
-            }
+
         }
 
         return $address;
+    }
+
+    /**
+     * "opg.poas.sirius": {
+     * "donor": {
+     * "addressLine2": "Ardith Causeway",
+     * "addressLine3": "Centennial",
+     * "dob": "1952-05-16",
+     * "firstname": "Laisha",
+     * "surname": "O'Hara",
+     * "town": "Jacksonville"
+     * },
+     */
+
+    /**
+     * "certificateProvider": {
+     * "address": {
+     * "country": "MH",
+     * "line1": "5511 Volkman Valley",
+     * "line2": "Gina Ridge",
+     * "postcode": "FP5 4CV",
+     * "town": "Pocatello"
+     * },
+     */
+
+    private function checkLpaDonorDetails(array $lpas): bool
+    {
+        foreach ($lpas as $key => $lpaRecord) {
+            if($key == 0) {
+                $name = $lpaRecord['opg.poas.lpastore']['donor']['firstNames'] .
+                    $lpaRecord['opg.poas.lpastore']['donor']['lastName'];
+            } else {
+                $nextName = $lpaRecord['opg.poas.lpastore']['donor']['firstNames'] .
+                    $lpaRecord['opg.poas.lpastore']['donor']['lastName'];
+                if($name !== $nextName) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
