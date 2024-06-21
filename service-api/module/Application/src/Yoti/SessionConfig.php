@@ -9,10 +9,11 @@ use DateTime;
 use Ramsey\Uuid\Uuid;
 
 class SessionConfig {
-    public function build(CaseData $case): array
+    public function build(CaseData $case, string $uuid): array
     {
+        //@todo need to throw exceptions if expected/required $casedata is not present?
         $sessionConfig = [];
-        $authToken = strval(Uuid::uuid4());
+        $authToken = $uuid;//strval(Uuid::uuid4());
 
         $sessionConfig["session_deadline"] = $this->deadlineDate();
         $sessionConfig["resources_ttl"] = '604800';
@@ -95,7 +96,6 @@ class SessionConfig {
         //@TODO client to save the $authToken back to $case
         return $sessionConfig;
 
-
     }
 
     public function deadlineDate(): string
@@ -121,15 +121,15 @@ class SessionConfig {
 
     public function addressFormatted(array $address): array
     {
-        $address = [];
-        $address["address_format"] = "1";
-        $address["address_line_1"] = $address['line1'];
-        $address["address_line_2"] = $address['line2'];
-        $address["country"] = $address['country'];
-        $address["country_iso"] = "GBR";
-        $address["postal_code"] = $address['postcode'];
+        $addressFormat = [];
+        $addressFormat["address_format"] = "1";
+        $addressFormat["address_line_1"] = $address['line1'];
+        $addressFormat["address_line_2"] = $address['line2'];
+        $addressFormat["country"] = $address['country'];
+        $addressFormat["country_iso"] = "GBR";
+        $addressFormat["postal_code"] = $address['postcode'];
 
-        return $address;
+        return $addressFormat;
     }
 
 }
