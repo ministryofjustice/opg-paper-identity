@@ -44,8 +44,6 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
-//        die(json_encode($lpas));
-
         if (!$this->checkLpaDonorDetails($lpas)) {
 //            throw new HttpException(
 //                400,
@@ -82,7 +80,7 @@ class IndexController extends AbstractActionController
     {
         if ($type === 'donor') {
             if (! empty($data['opg.poas.lpastore'])) {
-                $address = $data['opg.poas.lpastore']['donor']['address'];
+                $address = $this->processAddress($data['opg.poas.lpastore']['donor']['address']);
 
                 return [
                     'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
@@ -92,14 +90,14 @@ class IndexController extends AbstractActionController
                 ];
             }
 
-            $address = [
+            $address = $this->processAddress([
                 'line1' => $data['opg.poas.sirius']['donor']['addressLine1'],
                 'line2' => $data['opg.poas.sirius']['donor']['addressLine2'] ?? '',
                 'line3' => $data['opg.poas.sirius']['donor']['addressLine3'] ?? '',
                 'town' => $data['opg.poas.sirius']['donor']['town'] ?? '',
                 'postcode' => $data['opg.poas.sirius']['donor']['postcode'] ?? '',
                 'country' => $data['opg.poas.sirius']['donor']['country'],
-            ];
+            ]);
 
             return [
                 'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
@@ -115,7 +113,7 @@ class IndexController extends AbstractActionController
                 );
             }
 
-            $address = $data['opg.poas.lpastore']['certificateProvider']['address'];
+            $address = $this->processAddress($data['opg.poas.lpastore']['certificateProvider']['address']);
 
             return [
                 'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
@@ -134,39 +132,15 @@ class IndexController extends AbstractActionController
      */
     private function processAddress(array $siriusAddress): array
     {
-        $address = [];
-
-        foreach ($siriusAddress as $key => $line) {
-
-                $address[] = $line;
-
-        }
-
+        $address = [
+            'line1' => $siriusAddress['line1'],
+            'line2' => $siriusAddress['line2'],
+            'town' => $siriusAddress['town'],
+            'postcode' => $siriusAddress['postcode'],
+            'country' => $siriusAddress['country'],
+        ];
         return $address;
     }
-
-    /**
-     * "opg.poas.sirius": {
-     * "donor": {
-     * "addressLine2": "Ardith Causeway",
-     * "addressLine3": "Centennial",
-     * "dob": "1952-05-16",
-     * "firstname": "Laisha",
-     * "surname": "O'Hara",
-     * "town": "Jacksonville"
-     * },
-     */
-
-    /**
-     * "certificateProvider": {
-     * "address": {
-     * "country": "MH",
-     * "line1": "5511 Volkman Valley",
-     * "line2": "Gina Ridge",
-     * "postcode": "FP5 4CV",
-     * "town": "Pocatello"
-     * },
-     */
 
     private function checkLpaDonorDetails(array $lpas): bool
     {
