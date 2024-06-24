@@ -80,7 +80,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 'donor',
                 [
                     'Lili', 'Laur', '2019-02-18', 'donor', ['M-1234-5678-90AB'],
-                    ['17 East Lane', 'Wickerham', 'W1 3EJ', 'GB'],
+                    [
+                        'line1' => '17 East Lane',
+                        'line2' => 'Wickerham',
+                        'line3' => '',
+                        'town' => '',
+                        'postcode' => 'W1 3EJ',
+                        'country' => 'GB'
+                    ],
                 ]
             ],
             'executed, donor' => [
@@ -91,7 +98,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 'donor',
                 [
                     'Lilith', 'Laur', '2009-02-18', 'donor', ['M-1234-5678-90AB'],
-                    ['Unit 15', 'Uberior House', 'Edinburgh', 'EH1 2EJ', 'GB'],
+                    [
+                        'line1' => 'Unit 15',
+                        'line2' => 'Uberior House',
+                        'line3' => '',
+                        'town' => 'Edinburgh',
+                        'postcode' => 'EH1 2EJ',
+                        'country' => 'GB'
+                    ],
                 ]
             ],
             'executed, cp' => [
@@ -102,7 +116,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 'certificateProvider',
                 [
                     'x', 'x', '1000-01-01', 'certificateProvider', ['M-1234-5678-90AB'],
-                    ['16a Avenida Lucana', 'Cordón', 'ES'],
+                    [
+                        'line1' => '16a Avenida Lucana',
+                        'line2' => 'Cordón',
+                        'line3' => '',
+                        'town' => '',
+                        'postcode' => '',
+                        'country' => 'ES'
+                    ],
                 ]
             ],
         ];
@@ -195,5 +216,80 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             'Person type &quot;invalid&quot; is not valid',
             $this->getResponse()->getBody()
         );
+    }
+
+    /**
+     * @dataProvider addressData
+     */
+    public function testProcessAddress(
+        array $address,
+        array $addressType,
+        array $expected
+    ): void
+    {
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $opgApiService = $this->createMock(OpgApiService::class);
+
+        $indexController = new IndexController($opgApiService, $siriusApiService);
+
+        $response = $indexController->processAddress($address, $addressType);
+
+        $this->assertEquals($expected, $response);
+    }
+
+    public static function addressData(): array
+    {
+        return [
+            [
+                [
+                    'addressLine1' => "Park House",
+                    'addressLine2' => 'Park Lane',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ],
+                [
+                    'line1' => 'addressLine1',
+                    'line2' => 'addressLine2',
+                    'line3' => 'addressLine3',
+                    'town' => 'town',
+                    'postcode' => 'postcode',
+                    'country' => 'country'
+                ],
+                [
+                    'line1' => "Park House",
+                    'line2' => 'Park Lane',
+                    'line3' => '',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ]
+            ],
+            [
+                [
+                    'line1' => "Park House",
+                    'line3' => 'Park Lane',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ],
+                [
+                    'line1' => 'line1',
+                    'line2' => 'line2',
+                    'line3' => 'line3',
+                    'town' => 'town',
+                    'postcode' => 'postcode',
+                    'country' => 'country'
+                ],
+                [
+                    'line1' => "Park House",
+                    'line2' => '',
+                    'line3' => 'Park Lane',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ]
+            ],
+        ];
     }
 }

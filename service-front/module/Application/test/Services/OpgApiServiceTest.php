@@ -45,11 +45,19 @@ class OpgApiServiceTest extends TestCase
     public static function detailsData(): array
     {
         $successMockResponseData = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Line 1, Line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
+            "firstName" => "Mary Ann",
+            "lastName" => "Chapman",
+            "dob" => "01 May 1943",
+            "address" => [
+                'line1' => '1 Street',
+                'line2' => '',
+                'line3' => '',
+                'town' => 'Middleton',
+                'postcode' => 'LA1 2XN',
+                'country' => 'DD',
+            ],
+            "personType" => "Donor",
+            "lpas" => [
                 "PA M-XYXY-YAGA-35G3",
                 "PW M-VGAS-OAGA-34G9"
             ]

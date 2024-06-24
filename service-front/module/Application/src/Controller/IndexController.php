@@ -44,12 +44,14 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
-        if (!$this->checkLpaDonorDetails($lpas)) {
+//        die(json_encode($data));
+
+//        if (! $this->checkLpaDonorDetails($lpas)) {
 //            throw new HttpException(
 //                400,
 //                'These LPAs appear to relate to different donors.',
 //            );
-        }
+//        }
 
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
@@ -78,9 +80,27 @@ class IndexController extends AbstractActionController
      */
     private function processLpaResponse(string $type, array $data): array
     {
+        $lpaStoreAddressType = [
+            'line1' => 'line1',
+            'line2' => 'line2',
+            'line3' => 'line3',
+            'town' => 'town',
+            'postcode' => 'postcode',
+            'country' => 'country'
+        ];
+
+        $siriusAddressType = [
+            'line1' => 'addressLine1',
+            'line2' => 'addressLine2',
+            'line3' => 'addressLine3',
+            'town' => 'town',
+            'postcode' => 'postcode',
+            'country' => 'country'
+        ];
+
         if ($type === 'donor') {
             if (! empty($data['opg.poas.lpastore'])) {
-                $address = $this->processAddress($data['opg.poas.lpastore']['donor']['address']);
+                $address = $this->processAddress($data['opg.poas.lpastore']['donor']['address'], $lpaStoreAddressType);
 
                 return [
                     'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
@@ -90,14 +110,10 @@ class IndexController extends AbstractActionController
                 ];
             }
 
-            $address = $this->processAddress([
-                'line1' => $data['opg.poas.sirius']['donor']['addressLine1'],
-                'line2' => $data['opg.poas.sirius']['donor']['addressLine2'] ?? '',
-                'line3' => $data['opg.poas.sirius']['donor']['addressLine3'] ?? '',
-                'town' => $data['opg.poas.sirius']['donor']['town'] ?? '',
-                'postcode' => $data['opg.poas.sirius']['donor']['postcode'] ?? '',
-                'country' => $data['opg.poas.sirius']['donor']['country'],
-            ]);
+            $address = $this->processAddress(
+                $data['opg.poas.sirius']['donor'],
+                $siriusAddressType
+            );
 
             return [
                 'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
@@ -113,7 +129,10 @@ class IndexController extends AbstractActionController
                 );
             }
 
-            $address = $this->processAddress($data['opg.poas.lpastore']['certificateProvider']['address']);
+            $address = $this->processAddress(
+                $data['opg.poas.lpastore']['certificateProvider']['address'],
+                $lpaStoreAddressType
+            );
 
             return [
                 'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
@@ -127,31 +146,30 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * @param Address $siriusAddress
+     * @param Address $address
      * @return string[]
      */
-    private function processAddress(array $siriusAddress): array
+    public function processAddress(array $address, $addressType): array
     {
-        $address = [
-            'line1' => $siriusAddress['line1'],
-            'line2' => $siriusAddress['line2'],
-            'town' => $siriusAddress['town'],
-            'postcode' => $siriusAddress['postcode'],
-            'country' => $siriusAddress['country'],
-        ];
-        return $address;
+        $processedAddress = [];
+
+        foreach ($addressType as $key => $value) {
+            $processedAddress[$key] = array_key_exists($value, $address) ? $address[$value]: '';
+        }
+
+        return $processedAddress;
     }
 
     private function checkLpaDonorDetails(array $lpas): bool
     {
         foreach ($lpas as $key => $lpaRecord) {
-            if($key == 0) {
+            if ($key == 0) {
                 $name = $lpaRecord['opg.poas.lpastore']['donor']['firstNames'] .
                     $lpaRecord['opg.poas.lpastore']['donor']['lastName'];
             } else {
                 $nextName = $lpaRecord['opg.poas.lpastore']['donor']['firstNames'] .
                     $lpaRecord['opg.poas.lpastore']['donor']['lastName'];
-                if($name !== $nextName) {
+                if ($name !== $nextName) {
                     return false;
                 }
             }

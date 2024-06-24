@@ -84,7 +84,7 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
 
-        echo json_encode($detailsData);
+//        echo json_encode($detailsData);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpas', $detailsData['lpas']);
