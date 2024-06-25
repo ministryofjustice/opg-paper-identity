@@ -33,6 +33,7 @@
         <env name="AWS_ACCESS_KEY_ID" value="localstack" />
         <env name="AWS_SECRET_ACCESS_KEY" value="localstack" />
         <env name="AWS_REGION" value="eu-west-1" />
+        <env name="SECRETS_MANAGER_ENDPOINT" value="http://localstack:4566" />
         <env name="AWS_DYNAMODB_ENDPOINT" value="http://localstack:4566" />
         <env name="AWS_DYNAMODB_TABLE_NAME" value="cases" />
         <env name="MOCK_KBV_API" value="true" />

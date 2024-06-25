@@ -18,7 +18,7 @@ api-psalm: ## Run Psalm checks against API code
 api-phpcs: ## Run PHPCS checks against API code
 	docker compose -p api-phpcs run --rm api-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
 
-api-unit-test: ## Run API unit tests
+api-unit-test: scripts/localstack/init/private_key.pem ## Run API unit tests
 	docker compose -p api-unit-test run --rm api-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
 
 front-psalm: ## Run Psalm checks against front end code
