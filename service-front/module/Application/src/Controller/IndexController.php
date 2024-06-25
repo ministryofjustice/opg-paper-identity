@@ -18,7 +18,6 @@ use Laminas\View\Model\ViewModel;
  *
  * @psalm-type Identity array{first_name: string, last_name: string, dob: string, address: string[]}
  */
-
 class IndexController extends AbstractActionController
 {
     protected $plugins;
@@ -44,17 +43,16 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
-//        die(json_encode($data));
+        /** @var string $type */
+        $type = $this->params()->fromQuery("personType");
 
-//        if (! $this->checkLpaDonorDetails($lpas)) {
+//        if (!$this->checkLpaIdDetails($lpas, $type)) {
 //            throw new HttpException(
 //                400,
 //                'These LPAs appear to relate to different donors.',
 //            );
 //        }
 
-        /** @var string $type */
-        $type = $this->params()->fromQuery("personType");
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
@@ -146,34 +144,34 @@ class IndexController extends AbstractActionController
     }
 
     /**
-     * @param Address $address
+     * @param mixed $address
      * @return string[]
      */
-    public function processAddress(array $address, $addressType): array
+    public function processAddress(array $address, array $addressType): array
     {
         $processedAddress = [];
 
         foreach ($addressType as $key => $value) {
-            $processedAddress[$key] = array_key_exists($value, $address) ? $address[$value]: '';
+            $processedAddress[$key] = array_key_exists($value, $address) ? $address[$value] : '';
         }
 
         return $processedAddress;
     }
 
-    private function checkLpaDonorDetails(array $lpas): bool
-    {
-        foreach ($lpas as $key => $lpaRecord) {
-            if ($key == 0) {
-                $name = $lpaRecord['opg.poas.lpastore']['donor']['firstNames'] .
-                    $lpaRecord['opg.poas.lpastore']['donor']['lastName'];
-            } else {
-                $nextName = $lpaRecord['opg.poas.lpastore']['donor']['firstNames'] .
-                    $lpaRecord['opg.poas.lpastore']['donor']['lastName'];
-                if ($name !== $nextName) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+//    private function checkLpaIdDetails(array $lpas, string $type): bool
+//    {
+//        foreach ($lpas as $key => $lpaRecord) {
+//            if ($key == 0) {
+//                $name = $lpaRecord['opg.poas.lpastore'][$type]['firstNames'] .
+//                    $lpaRecord['opg.poas.lpastore'][$type]['lastName'];
+//            } else {
+//                $nextName = $lpaRecord['opg.poas.lpastore'][$type]['firstNames'] .
+//                    $lpaRecord['opg.poas.lpastore'][$type]['lastName'];
+//                if ($name !== $nextName) {
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
 }

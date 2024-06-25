@@ -225,8 +225,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         array $address,
         array $addressType,
         array $expected
-    ): void
-    {
+    ): void {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $opgApiService = $this->createMock(OpgApiService::class);
 

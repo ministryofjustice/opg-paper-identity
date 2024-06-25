@@ -12,7 +12,8 @@ use Laminas\Stdlib\Parameters;
 class AddressProcessorHelper
 {
     public function __construct(private array $address)
-    {}
+    {
+    }
 
     public function getAddress(): array
     {

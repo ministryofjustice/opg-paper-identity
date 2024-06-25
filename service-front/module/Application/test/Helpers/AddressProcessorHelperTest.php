@@ -18,7 +18,8 @@ class AddressProcessorHelperTest extends TestCase
      * @dataProvider addressData
      */
     public function testAddressHelper(
-        array $unprocessedAddress, $expectedAddress
+        array $unprocessedAddress,
+        array $expectedAddress
     ): void {
 
         $addressProcessorHelper = new AddressProcessorHelper($unprocessedAddress);
