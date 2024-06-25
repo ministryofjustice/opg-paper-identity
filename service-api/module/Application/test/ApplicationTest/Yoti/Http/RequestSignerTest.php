@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace ApplicationTest\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Yoti\Http\Exception\PemFileException;
 use Application\Yoti\Http\RequestSigner;
+use Aws\Result;
 use Aws\SecretsManager\SecretsManagerClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,18 +18,22 @@ class RequestSignerTest extends TestCase
 {
     private Payload|MockObject $payloadMock;
     private AwsSecret|MockObject $pemFileMock;
-
-    private const PRIVATE_KEY = __DIR__ . '/../../../TestData/test-private-key.pem';
-
-    private const PEM_FILE = __DIR__ . '/../../../../../../../scripts/localstack/private_key.pem';
-
-    private const PUBLIC_KEY = __DIR__ . '/../../../TestData/test-public-key.pem';
+    private SecretsManagerClient $secretsManagerClient;
+    private Result $privateResult;
     private const PATH = '/api/endpoint';
     private const METHOD = 'POST';
     public function setUp(): void
     {
         $this->payloadMock = $this->createMock(Payload::class);
         $this->pemFileMock = $this->createMock(AwsSecret::class);
+
+        $this->secretsManagerClient = new SecretsManagerClient([
+            'endpoint' => getenv('SECRETS_MANAGER_ENDPOINT'),
+            'region' => 'eu-west-1'
+        ]);
+        $this->privateResult = $this->secretsManagerClient->getSecretValue([
+            'SecretId' => 'local/paper-identity/private-key',
+        ]);
     }
 
     /**
@@ -41,17 +45,9 @@ class RequestSignerTest extends TestCase
     {
         $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
 
-        $secretsManagerClient = new SecretsManagerClient([
-            'endpoint' => getenv('SECRETS_MANAGER_ENDPOINT'),
-            'region' => 'eu-west-1'
-        ]);
-        $privateResult = $secretsManagerClient->getSecretValue([
-            'SecretId' => 'local/paper-identity/private-key',
-        ]);
-
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
-            ->willReturn($privateResult['SecretString']);
+            ->willReturn($this->privateResult['SecretString']);
 
         $signedMessage = RequestSigner::generateSignature(
             self::PATH,
@@ -61,7 +57,7 @@ class RequestSignerTest extends TestCase
         );
         $messageToSign = self::METHOD . '&' . self::PATH . '&' . $this->payloadMock->toBase64();
         /** @var array $publicKeyResult */
-        $publicKeyResult = $secretsManagerClient->getSecretValue([
+        $publicKeyResult = $this->secretsManagerClient->getSecretValue([
             'SecretId' => 'local/paper-identity/public-key',
         ]);
 
@@ -79,7 +75,7 @@ class RequestSignerTest extends TestCase
     {
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
-            ->willReturn(file_get_contents(self::PRIVATE_KEY));
+            ->willReturn($this->privateResult["SecretString"]);
 
         // Generate signature
         $signature = RequestSigner::generateSignature(
