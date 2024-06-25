@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace ApplicationTest\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
+use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Yoti\Http\Exception\PemFileException;
 use Application\Yoti\Http\RequestSigner;
+use Aws\SecretsManager\SecretsManagerClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Application\Yoti\Http\Exception\RequestSignException;
@@ -18,6 +20,9 @@ class RequestSignerTest extends TestCase
     private AwsSecret|MockObject $pemFileMock;
 
     private const PRIVATE_KEY = __DIR__ . '/../../../TestData/test-private-key.pem';
+
+    private const PEM_FILE = __DIR__ . '/../../../../../../../scripts/localstack/private_key.pem';
+
     private const PUBLIC_KEY = __DIR__ . '/../../../TestData/test-public-key.pem';
     private const PATH = '/api/endpoint';
     private const METHOD = 'POST';
@@ -36,9 +41,18 @@ class RequestSignerTest extends TestCase
     {
         $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
 
+        $secretsManagerClient = new SecretsManagerClient(['endpoint' => 'http://localstack:4566', 'region' => 'eu-west-1']);
+        $result = $secretsManagerClient->getSecretValue([
+            'SecretId' => 'local/paper-identity/private-key',
+        ]);
+
+        //var_dump(file_get_contents(self::PEM_FILE)); die;
+
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
-            ->willReturn(file_get_contents(self::PRIVATE_KEY));
+            ->willReturn(file_get_contents(self::PEM_FILE));
+            //->willReturn($pemFile->getValue());
+            //->willReturn(file_get_contents(self::PRIVATE_KEY));
 
         $signedMessage = RequestSigner::generateSignature(
             self::PATH,
@@ -47,6 +61,8 @@ class RequestSignerTest extends TestCase
             $this->payloadMock,
         );
         $messageToSign = self::METHOD . '&' . self::PATH . '&' . $this->payloadMock->toBase64();
+
+        $pubKeyContent = new AwsSecret('public-key');
 
         $publicKey = openssl_pkey_get_public(file_get_contents(self::PUBLIC_KEY));
 

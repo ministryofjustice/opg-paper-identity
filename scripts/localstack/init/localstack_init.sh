@@ -15,3 +15,11 @@ awslocal secretsmanager create-secret --name local/paper-identity/yoti/certifica
 awslocal secretsmanager create-secret --name local/paper-identity/yoti/sdk-client-id \
     --description "ID of Yoti client" \
     --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/public-key \
+    --description "Local dev public key" \
+    --secret-string file://public_key.pem
+
+awslocal secretsmanager create-secret --name local/paper-identity/private-key \
+    --description "Local dev private key" \
+    --secret-string file://private_key.pem

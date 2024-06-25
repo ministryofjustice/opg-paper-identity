@@ -179,6 +179,7 @@ services:
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
+
     environment:
       AWS_DEFAULT_REGION: eu-west-1
     healthcheck:

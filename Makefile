@@ -3,7 +3,7 @@ SHELL = '/bin/bash'
 help:
 	@grep --no-filename -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-build: ## Build containers
+build: scripts/localstack/init/private_key.pem ## Build containers
 	docker compose build --parallel api front api-test yoti-mock
 
 up: ## Start application
@@ -43,3 +43,7 @@ clean-junit-output:
 	sed -i -E 's/testcase name="(.*?)\/var\/www\/([^ ]+?)( \(([0-9]+):[0-9]+\))?"/& file="\2" line="\4"/g' ./service-front/build/phpcs-junit.xml
 	sed -i -E 's/testcase name="(.*?):([0-9]+)"/& file="\1" line="\2"/g' ./service-api/build/psalm-junit.xml
 	sed -i -E 's/testcase name="(.*?):([0-9]+)"/& file="\1" line="\2"/g' ./service-front/build/psalm-junit.xml
+
+scripts/localstack/init/private_key.pem:
+	openssl genpkey -algorithm RSA -out scripts/localstack/init/private_key.pem -pkeyopt rsa_keygen_bits:2048
+	openssl rsa -pubout -in scripts/localstack/init/private_key.pem -out scripts/localstack/init/public_key.pem
