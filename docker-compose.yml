@@ -175,7 +175,7 @@ services:
       - ./service-front:/app
 
   localstack:
-    image: localstack/localstack:3.4
+    image: localstack/localstack:3.5
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
