@@ -177,8 +177,11 @@ services:
   localstack:
     image: localstack/localstack:3.4
     volumes:
+      - "./scripts/localstack/init/private_key.pem:/tmp/private_key.pem"
+      - "./scripts/localstack/init/public_key.pem:/tmp/public_key.pem"
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
+
     environment:
       AWS_DEFAULT_REGION: eu-west-1
     healthcheck:
