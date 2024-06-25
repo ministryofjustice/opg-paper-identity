@@ -44,7 +44,7 @@ class YotiService implements YotiServiceInterface
     {
         try {
             $results = $this->client->post('/idverify/v1/lookup/uk-post-office', [
-                'json' => ['SearchString' => $postCode],
+                'json' => ['search_string' => $postCode],
             ]);
             if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
                 $this->logger->error('Post Office Lookup unsuccessful ', [
