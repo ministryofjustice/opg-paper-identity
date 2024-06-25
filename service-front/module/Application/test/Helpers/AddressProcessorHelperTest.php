@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\Helpers;
 
 use Application\Helpers\AddressProcessorHelper;
+use Application\Services\OpgApiService;
+use Application\Services\SiriusApiService;
 use PHPUnit\Framework\TestCase;
 
 class AddressProcessorHelperTest extends TestCase
@@ -17,13 +19,13 @@ class AddressProcessorHelperTest extends TestCase
     /**
      * @dataProvider addressData
      */
-    public function testAddressHelper(
+    public function testGetAddress(
         array $unprocessedAddress,
         array $expectedAddress
     ): void {
 
-        $addressProcessorHelper = new AddressProcessorHelper($unprocessedAddress);
-        $processed = $addressProcessorHelper->getAddress();
+        $addressProcessorHelper = new AddressProcessorHelper();
+        $processed = $addressProcessorHelper->getAddress($unprocessedAddress);
 
         $this->assertEquals($expectedAddress, $processed);
     }
@@ -67,6 +69,64 @@ class AddressProcessorHelperTest extends TestCase
                     'country' => 'UK',
                 ]
             ]
+        ];
+    }
+
+
+    /**
+     * @dataProvider processAddressData
+     */
+    public function testProcessAddressData(
+        array $address,
+        string $addressType,
+        array $expected
+    ): void {
+        $addressProcessorHelper = new AddressProcessorHelper();
+
+        $response = $addressProcessorHelper->processAddress($address, $addressType);
+
+        $this->assertEquals($expected, $response);
+    }
+
+    public static function processAddressData(): array
+    {
+        return [
+            [
+                [
+                    'addressLine1' => "Park House",
+                    'addressLine2' => 'Park Lane',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ],
+                'siriusAddressType',
+                [
+                    'line1' => "Park House",
+                    'line2' => 'Park Lane',
+                    'line3' => '',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ]
+            ],
+            [
+                [
+                    'line1' => "Park House",
+                    'line3' => 'Park Lane',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ],
+                'lpaStoreAddressType',
+                [
+                    'line1' => "Park House",
+                    'line2' => '',
+                    'line3' => 'Park Lane',
+                    'town' => 'London',
+                    'postcode' => 'SW1A 1AA',
+                    'country' => 'UK'
+                ]
+            ],
         ];
     }
 }

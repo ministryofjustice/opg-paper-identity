@@ -54,8 +54,7 @@ class OpgApiService implements OpgApiServiceInterface
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
-            $processedAddress = new AddressProcessorHelper($response['address']);
-            $response['address'] = $processedAddress->getAddress();
+            $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
 
             return $response;
         } catch (OpgApiException $exception) {

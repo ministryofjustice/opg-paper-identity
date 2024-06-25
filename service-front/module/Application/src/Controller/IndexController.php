@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Services\SiriusApiService;
 use DateTime;
 use Laminas\Http\Response;
@@ -24,7 +25,7 @@ class IndexController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
+        private readonly SiriusApiService $siriusApiService
     ) {
     }
 
@@ -78,27 +79,12 @@ class IndexController extends AbstractActionController
      */
     private function processLpaResponse(string $type, array $data): array
     {
-        $lpaStoreAddressType = [
-            'line1' => 'line1',
-            'line2' => 'line2',
-            'line3' => 'line3',
-            'town' => 'town',
-            'postcode' => 'postcode',
-            'country' => 'country'
-        ];
-
-        $siriusAddressType = [
-            'line1' => 'addressLine1',
-            'line2' => 'addressLine2',
-            'line3' => 'addressLine3',
-            'town' => 'town',
-            'postcode' => 'postcode',
-            'country' => 'country'
-        ];
-
         if ($type === 'donor') {
             if (! empty($data['opg.poas.lpastore'])) {
-                $address = $this->processAddress($data['opg.poas.lpastore']['donor']['address'], $lpaStoreAddressType);
+                $address = (new AddressProcessorHelper())->processAddress(
+                    $data['opg.poas.lpastore']['donor']['address'],
+                    'lpaStoreAddressType'
+                );
 
                 return [
                     'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
@@ -108,9 +94,9 @@ class IndexController extends AbstractActionController
                 ];
             }
 
-            $address = $this->processAddress(
+            $address = (new AddressProcessorHelper())->processAddress(
                 $data['opg.poas.sirius']['donor'],
-                $siriusAddressType
+                'siriusAddressType'
             );
 
             return [
@@ -127,9 +113,9 @@ class IndexController extends AbstractActionController
                 );
             }
 
-            $address = $this->processAddress(
+            $address = (new AddressProcessorHelper())->processAddress(
                 $data['opg.poas.lpastore']['certificateProvider']['address'],
-                $lpaStoreAddressType
+                'lpaStoreAddressType'
             );
 
             return [
@@ -143,20 +129,7 @@ class IndexController extends AbstractActionController
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    /**
-     * @param mixed $address
-     * @return string[]
-     */
-    public function processAddress(array $address, array $addressType): array
-    {
-        $processedAddress = [];
 
-        foreach ($addressType as $key => $value) {
-            $processedAddress[$key] = array_key_exists($value, $address) ? $address[$value] : '';
-        }
-
-        return $processedAddress;
-    }
 
 //    private function checkLpaIdDetails(array $lpas, string $type): bool
 //    {
