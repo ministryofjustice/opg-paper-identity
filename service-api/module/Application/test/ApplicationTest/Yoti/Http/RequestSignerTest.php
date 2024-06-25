@@ -41,18 +41,17 @@ class RequestSignerTest extends TestCase
     {
         $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
 
-        $secretsManagerClient = new SecretsManagerClient(['endpoint' => 'http://localstack:4566', 'region' => 'eu-west-1']);
-        $result = $secretsManagerClient->getSecretValue([
+        $secretsManagerClient = new SecretsManagerClient([
+            'endpoint' => getenv('SECRETS_MANAGER_ENDPOINT'),
+            'region' => 'eu-west-1'
+        ]);
+        $privateResult = $secretsManagerClient->getSecretValue([
             'SecretId' => 'local/paper-identity/private-key',
         ]);
 
-        //var_dump(file_get_contents(self::PEM_FILE)); die;
-
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
-            ->willReturn(file_get_contents(self::PEM_FILE));
-            //->willReturn($pemFile->getValue());
-            //->willReturn(file_get_contents(self::PRIVATE_KEY));
+            ->willReturn($privateResult['SecretString']);
 
         $signedMessage = RequestSigner::generateSignature(
             self::PATH,
@@ -61,10 +60,12 @@ class RequestSignerTest extends TestCase
             $this->payloadMock,
         );
         $messageToSign = self::METHOD . '&' . self::PATH . '&' . $this->payloadMock->toBase64();
+        /** @var array $publicKeyResult */
+        $publicKeyResult = $secretsManagerClient->getSecretValue([
+            'SecretId' => 'local/paper-identity/public-key',
+        ]);
 
-        $pubKeyContent = new AwsSecret('public-key');
-
-        $publicKey = openssl_pkey_get_public(file_get_contents(self::PUBLIC_KEY));
+        $publicKey = openssl_pkey_get_public($publicKeyResult['SecretString']);
 
         $verify = openssl_verify($messageToSign, base64_decode($signedMessage), $publicKey, OPENSSL_ALGO_SHA256);
 
