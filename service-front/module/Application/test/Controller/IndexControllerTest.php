@@ -80,7 +80,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 'donor',
                 [
                     'Lili', 'Laur', '2019-02-18', 'donor', ['M-1234-5678-90AB'],
-                    ['17 East Lane', 'Wickerham', 'W1 3EJ', 'GB'],
+                    [
+                        'line1' => '17 East Lane',
+                        'line2' => 'Wickerham',
+                        'line3' => '',
+                        'town' => '',
+                        'postcode' => 'W1 3EJ',
+                        'country' => 'GB'
+                    ],
                 ]
             ],
             'executed, donor' => [
@@ -91,7 +98,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 'donor',
                 [
                     'Lilith', 'Laur', '2009-02-18', 'donor', ['M-1234-5678-90AB'],
-                    ['Unit 15', 'Uberior House', 'Edinburgh', 'EH1 2EJ', 'GB'],
+                    [
+                        'line1' => 'Unit 15',
+                        'line2' => 'Uberior House',
+                        'line3' => '',
+                        'town' => 'Edinburgh',
+                        'postcode' => 'EH1 2EJ',
+                        'country' => 'GB'
+                    ],
                 ]
             ],
             'executed, cp' => [
@@ -102,7 +116,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 'certificateProvider',
                 [
                     'x', 'x', '1000-01-01', 'certificateProvider', ['M-1234-5678-90AB'],
-                    ['16a Avenida Lucana', 'Cordón', 'ES'],
+                    [
+                        'line1' => '16a Avenida Lucana',
+                        'line2' => 'Cordón',
+                        'line3' => '',
+                        'town' => '',
+                        'postcode' => '',
+                        'country' => 'ES'
+                    ],
                 ]
             ],
         ];

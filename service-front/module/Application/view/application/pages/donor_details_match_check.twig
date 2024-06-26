@@ -28,9 +28,29 @@
                 </p>
                 <h3 class="govuk-heading-m">Address</h3>
                 <p class="govuk-body">
-                    {% for line in details_data.address %}
-                        {{ line }}<br>
-                    {% endfor %}
+
+                    {% if details_data.address.line1 %}
+                        {{ details_data.address.line1 }}<br/>
+                    {% endif %}
+
+                    {% if details_data.address.line2 %}
+                        {{ details_data.address.line2 }}<br/>
+                    {% endif %}
+
+                    {% if details_data.address.town %}
+                        {{ details_data.address.town }}<br/>
+                    {% endif %}
+
+                    {% if details_data.address.postoode %}
+                        {{ details_data.address.postcode }}<br/>
+                    {% endif %}
+
+                    {% if details_data.address.country %}
+                        {{ details_data.address.country }}<br/>
+                    {% endif %}
+{#                    {% for line in details_data.address %}#}
+{#                        {{ line }}<br>#}
+{#                    {% endfor %}#}
                 </p>
 
                 <a href="">Edit the donor's details in Sirius</a><br><br>

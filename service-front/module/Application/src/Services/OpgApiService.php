@@ -6,6 +6,7 @@ namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
+use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
@@ -52,7 +53,10 @@ class OpgApiService implements OpgApiServiceInterface
     public function getDetailsData(string $uuid): array
     {
         try {
-            return $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+            $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+            $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
+
+            return $response;
         } catch (OpgApiException $exception) {
             $previous = $exception->getPrevious();
             if ($previous instanceof BadResponseException && $previous->getResponse()->getStatusCode() === 404) {
