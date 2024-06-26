@@ -55,6 +55,13 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
             $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
+            if (
+                array_key_exists('alternateAddress', $response) &&
+                !empty($response['alternateAddress'])) {
+                $response['alternateAddress'] = (
+                    new AddressProcessorHelper()
+                )->getAddress($response['alternateAddress']);
+            }
 
             return $response;
         } catch (OpgApiException $exception) {

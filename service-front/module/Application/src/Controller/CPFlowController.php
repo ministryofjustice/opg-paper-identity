@@ -42,29 +42,6 @@ class CPFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
             return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-
-
-//
-
-//            switch ($formData['id_method']) {
-//                case 'pn':
-//                    $this->redirect()
-//                        ->toRoute("passport_number", ['uuid' => $uuid]);
-//                    break;
-//
-//                case 'dln':
-//                    $this->redirect()
-//                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
-//                    break;
-//
-//                case 'nin':
-//                    $this->redirect()
-//                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
-//                    break;
-//
-//                default:
-//                    break;
-//            }
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
