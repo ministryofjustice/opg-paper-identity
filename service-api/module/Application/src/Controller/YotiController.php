@@ -6,11 +6,15 @@ namespace Application\Controller;
 
 use Application\Exceptions\YotiException;
 use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
+use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -22,6 +26,8 @@ class YotiController extends AbstractActionController
     public function __construct(
         private readonly YotiServiceInterface $yotiService,
         private readonly DataImportHandler $dataImportHandler,
+        private readonly DataQueryHandler $dataQuery,
+        private readonly SessionConfig $sessionConfig,
     ) {
     }
 
@@ -59,6 +65,11 @@ class YotiController extends AbstractActionController
     public function createSessionAction(array $sessionData): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
+
+        $sessionUuid = strval(Uuid::uuid4());
+        $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        $sessionData = $this->sessionConfig->build($caseData, $sessionUuid);
+
         //@TODO authenticate if not using mock?
         $result = $this->yotiService->createSession($sessionData);
         //save sessionId back to caseData

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
+use Application\Aws\Secrets\AwsSecret;
 use Application\Exceptions\YotiException;
+use Application\Yoti\Http\Payload;
+use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
@@ -65,12 +68,25 @@ class YotiService implements YotiServiceInterface
      * @param array $sessionData
      * @return array
      * Create a IBV session with applicant data and requirements
+     * @throws YotiException
      */
     public function createSession(array $sessionData): array
     {
-        //need to use the RequestSigner for the signature here that is on another branch
+        try {
+            $requestSignature = RequestSigner::generateSignature(
+                'sessions',
+                'POST',
+                new AwsSecret('yoti/certificate'),
+            );
+
+        } catch (Http\Exception\PemFileException $e) {
+            throw new YotiException("There was a problem with Pem file");
+        } catch (Http\Exception\RequestSignException $e) {
+            throw new YotiException("Unable to create request signature");
+        }
         $headers = [
-            'X-Yoti-Auth-Digest' => ''
+            'X-Yoti-Auth-Digest' => $requestSignature,
+            'sdkId' => new AwsSecret('yoti/sdk-client-id')
         ];
 
         $results = $this->client->post('/idverify/v1/sessions', [
