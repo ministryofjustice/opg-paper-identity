@@ -57,7 +57,8 @@ class OpgApiService implements OpgApiServiceInterface
             $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
             if (
                 array_key_exists('alternateAddress', $response) &&
-                !empty($response['alternateAddress'])) {
+                ! empty($response['alternateAddress'])
+            ) {
                 $response['alternateAddress'] = (
                     new AddressProcessorHelper()
                 )->getAddress($response['alternateAddress']);
