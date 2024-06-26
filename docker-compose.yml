@@ -11,21 +11,21 @@ services:
     volumes:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
 
-#  yoti-mock:
-#    image: paper-identity/yoti-mock
-#    build:
-#      context: docker/yoti
-#      dockerfile: Dockerfile
-#    restart: unless-stopped
-#    healthcheck:
-#      test: [ "CMD", "imposter", "list", "-x" ]
-#      interval: 15s
-#      timeout: 10s
-#      retries: 3
-#    volumes:
-#      - ./docker/yoti:/opt/imposter/config
-#    ports:
-#      - 8334:8080
+  yoti-mock:
+    image: paper-identity/yoti-mock
+    build:
+      context: docker/yoti
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "imposter", "list", "-x" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./docker/yoti:/opt/imposter/config
+    ports:
+      - 8334:8080
 
   api:
     image: paper-identity/api
@@ -55,8 +55,8 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
-#      yoti-mock:
-#        condition: service_healthy
+      yoti-mock:
+        condition: service_healthy
     env_file: ./service-api/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
@@ -123,8 +123,8 @@ services:
     depends_on:
       api:
         condition: service_healthy
-#      yoti-mock:
-#        condition: service_healthy
+      yoti-mock:
+        condition: service_healthy
     environment:
       APP_HOST: api
       APP_NAME: api
