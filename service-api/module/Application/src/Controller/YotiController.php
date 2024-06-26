@@ -70,7 +70,6 @@ class YotiController extends AbstractActionController
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
         $sessionData = $this->sessionConfig->build($caseData, $sessionUuid);
 
-        //@TODO authenticate if not using mock?
         $result = $this->yotiService->createSession($sessionData);
         //save sessionId back to caseData
         if ($result["status"] < 400) {

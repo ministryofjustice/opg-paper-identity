@@ -77,6 +77,7 @@ class YotiService implements YotiServiceInterface
                 'sessions',
                 'POST',
                 new AwsSecret('yoti/certificate'),
+                Payload::fromJsonData(json_encode($sessionData))
             );
 
         } catch (Http\Exception\PemFileException $e) {
