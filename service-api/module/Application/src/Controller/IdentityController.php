@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Aws\Secrets\AwsSecret;
 use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
@@ -60,6 +61,7 @@ class IdentityController extends AbstractActionController
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
                 return new JsonModel(new Problem($exception->getMessage()));
             }
+
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(['uuid' => $caseData->id]);
         }
@@ -273,13 +275,17 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem("Missing UUID"));
         }
-
-        $this->dataImportHandler->updateCaseData(
-            $uuid,
-            'idMethod',
-            'S',
-            $data['idMethod']
-        );
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'idMethod',
+                'S',
+                $data['idMethod']
+            );
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Updated";
@@ -297,13 +303,17 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
-
-        $this->dataImportHandler->updateCaseData(
-            $uuid,
-            'searchPostcode',
-            'S',
-            $data['selected_postcode']
-        );
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'searchPostcode',
+                'S',
+                $data['selected_postcode']
+            );
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Updated";
@@ -321,13 +331,17 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
-
-        $this->dataImportHandler->updateCaseData(
-            $uuid,
-            'selectedPostOffice',
-            'S',
-            $data['selected_postoffice']
-        );
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'selectedPostOffice',
+                'S',
+                $data['selected_postoffice']
+            );
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Updated";
@@ -345,13 +359,17 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
-
-        $this->dataImportHandler->updateCaseData(
-            $uuid,
-            'selectedPostOfficeDeadline',
-            'S',
-            $data['deadline']
-        );
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'selectedPostOfficeDeadline',
+                'S',
+                $data['deadline']
+            );
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Updated";

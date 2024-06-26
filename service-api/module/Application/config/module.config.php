@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
+use Application\Aws\Secrets\AwsSecretsCache;
+use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\Factories\LoggerFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
@@ -361,6 +363,7 @@ return [
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
+            AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class
         ],
     ],
