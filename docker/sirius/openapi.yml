@@ -42,6 +42,646 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CombinedLpa"
+              examples:
+                M-0000-0000-0000:
+                  summary: Initial LPA
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: active
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: active
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: active
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0001:
+                  summary: Happy path response for additional LPA
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: active
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: active
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: active
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0002:
+                  summary: Name mismatch response
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: active
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: Queen House
+                          line2: 2 Victoria Street
+                          postcode: SW1B 1BC
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: James
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: active
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: active
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0003:
+                  summary: Online error response
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: active
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: online
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: active
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: active
+                          channel: online
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0004:
+                  summary: Status draft response
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: draft
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: draft
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: draft
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0005:
+                  summary: Status complete response
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: complete
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: complete
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: complete
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0006:
+                  summary: Status registered response
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: registered
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: registered
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: registered
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0007:
+                  summary: Status im progress response
+                  value:
+                    opg.poas.lpastore:
+                      attorneys:
+                        - dateOfBirth: '1968-10-16'
+                          status: in progress
+                          channel: paper
+                          uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
+                          firstNames: Tavares
+                          lastName: Klocko
+                          address:
+                            line1: 690 Jon Spring
+                            country: GS
+                            postcode: HE1 8TU
+                            line3: O'Fallon
+                          email: Celestino.Rau@gmail.com
+                      certificateProvider:
+                        address:
+                          country: UK
+                          line1: King House
+                          line2: 1 Victoria Street
+                          postcode: SW1A 1BB
+                          town: London
+                        channel: paper
+                        email: john.doe@gmail.com
+                        firstNames: John
+                        lastName: Doe
+                        phone: 07777 000000
+                        signedAt: '1938-11-08T07:10:43.0Z'
+                        uid: 81e371b8-dda0-095f-4e7e-2bd936aec47c
+                      channel: paper
+                      donor:
+                        address:
+                          country: UK
+                          line1: 1 Street
+                          line2: Road
+                          postcode: SW1A 1AB
+                          town: London
+                        contactLanguagePreference: cy
+                        dateOfBirth: '1982-08-13'
+                        email: joe.bloggs@gmail.com
+                        firstNames: Joe
+                        lastName: Bloggs
+                        otherNamesKnownBy: Joseph Bloggs
+                        uid: fa2eb929-92e8-78cf-aff6-e2c0811e3c60
+                      howReplacementAttorneysMakeDecisionsDetails: eu velit
+                      howReplacementAttorneysStepInDetails: mollit exercitation ipsum sunt enim
+                      lifeSustainingTreatmentOption: option-b
+                      lpaType: property-and-affairs
+                      registrationDate:
+                      signedAt: '1912-08-24T01:13:49.0Z'
+                      status: in progress
+                      trustCorporations:
+                        - name: qui ullamco
+                          companyNumber: id officia cupidatat non
+                          address:
+                            line1: 72764 Dee Pike
+                            country: HU
+                            postcode: BW5 9RM
+                            town: Troy
+                          status: in progress
+                          channel: paper
+                          uid: eed9fb9f-dd9f-7b2f-067b-e75cbb816b71
+                          signedAt: '1956-10-15T11:23:58.0Z'
+                      uid: M-8VQ2-EY9I-DQ23
+                      updatedAt: '1910-10-26T21:38:54.0Z'
+                      whenTheLpaCanBeUsed: when-capacity-lost
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
+                M-0000-0000-0009:
+                  summary: Not found response
+                  value:
+                    opg.poas.lpastore:
+
+                    opg.poas.sirius:
+                      donor:
+                        country: UK
+                        dob: '1982-08-13'
+                        firstname: Joe
+                        postcode: SW1A 1AB
+                        surname: Bloggs
+                        town: London
+                      id: 8223213
+                      uId: M-M1VL-PJ9D-IKUS
         "401":
           description: Error
   /api/v1/postcode-lookup:
@@ -91,6 +731,7 @@ paths:
                       type: string
                       x-faker:
                         fake: "A concatenation of the address lines"
+
   /api/v1/lpa-lookup:
     parameters:
       - name: lpa

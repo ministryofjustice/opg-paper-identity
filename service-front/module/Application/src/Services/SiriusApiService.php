@@ -58,6 +58,19 @@ class SiriusApiService
     ) {
     }
 
+    private array $preferLpas = [
+        'M-0000-0000-0000',
+        'M-0000-0000-0001',
+        'M-0000-0000-0002',
+        'M-0000-0000-0003',
+        'M-0000-0000-0004',
+        'M-0000-0000-0005',
+        'M-0000-0000-0006',
+        'M-0000-0000-0007',
+        'M-0000-0000-0008',
+        'M-0000-0000-0009',
+    ];
+
     private function getAuthHeaders(RequestInterface $request): ?array
     {
         if (! ($request instanceof Request)) {
@@ -99,10 +112,18 @@ class SiriusApiService
      */
     public function getLpaByUid(string $uid, Request $request): array
     {
-        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
-            'headers' => $this->getAuthHeaders($request),
-        ]);
+        $preferHeader = in_array($uid, $this->preferLpas) ? // we need this to test LPA responses
+            ['Prefer' => sprintf("example=%s", $uid)] : // only while using the sirius mock
+            [];
 
+        $authHeaders = $this->getAuthHeaders($request) ?? [];
+
+        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+            'headers' => array_merge(
+                $authHeaders,
+                $preferHeader
+            )
+        ]);
         return json_decode(strval($response->getBody()), true);
     }
 

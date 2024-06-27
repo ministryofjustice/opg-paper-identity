@@ -148,6 +148,7 @@ class LpaFormHelper
                 $siriusCheck['opg.poas.lpastore']['certificateProvider']['lastName'];
 
             $siriusCpAddress = $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
+
             $opgCpAddress = $detailsData['address'];
             $response['name'] = $checkName;
             $response['address'] = $siriusCpAddress;
@@ -167,7 +168,7 @@ class LpaFormHelper
                 $response['name_match'] = true;
             } else {
                 $response['message'] = "This LPA cannot be added to this ID check because the" .
-                    " certificate provider details on this LPA do not match." .
+                    " certificate provider details on this LPA do not match. " .
                     "Edit the certificate provider record in Sirius if appropriate and find again.";
             }
             if (! $response['address_match'] || ! $response['name_match']) {
