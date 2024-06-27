@@ -12,9 +12,8 @@ class SessionConfig
 {
     public function build(CaseData $case, string $uuid): array
     {
-        //@todo need to throw exceptions if expected/required $casedata is not present?
         $sessionConfig = [];
-        $authToken = $uuid;//strval(Uuid::uuid4());
+        $authToken = $uuid;
 
         $sessionConfig["session_deadline"] = $this->deadlineDate();
         $sessionConfig["resources_ttl"] = '604800';
@@ -27,10 +26,10 @@ class SessionConfig
                 "FIRST_BRANCH_VISIT",
                 "THANK_YOU_EMAIL_REQUESTED",
                 "SESSION_COMPLETION"
-            ]
+            ],
+            "auth_token" => $authToken,
+            "auth_type" => 'BEARER'
         ];
-        $sessionConfig["auth_token"] = $authToken;
-        $sessionConfig["auth_type"] = 'BEARER';
         $sessionConfig["requested_checks"] = [
             [
                 "type" => "IBV_VISUAL_REVIEW_CHECK",
@@ -79,8 +78,8 @@ class SessionConfig
                     "type" => "DOCUMENT_RESTRICTIONS",
                     "inclusion" => "WHITELIST",
                     "documents" => [
-                        "country_codes" => "GBR",
-                        "document_types" => $this->getDocType($case->idMethod)
+                        "country_codes" => ["GBR"],
+                        "document_types" => [$this->getDocType($case->idMethod)]
                     ]
                 ]
             ]

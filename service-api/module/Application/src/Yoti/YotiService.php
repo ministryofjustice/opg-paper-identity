@@ -72,11 +72,12 @@ class YotiService implements YotiServiceInterface
      */
     public function createSession(array $sessionData): array
     {
+        $sdkId = 'c4321972-7a50-4644-a7cf-cc130c571f59'; //new AwsSecret('yoti/sdk-client-id');
         try {
             $requestSignature = RequestSigner::generateSignature(
                 'sessions',
                 'POST',
-                new AwsSecret('yoti/certificate'),
+                new AwsSecret('private-key'),
                 Payload::fromJsonData(json_encode($sessionData))
             );
 
@@ -86,12 +87,12 @@ class YotiService implements YotiServiceInterface
             throw new YotiException("Unable to create request signature");
         }
         $headers = [
-            'X-Yoti-Auth-Digest' => $requestSignature,
-            'sdkId' => new AwsSecret('yoti/sdk-client-id')
+            'X-Yoti-Auth-Digest' => $requestSignature
         ];
 
         $results = $this->client->post('/idverify/v1/sessions', [
             'headers' => $headers,
+            'query' => ['sdkId' => $sdkId],
             'json' => $sessionData,
         ]);
 

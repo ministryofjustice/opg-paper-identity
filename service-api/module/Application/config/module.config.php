@@ -19,6 +19,7 @@ use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
+use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
@@ -370,6 +371,7 @@ return [
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
             ),
+            SessionConfig::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionConfig(),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,

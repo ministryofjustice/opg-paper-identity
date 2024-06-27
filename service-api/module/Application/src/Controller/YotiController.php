@@ -62,7 +62,7 @@ class YotiController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($branches);
     }
-    public function createSessionAction(array $sessionData): JsonModel
+    public function createSessionAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
 
@@ -72,16 +72,17 @@ class YotiController extends AbstractActionController
 
         $result = $this->yotiService->createSession($sessionData);
         //save sessionId back to caseData
-        if ($result["status"] < 400) {
+        /*if ($result["status"] < 400) {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
                 'sessionId',
                 'S',
                 $result["data"]["session_id"]
             );
-        }
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_204);
-        return new JsonModel(null);
+        } */
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+        return new JsonModel($result);
     }
 
     public function getSessionStatusAction(): JsonModel
