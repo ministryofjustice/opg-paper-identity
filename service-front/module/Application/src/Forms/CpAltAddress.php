@@ -19,15 +19,15 @@ class CpAltAddress
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(AddressFieldValidator::class)]
-    public mixed $addressLine1;
+    public mixed $line1;
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public mixed $addressLine2;
+    public mixed $line2;
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public mixed $addressLine3;
+    public mixed $line3;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty

@@ -164,4 +164,27 @@ class FormProcessorHelper
         }
         return $stringified;
     }
+    public function findLpa(
+        string $uuid,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates = []
+    ): FormProcessorResponseDto {
+        $form->setData($formData);
+        $formArray = $formData->toArray();
+        $responseData = [];
+
+        if ($form->isValid()) {
+            $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
+        }
+
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            $templates['default'],
+            [
+                'lpa_response' => $responseData
+            ],
+        );
+    }
 }

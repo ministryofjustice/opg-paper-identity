@@ -14,6 +14,7 @@ use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -29,6 +30,7 @@ class CPFlowController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
+        private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly LpaFormHelper $lpaFormHelper,
         private readonly array $config,
     ) {
@@ -42,29 +44,6 @@ class CPFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
             $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
             return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-
-
-//
-
-//            switch ($formData['id_method']) {
-//                case 'pn':
-//                    $this->redirect()
-//                        ->toRoute("passport_number", ['uuid' => $uuid]);
-//                    break;
-//
-//                case 'dln':
-//                    $this->redirect()
-//                        ->toRoute("driving_licence_number", ['uuid' => $uuid]);
-//                    break;
-//
-//                case 'nin':
-//                    $this->redirect()
-//                        ->toRoute("national_insurance_number", ['uuid' => $uuid]);
-//                    break;
-//
-//                default:
-//                    break;
-//            }
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
@@ -382,7 +361,14 @@ class CPFlowController extends AbstractActionController
                     $params->get('postcode'),
                     $this->getRequest()
                 );
-                $addressStrings = $this->formProcessorHelper->stringifyAddresses($response);
+                $processedAddresses = [];
+                foreach ($response as $foundAddress) {
+                    $processedAddresses[] = $this->addressProcessorHelper->processAddress(
+                        $foundAddress,
+                        'siriusAddressType'
+                    );
+                }
+                $addressStrings = $this->addressProcessorHelper->stringifyAddresses($processedAddresses);
                 $view->setVariable('addresses', $addressStrings);
                 $view->setVariable('addresses_count', count($addressStrings));
                 return $view->setTemplate('application/pages/cp/select_address');
