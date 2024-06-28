@@ -43,6 +43,10 @@ paths:
   /idverify/v1/sessions:
     post:
       summary: Create a Yoti session with applicant details and selections
+      security:
+        - X-Yoti-Auth-Digest: [ ]
+      parameters:
+        - $ref: "#/components/parameters/sdkId"
       requestBody:
         description: the session comprised of required_docs, applicant profile, session_deadline etc
         content:
@@ -50,7 +54,7 @@ paths:
             schema:
               $ref: '#/components/schemas/YotiSession'
       responses:
-        '200':
+        '201':
           description: Success
           content:
             application/json:
@@ -292,6 +296,8 @@ components:
               example: "MANDATORY"
         user_tracking_id:
           type: string
+        notifications:
+          $ref: "#/components/schemas/NotificationPayload"
         requested_checks:
           type: array
           items:
@@ -306,6 +312,18 @@ components:
                     type: string
                   scheme:
                     type: string
+        requested_tasks:
+          type: array
+          description: Allow tasks to be specified on a given session
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/RequestedIdDocumentTextExtractionTask"
+              - $ref: "#/components/schemas/RequestedSupplementaryDocumentTextExtractionTask"
+            discriminator:
+              propertyName: type
+              mapping:
+                ID_DOCUMENT_TEXT_DATA_EXTRACTION: "#/components/schemas/RequestedIdDocumentTextExtractionTask"
+                SUPPLEMENTARY_DOCUMENT_TEXT_DATA_EXTRACTION: "#/components/schemas/RequestedSupplementaryDocumentTextExtractionTask"
         required_documents:
           type: array
           items:
@@ -330,6 +348,92 @@ components:
                     - $ref: "#/components/schemas/AddressFormat2"
                     - $ref: "#/components/schemas/AddressFormat3"
                     - $ref: "#/components/schemas/AddressFormat4"
+
+    NotificationPayload:
+      type: object
+      properties:
+        endpoint:
+          description: POST endpoint required. Update notifications are sent to this endpoint based on the selected subscription topics
+          type: string
+          format: uri
+          pattern: "^https://.+$"
+          example: "https://example.com/ibv/notification"
+        topics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Topic"
+          example:
+            [
+              RESOURCE_UPDATE,
+              TASK_COMPLETION,
+              CHECK_COMPLETION,
+              SESSION_COMPLETION,
+              NEW_PDF_SUPPLIED,
+              INSTRUCTIONS_EMAIL_REQUESTED,
+            ]
+        auth_token:
+          description: If provided, Yoti will send this as a base64 encoded value for the Authorization header in the notifications
+          type: string
+        auth_type:
+          description: Determines the type of auth header to include in outbound notifications.  Defaults to BASIC
+          type: string
+          enum: [ BASIC, BEARER ]
+
+    Topic:
+      type: string
+      enum:
+        [
+          RESOURCE_UPDATE,
+          TASK_COMPLETION,
+          CHECK_COMPLETION,
+          SESSION_COMPLETION,
+          NEW_PDF_SUPPLIED,
+          INSTRUCTIONS_EMAIL_REQUESTED,
+          CLIENT_SESSION_TOKEN_DELETED,
+        ]
+      description: "Acceptable values are (case-insensitive): [resource_update, task_completion, check_completion, session_completion, new_pdf_supplied, instructions_email_requested, client_session_token_deleted]"
+
+    RequestedIdDocumentTextExtractionTask:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [ ID_DOCUMENT_TEXT_DATA_EXTRACTION ]
+        config:
+          type: object
+          properties:
+            manual_check:
+              $ref: "#/components/schemas/ManualCheck"
+            chip_data:
+              type: string
+              enum: [ DESIRED, IGNORE ]
+          required:
+            - manual_check
+      required:
+        - type
+        - config
+    RequestedSupplementaryDocumentTextExtractionTask:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [ SUPPLEMENTARY_DOCUMENT_TEXT_DATA_EXTRACTION ]
+        config:
+          type: object
+          properties:
+            manual_check:
+              $ref: "#/components/schemas/ManualCheck"
+          required:
+            - manual_check
+      required:
+        - type
+        - config
+
+    ManualCheck:
+      type: string
+      enum: [ NEVER, FALLBACK, ALWAYS, IBV ]
+      description: "Acceptable values vary for each check type, but may be one of: [NEVER, FALLBACK, ALWAYS, IBV]"
+      example: FALLBACK
 
     ID_DOCUMENT:
       type: object
@@ -642,3 +746,11 @@ components:
           properties:
             scheme:
               type: string
+
+  parameters:
+    sdkId:
+      name: sdkId
+      in: query
+      required: false
+      schema:
+        type: string
