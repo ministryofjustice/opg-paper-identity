@@ -72,10 +72,10 @@ class AddressProcessorHelper
 
         foreach ($addresses as $arr) {
             if (array_key_exists('description', $arr)) {
-                unset($arr['description']);
+                unset($arr['description']);     // this field comes back from the mock at present
             }
             $string = function (array $arr): string {
-                $str = "";
+                $str = '';
                 foreach ($arr as $line) {
                     if (strlen($line) > 0) {
                         $str .= $line . ", ";
@@ -85,10 +85,12 @@ class AddressProcessorHelper
             };
             $index = json_encode($arr);
 
+            $arrString = $string($arr);
+
             $stringified[$index] = substr(
-                $string($arr),
+                $arrString,
                 0,
-                strlen($string($arr)) - 2
+                strlen($arrString) - 2
             );
         }
         return $stringified;

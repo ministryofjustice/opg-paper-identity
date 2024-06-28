@@ -129,4 +129,46 @@ class AddressProcessorHelperTest extends TestCase
             ],
         ];
     }
+
+
+    /**
+     * @dataProvider stringifyddressesData
+     */
+    public function testStringifyAddresses(
+        array $addresses,
+        array $expected,
+        string $json
+    ): void {
+        $addressProcessorHelper = new AddressProcessorHelper();
+
+        $response = $addressProcessorHelper->stringifyAddresses($addresses);
+
+        $this->assertEquals($expected[0], $response[$json]);
+    }
+
+    public static function stringifyddressesData(): array
+    {
+        $address = [
+            'line1' => "Park House",
+            'line2' => '',
+            'line3' => 'Park Lane',
+            'town' => 'London',
+            'postcode' => 'SW1A 1AA',
+            'country' => 'UK'
+        ];
+
+        $json = is_null(json_encode($address)) ? "" : json_encode($address);
+
+        return [
+            [
+                [
+                    $address
+                ],
+                [
+                    "Park House, Park Lane, London, SW1A 1AA, UK"
+                ],
+                $json
+            ],
+        ];
+    }
 }

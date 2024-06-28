@@ -13,7 +13,6 @@
                 class="govuk-input govuk-!-width-one-third {% if form.get('line1').messages %}govuk-input--error{% endif %}"
                 id="line1" name="line1" type="text"
                 value="{{ form.get('line1').value }}"
-                aria-describedby="line1-hint {% if form.get('line1').messages %}line1-error{% endif %}"
         />
     </div>
 
@@ -23,7 +22,6 @@
                 class="govuk-input govuk-!-width-one-third"
                 id="line2" name="line2" type="text"
                 value="{{ form.get('line2').value }}"
-                aria-describedby="line2-hint"
         />
     </div>
 
@@ -33,7 +31,6 @@
                 class="govuk-input govuk-!-width-one-third"
                 id="line3" name="line3" type="text"
                 value="{{ form.get('line3').value }}"
-                aria-describedby="line3-hint"
         />
     </div>
 
@@ -49,7 +46,6 @@
                 class="govuk-input govuk-!-width-one-third {% if form.get('town').messages %}govuk-input--error{% endif %}"
                 id="town" name="town" type="text"
                 value="{{ form.get('town').value }}"
-                aria-describedby="town-hint {% if form.get('town').messages %}town-error{% endif %}"
         />
     </div>
 
@@ -65,7 +61,6 @@
                 class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
                 id="postcode" name="postcode" type="text"
                 value="{{ form.get('postcode').value }}"
-                aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
         />
     </div>
 

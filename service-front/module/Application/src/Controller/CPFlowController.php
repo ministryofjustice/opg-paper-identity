@@ -148,7 +148,6 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-//                echo json_encode($form->getData());
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
             $view->setVariable('form', $form);
