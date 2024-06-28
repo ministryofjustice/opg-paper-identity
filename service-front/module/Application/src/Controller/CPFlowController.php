@@ -110,6 +110,7 @@ class CPFlowController extends AbstractActionController
                     $formObject->get('lpa'),
                     $this->getRequest()
                 );
+
                 $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
                     $formObject,
@@ -117,7 +118,6 @@ class CPFlowController extends AbstractActionController
                     $siriusCheck,
                     $detailsData,
                 );
-//                echo json_encode($processed->getVariables());
                 $view->setVariables($processed->getVariables());
                 $view->setVariable('form', $processed->getForm());
                 return $view->setTemplate('application/pages/cp/add_lpa');

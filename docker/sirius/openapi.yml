@@ -284,7 +284,7 @@ paths:
                       attorneys:
                         - dateOfBirth: '1968-10-16'
                           status: active
-                          channel: paper
+                          channel: online
                           uid: b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6
                           firstNames: Tavares
                           lastName: Klocko
@@ -301,7 +301,7 @@ paths:
                           line2: 1 Victoria Street
                           postcode: SW1A 1BB
                           town: London
-                        channel: paper
+                        channel: online
                         email: john.doe@gmail.com
                         firstNames: John
                         lastName: Doe

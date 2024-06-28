@@ -69,7 +69,7 @@ class LpaFormHelperTest extends TestCase
         $onlineLpa = "M-0000-0000-0006";
         $slrOnline = $slr;
         $slrOnline['opg.poas.sirius']['uId'] = $onlineLpa;
-        $slrOnline['opg.poas.lpastore']['status'] = 'online';
+        $slrOnline['opg.poas.lpastore']['certificateProvider']['channel'] = 'online';
 
         $noMatchLpa = "M-0000-0000-0006";
         $slrNoMatch = $slr;
@@ -78,7 +78,7 @@ class LpaFormHelperTest extends TestCase
         $slrNoMatch['opg.poas.lpastore']['certificateProvider']['address'] = [
             'line1' => '81 Penny Street',
             'line2' => 'Lancaster',
-            'line3' => 'Lancashire',
+            'town' => 'Lancashire',
             'postcode' => 'LA1 2XN',
             'country' => 'United Kingdom',
         ];
@@ -119,10 +119,11 @@ class LpaFormHelperTest extends TestCase
                         "Status" => "processing",
                         "CP_Name" => "David Smith",
                         "CP_Address" => [
-                            "82 Penny Street",
-                            "Lancaster",
-                            "Lancashire",
-                            "LA1 1XN"
+                            'line1' => '82 Penny Street',
+                            'line2' => 'Lancaster',
+                            'town' => 'Lancashire',
+                            'postcode' => 'LA1 1XN',
+                            'country' => 'United Kingdom',
                         ]
                     ],
                     "message" => "",
@@ -183,7 +184,22 @@ class LpaFormHelperTest extends TestCase
                 [
                     "message" => "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online.",
-                    "status" => "online",
+                    "status" => 'processing',
+                    "data" => [
+                        "case_uuid" => $caseUuid,
+                        "LPA_Number" => $onlineLpa,
+                        "Type_Of_LPA" => "property-and-affairs",
+                        "Donor" => "Kitty Jenkins",
+                        "Status" => "processing",
+                        "CP_Name" => "David Smith",
+                        "CP_Address" => [
+                            'line1' => '82 Penny Street',
+                            'line2' => 'Lancaster',
+                            'town' => 'Lancashire',
+                            'postcode' => 'LA1 1XN',
+                            'country' => 'United Kingdom',
+                        ]
+                    ],
                 ],
                 new Parameters(['lpa' => $onlineLpa]),
                 $form,
@@ -202,7 +218,7 @@ class LpaFormHelperTest extends TestCase
                         'address' => [
                             "line1" => "81 Penny Street",
                             "line2" => "Lancaster",
-                            "line3" => "Lancashire",
+                            "town" => "Lancashire",
                             "postcode" => "LA1 2XN",
                             "country" => "United Kingdom"
                         ],
@@ -218,10 +234,11 @@ class LpaFormHelperTest extends TestCase
                         "Status" => 'no match',
                         "CP_Name" => "David Smith",
                         "CP_Address" => [
-                            "82 Penny Street",
-                            "Lancaster",
-                            "Lancashire",
-                            "LA1 1XN"
+                            'line1' => '82 Penny Street',
+                            'line2' => 'Lancaster',
+                            'town' => 'Lancashire',
+                            'postcode' => 'LA1 1XN',
+                            'country' => 'United Kingdom',
                         ]
                     ]
                 ],
@@ -303,13 +320,13 @@ class LpaFormHelperTest extends TestCase
                 ],
                 "certificateProvider" => [
                     "address" => [
-                        "country" => "United Kingdom",
                         "line1" => "82 Penny Street",
                         "line2" => "Lancaster",
-                        "line3" => "Lancashire",
-                        "postcode" => "LA1 1XN"
+                        "town" => "Lancashire",
+                        "postcode" => "LA1 1XN",
+                        "country" => "United Kingdom",
                     ],
-                    "channel" => "online",
+                    "channel" => "paper",
                     "email" => "Elton95@hotmail.com",
                     "firstNames" => "David",
                     "lastName" => "Smith",
@@ -319,11 +336,11 @@ class LpaFormHelperTest extends TestCase
                 "channel" => "paper",
                 "donor" => [
                     "address" => [
-                        "country" => "UM",
                         "line1" => "7095 VonRueden Crossing",
                         "line2" => "Lancaster",
+                        "town" => "Ann Arbor",
                         "postcode" => "PZ4 2SC",
-                        "town" => "Ann Arbor"
+                        "country" => "UM",
                     ],
                     "dateOfBirth" => "1898-01-06",
                     "email" => "Ronny_Schultz73@gmail.com",
@@ -402,10 +419,11 @@ class LpaFormHelperTest extends TestCase
             "lastName" => "Smith",
             "dob" => "1999-01-01",
             "address" => [
-                "82 Penny Street",
-                "Lancaster",
-                "Lancashire",
-                "LA1 1XN"
+                "line1" => "82 Penny Street",
+                "line2" => "Lancaster",
+                "town" => "Lancashire",
+                "postcode" => "LA1 1XN",
+                "country" => "United Kingdom",
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -480,11 +498,11 @@ class LpaFormHelperTest extends TestCase
                 "error" => "This LPA cannot be added as it’s status is set to Draft.
                     LPAs need to be in the In Progress status to be added to this ID check."
             ],
-            "ol" => [
-                "status" => "online",
-                "error" => "This LPA cannot be added to this identity check because
-                    the certificate provider has signed this LPA online."
-            ],
+//            "ol" => [
+//                "status" => "online",
+//                "error" => "This LPA cannot be added to this identity check because
+//                    the certificate provider has signed this LPA online."
+//            ],
         ];
 
         foreach ($errors as $error) {
@@ -510,11 +528,11 @@ class LpaFormHelperTest extends TestCase
         $slr = self::siriusLpaResponse();
 
         $address = [
-            "country" => "United Kingdom",
             "line1" => "82 Penny Street",
             "line2" => "Lancaster",
-            "line3" => "Lancashire",
-            "postcode" => "LA1 1XN"
+            "town" => "Lancashire",
+            "postcode" => "LA1 1XN",
+            "country" => "United Kingdom",
         ];
 
         $lpaFormHelper = new LpaFormHelper();
@@ -548,5 +566,46 @@ class LpaFormHelperTest extends TestCase
         $result = $lpaFormHelper->getLpaTypeFromSiriusResponse($slr);
 
         $this->assertEquals($type, $result);
+    }
+
+
+    /**
+     * @dataProvider channelData
+     */
+    public function testCheckChannel(
+        array $siriusData,
+        array $expected
+    ): void {
+        $lpaFormHelper = new LpaFormHelper();
+
+        $result = $lpaFormHelper->checkChannel($siriusData);
+
+        $this->assertEquals($expected['error'], $result['error']);
+    }
+
+    public static function channelData(): array
+    {
+        $slr = self::siriusLpaResponse();
+
+        $slrOnline = self::siriusLpaResponse();
+        $slrOnline['opg.poas.lpastore']['certificateProvider']['channel'] = 'online';
+
+        return [
+            [
+                $slr,
+                [
+                    "status" => null,
+                    "error" => ""
+                ],
+            ],
+            [
+                $slrOnline,
+                [
+                    "status" => "online",
+                    "error" => "This LPA cannot be added to this identity check because
+                    the certificate provider has signed this LPA online."
+                ],
+            ]
+        ];
     }
 }

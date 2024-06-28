@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
+use Application\Helpers\AddressProcessorHelper;
 
 /**
  * @psalm-type Address = array{
@@ -124,7 +125,13 @@ class SiriusApiService
                 $preferHeader
             )
         ]);
-        return json_decode(strval($response->getBody()), true);
+
+        $responseArray = json_decode(strval($response->getBody()), true);
+
+        $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
+            ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+
+        return $responseArray;
     }
 
     public function searchAddressesByPostcode(string $postcode, Request $request): array

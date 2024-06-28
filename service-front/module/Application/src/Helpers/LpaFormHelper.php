@@ -56,6 +56,7 @@ class LpaFormHelper
 
             $idCheck = $this->compareCpRecords($detailsData, $siriusCheck);
             $statusCheck = $this->checkStatus($siriusCheck);
+            $channelCheck = $this->checkChannel($siriusCheck);
 
             if ($statusCheck['error'] === true) {
                 $result['status'] = $statusCheck['status'];
@@ -70,6 +71,18 @@ class LpaFormHelper
                     'address_match' => $idCheck['address_match'],
                     'error' => $idCheck['error']
                 ];
+                $result['data'] = [
+                    "case_uuid" => $uuid,
+                    "LPA_Number" => $form->get('lpa')->getValue(),
+                    "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
+                    "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
+                    "Status" => $statusCheck['status'],
+                    "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
+                    "CP_Address" => $detailsData['address']
+                ];
+            } elseif ($channelCheck['error'] === true) {
+                $result['status'] = $channelCheck['status'];
+                $result['message'] = $channelCheck['message'];
                 $result['data'] = [
                     "case_uuid" => $uuid,
                     "LPA_Number" => $form->get('lpa')->getValue(),
@@ -137,8 +150,6 @@ class LpaFormHelper
         $response = [
             'name_match' => false,
             'address_match' => false,
-//            'name' => "",
-//            'address' => [],
             'error' => false,
             'info' => null
         ];
@@ -154,8 +165,8 @@ class LpaFormHelper
             $response['address'] = $siriusCpAddress;
 
             if (
-                $siriusCpAddress['postcode'] == $opgCpAddress[3] &&
-                $siriusCpAddress['line1'] == $opgCpAddress[0]
+                $siriusCpAddress['postcode'] == $opgCpAddress['postcode'] &&
+                $siriusCpAddress['line1'] == $opgCpAddress['line1']
             ) {
                 $response['address_match'] = true;
             } else {
@@ -207,14 +218,31 @@ class LpaFormHelper
                 $response['message'] = "This LPA cannot be added as it’s status is set to Draft.
                     LPAs need to be in the In Progress status to be added to this ID check.";
             }
-            if ($response['status'] == 'online') {
+        } else {
+            $response['error'] = true;
+            $response['message'] = "No LPA Found.";
+        }
+        return $response;
+    }
+
+    public function checkChannel(array $siriusCheck): array
+    {
+        $response = [];
+        $response['channel'] = 'paper';
+        $response['error'] = false;
+        $response['message'] = "";
+        $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
+
+        if (
+            array_key_exists('opg.poas.lpastore', $siriusCheck) &&
+            array_key_exists('status', $siriusCheck['opg.poas.lpastore'])
+        ) {
+            $response['channel'] = $siriusCheck['opg.poas.lpastore']['certificateProvider']['channel'];
+            if ($response['channel'] == 'online') {
                 $response['error'] = true;
                 $response['message'] = "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online.";
             }
-        } else {
-            $response['error'] = true;
-            $response['message'] = "No LPA Found.";
         }
         return $response;
     }
