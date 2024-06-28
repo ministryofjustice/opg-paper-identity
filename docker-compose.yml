@@ -175,7 +175,7 @@ services:
       - ./service-front:/app
 
   localstack:
-    image: localstack/localstack:3.4
+    image: localstack/localstack:3.5
     volumes:
       - "./scripts/localstack/init/private_key.pem:/tmp/private_key.pem"
       - "./scripts/localstack/init/public_key.pem:/tmp/public_key.pem"
