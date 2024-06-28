@@ -143,7 +143,7 @@
             </div>
             {% if lpa_response %}
                 <form method="POST">
-                {% if lpa_response['status'] == 200 %}
+                {% if lpa_response['status'] == 'Success' %}
                     <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['LPA_Number']  }}">
                     <input type="submit" class="govuk-button" value="Add LPA to this ID check">
                 {% endif %}
