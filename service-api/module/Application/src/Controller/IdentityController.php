@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Aws\Secrets\AwsSecret;
 use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
