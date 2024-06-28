@@ -90,7 +90,7 @@ class YotiService implements YotiServiceInterface
             'X-Yoti-Auth-Digest' => $requestSignature
         ];
 
-        $results = $this->client->post('/idverify/v1/sessions', [
+        $results = $this->client->post('/sessions', [
             'headers' => $headers,
             'query' => ['sdkId' => $sdkId],
             'json' => $sessionData,
@@ -109,7 +109,7 @@ class YotiService implements YotiServiceInterface
     public function retrieveResults(string $sessionId): array
     {
         //can either use client directly like below or use
-        $results = $this->client->get('/idverify/v1/sessions/' . $sessionId);
+        $results = $this->client->get('/sessions/' . $sessionId);
 
         return json_decode(strval($results->getBody()), true);
     }

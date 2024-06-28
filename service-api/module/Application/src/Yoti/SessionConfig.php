@@ -16,15 +16,13 @@ class SessionConfig
         $authToken = $uuid;
 
         $sessionConfig["session_deadline"] = $this->deadlineDate();
-        $sessionConfig["resources_ttl"] = '604800';
+        $sessionConfig["resources_ttl"] = 86700;
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $case->id;
         $sessionConfig["notifications"] = [
-            "endpoints" => getenv("NOTIFICATION_URL"),
+            "endpoint" => getenv("NOTIFICATION_URL"),
             "topics" => [
                 "INSTRUCTIONS_EMAIL_REQUESTED",
-                "FIRST_BRANCH_VISIT",
-                "THANK_YOU_EMAIL_REQUESTED",
                 "SESSION_COMPLETION"
             ],
             "auth_token" => $authToken,
@@ -76,10 +74,10 @@ class SessionConfig
                 "type" => "ID_DOCUMENT",
                 "filter" => [
                     "type" => "DOCUMENT_RESTRICTIONS",
-                    "inclusion" => "WHITELIST",
+                    "inclusion" => "INCLUDE",
                     "documents" => [
-                        "country_codes" => ["GBR"],
-                        "document_types" => [$this->getDocType($case->idMethod)]
+                        #"country_codes" => ["GBR"], -- what is wrong with this?
+                        #"document_types" => [$this->getDocType($case->idMethod)]
                     ]
                 ]
             ]
