@@ -47,13 +47,6 @@ class IndexController extends AbstractActionController
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 
-//        if (!$this->checkLpaIdDetails($lpas, $type)) {
-//            throw new HttpException(
-//                400,
-//                'These LPAs appear to relate to different donors.',
-//            );
-//        }
-
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
@@ -128,23 +121,4 @@ class IndexController extends AbstractActionController
 
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
-
-
-
-//    private function checkLpaIdDetails(array $lpas, string $type): bool
-//    {
-//        foreach ($lpas as $key => $lpaRecord) {
-//            if ($key == 0) {
-//                $name = $lpaRecord['opg.poas.lpastore'][$type]['firstNames'] .
-//                    $lpaRecord['opg.poas.lpastore'][$type]['lastName'];
-//            } else {
-//                $nextName = $lpaRecord['opg.poas.lpastore'][$type]['firstNames'] .
-//                    $lpaRecord['opg.poas.lpastore'][$type]['lastName'];
-//                if ($name !== $nextName) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
 }
