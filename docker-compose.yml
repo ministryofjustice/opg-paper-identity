@@ -10,6 +10,8 @@ services:
       retries: 3
     volumes:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
+    ports:
+      - 8088:4010
 
   yoti-mock:
     image: paper-identity/yoti-mock

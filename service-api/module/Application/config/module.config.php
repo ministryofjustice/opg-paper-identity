@@ -99,7 +99,6 @@ return [
                     ],
                 ],
             ],
-
             'create_case' => [
                 'type' => Literal::class,
                 'options' => [
@@ -110,7 +109,6 @@ return [
                     ],
                 ],
             ],
-
             'address_verification' => [
                 'type' => Literal::class,
                 'options' => [
@@ -188,16 +186,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'create',
-                    ],
-                ],
-            ],
-            'find_lpa' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/find-lpa/:lpa',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'findLpa',
                     ],
                 ],
             ],
