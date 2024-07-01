@@ -27,10 +27,9 @@ class IndexController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService       $siriusApiService,
-        private readonly LpaHelper              $lpaHelper
-    )
-    {
+        private readonly SiriusApiService $siriusApiService,
+        private readonly LpaHelper $lpaHelper
+    ) {
     }
 
     public function indexAction()
@@ -51,7 +50,7 @@ class IndexController extends AbstractActionController
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 
-        if (!$this->lpaHelper->lpaIdentitiesMatch($lpas, $type)) {
+        if (! $this->lpaHelper->lpaIdentitiesMatch($lpas, $type)) {
             $personTypeDescription = $type === 'donor' ? "Donors" : " Certificate Providers";
             throw new OpgFrontException("These LPAs are for different " . $personTypeDescription);
         }
@@ -82,7 +81,7 @@ class IndexController extends AbstractActionController
     private function processLpaResponse(string $type, array $data): array
     {
         if ($type === 'donor') {
-            if (!empty($data['opg.poas.lpastore'])) {
+            if (! empty($data['opg.poas.lpastore'])) {
                 $address = (new AddressProcessorHelper())->processAddress(
                     $data['opg.poas.lpastore']['donor']['address'],
                     'lpaStoreAddressType'

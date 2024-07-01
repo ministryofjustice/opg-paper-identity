@@ -22,14 +22,13 @@ class LpaHelperTest extends TestCase
      * @dataProvider lpaData
      */
     public function testFindLpa(
-        string        $caseUuid,
-        array         $responseData,
-        Parameters    $formData,
+        string $caseUuid,
+        array $responseData,
+        Parameters $formData,
         FormInterface $form,
-        array         $siriusLpaResponse,
-        array         $opgCaseResponse,
-    ): void
-    {
+        array $siriusLpaResponse,
+        array $opgCaseResponse,
+    ): void {
         $lpaHelper = new LpaHelper();
 
         $processed = $lpaHelper->findLpa(
@@ -257,10 +256,9 @@ class LpaHelperTest extends TestCase
     public function testIdCompare(
         array $siriusData,
         array $opgData,
-        bool  $nameMatch,
-        bool  $addressMatch
-    ): void
-    {
+        bool $nameMatch,
+        bool $addressMatch
+    ): void {
         $lpaHelper = new LpaHelper();
 
         $result = $lpaHelper->compareCpRecords($opgData, $siriusData);
@@ -472,11 +470,10 @@ class LpaHelperTest extends TestCase
      * @dataProvider statusData
      */
     public function testCheckStatus(
-        array  $siriusData,
-        bool   $error,
+        array $siriusData,
+        bool $error,
         string $message
-    ): void
-    {
+    ): void {
         $lpaHelper = new LpaHelper();
 
         $result = $lpaHelper->checkStatus($siriusData);
@@ -578,8 +575,7 @@ class LpaHelperTest extends TestCase
     public function testCheckChannel(
         array $siriusData,
         array $expected
-    ): void
-    {
+    ): void {
         $lpaHelper = new LpaHelper();
 
         $result = $lpaHelper->checkChannel($siriusData);

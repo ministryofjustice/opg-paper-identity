@@ -28,11 +28,11 @@ class CPFlowController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper    $formProcessorHelper,
-        private readonly SiriusApiService       $siriusApiService,
+        private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
-        private readonly LpaHelper              $lpaHelper,
-        private readonly array                  $config,
+        private readonly LpaHelper $lpaHelper,
+        private readonly array $config,
     ) {
     }
 
