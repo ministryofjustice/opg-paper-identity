@@ -625,727 +625,179 @@ class LpaHelperTest extends TestCase
 
     public static function matchLpasData(): array
     {
+        $stdLpa = [
+            "opg.poas.lpastore" => [
+                "certificateProvider" => [
+                    "address" => [
+                        "line1" => "King House",
+                        "line2" => "1 Victoria Street",
+                        "line3" => "",
+                        "town" => "London",
+                        "postcode" => "SW1A 1BB",
+                        "country" => "UK"
+                    ],
+                    "channel" => "paper",
+                    "email" => "john.doe@gmail.com",
+                    "firstNames" => "John",
+                    "lastName" => "Doe",
+                    "phone" => "07777 000000",
+                    "signedAt" => "1938-11-08T07:10:43.0Z",
+                    "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
+                ],
+                "channel" => "paper",
+                "donor" => [
+                    "address" => [
+                        "country" => "UK",
+                        "line1" => "1 Street",
+                        "line2" => "Road",
+                        "postcode" => "SW1A 1AB",
+                        "town" => "London"
+                    ],
+                    "contactLanguagePreference" => "cy",
+                    "dateOfBirth" => "1982-08-13",
+                    "email" => "joe.bloggs@gmail.com",
+                    "firstNames" => "Joe",
+                    "lastName" => "Bloggs",
+                    "otherNamesKnownBy" => "Joseph Bloggs",
+                    "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
+                ],
+            ],
+            "opg.poas.sirius" => [
+                "donor" => [
+                    "country" => "UK",
+                    "dob" => "1982-08-13",
+                    "firstname" => "Joe",
+                    "postcode" => "SW1A 1AB",
+                    "surname" => "Bloggs",
+                    "town" => "London"
+                ],
+            ]
+        ];
+
+        $mismatchedAddress = [
+            "address" => [
+                "line1" => "mismatch",
+                "line2" => "1 Victoria Street",
+                "line3" => "",
+                "town" => "London",
+                "postcode" => "address",
+                "country" => "UK"
+            ],
+            "channel" => "paper",
+            "email" => "john.doe@gmail.com",
+            "firstNames" => "John",
+            "lastName" => "Doe",
+            "phone" => "07777 000000",
+            "signedAt" => "1938-11-08T07:10:43.0Z",
+            "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
+        ];
+
+        $mismatchedName = [
+            "address" => [
+                "line1" => "King House",
+                "line2" => "1 Victoria Street",
+                "line3" => "",
+                "town" => "London",
+                "postcode" => "SW1A 1BB",
+                "country" => "UK"
+            ],
+            "channel" => "paper",
+            "email" => "john.doe@gmail.com",
+            "firstNames" => "mismatch",
+            "lastName" => "name",
+            "phone" => "07777 000000",
+            "signedAt" => "1938-11-08T07:10:43.0Z",
+            "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
+        ];
+
         return [
             [
                 'donor',
                 [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
+                    $stdLpa,
                 ],
                 true
             ],
             [
                 'donor',
                 [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ],
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
+                    $stdLpa,
+                    $stdLpa,
                 ],
                 true
             ],
             [
-            'donor',
+                'donor',
                 [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
+                    $stdLpa,
+                    array_merge(
+                        $stdLpa,
+                        [
+                            "opg.poas.lpastore" => [
+                                "donor" => $mismatchedName
+                            ]
                         ]
-                    ],
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
+                    ),
                 ],
                 false
             ],
             [
                 'donor',
                 [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
+                    $stdLpa,
+                    array_merge(
+                        $stdLpa,
+                        [
+                            "opg.poas.lpastore" => [
+                                "donor" => $mismatchedAddress
+                            ]
                         ]
-                    ],
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "2 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
-                ],
-                false
-            ],
-
-
-
-            [
-                'certificateProvider',
-                [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
-                ],
-                true
-            ],
-            [
-                'certificateProvider',
-                [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ],
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
-                ],
-                true
-            ],
-            [
-                'certificateProvider',
-                [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ],
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => " House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
-                        ]
-                    ]
+                    ),
                 ],
                 false
             ],
             [
                 'certificateProvider',
                 [
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "King House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1A 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "1 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
+                    $stdLpa,
+                ],
+                true
+            ],
+            [
+                'certificateProvider',
+                [
+                    $stdLpa,
+                    $stdLpa,
+                ],
+                true
+            ],
+            [
+                'certificateProvider',
+                [
+                    $stdLpa,
+                    array_merge(
+                        $stdLpa,
+                        [
+                            "opg.poas.lpastore" => [
+                                "certificateProvider" => $mismatchedName
+                            ]
                         ]
-                    ],
-                    [
-                        "opg.poas.lpastore" => [
-                            "certificateProvider" => [
-                                "address" => [
-                                    "line1" => "Queen House",
-                                    "line2" => "1 Victoria Street",
-                                    "line3" => "",
-                                    "town" => "London",
-                                    "postcode" => "SW1B 1BB",
-                                    "country" => "UK"
-                                ],
-                                "channel" => "paper",
-                                "email" => "john.doe@gmail.com",
-                                "firstNames" => "John",
-                                "lastName" => "Doe",
-                                "phone" => "07777 000000",
-                                "signedAt" => "1938-11-08T07:10:43.0Z",
-                                "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                            ],
-                            "channel" => "paper",
-                            "donor" => [
-                                "address" => [
-                                    "country" => "UK",
-                                    "line1" => "2 Street",
-                                    "line2" => "Road",
-                                    "postcode" => "SW1A 1AB",
-                                    "town" => "London"
-                                ],
-                                "contactLanguagePreference" => "cy",
-                                "dateOfBirth" => "1982-08-13",
-                                "email" => "joe.bloggs@gmail.com",
-                                "firstNames" => "Joe",
-                                "lastName" => "Bloggs",
-                                "otherNamesKnownBy" => "Joseph Bloggs",
-                                "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
-                            ],
-                        ],
-                        "opg.poas.sirius" => [
-                            "donor" => [
-                                "country" => "UK",
-                                "dob" => "1982-08-13",
-                                "firstname" => "Joe",
-                                "postcode" => "SW1A 1AB",
-                                "surname" => "Bloggs",
-                                "town" => "London"
-                            ],
+                    ),
+                ],
+                false
+            ],
+            [
+                'certificateProvider',
+                [
+                    $stdLpa,
+                    array_merge(
+                        $stdLpa,
+                        [
+                            "opg.poas.lpastore" => [
+                                "certificateProvider" => $mismatchedAddress
+                            ]
                         ]
-                    ]
+                    ),
                 ],
                 false
             ],
