@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
+use DateTime;
 
 /**
  * @psalm-suppress PossiblyUnusedProperty
@@ -75,7 +76,7 @@ class YotiService implements YotiServiceInterface
         $sdkId = 'c4321972-7a50-4644-a7cf-cc130c571f59'; //new AwsSecret('yoti/sdk-client-id');
         try {
             $requestSignature = RequestSigner::generateSignature(
-                'sessions',
+                '/idverify/v1/sessions',
                 'POST',
                 new AwsSecret('private-key'),
                 Payload::fromJsonData(json_encode($sessionData))
@@ -89,10 +90,10 @@ class YotiService implements YotiServiceInterface
         $headers = [
             'X-Yoti-Auth-Digest' => $requestSignature
         ];
-
-        $results = $this->client->post('/sessions', [
+        $dateTime = new DateTime();
+        $results = $this->client->post('/idverify/v1/sessions', [
             'headers' => $headers,
-            'query' => ['sdkId' => $sdkId],
+            'query' => ['sdkId' => $sdkId, 'nonce' => $this->getNonce(), 'timestamp' => $dateTime->getTimestamp()],
             'json' => $sessionData,
         ]);
 
@@ -122,5 +123,11 @@ class YotiService implements YotiServiceInterface
     public function retrieveLetterPDF(string $sessionId): array
     {
         return [];
+    }
+
+    public function getNonce(): string
+    {
+        $api_nonce = explode(' ', microtime());
+        return $api_nonce[1].substr($api_nonce[0], 2, 3);
     }
 }

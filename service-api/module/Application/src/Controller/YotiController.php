@@ -70,8 +70,6 @@ class YotiController extends AbstractActionController
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
         $sessionData = $this->sessionConfig->build($caseData, $sessionUuid);
 
-        //var_dump($sessionData); die;
-
         $result = $this->yotiService->createSession($sessionData);
         //save sessionId back to caseData
         /*if ($result["status"] < 400) {

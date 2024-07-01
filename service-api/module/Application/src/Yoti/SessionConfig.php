@@ -76,8 +76,10 @@ class SessionConfig
                     "type" => "DOCUMENT_RESTRICTIONS",
                     "inclusion" => "INCLUDE",
                     "documents" => [
-                        #"country_codes" => ["GBR"], -- what is wrong with this?
-                        #"document_types" => [$this->getDocType($case->idMethod)]
+                        [
+                            "country_codes" => ["GBR"],
+                            "document_types" => [$this->getDocType($case->idMethod)]
+                        ]
                     ]
                 ]
             ]
