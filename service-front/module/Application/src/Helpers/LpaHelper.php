@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
-use Application\Helpers\DTO\LpaFormHelperResponseDto;
+use Application\Helpers\DTO\LpaHelperResponseDto;
 use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 use Laminas\Http\Response;
 
-class LpaFormHelper
+class LpaHelper
 {
     public function findLpa(
         string $uuid,
@@ -18,7 +18,7 @@ class LpaFormHelper
         FormInterface $form,
         array $siriusCheck,
         array $detailsData,
-    ): LpaFormHelperResponseDto {
+    ): LpaHelperResponseDto {
         $form->setData($formData);
         $result = [];
 
@@ -31,7 +31,7 @@ class LpaFormHelper
                     'status' => 'Not Found',
                     'message' => "No LPA found.",
                 ];
-                return new LpaFormHelperResponseDto(
+                return new LpaHelperResponseDto(
                     $uuid,
                     $form,
                     [
@@ -45,7 +45,7 @@ class LpaFormHelper
                     'status' => 'Already added',
                     'message' => "This LPA has already been added to this ID check.",
                 ];
-                return new LpaFormHelperResponseDto(
+                return new LpaHelperResponseDto(
                     $uuid,
                     $form,
                     [
@@ -107,7 +107,7 @@ class LpaFormHelper
             }
         }
 
-        return new LpaFormHelperResponseDto(
+        return new LpaHelperResponseDto(
             $uuid,
             $form,
             [
@@ -259,5 +259,29 @@ class LpaFormHelper
         } catch (\Exception $exception) {
             return false;
         }
+    }
+
+    public function lpaIdentitiesMatch(array $lpas, string $type): bool
+    {
+        if (count($lpas) == 1) {
+            return true;
+        }
+
+        $name = $lpas[0]['opg.poas.lpastore'][$type]['firstNames'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+
+        $address = $lpas[0]['opg.poas.lpastore'][$type]['address']['line1'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+        foreach ($lpas as $lpa) {
+            $nextname = $lpa['opg.poas.lpastore'][$type]['firstNames'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+
+            $nextAddress = $lpa['opg.poas.lpastore'][$type]['address']['line1'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+            if ($name !== $nextname || $address !== $nextAddress) {
+                return false;
+            }
+        }
+        return true;
     }
 }

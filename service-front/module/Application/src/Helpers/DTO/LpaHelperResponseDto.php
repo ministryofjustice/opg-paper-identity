@@ -6,7 +6,7 @@ namespace Application\Helpers\DTO;
 
 use Laminas\Form\FormInterface;
 
-class LpaFormHelperResponseDto
+class LpaHelperResponseDto
 {
     public function __construct(
         private string $uuid,

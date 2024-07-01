@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Helpers\DTO;
 
-use Application\Helpers\DTO\LpaFormHelperResponseDto;
+use Application\Helpers\DTO\LpaHelperResponseDto;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use PHPUnit\Framework\TestCase;
 
-class LpaFormHelperResponseDtoTest extends TestCase
+class LpaHelperResponseDtoTest extends TestCase
 {
-    private LpaFormHelperResponseDto $lpaFormHelperResponseDto;
+    private LpaHelperResponseDto $lpaHelperResponseDto;
 
     private string $uuid;
 
@@ -28,7 +28,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
 
         $this->variables = [];
 
-        $this->lpaFormHelperResponseDto = new LpaFormHelperResponseDto(
+        $this->lpaHelperResponseDto = new LpaHelperResponseDto(
             $this->uuid,
             $this->form,
             $this->variables
@@ -39,7 +39,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
     {
         $this->assertEquals(
             $this->uuid,
-            $this->lpaFormHelperResponseDto->getUuid()
+            $this->lpaHelperResponseDto->getUuid()
         );
     }
 
@@ -47,7 +47,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
     {
         $this->assertEquals(
             $this->form,
-            $this->lpaFormHelperResponseDto->getForm()
+            $this->lpaHelperResponseDto->getForm()
         );
     }
 
@@ -55,7 +55,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
     {
         $this->assertEquals(
             $this->variables,
-            $this->lpaFormHelperResponseDto->getVariables()
+            $this->lpaHelperResponseDto->getVariables()
         );
     }
 
@@ -67,7 +67,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
                 'form' => $this->form,
                 'variables' => [],
             ],
-            $this->lpaFormHelperResponseDto->toArray()
+            $this->lpaHelperResponseDto->toArray()
         );
     }
 }

@@ -16,7 +16,7 @@ use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
-use Application\Helpers\LpaFormHelper;
+use Application\Helpers\LpaHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -28,11 +28,11 @@ class CPFlowController extends AbstractActionController
     protected $plugins;
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHelper,
-        private readonly SiriusApiService $siriusApiService,
+        private readonly FormProcessorHelper    $formProcessorHelper,
+        private readonly SiriusApiService       $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
-        private readonly LpaFormHelper $lpaFormHelper,
-        private readonly array $config,
+        private readonly LpaHelper              $lpaHelper,
+        private readonly array                  $config,
     ) {
     }
 
@@ -111,7 +111,7 @@ class CPFlowController extends AbstractActionController
                     $this->getRequest()
                 );
 
-                $processed = $this->lpaFormHelper->findLpa(
+                $processed = $this->lpaHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
