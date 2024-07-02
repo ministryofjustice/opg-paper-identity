@@ -75,12 +75,22 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+//            die(json_encode($lpasData));
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames']. " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
+
 
         $view = new ViewModel();
 
         $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('lpa_details', $lpaDetails);
+//        echo json_encode($detailsData);
         $view->setVariable('case_uuid', $uuid);
 
         return $view->setTemplate('application/pages/cp/confirm_lpas');
