@@ -16,6 +16,7 @@ use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\LpaHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -30,6 +31,7 @@ class CPFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
+        private readonly LpaHelper $lpaHelper,
         private readonly array $config,
     ) {
     }
@@ -88,9 +90,6 @@ class CPFlowController extends AbstractActionController
 
     public function addLpaAction(): ViewModel|Response
     {
-        $templates = [
-            'default' => 'application/pages/cp/add_lpa',
-        ];
         $uuid = $this->params()->fromRoute("uuid");
         $lpas = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -107,15 +106,21 @@ class CPFlowController extends AbstractActionController
             $formObject = $this->getRequest()->getPost();
 
             if ($formObject->get('lpa')) {
-                $processed = $this->formProcessorHelper->findLpa(
+                $siriusCheck = $this->siriusApiService->getLpaByUid(
+                    $formObject->get('lpa'),
+                    $this->getRequest()
+                );
+
+                $processed = $this->lpaHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
-                    $templates
+                    $siriusCheck,
+                    $detailsData,
                 );
                 $view->setVariables($processed->getVariables());
                 $view->setVariable('form', $processed->getForm());
-                return $view->setTemplate($processed->getTemplate());
+                return $view->setTemplate('application/pages/cp/add_lpa');
             } else {
                 $responseData = $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
 
@@ -124,7 +129,7 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
-        return $view->setTemplate($templates['default']);
+        return $view->setTemplate('application/pages/cp/add_lpa');
     }
 
     public function confirmDobAction(): ViewModel|Response
