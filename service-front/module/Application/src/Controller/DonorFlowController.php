@@ -41,6 +41,7 @@ class DonorFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
+        $this->layout()->setVariable('title', 'Test');
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
