@@ -40,7 +40,7 @@ class Payload
      */
     public static function fromJsonData($jsonData): self
     {
-        return static::fromString(json_encode($jsonData));
+        return static::fromString(json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 
     /**

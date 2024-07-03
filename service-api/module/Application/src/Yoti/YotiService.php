@@ -6,6 +6,7 @@ namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Exceptions\YotiException;
+use Application\Yoti\Http\Exception\YotiApiException;
 use Application\Yoti\Http\Payload;
 use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
@@ -13,6 +14,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
 use DateTime;
+use Ramsey\Uuid\Uuid;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * @psalm-suppress PossiblyUnusedProperty
@@ -69,17 +72,22 @@ class YotiService implements YotiServiceInterface
      * @param array $sessionData
      * @return array
      * Create a IBV session with applicant data and requirements
+     * is the endpoint there meant to be relative or a full path?
      * @throws YotiException
      */
     public function createSession(array $sessionData): array
     {
         $sdkId = 'c4321972-7a50-4644-a7cf-cc130c571f59'; //new AwsSecret('yoti/sdk-client-id');
+        $body = json_encode($sessionData);
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
         try {
             $requestSignature = RequestSigner::generateSignature(
-                '/idverify/v1/sessions',
+                '/sessions?sdkId='.$sdkId.'&nonce='.$nonce.'&timestamp='.$timestamp ,
                 'POST',
                 new AwsSecret('private-key'),
-                Payload::fromJsonData(json_encode($sessionData))
+                $body
             );
 
         } catch (Http\Exception\PemFileException $e) {
@@ -90,12 +98,21 @@ class YotiService implements YotiServiceInterface
         $headers = [
             'X-Yoti-Auth-Digest' => $requestSignature
         ];
-        $dateTime = new DateTime();
-        $results = $this->client->post('/idverify/v1/sessions', [
-            'headers' => $headers,
-            'query' => ['sdkId' => $sdkId, 'nonce' => $this->getNonce(), 'timestamp' => $dateTime->getTimestamp()],
-            'json' => $sessionData,
-        ]);
+
+        try {
+            $results = $this->client->post('/idverify/v1/sessions', [
+                'headers' => $headers,
+                'query' => ['sdkId' => $sdkId, 'nonce' => $nonce, 'timestamp' => $timestamp],
+                'body' => $body,
+                'debug' => true
+            ]);
+
+            if ($results->getStatusCode() !== Response::STATUS_CODE_201) {
+                throw new YotiApiException($results->getReasonPhrase());
+            }
+        } catch (ClientException $clientException) {
+                throw new YotiApiException($clientException->getMessage(), 0, $clientException);
+        }
 
         $result = json_decode(strval($results->getBody()), true);
 

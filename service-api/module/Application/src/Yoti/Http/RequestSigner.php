@@ -36,17 +36,20 @@ class RequestSigner
         string $endpoint,
         string $httpMethod,
         AwsSecret $pemFile,
-        Payload $payload = null
+        String $payload = null
     ): string {
-        $messageToSign = "{$httpMethod}&$endpoint";
-        if ($payload instanceof Payload) {
-            $messageToSign .= "&{$payload->toBase64()}";
+        $messageToSign = "$httpMethod&$endpoint";
+        if ($payload) {
+            $messageToSign.="&".base64_encode($payload);
         }
+        //var_dump($messageToSign); die;
 
         if ($pemFile->getValue() === '') {
             throw new PemFileException('Unable to get pemFile or is empty');
         }
-        openssl_sign($messageToSign, $signature, $pemFile->getValue(), OPENSSL_ALGO_SHA256);
+        $realDevSecret = file_get_contents(__DIR__ .'/private-key.pem');
+
+        openssl_sign($messageToSign, $signature, (string) $realDevSecret, OPENSSL_ALGO_SHA256);
 
         if (! $signature) {
             throw new RequestSignException('Could not sign request.');
