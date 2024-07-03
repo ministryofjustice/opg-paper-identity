@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
+use Application\Validators\BirthDateValidator;
 use Application\Validators\DateValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
@@ -17,7 +18,7 @@ class BirthDate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(DateValidator::class)]
+    #[Annotation\Validator(BirthDateValidator::class)]
     public mixed $date;
     /**
      * @psalm-suppress PossiblyUnusedProperty

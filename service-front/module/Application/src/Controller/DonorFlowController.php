@@ -21,9 +21,10 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHellper,
-        private readonly array $config,
-    ) {
+        private readonly FormProcessorHelper    $formProcessorHelper,
+        private readonly array                  $config,
+    )
+    {
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -154,7 +155,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processNationalInsuranceNumberForm(
+            $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -186,7 +187,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formProcessorResponseDto = $this->formProcessorHellper->processDrivingLicenceForm(
+            $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
                 $this->getRequest()->getPost(),
                 $form,
@@ -227,19 +228,24 @@ class DonorFlowController extends AbstractActionController
             $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $formData->toArray())) {
-                $formProcessorResponseDto = $this->formProcessorHellper->processPassportDateForm(
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $dateSubForm,
                     $templates
                 );
             } else {
-                $view->setVariable('passport_indate', ucwords($data['inDate']));
-                $formProcessorResponseDto = $this->formProcessorHellper->processPassportForm(
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
                     $this->getRequest()->getPost(),
                     $form,
                     $templates
+                );
+                $view->setVariable(
+                    'passport_indate',
+                    array_key_exists('inDate', $data) ?
+                        ucwords($data['inDate']) :
+                        'no'
                 );
             }
             $view->setVariables($formProcessorResponseDto->getVariables());
