@@ -1,6 +1,9 @@
+{% extends "layout/layout" %}
+
+{% block content %}
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <h1 class="govuk-heading-xl">Is the caller prepared to perform the ID check?</h1>
+        <h1 class="govuk-heading-xl">{% block title %}Is the caller prepared to perform the ID check?{% endblock %}</h1>
 
         <p class="govuk-body">
             Things to check:
@@ -71,3 +74,4 @@
 
     </main>
 </div>
+{% endblock %}
