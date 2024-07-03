@@ -5,6 +5,9 @@ RUN apk --no-cache add fcgi icu-dev $PHPIZE_DEPS \
   && docker-php-ext-enable sodium
 RUN pecl install apcu && docker-php-ext-enable apcu
 
+# Patch Vulnerabilities
+RUN apk upgrade --no-cache openssl
+
 WORKDIR /var/www/
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
