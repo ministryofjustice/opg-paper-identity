@@ -148,6 +148,7 @@ class DonorFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -179,6 +180,7 @@ class DonorFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
