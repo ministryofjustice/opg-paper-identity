@@ -10,6 +10,7 @@ use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
 use Application\Helpers\FormProcessorHelper;
+use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -22,6 +23,7 @@ class DonorFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
     ) {
     }
@@ -256,12 +258,23 @@ class DonorFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
 
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_passed');
@@ -270,12 +283,23 @@ class DonorFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
 
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_failed');

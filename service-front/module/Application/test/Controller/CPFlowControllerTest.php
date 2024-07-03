@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
+use Laminas\Http\Request;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -37,19 +38,133 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
     }
 
-    public function testCPIdCheckReturnsPageWithData(): void
+    public function returnOpgResponseData(): array
     {
-        $mockResponseDataIdDetails = [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "cp",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
+        return [
+            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
+            "personType" => "certificateProvider",
+            "firstName" => "Mary Anne",
+            "lastName" => "Chapman",
+            "dob" => "01 May 1943",
+            "address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin"
+        ];
+    }
+
+    public function returnSiriusLpaResponse(): array
+    {
+        return [
+            "opg.poas.lpastore" => [
+                "attorneys" => [
+                    [
+                        "dateOfBirth" => "1968-10-16",
+                        "status" => "active",
+                        "channel" => "paper",
+                        "uid" => "b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6",
+                        "firstNames" => "Tavares",
+                        "lastName" => "Klocko",
+                        "address" => [
+                            "line1" => "690 Jon Spring",
+                            "country" => "GS",
+                            "postcode" => "HE1 8TU",
+                            "line3" => "O'Fallon"
+                        ],
+                        "email" => "Celestino.Rau@gmail.com"
+                    ]
+                ],
+                "certificateProvider" => [
+                    "address" => [
+                        "line1" => "King House",
+                        "line2" => "1 Victoria Street",
+                        "line3" => "",
+                        "town" => "London",
+                        "postcode" => "SW1A 1BB",
+                        "country" => "UK"
+                    ],
+                    "channel" => "paper",
+                    "email" => "john.doe@gmail.com",
+                    "firstNames" => "John",
+                    "lastName" => "Doe",
+                    "phone" => "07777 000000",
+                    "signedAt" => "1938-11-08T07:10:43.0Z",
+                    "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
+                ],
+                "channel" => "paper",
+                "donor" => [
+                    "address" => [
+                        "country" => "UK",
+                        "line1" => "1 Street",
+                        "line2" => "Road",
+                        "postcode" => "SW1A 1AB",
+                        "town" => "London"
+                    ],
+                    "contactLanguagePreference" => "cy",
+                    "dateOfBirth" => "1982-08-13",
+                    "email" => "joe.bloggs@gmail.com",
+                    "firstNames" => "Joe",
+                    "lastName" => "Bloggs",
+                    "otherNamesKnownBy" => "Joseph Bloggs",
+                    "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
+                ],
+                "howReplacementAttorneysMakeDecisionsDetails" => "eu velit",
+                "howReplacementAttorneysStepInDetails" => "mollit exercitation ipsum sunt enim",
+                "lifeSustainingTreatmentOption" => "option-b",
+                "lpaType" => "property-and-affairs",
+                "registrationDate" => null,
+                "signedAt" => "1912-08-24T01:13:49.0Z",
+                "status" => "active",
+                "trustCorporations" => [
+                    [
+                        "name" => "qui ullamco",
+                        "companyNumber" => "id officia cupidatat non",
+                        "address" => [
+                            "line1" => "72764 Dee Pike",
+                            "country" => "HU",
+                            "postcode" => "BW5 9RM",
+                            "town" => "Troy"
+                        ],
+                        "status" => "active",
+                        "channel" => "paper",
+                        "uid" => "eed9fb9f-dd9f-7b2f-067b-e75cbb816b71",
+                        "signedAt" => "1956-10-15T11:23:58.0Z"
+                    ]
+                ],
+                "uid" => "M-8VQ2-EY9I-DQ23",
+                "updatedAt" => "1910-10-26T21:38:54.0Z",
+                "whenTheLpaCanBeUsed" => "when-capacity-lost"
+            ],
+            "opg.poas.sirius" => [
+                "donor" => [
+                    "country" => "UK",
+                    "dob" => "1982-08-13",
+                    "firstname" => "Joe",
+                    "postcode" => "SW1A 1AB",
+                    "surname" => "Bloggs",
+                    "town" => "London"
+                ],
+                "id" => 8223213,
+                "uId" => "M-M1VL-PJ9D-IKUS"
             ]
         ];
+    }
+
+    public function testCPIdCheckReturnsPageWithData(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -68,16 +183,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testNameMatchesIDPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "cp",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -96,30 +202,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testConfirmLpasPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
-            "personType" => "certificateProvider",
-            "firstName" => "Mary Anne",
-            "lastName" => "Chapman",
-            "dob" => "01 May 1943",
-            "address" => [
-                "1 Court Street",
-                "London",
-                "UK",
-                "SW1B 1BB",
-            ],
-            "lpas" => [
-                "M-XYXY-YAGA-35G3",
-                "M-XYXY-YAGA-35G4"
-            ],
-            "documentComplete" => false,
-            "alternateAddress" => [
-            ],
-            "selectedPostOfficeDeadline" => null,
-            "selectedPostOffice" => null,
-            "searchPostcode" => null,
-            "idMethod" => "nin"
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -127,6 +210,14 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $mockResponseDataSiriusLpa = $this->returnSiriusLpaResponse();
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('getLpaByUid')
+            ->willReturn($mockResponseDataSiriusLpa);
 
         $this->dispatch("/$this->uuid/cp/confirm-lpas", 'GET');
         $this->assertResponseStatusCode(200);
@@ -138,22 +229,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testConfirmDobPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => [
-                "1 Court Street",
-                "London",
-                "UK",
-                "SW1B 1BB",
-            ],
-            "Role" => "cp",
-            "LPA" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-XYXY-YAGA-35G4"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -172,22 +248,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testConfirmAddressPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "FirstName" => "Mary Anne",
-            "LastName" => "Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => [
-                "1 Court Street",
-                "London",
-                "UK",
-                "SW1B 1BB",
-            ],
-            "Role" => "cp",
-            "LPA" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-XYXY-YAGA-35G4"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
