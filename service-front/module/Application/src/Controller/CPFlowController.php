@@ -320,12 +320,17 @@ class CPFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames']. " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
+        
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_passed');
@@ -334,12 +339,17 @@ class CPFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames']. " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
 
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_failed');
