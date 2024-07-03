@@ -31,7 +31,7 @@ class BirthDateValidator extends AbstractValidator
         }
 
         try {
-            $date = new \DateTime($this->value);
+            new \DateTime($this->value);
         } catch (\Exception $exception) {
             $this->error(self::DATE_FORMAT);
             return false;

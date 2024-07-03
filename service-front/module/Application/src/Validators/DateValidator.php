@@ -6,6 +6,9 @@ namespace Application\Validators;
 
 use Laminas\Validator\AbstractValidator;
 
+/**
+ * @psalm-suppress UnusedClass
+ */
 class DateValidator extends AbstractValidator
 {
     public const DATE_FORMAT = 'date_format';

@@ -77,8 +77,14 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames']. " " .
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
         }
 
@@ -323,11 +329,17 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames']. " " .
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
         }
-        
+
         $view = new ViewModel();
 
         $view->setVariable('lpas_data', $lpaDetails);
@@ -342,8 +354,14 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames']. " " .
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
         }
 

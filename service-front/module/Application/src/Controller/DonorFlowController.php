@@ -21,10 +21,9 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper    $formProcessorHelper,
-        private readonly array                  $config,
-    )
-    {
+        private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly array $config,
+    ) {
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
