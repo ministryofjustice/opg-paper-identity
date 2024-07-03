@@ -4,6 +4,9 @@ WORKDIR /app
 
 RUN apk add --no-cache git
 
+# Patch Vulnerabilities
+RUN apk upgrade --no-cache openssl
+
 RUN mkdir -p public
 
 COPY package.json .
