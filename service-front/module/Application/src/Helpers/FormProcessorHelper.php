@@ -81,8 +81,10 @@ class FormProcessorHelper
         $variables = [];
         $template = $templates['default'];
         $form->setData($formData);
+
         $validFormat = $form->isValid();
         $formArray = $formData->toArray();
+
 
         if ($validFormat) {
             $variables['passport_data'] = $formData;

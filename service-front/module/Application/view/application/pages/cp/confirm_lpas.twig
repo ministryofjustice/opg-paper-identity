@@ -12,7 +12,9 @@
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__title-wrapper">
                             <h2 class="govuk-summary-card__title">
-                                LPA List
+                                LPAs for certificate provider:
+                                {{ details_data.firstName }}
+                                {{ details_data.lastName }}
                             </h2>
                         </div>
                         <div class="govuk-summary-card__content">
@@ -34,8 +36,7 @@
                                             {{ datum }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            {{ details_data.firstName }}
-                                            {{ details_data.lastName }}
+                                            {{ lpa_details[datum] }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
                                             <a href="./remove-lpa/{{ datum }}">Remove</a>
@@ -52,7 +53,7 @@
                                                 href="./add-lpa"
                                                 class="govuk-button govuk-button--secondary"
                                         >
-                                            Add Another LPA
+                                            Add another LPA
                                         </a>
                                     </dd>
                                 </div>
