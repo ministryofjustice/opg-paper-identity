@@ -16,7 +16,7 @@ class SessionConfig
         $authToken = $uuid;
 
         $sessionConfig["session_deadline"] = $this->deadlineDate();
-        $sessionConfig["resources_ttl"] = 86700;
+        $sessionConfig["resources_ttl"] = $this->getResourceTtl();
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $case->id;
         $sessionConfig["notifications"] = [
@@ -97,10 +97,17 @@ class SessionConfig
         return $sessionConfig;
     }
 
+    public function getResourceTtl(): int
+    {
+        $deadlineSeconds = strtotime($this->deadlineDate()) - time();
+
+        return $deadlineSeconds + 86400;
+    }
+
     public function deadlineDate(): string
     {
         $currentDate = new DateTime();
-        // Add 30 days to the current date
+        // Add 30 days to the current date, should be 6 month really to be on safe side?
         $currentDate->modify('+30 days');
         // Set the time to 22:00
         $currentDate->setTime(22, 0, 0);
