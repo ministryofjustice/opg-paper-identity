@@ -31,6 +31,7 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
 
+
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
 if (! is_string($tableName) || empty($tableName)) {
@@ -358,7 +359,6 @@ return [
 
     'service_manager' => [
         'invokables' => [
-
         ],
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
@@ -371,6 +371,7 @@ return [
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
             ),
+            SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
