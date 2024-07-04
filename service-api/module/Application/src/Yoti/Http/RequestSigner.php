@@ -25,7 +25,7 @@ class RequestSigner
      *
      * @param string $endpoint The API endpoint to be accessed.
      * @param string $httpMethod The HTTP method to be used (e.g., GET, POST).
-     * @param Payload|null $payload An optional payload to include in the signature.
+     * @param String|null $payload An optional payload to include in the signature.
      *
      * @return string The generated signature, base64 encoded.
      *
@@ -38,17 +38,16 @@ class RequestSigner
         AwsSecret $pemFile,
         string $payload = null
     ): string {
-        $messageToSign = "$httpMethod&$endpoint";
-        if ($payload) {
-            $messageToSign.="&".base64_encode($payload);
+        $messageToSign = "{$httpMethod}&{$endpoint}";
+        if ($payload !== null) {
+            $messageToSign .= "&" . base64_encode($payload);
         }
 
         if ($pemFile->getValue() === '') {
             throw new PemFileException('Unable to get pemFile or is empty');
         }
-        $realDevSecret = file_get_contents(__DIR__ .'/private-key.pem');
 
-        openssl_sign($messageToSign, $signature, (string) $realDevSecret, OPENSSL_ALGO_SHA256);
+        openssl_sign($messageToSign, $signature, $pemFile->getValue(), OPENSSL_ALGO_SHA256);
 
         if (! $signature) {
             throw new RequestSignException('Could not sign request.');

@@ -371,7 +371,6 @@ return [
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
             ),
-            SessionConfig::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionConfig(),
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,

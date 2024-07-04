@@ -7,7 +7,6 @@ namespace Application\Yoti;
 use Application\Aws\Secrets\AwsSecret;
 use Application\Exceptions\YotiException;
 use Application\Yoti\Http\Exception\YotiApiException;
-use Application\Yoti\Http\Payload;
 use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -74,23 +73,23 @@ class YotiService implements YotiServiceInterface
      * Create a IBV session with applicant data and requirements
      * is the endpoint there meant to be relative or a full path?
      * @throws YotiException
+     * @throws YotiApiException
      */
     public function createSession(array $sessionData): array
     {
         $sdkId = 'c4321972-7a50-4644-a7cf-cc130c571f59'; //new AwsSecret('yoti/sdk-client-id');
-        var_dump($sessionData); die;
+
         $body = json_encode($sessionData);
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
         try {
             $requestSignature = RequestSigner::generateSignature(
-                '/sessions?sdkId='.$sdkId.'&nonce='.$nonce.'&timestamp='.$timestamp ,
+                '/sessions?sdkId=' . $sdkId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
                 'POST',
-                new AwsSecret('yoti/private-key'),
+                new AwsSecret('yoti/certificate'),
                 $body
             );
-
         } catch (Http\Exception\PemFileException $e) {
             throw new YotiException("There was a problem with Pem file");
         } catch (Http\Exception\RequestSignException $e) {
@@ -141,11 +140,5 @@ class YotiService implements YotiServiceInterface
     public function retrieveLetterPDF(string $sessionId): array
     {
         return [];
-    }
-
-    public function getNonce(): string
-    {
-        $api_nonce = explode(' ', microtime());
-        return $api_nonce[1].substr($api_nonce[0], 2, 3);
     }
 }

@@ -141,6 +141,5 @@ class SessionConfig
         $addressFormat["postal_code"] = $address['postcode'];
 
         return $addressFormat;
-
     }
 }
