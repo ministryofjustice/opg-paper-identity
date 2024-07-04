@@ -99,7 +99,6 @@ return [
                     ],
                 ],
             ],
-
             'create_case' => [
                 'type' => Literal::class,
                 'options' => [
@@ -110,7 +109,6 @@ return [
                     ],
                 ],
             ],
-
             'address_verification' => [
                 'type' => Literal::class,
                 'options' => [
@@ -188,16 +186,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'create',
-                    ],
-                ],
-            ],
-            'find_lpa' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/find-lpa/:lpa',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'findLpa',
                     ],
                 ],
             ],
@@ -286,29 +274,29 @@ return [
                 'verb' => 'put',
                 'options' => [
                     'route' => '/cases/:uuid/lpas/:lpa',
-                    'child_routes' => [
-                        'put' => [
-                            'type' => Method::class,
-                            'options' => [
-                                'verb' => 'put',
-                                'defaults' => [
-                                    'controller' => Controller\IdentityController::class,
-                                    'action' => 'addCaseLpa',
-                                ],
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'addCaseLpa',
                             ],
-                            'may_terminate' => true,
                         ],
-                        'delete' => [
-                            'type' => Method::class,
-                            'options' => [
-                                'verb' => 'delete',
-                                'defaults' => [
-                                    'controller' => Controller\IdentityController::class,
-                                    'action' => 'removeCaseLpa',
-                                ],
+                        'may_terminate' => true,
+                    ],
+                    'delete' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'delete',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'removeCaseLpa',
                             ],
-                            'may_terminate' => true,
                         ],
+                        'may_terminate' => true,
                     ],
                 ],
             ],
