@@ -49,10 +49,10 @@ class LpaFormHelperTest extends TestCase
         $this->assertEquals($form, $processed->getForm());
         $this->assertEquals($responseData['status'], $processed->getStatus());
         $this->assertEquals($responseData['message'], $processed->getMessage());
-        if (array_key_exists('data',$responseData)) {
+        if (array_key_exists('data', $responseData)) {
             $this->assertEquals($responseData['data'], $processed->getData());
         }
-        if (array_key_exists('additionalData',$responseData)) {
+        if (array_key_exists('additionalData', $responseData)) {
             $this->assertEquals($responseData['additionalData'], $processed->getData());
         }
     }

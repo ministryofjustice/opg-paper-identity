@@ -42,7 +42,7 @@ class LpaFormHelper
             if (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
                 $result['status'] = 'Already added';
                 $result['message'] = "This LPA has already been added to this ID check.";
-            } else if ($statusCheck['error'] === true) {
+            } elseif ($statusCheck['error'] === true) {
                 $result['status'] = $statusCheck['status'];
                 $result['message'] = $statusCheck['message'];
             } elseif ($idCheck['error'] === true) {

@@ -93,7 +93,6 @@ class LpaFormHelperResponseDtoTest extends TestCase
         $this->assertEquals(
             $this->data,
             $this->lpaFormHelperResponseDto->getData()
-
         );
     }
 
