@@ -20,7 +20,10 @@ class LpaFormHelper
         array $detailsData,
     ): LpaFormHelperResponseDto {
         $form->setData($formData);
-        $result = [];
+        $result = [
+            'lpa_status' => "",
+            'message' => ""
+        ];
 
         if ($form->isValid()) {
             if (
@@ -40,13 +43,13 @@ class LpaFormHelper
             $channelCheck = $this->checkChannel($siriusCheck);
 
             if (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
-                $result['status'] = 'Already added';
+                $result['lpa_status'] = 'Already added';
                 $result['message'] = "This LPA has already been added to this ID check.";
             } elseif ($statusCheck['error'] === true) {
-                $result['status'] = $statusCheck['status'];
+                $result['lpa_status'] = $statusCheck['status'];
                 $result['message'] = $statusCheck['message'];
             } elseif ($idCheck['error'] === true) {
-                $result['status'] = 'no match';
+                $result['lpa_status'] = 'no match';
                 $result['message'] = $idCheck['message'];
                 $result['additional_data'] = [
                     'name' => $idCheck['name'],
@@ -56,10 +59,10 @@ class LpaFormHelper
                     'error' => $idCheck['error']
                 ];
             } elseif ($channelCheck['error'] === true) {
-                $result['status'] = $channelCheck['status'];
+                $result['lpa_status'] = $channelCheck['status'];
                 $result['message'] = $channelCheck['message'];
             } else {
-                $result['status'] = "Success";
+                $result['lpa_status'] = "Success";
                 $result['message'] = "";
             }
             $result['data'] = [
@@ -76,7 +79,10 @@ class LpaFormHelper
         return new LpaFormHelperResponseDto(
             $uuid,
             $form,
-            $result['status'],
+            /**
+             * @psalm-suppress PossiblyUndefinedArrayOffset
+             */
+            $result['lpa_status'],
             $result['message'],
             array_key_exists('data', $result) ? $result['data'] : [],
             array_key_exists('additional_data', $result) ? $result['additional_data'] : [],

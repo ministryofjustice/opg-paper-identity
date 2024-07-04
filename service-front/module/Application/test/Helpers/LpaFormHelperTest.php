@@ -41,13 +41,13 @@ class LpaFormHelperTest extends TestCase
 
         $this->assertArrayHasKey('uuid', $processed->toArray());
         $this->assertArrayHasKey('form', $processed->toArray());
-        $this->assertArrayHasKey('status', $processed->toArray());
+        $this->assertArrayHasKey('lpa_status', $processed->toArray());
         $this->assertArrayHasKey('message', $processed->toArray());
         $this->assertArrayHasKey('data', $processed->toArray());
         $this->assertArrayHasKey('additionalData', $processed->toArray());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($form, $processed->getForm());
-        $this->assertEquals($responseData['status'], $processed->getStatus());
+        $this->assertEquals($responseData['lpa_status'], $processed->getLpaStatus());
         $this->assertEquals($responseData['message'], $processed->getMessage());
         if (array_key_exists('data', $responseData)) {
             $this->assertEquals($responseData['data'], $processed->getData());
@@ -115,7 +115,7 @@ class LpaFormHelperTest extends TestCase
                 ]
             ],
             "message" => "",
-            "status" => "Success",
+            "lpa_status" => "Success",
         ];
 
         $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
@@ -141,7 +141,7 @@ class LpaFormHelperTest extends TestCase
                         ]
                     ],
                     "message" => "",
-                    "status" => "Success",
+                    "lpa_status" => "Success",
                 ],
                 $params,
                 $form,
@@ -152,7 +152,7 @@ class LpaFormHelperTest extends TestCase
                 $caseUuid,
                 [
                     "message" => "This LPA has already been added to this ID check.",
-                    "status" => "Already added"
+                    "lpa_status" => "Already added"
                 ],
                 new Parameters(['lpa' => $alreadyAddedLpa]),
                 $form,
@@ -163,7 +163,7 @@ class LpaFormHelperTest extends TestCase
                 $notFoundLpa,
                 [
                     "message" => "No LPA found.",
-                    "status" => 'Not Found',
+                    "lpa_status" => 'Not Found',
                 ],
                 new Parameters(['lpa' => $notFoundLpa]),
                 $form,
@@ -174,7 +174,7 @@ class LpaFormHelperTest extends TestCase
                 $caseUuid,
                 [
                     "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
-                    "status" => "complete",
+                    "lpa_status" => "complete",
                 ],
                 new Parameters(['lpa' => $alreadyDoneLpa]),
                 $form,
@@ -186,7 +186,7 @@ class LpaFormHelperTest extends TestCase
                 [
                     "message" => "This LPA cannot be added as it’s status is set to Draft.
                     LPAs need to be in the In Progress status to be added to this ID check.",
-                    "status" => "draft",
+                    "lpa_status" => "draft",
                 ],
                 new Parameters(['lpa' => $draftLpa]),
                 $form,
@@ -198,7 +198,7 @@ class LpaFormHelperTest extends TestCase
                 [
                     "message" => "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online.",
-                    "status" => 'processing',
+                    "lpa_status" => 'processing',
                     "data" => [
                         "case_uuid" => $caseUuid,
                         "LPA_Number" => $onlineLpa,
@@ -226,7 +226,7 @@ class LpaFormHelperTest extends TestCase
                     "message" => "This LPA cannot be added to this ID check because the" .
                         " certificate provider details on this LPA do not match. " .
                         "Edit the certificate provider record in Sirius if appropriate and find again.",
-                    "status" => "no match",
+                    "lpa_status" => "no match",
                     "additional_data" => [
                         'name' => "Daniel Smith",
                         'address' => [

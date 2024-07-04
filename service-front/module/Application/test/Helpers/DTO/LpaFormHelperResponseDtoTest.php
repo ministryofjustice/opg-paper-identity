@@ -23,7 +23,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
 
     private array $addtionalData;
 
-    private string $status;
+    private string $lpa_status;
 
     private string $message;
 
@@ -34,12 +34,12 @@ class LpaFormHelperResponseDtoTest extends TestCase
         $this->form = (new AttributeBuilder())->createForm(TestValidator::class);
         $this->uuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
 
-        $this->status = 'OK';
+        $this->lpa_status = 'OK';
         $this->message = "";
         $this->data = [];
         $this->addtionalData = [];
         $this->variables = [
-            'status' => 'OK',
+            'lpa_status' => 'OK',
             'message' => '',
             'data' => [],
             'additionalData' => [],
@@ -48,7 +48,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
         $this->lpaFormHelperResponseDto = new LpaFormHelperResponseDto(
             $this->uuid,
             $this->form,
-            $this->status,
+            $this->lpa_status,
             $this->message,
             $this->data,
             $this->addtionalData,
@@ -75,8 +75,8 @@ class LpaFormHelperResponseDtoTest extends TestCase
     public function testGetStatus(): void
     {
         $this->assertEquals(
-            $this->status,
-            $this->lpaFormHelperResponseDto->getStatus()
+            $this->lpa_status,
+            $this->lpaFormHelperResponseDto->getLpaStatus()
         );
     }
 
@@ -118,7 +118,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
             [
                 'uuid' => $this->uuid,
                 'form' => $this->form,
-                'status' => 'OK',
+                'lpa_status' => 'OK',
                 'message' => '',
                 'data' => [],
                 'additionalData' => [],

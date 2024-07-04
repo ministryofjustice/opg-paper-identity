@@ -1,7 +1,5 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
-
-
         {% if form.get('lpa').messages %}
             <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
                 <p class="govuk-body">
@@ -12,9 +10,8 @@
                 </div>
             </div>
         {% endif %}
-
         {% if lpa_response %}
-            {% if lpa_response['status'] != "Success" %}
+            {% if lpa_response['lpa_status'] != "Success" %}
 
                 <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
                     <p class="govuk-body">
@@ -44,7 +41,6 @@
                 </div>
             {% endif %}
         {% endif %}
-
 
             <h1 class="govuk-heading-xl">Find an LPA to add</h1>
 
@@ -102,7 +98,7 @@
                                 <th scope="row" class="govuk-table__header">CP Name</th>
                                 <td class="govuk-table__cell">{{ lpa_response['data']['CP_Name'] }}</td>
                                 <td class="govuk-table__cell">
-                                    {% if lpa_response['status'] == 'no match' %}
+                                    {% if lpa_response['lpa_status'] == 'no match' %}
                                         {% if lpa_response['additional_data']['name_match'] == false  %}
                                             <strong class="govuk-tag govuk-tag--red">
                                                 Does Not Match
@@ -123,7 +119,7 @@
                                     {% endfor %}
                                 </td>
                                 <td class="govuk-table__cell">
-                                    {% if lpa_response['status'] == 'no match' %}
+                                    {% if lpa_response['lpa_status'] == 'no match' %}
                                         {% if lpa_response['additional_data']['address_match'] == false  %}
                                             <strong class="govuk-tag govuk-tag--red">
                                                 Does Not Match
@@ -143,7 +139,7 @@
             </div>
             {% if lpa_response %}
                 <form method="POST">
-                {% if lpa_response['status'] == 'Success' %}
+                {% if lpa_response['lpa_status'] == 'Success' %}
                     <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['LPA_Number']  }}">
                     <input type="submit" class="govuk-button" value="Add LPA to this ID check">
                 {% endif %}

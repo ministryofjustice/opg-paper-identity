@@ -68,8 +68,6 @@ class SiriusApiService
         'M-0000-0000-0005',
         'M-0000-0000-0006',
         'M-0000-0000-0007',
-        'M-0000-0000-0008',
-        'M-0000-0000-0009',
     ];
 
     private function getAuthHeaders(RequestInterface $request): ?array
