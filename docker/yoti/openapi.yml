@@ -1943,6 +1943,8 @@ components:
             $ref: "#/components/schemas/Topic"
           example:
             [
+              THANK_YOU_EMAIL_REQUESTED
+              FIRST_BRANCH_VISIT
               RESOURCE_UPDATE,
               TASK_COMPLETION,
               CHECK_COMPLETION,
