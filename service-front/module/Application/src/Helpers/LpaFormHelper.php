@@ -35,22 +35,14 @@ class LpaFormHelper
                 );
             }
 
-            if (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
-                return new LpaFormHelperResponseDto(
-                    $uuid,
-                    $form,
-                    'Already added',
-                    "This LPA has already been added to this ID check.",
-                    [],
-                    [],
-                );
-            }
-
             $idCheck = $this->compareCpRecords($detailsData, $siriusCheck);
             $statusCheck = $this->checkStatus($siriusCheck);
             $channelCheck = $this->checkChannel($siriusCheck);
 
-            if ($statusCheck['error'] === true) {
+            if (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
+                $result['status'] = 'Already added';
+                $result['message'] = "This LPA has already been added to this ID check.";
+            } else if ($statusCheck['error'] === true) {
                 $result['status'] = $statusCheck['status'];
                 $result['message'] = $statusCheck['message'];
             } elseif ($idCheck['error'] === true) {
@@ -63,40 +55,22 @@ class LpaFormHelper
                     'address_match' => $idCheck['address_match'],
                     'error' => $idCheck['error']
                 ];
-                $result['data'] = [
-                    "case_uuid" => $uuid,
-                    "LPA_Number" => $form->get('lpa')->getValue(),
-                    "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
-                    "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                    "Status" => $statusCheck['status'],
-                    "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
-                    "CP_Address" => $detailsData['address']
-                ];
             } elseif ($channelCheck['error'] === true) {
                 $result['status'] = $channelCheck['status'];
                 $result['message'] = $channelCheck['message'];
-                $result['data'] = [
-                    "case_uuid" => $uuid,
-                    "LPA_Number" => $form->get('lpa')->getValue(),
-                    "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
-                    "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                    "Status" => $statusCheck['status'],
-                    "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
-                    "CP_Address" => $detailsData['address']
-                ];
             } else {
                 $result['status'] = "Success";
                 $result['message'] = "";
-                $result['data'] = [
-                    "case_uuid" => $uuid,
-                    "LPA_Number" => $form->get('lpa')->getValue(),
-                    "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
-                    "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                    "Status" => $statusCheck['status'],
-                    "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
-                    "CP_Address" => $detailsData['address']
-                ];
             }
+            $result['data'] = [
+                "case_uuid" => $uuid,
+                "LPA_Number" => $form->get('lpa')->getValue(),
+                "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
+                "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
+                "Status" => $statusCheck['status'],
+                "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
+                "CP_Address" => $detailsData['address']
+            ];
         }
 
         return new LpaFormHelperResponseDto(
@@ -104,8 +78,8 @@ class LpaFormHelper
             $form,
             $result['status'],
             $result['message'],
-            $result['data'] ?? [],
-            $result['additional_data'] ?? []
+            array_key_exists('data', $result) ? $result['data'] : [],
+            array_key_exists('additional_data', $result) ? $result['additional_data'] : [],
         );
     }
 

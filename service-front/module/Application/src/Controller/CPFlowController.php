@@ -118,7 +118,8 @@ class CPFlowController extends AbstractActionController
                     $siriusCheck,
                     $detailsData,
                 );
-                $view->setVariables($processed->getVariables());
+
+                $view->setVariables(['lpa_response' => $processed->constructFormVariables()]);
                 $view->setVariable('form', $processed->getForm());
                 return $view->setTemplate('application/pages/cp/add_lpa');
             } else {

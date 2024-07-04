@@ -109,7 +109,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
     {
         $this->assertEquals(
             $this->variables,
-            $this->lpaFormHelperResponseDto->constructVariables()
+            $this->lpaFormHelperResponseDto->constructFormVariables()
         );
     }
 
@@ -123,7 +123,6 @@ class LpaFormHelperResponseDtoTest extends TestCase
                 'message' => '',
                 'data' => [],
                 'additionalData' => [],
-                'variables' => $this->lpaFormHelperResponseDto->constructVariables()
             ],
             $this->lpaFormHelperResponseDto->toArray()
         );

@@ -48,7 +48,7 @@ class LpaFormHelperResponseDto
         return $this->additionalData;
     }
 
-    public function constructVariables(): array
+    public function constructFormVariables(): array
     {
         return [
             'status' => $this->getStatus(),
@@ -67,7 +67,6 @@ class LpaFormHelperResponseDto
             'message' => $this->getMessage(),
             'data' => $this->getData(),
             'additionalData' => $this->getAdditionalData(),
-            'variables' => $this->constructVariables(),
         ];
     }
 }
