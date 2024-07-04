@@ -128,7 +128,7 @@ class LpaFormHelper
     public function getLpaTypeFromSiriusResponse(array $siriusCheck): string
     {
         try {
-            return $siriusCheck['opg.poas.lpastore']['lpaType'];
+            return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? '';
         } catch (\Exception $exception) {
             return $exception->getMessage();
         }
