@@ -36,13 +36,12 @@ class RequestSigner
         string $endpoint,
         string $httpMethod,
         AwsSecret $pemFile,
-        String $payload = null
+        string $payload = null
     ): string {
         $messageToSign = "$httpMethod&$endpoint";
         if ($payload) {
             $messageToSign.="&".base64_encode($payload);
         }
-        //var_dump($messageToSign); die;
 
         if ($pemFile->getValue() === '') {
             throw new PemFileException('Unable to get pemFile or is empty');

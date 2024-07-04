@@ -22,6 +22,8 @@ class SessionConfig
         $sessionConfig["notifications"] = [
             "endpoint" => getenv("NOTIFICATION_URL"),
             "topics" => [
+                "FIRST_BRANCH_VISIT",
+                "THANK_YOU_EMAIL_REQUESTED",
                 "INSTRUCTIONS_EMAIL_REQUESTED",
                 "SESSION_COMPLETION"
             ],
@@ -128,13 +130,17 @@ class SessionConfig
     public function addressFormatted(array $address): array
     {
         $addressFormat = [];
+        //@TODO determine what address format we are sending, currently no country_iso, assuming all UK for now
         $addressFormat["address_format"] = "1";
-        $addressFormat["address_line_1"] = $address['line1'];
-        $addressFormat["address_line_2"] = $address['line2'];
+        $addressFormat["building_number"] = substr($address['line1'], 0, 3);
+        $addressFormat["address_line1"] = $address['line1'];
+        $addressFormat["address_line2"] = $address['line2'];
+        $addressFormat["town_city"] = $address['line3'] ?? $address['line2'];
         $addressFormat["country"] = $address['country'];
         $addressFormat["country_iso"] = "GBR";
         $addressFormat["postal_code"] = $address['postcode'];
 
         return $addressFormat;
+
     }
 }

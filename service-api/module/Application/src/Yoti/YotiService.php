@@ -78,6 +78,7 @@ class YotiService implements YotiServiceInterface
     public function createSession(array $sessionData): array
     {
         $sdkId = 'c4321972-7a50-4644-a7cf-cc130c571f59'; //new AwsSecret('yoti/sdk-client-id');
+        var_dump($sessionData); die;
         $body = json_encode($sessionData);
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
@@ -86,7 +87,7 @@ class YotiService implements YotiServiceInterface
             $requestSignature = RequestSigner::generateSignature(
                 '/sessions?sdkId='.$sdkId.'&nonce='.$nonce.'&timestamp='.$timestamp ,
                 'POST',
-                new AwsSecret('private-key'),
+                new AwsSecret('yoti/private-key'),
                 $body
             );
 
