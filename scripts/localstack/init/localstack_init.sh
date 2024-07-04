@@ -16,12 +16,13 @@ awslocal secretsmanager create-secret --name local/paper-identity/yoti/sdk-clien
     --description "ID of Yoti client" \
     --secret-string "empty"
 
-awslocal secretsmanager create-secret --name local/paper-identity/public-key \
+# following keys are mostly for use by tests
+awslocal secretsmanager create-secret --name local/paper-identity/yoti/public-key \
     --region "eu-west-1" \
     --description "Local dev public key" \
     --secret-string file:///tmp/public_key.pem
 
-awslocal secretsmanager create-secret --name local/paper-identity/private-key \
+awslocal secretsmanager create-secret --name local/paper-identity/yoti/private-key \
     --region "eu-west-1" \
     --description "Local dev private key" \
     --secret-string file:///tmp/private_key.pem
