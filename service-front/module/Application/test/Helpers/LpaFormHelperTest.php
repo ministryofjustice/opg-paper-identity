@@ -246,12 +246,12 @@ class LpaFormHelperTest extends TestCase
                         "Type_Of_LPA" => 'property-and-affairs',
                         "Donor" => "Kitty Jenkins",
                         "Status" => 'no match',
-                        "CP_Name" => "David Smith",
+                        "CP_Name" => "Daniel Smith",
                         "CP_Address" => [
-                            'line1' => '82 Penny Street',
+                            'line1' => '81 Penny Street',
                             'line2' => 'Lancaster',
                             'town' => 'Lancashire',
-                            'postcode' => 'LA1 1XN',
+                            'postcode' => 'LA1 2XN',
                             'country' => 'United Kingdom',
                         ]
                     ]

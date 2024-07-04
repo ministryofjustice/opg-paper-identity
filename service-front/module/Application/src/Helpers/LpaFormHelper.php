@@ -42,13 +42,7 @@ class LpaFormHelper
             $statusCheck = $this->checkStatus($siriusCheck);
             $channelCheck = $this->checkChannel($siriusCheck);
 
-            if (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
-                $result['lpa_status'] = 'Already added';
-                $result['message'] = "This LPA has already been added to this ID check.";
-            } elseif ($statusCheck['error'] === true) {
-                $result['lpa_status'] = $statusCheck['status'];
-                $result['message'] = $statusCheck['message'];
-            } elseif ($idCheck['error'] === true) {
+            if ($idCheck['error'] === true) {
                 $result['lpa_status'] = 'no match';
                 $result['message'] = $idCheck['message'];
                 $result['additional_data'] = [
@@ -58,6 +52,12 @@ class LpaFormHelper
                     'address_match' => $idCheck['address_match'],
                     'error' => $idCheck['error']
                 ];
+            } elseif (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
+                $result['lpa_status'] = 'Already added';
+                $result['message'] = "This LPA has already been added to this ID check.";
+            } elseif ($statusCheck['error'] === true) {
+                $result['lpa_status'] = $statusCheck['status'];
+                $result['message'] = $statusCheck['message'];
             } elseif ($channelCheck['error'] === true) {
                 $result['lpa_status'] = $channelCheck['status'];
                 $result['message'] = $channelCheck['message'];
@@ -71,8 +71,8 @@ class LpaFormHelper
                 "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                 "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
                 "Status" => $statusCheck['status'],
-                "CP_Name" => $detailsData['firstName'] . " " . $detailsData['lastName'],
-                "CP_Address" => $detailsData['address']
+                "CP_Name" => $idCheck['name'],
+                "CP_Address" => $idCheck['address']
             ];
         }
 
