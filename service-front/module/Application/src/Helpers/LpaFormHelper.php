@@ -89,16 +89,7 @@ class LpaFormHelper
         );
     }
 
-    public function getCpAddressFromSiriusResponse(array $siriusCheck): array
-    {
-        try {
-            return $siriusCheck['opg.poas.lpastore']['certificateProvider']['address'];
-        } catch (\Exception $exception) {
-            return [$exception->getMessage()];
-        }
-    }
-
-    public function getLpaTypeFromSiriusResponse(array $siriusCheck): string
+    private function getLpaTypeFromSiriusResponse(array $siriusCheck): string
     {
         try {
             return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? '';
@@ -107,7 +98,7 @@ class LpaFormHelper
         }
     }
 
-    public function getDonorNameFromSiriusResponse(array $siriusCheck): string
+    private function getDonorNameFromSiriusResponse(array $siriusCheck): string
     {
         try {
             return $siriusCheck['opg.poas.sirius']['donor']['firstname'] .
@@ -118,7 +109,7 @@ class LpaFormHelper
         }
     }
 
-    public function compareCpRecords(array $detailsData, array $siriusCheck): array
+    private function compareCpRecords(array $detailsData, array $siriusCheck): array
     {
         $response = [
             'name_match' => false,
@@ -165,7 +156,7 @@ class LpaFormHelper
         return $response;
     }
 
-    public function checkStatus(array $siriusCheck): array
+    private function checkStatus(array $siriusCheck): array
     {
         $response = [
             'error' => false,
@@ -198,7 +189,7 @@ class LpaFormHelper
         return $response;
     }
 
-    public function checkChannel(array $siriusCheck): array
+    private function checkChannel(array $siriusCheck): array
     {
         $response = [];
         $response['channel'] = 'paper';
@@ -220,7 +211,7 @@ class LpaFormHelper
         return $response;
     }
 
-    public function checkLpaNotAdded(string $lpa, array $detailsData): bool
+    private function checkLpaNotAdded(string $lpa, array $detailsData): bool
     {
         try {
             foreach ($detailsData['lpas'] as $existingLpa) {
