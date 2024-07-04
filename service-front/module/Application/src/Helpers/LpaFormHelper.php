@@ -27,30 +27,22 @@ class LpaFormHelper
                 ! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
                 empty($siriusCheck['opg.poas.lpastore'])
             ) {
-                $result = [
-                    'status' => 'Not Found',
-                    'message' => "No LPA found.",
-                ];
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,
-                    [
-                        'lpa_response' => $result
-                    ],
+                    'Not Found',
+                    'No LPA found.'
                 );
             }
 
             if (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
-                $result = [
-                    'status' => 'Already added',
-                    'message' => "This LPA has already been added to this ID check.",
-                ];
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,
-                    [
-                        'lpa_response' => $result
-                    ],
+                    'Already added',
+                    "This LPA has already been added to this ID check.",
+                    [],
+                    [],
                 );
             }
 
@@ -110,9 +102,10 @@ class LpaFormHelper
         return new LpaFormHelperResponseDto(
             $uuid,
             $form,
-            [
-                'lpa_response' => $result
-            ],
+            $result['status'],
+            $result['message'],
+            $result['data'] ?? [],
+            $result['additional_data'] ?? []
         );
     }
 

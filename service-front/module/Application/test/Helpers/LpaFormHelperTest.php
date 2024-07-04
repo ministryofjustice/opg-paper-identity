@@ -38,9 +38,23 @@ class LpaFormHelperTest extends TestCase
             $siriusLpaResponse,
             $opgCaseResponse,
         );
+
+        $this->assertArrayHasKey('uuid', $processed->toArray());
+        $this->assertArrayHasKey('form', $processed->toArray());
+        $this->assertArrayHasKey('status', $processed->toArray());
+        $this->assertArrayHasKey('message', $processed->toArray());
+        $this->assertArrayHasKey('data', $processed->toArray());
+        $this->assertArrayHasKey('additionalData', $processed->toArray());
         $this->assertEquals($caseUuid, $processed->getUuid());
-        $this->assertArrayHasKey('lpa_response', $processed->getVariables());
-        $this->assertEquals($responseData, $processed->getVariables()['lpa_response']);
+        $this->assertEquals($form, $processed->getForm());
+        $this->assertEquals($responseData['status'], $processed->getStatus());
+        $this->assertEquals($responseData['message'], $processed->getMessage());
+        if (array_key_exists('data',$responseData)) {
+            $this->assertEquals($responseData['data'], $processed->getData());
+        }
+        if (array_key_exists('additionalData',$responseData)) {
+            $this->assertEquals($responseData['additionalData'], $processed->getData());
+        }
     }
 
 

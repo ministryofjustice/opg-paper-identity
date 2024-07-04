@@ -11,7 +11,10 @@ class LpaFormHelperResponseDto
     public function __construct(
         private string $uuid,
         private FormInterface $form,
-        private array $variables = [],
+        private string $status,
+        private string $message,
+        private array $data = [],
+        private array $additionalData = [],
     ) {
     }
 
@@ -25,17 +28,46 @@ class LpaFormHelperResponseDto
         return $this->form;
     }
 
-    public function getVariables(): array
+    public function getStatus(): string
     {
-        return $this->variables;
+        return $this->status;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    public function getAdditionalData(): array
+    {
+        return $this->additionalData;
+    }
+
+    public function constructVariables(): array
+    {
+        return [
+            'status' => $this->getStatus(),
+            'message' => $this->getMessage(),
+            'data' => $this->getData(),
+            'additionalData' => $this->getAdditionalData(),
+        ];
     }
 
     public function toArray(): array
     {
         return [
-            'uuid' => $this->uuid,
-            'form' => $this->form,
-            'variables' => $this->variables,
+            'uuid' => $this->getUuid(),
+            'form' => $this->getForm(),
+            'status' => $this->getStatus(),
+            'message' => $this->getMessage(),
+            'data' => $this->getData(),
+            'additionalData' => $this->getAdditionalData(),
+            'variables' => $this->constructVariables(),
         ];
     }
 }
