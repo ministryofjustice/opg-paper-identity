@@ -21,7 +21,7 @@ class LpaFormHelper
     ): LpaFormHelperResponseDto {
         $form->setData($formData);
         $result = [
-            'lpa_status' => "",
+            'status' => "",
             'message' => ""
         ];
 
@@ -43,7 +43,7 @@ class LpaFormHelper
             $channelCheck = $this->checkChannel($siriusCheck);
 
             if ($idCheck['error'] === true) {
-                $result['lpa_status'] = 'no match';
+                $result['status'] = 'no match';
                 $result['message'] = $idCheck['message'];
                 $result['additional_data'] = [
                     'name' => $idCheck['name'],
@@ -53,26 +53,26 @@ class LpaFormHelper
                     'error' => $idCheck['error']
                 ];
             } elseif (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
-                $result['lpa_status'] = 'Already added';
+                $result['status'] = 'error';
                 $result['message'] = "This LPA has already been added to this ID check.";
             } elseif ($statusCheck['error'] === true) {
-                $result['lpa_status'] = $statusCheck['status'];
+                $result['status'] = 'error';
                 $result['message'] = $statusCheck['message'];
             } elseif ($channelCheck['error'] === true) {
-                $result['lpa_status'] = $channelCheck['status'];
+                $result['status'] = 'error';
                 $result['message'] = $channelCheck['message'];
             } else {
-                $result['lpa_status'] = "Success";
+                $result['status'] = "success";
                 $result['message'] = "";
             }
             $result['data'] = [
                 "case_uuid" => $uuid,
-                "LPA_Number" => $form->get('lpa')->getValue(),
-                "Type_Of_LPA" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
-                "Donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                "Status" => $statusCheck['status'],
-                "CP_Name" => $idCheck['name'],
-                "CP_Address" => $idCheck['address']
+                "lpa_number" => $form->get('lpa')->getValue(),
+                "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
+                "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
+                "lpa_status" => $statusCheck['status'],
+                "cp_name" => $idCheck['name'],
+                "cp_address" => $idCheck['address']
             ];
         }
 
@@ -82,7 +82,7 @@ class LpaFormHelper
             /**
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
-            $result['lpa_status'],
+            $result['status'],
             $result['message'],
             array_key_exists('data', $result) ? $result['data'] : [],
             array_key_exists('additional_data', $result) ? $result['additional_data'] : [],

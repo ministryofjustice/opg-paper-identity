@@ -41,13 +41,13 @@ class LpaFormHelperTest extends TestCase
 
         $this->assertArrayHasKey('uuid', $processed->toArray());
         $this->assertArrayHasKey('form', $processed->toArray());
-        $this->assertArrayHasKey('lpa_status', $processed->toArray());
+        $this->assertArrayHasKey('status', $processed->toArray());
         $this->assertArrayHasKey('message', $processed->toArray());
         $this->assertArrayHasKey('data', $processed->toArray());
         $this->assertArrayHasKey('additionalData', $processed->toArray());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($form, $processed->getForm());
-        $this->assertEquals($responseData['lpa_status'], $processed->getLpaStatus());
+        $this->assertEquals($responseData['status'], $processed->getStatus());
         $this->assertEquals($responseData['message'], $processed->getMessage());
         if (array_key_exists('data', $responseData)) {
             $this->assertEquals($responseData['data'], $processed->getData());
@@ -101,12 +101,12 @@ class LpaFormHelperTest extends TestCase
         $mockResponseData = [
             "data" => [
                 "case_uuid" => $caseUuid,
-                "LPA_Number" => $goodLpa,
-                "Type_Of_LPA" => "property-and-affairs",
-                "Donor" => "Kitty Jenkins",
-                "Status" => "processing",
-                "CP_Name" => "David Smith",
-                "CP_Address" => [
+                "lpa_number" => $goodLpa,
+                "type_of_lpa" => "property-and-affairs",
+                "donor" => "Kitty Jenkins",
+                "lpa_status" => "processing",
+                "cp_name" => "David Smith",
+                "cp_address" => [
                     'line1' => '82 Penny Street',
                     'line2' => 'Lancaster',
                     'line3' => 'Lancashire',
@@ -115,11 +115,11 @@ class LpaFormHelperTest extends TestCase
                 ]
             ],
             "message" => "",
-            "lpa_status" => "Success",
+            "status" => "success",
         ];
 
         $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
-        $params = new Parameters(['lpa' => $mockResponseData['data']['LPA_Number']]);
+        $params = new Parameters(['lpa' => $mockResponseData['data']['lpa_number']]);
 
         return [
             [
@@ -127,12 +127,12 @@ class LpaFormHelperTest extends TestCase
                 [
                     "data" => [
                         "case_uuid" => $caseUuid,
-                        "LPA_Number" => $goodLpa,
-                        "Type_Of_LPA" => "property-and-affairs",
-                        "Donor" => "Kitty Jenkins",
-                        "Status" => "processing",
-                        "CP_Name" => "David Smith",
-                        "CP_Address" => [
+                        "lpa_number" => $goodLpa,
+                        "type_of_lpa" => "property-and-affairs",
+                        "donor" => "Kitty Jenkins",
+                        "lpa_status" => "processing",
+                        "cp_name" => "David Smith",
+                        "cp_address" => [
                             'line1' => '82 Penny Street',
                             'line2' => 'Lancaster',
                             'town' => 'Lancashire',
@@ -141,7 +141,7 @@ class LpaFormHelperTest extends TestCase
                         ]
                     ],
                     "message" => "",
-                    "lpa_status" => "Success",
+                    "status" => "success",
                 ],
                 $params,
                 $form,
@@ -152,7 +152,7 @@ class LpaFormHelperTest extends TestCase
                 $caseUuid,
                 [
                     "message" => "This LPA has already been added to this ID check.",
-                    "lpa_status" => "Already added"
+                    "status" => "error"
                 ],
                 new Parameters(['lpa' => $alreadyAddedLpa]),
                 $form,
@@ -163,7 +163,7 @@ class LpaFormHelperTest extends TestCase
                 $notFoundLpa,
                 [
                     "message" => "No LPA found.",
-                    "lpa_status" => 'Not Found',
+                    "status" => 'Not Found',
                 ],
                 new Parameters(['lpa' => $notFoundLpa]),
                 $form,
@@ -174,7 +174,7 @@ class LpaFormHelperTest extends TestCase
                 $caseUuid,
                 [
                     "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
-                    "lpa_status" => "complete",
+                    "status" => "error",
                 ],
                 new Parameters(['lpa' => $alreadyDoneLpa]),
                 $form,
@@ -186,7 +186,7 @@ class LpaFormHelperTest extends TestCase
                 [
                     "message" => "This LPA cannot be added as it’s status is set to Draft.
                     LPAs need to be in the In Progress status to be added to this ID check.",
-                    "lpa_status" => "draft",
+                    "status" => "error",
                 ],
                 new Parameters(['lpa' => $draftLpa]),
                 $form,
@@ -198,15 +198,15 @@ class LpaFormHelperTest extends TestCase
                 [
                     "message" => "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online.",
-                    "lpa_status" => 'processing',
+                    "status" => 'error',
                     "data" => [
                         "case_uuid" => $caseUuid,
-                        "LPA_Number" => $onlineLpa,
-                        "Type_Of_LPA" => "property-and-affairs",
-                        "Donor" => "Kitty Jenkins",
-                        "Status" => "processing",
-                        "CP_Name" => "David Smith",
-                        "CP_Address" => [
+                        "lpa_number" => $onlineLpa,
+                        "type_of_lpa" => "property-and-affairs",
+                        "donor" => "Kitty Jenkins",
+                        "lpa_status" => "processing",
+                        "cp_name" => "David Smith",
+                        "cp_address" => [
                             'line1' => '82 Penny Street',
                             'line2' => 'Lancaster',
                             'town' => 'Lancashire',
@@ -226,7 +226,7 @@ class LpaFormHelperTest extends TestCase
                     "message" => "This LPA cannot be added to this ID check because the" .
                         " certificate provider details on this LPA do not match. " .
                         "Edit the certificate provider record in Sirius if appropriate and find again.",
-                    "lpa_status" => "no match",
+                    "status" => "no match",
                     "additional_data" => [
                         'name' => "Daniel Smith",
                         'address' => [
@@ -242,12 +242,12 @@ class LpaFormHelperTest extends TestCase
                     ],
                     'data' => [
                         "case_uuid" => $caseUuid,
-                        "LPA_Number" => $noMatchLpa,
-                        "Type_Of_LPA" => 'property-and-affairs',
-                        "Donor" => "Kitty Jenkins",
-                        "Status" => 'no match',
-                        "CP_Name" => "Daniel Smith",
-                        "CP_Address" => [
+                        "lpa_number" => $noMatchLpa,
+                        "type_of_lpa" => 'property-and-affairs',
+                        "donor" => "Kitty Jenkins",
+                        "lpa_status" => 'no match',
+                        "cp_name" => "Daniel Smith",
+                        "cp_address" => [
                             'line1' => '81 Penny Street',
                             'line2' => 'Lancaster',
                             'town' => 'Lancashire',

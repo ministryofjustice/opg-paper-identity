@@ -11,7 +11,7 @@
         </div>
     {% endif %}
     {% if lpa_response %}
-        {% if lpa_response['lpa_status'] != "Success" %}
+        {% if lpa_response['status'] != "Success" %}
 
             <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
                 <p class="govuk-body">
@@ -76,29 +76,29 @@
                     <tbody class="govuk-table__body">
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">LPA Number</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['LPA_Number'] }}</td>
+                        <td class="govuk-table__cell">{{ lpa_response['data']['lpa_number'] }}</td>
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">Type of LPA</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['Type_Of_LPA'] }}</td>
+                        <td class="govuk-table__cell">{{ lpa_response['data']['type_of_lpa'] }}</td>
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">Donor</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['Donor'] }}</td>
+                        <td class="govuk-table__cell">{{ lpa_response['data']['donor'] }}</td>
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">Status</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['Status'] }}</td>
+                        <td class="govuk-table__cell">{{ lpa_response['data']['lpa_status'] }}</td>
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">CP Name</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['CP_Name'] }}</td>
+                        <td class="govuk-table__cell">{{ lpa_response['data']['cp_name'] }}</td>
                         <td class="govuk-table__cell">
-                            {% if lpa_response['lpa_status'] == 'no match' %}
+                            {% if lpa_response['data']['status'] == 'no match' %}
                                 {% if lpa_response['additional_data']['name_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">
                                         Does Not Match
@@ -114,14 +114,14 @@
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">CP Address</th>
                         <td class="govuk-table__cell">
-                            {% for line in lpa_response['data']['CP_Address'] %}
+                            {% for line in lpa_response['data']['cp_address'] %}
                                 {% if line %}
                                     {{ line }}<br>
                                 {% endif %}
                             {% endfor %}
                         </td>
                         <td class="govuk-table__cell">
-                            {% if lpa_response['lpa_status'] == 'no match' %}
+                            {% if lpa_response['data']['status'] == 'no match' %}
                                 {% if lpa_response['additional_data']['address_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">
                                         Does Not Match
@@ -141,8 +141,8 @@
     </div>
     {% if lpa_response %}
         <form method="POST">
-            {% if lpa_response['lpa_status'] == 'Success' %}
-                <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['LPA_Number'] }}">
+            {% if lpa_response['status'] == 'Success' %}
+                <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['lpa_number'] }}">
                 <input type="submit" class="govuk-button" value="Add LPA to this ID check">
             {% endif %}
         </form>

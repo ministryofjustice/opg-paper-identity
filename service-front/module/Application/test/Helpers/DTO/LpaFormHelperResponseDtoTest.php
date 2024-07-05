@@ -21,9 +21,9 @@ class LpaFormHelperResponseDtoTest extends TestCase
 
     private array $data;
 
-    private array $addtionalData;
+    private array $additionalData;
 
-    private string $lpa_status;
+    private string $status;
 
     private string $message;
 
@@ -34,12 +34,12 @@ class LpaFormHelperResponseDtoTest extends TestCase
         $this->form = (new AttributeBuilder())->createForm(TestValidator::class);
         $this->uuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
 
-        $this->lpa_status = 'OK';
+        $this->status = 'success';
         $this->message = "";
         $this->data = [];
-        $this->addtionalData = [];
+        $this->additionalData = [];
         $this->variables = [
-            'lpa_status' => 'OK',
+            'status' => 'success',
             'message' => '',
             'data' => [],
             'additionalData' => [],
@@ -48,10 +48,10 @@ class LpaFormHelperResponseDtoTest extends TestCase
         $this->lpaFormHelperResponseDto = new LpaFormHelperResponseDto(
             $this->uuid,
             $this->form,
-            $this->lpa_status,
+            $this->status,
             $this->message,
             $this->data,
-            $this->addtionalData,
+            $this->additionalData,
         );
     }
 
@@ -75,8 +75,8 @@ class LpaFormHelperResponseDtoTest extends TestCase
     public function testGetStatus(): void
     {
         $this->assertEquals(
-            $this->lpa_status,
-            $this->lpaFormHelperResponseDto->getLpaStatus()
+            $this->status,
+            $this->lpaFormHelperResponseDto->getStatus()
         );
     }
 
@@ -99,7 +99,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
     public function testGetAdditionalData(): void
     {
         $this->assertEquals(
-            $this->addtionalData,
+            $this->additionalData,
             $this->lpaFormHelperResponseDto->getAdditionalData()
         );
     }
@@ -118,7 +118,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
             [
                 'uuid' => $this->uuid,
                 'form' => $this->form,
-                'lpa_status' => 'OK',
+                'status' => 'success',
                 'message' => '',
                 'data' => [],
                 'additionalData' => [],

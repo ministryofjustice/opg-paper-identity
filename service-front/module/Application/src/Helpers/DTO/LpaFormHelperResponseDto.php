@@ -11,7 +11,7 @@ class LpaFormHelperResponseDto
     public function __construct(
         private string $uuid,
         private FormInterface $form,
-        private string $lpaStatus,
+        private string $status,
         private string $message,
         private array $data = [],
         private array $additionalData = [],
@@ -28,9 +28,9 @@ class LpaFormHelperResponseDto
         return $this->form;
     }
 
-    public function getLpaStatus(): string
+    public function getStatus(): string
     {
-        return $this->lpaStatus;
+        return $this->status;
     }
 
     public function getMessage(): string
@@ -51,7 +51,7 @@ class LpaFormHelperResponseDto
     public function constructFormVariables(): array
     {
         return [
-            'lpa_status' => $this->getLpaStatus(),
+            'status' => $this->getStatus(),
             'message' => $this->getMessage(),
             'data' => $this->getData(),
             'additionalData' => $this->getAdditionalData(),
@@ -63,7 +63,7 @@ class LpaFormHelperResponseDto
         return [
             'uuid' => $this->getUuid(),
             'form' => $this->getForm(),
-            'lpa_status' => $this->getLpaStatus(),
+            'status' => $this->getStatus(),
             'message' => $this->getMessage(),
             'data' => $this->getData(),
             'additionalData' => $this->getAdditionalData(),
