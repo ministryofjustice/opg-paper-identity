@@ -16,6 +16,9 @@ awslocal secretsmanager create-secret --name local/paper-identity/yoti/sdk-clien
     --description "ID of Yoti client" \
     --secret-string "empty"
 
+openssl genpkey -algorithm RSA -out /tmp/private_key.pem -pkeyopt rsa_keygen_bits:2048
+openssl rsa -pubout -in /tmp/private_key.pem -out /tmp/public_key.pem
+
 awslocal secretsmanager create-secret --name local/paper-identity/public-key \
     --region "eu-west-1" \
     --description "Local dev public key" \
