@@ -56,7 +56,7 @@ class OpgApiServiceTest extends TestCase
                 'postcode' => 'LA1 2XN',
                 'country' => 'DD',
             ],
-            "personType" => "Donor",
+            "personType" => "donor",
             "lpas" => [
                 "PA M-XYXY-YAGA-35G3",
                 "PW M-VGAS-OAGA-34G9"
@@ -676,12 +676,12 @@ class OpgApiServiceTest extends TestCase
 
         $successMockResponseData = [
             "case_uuid" => "9130a21e-6e5e-4a30-8b27-76d21b747e60",
-            "LPA_Number" => "M-0000-0000-0000",
-            "Type_Of_LPA" => "Personal welfare",
-            "Donor" => "Mary Ann Chapman",
-            "Status" => "Processing",
-            "CP_Name" => "David Smith",
-            "CP_Address" => [
+            "lpa_number" => "M-0000-0000-0000",
+            "type_of_lpa" => "Personal welfare",
+            "donor" => "Mary Ann Chapman",
+            "lpa_status" => "Processing",
+            "cp_name" => "David Smith",
+            "cp_address" => [
                 "Line_1" => "82 Penny Street",
                 "Line_2" => "Lancaster",
                 "Town" => "Lancashire",

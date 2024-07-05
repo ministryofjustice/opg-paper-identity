@@ -16,7 +16,7 @@ use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
-use Application\Helpers\LpaHelper;
+use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -31,7 +31,7 @@ class CPFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
-        private readonly LpaHelper $lpaHelper,
+        private readonly LpaFormHelper $lpaFormHelper,
         private readonly array $config,
     ) {
     }
@@ -111,14 +111,15 @@ class CPFlowController extends AbstractActionController
                     $this->getRequest()
                 );
 
-                $processed = $this->lpaHelper->findLpa(
+                $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
                     $formObject,
                     $form,
                     $siriusCheck,
                     $detailsData,
                 );
-                $view->setVariables($processed->getVariables());
+
+                $view->setVariables(['lpa_response' => $processed->constructFormVariables()]);
                 $view->setVariable('form', $processed->getForm());
                 return $view->setTemplate('application/pages/cp/add_lpa');
             } else {

@@ -274,29 +274,29 @@ return [
                 'verb' => 'put',
                 'options' => [
                     'route' => '/cases/:uuid/lpas/:lpa',
-                    'child_routes' => [
-                        'put' => [
-                            'type' => Method::class,
-                            'options' => [
-                                'verb' => 'put',
-                                'defaults' => [
-                                    'controller' => Controller\IdentityController::class,
-                                    'action' => 'addCaseLpa',
-                                ],
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'addCaseLpa',
                             ],
-                            'may_terminate' => true,
                         ],
-                        'delete' => [
-                            'type' => Method::class,
-                            'options' => [
-                                'verb' => 'delete',
-                                'defaults' => [
-                                    'controller' => Controller\IdentityController::class,
-                                    'action' => 'removeCaseLpa',
-                                ],
+                        'may_terminate' => true,
+                    ],
+                    'delete' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'delete',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'removeCaseLpa',
                             ],
-                            'may_terminate' => true,
                         ],
+                        'may_terminate' => true,
                     ],
                 ],
             ],
