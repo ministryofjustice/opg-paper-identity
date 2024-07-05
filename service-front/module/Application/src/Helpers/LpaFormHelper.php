@@ -13,13 +13,12 @@ use Laminas\Http\Response;
 class LpaFormHelper
 {
     public function findLpa(
-        string        $uuid,
-        Parameters    $formData,
+        string $uuid,
+        Parameters $formData,
         FormInterface $form,
-        array         $siriusCheck,
-        array         $detailsData,
-    ): LpaFormHelperResponseDto
-    {
+        array $siriusCheck,
+        array $detailsData,
+    ): LpaFormHelperResponseDto {
         $form->setData($formData);
         $result = [
             'status' => "",
@@ -28,7 +27,7 @@ class LpaFormHelper
 
         if ($form->isValid()) {
             if (
-                !array_key_exists('opg.poas.lpastore', $siriusCheck) ||
+                ! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
                 empty($siriusCheck['opg.poas.lpastore'])
             ) {
                 return new LpaFormHelperResponseDto(
@@ -53,7 +52,7 @@ class LpaFormHelper
                     'address_match' => $idCheck['address_match'],
                     'error' => $idCheck['error']
                 ];
-            } elseif (!$this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
+            } elseif (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
                 $result['status'] = 'error';
                 $result['message'] = "This LPA has already been added to this ID check.";
             } elseif ($statusCheck['error'] === true) {
@@ -140,7 +139,7 @@ class LpaFormHelper
                     " certificate provider details on this LPA do not match. " .
                     "Edit the certificate provider record in Sirius if appropriate and find again.";
             }
-            if (!$response['address_match'] || !$response['name_match']) {
+            if (! $response['address_match'] || ! $response['name_match']) {
                 $response['error'] = true;
             }
         } catch (\Exception $exception) {
