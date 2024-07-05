@@ -91,22 +91,15 @@ class LpaFormHelper
 
     private function getLpaTypeFromSiriusResponse(array $siriusCheck): string
     {
-        try {
-            return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? '';
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
-        }
+        return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? '';
     }
 
     private function getDonorNameFromSiriusResponse(array $siriusCheck): string
     {
-        try {
-            return $siriusCheck['opg.poas.sirius']['donor']['firstname'] .
-                " " .
-                $siriusCheck['opg.poas.sirius']['donor']['surname'];
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
-        }
+        return implode(' ', [
+            $siriusCheck['opg.poas.sirius']['donor']['firstname'] ?? '',
+            $siriusCheck['opg.poas.sirius']['donor']['surname'] ?? '',
+        ]);
     }
 
     private function compareCpRecords(array $detailsData, array $siriusCheck): array
@@ -175,7 +168,7 @@ class LpaFormHelper
             ) {
                 $response['error'] = true;
                 $response['message'] = "This LPA cannot be added as an ID" .
-                " check has already been completed for this LPA.";
+                    " check has already been completed for this LPA.";
             }
             if ($response['status'] == 'draft') {
                 $response['error'] = true;
