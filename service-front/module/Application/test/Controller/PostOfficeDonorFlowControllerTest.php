@@ -49,7 +49,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "SW1B 1BB",
                 "UK"
             ],
-            "personType" => "Donor",
+            "personType" => "donor",
             "lpas" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -85,7 +85,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "SW1B 1BB",
                 "UK"
             ],
-            "personType" => "Donor",
+            "personType" => "donor",
             "lpas" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -120,7 +120,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "SW1B 1BB",
                 "UK"
             ],
-            "personType" => "Donor",
+            "personType" => "donor",
             "lpas" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -156,7 +156,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "SW1B 1BB",
                 "UK"
             ],
-            "personType" => "Donor",
+            "personType" => "donor",
             "lpas" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
