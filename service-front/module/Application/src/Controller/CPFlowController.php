@@ -39,11 +39,23 @@ class CPFlowController extends AbstractActionController
     public function howWillCpConfirmAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
+        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
-            $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+            if (array_key_exists('check_button', $formData)) {
+
+                die('here');
+//                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+//                    $uuid,
+//                    $this->getRequest()->getPost(),
+//                    $dateSubForm,
+//                    $templates
+//                );
+            } else {
+                $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+            }
         }
 
         $optionsdata = $this->config['opg_settings']['identity_methods'];
