@@ -11,7 +11,7 @@
         </div>
     {% endif %}
     {% if lpa_response %}
-        {% if lpa_response['status'] != "Success" %}
+        {% if lpa_response['status'] != "success" %}
 
             <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
                 <p class="govuk-body">
@@ -141,7 +141,7 @@
     </div>
     {% if lpa_response %}
         <form method="POST">
-            {% if lpa_response['status'] == 'Success' %}
+            {% if lpa_response['status'] == 'success' %}
                 <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['lpa_number'] }}">
                 <input type="submit" class="govuk-button" value="Add LPA to this ID check">
             {% endif %}
