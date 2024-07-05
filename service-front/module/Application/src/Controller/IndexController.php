@@ -7,7 +7,9 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
 use Application\Helpers\AddressProcessorHelper;
+use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
+use Application\Exceptions\OpgFrontException;
 use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -25,7 +27,8 @@ class IndexController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService
+        private readonly SiriusApiService $siriusApiService,
+        private readonly LpaFormHelper $lpaFormHelper
     ) {
     }
 
@@ -47,6 +50,10 @@ class IndexController extends AbstractActionController
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 
+        if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
+            $personTypeDescription = $type === 'donor' ? "Donors" : " Certificate Providers";
+            throw new OpgFrontException("These LPAs are for different " . $personTypeDescription);
+        }
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
