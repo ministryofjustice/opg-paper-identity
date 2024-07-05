@@ -679,7 +679,7 @@ class OpgApiServiceTest extends TestCase
             "lpa_number" => "M-0000-0000-0000",
             "type_of_lpa" => "Personal welfare",
             "donor" => "Mary Ann Chapman",
-            "status" => "Processing",
+            "lpa_status" => "Processing",
             "cp_name" => "David Smith",
             "cp_address" => [
                 "Line_1" => "82 Penny Street",
