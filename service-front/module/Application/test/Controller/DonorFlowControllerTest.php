@@ -43,7 +43,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -85,7 +85,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -153,7 +153,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -181,7 +181,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -209,7 +209,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -237,7 +237,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -282,7 +282,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -346,7 +346,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "dob" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
