@@ -12,25 +12,24 @@ class SessionConfig
 {
     public function build(CaseData $case, string $uuid): array
     {
-        //@todo need to throw exceptions if expected/required $casedata is not present?
         $sessionConfig = [];
-        $authToken = $uuid;//strval(Uuid::uuid4());
+        $authToken = $uuid;
 
         $sessionConfig["session_deadline"] = $this->deadlineDate();
-        $sessionConfig["resources_ttl"] = '604800';
+        $sessionConfig["resources_ttl"] = $this->getResourceTtl();
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $case->id;
         $sessionConfig["notifications"] = [
-            "endpoints" => getenv("NOTIFICATION_URL"),
+            "endpoint" => getenv("NOTIFICATION_URL"),
             "topics" => [
-                "INSTRUCTIONS_EMAIL_REQUESTED",
                 "FIRST_BRANCH_VISIT",
                 "THANK_YOU_EMAIL_REQUESTED",
+                "INSTRUCTIONS_EMAIL_REQUESTED",
                 "SESSION_COMPLETION"
-            ]
+            ],
+            "auth_token" => $authToken,
+            "auth_type" => 'BEARER'
         ];
-        $sessionConfig["auth_token"] = $authToken;
-        $sessionConfig["auth_type"] = 'BEARER';
         $sessionConfig["requested_checks"] = [
             [
                 "type" => "IBV_VISUAL_REVIEW_CHECK",
@@ -77,10 +76,12 @@ class SessionConfig
                 "type" => "ID_DOCUMENT",
                 "filter" => [
                     "type" => "DOCUMENT_RESTRICTIONS",
-                    "inclusion" => "WHITELIST",
+                    "inclusion" => "INCLUDE",
                     "documents" => [
-                        "country_codes" => "GBR",
-                        "document_types" => $this->getDocType($case->idMethod)
+                        [
+                            "country_codes" => ["GBR"],
+                            "document_types" => [$this->getDocType($case->idMethod)]
+                        ]
                     ]
                 ]
             ]
@@ -98,10 +99,17 @@ class SessionConfig
         return $sessionConfig;
     }
 
+    public function getResourceTtl(): int
+    {
+        $deadlineSeconds = strtotime($this->deadlineDate()) - time();
+
+        return $deadlineSeconds + 86400;
+    }
+
     public function deadlineDate(): string
     {
         $currentDate = new DateTime();
-        // Add 30 days to the current date
+        // Add 30 days to the current date, should be 6 month really to be on safe side?
         $currentDate->modify('+30 days');
         // Set the time to 22:00
         $currentDate->setTime(22, 0, 0);
@@ -122,9 +130,12 @@ class SessionConfig
     public function addressFormatted(array $address): array
     {
         $addressFormat = [];
+        //@TODO determine what address format we are sending, currently no country_iso, assuming all UK for now
         $addressFormat["address_format"] = "1";
-        $addressFormat["address_line_1"] = $address['line1'];
-        $addressFormat["address_line_2"] = $address['line2'];
+        $addressFormat["building_number"] = substr($address['line1'], 0, 3);
+        $addressFormat["address_line1"] = $address['line1'];
+        $addressFormat["address_line2"] = $address['line2'];
+        $addressFormat["town_city"] = $address['line3'] ?? $address['line2'];
         $addressFormat["country"] = $address['country'];
         $addressFormat["country_iso"] = "GBR";
         $addressFormat["postal_code"] = $address['postcode'];

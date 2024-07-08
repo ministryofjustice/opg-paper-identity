@@ -19,6 +19,7 @@ use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
+use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
@@ -29,6 +30,7 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
+
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
@@ -345,7 +347,6 @@ return [
 
     'service_manager' => [
         'invokables' => [
-
         ],
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
@@ -358,6 +359,7 @@ return [
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
             ),
+            SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
