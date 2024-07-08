@@ -42,8 +42,11 @@ jobs:
 
   test:
     name: Test
-    needs: [build]
+    needs: [branch_name, build, semver_tag]
     uses: ./.github/workflows/test.yml
+    with:
+      branch: ${{ needs.branch_name.outputs.branch_name }}
+      tag: ${{ needs.semver_tag.outputs.tag }}
 
   push:
     name: "ECR push"
