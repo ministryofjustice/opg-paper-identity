@@ -40,7 +40,8 @@ front-unit-test: ## Run front end unit tests
 		--broker-username admin \
 		--consumer-app-version $(PACT_CONSUMER_VERSION) \
 		--branch $(PACT_CONSUMER_BRANCH) \
-		--tag $(PACT_CONSUMER_TAG)
+		--tag $(PACT_CONSUMER_TAG) \
+		-v
 
 api-test:
 	@${MAKE} api-psalm api-phpcs api-unit-test -j 3
