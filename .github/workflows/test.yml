@@ -2,6 +2,15 @@ name: "[Job] Test"
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        description: "Branch"
+        required: false
+        type: string
+      tag:
+        description: "Tag"
+        required: false
+        type: string
 
 defaults:
   run:
@@ -36,6 +45,9 @@ jobs:
         run: |
           mkdir -m 0777 service-${{ matrix.service }}/build
       - name: Run Tests
+        env:
+          PACT_CONSUMER_BRANCH: ${{ inputs.branch }}
+          PACT_CONSUMER_TAG: ${{ inputs.tag }}
         run: |
           make ${{ matrix.service }}-${{ matrix.suite }}
       - name: Clean JUnit output
