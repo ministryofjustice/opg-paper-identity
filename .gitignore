@@ -15,6 +15,7 @@ development.config.php
 # ci files
 service-api/build
 service-front/build
+build
 .phpunit.cache
 .psalm-cache
 # vendor files
