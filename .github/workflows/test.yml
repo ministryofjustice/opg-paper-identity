@@ -2,6 +2,19 @@ name: "[Job] Test"
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        description: "Branch"
+        required: true
+        type: string
+      tag:
+        description: "Tag"
+        required: true
+        type: string
+    secrets:
+      pact_broker_password:
+        description: 'Password for central OPG pact broker'
+        required: true
 
 defaults:
   run:
@@ -35,7 +48,14 @@ jobs:
       - name: Create test output dir
         run: |
           mkdir -m 0777 service-${{ matrix.service }}/build
+      - name: Set version env var
+        run: |
+          echo "PACT_CONSUMER_VERSION=$(git rev-parse HEAD)" >> $GITHUB_ENV
       - name: Run Tests
+        env:
+          PACT_CONSUMER_BRANCH: ${{ inputs.branch }}
+          PACT_CONSUMER_TAG: ${{ inputs.tag }}
+          PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
         run: |
           make ${{ matrix.service }}-${{ matrix.suite }}
       - name: Clean JUnit output
