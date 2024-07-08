@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
-use Application\Validators\PassportDateValidatorCp;
+use Application\Validators\PassportDateValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
@@ -17,7 +17,7 @@ class PassportDateCp
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(PassportDateValidatorCp::class)]
+    #[Annotation\Validator(PassportDateValidator::class, options: ['expiry_allowance' => '+3 year'])]
     public mixed $passport_date;
     /**
      * @psalm-suppress PossiblyUnusedProperty
