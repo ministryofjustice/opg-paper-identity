@@ -2,6 +2,15 @@ name: "[Job] Test"
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        description: "Branch"
+        required: false
+        type: string
+      tag:
+        description: "Tag"
+        required: false
+        type: string
 
 defaults:
   run:
@@ -36,7 +45,13 @@ jobs:
         run: |
           mkdir -m 0777 service-${{ matrix.service }}/build
       - name: Run Tests
+        env:
+          PACT_CONSUMER_BRANCH: ${{ inputs.branch }}
+          PACT_CONSUMER_TAG: ${{ inputs.tag }}
+          PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
         run: |
+          echo "PACT_CONSUMER_VERSION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
           make ${{ matrix.service }}-${{ matrix.suite }}
       - name: Clean JUnit output
         if: always()
