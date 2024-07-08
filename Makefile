@@ -28,7 +28,19 @@ front-phpcs: ## Run PHPCS checks against front end code
 	docker compose -p front-phpcs run --rm front-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
 
 front-unit-test: ## Run front end unit tests
-	docker compose -p front-unit-test run --rm front-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
+	docker compose -p front-unit-test run --rm --volume ${PWD}/build/output/pacts:/tmp/pacts front-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
+
+	docker run --rm \
+		-v ${PWD}/build/output/pacts:/tmp/output \
+		-e PACT_BROKER_PASSWORD \
+		pactfoundation/pact-cli:latest \
+		publish \
+		/tmp/output \
+		--broker-base-url https://pact-broker.api.opg.service.justice.gov.uk \
+		--broker-username admin \
+		--consumer-app-version $(PACT_CONSUMER_VERSION) \
+		--branch $(PACT_CONSUMER_BRANCH) \
+		--tag $(PACT_CONSUMER_TAG)
 
 api-test:
 	@${MAKE} api-psalm api-phpcs api-unit-test -j 3
