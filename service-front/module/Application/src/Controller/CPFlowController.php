@@ -11,6 +11,7 @@ use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
+use Application\Forms\PassportDateCp;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Forms\PostOfficePostcode;
@@ -38,20 +39,25 @@ class CPFlowController extends AbstractActionController
 
     public function howWillCpConfirmAction(): ViewModel|Response
     {
+        $templates = [
+            'default' => 'application/pages/cp/how_will_the_cp_confirm'
+        ];
+        $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
+        $dateSubForm = (new AttributeBuilder())->createForm(PassportDateCp::class);
+        $view->setVariable('date_sub_form', $dateSubForm);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             if (array_key_exists('check_button', $formData)) {
-
-                die('here');
-//                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-//                    $uuid,
-//                    $this->getRequest()->getPost(),
-//                    $dateSubForm,
-//                    $templates
-//                );
+                $dateSubForm->setData($this->getRequest()->getPost());
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $dateSubForm,
+                    $templates
+                );
+                $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
                 $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
                 return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
@@ -61,13 +67,11 @@ class CPFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view = new ViewModel();
-
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
-        return $view->setTemplate('application/pages/cp/how_will_the_cp_confirm');
+        return $view->setTemplate($templates['default']);
     }
 
     public function nameMatchCheckAction(): ViewModel

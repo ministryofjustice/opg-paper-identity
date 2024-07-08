@@ -113,7 +113,7 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="govuk-form-group">
+        <div class="govuk-form-group govuk-!-width-two-thirds">
             <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the post office</h2>
 
 
@@ -121,10 +121,31 @@
                 <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
                        value="po">
                 <label class="govuk-label govuk-radios__label" for="PostOffice">
-                    Post Office (current UK / EU international passport or UK driving licence)
+                    Post office (UK passport (up to 18 months expired), UK driving licence or current EU passport or driving licence)
                 </label>
             </div>
         </div>
+        <details class="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Other methods
+                </span>
+            </summary>
+            <div class="govuk-details__text">
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
+                               value="OnBehalf">
+                        <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their identity on donor's behalf</label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
+                               value="cpr">
+                        <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of protection</label>
+                    </div>
+                </div>
+            </div>
+        </details>
         <input type="submit" class="govuk-button" value="Continue">
     </form>
 
