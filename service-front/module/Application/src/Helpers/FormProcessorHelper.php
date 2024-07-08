@@ -158,32 +158,4 @@ class FormProcessorHelper
             ],
         );
     }
-
-    public function stringifyAddresses(array $addresses): array
-    {
-        $stringified = [];
-
-        foreach ($addresses as $arr) {
-            if (array_key_exists('description', $arr)) {
-                unset($arr['description']);
-            }
-            $string = function (array $arr): string {
-                $str = "";
-                foreach ($arr as $line) {
-                    if (strlen($line) > 0) {
-                        $str .= $line . ", ";
-                    }
-                }
-                return $str;
-            };
-            $index = json_encode($arr);
-
-            $stringified[$index] = substr(
-                $string($arr),
-                0,
-                strlen($string($arr)) - 2
-            );
-        }
-        return $stringified;
-    }
 }

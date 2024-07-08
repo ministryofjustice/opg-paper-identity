@@ -22,8 +22,8 @@ RUN apk --no-cache add fcgi icu-dev autoconf linux-headers $PHPIZE_DEPS \
     && docker-php-ext-install opcache intl \
     && docker-php-ext-enable sodium
 
-# Patch curl Vulnerability 20230220
-RUN apk upgrade --no-cache libxml2
+# Patch Vulnerabilities
+RUN apk upgrade --no-cache openssl
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
