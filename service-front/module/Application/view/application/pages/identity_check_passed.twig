@@ -1,3 +1,5 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
     <main class="govuk-main-wrapper govuk-!-width-two-thirds">
@@ -6,7 +8,7 @@
                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
                 <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
             </svg>
-            <div class="moj-banner__message">Identity check passed.</div>
+            <div class="moj-banner__message">{% block title %}Identity check passed.{% endblock %}</div>
         </div>
 
         <div class="govuk-form-group">
@@ -129,3 +131,4 @@
         <button class="govuk-button">Continue</button>
     </main>
 </div>
+{% endblock %}

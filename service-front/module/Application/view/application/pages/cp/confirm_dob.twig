@@ -1,8 +1,10 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-            <h1 class="govuk-heading-xl">What is their date of birth?</h1>
+            <h1 class="govuk-heading-xl">{% block title %}What is their date of birth?{% endblock %}</h1>
 
             <p class="govuk-body govuk-!-width-two-thirds">
                 To perform the fraud and identity checks we need some additional
@@ -65,5 +67,5 @@
             </div>
             <input type="submit" class="govuk-button" value="Continue">
         </form>
-
-</div>
+    </div>
+{% endblock %}

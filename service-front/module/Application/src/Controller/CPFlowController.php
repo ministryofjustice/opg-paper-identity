@@ -245,7 +245,6 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
-
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,

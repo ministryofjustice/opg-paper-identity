@@ -1,7 +1,9 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
 
-        <h1 class="govuk-heading-xl">Does the name match the ID?</h1>
+        <h1 class="govuk-heading-xl">{% block title %}Does the name match the ID?{% endblock %}</h1>
 
         <p class="govuk-body">
             The certificate provider’s name that is recorded in Sirius should be identical <br/> to how it is printed on the ID document they have chosen to prove their <br/> identity with. If there is a mis-match, amend in Sirius as appropriate.
@@ -24,3 +26,4 @@
         <a href="./confirm-lpas" class="govuk-button">Continue</a>
 
 </div>
+{% endblock %}
