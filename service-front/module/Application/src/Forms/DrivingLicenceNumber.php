@@ -8,6 +8,7 @@ use Application\Validators\DLNValidator;
 use Application\Validators\DLNDateValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
@@ -25,5 +26,6 @@ class DrivingLicenceNumber
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(DLNDateValidator::class)]
-    public mixed $inDate;
+    #[Annotation\Validator(NotEmpty::class, options: ["messages" => [NotEmpty::IS_EMPTY => "Please choose yes or no"]])]
+    public mixed $inDate = null;
 }

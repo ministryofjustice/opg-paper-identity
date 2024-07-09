@@ -1,8 +1,10 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
 
     <form method="POST">
-        <h1 class="govuk-heading-xl">Choose how to prove their identity</h1>
+        <h1 class="govuk-heading-xl">{% block title %}Choose how to prove their identity{% endblock %}</h1>
 
         <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
         <div class="govuk-form-group">
@@ -148,5 +150,5 @@
         </details>
         <input type="submit" class="govuk-button" value="Continue">
     </form>
-
 </div>
+{% endblock %}

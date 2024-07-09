@@ -264,8 +264,12 @@ class DonorFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
+        $lpasData = [];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData[$lpa] = $detailsData['firstName'] . " " .
+                $detailsData['lastName'];
+        }
 
         $view = new ViewModel();
 

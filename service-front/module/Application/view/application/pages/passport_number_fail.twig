@@ -1,6 +1,8 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
-
+    <h1 class="govuk-heading-xl moj-hidden">{% block title %}UK passport{% endblock %}</h1>
         <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
             <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -14,7 +16,7 @@
         </p>
         <h2 class="govuk-heading-m">Date of birth</h2>
         <p class="govuk-body">
-            {{ details_data.dob }}
+            {{ dob_full }}
         </p>
         <h2 class="govuk-heading-m">Passport number</h2>
         <p class="govuk-body">
@@ -25,11 +27,12 @@
             {{ passport_indate }}
         </p>
         <a href="./passport-number" class="govuk-button">Edit details</a>
-        <p class="govuk-body">
+{#        <p class="govuk-body">#}
             <a href="./how-will-donor-confirm" role="button" draggable="false"
                class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2" data-module="govuk-button">
                 Try a different method
             </a>
-        </p>
+{#        </p>#}
 
 </div>
+{% endblock %}

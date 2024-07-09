@@ -1,8 +1,10 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-            <h1 class="govuk-heading-xl">What is their date of birth?</h1>
+            <h1 class="govuk-heading-xl">{% block title %}What is their date of birth?{% endblock %}</h1>
 
             <p class="govuk-body govuk-!-width-two-thirds">
                 To perform the fraud and identity checks we need some additional
@@ -21,7 +23,7 @@
             </div>
             <div class="govuk-form-group">
                 <h2 class="govuk-heading-m">Enter date of birth</h2>
-                <p class="govuk-body">Enter date of birth, for example 31 03 1980</p>
+                <p class="govuk-body app-text-gray">Enter date of birth, for example 31 03 1980</p>
             </div>
             <div class="govuk-form-group {% if form.get('date').messages %}govuk-form-group--error{% endif %}">
                 {% if form.get('date').messages %}
@@ -33,7 +35,7 @@
                 <div class="govuk-date-input" id="date-of-birth">
                     <div class="govuk-date-input__item">
                         <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="dob-day">
+                            <label class="govuk-label govuk-date-input__label app-text-gray" for="dob-day">
                                 Day
                             </label>
                             <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="dob-day"
@@ -43,7 +45,7 @@
                     </div>
                     <div class="govuk-date-input__item">
                         <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="dob-month">
+                            <label class="govuk-label govuk-date-input__label app-text-gray" for="dob-month">
                                 Month
                             </label>
                             <input class="govuk-input govuk-date-input__input govuk-input--width-2"
@@ -53,7 +55,7 @@
                     </div>
                     <div class="govuk-date-input__item">
                         <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label" for="dob-year">
+                            <label class="govuk-label govuk-date-input__label app-text-gray" for="dob-year">
                                 Year
                             </label>
                             <input class="govuk-input govuk-date-input__input govuk-input--width-4"
@@ -65,5 +67,5 @@
             </div>
             <input type="submit" class="govuk-button" value="Continue">
         </form>
-
-</div>
+    </div>
+{% endblock %}
