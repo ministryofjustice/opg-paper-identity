@@ -253,6 +253,16 @@ return [
                     ],
                 ]
             ],
+            'download_pdf_letter' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/download-pdf',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'downloadPDF',
+                    ],
+                ]
+            ],
             'add_search_postcode' => [
                 'type' => Segment::class,
                 'options' => [

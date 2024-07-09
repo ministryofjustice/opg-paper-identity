@@ -15,6 +15,7 @@ use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -72,12 +73,28 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Missing uuid']);
         }
-        $sessionUuid = strval(Uuid::uuid4());
+        $notifyAuthToken = strval(Uuid::uuid4());
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
-        $sessionData = $this->sessionConfig->build($caseData, $sessionUuid);
+        $sessionData = $this->sessionConfig->build($caseData, $notifyAuthToken);
 
         try {
             $result = $this->yotiService->createSession($sessionData);
+
+            if ($result["status"] < 400) {
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'sessionId',
+                    'S',
+                    $result["data"]["session_id"]
+                );
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'notifyAuthToken',
+                    'S',
+                    $notifyAuthToken
+                );
+            }
+
         } catch (YotiException $e) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem(
@@ -115,10 +132,28 @@ class YotiController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function getPDFLetterAction(string $session): JsonModel
+    public function getPDFLetterAction(): JsonModel
     {
+        $uuid = $this->params()->fromRoute('uuid');
+        $caseData = $this->dataQuery->getCaseByUUID($uuid);
         $data = [];
-        $data['response'] = $this->yotiService->retrieveLetterPDF($session);
+        $data['response'] = $this->yotiService->retrieveLetterPDF($caseData);
         return new JsonModel($data);
+    }
+
+    public function downloadPDFAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        $data = [];
+        $data = $this->yotiService->generatePDFLetter($caseData);
+
+        // Write pdf to file
+        $fileName = 'instructions.pdf';
+        $content = file_put_contents($fileName, $data['pdfData']);
+
+        $this->getResponse()->setContent($content);
+
+        //return new JsonModel(["Status" => "PDF Created"]);
     }
 }

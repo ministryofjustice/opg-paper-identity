@@ -117,7 +117,7 @@ class SessionConfig
         return $currentDate->format(DateTime::ATOM);
     }
 
-    public function getDocType(?string $idMethod): string
+    public static function getDocType(?string $idMethod): string
     {
         $drivingLicenceOptions = ["po_ukd", "po_eud"];
         if (in_array($idMethod, $drivingLicenceOptions)) {
