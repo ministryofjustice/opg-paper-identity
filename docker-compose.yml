@@ -10,6 +10,8 @@ services:
       retries: 3
     volumes:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
+    ports:
+      - 8088:4010
 
   yoti-mock:
     image: paper-identity/yoti-mock
@@ -104,6 +106,9 @@ services:
       context: service-front
       dockerfile: Dockerfile
       target: development
+    depends_on:
+      pact-mock:
+        condition: service_healthy
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
@@ -177,8 +182,6 @@ services:
   localstack:
     image: localstack/localstack:3.5
     volumes:
-      - "./scripts/localstack/init/private_key.pem:/tmp/private_key.pem"
-      - "./scripts/localstack/init/public_key.pem:/tmp/public_key.pem"
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
 
@@ -190,6 +193,29 @@ services:
       timeout: 30s
       retries: 50
     restart: unless-stopped
+
+  pact-mock:
+    image: pactfoundation/pact-cli:latest
+    command:
+      - mock-service
+      - -p
+      - "80"
+      - --host
+      - "0.0.0.0"
+      - --pact-dir
+      - /tmp/pacts
+      - --consumer
+      - paper-identity
+      - --provider
+      - ${PACT_PROVIDER_NAME:-sirius}
+    volumes:
+      - "./build/output/pacts:/tmp/pacts"
+    healthcheck:
+      test: "wget -O /dev/null -S 'http://0.0.0.0/' --header='X-Pact-Mock-Service: true' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   static-content:

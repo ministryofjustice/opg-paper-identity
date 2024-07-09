@@ -6,13 +6,15 @@ namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Helpers\DTO\FormProcessorResponseDto;
+use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 
 class FormProcessorHelper
 {
-    public function __construct(private OpgApiServiceInterface $opgApiService)
-    {
+    public function __construct(
+        private OpgApiServiceInterface $opgApiService
+    ) {
     }
 
     public function processDrivingLicenceForm(
@@ -134,30 +136,6 @@ class FormProcessorHelper
             $form,
             $template,
             $variables
-        );
-    }
-
-    public function findLpa(
-        string $uuid,
-        Parameters $formData,
-        FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
-        $form->setData($formData);
-        $formArray = $formData->toArray();
-        $responseData = [];
-
-        if ($form->isValid()) {
-            $responseData = $this->opgApiService->findLpa($uuid, $formArray['lpa']);
-        }
-
-        return new FormProcessorResponseDto(
-            $uuid,
-            $form,
-            $templates['default'],
-            [
-                'lpa_response' => $responseData
-            ],
         );
     }
 }
