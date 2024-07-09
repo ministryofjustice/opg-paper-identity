@@ -80,4 +80,88 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals('Forston', $addresses[0]['town']);
         $this->assertEquals('FR6 2FJ', $addresses[0]['postcode']);
     }
+
+    public function testGetLpaByUid(): void
+    {
+        $request = new ConsumerRequest();
+        $request
+            ->setMethod('GET')
+            ->setPath('/api/v1/digital-lpas/M-1234-9876-4567');
+
+        $matcher = new Matcher();
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(200)
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody([
+                'opg.poas.sirius' => [
+                    'donor' => [
+                        'firstname' => $matcher->like('Erma'),
+                        'surname' => $matcher->like('Muresan'),
+                        'dob' => $matcher->regex('19/10/1930', '^\d{1,2}\/\d{1,2}\/\d{4}$'),
+                        'addressLine1' => $matcher->like('18 Leith Road'),
+                        'addressLine2' => $matcher->like('West Verpar'),
+                        'addressLine3' => $matcher->like('Smithhay'),
+                        'town' => $matcher->like('Forston'),
+                        'postcode' => $matcher->like('FR6 2FJ'),
+                        'country' => $matcher->like('GB'),
+                    ],
+                ],
+                'opg.poas.lpastore' => [
+                    'donor' => [
+                        'firstNames' => $matcher->like('Mikel'),
+                        'lastName' => $matcher->like('Lancz'),
+                        'dateOfBirth' => $matcher->regex('1951-10-05', '^\d{4}-\d{1,2}-\d{1,2}$'),
+                        'address' => [
+                            'line1' => $matcher->like('Flat 19'),
+                            'country' => $matcher->like('GB'),
+                        ]
+                    ],
+                    'certificateProvider' => [
+                        'firstNames' => $matcher->like('Dorian'),
+                        'lastName' => $matcher->like('Rehkop'),
+                        'address' => [
+                            'line1' => $matcher->like('104, Alte Lindenstraße'),
+                            'country' => $matcher->like('DE'),
+                        ]
+                    ]
+                ]
+            ]);
+
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('A request for an LPA')
+            ->with($request)
+            ->willRespondWith($response);
+
+        $lpa = $this->sut->getLpaByUid('M-1234-9876-4567', new Request());
+
+        $this->assertEquals('18 Leith Road', $lpa['opg.poas.sirius']['donor']['addressLine1']);
+
+        $this->assertEquals('Erma', $lpa['opg.poas.sirius']['donor']['firstname']);
+        $this->assertEquals('Muresan', $lpa['opg.poas.sirius']['donor']['surname']);
+        $this->assertEquals('19/10/1930', $lpa['opg.poas.sirius']['donor']['dob']);
+        $this->assertEquals('18 Leith Road', $lpa['opg.poas.sirius']['donor']['addressLine1']);
+        $this->assertEquals('West Verpar', $lpa['opg.poas.sirius']['donor']['addressLine2'] ?? '');
+        $this->assertEquals('Smithhay', $lpa['opg.poas.sirius']['donor']['addressLine3'] ?? '');
+        $this->assertEquals('Forston', $lpa['opg.poas.sirius']['donor']['town'] ?? '');
+        $this->assertEquals('FR6 2FJ', $lpa['opg.poas.sirius']['donor']['postcode'] ?? '');
+        $this->assertEquals('GB', $lpa['opg.poas.sirius']['donor']['country']);
+
+        $this->assertEquals('Mikel', $lpa['opg.poas.lpastore']['donor']['firstNames'] ?? '');
+        $this->assertEquals('Lancz', $lpa['opg.poas.lpastore']['donor']['lastName'] ?? '');
+        $this->assertEquals('1951-10-05', $lpa['opg.poas.lpastore']['donor']['dateOfBirth'] ?? '');
+
+        $donorAddress = $lpa['opg.poas.lpastore']['donor']['address'] ?? [];
+        $this->assertEquals('Flat 19', $donorAddress['line1'] ?? '');;
+        $this->assertEquals('GB', $donorAddress['country'] ?? '');
+
+        $this->assertEquals('Dorian', $lpa['opg.poas.lpastore']['certificateProvider']['firstNames'] ?? '');
+        $this->assertEquals('Rehkop', $lpa['opg.poas.lpastore']['certificateProvider']['lastName'] ?? '');
+
+        $cpAddress = $lpa['opg.poas.lpastore']['certificateProvider']['address'] ?? [];
+        $this->assertEquals('104, Alte Lindenstraße', $cpAddress['line1'] ?? '');
+        $this->assertEquals('DE', $cpAddress['country'] ?? '');
+    }
 }
