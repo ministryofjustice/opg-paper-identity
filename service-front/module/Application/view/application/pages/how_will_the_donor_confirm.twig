@@ -1,8 +1,11 @@
+{% extends "layout/layout" %}
+
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
 
-    <form method="POST">
-        <h1 class="govuk-heading-xl govuk-!-width-two-thirds">How will they confirm their identity</h1>
+        <form method="POST">
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}How will they confirm their identity{% endblock %}</h1>
 
         <p class="govuk-body govuk-!-width-two-thirds">
             Confirming their identity over the phone is the quickest and easiest option - they'll need an NI number,
@@ -163,3 +166,4 @@
     </form>
 
 </div>
+{% endblock %}
