@@ -31,7 +31,6 @@ use Application\Helpers\AddressProcessorHelper;
  *      addressLine2?: string,
  *      addressLine3?: string,
  *      town?: string,
- *      county?: string,
  *      postcode?: string,
  *      country: string,
  *    },
