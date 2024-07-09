@@ -213,4 +213,28 @@ class LpaFormHelper
         }
         return true;
     }
+
+    public function lpaIdentitiesMatch(array $lpas, string $type): bool
+    {
+        if (count($lpas) == 1) {
+            return true;
+        }
+
+        $name = $lpas[0]['opg.poas.lpastore'][$type]['firstNames'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+
+        $address = $lpas[0]['opg.poas.lpastore'][$type]['address']['line1'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+        foreach ($lpas as $lpa) {
+            $nextname = $lpa['opg.poas.lpastore'][$type]['firstNames'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+
+            $nextAddress = $lpa['opg.poas.lpastore'][$type]['address']['line1'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+            if ($name !== $nextname || $address !== $nextAddress) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
