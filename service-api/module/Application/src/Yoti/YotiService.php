@@ -26,6 +26,8 @@ class YotiService implements YotiServiceInterface
     public function __construct(
         public readonly Client $client,
         private readonly LoggerInterface $logger,
+        private readonly AwsSecret $sdkId,
+        private readonly AwsSecret $key
     ) {
     }
 
@@ -78,34 +80,18 @@ class YotiService implements YotiServiceInterface
      */
     public function createSession(array $sessionData): array
     {
-        $sdkId = new AwsSecret('yoti/sdk-client-id');
-
         $body = json_encode($sessionData);
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
-        try {
-            $requestSignature = RequestSigner::generateSignature(
-                '/sessions?sdkId=' . $sdkId->getValue() . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
-                'POST',
-                new AwsSecret('yoti/certificate'),
-                $body
-            );
-        } catch (Http\Exception\PemFileException $e) {
-            throw new YotiException("There was a problem with Pem file");
-        } catch (Http\Exception\RequestSignException $e) {
-            throw new YotiException("Unable to create request signature");
-        }
-        $headers = [
-            'X-Yoti-Auth-Digest' => $requestSignature
-        ];
+
+        $headers = $this->getSignedRequest('/sessions', 'POST', $nonce, $timestamp, $body);
 
         try {
             $results = $this->client->post('/idverify/v1/sessions', [
                 'headers' => $headers,
-                'query' => ['sdkId' => $sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
-                'body' => $body,
-                'debug' => true
+                'query' => ['sdkId' => $this->sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
+                'body' => $body
             ]);
 
             if ($results->getStatusCode() !== Response::STATUS_CODE_201) {
@@ -145,34 +131,24 @@ class YotiService implements YotiServiceInterface
         $requirementID = $config['capture']['required_resources'][0]['id'];
         $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
         //var_dump($payload); die;
-        $sdkId = new AwsSecret('yoti/sdk-client-id');
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
 
-        try {
-            $requestSignature = RequestSigner::generateSignature(
-                '/sessions/'. $caseData->sessionId. '/instructions?sdkId=' . $sdkId->getValue()
-                .'&sessionId='.$caseData->sessionId. '&nonce=' .$nonce.'&timestamp=' .$timestamp,
-                'PUT',
-                new AwsSecret('yoti/certificate'),
-                $payload
-
-            );
-        } catch (Http\Exception\PemFileException $e) {
-            throw new YotiException("There was a problem with Pem file");
-        } catch (Http\Exception\RequestSignException $e) {
-            throw new YotiException("Unable to create request signature");
-        }
-        $headers = [
-            'X-Yoti-Auth-Digest' => $requestSignature
-        ];
+        $headers = $this->getSignedRequest(
+            '/sessions/'.$caseData->sessionId.'/instructions',
+            'PUT',
+            $nonce,
+            $timestamp,
+            $payload,
+            $caseData->sessionId
+        );
 
         try {
             $config = $this->client->put('/idverify/v1/sessions/'. $caseData->sessionId. '/instructions', [
                 'headers' => $headers,
                 'query' => [
-                    'sdkId' => $sdkId->getValue(),
+                    'sdkId' => $this->sdkId->getValue(),
                     'sessionId' => $caseData->sessionId,
                     'nonce' => $nonce,
                     'timestamp'=>$timestamp
@@ -195,7 +171,6 @@ class YotiService implements YotiServiceInterface
             ]);
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
-
         //return $config;
     }
     /**
@@ -206,35 +181,25 @@ class YotiService implements YotiServiceInterface
      */
     private function getSessionConfigFromYoti(string $yotiSessionId): array
     {
-        $sdkId = new AwsSecret('yoti/sdk-client-id');
+
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
 
-        try {
-            $requestSignature = RequestSigner::generateSignature(
-                '/sessions/'. $yotiSessionId. '/configuration?sdkId=' . $sdkId->getValue()
-                .'&sessionId='.$yotiSessionId. '&nonce=' .$nonce.'&timestamp=' .$timestamp,
-                'GET',
-                new AwsSecret('yoti/certificate'),
-
-            );
-        } catch (Http\Exception\PemFileException $e) {
-            throw new YotiException("There was a problem with Pem file");
-        } catch (Http\Exception\RequestSignException $e) {
-            throw new YotiException("Unable to create request signature");
-        }
-        //var_dump($requestSignature); die;
-
-        $headers = [
-            'X-Yoti-Auth-Digest' => $requestSignature
-        ];
+        $headers = $this->getSignedRequest(
+            '/sessions/'. $yotiSessionId. '/configuration',
+            'GET',
+            $nonce,
+            $timestamp,
+            null,
+            $yotiSessionId
+        );
 
         try {
             $config = $this->client->get('/idverify/v1/sessions/'. $yotiSessionId. '/configuration', [
                 'headers' => $headers,
                 'query' => [
-                    'sdkId' => $sdkId->getValue(),
+                    'sdkId' => $this->sdkId->getValue(),
                     'sessionId' => $yotiSessionId,
                     'nonce' => $nonce,
                     'timestamp'=>$timestamp
@@ -248,6 +213,7 @@ class YotiService implements YotiServiceInterface
                 throw new YotiException("Error: " . $config->getReasonPhrase());
             }
             return json_decode(strval($config->getBody()), true);
+
         } catch (GuzzleException $e) {
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
                 'data' => [ ]
@@ -264,26 +230,24 @@ class YotiService implements YotiServiceInterface
     public function generatePDFLetter(CaseData $caseData): array
     {
         //need error validation here if this is called before instructions are set etc
-        $sdkId = new AwsSecret('yoti/sdk-client-id');
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
 
+        $headers = $this->getSignedRequest(
+            '/sessions/' . $caseData->sessionId . '/instructions/pdf',
+            'GET',
+            $nonce,
+            $timestamp,
+            null,
+            $caseData->sessionId
+        );
         try {
-            $finalSignature = RequestSigner::generateSignature(
-                '/sessions/' . $caseData->sessionId . '/instructions/pdf?sdkId=' . $sdkId->getValue()
-                . '&sessionId=' . $caseData->sessionId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
-                'GET',
-                new AwsSecret('yoti/certificate'),
-            );
-            $finalHeaders = [
-                'X-Yoti-Auth-Digest' => $finalSignature
-            ];
 
             $pdfData = $this->client->get('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions/pdf', [
-                'headers' => $finalHeaders,
+                'headers' => $headers,
                 'query' => [
-                    'sdkId' => $sdkId->getValue(),
+                    'sdkId' => $this->sdkId->getValue(),
                     'sessionId' => $caseData->sessionId,
                     'nonce' => $nonce,
                     'timestamp' => $timestamp
@@ -292,7 +256,6 @@ class YotiService implements YotiServiceInterface
         } catch (GuzzleException $e){
 
         }
-
         $base64 = base64_encode(strval($pdfData->getBody()));
         // Convert base64 to pdf
         $pdf = base64_decode($base64);
@@ -324,5 +287,38 @@ class YotiService implements YotiServiceInterface
           "fad_code" => $caseData->selectedPostOffice
         ];
         return $payload;
+    }
+
+    public function getSignedRequest(
+        string $endpoint,
+        string $method,
+        string $nonce,
+        int $time,
+        string $body = null,
+        string $sessionId = null,
+    ): array
+    {
+        $apiEndpoint = $endpoint. '?sdkId='.$this->sdkId->getValue();
+        if ($sessionId !== null) {
+            $apiEndpoint = $apiEndpoint. '&sessionId='.$sessionId;
+        }
+        try {
+            $requestSignature = RequestSigner::generateSignature(
+                $apiEndpoint.'&nonce='.$nonce. '&timestamp='.$time,
+                $method,
+                $this->key,
+                $body
+            );
+        } catch (Http\Exception\PemFileException $e) {
+            throw new YotiException("There was a problem with Pem file");
+        } catch (Http\Exception\RequestSignException $e) {
+            throw new YotiException("Unable to create request signature");
+        }
+
+        $headers = [
+            'X-Yoti-Auth-Digest' => $requestSignature
+        ];
+
+        return $headers;
     }
 }

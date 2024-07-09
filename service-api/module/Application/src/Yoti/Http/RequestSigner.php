@@ -42,7 +42,7 @@ class RequestSigner
         if ($payload !== null) {
             $messageToSign .= "&" . base64_encode($payload);
         }
-
+        //var_dump($messageToSign); die;
         if ($pemFile->getValue() === '') {
             throw new PemFileException('Unable to get pemFile or is empty');
         }
