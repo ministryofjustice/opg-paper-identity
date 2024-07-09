@@ -1,67 +1,86 @@
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
-
         <form method="POST">
-            <h1 class="govuk-heading-xl">What is their date of birth?</h1>
-
-            <p class="govuk-body govuk-!-width-two-thirds">
-                To perform the fraud and identity checks we need some additional
-                information including date of birth. We do not hold the certificate provider's
-                date of birth in Sirius as standard, so we need to ask for this now.
-            </p>
             <div class="govuk-form-group">
-                <div class="govuk-warning-text">
-                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                        <span class="govuk-visually-hidden">Warning</span>
-                        Note: date of birth is only used for this identity check, we will not <br>
-                        save it or store it in Sirius.
-                    </strong>
-                </div>
-            </div>
-            <div class="govuk-form-group">
-                <h2 class="govuk-heading-m">Enter date of birth</h2>
-                <p class="govuk-body app-text-gray">Enter date of birth, for example 31 03 1980</p>
-            </div>
-            <div class="govuk-form-group {% if form.get('date').messages %}govuk-form-group--error{% endif %}">
-                {% if form.get('date').messages %}
-                    <p id="lpa-error" class="govuk-error-message">
-                        <span class="govuk-visually-hidden">Error:</span>
-                        {{ form.get('date').messages | join(', ', ' and ') }}
+                <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            What is their date of birth?
+                        </h1>
+                    </legend>
+                    <p class="govuk-body govuk-!-width-two-thirds">
+                        To perform the fraud and identity checks we need some additional
+                        information including date of birth. We do not hold the certificate provider's
+                        date of birth in Sirius as standard, so we need to ask for this now.
                     </p>
-                {% endif %}
-                <div class="govuk-date-input" id="date-of-birth">
-                    <div class="govuk-date-input__item">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label app-text-gray" for="dob-day">
-                                Day
-                            </label>
-                            <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="dob-day"
-                                   name="dob_day" type="text" inputmode="numeric"
-                                   value="{{ form.get('dob_day').value }}">
+                    <div class="govuk-form-group">
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                <span class="govuk-visually-hidden">Warning</span>
+                                Note: date of birth is only used for this identity check, we will not <br>
+                                save it or store it in Sirius.
+                            </strong>
                         </div>
                     </div>
-                    <div class="govuk-date-input__item">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label app-text-gray" for="dob-month">
-                                Month
-                            </label>
-                            <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                   name="dob_month" id="dob-month" type="text" inputmode="numeric"
-                                   value="{{ form.get('dob_month').value }}">
+                    <h2 class="govuk-heading-m">Enter date of birth</h2>
+                    <div id="passport-issued-hint" class="govuk-hint">
+                        Enter date of birth, for example 31 03 1980
+                    </div>
+                    {% if form.get('date').messages %}
+                        <p id="lpa-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {{ form.get('date').messages | join(', ', ' and ') }}
+                        </p>
+                    {% endif %}
+                    <div class="govuk-date-input" id="passport-issued">
+                        <div class="govuk-date-input__item">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label govuk-date-input__label" for="dob-day">
+                                    Day
+                                </label>
+                                <input
+                                    class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                    id="dob-day"
+                                    name="dob_day"
+                                    type="text"
+                                    inputmode="numeric"
+                                    value="{{ form.get('dob_day').value }}"
+                                >
+                            </div>
+                        </div>
+                        <div class="govuk-date-input__item">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label govuk-date-input__label" for="dob-month">
+                                    Month
+                                </label>
+                                <input
+                                    class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                    id="dob-month"
+                                    name="dob_month"
+                                    type="text"
+                                    inputmode="numeric"
+                                    value="{{ form.get('dob_month').value }}"
+                                >
+                            </div>
+                        </div>
+                        <div class="govuk-date-input__item">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label govuk-date-input__label" for="dob-year">
+                                    Year
+                                </label>
+                                <input
+                                    class="govuk-input govuk-date-input__input govuk-input--width-4"
+                                    id="dob-year"
+                                    name="dob_year"
+                                    type="text"
+                                    inputmode="numeric"
+                                    value="{{ form.get('dob_year').value }}"
+                                >
+                            </div>
                         </div>
                     </div>
-                    <div class="govuk-date-input__item">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-date-input__label app-text-gray" for="dob-year">
-                                Year
-                            </label>
-                            <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                   name="dob_year" id="dob-year" type="text" inputmode="numeric"
-                                   value="{{ form.get('dob_year').value }}">
-                        </div>
-                    </div>
-                </div>
+                </fieldset>
             </div>
             <input type="submit" class="govuk-button" value="Continue">
         </form>

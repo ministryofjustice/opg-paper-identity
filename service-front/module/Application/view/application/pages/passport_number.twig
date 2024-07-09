@@ -27,10 +27,10 @@
                         The passport number is located at the top right-hand corner of the <br/>personal details page,
                         printed in
                         bold, black ink. Example:
-                        <br/>
-                        <br/>
                         <img src="{{ '/assets/images/passport_sample.png' | basepath }}"
-                             alt="Photo of passport highlighting location of passport number"/>
+                             alt="Photo of passport highlighting location of passport number"
+                             class="govuk-!-margin-top-5"
+                        />
                     </div>
                 </details>
                 <p id="passport-hint" class="govuk-hint">
@@ -127,7 +127,7 @@
 
                                 {% if valid_date %}
                                     <div class="govuk-date-input__item">
-                                        <div class="moj-banner moj-banner--success moj-banner--date app-moj-banner-wide" role="region"
+                                        <div class="moj-banner moj-banner--success moj-banner--date app-moj-banner--wide" role="region"
                                              aria-label="Success">
                                             <svg class="moj-banner__icon" fill="currentColor" role="presentation"
                                                  focusable="false"

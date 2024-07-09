@@ -294,23 +294,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             "opg.poas.lpastore" => [
-                "attorneys" => [
-                    [
-                        "dateOfBirth" => "1968-10-16",
-                        "status" => "active",
-                        "channel" => "paper",
-                        "uid" => "b6bbc539-e17f-e0c7-2f2b-5d7940b4fba6",
-                        "firstNames" => "Tavares",
-                        "lastName" => "Klocko",
-                        "address" => [
-                            "line1" => "690 Jon Spring",
-                            "country" => "GS",
-                            "postcode" => "HE1 8TU",
-                            "line3" => "O'Fallon"
-                        ],
-                        "email" => "Celestino.Rau@gmail.com"
-                    ]
-                ],
                 "certificateProvider" => [
                     "address" => [
                         "line1" => "King House",
@@ -352,22 +335,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "registrationDate" => null,
                 "signedAt" => "1912-08-24T01:13:49.0Z",
                 "status" => "active",
-                "trustCorporations" => [
-                    [
-                        "name" => "qui ullamco",
-                        "companyNumber" => "id officia cupidatat non",
-                        "address" => [
-                            "line1" => "72764 Dee Pike",
-                            "country" => "HU",
-                            "postcode" => "BW5 9RM",
-                            "town" => "Troy"
-                        ],
-                        "status" => "active",
-                        "channel" => "paper",
-                        "uid" => "eed9fb9f-dd9f-7b2f-067b-e75cbb816b71",
-                        "signedAt" => "1956-10-15T11:23:58.0Z"
-                    ]
-                ],
                 "uid" => "M-8VQ2-EY9I-DQ23",
                 "updatedAt" => "1910-10-26T21:38:54.0Z",
                 "whenTheLpaCanBeUsed" => "when-capacity-lost"
