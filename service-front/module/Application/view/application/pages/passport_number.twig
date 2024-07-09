@@ -9,7 +9,7 @@
             </p>
             <h2 class="govuk-heading-m">Date of birth</h2>
             <p class="govuk-body">
-                {{ details_data.dob }}
+                {{ dob_full }}
             </p>
             <div class="govuk-form-group {% if form.get('passport').messages %}govuk-form-group--error{% endif %}">
                 <h2 class="govuk-label-wrapper">
@@ -17,7 +17,22 @@
                         Passport number
                     </label>
                 </h2>
-
+                <details class="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                          Where to find the passport number
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        The passport number is located at the top right-hand corner of the <br/>personal details page,
+                        printed in
+                        bold, black ink. Example:
+                        <img src="{{ '/assets/images/passport_sample.png' | basepath }}"
+                             alt="Photo of passport highlighting location of passport number"
+                             class="govuk-!-margin-top-5"
+                        />
+                    </div>
+                </details>
                 <p id="passport-hint" class="govuk-hint">
                     A UK passport number is 9-digits
                 </p>
@@ -37,23 +52,6 @@
                 />
             </div>
 
-            <details class="govuk-details">
-                <summary class="govuk-details__summary">
-                <span class="govuk-details__summary-text">
-                  Where to find the passport number
-                </span>
-                </summary>
-                <div class="govuk-details__text">
-                    The passport number is located at the top right-hand corner of the <br/>personal details page,
-                    printed in
-                    bold, black ink. Example:
-                    <br/>
-                    <br/>
-                    <img src="{{ '/assets/images/passport_sample.png' | basepath }}"
-                         alt="Photo of passport highlighting location of passport number"/>
-                </div>
-            </details>
-
             <div class="govuk-form-group {% if form.get('inDate').messages %}govuk-form-group--error{% endif %}">
                 <fieldset class="govuk-fieldset" aria-describedby="govuk-error-message">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -61,6 +59,89 @@
                             Passport in date?
                         </h2>
                     </legend>
+                    <details class="govuk-details" {% if details_open %} open {% endif %}>
+                        <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Help with checking if passport is in date
+                </span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            <p class="govuk-form-group govuk-!-margin-bottom-3">
+                                Enter passport expiry date. For example, 31 03 2012
+                            </p>
+                            <div class="govuk-date-input" id="passport-issued">
+                                <div class="govuk-date-input__item">
+                                    <div class="govuk-form-group">
+                                        <label class="govuk-label govuk-date-input__label" for="passport-issued-day">
+                                            Day
+                                        </label>
+                                        <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                               id="passport-issued-day"
+                                               name="passport_issued_day" type="text" inputmode="numeric"
+                                               value="{{ date_sub_form.get('passport_issued_day').value }}">
+                                    </div>
+                                </div>
+                                <div class="govuk-date-input__item">
+                                    <div class="govuk-form-group">
+                                        <label class="govuk-label govuk-date-input__label" for="passport-issued-month">
+                                            Month
+                                        </label>
+                                        <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                               name="passport_issued_month" id="passport-issued-month" type="text"
+                                               inputmode="numeric"
+                                               value="{{ date_sub_form.get('passport_issued_month').value }}">
+                                    </div>
+                                </div>
+                                <div class="govuk-date-input__item">
+                                    <div class="govuk-form-group">
+                                        <label class="govuk-label govuk-date-input__label" for="passport-issued-year">
+                                            Year
+                                        </label>
+                                        <input class="govuk-input govuk-date-input__input govuk-input--width-4"
+                                               name="passport_issued_year" id="passport-issued-year" type="text"
+                                               inputmode="numeric"
+                                               value="{{ date_sub_form.get('passport_issued_year').value }}">
+                                    </div>
+                                </div>
+                                <div class="govuk-date-input__item">
+                                    <button
+                                            class="app-button--align-baseline govuk-button govuk-button--secondary"
+                                            name="check_button"
+                                    >Check
+                                    </button>
+                                </div>
+
+                                {% if invalid_date %}
+                                    <div class="govuk-date-input__item">
+                                        <div class="moj-banner moj-banner--warning moj-banner--date app-moj-banner" role="region"
+                                             aria-label="Warning">
+                                            <svg class="moj-banner__icon" fill="currentColor" role="presentation"
+                                                 focusable="false"
+                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                                                <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
+                                            </svg>
+                                            <div class="moj-banner__message">Out of date</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if valid_date %}
+                                    <div class="govuk-date-input__item">
+                                        <div class="moj-banner moj-banner--success moj-banner--date app-moj-banner--wide" role="region"
+                                             aria-label="Success">
+                                            <svg class="moj-banner__icon" fill="currentColor" role="presentation"
+                                                 focusable="false"
+                                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                                                <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
+                                            </svg>
+                                            <div class="moj-banner__message">can be used for ID check</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </details>
                     {% if form.get('inDate').messages %}
                         <p id="passport-error" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span>
@@ -81,88 +162,6 @@
                     </div>
                 </fieldset>
             </div>
-            <details class="govuk-details" {% if details_open %} open {% endif %}>
-                <summary class="govuk-details__summary">
-                <span class="govuk-details__summary-text">
-                  Help with checking if passport is in date
-                </span>
-                </summary>
-                <div class="govuk-details__text">
-                    Enter passport expiry date. For example 31 03 2012
-
-                    <div class="govuk-date-input" id="passport-issued">
-                        <div class="govuk-date-input__item">
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-date-input__label" for="passport-issued-day">
-                                    Day
-                                </label>
-                                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                       id="passport-issued-day"
-                                       name="passport_issued_day" type="text" inputmode="numeric"
-                                       value="{{ date_sub_form.get('passport_issued_day').value }}">
-                            </div>
-                        </div>
-                        <div class="govuk-date-input__item">
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-date-input__label" for="passport-issued-month">
-                                    Month
-                                </label>
-                                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                       name="passport_issued_month" id="passport-issued-month" type="text"
-                                       inputmode="numeric"
-                                       value="{{ date_sub_form.get('passport_issued_month').value }}">
-                            </div>
-                        </div>
-                        <div class="govuk-date-input__item">
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-date-input__label" for="passport-issued-year">
-                                    Year
-                                </label>
-                                <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                       name="passport_issued_year" id="passport-issued-year" type="text"
-                                       inputmode="numeric"
-                                       value="{{ date_sub_form.get('passport_issued_year').value }}">
-                            </div>
-                        </div>
-                        <div class="govuk-date-input__item">
-                            <button
-                                    class="app-button--align-baseline govuk-button govuk-button--secondary"
-                                    name="check_button"
-                            >Check
-                            </button>
-                        </div>
-
-                        {% if invalid_date %}
-                            <div class="govuk-date-input__item">
-                                <div class="moj-banner moj-banner--warning moj-banner--date app-moj-banner" role="region"
-                                     aria-label="Warning">
-                                    <svg class="moj-banner__icon" fill="currentColor" role="presentation"
-                                         focusable="false"
-                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                                        <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
-                                    </svg>
-                                    <div class="moj-banner__message">Out of date</div>
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if valid_date %}
-                            <div class="govuk-date-input__item">
-                                <div class="moj-banner moj-banner--success moj-banner--date app-moj-banner" role="region"
-                                     aria-label="Success">
-                                    <svg class="moj-banner__icon" fill="currentColor" role="presentation"
-                                         focusable="false"
-                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                                        <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
-                                    </svg>
-                                    <div class="moj-banner__message">In date</div>
-                                </div>
-                            </div>
-                        {% endif %}
-
-                    </div>
-                </div>
-            </details>
             <button class="govuk-button" name="continue_button">Continue</button>
             <a href="/{{ uuid }}/how-will-donor-confirm" role="button" draggable="false"
                class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"

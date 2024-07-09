@@ -1,0 +1,62 @@
+{
+  "consumer": {
+    "name": "paper-identity"
+  },
+  "provider": {
+    "name": "sirius"
+  },
+  "interactions": [
+    {
+      "description": "A search for addresses by postcode",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/postcode-lookup",
+        "query": "postcode=B1%201TT"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          {
+            "addressLine1": "18 Leith Road",
+            "addressLine2": "West Verpar",
+            "addressLine3": "Smithhay",
+            "town": "Forston",
+            "postcode": "FR6 2FJ"
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "min": 1
+          },
+          "$.body[*].*": {
+            "match": "type"
+          },
+          "$.body[*].addressLine1": {
+            "match": "type"
+          },
+          "$.body[*].addressLine2": {
+            "match": "type"
+          },
+          "$.body[*].addressLine3": {
+            "match": "type"
+          },
+          "$.body[*].town": {
+            "match": "type"
+          },
+          "$.body[*].postcode": {
+            "match": "regex",
+            "regex": "^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
