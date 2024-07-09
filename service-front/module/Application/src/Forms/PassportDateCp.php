@@ -12,12 +12,12 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
  * @psalm-suppress MissingConstructor
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PassportDate
+class PassportDateCp
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(PassportDateValidator::class, options: ['expiry_allowance' => '+5 year'])]
+    #[Annotation\Validator(PassportDateValidator::class, options: ['expiry_allowance' => '+3 year'])]
     public mixed $passport_date;
     /**
      * @psalm-suppress PossiblyUnusedProperty
