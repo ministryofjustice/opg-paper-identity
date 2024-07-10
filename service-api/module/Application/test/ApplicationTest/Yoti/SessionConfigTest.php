@@ -51,7 +51,8 @@ class SessionConfigTest extends TestCase
     public function sessionConfigExpected(): array
     {
         $currentDate = new DateTime();
-        $currentDate->modify('+30 days');
+        $modifierString = '+'. getenv("YOTI_SESSION_DEADLINE"). ' days';
+        $currentDate->modify($modifierString);
         $currentDate->setTime(22, 0, 0);
 
         $sessionConfig = [];
@@ -60,7 +61,7 @@ class SessionConfigTest extends TestCase
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $this->caseMock->id;
         $sessionConfig["notifications"] = [
-            "endpoint" => getenv("NOTIFICATION_URL"),
+            "endpoint" => getenv("YOTI_NOTIFICATION_URL"),
             "topics" => [
                 "FIRST_BRANCH_VISIT",
                 "THANK_YOU_EMAIL_REQUESTED",
