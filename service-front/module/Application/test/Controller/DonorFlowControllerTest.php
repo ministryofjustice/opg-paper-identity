@@ -294,24 +294,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             "opg.poas.lpastore" => [
-                "certificateProvider" => [
-                    "address" => [
-                        "line1" => "King House",
-                        "line2" => "1 Victoria Street",
-                        "line3" => "",
-                        "town" => "London",
-                        "postcode" => "SW1A 1BB",
-                        "country" => "UK"
-                    ],
-                    "channel" => "paper",
-                    "email" => "john.doe@gmail.com",
-                    "firstNames" => "John",
-                    "lastName" => "Doe",
-                    "phone" => "07777 000000",
-                    "signedAt" => "1938-11-08T07:10:43.0Z",
-                    "uid" => "81e371b8-dda0-095f-4e7e-2bd936aec47c"
-                ],
-                "channel" => "paper",
                 "donor" => [
                     "address" => [
                         "country" => "UK",
@@ -328,29 +310,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                     "otherNamesKnownBy" => "Joseph Bloggs",
                     "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
                 ],
-                "howReplacementAttorneysMakeDecisionsDetails" => "eu velit",
-                "howReplacementAttorneysStepInDetails" => "mollit exercitation ipsum sunt enim",
-                "lifeSustainingTreatmentOption" => "option-b",
-                "lpaType" => "property-and-affairs",
-                "registrationDate" => null,
-                "signedAt" => "1912-08-24T01:13:49.0Z",
-                "status" => "active",
-                "uid" => "M-8VQ2-EY9I-DQ23",
-                "updatedAt" => "1910-10-26T21:38:54.0Z",
-                "whenTheLpaCanBeUsed" => "when-capacity-lost"
             ],
-            "opg.poas.sirius" => [
-                "donor" => [
-                    "country" => "UK",
-                    "dob" => "1982-08-13",
-                    "firstname" => "Joe",
-                    "postcode" => "SW1A 1AB",
-                    "surname" => "Bloggs",
-                    "town" => "London"
-                ],
-                "id" => 8223213,
-                "uId" => "M-M1VL-PJ9D-IKUS"
-            ]
         ];
     }
 }

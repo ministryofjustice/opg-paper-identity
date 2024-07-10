@@ -31,7 +31,6 @@ class DLNDateValidator extends AbstractValidator
         }
 
         if ($this->value === 'yes') {
-//            $this->error(self::DLN_DATE);
             return true;
         }
         return false;
