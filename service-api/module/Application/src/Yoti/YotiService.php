@@ -212,7 +212,7 @@ class YotiService implements YotiServiceInterface
 
             if ($config->getStatusCode() !== Response::STATUS_CODE_200) {
                 $this->logger->error('Case configuration retrieval was unsuccessful ', [
-                    'data' => [ ]
+                    'data' => [ "sessionId" => $yotiSessionId]
                 ]);
                 throw new YotiException("Error: " . $config->getReasonPhrase());
             }
@@ -220,7 +220,7 @@ class YotiService implements YotiServiceInterface
 
         } catch (GuzzleException $e) {
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
-                'data' => [ ]
+                'data' => [ "operation" => "session-configuration", "sessionId" => $yotiSessionId ]
             ]);
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
@@ -259,7 +259,7 @@ class YotiService implements YotiServiceInterface
             ]);
         } catch (GuzzleException $e){
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
-                'data' => [ 'operation' => 'generate-pdf', 'header' => $headers]
+                'data' => [ 'operation' => 'retrieve-pdf', 'header' => $headers]
             ]);
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }

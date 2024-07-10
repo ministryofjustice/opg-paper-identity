@@ -15,7 +15,6 @@ use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf;
 use Ramsey\Uuid\Uuid;
 
 /**
