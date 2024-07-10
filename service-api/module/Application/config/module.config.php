@@ -330,6 +330,16 @@ return [
                     ],
                 ],
             ],
+            'update_dob' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/update-dob/:dob',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'updateDob',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
