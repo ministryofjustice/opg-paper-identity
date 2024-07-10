@@ -132,21 +132,21 @@ class YotiController extends AbstractActionController
         return new JsonModel($data);
     }
 
-    public function getPDFLetterAction(): JsonModel
+    public function preparePDFLetterAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
         $data = [];
-        $data['response'] = $this->yotiService->retrieveLetterPDF($caseData);
+        $data['response'] = $this->yotiService->preparePDFLetter($caseData);
         return new JsonModel($data);
     }
 
-    public function downloadPDFAction(): JsonModel
+    public function retrievePDFAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
-        $data = [];
-        $data = $this->yotiService->generatePDFLetter($caseData);
+
+        $data = $this->yotiService->retrieveLetterPDF($caseData);
 
         // Write pdf to file
         $fileName = 'instructions.pdf';
@@ -154,6 +154,6 @@ class YotiController extends AbstractActionController
 
         $this->getResponse()->setContent($content);
 
-        //return new JsonModel(["Status" => "PDF Created"]);
+        return new JsonModel(["Status" => "PDF Created", "pdfData" => $data['pdfData']]);
     }
 }

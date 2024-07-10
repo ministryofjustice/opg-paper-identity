@@ -249,17 +249,17 @@ return [
                     'route'    => '/counter-service/:uuid/retrieve-letter',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getPDFLetter',
+                        'action'     => 'retrievePDF',
                     ],
                 ]
             ],
-            'download_pdf_letter' => [
+            'prepare_pdf_letter' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/download-pdf',
+                    'route'    => '/counter-service/:uuid/prepare-pdf',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'downloadPDF',
+                        'action'     => 'preparePDFLetter',
                     ],
                 ]
             ],

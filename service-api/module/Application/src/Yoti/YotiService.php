@@ -59,7 +59,7 @@ class YotiService implements YotiServiceInterface
                 $this->logger->error('Post Office Lookup unsuccessful ', [
                     'data' => [ 'Post Code' => $postCode]
                 ]);
-                throw new YotiException("FM INT: " . $results->getReasonPhrase());
+                throw new YotiException($results->getReasonPhrase());
             }
             return json_decode(strval($results->getBody()), true);
         } catch (GuzzleException $e) {
@@ -98,7 +98,11 @@ class YotiService implements YotiServiceInterface
                 throw new YotiApiException($results->getReasonPhrase());
             }
         } catch (ClientException $clientException) {
-                throw new YotiApiException($clientException->getMessage(), 0, $clientException);
+
+            $this->logger->error('Unable to connect to Yoti Service [' .$clientException->getMessage(). '] ', [
+                'data' => [ 'operation' => 'session-create', 'header' => $headers]
+            ]);
+            throw new YotiApiException($clientException->getMessage(), 0, $clientException);
         }
 
         $result = json_decode(strval($results->getBody()), true);
@@ -122,15 +126,15 @@ class YotiService implements YotiServiceInterface
     /**
      * @param CaseData $caseData
      * @return array
-     * Generate PDF letter for applicant
+     * PDF Stage 1: Prepare PDF letter for applicant, generatePDFLetter vs retrieveLetterPDF
      * @throws YotiException
      */
-    public function retrieveLetterPDF(CaseData $caseData): array
+    public function preparePDFLetter(CaseData $caseData): array
     {
         $config = $this->getSessionConfigFromYoti($caseData->sessionId);
         $requirementID = $config['capture']['required_resources'][0]['id'];
         $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
-        //var_dump($payload); die;
+
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
@@ -167,11 +171,11 @@ class YotiService implements YotiServiceInterface
 
         } catch (GuzzleException $e) {
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
-                'data' => [ ]
+                'data' => [ 'operation' => 'session-create', 'header' => $headers]
             ]);
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
-        //return $config;
+
     }
     /**
      * @param string $yotiSessionId
@@ -224,10 +228,10 @@ class YotiService implements YotiServiceInterface
     /**
      * @param CaseData $caseData
      * @return array
-     * Generate PDF letter for applicant
+     * PDF Stage 2: Retrieve PDF letter contents
      * @throws YotiException
      */
-    public function generatePDFLetter(CaseData $caseData): array
+    public function retrieveLetterPDF(CaseData $caseData): array
     {
         //need error validation here if this is called before instructions are set etc
         $nonce = strval(Uuid::uuid4());
@@ -254,7 +258,10 @@ class YotiService implements YotiServiceInterface
                 ],
             ]);
         } catch (GuzzleException $e){
-
+            $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
+                'data' => [ 'operation' => 'generate-pdf', 'header' => $headers]
+            ]);
+            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
         $base64 = base64_encode(strval($pdfData->getBody()));
         // Convert base64 to pdf
