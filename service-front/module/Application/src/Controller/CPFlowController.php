@@ -172,21 +172,24 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $form = (new AttributeBuilder())->createForm(BirthDate::class);
 
-
-
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
-            $date = sprintf(
+            $dateOfBirth = sprintf(
                 "%s-%s-%s",
                 $params->get('dob_year'),
                 $params->get('dob_month'),
                 $params->get('dob_day'),
             );
-            $params->set('date', $date);
+            $params->set('date', $dateOfBirth);
             $form->setData($params);
 
             if ($form->isValid()) {
-                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                try {
+                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                } catch (\Exception $exception) {
+                    $form->setMessages(["There was an error saving the data"]);
+                }
             }
             $view->setVariable('form', $form);
         }
@@ -275,6 +278,9 @@ class CPFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
+
+        echo json_encode($detailsData);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
