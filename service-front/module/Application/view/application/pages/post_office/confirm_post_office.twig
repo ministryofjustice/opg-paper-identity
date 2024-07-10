@@ -1,8 +1,14 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-            <h1 class="govuk-heading-xl">Confirm Post Office route</h1>
+            <h1 class="govuk-heading-xl">
+                {% block title %}
+                    Confirm Post Office route
+                {% endblock %}
+            </h1>
             <p class="govuk-body govuk-!-width-two-thirds">
                 We will send you a letter
             </p>
@@ -45,7 +51,8 @@
                                 {{ id_method }}
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="post-office-documents">Change<span class="govuk-visually-hidden"></span></a>
+                                <a class="govuk-link" href="post-office-documents">Change<span
+                                            class="govuk-visually-hidden"></span></a>
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -58,7 +65,8 @@
                                 {% endfor %}
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="find-post-office">Change<span class="govuk-visually-hidden"></span></a>
+                                <a class="govuk-link" href="find-post-office">Change<span
+                                            class="govuk-visually-hidden"></span></a>
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -88,5 +96,5 @@
                 <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
             </p>
         </form>
-
-</div>
+    </div>
+{% endblock %}

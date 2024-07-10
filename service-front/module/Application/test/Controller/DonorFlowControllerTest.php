@@ -106,6 +106,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/address_verification');
     }
+
     public function testLpasByDonorReturnsPageWithData(): void
     {
         $mockResponseDataIdDetails = [
@@ -206,15 +207,31 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testHowWillDonorConfirmPage(): void
     {
         $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
+            "id" => "d51929b3-2cf8-4762-b9be-50ab1f941ff9",
+            "personType" => "donor",
+            "firstName" => "Merl",
+            "lastName" => "Will",
+            "dob" => "1000-01-01",
+            "address" => [
+                "line1" => "976 Jacobi Knoll",
+                "line2" => "John Park",
+                "line3" => "Toms River",
+                "town" => "",
+                "postcode" => "WV6 3TL",
+                "country" => "IS"
+            ],
+            "lpas" => [
+                "M-1234-ABCD-EF56"
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin"
         ];
+
 
         $this
             ->opgApiServiceMock
@@ -234,14 +251,29 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testIdentityCheckPassedPage(): void
     {
         $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
+            "id" => "d51929b3-2cf8-4762-b9be-50ab1f941ff9",
+            "personType" => "donor",
+            "firstName" => "Merl",
+            "lastName" => "Will",
+            "dob" => "1000-01-01",
+            "address" => [
+                "line1" => "976 Jacobi Knoll",
+                "line2" => "John Park",
+                "line3" => "Toms River",
+                "town" => "",
+                "postcode" => "WV6 3TL",
+                "country" => "IS"
+            ],
+            "lpas" => [
+                "M-1234-ABCD-EF56"
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin"
         ];
 
         $this
@@ -250,23 +282,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
-
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
-            ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
 
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
@@ -320,6 +335,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/identity_check_failed');
     }
+
     public function testThinFileFailurePage(): void
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');

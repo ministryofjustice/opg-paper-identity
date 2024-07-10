@@ -6,20 +6,19 @@ namespace Application\Validators;
 
 use Laminas\Validator\AbstractValidator;
 
-/**
- * @psalm-suppress UnusedClass
- */
-class DateValidator extends AbstractValidator
+class BirthDateValidator extends AbstractValidator
 {
     public const DATE_FORMAT = 'date_format';
 
-    public const DATE_EMPTY = 'passport_date_empty';
-    public const DATE_PAST = 'passport_date_past';
+    public const DATE_EMPTY = 'date_empty';
+    public const DATE_18 = 'date_under_18';
+
+    public const EIGHTEEN_YEARS = '-18 year';
 
     protected array $messageTemplates = [
         self::DATE_FORMAT => 'The date needs to be a valid date',
         self::DATE_EMPTY => 'The date cannot be empty',
-        self::DATE_PAST => 'The date cannot be in the future',
+        self::DATE_18 => 'Birth date cannot be under 18 years ago',
     ];
 
     public function isValid($value): bool
@@ -32,14 +31,17 @@ class DateValidator extends AbstractValidator
         }
 
         try {
-            $date = new \DateTime($this->value);
+            new \DateTime($this->value);
         } catch (\Exception $exception) {
             $this->error(self::DATE_FORMAT);
             return false;
         }
 
-        if ($date > new \DateTime()) {
-            $this->error(self::DATE_PAST);
+        $birthDate = strtotime($value);
+        $minBirthDate = strtotime(self::EIGHTEEN_YEARS, time());
+
+        if ($birthDate > $minBirthDate) {
+            $this->error(self::DATE_18);
             return false;
         }
         return true;
