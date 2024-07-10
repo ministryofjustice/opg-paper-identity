@@ -884,4 +884,68 @@ class OpgApiServiceTest extends TestCase
             ],
         ];
     }
+
+
+
+    /**
+     * @dataProvider setDobData
+     * @return void
+     */
+    public function testSetDobMethod(
+        array $data,
+        Client $client,
+        array $responseData,
+        bool $exception
+    ): void {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
+        $this->opgApiService = new OpgApiService($client);
+
+        $response = $this->opgApiService->updateCaseSetDob($data['uuid'], $data['dob']);
+
+        if ($exception) {
+            $this->assertStringContainsString('Client error:', json_encode($response));
+        } else {
+            $this->assertEquals($responseData, $response);
+        }
+    }
+
+    public static function setDobData(): array
+    {
+        $data = [];
+        $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
+        $data['dob'] = '1980-01-01';
+
+        $successMockResponseData = ["result" => "Updated"];
+        $successMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $failMockResponseData = [
+            'Client error: `'
+        ];
+        $failMock = new MockHandler([
+            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $handlerStack]);
+
+        return [
+            [
+                $data,
+                $successClient,
+                $successMockResponseData,
+                false
+            ],
+            [
+                $data,
+                $failClient,
+                $failMockResponseData,
+                true
+            ],
+        ];
+    }
 }
