@@ -1,6 +1,8 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
-
+    <div class="moj-banner__message moj-hidden">{% block title %}National insurance number{% endblock %}</div>
         <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
             <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -27,6 +29,5 @@
                 Try a different method
             </a>
         </p>
-
 </div>
-
+{% endblock %}

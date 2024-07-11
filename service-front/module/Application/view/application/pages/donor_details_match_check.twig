@@ -1,8 +1,10 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">Do the details match the ID document?</h1>
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}Do the details match the ID document?{% endblock %}</h1>
 
             <p class="govuk-body govuk-!-width-two-thirds">
                 The donor’s name and date of birth recorded in Sirius should be identical to
@@ -41,8 +43,8 @@
             </div>
 
 
-            <a href="./donor-lpa-check" class="govuk-button" >Continue</a>
+            <a href="./donor-lpa-check" class="govuk-button">Continue</a>
             <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
         </form>
-
-</div>
+    </div>
+{% endblock %}
