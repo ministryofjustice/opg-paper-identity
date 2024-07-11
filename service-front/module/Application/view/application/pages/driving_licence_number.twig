@@ -9,7 +9,7 @@
             </p>
             <h2 class="govuk-heading-m">Date of birth</h2>
             <p class="govuk-body">
-                {{ details_data.dob }}
+                {{ dob_full }}
             </p>
             <div class="govuk-form-group {% if form.get('dln').messages %}govuk-form-group--error{% endif %}">
                 <h2 class="govuk-label-wrapper">
@@ -17,6 +17,20 @@
                         Driving licence number
                     </label>
                 </h2>
+
+                <details class="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                          Where to find the driving licence number
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text govuk-!-padding-bottom-0">
+                        The driving licence number is found in section 5 of the details section for both paper and photo ID
+                        licences. Example:
+                        <img src="{{ '/assets/images/driving_licence_sample.png' | basepath }}"
+                             alt="Photo of driving licence highlighting location of licence number"/>
+                    </div>
+                </details>
 
                 <p id="dln-hint" class="govuk-hint">
                     A driving licence number is 16-digits. Example: MORGA657054SM9IJ
@@ -36,20 +50,6 @@
                         aria-describedby="dln-hint {% if form.get('dln').messages %}dln-error{% endif %}"
                 />
             </div>
-
-            <details class="govuk-details">
-                <summary class="govuk-details__summary">
-                <span class="govuk-details__summary-text">
-                  Where to find the driving licence number
-                </span>
-                </summary>
-                <div class="govuk-details__text govuk-!-padding-bottom-0">
-                    The driving licence number is found in section 5 of the details section for both paper and photo ID
-                    licences. Example:
-                    <img src="{{ '/assets/images/driving_licence_sample.png' | basepath }}"
-                         alt="Photo of driving licence highlighting location of licence number"/>
-                </div>
-            </details>
 
             <div class="govuk-form-group {% if form.get('inDate').messages %}govuk-form-group--error{% endif %}">
                 <fieldset class="govuk-fieldset" aria-describedby="govuk-error-message">
@@ -79,10 +79,21 @@
                 </fieldset>
             </div>
             <button class="govuk-button">Continue</button>
-            <a href="/{{ uuid }}/how-will-donor-confirm" role="button" draggable="false"
-               class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2" data-module="govuk-button">
-                Try a different method
-            </a>
+
+            {% if details_data.personType == 'certificateProvider' %}
+                <a href="./how-will-cp-confirm" role="button" draggable="false"
+                   class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
+                   data-module="govuk-button">
+                    Try a different method
+                </a>
+            {% else %}
+                <a href="./how-will-donor-confirm" role="button" draggable="false"
+                   class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
+                   data-module="govuk-button">
+                    Try a different method
+                </a>
+            {% endif %}
+
         </form>
 
 </div>

@@ -31,7 +31,6 @@ class PassportInDateValidator extends AbstractValidator
         }
 
         if ($this->value === 'yes') {
-            $this->error(self::PASSPORT_DATE);
             return true;
         }
         return false;

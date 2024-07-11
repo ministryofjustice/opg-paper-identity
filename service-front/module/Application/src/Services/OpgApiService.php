@@ -406,4 +406,16 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+
+    public function updateCaseSetDob(string $uuid, string $dob): array
+    {
+        $url = sprintf("/cases/%s/update-dob/%s", $uuid, $dob);
+
+        try {
+            $this->makeApiRequest($url, 'PUT');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
 }

@@ -8,7 +8,7 @@
         </p>
         <h2 class="govuk-heading-m">Date of birth</h2>
         <p class="govuk-body">
-            {{ details_data.dob }}
+            {{ dob_full }}
         </p>
 
         <div class="govuk-form-group {% if form.get('nino').messages %}govuk-form-group--error{% endif %}">
@@ -18,11 +18,9 @@
                 </label>
             </h2>
 
-            <p id="nino-hint" class="govuk-hint">
-                A NINO is made up of 2 letters, 6 numbers and a final letter, which is always A, B, C or D. Example
-                QQ
-                12 34
-                56 A
+            <p id="nino-hint" class="govuk-hint  govuk-!-width-two-thirds">
+                A National Insurance number is made up of 2 letters, 6 numbers and a final letter,
+                which is always A, B, C or D. Example QQ 12 34 56 A
             </p>
 
             {% if form.get('nino').messages %}
@@ -58,10 +56,19 @@
             </div>
         </details>
         <button class="govuk-button" data-module="govuk-button">Continue</button>
-        <a href="/{{ uuid }}/how-will-donor-confirm" role="button" draggable="false"
-           class="govuk-button govuk-button--secondary govuk-!-static-margin-left-2" data-module="govuk-button">
-            Try a different method
-        </a>
+        {% if details_data.personType == 'certificateProvider' %}
+            <a href="./how-will-cp-confirm" role="button" draggable="false"
+               class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
+               data-module="govuk-button">
+                Try a different method
+            </a>
+        {% else %}
+            <a href="./how-will-donor-confirm" role="button" draggable="false"
+               class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
+               data-module="govuk-button">
+                Try a different method
+            </a>
+        {% endif %}
     </form>
 
 </div>
