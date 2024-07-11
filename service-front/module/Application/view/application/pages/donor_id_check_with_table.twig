@@ -1,7 +1,9 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
-        <h3 class="govuk-heading-xl">Donor ID check</h3>
+        <h3 class="govuk-heading-xl">{% block title %}Donor ID check{% endblock %}</h3>
         <h3 class="govuk-heading-m">Is the donor prepared to perform the ID check?</h3>
 
         <p class="govuk-body">
@@ -57,9 +59,9 @@
 
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      ID in person at the Post Office
-    </span>
+                <span class="govuk-details__summary-text">
+                  ID in person at the Post Office
+                </span>
             </summary>
             <div class="govuk-details__text">
             </div>
@@ -67,15 +69,14 @@
 
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      No ID: choose someone to vouch (donor only)
-    </span>
+                <span class="govuk-details__summary-text">
+                  No ID: choose someone to vouch (donor only)
+                </span>
             </summary>
             <div class="govuk-details__text">
             </div>
         </details>
 
         <button class="govuk-button">Continue</button>
-
-
-</div>
+    </div>
+{% endblock %}

@@ -1,11 +1,13 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
-
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
         <form method="POST">
-            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">Proving their identity</h1>
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}Proving their identity{% endblock %}</h1>
 
             <p class="govuk-body govuk-!-width-two-thirds">
-                Confirming their identity over the phone is the quickest and easiest option - they'll need an NI number, passport or driving licence and to answer some identity check questions during the call.
+                Confirming their identity over the phone is the quickest and easiest option - they'll need an NI number,
+                passport or driving licence and to answer some identity check questions during the call.
 
                 Alternately, they can identify in-person at a post office - this will take longer and incurs a cost
             </p>
@@ -23,11 +25,12 @@
                 <div class="govuk-radios__item">
                     <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
                            value="OnBehalf">
-                    <label class="govuk-label govuk-radios__label" for="OnBehalf">Post Office (current UK / EU / international passport or driving licence)</label>
+                    <label class="govuk-label govuk-radios__label" for="OnBehalf">Post Office (current UK / EU /
+                        international passport or driving licence)</label>
                 </div>
             </div>
 
-            <a href="./donor-lpa-check" class="govuk-button" >Continue</a>
+            <a href="./donor-lpa-check" class="govuk-button">Continue</a>
         </form>
-
-</div>
+    </div>
+{% endblock %}

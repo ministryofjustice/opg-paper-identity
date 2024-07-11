@@ -97,6 +97,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/address_verification');
     }
+
     public function testLpasByDonorReturnsPageWithData(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -223,6 +224,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/identity_check_failed');
     }
+
     public function testThinFileFailurePage(): void
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
