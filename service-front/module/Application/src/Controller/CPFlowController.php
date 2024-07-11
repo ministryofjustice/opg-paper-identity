@@ -283,8 +283,6 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        echo json_encode($detailsData);
-
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 

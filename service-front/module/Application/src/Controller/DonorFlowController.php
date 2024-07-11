@@ -16,6 +16,7 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Enums\LpaTypes;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -104,11 +105,38 @@ class DonorFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
+
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             * @psalm-suppress InvalidArrayOffset
+             * @psalm-suppress PossiblyNullArgument
+             */
+            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+
+            $lpaDetails[$lpa] = [
+                'name' => $name,
+                'type' => $type
+            ];
+        }
+
+        $view->setVariable('lpa_details', $lpaDetails);
 
         if (count($this->getRequest()->getPost())) {
 //            $data = $this->getRequest()->getPost();
