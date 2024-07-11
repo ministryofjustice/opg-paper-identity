@@ -1,8 +1,10 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
     <form method="POST">
         <h1 class="govuk-heading-xl">Donor LPA check</h1>
-        <h3 class="govuk-heading-m">Which LPAs should this identity check apply to?</h3>
+        <h3 class="govuk-heading-m">{% block title %}Which LPAs should this identity check apply to?{% endblock %}</h3>
 
         <div class="govuk-form-group govuk-!-width-three-quarters">
             <fieldset class="govuk-fieldset">
@@ -49,3 +51,4 @@
         </div>
     </form>
 </div>
+{% endblock %}

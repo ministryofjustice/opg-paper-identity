@@ -1,14 +1,20 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">Does the address on the ID document match the address in Sirius?</h1>
-
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
+                {% block title %}
+                Does the address on the ID document match the address in Sirius?</h1>
+            {% endblock %}
             <p class="govuk-body govuk-!-width-two-thirds">
-                To perform the fraud and identity checks, a check is made against the certificate provider’s home address.
+                To perform the fraud and identity checks, a check is made against the certificate provider’s home
+                address.
             </p>
             <p class="govuk-body govuk-!-width-two-thirds">
-                In the role of certificate provider, they might have registered a business or professional address with us.
+                In the role of certificate provider, they might have registered a business or professional address with
+                us.
             </p>
             <p class="govuk-body govuk-!-width-two-thirds">
                 We need to either confirm the Sirius record is their home address or capture it on the next page.
@@ -76,5 +82,5 @@
             {% endif %}
             <input type="submit" class="govuk-button" value="Continue">
         </form>
-
-</div>
+    </div>
+{% endblock %}

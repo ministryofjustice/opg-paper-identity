@@ -1,20 +1,24 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<form method="POST" class="govuk-!-width-two-thirds">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
     <div class="govuk-width-container govuk-!-padding-top-5">
-        <h1 class="govuk-heading-xl">Do the details match the ID document?</h1>
 
-        <p class="govuk-body">
-            The donor’s name and date of birth recorded in Sirius should be identical to
-            how they are presented on the ID document they have chosen to prove their
-            identity with.
-        </p>
-        <p class="govuk-body">
-            The donor’s address recorded in Sirius should be their home address as this is
-            used for the identity check.
-        </p>
-        <p class="govuk-body">
-            If there is a mis-match, amend in Sirius as appropriate.
-        </p>
+
+        <form method="POST">
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}Do the details match the ID document?{% endblock %}</h1>
+
+            <p class="govuk-body">
+                The donor’s name and date of birth recorded in Sirius should be identical to
+                how they are presented on the ID document they have chosen to prove their
+                identity with.
+            </p>
+            <p class="govuk-body">
+                The donor’s address recorded in Sirius should be their home address as this is
+                used for the identity check.
+            </p>
+            <p class="govuk-body">
+                If there is a mis-match, amend in Sirius as appropriate.
+            </p>
 
 
         <div class="app-inset-text-blue">
@@ -44,7 +48,8 @@
         </div>
 
 
-        <a href="./donor-lpa-check" class="govuk-button">Continue</a>
-        <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
+            <a href="./donor-lpa-check" class="govuk-button">Continue</a>
+            <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
+        </form>
     </div>
-</form>
+{% endblock %}

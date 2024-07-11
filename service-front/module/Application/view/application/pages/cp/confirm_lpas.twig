@@ -1,11 +1,17 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
-    <main class="govuk-main-wrapper govuk-!-width-two-thirds">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
         <form method="POST">
-            <h1 class="govuk-heading-xl">LPAs included in the identity check</h1>
+            <h1 class="govuk-heading-xl">
+                {% block title %}
+                    LPAs included in the identity check
+                {% endblock %}
+            </h1>
 
             <p class="govuk-body">
-                Certificate providers may be on more than 1 LPA and may want to confirm their identity for multiple LPAs at the same time.
+                Certificate providers may be on more than 1 LPA and may want to confirm their identity for multiple
+                LPAs at the same time.
             </p>
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
@@ -64,6 +70,5 @@
             </div>
             <a href="confirm-dob" class="govuk-button">Continue</a>
         </form>
-
-</div>
-
+    </div>
+{% endblock %}
