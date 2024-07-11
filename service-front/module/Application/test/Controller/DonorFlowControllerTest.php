@@ -39,16 +39,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDonorIdCheckReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -109,30 +100,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testLpasByDonorReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
-            "personType" => "certificateProvider",
-            "firstName" => "Mary Anne",
-            "lastName" => "Chapman",
-            "dob" => "01 May 1943",
-            "address" => [
-                "1 Court Street",
-                "London",
-                "UK",
-                "SW1B 1BB",
-            ],
-            "lpas" => [
-                "M-XYXY-YAGA-35G3",
-                "M-XYXY-YAGA-35G4"
-            ],
-            "documentComplete" => false,
-            "alternateAddress" => [
-            ],
-            "selectedPostOfficeDeadline" => null,
-            "selectedPostOffice" => null,
-            "searchPostcode" => null,
-            "idMethod" => "nin"
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -150,16 +118,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testNationalInsuranceNumberReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -178,16 +137,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDrivingLicenceNumberReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -206,32 +156,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testHowWillDonorConfirmPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "id" => "d51929b3-2cf8-4762-b9be-50ab1f941ff9",
-            "personType" => "donor",
-            "firstName" => "Merl",
-            "lastName" => "Will",
-            "dob" => "1000-01-01",
-            "address" => [
-                "line1" => "976 Jacobi Knoll",
-                "line2" => "John Park",
-                "line3" => "Toms River",
-                "town" => "",
-                "postcode" => "WV6 3TL",
-                "country" => "IS"
-            ],
-            "lpas" => [
-                "M-1234-ABCD-EF56"
-            ],
-            "documentComplete" => false,
-            "alternateAddress" => [
-            ],
-            "selectedPostOfficeDeadline" => null,
-            "selectedPostOffice" => null,
-            "searchPostcode" => null,
-            "idMethod" => "nin"
-        ];
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -250,31 +175,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testIdentityCheckPassedPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "id" => "d51929b3-2cf8-4762-b9be-50ab1f941ff9",
-            "personType" => "donor",
-            "firstName" => "Merl",
-            "lastName" => "Will",
-            "dob" => "1000-01-01",
-            "address" => [
-                "line1" => "976 Jacobi Knoll",
-                "line2" => "John Park",
-                "line3" => "Toms River",
-                "town" => "",
-                "postcode" => "WV6 3TL",
-                "country" => "IS"
-            ],
-            "lpas" => [
-                "M-1234-ABCD-EF56"
-            ],
-            "documentComplete" => false,
-            "alternateAddress" => [
-            ],
-            "selectedPostOfficeDeadline" => null,
-            "selectedPostOffice" => null,
-            "searchPostcode" => null,
-            "idMethod" => "nin"
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $siriusResponse = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
@@ -282,6 +184,12 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('getLpaByUid')
+            ->willReturn($siriusResponse);
 
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
@@ -293,16 +201,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testIdentityCheckFailedPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $siriusResponse = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
@@ -311,22 +211,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
-            ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
-        ];
-
         $this
-            ->opgApiServiceMock
+            ->siriusApiService
             ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
+            ->method('getLpaByUid')
+            ->willReturn($siriusResponse);
 
         $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
@@ -358,16 +247,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDonorIdMatchPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "dob" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -382,5 +262,57 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/donor_details_match_check');
+    }
+
+
+    public function returnOpgResponseData(): array
+    {
+        return [
+            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
+            "personType" => "donor",
+            "firstName" => "Mary Anne",
+            "lastName" => "Chapman",
+            "dob" => "01 May 1943",
+            "address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin"
+        ];
+    }
+
+    public function returnSiriusLpaResponse(): array
+    {
+        return [
+            "opg.poas.lpastore" => [
+                "donor" => [
+                    "address" => [
+                        "country" => "UK",
+                        "line1" => "1 Street",
+                        "line2" => "Road",
+                        "postcode" => "SW1A 1AB",
+                        "town" => "London"
+                    ],
+                    "contactLanguagePreference" => "cy",
+                    "dateOfBirth" => "1982-08-13",
+                    "email" => "joe.bloggs@gmail.com",
+                    "firstNames" => "Joe",
+                    "lastName" => "Bloggs",
+                    "otherNamesKnownBy" => "Joseph Bloggs",
+                    "uid" => "fa2eb929-92e8-78cf-aff6-e2c0811e3c60"
+                ],
+            ],
+        ];
     }
 }

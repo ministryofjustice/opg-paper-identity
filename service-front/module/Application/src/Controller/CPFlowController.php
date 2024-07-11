@@ -176,17 +176,22 @@ class CPFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
-            $date = sprintf(
+            $dateOfBirth = sprintf(
                 "%s-%s-%s",
                 $params->get('dob_year'),
                 $params->get('dob_month'),
                 $params->get('dob_day'),
             );
-            $params->set('date', $date);
+            $params->set('date', $dateOfBirth);
             $form->setData($params);
 
             if ($form->isValid()) {
-                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                try {
+                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                } catch (\Exception $exception) {
+                    $form->setMessages(["There was an error saving the data"]);
+                }
             }
             $view->setVariable('form', $form);
         }
@@ -245,6 +250,8 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
+
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
@@ -274,6 +281,9 @@ class CPFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
+
+        echo json_encode($detailsData);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -314,6 +324,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('details_open', false);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();

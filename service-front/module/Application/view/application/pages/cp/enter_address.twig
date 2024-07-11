@@ -1,46 +1,42 @@
-{% extends "layout/layout" %}
-{% block content %}
-    {% include 'layout/id_check_banner.twig' with details_data %}
-    <div class="govuk-width-container govuk-!-padding-top-5">
-        <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
-            {% block title %}What is the address on the ID document?{% endblock %}</h1>
-        <form method="POST" target="">
-            <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
-                <p id="postcode-hint" class="govuk-body govuk-!-width-two-thirds govuk-hint">
-                    This information is required to check their identity and protect against fraud.
-                </p>
+{% include 'layout/id_check_banner.twig' with details_data %}
+<div class="govuk-width-container govuk-!-padding-top-5">
+    <h1 class="govuk-heading-xl govuk-!-width-two-thirds">What is the address on the ID document?</h1>
+    <form method="POST" target="">
+        <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
+            <p id="postcode-hint" class="govuk-body govuk-!-width-two-thirds govuk-hint">
+                This information is required to check their identity and protect against fraud.
+            </p>
 
-                <div class="govuk-warning-text govuk-!-width-two-thirds">
-                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                        <span class="govuk-visually-hidden">Warning</span>
-                        Note: this address is only used for this identity check and is not stored in Sirius.
-                    </strong>
-                </div>
-
-                {% if form.get('postcode').messages %}
-                    <p id="postcode-error" class="govuk-error-message">
-                        <span class="govuk-visually-hidden">Error:</span>
-                        {{ form.get('postcode').messages | join(', ', ' and ') }}
-                    </p>
-                {% endif %}
-                <label for="postcode" class="govuk-label">Enter postcode</label>
-                <input
-                        class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
-                        id="postcode" name="postcode" type="text"
-                        value="{{ form.get('postcode').value }}"
-                        aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
-                />
-
-                <p id="different-method-link" class="govuk-hint govuk-!-width-two-thirds">
-                    <a href="./enter-address-manual" class="app-link-text-color">
-                        Enter address manually or an address outside the UK
-                    </a>
-                </p>
-
-
+            <div class="govuk-warning-text govuk-!-width-two-thirds">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    Note: this address is only used for this identity check and is not stored in Sirius.
+                </strong>
             </div>
-            <button class="govuk-button" data-module="govuk-button">Continue</button>
-        </form>
-    </div>
-{% endblock %}
+
+            {% if form.get('postcode').messages %}
+                <p id="postcode-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('postcode').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            <label for="postcode" class="govuk-label">Enter postcode</label>
+            <input
+                    class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
+                    id="postcode" name="postcode" type="text"
+                    value="{{ form.get('postcode').value }}"
+                    aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
+            />
+
+            <p id="different-method-link" class="govuk-hint govuk-!-width-two-thirds">
+                <a href="./enter-address-manual" class="govuk-link">
+                    Enter address manually or an address outside the UK
+                </a>
+            </p>
+
+
+        </div>
+        <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+</div>
