@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Exceptions\YotiException;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
-use Application\Yoti\Http\Exception\YotiApiException;
+use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -72,26 +71,19 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Missing uuid']);
         }
-        $sessionUuid = strval(Uuid::uuid4());
+        $authToken = strval(Uuid::uuid4());
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
-        $sessionData = $this->sessionConfig->build($caseData, $sessionUuid);
+        $sessionData = $this->sessionConfig->build($caseData, $authToken);
 
         try {
             $result = $this->yotiService->createSession($sessionData);
         } catch (YotiException $e) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(new Problem(
-                'Problem sending request',
-                extra: ['errors' => $e->getMessage()],
-            ));
-        } catch (YotiApiException $apiException) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem(
-                'Problem sending request',
-                extra: ['errors' => $apiException->getMessage()],
+                'Problem with request',
+                extra: ['errors' => $e->getMessage()],
             ));
         }
-        //@todo save sessionId back to caseData
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
         return new JsonModel($result);

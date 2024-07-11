@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Exceptions\YotiException;
-use Application\Yoti\Http\Exception\YotiApiException;
+use Application\Yoti\Http\Exception\YotiAuthException;
+use Application\Yoti\Http\Exception\YotiClientException;
+use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -16,10 +17,6 @@ use DateTime;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Exception\ClientException;
 
-/**
- * @psalm-suppress PossiblyUnusedProperty
- * Suppress unused $client pending implementation
- */
 class YotiService implements YotiServiceInterface
 {
     public function __construct(
@@ -50,13 +47,13 @@ class YotiService implements YotiServiceInterface
     {
         try {
             $results = $this->client->post('/idverify/v1/lookup/uk-post-office', [
-                'json' => ['SearchString' => $postCode],
+                'json' => ['search_string' => $postCode],
             ]);
             if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
                 $this->logger->error('Post Office Lookup unsuccessful ', [
                     'data' => [ 'Post Code' => $postCode]
                 ]);
-                throw new YotiException("FM INT: " . $results->getReasonPhrase());
+                throw new YotiException($results->getReasonPhrase());
             }
             return json_decode(strval($results->getBody()), true);
         } catch (GuzzleException $e) {
@@ -73,11 +70,10 @@ class YotiService implements YotiServiceInterface
      * Create a IBV session with applicant data and requirements
      * is the endpoint there meant to be relative or a full path?
      * @throws YotiException
-     * @throws YotiApiException
      */
     public function createSession(array $sessionData): array
     {
-        $sdkId = 'c4321972-7a50-4644-a7cf-cc130c571f59'; //new AwsSecret('yoti/sdk-client-id');
+        $sdkId = new AwsSecret('yoti/sdk-client-id');
 
         $body = json_encode($sessionData);
         $nonce = strval(Uuid::uuid4());
@@ -90,10 +86,8 @@ class YotiService implements YotiServiceInterface
                 new AwsSecret('yoti/certificate'),
                 $body
             );
-        } catch (Http\Exception\PemFileException $e) {
-            throw new YotiException("There was a problem with Pem file");
-        } catch (Http\Exception\RequestSignException $e) {
-            throw new YotiException("Unable to create request signature");
+        } catch (Http\Exception\YotiAuthException $e) {
+            throw new YotiAuthException("Auth error: " . $e->getMessage());
         }
         $headers = [
             'X-Yoti-Auth-Digest' => $requestSignature
@@ -108,14 +102,13 @@ class YotiService implements YotiServiceInterface
             ]);
 
             if ($results->getStatusCode() !== Response::STATUS_CODE_201) {
-                throw new YotiApiException($results->getReasonPhrase());
+                throw new YotiException($results->getReasonPhrase());
             }
         } catch (ClientException $clientException) {
-                throw new YotiApiException($clientException->getMessage(), 0, $clientException);
+                throw new YotiClientException($clientException->getMessage(), 0, $clientException);
         }
 
         $result = json_decode(strval($results->getBody()), true);
-
         return ["status" => $results->getStatusCode(), "data" => $result];
     }
 

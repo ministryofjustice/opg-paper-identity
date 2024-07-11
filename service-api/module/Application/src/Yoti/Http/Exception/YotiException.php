@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Exceptions;
+namespace Application\Yoti\Http\Exception;
 
 class YotiException extends \Exception
 {

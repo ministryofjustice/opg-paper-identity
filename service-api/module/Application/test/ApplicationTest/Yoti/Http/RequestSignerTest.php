@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Yoti\Http\Exception\PemFileException;
+use Application\Yoti\Http\Exception\YotiAuthException;
 use Application\Yoti\Http\RequestSigner;
 use Aws\Result;
 use Aws\SecretsManager\SecretsManagerClient;
@@ -92,7 +92,7 @@ class RequestSignerTest extends TestCase
     {
         $this->pemFileMock->method('getValue')->willReturn('');
 
-        $this->expectException(PemFileException::class);
+        $this->expectException(YotiAuthException::class);
 
         RequestSigner::generateSignature(
             '/api/endpoint',

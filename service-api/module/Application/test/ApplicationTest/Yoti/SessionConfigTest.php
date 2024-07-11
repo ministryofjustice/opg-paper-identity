@@ -51,7 +51,8 @@ class SessionConfigTest extends TestCase
     public function sessionConfigExpected(): array
     {
         $currentDate = new DateTime();
-        $modifierString = '+'. getenv("YOTI_SESSION_DEADLINE"). ' days';
+        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
+        $modifierString = '+' . $deadlineSet . ' days';
         $currentDate->modify($modifierString);
         $currentDate->setTime(22, 0, 0);
 
