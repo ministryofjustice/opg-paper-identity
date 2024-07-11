@@ -193,6 +193,26 @@ return [
                             ],
                         ],
                     ],
+                    'po_do_details_match' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/post-office-do-details-match',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'doDetailsMatch',
+                            ],
+                        ],
+                    ],
+                    'po_donor_lpa_check' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/post-office-donor-lpa-check',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'donorLpaCheck',
+                            ],
+                        ],
+                    ],
                     'find_post_office' => [
                         'type'    => Segment::class,
                         'options' => [
@@ -409,6 +429,16 @@ return [
                             'route'    => '/:uuid/cp/remove-lpa/:lpa',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
+                                'action'     => 'removeLpa',
+                            ],
+                        ],
+                    ],
+                    'po_remove_lpa' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
                                 'action'     => 'removeLpa',
                             ],
                         ],
