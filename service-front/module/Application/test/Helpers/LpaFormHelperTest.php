@@ -435,4 +435,59 @@ class LpaFormHelperTest extends TestCase
             "idMethod" => null
         ];
     }
+
+    /**
+     * @dataProvider lpaIndexCheckData
+     */
+    public function testIndexLpaMatchCheck(array $lpas, string $personType, bool $pass): void
+    {
+        $lpaFormHelper = new LpaFormHelper();
+
+        $this->assertEquals($pass, $lpaFormHelper->lpaIdentitiesMatch($lpas, $personType));
+    }
+
+    public static function lpaIndexCheckData(): array
+    {
+        $slr = self::siriusLpaResponse();
+
+        $slrMismatchedDonor = $slr;
+        $slrMismatchedDonor['opg.poas.lpastore']['donor']['firstNames'] = 'no match';
+
+        $slrMismatchedCp = $slr;
+        $slrMismatchedCp['opg.poas.lpastore']['certificateProvider']['firstNames'] = 'no match';
+
+        return [
+            [
+                [$slr],
+                'certificateProvider',
+                true,
+            ],
+            [
+                [$slr],
+                'donor',
+                true,
+            ],
+            [
+                [$slr, $slr],
+                'certificateProvider',
+                true,
+            ],
+            [
+                [$slr, $slr],
+                'donor',
+                true,
+            ],
+
+            [
+                [$slr, $slrMismatchedDonor],
+                'donor',
+                false,
+            ],
+            [
+                [$slr, $slrMismatchedCp],
+                'certificateProvider',
+                false,
+            ]
+        ];
+    }
 }
