@@ -93,12 +93,26 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
+
 
         $view = new ViewModel();
 
         $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('lpa_details', $lpaDetails);
         $view->setVariable('case_uuid', $uuid);
 
         return $view->setTemplate('application/pages/cp/confirm_lpas');
@@ -160,17 +174,22 @@ class CPFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
-            $date = sprintf(
+            $dateOfBirth = sprintf(
                 "%s-%s-%s",
                 $params->get('dob_year'),
                 $params->get('dob_month'),
                 $params->get('dob_day'),
             );
-            $params->set('date', $date);
+            $params->set('date', $dateOfBirth);
             $form->setData($params);
 
             if ($form->isValid()) {
-                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                try {
+                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                } catch (\Exception $exception) {
+                    $form->setMessages(["There was an error saving the data"]);
+                }
             }
             $view->setVariable('form', $form);
         }
@@ -229,6 +248,7 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
@@ -259,6 +279,9 @@ class CPFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
+
+        echo json_encode($detailsData);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -299,6 +322,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('details_open', false);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
@@ -332,12 +356,23 @@ class CPFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
 
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_passed');
@@ -346,12 +381,23 @@ class CPFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpasData = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+        }
 
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpasData);
+        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_failed');
