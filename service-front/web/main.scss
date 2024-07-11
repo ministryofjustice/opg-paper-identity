@@ -39,6 +39,12 @@ $govuk-assets-path: "../assets/";
   margin-bottom:10px;
 }
 
+.app-moj-banner--wide {
+  @extend .app-moj-banner;
+  min-width: 250px;
+  vertical-align: baseline !important;
+}
+
 .app-button--align-baseline {
   vertical-align: baseline !important;
 }
