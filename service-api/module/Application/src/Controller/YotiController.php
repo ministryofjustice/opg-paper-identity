@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Exceptions\YotiException;
 use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
+use Application\Yoti\Http\Exception\YotiException;
+use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceInterface;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  * @psalm-suppress InvalidArgument
+ * @psalm-suppress UnusedProperty
  * Needed here due to false positive from Laminas’s uninitialised properties
  */
 class YotiController extends AbstractActionController
@@ -22,6 +27,8 @@ class YotiController extends AbstractActionController
     public function __construct(
         private readonly YotiServiceInterface $yotiService,
         private readonly DataImportHandler $dataImportHandler,
+        private readonly DataQueryHandler $dataQuery,
+        private readonly SessionConfig $sessionConfig,
     ) {
     }
 
@@ -56,22 +63,30 @@ class YotiController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($branches);
     }
-    public function createSessionAction(array $sessionData): JsonModel
+    public function createSessionAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
-        //@TODO authenticate if not using mock?
-        $result = $this->yotiService->createSession($sessionData);
-        //save sessionId back to caseData
-        if ($result["status"] < 400) {
-            $this->dataImportHandler->updateCaseData(
-                $uuid,
-                'sessionId',
-                'S',
-                $result["data"]["session_id"]
-            );
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(['error' => 'Missing uuid']);
         }
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_204);
-        return new JsonModel(null);
+        $authToken = strval(Uuid::uuid4());
+        $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        $sessionData = $this->sessionConfig->build($caseData, $authToken);
+
+        try {
+            $result = $this->yotiService->createSession($sessionData);
+        } catch (YotiException $e) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem(
+                'Problem with request',
+                extra: ['errors' => $e->getMessage()],
+            ));
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+        return new JsonModel($result);
     }
 
     public function getSessionStatusAction(): JsonModel

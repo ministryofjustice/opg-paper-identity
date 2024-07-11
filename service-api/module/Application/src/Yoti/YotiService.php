@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
-use Application\Exceptions\YotiException;
+use Application\Aws\Secrets\AwsSecret;
+use Application\Yoti\Http\Exception\YotiAuthException;
+use Application\Yoti\Http\Exception\YotiClientException;
+use Application\Yoti\Http\Exception\YotiException;
+use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
+use DateTime;
+use Ramsey\Uuid\Uuid;
+use GuzzleHttp\Exception\ClientException;
 
-/**
- * @psalm-suppress PossiblyUnusedProperty
- * Suppress unused $client pending implementation
- */
 class YotiService implements YotiServiceInterface
 {
     public function __construct(
@@ -50,7 +53,7 @@ class YotiService implements YotiServiceInterface
                 $this->logger->error('Post Office Lookup unsuccessful ', [
                     'data' => [ 'Post Code' => $postCode]
                 ]);
-                throw new YotiException("FM INT: " . $results->getReasonPhrase());
+                throw new YotiException($results->getReasonPhrase());
             }
             return json_decode(strval($results->getBody()), true);
         } catch (GuzzleException $e) {
@@ -65,21 +68,47 @@ class YotiService implements YotiServiceInterface
      * @param array $sessionData
      * @return array
      * Create a IBV session with applicant data and requirements
+     * is the endpoint there meant to be relative or a full path?
+     * @throws YotiException
      */
     public function createSession(array $sessionData): array
     {
-        //need to use the RequestSigner for the signature here that is on another branch
+        $sdkId = new AwsSecret('yoti/sdk-client-id');
+
+        $body = json_encode($sessionData);
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+        try {
+            $requestSignature = RequestSigner::generateSignature(
+                '/sessions?sdkId=' . $sdkId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                'POST',
+                new AwsSecret('yoti/certificate'),
+                $body
+            );
+        } catch (Http\Exception\YotiAuthException $e) {
+            throw new YotiAuthException("Auth error: " . $e->getMessage());
+        }
         $headers = [
-            'X-Yoti-Auth-Digest' => ''
+            'X-Yoti-Auth-Digest' => $requestSignature
         ];
 
-        $results = $this->client->post('/idverify/v1/sessions', [
-            'headers' => $headers,
-            'json' => $sessionData,
-        ]);
+        try {
+            $results = $this->client->post('/idverify/v1/sessions', [
+                'headers' => $headers,
+                'query' => ['sdkId' => $sdkId, 'nonce' => $nonce, 'timestamp' => $timestamp],
+                'body' => $body,
+                'debug' => true
+            ]);
+
+            if ($results->getStatusCode() !== Response::STATUS_CODE_201) {
+                throw new YotiException($results->getReasonPhrase());
+            }
+        } catch (ClientException $clientException) {
+                throw new YotiClientException($clientException->getMessage(), 0, $clientException);
+        }
 
         $result = json_decode(strval($results->getBody()), true);
-
         return ["status" => $results->getStatusCode(), "data" => $result];
     }
 
@@ -91,7 +120,7 @@ class YotiService implements YotiServiceInterface
     public function retrieveResults(string $sessionId): array
     {
         //can either use client directly like below or use
-        $results = $this->client->get('/idverify/v1/sessions/' . $sessionId);
+        $results = $this->client->get('/sessions/' . $sessionId);
 
         return json_decode(strval($results->getBody()), true);
     }
