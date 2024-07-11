@@ -1,3 +1,5 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
 
@@ -7,7 +9,9 @@
             <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
         </svg>
         <div class="moj-banner__message">
-            Initial identity confirmation complete
+            {% block title %}
+                Initial identity confirmation complete
+            {% endblock %}
         </div>
     </div>
 
@@ -37,3 +41,4 @@
         </a>
     </p>
 </div>
+{% endblock %}

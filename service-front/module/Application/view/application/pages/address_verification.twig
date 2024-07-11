@@ -1,7 +1,13 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
 
-        <h3 class="govuk-heading-xl">Choose verification method</h3>
+        <h3 class="govuk-heading-xl">
+            {% block title %}
+                Choose verification method
+            {% endblock %}
+        </h3>
         <p class="govuk-body">
             Things to check:
         </p>
@@ -25,3 +31,4 @@
         <button class="govuk-button">Continue</button>
 
 </div>
+{% endblock %}

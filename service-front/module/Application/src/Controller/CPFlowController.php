@@ -172,6 +172,8 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $form = (new AttributeBuilder())->createForm(BirthDate::class);
 
+
+
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
             $dateOfBirth = sprintf(

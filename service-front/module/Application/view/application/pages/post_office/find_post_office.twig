@@ -1,13 +1,19 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-                <h1 class="govuk-heading-xl">Find a Post Office</h1>
-                <p class="govuk-body govuk-!-width-two-thirds">
-                    Not all post offices provide this service, please confirm your postcode so I can find your nearest
-                    post
-                    office
-                </p>
+            <h1 class="govuk-heading-xl">
+                {% block title %}
+                    Find a Post Office
+                {% endblock %}
+            </h1>
+            <p class="govuk-body govuk-!-width-two-thirds">
+                Not all post offices provide this service, please confirm your postcode so I can find your nearest
+                post
+                office
+            </p>
 
             <div class="govuk-form-group {% if form.get('selected_postcode').messages %}govuk-form-group--error{% endif %}">
                 <h2 class="govuk-label-wrapper">
@@ -64,11 +70,11 @@
                 </fieldset>
             </div>
 
-                <input type="hidden" name="next_page" value="2">
-                <p class="govuk-form-group">
-                    <input type="submit" class="govuk-button" value="Continue"/>
-                    <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
-                </p>
+            <input type="hidden" name="next_page" value="2">
+            <p class="govuk-form-group">
+                <input type="submit" class="govuk-button" value="Continue"/>
+                <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+            </p>
         </form>
-
-</div>
+    </div>
+{% endblock %}
