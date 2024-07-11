@@ -1,5 +1,8 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
+    <div class="moj-banner__message moj-hidden">{% block title %}Identity check questions{% endblock %}</div>
 
         <form method="post" target="">
             {% for questionBlock in questions_data %}
@@ -50,5 +53,5 @@
                 {% endif %}
             {% endfor %}
         </form>
-
 </div>
+{% endblock %}

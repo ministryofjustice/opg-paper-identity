@@ -1,11 +1,15 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
         <form method="POST">
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h1 class="govuk-fieldset__heading">
-                            What is their date of birth?
+                            {% block title %}
+                                What is their date of birth?
+                            {% endblock %}
                         </h1>
                     </legend>
                     <p class="govuk-body govuk-!-width-two-thirds">
@@ -40,12 +44,12 @@
                                     Day
                                 </label>
                                 <input
-                                    class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                    id="dob-day"
-                                    name="dob_day"
-                                    type="text"
-                                    inputmode="numeric"
-                                    value="{{ form.get('dob_day').value }}"
+                                        class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                        id="dob-day"
+                                        name="dob_day"
+                                        type="text"
+                                        inputmode="numeric"
+                                        value="{{ form.get('dob_day').value }}"
                                 >
                             </div>
                         </div>
@@ -55,12 +59,12 @@
                                     Month
                                 </label>
                                 <input
-                                    class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                    id="dob-month"
-                                    name="dob_month"
-                                    type="text"
-                                    inputmode="numeric"
-                                    value="{{ form.get('dob_month').value }}"
+                                        class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                        id="dob-month"
+                                        name="dob_month"
+                                        type="text"
+                                        inputmode="numeric"
+                                        value="{{ form.get('dob_month').value }}"
                                 >
                             </div>
                         </div>
@@ -70,12 +74,12 @@
                                     Year
                                 </label>
                                 <input
-                                    class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                    id="dob-year"
-                                    name="dob_year"
-                                    type="text"
-                                    inputmode="numeric"
-                                    value="{{ form.get('dob_year').value }}"
+                                        class="govuk-input govuk-date-input__input govuk-input--width-4"
+                                        id="dob-year"
+                                        name="dob_year"
+                                        type="text"
+                                        inputmode="numeric"
+                                        value="{{ form.get('dob_year').value }}"
                                 >
                             </div>
                         </div>
@@ -84,5 +88,5 @@
             </div>
             <input type="submit" class="govuk-button" value="Continue">
         </form>
-
-</div>
+    </div>
+{% endblock %}
