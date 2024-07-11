@@ -1,7 +1,13 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
     <form method="POST" target="">
-        <h1 class="govuk-heading-xl">National insurance number</h1>
+        <h1 class="govuk-heading-xl">
+            {% block title %}
+                National insurance number
+            {%  endblock %}
+        </h1>
         <h2 class="govuk-heading-m">Name</h2>
         <p class="govuk-body">
             {{ details_data.firstName }} {{ details_data.lastName }}
@@ -72,3 +78,4 @@
     </form>
 
 </div>
+{%  endblock %}
