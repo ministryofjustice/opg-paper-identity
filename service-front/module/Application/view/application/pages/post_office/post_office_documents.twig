@@ -2,20 +2,20 @@
 {% block content %}
     {% include 'layout/id_check_banner.twig' with details_data %}
     <div class="govuk-width-container govuk-!-padding-top-5">
-        <form method="POST">
+        <form method="POST" class="govuk-!-width-two-thirds">
             <h1 class="govuk-heading-xl">
                 {% block title %}
                     Which document will they take to the Post office?
                 {% endblock %}
             </h1>
-            <div class="govuk-warning-text govuk-!-width-two-thirds">
+            <div class="govuk-warning-text">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
                     Note:  the chosen ID document must meet the date requirements / must be in date when taken to the Post Office.
                 </strong>
             </div>
-            <div class="govuk-warning-text govuk-!-width-two-thirds">
+            <div class="govuk-warning-text">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
