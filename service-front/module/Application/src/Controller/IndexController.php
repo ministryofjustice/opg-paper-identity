@@ -9,7 +9,6 @@ use Application\Exceptions\HttpException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
-use Application\Exceptions\OpgFrontException;
 use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -52,7 +51,7 @@ class IndexController extends AbstractActionController
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
             $personTypeDescription = $type === 'donor' ? "Donors" : " Certificate Providers";
-            throw new OpgFrontException("These LPAs are for different " . $personTypeDescription);
+            throw new HttpException(400, "These LPAs are for different " . $personTypeDescription);
         }
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
