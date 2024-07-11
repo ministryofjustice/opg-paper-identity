@@ -137,9 +137,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
         $view->setVariable('form', $form);
         $view->setVariable('location_form', $locationForm);
-
-        echo json_encode($detailsData);
-
+        
         if (! isset($detailsData['searchPostcode'])) {
             $searchPostcode = $detailsData['address']['postcode'];
         } else {
