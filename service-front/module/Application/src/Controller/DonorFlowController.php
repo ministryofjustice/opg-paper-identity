@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\IdMethod;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
@@ -56,7 +57,7 @@ class DonorFlowController extends AbstractActionController
                     $view->setVariables($formProcessorResponseDto->getVariables());
                 } else {
                     $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                    if ($formData['id_method'] == 'po') {
+                    if ($formData['id_method'] == IdMethod::PostOffice) {
                         return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     } else {
                         return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
