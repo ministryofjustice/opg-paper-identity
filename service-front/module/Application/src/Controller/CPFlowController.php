@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\LpaTypes;
 use Application\Forms\BirthDate;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
@@ -102,8 +103,20 @@ class CPFlowController extends AbstractActionController
             /**
              * @psalm-suppress PossiblyNullArrayAccess
              */
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             * @psalm-suppress InvalidArrayOffset
+             * @psalm-suppress PossiblyNullArgument
+             */
+            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+
+            $lpaDetails[$lpa] = [
+                'name' => $name,
+                'type' => $type
+            ];
         }
 
 
@@ -282,8 +295,6 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
-
-        echo json_encode($detailsData);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
