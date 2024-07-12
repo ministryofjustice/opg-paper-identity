@@ -58,7 +58,7 @@ class DonorFlowController extends AbstractActionController
                     $view->setVariables($formProcessorResponseDto->getVariables());
                 } else {
                     $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                    if ($formData['id_method'] == IdMethod::PostOffice) {
+                    if ($formData['id_method'] == IdMethod::PostOffice->value) {
                         return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     } else {
                         return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
