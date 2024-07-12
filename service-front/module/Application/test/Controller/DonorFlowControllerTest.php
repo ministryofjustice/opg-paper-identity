@@ -39,16 +39,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDonorIdCheckReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -85,7 +76,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "Name" => "Mary Anne Chapman",
             "DOB" => "01 May 1943",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
+            "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
                 "PW M-1234-ABCD-AAAA"
@@ -106,38 +97,24 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/address_verification');
     }
+
     public function testLpasByDonorReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
-            "personType" => "certificateProvider",
-            "firstName" => "Mary Anne",
-            "lastName" => "Chapman",
-            "dob" => "01 May 1943",
-            "address" => [
-                "1 Court Street",
-                "London",
-                "UK",
-                "SW1B 1BB",
-            ],
-            "lpas" => [
-                "M-XYXY-YAGA-35G3",
-                "M-XYXY-YAGA-35G4"
-            ],
-            "documentComplete" => false,
-            "alternateAddress" => [
-            ],
-            "selectedPostOfficeDeadline" => null,
-            "selectedPostOffice" => null,
-            "searchPostcode" => null,
-            "idMethod" => "nin"
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockSiriusData = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('getDetailsData')
             ->willReturn($mockResponseDataIdDetails);
+
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('getLpaByUid')
+            ->willReturn($mockSiriusData);
 
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
@@ -149,16 +126,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testNationalInsuranceNumberReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -177,16 +145,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDrivingLicenceNumberReturnsPageWithData(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -205,16 +164,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testHowWillDonorConfirmPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -233,16 +183,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testIdentityCheckPassedPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $siriusResponse = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
@@ -251,22 +193,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
-            ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
-        ];
-
         $this
-            ->opgApiServiceMock
+            ->siriusApiService
             ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
+            ->method('getLpaByUid')
+            ->willReturn($siriusResponse);
 
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
@@ -278,16 +209,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testIdentityCheckFailedPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $siriusResponse = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
@@ -296,22 +219,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockResponseDataAddressVerificationOptions = [
-            [
-                'lpa_ref' => 'PW M-1234-ABCD-AAAA',
-                'donor_name' => 'Mary Anne Chapman'
-            ],
-            [
-                'lpa_ref' => 'PA M-1234-ABCD-XXXX',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
-        ];
-
         $this
-            ->opgApiServiceMock
+            ->siriusApiService
             ->expects(self::once())
-            ->method('getLpasByDonorData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
+            ->method('getLpaByUid')
+            ->willReturn($siriusResponse);
 
         $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
@@ -320,6 +232,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/identity_check_failed');
     }
+
     public function testThinFileFailurePage(): void
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
@@ -342,16 +255,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testDonorIdMatchPage(): void
     {
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "dob" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "Donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
         $this
             ->opgApiServiceMock
@@ -366,5 +270,98 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/donor_details_match_check');
+    }
+
+
+    public function returnOpgResponseData(): array
+    {
+        return [
+            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
+            "personType" => "donor",
+            "firstName" => "Mary Anne",
+            "lastName" => "Chapman",
+            "dob" => "01 May 1943",
+            "address" => [
+                "1 Court Street",
+                "London",
+                "UK",
+                "SW1B 1BB",
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin"
+        ];
+    }
+
+    public function returnSiriusLpaResponse(): array
+    {
+        return [
+            "opg.poas.lpastore" => [
+                "certificateProvider" => [
+                    "address" => [
+                        "country" => "TV",
+                        "line1" => "93274 Goldner Club",
+                        "line3" => "Oak Lawn",
+                        "postcode" => "YG9 3RV",
+                        "town" => "Caguas"
+                    ],
+                    "channel" => "paper",
+                    "firstNames" => "Wilma",
+                    "identityCheck" => [
+                        "checkedAt" => "1940-11-01T22:28:42.0Z",
+                        "type" => "one-login"
+                    ],
+                    "lastName" => "Lynch",
+                    "phone" => "proident elit dolor cupidatat ut",
+                    "signedAt" => "1967-02-10T08:53:14.0Z",
+                    "uid" => "a72f52bd-1c26-e0ab-88a0-233e5611cd62"
+                ],
+                "channel" => "paper",
+                "donor" => [
+                    "address" => [
+                        "country" => "TF",
+                        "line1" => "9077 Bertrand Lane",
+                        "line2" => "Grady Haven",
+                        "line3" => "Hollywood",
+                        "postcode" => "XW0 6ZQ"
+                    ],
+                    "contactLanguagePreference" => "en",
+                    "dateOfBirth" => "1920-02-16",
+                    "email" => "Bethany.Ritchie@yahoo.com",
+                    "firstNames" => "Akeem",
+                    "lastName" => "Wiegand",
+                    "otherNamesKnownBy" => "Melba King",
+                    "uid" => "d4c3d084-303a-3cd3-eab0-e981618b1fe8"
+                ],
+                "howAttorneysMakeDecisions" => "jointly-for-some-severally-for-others",
+                "howReplacementAttorneysStepInDetails" => "in ut",
+                "lpaType" => "property-and-affairs",
+                "registrationDate" => "1938-06-30",
+                "signedAt" => "1910-07-22T19:38:24.0Z",
+                "status" => "registered",
+                "uid" => "M-X7BG-VMAO-1V2F",
+                "updatedAt" => "1906-03-13T01:06:58.0Z",
+                "whenTheLpaCanBeUsed" => "when-capacity-lost"
+            ],
+            "opg.poas.sirius" => [
+                "donor" => [
+                    "addressLine2" => "Randi Trafficway",
+                    "dob" => "1948-08-14",
+                    "firstname" => "Isai",
+                    "postcode" => "WR5 4XT",
+                    "surname" => "Spencer",
+                    "town" => "Galveston"
+                ],
+                "id" => 36902521,
+                "uId" => "M-F4JG-7IHS-STS5"
+            ]
+        ];
     }
 }

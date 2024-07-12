@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\LpaTypes;
+use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeNumericCode;
 use Application\Forms\PostOfficePostcode;
+use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
 
 class DonorPostOfficeFlowController extends AbstractActionController
@@ -19,30 +24,62 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
+        private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
     ) {
     }
 
     public function postOfficeDocumentsAction(): ViewModel|Response
     {
+        $templates = ['default' => 'application/pages/post_office/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
+        $dateSubForm = (new AttributeBuilder())->createForm(PassportDatePo::class);
+        $view = new ViewModel();
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
-            $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-            return $this->redirect()->toRoute("root/find_post_office", ['uuid' => $uuid]);
+
+            if (array_key_exists('check_button', $formData)) {
+                $dateSubForm->setData($formData);
+                $view->setVariable('date_sub_form', $dateSubForm);
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $dateSubForm,
+                    $templates
+                );
+                $view->setVariables($formProcessorResponseDto->getVariables());
+            } else {
+                $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+                return $this->redirect()->toRoute("root/po_do_details_match", ['uuid' => $uuid]);
+            }
         }
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view = new ViewModel();
-
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
-        return $view->setTemplate('application/pages/post_office/post_office_documents');
+        return $view->setTemplate($templates['default']);
+    }
+
+    public function doDetailsMatchAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate('application/pages/post_office/donor_details_match_check');
     }
 
     public function findPostOfficeAction(): ViewModel|Response
@@ -100,9 +137,17 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(PostOfficeNumericCode::class);
+        $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
         $view->setVariable('form', $form);
+        $view->setVariable('location_form', $locationForm);
 
-        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $detailsData['searchPostcode']);
+        if (! isset($detailsData['searchPostcode'])) {
+            $searchPostcode = $detailsData['address']['postcode'];
+        } else {
+            $searchPostcode = $detailsData['searchPostcode'];
+        }
+
+        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostcode);
         $view->setVariable('post_office_list', $responseData);
 
         if (count($this->getRequest()->getPost())) {
@@ -114,8 +159,13 @@ class DonorPostOfficeFlowController extends AbstractActionController
             }
 
             if (array_key_exists('location', $formArray)) {
-                $responseData = $this->opgApiService->searchPostOfficesByLocation($uuid, $formData['location']);
-                $view->setVariable('post_office_list', $responseData);
+                $locationForm->setData(['location' => $formArray['location']]);
+                if ($locationForm->isValid()) {
+                    $responseData = $this->opgApiService->searchPostOfficesByLocation($uuid, $formData['location']);
+                    $view->setVariable('post_office_list', $responseData);
+                } else {
+                    $locationForm->setMessages(['location' => ['Please enter a postcode, town or street name']]);
+                }
             } else {
                 $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formData['postoffice']);
 
@@ -184,5 +234,53 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
+    }
+
+    public function donorLpaCheckAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view = new ViewModel();
+        $lpaDetails = [];
+
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             * @psalm-suppress InvalidArrayOffset
+             * @psalm-suppress PossiblyNullArgument
+             */
+            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+
+            $lpaDetails[$lpa] = [
+                'name' => $name,
+                'type' => $type
+            ];
+        }
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('lpa_details', $lpaDetails);
+        $view->setVariable('lpa_count', count($detailsData['lpas']));
+
+        return $view->setTemplate('application/pages/post_office/donor_lpa_check');
+    }
+
+    public function removeLpaAction(): Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpa = $this->params()->fromRoute("lpa");
+
+        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
+
+        return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
     }
 }

@@ -47,4 +47,6 @@ interface OpgApiServiceInterface
     public function addSelectedAltAddress(string $uuid, array $data): array;
 
     public function updateCaseSetDocumentComplete(string $uuid): array;
+
+    public function updateCaseSetDob(string $uuid, string $dob): array;
 }

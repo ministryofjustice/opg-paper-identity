@@ -1,34 +1,154 @@
+{% extends "layout/layout" %}
+{% block content %}
 {% include 'layout/id_check_banner.twig' with details_data %}
 <div class="govuk-width-container govuk-!-padding-top-5">
 
-        <form method="POST">
-            <h1 class="govuk-heading-xl">Choose how to prove their identity</h1>
+    <form method="POST">
+        <h1 class="govuk-heading-xl">{% block title %}Choose how to prove their identity{% endblock %}</h1>
 
-            <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
-            <div class="govuk-form-group">
+        <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
+        <div class="govuk-form-group">
+            <div class="govuk-radios" data-module="govuk-radios">
+                {% for key, datum in options_data %}
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="{{ key }}" name="id_method" type="radio"
+                               value="{{ key }}">
+                        <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}
+                        {% if key == 'pn' %}
+
+                            <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
+                                <summary class="govuk-details__summary">
+                                    <span class="govuk-details__summary-text">
+                                      Help with checking if passport is in date
+                                    </span>
+                                </summary>
+                                <div class="govuk-details__text">
+                                    Enter passport expiry date. For example 31 03 2012
+
+                                    <div class="govuk-date-input" id="passport-issued">
+                                        <div class="govuk-date-input__item">
+                                            <div class="govuk-form-group">
+                                                <label class="govuk-label govuk-date-input__label"
+                                                       for="passport-issued-day">
+                                                    Day
+                                                </label>
+                                                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                                       id="passport-issued-day"
+                                                       name="passport_issued_day" type="text" inputmode="numeric"
+                                                       value="{{ date_sub_form.get('passport_issued_day').value }}">
+                                            </div>
+                                        </div>
+                                        <div class="govuk-date-input__item">
+                                            <div class="govuk-form-group">
+                                                <label class="govuk-label govuk-date-input__label"
+                                                       for="passport-issued-month">
+                                                    Month
+                                                </label>
+                                                <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                                       name="passport_issued_month" id="passport-issued-month"
+                                                       type="text"
+                                                       inputmode="numeric"
+                                                       value="{{ date_sub_form.get('passport_issued_month').value }}">
+                                            </div>
+                                        </div>
+                                        <div class="govuk-date-input__item">
+                                            <div class="govuk-form-group">
+                                                <label class="govuk-label govuk-date-input__label"
+                                                       for="passport-issued-year">
+                                                    Year
+                                                </label>
+                                                <input class="govuk-input govuk-date-input__input govuk-input--width-4"
+                                                       name="passport_issued_year" id="passport-issued-year" type="text"
+                                                       inputmode="numeric"
+                                                       value="{{ date_sub_form.get('passport_issued_year').value }}">
+                                            </div>
+                                        </div>
+                                        <div class="govuk-date-input__item">
+                                            <button
+                                                    class="app-button--align-baseline govuk-button govuk-button--secondary"
+                                                    name="check_button"
+                                            >Check
+                                            </button>
+                                        </div>
+
+                                        {% if invalid_date %}
+                                            <div class="govuk-date-input__item">
+                                                <div class="moj-banner moj-banner--warning moj-banner--date app-moj-banner"
+                                                     role="region"
+                                                     aria-label="Warning">
+                                                    <svg class="moj-banner__icon" fill="currentColor"
+                                                         role="presentation"
+                                                         focusable="false"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
+                                                         height="25" width="25">
+                                                        <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
+                                                    </svg>
+                                                    <div class="moj-banner__message">Out of date</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if valid_date %}
+                                            <div class="govuk-date-input__item">
+                                                <div class="moj-banner moj-banner--success moj-banner--date app-moj-banner"
+                                                     role="region"
+                                                     aria-label="Success">
+                                                    <svg class="moj-banner__icon" fill="currentColor"
+                                                         role="presentation"
+                                                         focusable="false"
+                                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
+                                                         height="25" width="25">
+                                                        <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
+                                                    </svg>
+                                                    <div class="moj-banner__message">In date</div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </details>
+
+                        {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="govuk-form-group govuk-!-width-two-thirds">
+            <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the post office</h2>
+
+
+            <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
+                       value="po">
+                <label class="govuk-label govuk-radios__label" for="PostOffice">
+                    Post office (UK passport (up to 18 months expired), UK driving licence or current EU passport or driving licence)
+                </label>
+            </div>
+        </div>
+        <details class="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                  Other methods
+                </span>
+            </summary>
+            <div class="govuk-details__text">
                 <div class="govuk-radios" data-module="govuk-radios">
-                    {% for key, datum in options_data %}
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="{{ key }}" name="id_method" type="radio"
-                                   value="{{ key }}">
-                            <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}</label>
-                        </div>
-                    {% endfor %}
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
+                               value="OnBehalf">
+                        <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their identity on donor's behalf</label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
+                               value="cpr">
+                        <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of protection</label>
+                    </div>
                 </div>
             </div>
-            <div class="govuk-form-group">
-                <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the post office</h2>
-
-
-                <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
-                           value="po">
-                    <label class="govuk-label govuk-radios__label" for="PostOffice">
-                        Post Office (current UK / EU international passport or UK driving licence)
-                    </label>
-                </div>
-            </div>
-            <input type="submit" class="govuk-button" value="Continue">
-        </form>
-
+        </details>
+        <input type="submit" class="govuk-button" value="Continue">
+    </form>
 </div>
+{% endblock %}

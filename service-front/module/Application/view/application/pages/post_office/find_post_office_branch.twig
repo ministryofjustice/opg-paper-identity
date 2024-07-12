@@ -1,8 +1,12 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
-
-
-        <h1 class="govuk-heading-xl">Find a branch</h1>
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
+        <h1 class="govuk-heading-xl">
+            {% block title %}
+                Find a Post Office
+            {% endblock %}
+        </h1>
         <p class="govuk-body govuk-!-width-two-thirds">
             Not all post offices provide this service, please confirm your postcode so I can find your nearest
             post
@@ -11,15 +15,22 @@
 
         <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
         <form method="POST">
-            <div class="govuk-form-group">
+            <div class="govuk-form-group {% if location_form.get('location').messages %}govuk-form-group--error{% endif %}"  >
                 <h1 class="govuk-label-wrapper">
                     <label class="govuk-label govuk-label--s app-text-gray govuk-body" for="location">
                         Enter a postcode, town, or street name
                     </label>
                 </h1>
+
+                {% if location_form.get('location').messages %}
+                    <p id="dln-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ location_form.get('location').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
                 <input class="govuk-input govuk-!-width-one-third" id="location" name="location"
-                       type="text">
-                <input type="submit" class="govuk-button govuk-button--secondary" value="Search" />
+                       type="text" value="{{ location_form.get('location').value }}">
+                <input type="submit" class="govuk-button govuk-button--secondary" value="Search"/>
             </div>
         </form>
         <form method="POST">
@@ -67,5 +78,5 @@
                 <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
             </p>
         </form>
-
-</div>
+    </div>
+{% endblock %}

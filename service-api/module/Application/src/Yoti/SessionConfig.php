@@ -20,7 +20,7 @@ class SessionConfig
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $case->id;
         $sessionConfig["notifications"] = [
-            "endpoint" => getenv("NOTIFICATION_URL"),
+            "endpoint" => getenv("YOTI_NOTIFICATION_URL"),
             "topics" => [
                 "FIRST_BRANCH_VISIT",
                 "THANK_YOU_EMAIL_REQUESTED",
@@ -109,8 +109,12 @@ class SessionConfig
     public function deadlineDate(): string
     {
         $currentDate = new DateTime();
-        // Add 30 days to the current date, should be 6 month really to be on safe side?
-        $currentDate->modify('+30 days');
+
+        // Add number of days for session dateline as loaded via env
+        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
+        $modifierString = '+' . $deadlineSet . ' days';
+        $currentDate->modify($modifierString);
+
         // Set the time to 22:00
         $currentDate->setTime(22, 0, 0);
         // Format the date to ISO 8601 string

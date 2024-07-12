@@ -1,6 +1,9 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
-
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
+        <h1 class="govuk-heading-xl moj-hidden">{% block title %}Not enough details to continue with this form of identification
+            {% endblock %}</h1>
         <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
             <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -10,7 +13,9 @@
         </div>
         <div class="govuk-form-group">
             <p class="govuk-body govuk-!-width-two-thirds">
-                Sorry, although the identity details did match, we can’t use this form of ID to continue the check because there is not enough identity information available online to generate the necessary security questions. This is likely to be the same for national insurance number / passport / driving licence.
+                Sorry, although the identity details did match, we can’t use this form of ID to continue the check
+                because there is not enough identity information available online to generate the necessary security
+                questions. This is likely to be the same for national insurance number / passport / driving licence.
             </p>
         </div>
         <div class="govuk-form-group">
@@ -19,6 +24,5 @@
                 Try a different method
             </a>
         </div>
-
-</div>
-
+    </div>
+{% endblock %}

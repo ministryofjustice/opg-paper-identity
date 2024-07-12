@@ -8,23 +8,28 @@ use Laminas\Validator\AbstractValidator;
 
 class PassportDateValidator extends AbstractValidator
 {
-    public const PASSPORT_DATE = 'passport_date';
+    private string $expiryAllowance = '+5 year';
 
-    public const EXPIRY_ALLOWANCE = '+5 year';
+    public function setOptions(mixed $options = []): self
+    {
+        /**
+         * @psalm-suppress InvalidArrayAccess
+         */
+        if (isset($options['expiry_allowance'])) {
+            $this->expiryAllowance = $options['expiry_allowance'];
+        }
 
-    protected array $messageTemplates = [
-        self::PASSPORT_DATE => 'The passport needs to be no more than 5 years out of date. Check the expiry date 
-        and change to Yes, or try a different method',
-    ];
+        return $this;
+    }
 
     public function isValid($value): bool
     {
         $this->setValue($value);
 
-        return $this->fiveYearValidity($value);
+        return $this->validity($value);
     }
 
-    private function fiveYearValidity(string $date): bool
+    private function validity(string $date): bool
     {
         try {
             $now = time();
@@ -32,7 +37,7 @@ class PassportDateValidator extends AbstractValidator
             if ($expiryDate === false) {
                 return false;
             }
-            $effectiveExpiry = date('Y-m-d', strtotime(self::EXPIRY_ALLOWANCE, $expiryDate));
+            $effectiveExpiry = date('Y-m-d', strtotime($this->expiryAllowance, $expiryDate));
 
             return $now < strtotime($effectiveExpiry);
         } catch (\Exception $exception) {

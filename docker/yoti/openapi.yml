@@ -1,10 +1,18 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
-  title: Yoti IBV Public API
+  title: Yoti Mock API
+  description: Provides mock for crucial Yoti endpoints spec for local/dev Post Office integrations
   version: 1.0.0
+servers:
+  - url: http://localhost:8002
+    description: Local Imposter server
+x-json-schema-faker:
+  alwaysFakeOptionals: false
+  optionalsProbability: 0.5
+  fillProperties: false
 tags:
   - name: Backend Endpoints
-    description: Endpoints for the Back-End API
+    description: Mock Server Endpoints for the Yoti API
 paths:
   /supported-documents:
     get:
@@ -316,6 +324,69 @@ paths:
                   $ref: "#/components/examples/SessionLockedError"
                 RESOURCE_LOCKED:
                   $ref: "#/components/examples/ResourceLockedError"
+
+  /sessions/{sessionId}/instructions:
+    put:
+      tags:
+        - Public Endpoints
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+        - $ref: "#/components/parameters/sdkId"
+        - $ref: "#/components/parameters/nonce"
+        - $ref: "#/components/parameters/timestamp"
+      security:
+        - X-Yoti-Auth-Token: []
+        - X-Yoti-Auth-Digest: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstructionsViewRequest"
+            examples:
+              VALID_REQUEST:
+                $ref: "#/components/examples/ValidInstructionsViewRequestExample"
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        404:
+          $ref: "#/components/responses/404"
+        409:
+          $ref: "#/components/responses/409"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+  /sessions/{sessionId}/instructions/pdf:
+    get:
+      tags:
+        - Public Endpoints
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+        - $ref: "#/components/parameters/sdkId"
+        - $ref: "#/components/parameters/nonce"
+        - $ref: "#/components/parameters/timestamp"
+      security:
+        - X-Yoti-Auth-Token: []
+        - X-Yoti-Auth-Digest: []
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        404:
+          $ref: "#/components/responses/404"
+        409:
+          $ref: "#/components/responses/409"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
 
 components:
   schemas:
@@ -1944,8 +2015,8 @@ components:
           example:
             [
               THANK_YOU_EMAIL_REQUESTED
-              FIRST_BRANCH_VISIT
-              RESOURCE_UPDATE,
+                FIRST_BRANCH_VISIT
+                RESOURCE_UPDATE,
               TASK_COMPLETION,
               CHECK_COMPLETION,
               SESSION_COMPLETION,
@@ -1987,6 +2058,378 @@ components:
           description: Determines the type of auth header to include in outbound notifications.  Defaults to BASIC
           type: string
           enum: [BASIC, BEARER]
+
+    # -----------------------------------------
+    # REQUEST OBJECTS
+    # -----------------------------------------
+
+    SessionEventRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the event to trigger for the session
+          nullable: false
+      required:
+        - name
+
+    InstructionsViewRequest:
+      type: object
+      properties:
+        contact_profile:
+          type: object
+          nullable: false
+          description: The contact-profile for the end user
+          properties:
+            first_name:
+              type: string
+              nullable: false
+              description: The first-name of the end user
+            last_name:
+              type: string
+              nullable: false
+              description: The last-name of the end user
+            email:
+              type: string
+              nullable: false
+              description: The email address of the end user
+          required:
+            - first_name
+            - last_name
+            - email
+        documents:
+          type: array
+          nullable: false
+          description: A list of documents that the user has said they will bring to the IBV session
+          items:
+            $ref: "#/components/schemas/DocumentProposalRequest"
+        branch:
+          type: object
+          nullable: false
+          description: Information about the branch the user selected during the at-home flow
+          oneOf:
+            - $ref: "#/components/schemas/UkPostOfficeBranchRequest"
+          discriminator:
+            propertyName: type
+            mapping:
+              UK_POST_OFFICE: "#/components/schemas/UkPostOfficeBranchRequest"
+      required:
+        - contact_profile
+        - documents
+        - branch
+
+    DocumentProposalRequest:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+          description: The requirement ID that the document proposal will satisfy
+          nullable: false
+        document:
+          description: The document that will be used to satisfy the requirement
+          nullable: false
+          oneOf:
+            - $ref: "#/components/schemas/SelectedIdDocumentRequest"
+            - $ref: "#/components/schemas/SelectedSupplementaryDocumentRequest"
+          discriminator:
+            propertyName: type
+            mapping:
+              ID_DOCUMENT: "#/components/schemas/SelectedIdDocumentRequest"
+              SUPPLEMENTARY_DOCUMENT: "#/components/schemas/SelectedSupplementaryDocumentRequest"
+          example:
+            value:
+              requirement_id: someRequirementId
+              document:
+                type: ID_DOCUMENT
+                country_code: GBR
+                document_type: PASSPORT
+      required:
+        - requirement_id
+        - document
+
+    SelectedIdDocumentRequest:
+      description: Represents an ID document the user has selected for the IBV session
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: false
+          enum: [ ID_DOCUMENT ]
+        country_code:
+          type: string
+          description: Three letter ISO country code
+          nullable: false
+          example: GBR
+        document_type:
+          type: string
+          description: Document type supported by the Yoti IBV service
+          nullable: false
+          example:
+            - PASSPORT
+            - DRIVING_LICENCE
+      required:
+        - type
+        - country_code
+        - document_type
+
+    SelectedSupplementaryDocumentRequest:
+      description: Represents a supplementary document the user has selected for the IBV session
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: false
+          enum: [ SUPPLEMENTARY_DOCUMENT ]
+        country_code:
+          type: string
+          description: Three letter ISO country code
+          nullable: false
+          example: GBR
+        document_type:
+          type: string
+          description: Document type supported by the Yoti IBV service
+          nullable: false
+          example:
+            - UTILITY_BILL
+            - MOBILE_PHONE_BILL
+      required:
+        - country_code
+        - document_type
+
+    UkPostOfficeBranchRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: false
+          enum: [ UK_POST_OFFICE ]
+        name:
+          type: string
+          nullable: false
+          description: The name of the UK Post Office branch
+        address:
+          type: string
+          nullable: false
+          description: The address of the UK Post Office branch
+        post_code:
+          type: string
+          nullable: false
+          description: The postcode of the UK Post Office branch
+        fad_code:
+          type: string
+          minLength: 7
+          maxLength: 7
+          description: The FAD code of the UK Post Office branch (7 alphanumeric characters)
+        location:
+          $ref: "#/components/schemas/BranchLocationRequest"
+      required:
+        - name
+        - address
+        - post_code
+
+    BranchLocationRequest:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          description: The latitude of the branch
+        longitude:
+          type: number
+          format: double
+          description: The longitude of the branch
+      required:
+        - latitude
+        - longitude
+
+    # -----------------------------------------
+    # RESPONSE OBJECTS
+    # -----------------------------------------
+
+    InstructionsViewResponse:
+      type: object
+      properties:
+        contact_profile_exists:
+          type: boolean
+          nullable: false
+          description: Signals if a contact-profile has been created that can be retrieved by the Relying Business
+          example: true
+        documents:
+          type: array
+          nullable: false
+          description: A list of documents that the user has said they will bring to the IBV session
+          items:
+            $ref: "#/components/schemas/DocumentProposalResponse"
+        branch:
+          type: object
+          nullable: true
+          description: Information about the branch the user selected during the at-home flow
+          oneOf:
+            - $ref: "#/components/schemas/UkPostOfficeBranchResponse"
+          discriminator:
+            propertyName: type
+            mapping:
+              UK_POST_OFFICE: "#/components/schemas/UkPostOfficeBranchResponse"
+      required:
+        - contact_profile_exists
+        - documents
+        - branch
+
+    DocumentProposalResponse:
+      type: object
+      properties:
+        requirement_id:
+          type: string
+          description: The requirement ID that the document proposal will satisfy
+          nullable: false
+        document:
+          description: The document that will be used to satisfy the requirement
+          nullable: false
+          oneOf:
+            - $ref: "#/components/schemas/SelectedIdDocumentResponse"
+            - $ref: "#/components/schemas/SelectedSupplementaryDocumentResponse"
+          discriminator:
+            propertyName: type
+            mapping:
+              ID_DOCUMENT: "#/components/schemas/SelectedIdDocumentResponse"
+              SUPPLEMENTARY_DOCUMENT: "#/components/schemas/SelectedSupplementaryDocumentResponse"
+          example:
+            value:
+              requirement_id: someRequirementId
+              document:
+                type: ID_DOCUMENT
+                country_code: GBR
+                document_type: PASSPORT
+      required:
+        - requirement_id
+        - document
+
+    SelectedIdDocumentResponse:
+      description: Represents an ID document the user has selected for the IBV session
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: false
+          enum: [ ID_DOCUMENT ]
+        country_code:
+          type: string
+          description: Three letter ISO country code
+          nullable: false
+          example: GBR
+        document_type:
+          type: string
+          description: Document type supported by the Yoti IBV service
+          nullable: false
+          example:
+            - PASSPORT
+            - DRIVING_LICENCE
+      required:
+        - type
+        - country_code
+        - document_type
+
+    SelectedSupplementaryDocumentResponse:
+      description: Represents a supplementary document the user has selected for the IBV session
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: false
+          enum: [ SUPPLEMENTARY_DOCUMENT ]
+        country_code:
+          type: string
+          description: Three letter ISO country code
+          nullable: false
+          example: GBR
+        document_type:
+          type: string
+          description: Document type supported by the Yoti IBV service
+          nullable: false
+          example:
+            - UTILITY_BILL
+            - MOBILE_PHONE_BILL
+      required:
+        - country_code
+        - document_type
+
+    UkPostOfficeBranchResponse:
+      type: object
+      nullable: true
+      properties:
+        type:
+          type: string
+          nullable: false
+          enum: [ UK_POST_OFFICE ]
+        name:
+          type: string
+          nullable: false
+          description: The name of the UK Post Office branch
+        address:
+          type: string
+          nullable: false
+          description: The address of the UK Post Office branch
+        post_code:
+          type: string
+          nullable: false
+          description: The postcode of the UK Post Office branch
+        fad_code:
+          type: string
+          description: The FAD code of the UK Post Office branch
+        location:
+          $ref: "#/components/schemas/BranchLocationResponse"
+      required:
+        - name
+        - address
+        - post_code
+
+    BranchLocationResponse:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          description: The latitude of the branch
+        longitude:
+          type: number
+          format: double
+          description: The longitude of the branch
+      required:
+        - latitude
+        - longitude
+
+    ContactProfileResponse:
+      type: object
+      nullable: false
+      description: The contact-profile for the end user
+      properties:
+        first_name:
+          type: string
+          nullable: false
+          description: The first-name of the end user
+        last_name:
+          type: string
+          nullable: false
+          description: The last-name of the end user
+        email:
+          type: string
+          nullable: false
+          description: The email address of the end user
+      required:
+        - first_name
+        - last_name
+        - email
+
+    DocumentSchemeValidityResponse:
+      type: object
+      properties:
+        requirements:
+          type: object
+          description: A map of all the requirements for the document, for the requested scheme
+          additionalProperties: true
+      required:
+        - requirements
+
   parameters:
     checkId:
       name: checkId
@@ -2090,7 +2533,98 @@ components:
       description: "`X-Yoti-Device-Meta` header containing a base64 encoded JSON with `DeviceMetadata` (as per the schema)"
       example: eyJtYW51ZmFjdHVyZV9uYW1lIjoiQXBwbGUiLCJtb2RlbF9uYW1lIjoiSXBob25lWCIsImJyb3dzZXJfbmFtZSI6IkNocm9tZSIsImJyb3dzZXJfdmVyc2lvbiI6IjcyLjAuMzYyNi4xMTkiLCJsb2NhbGUiOiJlbi1HQiIsImNsaWVudF92ZXJzaW9uIjoiMi4xMi4wIiwib3NfbmFtZSI6Ik1hY09zIiwib3NfdmVyc2lvbiI6IjEwLjEzLjE0IiwicHJvZHVjdCI6M30=
 
+    issuingCountry:
+      name: issuingCountry
+      description: The issuing country code of the document
+      in: query
+      required: true
+      allowEmptyValue: false
+      schema:
+        type: string
+    documentType:
+      name: documentType
+      description: The type of the document
+      in: query
+      required: true
+      allowEmptyValue: false
+      schema:
+        type: string
+
   responses:
+    400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            PAYLOAD_VALIDATION:
+              $ref: "#/components/examples/PayloadValidationError"
+            MALFORMED_DIGEST:
+              $ref: "#/components/examples/MalformedRequestDigestError"
+            MALFORMED_TOKEN:
+              $ref: "#/components/examples/MalformedRequestTokenError"
+    401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            BAD_TOKEN:
+              $ref: "#/components/examples/BadTokenError"
+            BAD_SDK_ID:
+              $ref: "#/components/examples/BadSdkIdError"
+            BAD_PUBLIC_KEY:
+              $ref: "#/components/examples/BadPublicKeyError"
+            MESSAGE_SIGNING:
+              $ref: "#/components/examples/MessageSigningError"
+    404:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            APP_NOT_FOUND:
+              $ref: "#/components/examples/AppNotFoundError"
+            SESSION_NOT_FOUND:
+              $ref: "#/components/examples/SessionNotFoundError"
+            SCHEME_NOT_FOUND:
+              $ref: "#/components/examples/SchemeNotFoundError"
+            SCHEME_VALIDATION_REQUIREMENT_NOT_FOUND:
+              $ref: "#/components/examples/SchemeValidationRequirementNotFoundError"
+    409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            SESSION_EXPIRED:
+              $ref: "#/components/examples/SessionExpiredError"
+            SESSION_LOCKED:
+              $ref: "#/components/examples/SessionLockedError"
+            INSTRUCTIONS_NOT_COMPLETE:
+              $ref: "#/components/examples/InstructionsNotCompleteError"
+    500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            SERVER_ERROR:
+              $ref: "#/components/examples/UnexpectedServerError"
+    503:
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            TEMPORARILY_UNAVAILABLE:
+              $ref: "#/components/examples/TemporarilyUnavailableError"
     400Response:
       description: Bad Request
       content:
@@ -2188,6 +2722,91 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
 
   examples:
+    MalformedRequestTokenError:
+      value:
+        code: MALFORMED_REQUEST
+        errors:
+          - property: header.X-Yoti-Auth-Token
+            message: must not be null or empty
+    SchemeValidationRequirementNotFoundError:
+      value:
+        code: SCHEME_VALIDATION_REQUIREMENT_NOT_FOUND
+        message: No scheme validation found for requested issuing country and/or document type
+    BadPublicKeyError:
+      value:
+        code: BAD_PUBLIC_KEY
+        message: Cannot parse the public key provided
+    InstructionsNotCompleteError:
+      value:
+        code: INSTRUCTIONS_NOT_COMPLETE
+        message: No instructions have been provided
+    UnexpectedServerError:
+      value:
+        code: SERVER_ERROR
+        message: An unexpected error occurred on the server
+    TemporarilyUnavailableError:
+      value:
+        code: TEMPORARILY_UNAVAILABLE
+        message: Unable to complete your request right now.  Please try again later
+    ValidInstructionsViewRequestExample:
+      value:
+        contact_profile:
+          first_name: John
+          last_name: Doe
+          email: john.doe@gmail.com
+        documents:
+          - requirement_id: someIdDocumentRequirementId
+            document:
+              type: ID_DOCUMENT
+              country_code: GBR
+              document_type: PASSPORT
+          - requirement_id: someSupplementaryDocumentRequirementId
+            document:
+              type: SUPPLEMENTARY_DOCUMENT
+              country_code: USA
+              document_type: UTILITY_BILL
+        branch:
+          type: UK_POST_OFFICE
+          fad_code: 1234567
+          name: UK Post Office Branch
+          address: 123 Post Office Road, London
+          post_code: ABC 123
+          location:
+            latitude: 0.34322
+            longitude: -42.48372
+    EmptyInstructionsViewResponseExample:
+      value:
+        contact_profile_exists: false
+        documents: [ ]
+        branch: null
+    CompletedInstructionsViewResponseExample:
+      value:
+        contact_profile_exists: true
+        documents:
+          - requirement_id: someIdDocumentRequirementId
+            document:
+              type: ID_DOCUMENT
+              country_code: GBR
+              document_type: PASSPORT
+          - requirement_id: someSupplementaryDocumentRequirementId
+            document:
+              type: SUPPLEMENTARY_DOCUMENT
+              country_code: USA
+              document_type: UTILITY_BILL
+        branch:
+          type: UK_POST_OFFICE
+          fad_code: 1234567
+          name: UK Post Office Branch
+          address: 123 Post Office Road, London
+          post_code: ABC 123
+          location:
+            latitude: 0.34322
+            longitude: -42.48372
+    SchemeNotFoundError:
+      value:
+        code: SCHEME_NOT_FOUND
+        message: No scheme found that matches provided scheme name
+
     PayloadValidationError:
       value:
         code: PAYLOAD_VALIDATION

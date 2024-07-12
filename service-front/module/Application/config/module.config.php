@@ -193,6 +193,26 @@ return [
                             ],
                         ],
                     ],
+                    'po_do_details_match' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/post-office-do-details-match',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'doDetailsMatch',
+                            ],
+                        ],
+                    ],
+                    'po_donor_lpa_check' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/post-office-donor-lpa-check',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'donorLpaCheck',
+                            ],
+                        ],
+                    ],
                     'find_post_office' => [
                         'type'    => Segment::class,
                         'options' => [
@@ -413,6 +433,16 @@ return [
                             ],
                         ],
                     ],
+                    'po_remove_lpa' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/:uuid/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action'     => 'removeLpa',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -435,6 +465,7 @@ return [
         'doctype'                  => 'HTML5',
         'not_found_template'       => 'error/404',
         'exception_template'       => 'error/index',
+        'layout'                   => 'layout/plain',
         'template_map' => [
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',

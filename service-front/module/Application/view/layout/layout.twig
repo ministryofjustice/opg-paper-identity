@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>GOV.UK - The best place to find government services and information</title>
+    <title>{% block title %}OPG Sirius - Identity check{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#0b0c0c">
     <link rel="icon" sizes="48x48" href="{{ '/assets/images/favicon.ico' | basepath }}">
@@ -41,7 +41,7 @@
 </header>
 <div class="govuk-width-container">
     <main class="app-main-wrapper govuk-!-padding-bottom-7" id="main-content" role="main">
-        {{ content | raw }}
+        {% block content %}{% endblock %}
     </main>
 </div>
 <footer class="govuk-footer" role="contentinfo">

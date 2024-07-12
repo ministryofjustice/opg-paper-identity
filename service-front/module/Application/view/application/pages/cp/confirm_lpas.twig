@@ -1,18 +1,26 @@
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
-    <main class="govuk-main-wrapper govuk-!-width-two-thirds">
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
         <form method="POST">
-            <h1 class="govuk-heading-xl">LPAs included in the identity check</h1>
+            <h1 class="govuk-heading-xl">
+                {% block title %}
+                    LPAs included in the identity check
+                {% endblock %}
+            </h1>
 
             <p class="govuk-body">
-                Certificate providers may be on more than 1 LPA and may want to confirm their identity for multiple LPAs at the same time.
+                Certificate providers may be on more than 1 LPA and may want to confirm their identity for multiple
+                LPAs at the same time.
             </p>
             <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__title-wrapper">
                             <h2 class="govuk-summary-card__title">
-                                LPA List
+                                LPAs for certificate provider:
+                                {{ details_data.firstName }}
+                                {{ details_data.lastName }}
                             </h2>
                         </div>
                         <div class="govuk-summary-card__content">
@@ -28,17 +36,21 @@
                                         Action
                                     </dt>
                                 </div>
-                                {% for datum in lpas %}
+                                {% for index, datum in lpa_details %}
                                     <div class="govuk-summary-list__row">
                                         <dd class="govuk-summary-list__value">
-                                            {{ datum }}
+                                            <span class="app-type-text-colour--{{ datum['type'] }}">
+                                                {{ datum['type'] }}
+                                            </span>
+                                            {{ index }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            {{ details_data.firstName }}
-                                            {{ details_data.lastName }}
+                                            {{ datum['name'] }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            <a href="./remove-lpa/{{ datum }}">Remove</a>
+                                            {% if lpa_count > 1 %}
+                                                <a href="./remove-lpa/{{ index }}">Remove</a>
+                                            {% endif %}
                                         </dd>
                                     </div>
                                 {% endfor %}
@@ -52,7 +64,7 @@
                                                 href="./add-lpa"
                                                 class="govuk-button govuk-button--secondary"
                                         >
-                                            Add Another LPA
+                                            Add another LPA
                                         </a>
                                     </dd>
                                 </div>
@@ -63,6 +75,5 @@
             </div>
             <a href="confirm-dob" class="govuk-button">Continue</a>
         </form>
-
-</div>
-
+    </div>
+{% endblock %}

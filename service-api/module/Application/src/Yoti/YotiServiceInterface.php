@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
-use Application\Exceptions\YotiException;
 use Application\Model\Entity\CaseData;
+use Application\Yoti\Http\Exception\YotiException;
 
 interface YotiServiceInterface
 {

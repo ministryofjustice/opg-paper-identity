@@ -1,0 +1,56 @@
+{% extends "layout/layout" %}
+{% block content %}
+{% include 'layout/id_check_banner.twig' with details_data %}
+<div class="govuk-width-container govuk-!-padding-top-5">
+    <form method="POST">
+        <h1 class="govuk-heading-m">{% block title %}Which LPAs should this identity check apply to?{% endblock %}</h1>
+
+        <div class="govuk-form-group govuk-!-width-three-quarters">
+            <fieldset class="govuk-fieldset">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            LPAs for donor: {{ details_data.firstName }} {{ details_data.lastName }}
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <table class="govuk-table">
+                            <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header">LPA reference number</th>
+                                <th scope="col" class="govuk-table__header">Donor</th>
+                                <th scope="col" class="govuk-table__header">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                            {% for index, datum in lpa_details %}
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">
+                                       <span class="app-type-text-colour--{{ datum['type'] }}">
+                                            {{ datum['type'] }}
+                                        </span>
+                                        {{ index }}</td>
+                                    <td class="govuk-table__cell">
+                                        {{ datum['name'] }}
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        {% if lpa_count > 1 %}
+                                            <a href="./po-remove-lpa/{{ index }}">Remove</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <input type="hidden" name="form-check" value="form-check">
+        <div class="govuk-button-group">
+            <a href="./find-post-office-branch" class="govuk-button">Continue</a>
+            <a href="./post-office-do-details-match" class="govuk-button govuk-button--secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

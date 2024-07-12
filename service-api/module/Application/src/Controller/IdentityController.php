@@ -377,120 +377,6 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function findLpaAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        $lpa = $this->params()->fromRoute('lpa');
-        $status = Response::STATUS_CODE_200;
-        $response = [];
-        //pending design decision - may need this code
-
-        //        if($lpa == null || $lpa == '') {
-        //            $status = Response::STATUS_CODE_400;
-        //            $message = "Enter an LPA number to continue.";
-        //            $response['message'] = $message;
-        //            $response['status'] = $status;
-        //            return new JsonModel($response);
-        //        }
-        //
-        //        if (1 !== preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
-        //            $status = Response::STATUS_CODE_400;
-        //            $message = "Not a valid LPA number. Enter an LPA number to continue.";
-        //            $response['message'] = $message;
-        //            $response['status'] = $status;
-        //            return new JsonModel($response);
-        //        }
-
-        switch ($lpa) {
-            case 'M-0000-0000-0000':
-                $message = 'Success';
-                $response['data'] = [
-                    'case_uuid' => $uuid,
-                    "LPA_Number" => $lpa,
-                    "Type_Of_LPA" => "Personal welfare",
-                    "Donor" => "Mary Ann Chapman",
-                    "Status" => "Processing",
-                    "CP_Name" => "David Smith",
-                    "CP_Address" => [
-                        'Line_1' => '82 Penny Street',
-                        'Line_2' => 'Lancaster',
-                        'Town' => 'Lancashire',
-                        'PostOfficePostcode' => 'LA1 1XN',
-                        'Country' => 'United Kingdom',
-                    ],
-                ];
-                break;
-            case 'M-0000-0000-0001':
-                $status = Response::STATUS_CODE_400;
-                $message = "This LPA has already been added to this ID check.";
-                $response['data']['Status'] = 'Already added';
-                break;
-            case 'M-0000-0000-0002':
-                $status = Response::STATUS_CODE_400;
-                $message = "No LPA found.";
-                $response['data']['Status'] = 'Not found';
-                break;
-            case 'M-0000-0000-0003':
-                $status = Response::STATUS_CODE_400;
-                $message = "This LPA cannot be added to this ID check because the
-                certificate provider details on this LPA do not match.
-                Edit the certificate provider record in Sirius if appropriate and find again.";
-                $response['additional_data'] = [
-                    'Name' => 'John Brian Adams',
-                    'Address' => [
-                        'Line_1' => '42 Mount Street',
-                        'Line_2' => 'Hednesford',
-                        'Town' => 'Cannock',
-                        'PostOfficePostcode' => 'WS12 4DE',
-                        'Country' => 'United Kingdom',
-                    ]
-                ];
-                break;
-            case 'M-0000-0000-0004':
-                $status = Response::STATUS_CODE_400;
-                $response['data']['Status'] = 'Already completed';
-                $message = "This LPA cannot be added as an ID check has already been
-                 completed for this LPA.";
-                break;
-            case 'M-0000-0000-0005':
-                $status = Response::STATUS_CODE_400;
-                $response['data']['Status'] = 'Draft';
-                $message = "This LPA cannot be added as it’s status is set to Draft.
-                LPAs need to be in the In Progress status to be added to this ID check.";
-                break;
-            case 'M-0000-0000-0006':
-                $status = Response::STATUS_CODE_400;
-                $response['data']['Status'] = 'Online';
-                $message = "This LPA cannot be added to this identity check because
-                the certificate provider has signed this LPA online.";
-                break;
-            default:
-                /**
-                 * @psalm-suppress PossiblyNullReference
-                 */
-                $case = $this->dataQueryHandler->getCaseByUUID($uuid) ?
-                    $this->dataQueryHandler->getCaseByUUID($uuid)->toArray() :
-                    [];
-                $status = Response::STATUS_CODE_200;
-                $message = "Success.";
-                $response['data'] = [
-                    'case_uuid' => $uuid,
-                    "LPA_Number" => $lpa,
-                    "Type_Of_LPA" => "Personal welfare",
-                    "Donor" => "Mary Ann Chapman",
-                    "Status" => "Processing",
-                    "CP_Name" => $case['firstName'] . " " . $case['lastName'],
-                    "CP_Address" => $case['address']
-                ];
-                break;
-        }
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $response['message'] = $message;
-        $response['status'] = $status;
-        $response['uuid'] = $uuid;
-        return new JsonModel($response);
-    }
-
     public function addCaseLpaAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
@@ -621,6 +507,51 @@ class IdentityController extends AbstractActionController
                 'documentComplete',
                 'BOOL',
                 true
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+            return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function updateDobAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $dob = $this->params()->fromRoute('dob');
+        //$data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing UUID"
+            ];
+            return new JsonModel($response);
+        }
+
+        if (! $dob) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing Date of Birth"
+            ];
+            return new JsonModel($response);
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'dob',
+                'S',
+                $dob
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";

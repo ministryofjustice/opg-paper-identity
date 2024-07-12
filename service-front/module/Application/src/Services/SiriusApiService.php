@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
+use Application\Helpers\AddressProcessorHelper;
 
 /**
  * @psalm-type Address = array{
@@ -30,7 +31,6 @@ use Laminas\Stdlib\RequestInterface;
  *      addressLine2?: string,
  *      addressLine3?: string,
  *      town?: string,
- *      county?: string,
  *      postcode?: string,
  *      country: string,
  *    },
@@ -99,13 +99,29 @@ class SiriusApiService
      */
     public function getLpaByUid(string $uid, Request $request): array
     {
+        $authHeaders = $this->getAuthHeaders($request) ?? [];
+
         $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
-            'headers' => $this->getAuthHeaders($request),
+            'headers' => $authHeaders
         ]);
 
-        return json_decode(strval($response->getBody()), true);
+        $responseArray = json_decode(strval($response->getBody()), true);
+
+        $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
+            ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+
+        return $responseArray;
     }
 
+    /**
+     * @return array{
+     *  addressLine1: string,
+     *  addressLine2: string,
+     *  addressLine3: string,
+     *  town: string,
+     *  postcode: string,
+     * }[]
+     */
     public function searchAddressesByPostcode(string $postcode, Request $request): array
     {
         $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Exceptions\YotiException;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiApiException;
+use Application\Yoti\Http\Exception\YotiAuthException;
+use Application\Yoti\Http\Exception\YotiClientException;
+use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -17,10 +19,6 @@ use DateTime;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Exception\ClientException;
 
-/**
- * @psalm-suppress PossiblyUnusedProperty
- * Suppress unused $client pending implementation
- */
 class YotiService implements YotiServiceInterface
 {
     public function __construct(
@@ -76,7 +74,6 @@ class YotiService implements YotiServiceInterface
      * Create a IBV session with applicant data and requirements
      * is the endpoint there meant to be relative or a full path?
      * @throws YotiException
-     * @throws YotiApiException
      */
     public function createSession(array $sessionData): array
     {
@@ -95,18 +92,16 @@ class YotiService implements YotiServiceInterface
             ]);
 
             if ($results->getStatusCode() !== Response::STATUS_CODE_201) {
-                throw new YotiApiException($results->getReasonPhrase());
+                throw new YotiException($results->getReasonPhrase());
             }
         } catch (ClientException $clientException) {
-
-            $this->logger->error('Unable to connect to Yoti Service [' .$clientException->getMessage(). '] ', [
-                'data' => [ 'operation' => 'session-create', 'header' => $headers]
+            $this->logger->error('Unable to connect to Yoti Service [' . $clientException->getMessage() . '] ', [
+                'data' => ['operation' => 'session-create', 'header' => $headers]
             ]);
-            throw new YotiApiException($clientException->getMessage(), 0, $clientException);
+            throw new YotiClientException($clientException->getMessage(), 0, $clientException);
         }
 
         $result = json_decode(strval($results->getBody()), true);
-
         return ["status" => $results->getStatusCode(), "data" => $result];
     }
 
@@ -140,7 +135,7 @@ class YotiService implements YotiServiceInterface
         $timestamp = $dateTime->getTimestamp();
 
         $headers = $this->getSignedRequest(
-            '/sessions/'.$caseData->sessionId.'/instructions',
+            '/sessions/' . $caseData->sessionId . '/instructions',
             'PUT',
             $nonce,
             $timestamp,
@@ -149,13 +144,13 @@ class YotiService implements YotiServiceInterface
         );
 
         try {
-            $config = $this->client->put('/idverify/v1/sessions/'. $caseData->sessionId. '/instructions', [
+            $config = $this->client->put('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions', [
                 'headers' => $headers,
                 'query' => [
                     'sdkId' => $this->sdkId->getValue(),
                     'sessionId' => $caseData->sessionId,
                     'nonce' => $nonce,
-                    'timestamp'=>$timestamp
+                    'timestamp' => $timestamp
                 ],
                 'body' => $payload
             ]);
@@ -167,15 +162,12 @@ class YotiService implements YotiServiceInterface
                 throw new YotiException("Error: " . $config->getReasonPhrase());
             }
             return ["status" => "PDF Created"];
-
-
         } catch (GuzzleException $e) {
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
                 'data' => [ 'operation' => 'session-create', 'header' => $headers]
             ]);
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
-
     }
     /**
      * @param string $yotiSessionId
@@ -191,7 +183,7 @@ class YotiService implements YotiServiceInterface
         $timestamp = $dateTime->getTimestamp();
 
         $headers = $this->getSignedRequest(
-            '/sessions/'. $yotiSessionId. '/configuration',
+            '/sessions/' . $yotiSessionId . '/configuration',
             'GET',
             $nonce,
             $timestamp,
@@ -200,13 +192,13 @@ class YotiService implements YotiServiceInterface
         );
 
         try {
-            $config = $this->client->get('/idverify/v1/sessions/'. $yotiSessionId. '/configuration', [
+            $config = $this->client->get('/idverify/v1/sessions/' . $yotiSessionId . '/configuration', [
                 'headers' => $headers,
                 'query' => [
                     'sdkId' => $this->sdkId->getValue(),
                     'sessionId' => $yotiSessionId,
                     'nonce' => $nonce,
-                    'timestamp'=>$timestamp
+                    'timestamp' => $timestamp
                 ]
             ]);
 
@@ -217,7 +209,6 @@ class YotiService implements YotiServiceInterface
                 throw new YotiException("Error: " . $config->getReasonPhrase());
             }
             return json_decode(strval($config->getBody()), true);
-
         } catch (GuzzleException $e) {
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
                 'data' => [ "operation" => "session-configuration", "sessionId" => $yotiSessionId ]
@@ -247,7 +238,6 @@ class YotiService implements YotiServiceInterface
             $caseData->sessionId
         );
         try {
-
             $pdfData = $this->client->get('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions/pdf', [
                 'headers' => $headers,
                 'query' => [
@@ -257,7 +247,7 @@ class YotiService implements YotiServiceInterface
                     'timestamp' => $timestamp
                 ],
             ]);
-        } catch (GuzzleException $e){
+        } catch (GuzzleException $e) {
             $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
                 'data' => [ 'operation' => 'retrieve-pdf', 'header' => $headers]
             ]);
@@ -300,28 +290,24 @@ class YotiService implements YotiServiceInterface
         string $endpoint,
         string $method,
         string $nonce,
-        int $time,
+        int $timestamp,
         string $body = null,
         string $sessionId = null,
-    ): array
-    {
-        $apiEndpoint = $endpoint. '?sdkId='.$this->sdkId->getValue();
+    ): array {
+        $apiEndpoint = $endpoint . '?sdkId=' . $this->sdkId->getValue();
         if ($sessionId !== null) {
-            $apiEndpoint = $apiEndpoint. '&sessionId='.$sessionId;
+            $apiEndpoint = $apiEndpoint . '&sessionId=' . $sessionId;
         }
         try {
             $requestSignature = RequestSigner::generateSignature(
-                $apiEndpoint.'&nonce='.$nonce. '&timestamp='.$time,
+                $apiEndpoint . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
                 $method,
                 $this->key,
                 $body
             );
-        } catch (Http\Exception\PemFileException $e) {
-            throw new YotiException("There was a problem with Pem file");
-        } catch (Http\Exception\RequestSignException $e) {
-            throw new YotiException("Unable to create request signature");
+        } catch (Http\Exception\YotiAuthException $e) {
+            throw new YotiException("Request signing issue " . $e->getMessage());
         }
-
         $headers = [
             'X-Yoti-Auth-Digest' => $requestSignature
         ];
