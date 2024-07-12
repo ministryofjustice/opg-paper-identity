@@ -80,7 +80,7 @@ class YotiController extends AbstractActionController
         } catch (YotiException $e) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem(
-                'Problem with request',
+                'Problem requesting Yoti API',
                 extra: ['errors' => $e->getMessage()],
             ));
         }
