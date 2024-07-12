@@ -79,19 +79,13 @@ class YotiService implements YotiServiceInterface
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
-        try {
-            $requestSignature = RequestSigner::generateSignature(
-                '/sessions?sdkId=' . $sdkId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
-                'POST',
-                new AwsSecret('yoti/certificate'),
-                $body
-            );
-        } catch (Http\Exception\YotiAuthException $e) {
-            $this->logger->error('Yoti Authentication problem for session-create [' . $e->getMessage() . '] ', [
-                'data' => [ 'sessionBody' => $body]
-            ]);
-            throw new YotiException("Previous error: " . $e->getMessage());
-        }
+
+        $requestSignature = RequestSigner::generateSignature(
+            '/sessions?sdkId=' . $sdkId->getValue() . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
+            'POST',
+            new AwsSecret('yoti/certificate'),
+            $body
+        );
         $headers = [
             'X-Yoti-Auth-Digest' => $requestSignature
         ];
@@ -99,7 +93,7 @@ class YotiService implements YotiServiceInterface
         try {
             $results = $this->client->post('/idverify/v1/sessions', [
                 'headers' => $headers,
-                'query' => ['sdkId' => $sdkId, 'nonce' => $nonce, 'timestamp' => $timestamp],
+                'query' => ['sdkId' => $sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
                 'body' => $body,
                 'debug' => true
             ]);
