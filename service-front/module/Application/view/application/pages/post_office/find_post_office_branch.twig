@@ -15,7 +15,7 @@
 
         <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
         <form method="POST">
-            <div class="govuk-form-group {% if location_form.get('location').messages %}govuk-form-group--error{% endif %}"  >
+            <div class="govuk-form-group {% if location_form.get('location').messages %}govuk-form-group--error{% endif %}">
                 <h1 class="govuk-label-wrapper">
                     <label class="govuk-label govuk-label--s app-text-gray govuk-body" for="location">
                         Enter a postcode, town, or street name
@@ -29,50 +29,58 @@
                     </p>
                 {% endif %}
                 <input class="govuk-input govuk-!-width-one-third" id="location" name="location"
-                       type="text" value="{{ location_form.get('location').value }}">
+                       type="text" value="{{ location }}">
                 <input type="submit" class="govuk-button govuk-button--secondary" value="Search"/>
             </div>
         </form>
         <form method="POST">
-            <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
-                {% for index, item in post_office_list %}
-                    <div class="govuk-radios__item">
-                        <input
-                                class="govuk-radios__input"
-                                id="{{ index }}"
-                                name="postoffice"
-                                type="radio"
-                                value="{{ index }}"
-                                data-aria-controls="default"
-                        />
-                        <label class="govuk-label govuk-radios__label" for="{{ index }}">
-                            {{ item.name }} <br>
-                            {{ item.address }} <br>
-                        </label>
+            <div class="govuk-form-group {% if form.get('postoffice').messages %}govuk-form-group--error{% endif %}">
+                {% if form.get('postoffice').messages %}
+                    <p id="dln-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ form.get('postoffice').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+                <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                    {% for index, item in post_office_list %}
+                        <div class="govuk-radios__item">
+                            <input
+                                    class="govuk-radios__input"
+                                    id="{{ index }}"
+                                    name="postoffice"
+                                    type="radio"
+                                    value="{{ index }}"
+                                    data-aria-controls="default"
+                            />
+                            <label class="govuk-label govuk-radios__label" for="{{ index }}">
+                                {{ item.name }} <br>
+                                {{ item.address }}
+                                {{ item.postcode }} <br>
+                            </label>
+                        </div>
+                    {% endfor %}
+                    <div class="govuk-form-group">
+                        <a href="#" class="govuk-link">See more</a>
                     </div>
-                {% endfor %}
-                <div class="govuk-form-group">
-                    <a href="#" class="govuk-link">See more</a>
-                </div>
-                <div class="govuk-form-group">
-                    <div class="govuk-radios__item">
-                        <input
-                                class="govuk-radios__input"
-                                id="default"
-                                name="postoffice"
-                                type="radio"
-                                value="none"
-                                data-aria-controls="default"
-                        />
-                        <label class="govuk-label govuk-radios__label" for="default">
-                            None of the above
-                        </label>
+                    <div class="govuk-form-group">
+                        <div class="govuk-radios__item">
+                            <input
+                                    class="govuk-radios__input"
+                                    id="default"
+                                    name="postoffice"
+                                    type="radio"
+                                    value="none"
+                                    data-aria-controls="default"
+                            />
+                            <label class="govuk-label govuk-radios__label" for="default">
+                                None of the above
+                            </label>
+                        </div>
                     </div>
-                </div>
-            </fieldset>
+                </fieldset>
 
-            <input type="hidden" name="next_page" value="3">
-
+                <input type="hidden" name="next_page" value="3">
+            </div>
             <p class="govuk-form-group">
                 <input type="submit" class="govuk-button" value="Continue"/>
                 <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
