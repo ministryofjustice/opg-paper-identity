@@ -53,3 +53,11 @@ $govuk-assets-path: "../assets/";
   background-color: $govuk-border-colour;
 }
 
+.app-type-text-colour--PW {
+  color: govuk-colour("turquoise");
+  font-weight: bold;
+}
+.app-type-text-colour--PA {
+  color:  govuk-colour("brown") ;
+  font-weight: bold;
+}

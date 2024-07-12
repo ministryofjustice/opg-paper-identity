@@ -23,12 +23,15 @@
                             </tr>
                             </thead>
                             <tbody class="govuk-table__body">
-                            {% for datum in lpas %}
+                            {% for index, datum in lpa_details %}
                                 <tr class="govuk-table__row">
-                                    <td class="govuk-table__cell">{{ datum }}</td>
                                     <td class="govuk-table__cell">
-                                        {{ details_data['firstName'] }}
-                                        {{ details_data['lastName'] }}
+                                       <span class="app-type-text-colour--{{ datum['type'] }}">
+                                            {{ datum['type'] }}
+                                        </span>
+                                        {{ index }}</td>
+                                    <td class="govuk-table__cell">
+                                        {{ datum['name'] }}
                                     </td>
                                     <td class="govuk-table__cell">
                                         {% if lpa_count > 1 %}

@@ -36,16 +36,19 @@
                                         Action
                                     </dt>
                                 </div>
-                                {% for datum in lpas %}
+                                {% for index, datum in lpa_details %}
                                     <div class="govuk-summary-list__row">
                                         <dd class="govuk-summary-list__value">
-                                            {{ datum }}
+                                            <span class="app-type-text-colour--{{ datum['type'] }}">
+                                                {{ datum['type'] }}
+                                            </span>
+                                            {{ index }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            {{ lpa_details[datum] }}
+                                            {{ datum['name'] }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            <a href="./remove-lpa/{{ datum }}">Remove</a>
+                                            <a href="./remove-lpa/{{ index }}">Remove</a>
                                         </dd>
                                     </div>
                                 {% endfor %}
