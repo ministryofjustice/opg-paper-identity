@@ -39,7 +39,7 @@
                                 {% for index, datum in lpa_details %}
                                     <div class="govuk-summary-list__row">
                                         <dd class="govuk-summary-list__value">
-                                            <span class="{{ datum['type'] }}-text-colour">
+                                            <span class="app-type-text-colour--{{ datum['type'] }}">
                                                 {{ datum['type'] }}
                                             </span>
                                             {{ index }}
