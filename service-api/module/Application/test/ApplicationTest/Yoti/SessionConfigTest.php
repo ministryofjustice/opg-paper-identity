@@ -30,6 +30,7 @@ class SessionConfigTest extends TestCase
             'address' => [
                 'line1' => '123 long street',
                 'line2' => 'Kings Cross',
+                'line3' => 'London',
                 'postcode' => 'NW1 1SP',
                 'country' => 'England'
             ],
@@ -50,25 +51,28 @@ class SessionConfigTest extends TestCase
     public function sessionConfigExpected(): array
     {
         $currentDate = new DateTime();
-        $currentDate->modify('+30 days');
+        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
+        $modifierString = '+' . $deadlineSet . ' days';
+        $currentDate->modify($modifierString);
         $currentDate->setTime(22, 0, 0);
 
         $sessionConfig = [];
         $sessionConfig["session_deadline"] = $currentDate->format(DateTime::ATOM);
-        $sessionConfig["resources_ttl"] = '604800';
+        $sessionConfig["resources_ttl"] = strtotime($currentDate->format(DateTime::ATOM)) - time() + 86400;
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $this->caseMock->id;
         $sessionConfig["notifications"] = [
-            "endpoints" => getenv("NOTIFICATION_URL"),
+            "endpoint" => getenv("YOTI_NOTIFICATION_URL"),
             "topics" => [
-                "INSTRUCTIONS_EMAIL_REQUESTED",
                 "FIRST_BRANCH_VISIT",
                 "THANK_YOU_EMAIL_REQUESTED",
+                "INSTRUCTIONS_EMAIL_REQUESTED",
                 "SESSION_COMPLETION"
-            ]
+            ],
+            "auth_token" => $this->uuid,
+            "auth_type" => 'BEARER',
         ];
-        $sessionConfig["auth_token"] = $this->uuid;
-        $sessionConfig["auth_type"] = 'BEARER';
+
         $sessionConfig["requested_checks"] = [
             [
                 "type" => "IBV_VISUAL_REVIEW_CHECK",
@@ -115,10 +119,12 @@ class SessionConfigTest extends TestCase
                 "type" => "ID_DOCUMENT",
                 "filter" => [
                     "type" => "DOCUMENT_RESTRICTIONS",
-                    "inclusion" => "WHITELIST",
+                    "inclusion" => "INCLUDE",
                     "documents" => [
-                        "country_codes" => "GBR",
-                        "document_types" => "PASSPORT"
+                        [
+                            "country_codes" => ["GBR"],
+                            "document_types" => ["PASSPORT"]
+                        ]
                     ]
                 ]
             ]
@@ -130,8 +136,10 @@ class SessionConfigTest extends TestCase
                 "date_of_birth" => $this->caseMock->dob,
                 "structured_postal_address" => [
                     "address_format" => "1",
-                    "address_line_1" => $this->caseMock->address['line1'],
-                    "address_line_2" => $this->caseMock->address['line2'],
+                    "building_number" => "123",
+                    "address_line1" => $this->caseMock->address['line1'],
+                    "address_line2" => $this->caseMock->address['line2'],
+                    "town_city" => "London",
                     "country" => $this->caseMock->address['country'],
                     "country_iso" => "GBR",
                     "postal_code" => $this->caseMock->address['postcode'],
