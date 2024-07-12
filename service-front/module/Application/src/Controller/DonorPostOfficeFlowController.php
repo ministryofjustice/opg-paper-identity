@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\LpaTypes;
 use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeNumericCode;
 use Application\Forms\PostOfficePostcode;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -23,6 +25,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
     ) {
     }
@@ -238,9 +241,34 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
+        $lpaDetails = [];
+
+        foreach ($detailsData['lpas'] as $lpa) {
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             */
+            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+            /**
+             * @psalm-suppress PossiblyNullArrayAccess
+             * @psalm-suppress InvalidArrayOffset
+             * @psalm-suppress PossiblyNullArgument
+             */
+            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+
+            $lpaDetails[$lpa] = [
+                'name' => $name,
+                'type' => $type
+            ];
+        }
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('lpas', $detailsData['lpas']);
+        $view->setVariable('lpa_details', $lpaDetails);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
 
         return $view->setTemplate('application/pages/post_office/donor_lpa_check');
