@@ -59,6 +59,71 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    public function returnSiriusLpaResponse(): array
+    {
+        return [
+            "opg.poas.lpastore" => [
+                "certificateProvider" => [
+                    "address" => [
+                        "country" => "TV",
+                        "line1" => "93274 Goldner Club",
+                        "line3" => "Oak Lawn",
+                        "postcode" => "YG9 3RV",
+                        "town" => "Caguas"
+                    ],
+                    "channel" => "paper",
+                    "firstNames" => "Wilma",
+                    "identityCheck" => [
+                        "checkedAt" => "1940-11-01T22:28:42.0Z",
+                        "type" => "one-login"
+                    ],
+                    "lastName" => "Lynch",
+                    "phone" => "proident elit dolor cupidatat ut",
+                    "signedAt" => "1967-02-10T08:53:14.0Z",
+                    "uid" => "a72f52bd-1c26-e0ab-88a0-233e5611cd62"
+                ],
+                "channel" => "paper",
+                "donor" => [
+                    "address" => [
+                        "country" => "TF",
+                        "line1" => "9077 Bertrand Lane",
+                        "line2" => "Grady Haven",
+                        "line3" => "Hollywood",
+                        "postcode" => "XW0 6ZQ"
+                    ],
+                    "contactLanguagePreference" => "en",
+                    "dateOfBirth" => "1920-02-16",
+                    "email" => "Bethany.Ritchie@yahoo.com",
+                    "firstNames" => "Akeem",
+                    "lastName" => "Wiegand",
+                    "otherNamesKnownBy" => "Melba King",
+                    "uid" => "d4c3d084-303a-3cd3-eab0-e981618b1fe8"
+                ],
+                "howAttorneysMakeDecisions" => "jointly-for-some-severally-for-others",
+                "howReplacementAttorneysStepInDetails" => "in ut",
+                "lpaType" => "property-and-affairs",
+                "registrationDate" => "1938-06-30",
+                "signedAt" => "1910-07-22T19:38:24.0Z",
+                "status" => "registered",
+                "uid" => "M-X7BG-VMAO-1V2F",
+                "updatedAt" => "1906-03-13T01:06:58.0Z",
+                "whenTheLpaCanBeUsed" => "when-capacity-lost"
+            ],
+            "opg.poas.sirius" => [
+                "donor" => [
+                    "addressLine2" => "Randi Trafficway",
+                    "dob" => "1948-08-14",
+                    "firstname" => "Isai",
+                    "postcode" => "WR5 4XT",
+                    "surname" => "Spencer",
+                    "town" => "Galveston"
+                ],
+                "id" => 36902521,
+                "uId" => "M-F4JG-7IHS-STS5"
+            ]
+        ];
+    }
+
     public function testPostOfficeDocumentsPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
@@ -138,6 +203,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testDonorLpaCheckPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+        $mockSiriusData = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
@@ -145,6 +211,11 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->method('getLpaByUid')
+            ->willReturn($mockSiriusData);
 
         $this->dispatch("/$this->uuid/post-office-donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
