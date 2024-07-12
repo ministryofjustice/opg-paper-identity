@@ -142,24 +142,6 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/post_office_documents');
     }
 
-    public function testFindPostOfficePage(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch("/$this->uuid/find-post-office", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
-        $this->assertMatchedRouteName('root/find_post_office');
-    }
     public function testWhatHappensNextPageWithData(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();

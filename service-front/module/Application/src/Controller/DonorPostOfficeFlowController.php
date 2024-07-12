@@ -9,11 +9,13 @@ use Application\Enums\LpaTypes;
 use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeNumericCode;
 use Application\Forms\PostOfficePostcode;
+use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
 
 class DonorPostOfficeFlowController extends AbstractActionController
@@ -135,9 +137,17 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(PostOfficeNumericCode::class);
+        $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
         $view->setVariable('form', $form);
+        $view->setVariable('location_form', $locationForm);
 
-        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $detailsData['searchPostcode']);
+        if (! isset($detailsData['searchPostcode'])) {
+            $searchPostcode = $detailsData['address']['postcode'];
+        } else {
+            $searchPostcode = $detailsData['searchPostcode'];
+        }
+
+        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostcode);
         $view->setVariable('post_office_list', $responseData);
 
         if (count($this->getRequest()->getPost())) {
@@ -149,8 +159,13 @@ class DonorPostOfficeFlowController extends AbstractActionController
             }
 
             if (array_key_exists('location', $formArray)) {
-                $responseData = $this->opgApiService->searchPostOfficesByLocation($uuid, $formData['location']);
-                $view->setVariable('post_office_list', $responseData);
+                $locationForm->setData(['location' => $formArray['location']]);
+                if ($locationForm->isValid()) {
+                    $responseData = $this->opgApiService->searchPostOfficesByLocation($uuid, $formData['location']);
+                    $view->setVariable('post_office_list', $responseData);
+                } else {
+                    $locationForm->setMessages(['location' => ['Please enter a postcode, town or street name']]);
+                }
             } else {
                 $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formData['postoffice']);
 
