@@ -48,7 +48,9 @@
                                             {{ datum['name'] }}
                                         </dd>
                                         <dd class="govuk-summary-list__value">
-                                            <a href="./remove-lpa/{{ index }}">Remove</a>
+                                            {% if lpa_count > 1 %}
+                                                <a href="./remove-lpa/{{ index }}">Remove</a>
+                                            {% endif %}
                                         </dd>
                                     </div>
                                 {% endfor %}
