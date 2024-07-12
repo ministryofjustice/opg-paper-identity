@@ -90,6 +90,7 @@ class YotiService implements YotiServiceInterface
             $this->logger->error('Yoti Authentication problem for session-create [' . $e->getMessage() . '] ', [
                 'data' => [ 'sessionBody' => $body]
             ]);
+            throw new YotiException("Previous error: " . $e->getMessage());
         }
         $headers = [
             'X-Yoti-Auth-Digest' => $requestSignature
