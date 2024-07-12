@@ -36,14 +36,15 @@ class YotiController extends AbstractActionController
 
         if (! isset($data["search_string"])) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(new Problem('Missing postCode'));
+            return new JsonModel(new Problem('Missing search parameter'));
         }
         try {
             $branchList = $this->yotiService->postOfficeBranch($data["search_string"]);
             foreach ($branchList['branches'] as $branch) {
                 $branches[$branch["fad_code"]] = [
                     "name" => $branch["name"],
-                    "address" => $branch["address"] . ", " . $branch["postcode"]
+                    "address" => $branch["address"],
+                    "postcode" => $branch["postcode"]
                 ];
             }
         } catch (YotiException $e) {
