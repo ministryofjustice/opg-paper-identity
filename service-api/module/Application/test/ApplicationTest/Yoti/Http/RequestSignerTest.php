@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace ApplicationTest\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Yoti\Http\Exception\PemFileException;
+use Application\Yoti\Http\Exception\YotiAuthException;
 use Application\Yoti\Http\RequestSigner;
 use Aws\Result;
 use Aws\SecretsManager\SecretsManagerClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Application\Yoti\Http\Exception\RequestSignException;
-use Application\Yoti\Http\Payload;
 
 class RequestSignerTest extends TestCase
 {
-    private Payload|MockObject $payloadMock;
     private AwsSecret|MockObject $pemFileMock;
     private SecretsManagerClient $secretsManagerClient;
     private Result $privateResult;
@@ -24,7 +21,6 @@ class RequestSignerTest extends TestCase
     private const METHOD = 'POST';
     public function setUp(): void
     {
-        $this->payloadMock = $this->createMock(Payload::class);
         $this->pemFileMock = $this->createMock(AwsSecret::class);
 
         $this->secretsManagerClient = new SecretsManagerClient([
@@ -32,7 +28,7 @@ class RequestSignerTest extends TestCase
             'region' => 'eu-west-1'
         ]);
         $this->privateResult = $this->secretsManagerClient->getSecretValue([
-            'SecretId' => 'local/paper-identity/private-key',
+            'SecretId' => 'local/paper-identity/yoti/private-key',
         ]);
     }
 
@@ -43,7 +39,7 @@ class RequestSignerTest extends TestCase
      */
     public function testGenerateSignature(): void
     {
-        $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
+        $payload = json_encode(['data' => 'payload']);
 
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
@@ -53,12 +49,12 @@ class RequestSignerTest extends TestCase
             self::PATH,
             self::METHOD,
             $this->pemFileMock,
-            $this->payloadMock,
+            $payload
         );
-        $messageToSign = self::METHOD . '&' . self::PATH . '&' . $this->payloadMock->toBase64();
+        $messageToSign = self::METHOD . '&' . self::PATH . '&' . base64_encode($payload);
         /** @var array $publicKeyResult */
         $publicKeyResult = $this->secretsManagerClient->getSecretValue([
-            'SecretId' => 'local/paper-identity/public-key',
+            'SecretId' => 'local/paper-identity/yoti/public-key',
         ]);
 
         $publicKey = openssl_pkey_get_public($publicKeyResult['SecretString']);
@@ -94,17 +90,15 @@ class RequestSignerTest extends TestCase
      */
     public function testGenerateSignatureEmptyPemFileThrowsException(): void
     {
-        $this->payloadMock->method('toBase64')->willReturn('payloadBase64String');
-
         $this->pemFileMock->method('getValue')->willReturn('');
 
-        $this->expectException(PemFileException::class);
+        $this->expectException(YotiAuthException::class);
 
         RequestSigner::generateSignature(
             '/api/endpoint',
             'POST',
             $this->pemFileMock,
-            $this->payloadMock
+            'payloadBase64String'
         );
     }
 }

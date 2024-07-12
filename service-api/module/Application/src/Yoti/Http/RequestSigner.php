@@ -5,14 +5,8 @@ declare(strict_types=1);
 namespace Application\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Yoti\Http\Exception\PemFileException;
-use Application\Yoti\Http\Exception\RequestSignException;
-use Application\Yoti\Http\Payload;
+use Application\Yoti\Http\Exception\YotiAuthException;
 
-/**
- * Suppress pslam error til class is used
- * @psalm-suppress UnusedClass
- */
 class RequestSigner
 {
     /**
@@ -25,31 +19,32 @@ class RequestSigner
      *
      * @param string $endpoint The API endpoint to be accessed.
      * @param string $httpMethod The HTTP method to be used (e.g., GET, POST).
-     * @param Payload|null $payload An optional payload to include in the signature.
+     * @param String|null $payload An optional payload to include in the signature.
      *
      * @return string The generated signature, base64 encoded.
      *
-     * @throws RequestSignException If the signing process fails.
-     * @throws PemFileException
+     * If the signing process fails.
+     * @throws YotiAuthException
      */
     public static function generateSignature(
         string $endpoint,
         string $httpMethod,
         AwsSecret $pemFile,
-        Payload $payload = null
+        string $payload = null
     ): string {
-        $messageToSign = "{$httpMethod}&$endpoint";
-        if ($payload instanceof Payload) {
-            $messageToSign .= "&{$payload->toBase64()}";
+
+        $messageToSign = "{$httpMethod}&{$endpoint}";
+        if ($payload !== null) {
+            $messageToSign .= "&" . base64_encode($payload);
+        }
+        if ($pemFile->getValue() === '') {
+            throw new YotiAuthException('Unable to get pemFile or is empty');
         }
 
-        if ($pemFile->getValue() === '') {
-            throw new PemFileException('Unable to get pemFile or is empty');
-        }
         openssl_sign($messageToSign, $signature, $pemFile->getValue(), OPENSSL_ALGO_SHA256);
 
         if (! $signature) {
-            throw new RequestSignException('Could not sign request.');
+            throw new YotiAuthException('Could not sign request.');
         }
 
         return base64_encode($signature);
