@@ -82,55 +82,9 @@ class DonorPostOfficeFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/post_office/donor_details_match_check');
     }
 
-    public function findPostOfficeAction(): ViewModel|Response
-    {
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-
-        $form = (new AttributeBuilder())->createForm(PostOfficePostcode::class);
-        $view->setVariable('form', $form);
-
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
-
-        foreach ($detailsData['address'] as $line) {
-            if (preg_match('/^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$/', $line)) {
-                $defaultPostcode = $line;
-            }
-        }
-
-        if (count($this->getRequest()->getPost())) {
-            $formObject = $this->getRequest()->getPost();
-            $formData = $formObject->toArray();
-            if ($formData['postcode'] == 'alt') {
-                $postcode = $formData['alt_postcode'];
-            } else {
-                $postcode = $formData['postcode'];
-            }
-            $formObject->set('selected_postcode', $postcode);
-            $form->setData($formObject);
-
-            if ($form->isValid()) {
-                $response = $this->opgApiService->addSearchPostcode($uuid, $postcode);
-                if ($response['result'] === 'Updated') {
-                    return $this->redirect()->toRoute('root/find_post_office_branch', ['uuid' => $uuid]);
-                }
-            }
-        }
-
-        /**
-         * @psalm-suppress PossiblyUndefinedVariable
-         */
-        $view->setVariable('default_postcode', $defaultPostcode);
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        return $view->setTemplate('application/pages/post_office/find_post_office');
-    }
-
     public function findPostOfficeBranchAction(): ViewModel|Response
     {
+        $templates = ['default' => 'application/pages/post_office/find_post_office_branch'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
@@ -145,51 +99,43 @@ class DonorPostOfficeFlowController extends AbstractActionController
             $searchString = $detailsData['searchPostcode'];
         }
 
-        $view->setVariable('location', $searchString);
-
         $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
         $locationData = $this->formProcessorHelper->processPostOfficeSearchResponse($responseData);
 
-        if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost();
-            $formArray = $formData->toArray();
+        $view->setVariable('location', $searchString);
+        $view->setVariable('post_office_list', $locationData);
+        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
 
+        if (count($this->getRequest()->getPost())) {
             if ($this->getRequest()->getPost('postoffice') == 'none') {
                 return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
 
-            if (array_key_exists('location', $formArray)) {
-                $view->setVariable('location', $formArray['location']);
-                $locationForm->setData(['location' => $formArray['location']]);
-                if ($locationForm->isValid()) {
-                    $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formData['location']);
-
-                    $locationData = $this->formProcessorHelper->processPostOfficeSearchResponse($responseData);
-                    $view->setVariable('post_office_list', $locationData);
-                } else {
-                    $locationForm->setMessages(['location' => ['Please enter a postcode, town or street name']]);
-                }
+            if (array_key_exists('location', $this->getRequest()->getPost()->toArray())) {
+                $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $locationForm,
+                    $templates
+                );
             } else {
-                $form->setData($formData);
-                if ($form->isValid()) {
-                    $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
-                    if ($responseData['result'] == 'Updated') {
-                        return $this->redirect()->toRoute('root/confirm_post_office', ['uuid' => $uuid]);
-                    } else {
-                        $form->setMessages(['Error saving Post Office to this case.']);
-                    }
-                } else {
-                    $form->setMessages(['postoffice' => ['Please select an option']]);
+                $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $form,
+                    $templates
+                );
+                if ($processed->getRedirect() !== null) {
+                    return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
                 }
             }
+            $view->setVariables($processed->getVariables());
+        } else {
+            $view->setVariable('form', $form);
+            $view->setVariable('location_form', $locationForm);
         }
-
-        $view->setVariable('post_office_list', $locationData);
-        $view->setVariable('form', $form);
-        $view->setVariable('location_form', $locationForm);
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate('application/pages/post_office/find_post_office_branch');
     }

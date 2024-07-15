@@ -237,8 +237,6 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException($opgApiException->getMessage());
         }
         return $this->responseData;
-
-        // NEED TO INCLUDE PAGINATION LOGIC HERE AS WELL
     }
 
 

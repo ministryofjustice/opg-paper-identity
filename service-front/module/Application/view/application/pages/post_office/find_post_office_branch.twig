@@ -41,7 +41,7 @@
                         {{ form.get('postoffice').messages | join(', ', ' and ') }}
                     </p>
                 {% endif %}
-                <fieldset class="govuk-fieldset" aria-describedby="contact-hint">
+                <fieldset class="govuk-fieldset">
                     {% for index, item in post_office_list %}
                         <div class="govuk-radios__item">
                             <input
@@ -59,9 +59,6 @@
                             </label>
                         </div>
                     {% endfor %}
-                    <div class="govuk-form-group">
-                        <a href="#" class="govuk-link">See more</a>
-                    </div>
                     <div class="govuk-form-group">
                         <div class="govuk-radios__item">
                             <input

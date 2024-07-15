@@ -9,6 +9,7 @@ use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use Laminas\View\Model\ViewModel;
 
 class FormProcessorHelper
 {
@@ -147,5 +148,50 @@ class FormProcessorHelper
             $locationData[$jsonKey] = $array;
         }
         return $locationData;
+    }
+
+    public function processPostOfficeSearchForm(
+        string $uuid,
+        Parameters $formData,
+        FormInterface $form,
+        array $templates = []
+    ): FormProcessorResponseDto {
+        $formArray = $formData->toArray();
+        $variables = [];
+        $redirect = null;
+
+        if (array_key_exists('location', $formArray)) {
+            $variables['location'] = $formArray['location'];
+            $form->setData(['location' => $formArray['location']]);
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formData['location']);
+
+                $locationData = $this->processPostOfficeSearchResponse($responseData);
+                $variables['post_office_list'] = $locationData;
+            } else {
+                $form->setMessages(['location' => ['Please enter a postcode, town or street name']]);
+            }
+            $variables['location_form'] = $form;
+        } else {
+            $form->setData($formData);
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
+                if ($responseData['result'] == 'Updated') {
+                    $redirect = 'root/confirm_post_office';
+                } else {
+                    $form->setMessages(['Error saving Post Office to this case.']);
+                }
+            } else {
+                $form->setMessages(['postoffice' => ['Please select an option']]);
+            }
+            $variables['form'] = $form;
+        }
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            $templates['default'],
+            $variables,
+            $redirect
+        );
     }
 }
