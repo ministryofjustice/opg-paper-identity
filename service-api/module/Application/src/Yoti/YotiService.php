@@ -121,12 +121,18 @@ class YotiService implements YotiServiceInterface
     /**
      * @param CaseData $caseData
      * @return array
-     * PDF Stage 1: Prepare PDF letter for applicant, generatePDFLetter vs retrieveLetterPDF
+     * PDF Stage 1: Prepare PDF letter for applicant
      * @throws YotiException
      */
     public function preparePDFLetter(CaseData $caseData): array
     {
-        $config = $this->getSessionConfigFromYoti($caseData->sessionId);
+        $sessionId = $caseData->sessionId;
+
+        if ( $sessionId === null) {
+            throw new YotiException("SessionID does not exist to prepare PDF for this case");
+        }
+
+        $config = $this->getSessionConfigFromYoti($sessionId);
         $requirementID = $config['capture']['required_resources'][0]['id'];
         $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
 
@@ -260,7 +266,7 @@ class YotiService implements YotiServiceInterface
         return ["status" => "PDF Created", "pdfData" => $pdf];
     }
 
-    private function letterConfigPayload(CaseData $caseData, $requirementId): array
+    public function letterConfigPayload(CaseData $caseData, string $requirementId): array
     {
         $payload = [];
 

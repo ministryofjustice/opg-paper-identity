@@ -37,4 +37,11 @@ interface YotiServiceInterface
      * Generate PDF letter for applicant
      */
     public function retrieveLetterPDF(CaseData $caseData): array;
+
+    /**
+     * @param CaseData $caseData
+     * @return array
+     * Prepare PDF letter for applicant
+     */
+    public function preparePDFLetter(CaseData $caseData): array;
 }
