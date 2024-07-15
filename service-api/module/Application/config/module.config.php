@@ -237,7 +237,17 @@ return [
                     'route'    => '/counter-service/:uuid/retrieve-letter',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getPDFLetter',
+                        'action'     => 'retrievePDF',
+                    ],
+                ]
+            ],
+            'prepare_pdf_letter' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/:uuid/prepare-pdf',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'preparePDFLetter',
                     ],
                 ]
             ],
