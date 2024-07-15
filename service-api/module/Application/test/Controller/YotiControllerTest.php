@@ -88,9 +88,9 @@ class YotiControllerTest extends TestCase
      */
     public function testBranchReturnFormat(): void
     {
-        $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. '.
+        $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. ' .
             'Neots, Cambridgeshire","postcode":"PE19 1NL"}' .
-                    ',"12345675":{"name":"Hampstead","address":"66 High Street, '.
+                    ',"12345675":{"name":"Hampstead","address":"66 High Street, ' .
             'Hampstead Heath, London","postcode":"NW3 6LR"}}';
         $this->YotiServiceMock
             ->expects($this->once())->method('postOfficeBranch')
