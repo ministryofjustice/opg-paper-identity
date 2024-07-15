@@ -225,123 +225,20 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function listPostOfficesByPostcode(string $uuid, string $postcode): array
+    public function listPostOfficesByPostcode(string $uuid, string $location): array
     {
-//        $data = [
-//            'postcode' => $postcode
-//        ];
-//        try {
-//            $response = $this->makeApiRequest("/cases/$uuid/find-post-office", 'POST', $data);
-//            return $response['result'];
-//        } catch (OpgApiException $opgApiException) {
-//            throw new OpgApiException('Post office reference code not found');
-//        }
-
-        // NEED TO INCLUDE PAGINATION LOGIC HERE AS WELL
-
-        return [
-            12345672 => [
-                'name' => 'Hednesford',
-                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
-            ],
-            12345673 => [
-                'name' => 'Chadsmoor',
-                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
-            ],
-            12345674 => [
-                'name' => 'Hazelslade',
-                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
-            ],
-            12345675 => [
-                'name' => 'Wimblebury',
-                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
-            ],
-            12345676 => [
-                'name' => 'Heath Hayes',
-                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
-            ]
+        $data = [
+            'search_string' => $location
         ];
-    }
 
-    public function searchPostOfficesByLocation(
-        string $uuid,
-        string $location,
-        int $page = 1
-    ): array {
-//        $data = [
-//            'postcode' => $postcode
-//        ];
-//        try {
-//            $response = $this->makeApiRequest("/cases/$uuid/search-post-office-by-location", 'POST', $data);
-//            return $response['result'];
-//        } catch (OpgApiException $opgApiException) {
-//            throw new OpgApiException('Post office reference code not found');
-//        }
-
-        return [
-            12345672 => [
-                'name' => 'Hednesford',
-                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
-            ],
-            12345673 => [
-                'name' => 'Chadsmoor',
-                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
-            ],
-            12345674 => [
-                'name' => 'Hazelslade',
-                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
-            ],
-            12345675 => [
-                'name' => 'Wimblebury',
-                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
-            ],
-            12345676 => [
-                'name' => 'Heath Hayes',
-                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
-            ]
-        ];
-    }
-
-    public function getPostOfficeByCode(string $uuid, int $code): array
-    {
-//        $data = [
-//            'postcode' => $postcode
-//        ];
-//        try {
-//            $response = $this->makeApiRequest("/cases/$uuid/find-post-office", 'POST', $data);
-//            return $response['result'];
-//        } catch (OpgApiException $opgApiException) {
-//            throw new OpgApiException('Post office reference code not found');
-//        }
-
-        $postOffices = [
-            12345672 => [
-                'name' => 'Hednesford',
-                'address' => '45 Market Street, Hednesford, Cannock, WS12 1AY',
-            ],
-            12345673 => [
-                'name' => 'Chadsmoor',
-                'address' => '207-209 Cannock Road, Chadsmoor, Cannock, WS11 5DD',
-            ],
-            12345674 => [
-                'name' => 'Hazelslade',
-                'address' => '71 Rugeley Road, Hazelslade, Cannock, WS12 0PQ',
-            ],
-            12345675 => [
-                'name' => 'Wimblebury',
-                'address' => '66-68 John Street, Wimblebury, Cannock, WS12 2RJ',
-            ],
-            12345676 => [
-                'name' => 'Heath Hayes',
-                'address' => '151 Hednesford Road, Heath Hayes, Cannock, WS12 3HN',
-            ]
-        ];
-        if (array_key_exists($code, $postOffices)) {
-            return $postOffices[$code] ;
-        } else {
-            throw new OpgApiException('Post office reference code not found');
+        try {
+            $this->makeApiRequest("/counter-service/branches", 'POST', $data);
+        } catch (OpgApiException $opgApiException) {
+            throw new OpgApiException($opgApiException->getMessage());
         }
+        return $this->responseData;
     }
+
 
     public function addSearchPostcode(string $uuid, string $postcode): array
     {
