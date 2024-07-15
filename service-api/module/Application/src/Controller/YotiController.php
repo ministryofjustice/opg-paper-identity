@@ -141,7 +141,7 @@ class YotiController extends AbstractActionController
 
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
 
-        if ( !$caseData || $caseData->sessionId === null ) {
+        if (! $caseData || $caseData->sessionId === null) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('SessionId does not exist to prepare PDF'));
         }

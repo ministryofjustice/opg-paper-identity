@@ -6,7 +6,6 @@ namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Model\Entity\CaseData;
-use Application\Yoti\Http\Exception\YotiApiException;
 use Application\Yoti\Http\Exception\YotiAuthException;
 use Application\Yoti\Http\Exception\YotiClientException;
 use Application\Yoti\Http\Exception\YotiException;
@@ -128,7 +127,7 @@ class YotiService implements YotiServiceInterface
     {
         $sessionId = $caseData->sessionId;
 
-        if ( $sessionId === null) {
+        if ($sessionId === null) {
             throw new YotiException("SessionID does not exist to prepare PDF for this case");
         }
 
@@ -311,7 +310,7 @@ class YotiService implements YotiServiceInterface
                 $this->key,
                 $body
             );
-        } catch (Http\Exception\YotiAuthException $e) {
+        } catch (YotiAuthException $e) {
             throw new YotiException("Request signing issue " . $e->getMessage());
         }
         $headers = [
