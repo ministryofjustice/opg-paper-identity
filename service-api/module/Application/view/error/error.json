@@ -1,0 +1,1 @@
+{"type": "UnexpectedError", "title": "An unexpected error occurred", "status": 500, "detail": "<?= $this->message ?>"}

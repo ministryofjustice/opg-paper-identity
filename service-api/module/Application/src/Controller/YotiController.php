@@ -174,11 +174,7 @@ class YotiController extends AbstractActionController
                 extra: ['errors' => $e->getMessage()],
             ));
         }
-        // Write pdf to file
-        $fileName = 'instructions-' . $uuid . '.pdf';
-        $content = file_put_contents($fileName, $data['pdfData']);
 
-        $this->getResponse()->setContent($content);
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel(["Status" => "PDF Created", "pdfData" => $data['pdfData']]);
     }
