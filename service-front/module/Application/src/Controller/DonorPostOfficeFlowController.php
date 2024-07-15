@@ -7,7 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
 use Application\Forms\PassportDatePo;
-use Application\Forms\PostOfficeNumericCode;
+use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficePostcode;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
@@ -136,19 +136,19 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = (new AttributeBuilder())->createForm(PostOfficeNumericCode::class);
+        $form = (new AttributeBuilder())->createForm(PostOfficeAddress::class);
         $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
-        $view->setVariable('form', $form);
-        $view->setVariable('location_form', $locationForm);
 
         if (! isset($detailsData['searchPostcode'])) {
-            $searchPostcode = $detailsData['address']['postcode'];
+            $searchString = $detailsData['address']['postcode'];
         } else {
-            $searchPostcode = $detailsData['searchPostcode'];
+            $searchString = $detailsData['searchPostcode'];
         }
 
-        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostcode);
-        $view->setVariable('post_office_list', $responseData);
+        $view->setVariable('location', $searchString);
+
+        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
+        $locationData = $this->formProcessorHelper->processPostOfficeSearchResponse($responseData);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
@@ -159,24 +159,34 @@ class DonorPostOfficeFlowController extends AbstractActionController
             }
 
             if (array_key_exists('location', $formArray)) {
+                $view->setVariable('location', $formArray['location']);
                 $locationForm->setData(['location' => $formArray['location']]);
                 if ($locationForm->isValid()) {
-                    $responseData = $this->opgApiService->searchPostOfficesByLocation($uuid, $formData['location']);
-                    $view->setVariable('post_office_list', $responseData);
+                    $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formData['location']);
+
+                    $locationData = $this->formProcessorHelper->processPostOfficeSearchResponse($responseData);
+                    $view->setVariable('post_office_list', $locationData);
                 } else {
                     $locationForm->setMessages(['location' => ['Please enter a postcode, town or street name']]);
                 }
             } else {
-                $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formData['postoffice']);
-
-                if ($responseData['result'] == 'Updated') {
-                    return $this->redirect()->toRoute('root/confirm_post_office', ['uuid' => $uuid]);
+                $form->setData($formData);
+                if ($form->isValid()) {
+                    $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
+                    if ($responseData['result'] == 'Updated') {
+                        return $this->redirect()->toRoute('root/confirm_post_office', ['uuid' => $uuid]);
+                    } else {
+                        $form->setMessages(['Error saving Post Office to this case.']);
+                    }
                 } else {
-                    $form->setMessages(['Error saving Post Office to this case.']);
+                    $form->setMessages(['postoffice' => ['Please select an option']]);
                 }
             }
         }
 
+        $view->setVariable('post_office_list', $locationData);
+        $view->setVariable('form', $form);
+        $view->setVariable('location_form', $locationForm);
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
@@ -195,14 +205,15 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $date->modify("+90 days");
         $deadline = $date->format("d M Y");
 
-        $responseData = $this->opgApiService->getPostOfficeByCode($uuid, (int)$detailsData['selectedPostOffice']);
-        $postOfficeAddress = explode(",", $responseData['address']);
+        $postOfficeData = json_decode($detailsData['selectedPostOffice'], true);
+
+        $postOfficeAddress = explode(",", $postOfficeData['address']);
+        $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['postcode']]);
 
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
         $view->setVariable('post_office_summary', true);
-        $view->setVariable('post_office_data', $responseData);
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
         $view->setVariable('id_method', $optionsdata[$detailsData['idMethod']]);

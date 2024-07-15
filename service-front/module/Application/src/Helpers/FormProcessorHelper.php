@@ -138,4 +138,14 @@ class FormProcessorHelper
             $variables
         );
     }
+
+    public function processPostOfficeSearchResponse(array $responseData): array
+    {
+        $locationData = [];
+        foreach ($responseData as $key => $array) {
+            $jsonKey = json_encode(array_merge($array, ['fad' => $key]));
+            $locationData[$jsonKey] = $array;
+        }
+        return $locationData;
+    }
 }
