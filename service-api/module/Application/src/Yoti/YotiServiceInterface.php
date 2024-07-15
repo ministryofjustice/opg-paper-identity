@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
+use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiException;
 
 interface YotiServiceInterface
@@ -31,9 +32,16 @@ interface YotiServiceInterface
     public function retrieveResults(string $sessionId): array;
 
     /**
-     * @param string $sessionId
+     * @param CaseData $caseData
      * @return array
      * Generate PDF letter for applicant
      */
-    public function retrieveLetterPDF(string $sessionId): array;
+    public function retrieveLetterPDF(CaseData $caseData): array;
+
+    /**
+     * @param CaseData $caseData
+     * @return array
+     * Prepare PDF letter for applicant
+     */
+    public function preparePDFLetter(CaseData $caseData): array;
 }

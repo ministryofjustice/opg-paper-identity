@@ -109,17 +109,19 @@ class SessionConfig
     public function deadlineDate(): string
     {
         $currentDate = new DateTime();
+
         // Add number of days for session dateline as loaded via env
         $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
         $modifierString = '+' . $deadlineSet . ' days';
         $currentDate->modify($modifierString);
+
         // Set the time to 22:00
         $currentDate->setTime(22, 0, 0);
         // Format the date to ISO 8601 string
         return $currentDate->format(DateTime::ATOM);
     }
 
-    public function getDocType(?string $idMethod): string
+    public static function getDocType(?string $idMethod): string
     {
         $drivingLicenceOptions = ["po_ukd", "po_eud"];
         if (in_array($idMethod, $drivingLicenceOptions)) {
