@@ -51,8 +51,14 @@
                                 {{ id_method }}
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="post-office-documents">Change<span
-                                            class="govuk-visually-hidden"></span></a>
+                                <a
+                                    class="govuk-link"
+                                    href="post-office-documents"
+                                    aria-label="Change document"
+                                >
+                                    Change
+                                    <span class="govuk-visually-hidden">Document</span>
+                                </a>
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -65,8 +71,14 @@
                                 {% endfor %}
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="find-post-office">Change<span
-                                            class="govuk-visually-hidden"></span></a>
+                                <a
+                                    class="govuk-link"
+                                    href="find-post-office-branch"
+                                    aria-label="Change post office"
+                                >
+                                    Change
+                                    <span class="govuk-visually-hidden">Post Office</span>
+                                </a>
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -78,7 +90,7 @@
                                 <input type="hidden" name="deadline" value="{{ deadline }}">
                             </dd>
                             <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" href="#">Change<span class="govuk-visually-hidden"></span></a>
+
                             </dd>
                         </div>
                     </dl>
@@ -93,7 +105,7 @@
             {% endif %}
             <p class="govuk-form-group">
                 <input type="submit" class="govuk-button" value="Continue">
-                <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+                <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
             </p>
         </form>
     </div>
