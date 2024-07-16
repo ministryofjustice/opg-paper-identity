@@ -241,6 +241,16 @@ return [
                     ],
                 ]
             ],
+            'yoti_notification' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/notification',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'notification',
+                    ],
+                ],
+            ],
             'add_search_postcode' => [
                 'type' => Segment::class,
                 'options' => [

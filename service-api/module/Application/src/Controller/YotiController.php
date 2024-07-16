@@ -113,4 +113,39 @@ class YotiController extends AbstractActionController
         $data['response'] = $this->yotiService->retrieveLetterPDF($session);
         return new JsonModel($data);
     }
+
+    /**
+     * @return JsonModel
+     */
+    public function notificationAction(): JsonModel
+    {
+        $branches = [];
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $values = filter_input_array($data);
+        if ( !isset($data['sessionId'], $data['sessionToken'], $data['type'])) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing required parameters'));
+        }
+
+        if ( !in_array($data['type'], array('FIRST_BRANCH_VISIT', 'SESSION_COMPLETION'))) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Invalid type'));
+        }
+
+        $sessionId = filter_var($data['sessionId'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $sessionToken = filter_var($data['sessionToken'], FILTER_SANITIZE_SPECIAL_CHARS);
+
+        try {
+            //call yotiservice to save the updates to case or maybe just use dataImporthandler directly?
+
+        } catch (YotiException $e) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem(
+                'Service issue',
+                extra: ['errors' => $e->getMessage()],
+            ));
+        }
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        return new JsonModel($branches);
+    }
 }
