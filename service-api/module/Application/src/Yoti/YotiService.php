@@ -24,7 +24,8 @@ class YotiService implements YotiServiceInterface
         public readonly Client $client,
         private readonly LoggerInterface $logger,
         private readonly AwsSecret $sdkId,
-        private readonly AwsSecret $key
+        private readonly AwsSecret $key,
+        private readonly RequestSigner $requestSigner
     ) {
     }
 
@@ -74,12 +75,9 @@ class YotiService implements YotiServiceInterface
      * is the endpoint there meant to be relative or a full path?
      * @throws YotiException
      */
-    public function createSession(array $sessionData): array
+    public function createSession(array $sessionData, string $nonce, int $timestamp): array
     {
         $body = json_encode($sessionData);
-        $nonce = strval(Uuid::uuid4());
-        $dateTime = new DateTime();
-        $timestamp = $dateTime->getTimestamp();
 
         $headers = $this->getSignedRequest('/sessions', 'POST', $nonce, $timestamp, $body);
 
@@ -123,7 +121,7 @@ class YotiService implements YotiServiceInterface
      * PDF Stage 1: Prepare PDF letter for applicant
      * @throws YotiException
      */
-    public function preparePDFLetter(CaseData $caseData): array
+    public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp): array
     {
         $sessionId = $caseData->sessionId;
 
@@ -131,7 +129,7 @@ class YotiService implements YotiServiceInterface
             throw new YotiException("SessionID does not exist to prepare PDF for this case");
         }
 
-        $config = $this->getSessionConfigFromYoti($sessionId);
+        $config = $this->getSessionConfigFromYoti($sessionId, $nonce, $timestamp);
         $requirementID = $config['capture']['required_resources'][0]['id'];
         $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
 
@@ -180,13 +178,8 @@ class YotiService implements YotiServiceInterface
      * Generate PDF letter instructions
      * @throws YotiException
      */
-    private function getSessionConfigFromYoti(string $yotiSessionId): array
+    public function getSessionConfigFromYoti(string $yotiSessionId, string $nonce, int $timestamp): array
     {
-
-        $nonce = strval(Uuid::uuid4());
-        $dateTime = new DateTime();
-        $timestamp = $dateTime->getTimestamp();
-
         $headers = $this->getSignedRequest(
             '/sessions/' . $yotiSessionId . '/configuration',
             'GET',
@@ -221,19 +214,15 @@ class YotiService implements YotiServiceInterface
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
     }
+
     /**
      * @param CaseData $caseData
      * @return array
      * PDF Stage 2: Retrieve PDF letter contents
      * @throws YotiException
      */
-    public function retrieveLetterPDF(CaseData $caseData): array
+    public function retrieveLetterPDF(CaseData $caseData, string $nonce, int $timestamp): array
     {
-        //need error validation here if this is called before instructions are set etc
-        $nonce = strval(Uuid::uuid4());
-        $dateTime = new DateTime();
-        $timestamp = $dateTime->getTimestamp();
-
         $headers = $this->getSignedRequest(
             '/sessions/' . $caseData->sessionId . '/instructions/pdf',
             'GET',
@@ -304,7 +293,7 @@ class YotiService implements YotiServiceInterface
             $apiEndpoint = $apiEndpoint . '&sessionId=' . $sessionId;
         }
         try {
-            $requestSignature = RequestSigner::generateSignature(
+            $requestSignature = $this->requestSigner->generateSignature(
                 $apiEndpoint . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
                 $method,
                 $this->key,

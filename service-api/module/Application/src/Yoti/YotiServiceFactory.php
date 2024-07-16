@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
+use Application\Yoti\Http\RequestSigner;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -32,7 +33,8 @@ class YotiServiceFactory implements FactoryInterface
 
         $sdkId = new AwsSecret('yoti/sdk-client-id');
         $privateKey = new AwsSecret('yoti/certificate');
+        $signer = new RequestSigner();
 
-        return new YotiService($client, $container->get(LoggerInterface::class), $sdkId, $privateKey);
+        return new YotiService($client, $container->get(LoggerInterface::class), $sdkId, $privateKey, $signer);
     }
 }

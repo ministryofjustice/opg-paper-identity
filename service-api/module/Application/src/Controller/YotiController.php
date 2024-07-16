@@ -11,6 +11,7 @@ use Application\Model\Entity\Problem;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceInterface;
+use DateTime;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
@@ -81,9 +82,12 @@ class YotiController extends AbstractActionController
             return new JsonModel(['error' => 'Case data not found']);
         }
         $sessionData = $this->sessionConfig->build($caseData, $notifyAuthToken);
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
 
         try {
-            $result = $this->yotiService->createSession($sessionData);
+            $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
 
             if ($result["status"] < 400) {
                 $this->dataImportHandler->updateCaseData(
@@ -145,10 +149,12 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('SessionId does not exist to prepare PDF'));
         }
-
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
         $data = [];
         try {
-            $data['response'] = $this->yotiService->preparePDFLetter($caseData);
+            $data['response'] = $this->yotiService->preparePDFLetter($caseData, $nonce, $timestamp);
         } catch (YotiException $e) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem(
@@ -165,8 +171,11 @@ class YotiController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
         try {
-            $data = $this->yotiService->retrieveLetterPDF($caseData);
+            $data = $this->yotiService->retrieveLetterPDF($caseData, $nonce, $timestamp);
         } catch (YotiException $e) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem(

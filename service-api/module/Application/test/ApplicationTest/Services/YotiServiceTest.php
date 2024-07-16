@@ -8,11 +8,15 @@ use Application\Aws\Secrets\AwsSecret;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiApiException;
 use Application\Yoti\Http\Exception\YotiException;
+use Application\Yoti\Http\RequestSigner;
 use Application\Yoti\YotiService;
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress DeprecatedMethod
@@ -23,10 +27,11 @@ use Psr\Log\LoggerInterface;
 class YotiServiceTest extends TestCase
 {
     private Client $client;
-    private LoggerInterface $logger;
-    private AwsSecret $sdkId;
-    private AwsSecret $key;
+    private LoggerInterface&MockObject $logger;
+    private AwsSecret&MockObject $sdkId;
+    private AwsSecret&MockObject $key;
     private YotiService $yotiService;
+    private RequestSigner&MockObject $requestSigner;
 
     protected function setUp(): void
     {
@@ -34,6 +39,7 @@ class YotiServiceTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->sdkId = $this->createMock(AwsSecret::class);
         $this->key = $this->createMock(AwsSecret::class);
+        $this->requestSigner = $this->createMock(RequestSigner::class);
 
         $this->sdkId->method('getValue')->willReturn('test-sdk-id');
         $this->key->method('getValue')->willReturn('test-key');
@@ -42,7 +48,8 @@ class YotiServiceTest extends TestCase
             $this->client,
             $this->logger,
             $this->sdkId,
-            $this->key
+            $this->key,
+            $this->requestSigner
         );
     }
 
@@ -73,6 +80,118 @@ class YotiServiceTest extends TestCase
             ->method('post')->willReturn($response);
 
         $this->yotiService->postOfficeBranch($postCode);
+    }
+
+    public function testCreateSessionSuccess(): void
+    {
+        $sessionData = ['data' => 'test'];
+        $responseBody = json_encode(['status' => 'created']);
+
+        $response = new GuzzleResponse(201, [], $responseBody);
+
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+
+        $this->requestSigner->expects($this->atLeastOnce())
+            ->method("generateSignature")
+            ->with(
+                '/sessions?sdkId=test-sdk-id&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                'POST',
+                $this->key,
+                json_encode($sessionData)
+            )
+            ->willReturn('signature');
+
+        $this->client->expects($this->once())
+            ->method('post')
+            ->with('/idverify/v1/sessions')
+            ->willReturn($response);
+
+        $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
+
+        $this->assertEquals(201, $result['status']);
+        $this->assertEquals(['status' => 'created'], $result['data']);
+    }
+
+    public function testCreateSessionFailure(): void
+    {
+        $this->expectException(YotiException::class);
+
+        $sessionData = ['empty'];
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+
+        $this->requestSigner->expects($this->atLeastOnce())
+            ->method("generateSignature")
+            ->with(
+                '/sessions?sdkId=test-sdk-id&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                'POST',
+                $this->key,
+                json_encode($sessionData)
+            )
+            ->willReturn('signature');
+
+        $response = new GuzzleResponse(400, [], 'Bad Request');
+
+        $this->client->method('post')->willReturn($response);
+
+        $this->yotiService->createSession($sessionData, $nonce, $timestamp);
+    }
+
+    public function testGetSessionConfigSuccess(): void
+    {
+        $sessionId = 'asASJFAFsd';
+
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+
+        $this->requestSigner->expects($this->atLeastOnce())
+            ->method("generateSignature")
+            ->with(
+                '/sessions/' . $sessionId . '/configuration?sdkId=test-sdk-id&sessionId=' . $sessionId .
+                    '&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                'GET',
+                $this->key,
+                null
+            )
+            ->willReturn('signature');
+
+        $config = ['capture' => ['required_resources' => [['id' => 'resource-id']]]];
+        $this->client->method('get')->willReturn(new GuzzleResponse(200, [], json_encode($config)));
+
+        $this->yotiService->getSessionConfigFromYoti($sessionId, $nonce, $timestamp);
+    }
+
+    public function testRetrieveLetterPDFSuccess(): void
+    {
+        $caseData = $this->createMock(CaseData::class);
+        $caseData->sessionId = 'session-id';
+
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+
+        $this->requestSigner->expects($this->atLeastOnce())
+            ->method("generateSignature")
+            ->with(
+                '/sessions/' . $caseData->sessionId . '/instructions/pdf?sdkId=test-sdk-id&sessionId='
+                . $caseData->sessionId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                'GET',
+                $this->key,
+                null
+            )
+            ->willReturn('signature');
+
+        $response = new GuzzleResponse(200, [], 'pdf-content');
+        $this->client->method('get')->willReturn($response);
+
+        $result = $this->yotiService->retrieveLetterPDF($caseData, $nonce, $timestamp);
+
+        $this->assertEquals('PDF Created', $result['status']);
+        $this->assertEquals(base64_decode(base64_encode('pdf-content')), $result['pdfData']);
     }
 
     public function testLetterConfigPayload(): void
