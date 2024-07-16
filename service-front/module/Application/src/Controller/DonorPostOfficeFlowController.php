@@ -88,7 +88,6 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
-        $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(PostOfficeAddress::class);
         $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
@@ -104,7 +103,6 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         $view->setVariable('location', $searchString);
         $view->setVariable('post_office_list', $locationData);
-        $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -113,23 +111,18 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
 
-            if (array_key_exists('location', $this->getRequest()->getPost()->toArray())) {
-                $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $locationForm,
-                    $templates
-                );
-            } else {
-                $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $form,
-                    $templates
-                );
-                if ($processed->getRedirect() !== null) {
-                    return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
-                }
+            $processableForm = array_key_exists('location', $this->getRequest()->getPost()->toArray())
+                ? $locationForm
+                : $form;
+
+            $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
+                $uuid,
+                $this->getRequest()->getPost(),
+                $processableForm,
+                $templates
+            );
+            if (! is_null($processed->getRedirect())) {
+                return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
             }
             $view->setVariables($processed->getVariables());
         } else {
