@@ -13,6 +13,7 @@ class FormProcessorResponseDto
         private FormInterface $form,
         private string $template,
         private array $variables = [],
+        private string|null $redirect = null
     ) {
     }
 
@@ -36,6 +37,11 @@ class FormProcessorResponseDto
         return $this->variables;
     }
 
+    public function getRedirect(): ?string
+    {
+        return $this->redirect;
+    }
+
     public function toArray(): array
     {
         return [
@@ -43,6 +49,7 @@ class FormProcessorResponseDto
             'form' => $this->form,
             'template' => $this->template,
             'variables' => $this->variables,
+            'redirect' => $this->redirect
         ];
     }
 }
