@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
-use Application\Validators\PostcodeValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PostOfficePostcode
+class PostOfficeAddress
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(PostcodeValidator::class)]
-    public mixed $selected_postcode;
+    #[Annotation\Validator(NotEmpty::class)]
+    public mixed $postoffice;
 }
