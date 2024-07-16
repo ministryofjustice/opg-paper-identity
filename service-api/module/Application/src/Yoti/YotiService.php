@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
+use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiAuthException;
 use Application\Yoti\Http\Exception\YotiClientException;
 use Application\Yoti\Http\Exception\YotiException;
@@ -22,6 +23,9 @@ class YotiService implements YotiServiceInterface
     public function __construct(
         public readonly Client $client,
         private readonly LoggerInterface $logger,
+        private readonly AwsSecret $sdkId,
+        private readonly AwsSecret $key,
+        private readonly RequestSigner $requestSigner
     ) {
     }
 
@@ -71,38 +75,27 @@ class YotiService implements YotiServiceInterface
      * is the endpoint there meant to be relative or a full path?
      * @throws YotiException
      */
-    public function createSession(array $sessionData): array
+    public function createSession(array $sessionData, string $nonce, int $timestamp): array
     {
-        $sdkId = new AwsSecret('yoti/sdk-client-id');
-
         $body = json_encode($sessionData);
-        $nonce = strval(Uuid::uuid4());
-        $dateTime = new DateTime();
-        $timestamp = $dateTime->getTimestamp();
 
-        $requestSignature = RequestSigner::generateSignature(
-            '/sessions?sdkId=' . $sdkId->getValue() . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
-            'POST',
-            new AwsSecret('yoti/certificate'),
-            $body
-        );
-        $headers = [
-            'X-Yoti-Auth-Digest' => $requestSignature
-        ];
+        $headers = $this->getSignedRequest('/sessions', 'POST', $nonce, $timestamp, $body);
 
         try {
             $results = $this->client->post('/idverify/v1/sessions', [
                 'headers' => $headers,
-                'query' => ['sdkId' => $sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
-                'body' => $body,
-                'debug' => true
+                'query' => ['sdkId' => $this->sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
+                'body' => $body
             ]);
 
             if ($results->getStatusCode() !== Response::STATUS_CODE_201) {
                 throw new YotiException($results->getReasonPhrase());
             }
         } catch (ClientException $clientException) {
-                throw new YotiClientException($clientException->getMessage(), 0, $clientException);
+            $this->logger->error('Unable to connect to Yoti Service [' . $clientException->getMessage() . '] ', [
+                'data' => ['operation' => 'session-create', 'header' => $headers]
+            ]);
+            throw new YotiClientException($clientException->getMessage(), 0, $clientException);
         }
 
         $result = json_decode(strval($results->getBody()), true);
@@ -123,12 +116,196 @@ class YotiService implements YotiServiceInterface
     }
 
     /**
-     * @param string $sessionId
+     * @param CaseData $caseData
      * @return array
-     * Generate PDF letter for applicant
+     * PDF Stage 1: Prepare PDF letter for applicant
+     * @throws YotiException
      */
-    public function retrieveLetterPDF(string $sessionId): array
+    public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp): array
     {
-        return [];
+        $sessionId = $caseData->sessionId;
+
+        if ($sessionId === null) {
+            throw new YotiException("SessionID does not exist to prepare PDF for this case");
+        }
+
+        $config = $this->getSessionConfigFromYoti($sessionId, $nonce, $timestamp);
+        $requirementID = $config['capture']['required_resources'][0]['id'];
+        $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
+
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+
+        $headers = $this->getSignedRequest(
+            '/sessions/' . $caseData->sessionId . '/instructions',
+            'PUT',
+            $nonce,
+            $timestamp,
+            $payload,
+            $caseData->sessionId
+        );
+
+        try {
+            $config = $this->client->put('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions', [
+                'headers' => $headers,
+                'query' => [
+                    'sdkId' => $this->sdkId->getValue(),
+                    'sessionId' => $caseData->sessionId,
+                    'nonce' => $nonce,
+                    'timestamp' => $timestamp
+                ],
+                'body' => $payload
+            ]);
+
+            if ($config->getStatusCode() !== Response::STATUS_CODE_200) {
+                $this->logger->error('PDF letter generation was unsuccessful ', [
+                    'data' => [ ]
+                ]);
+                throw new YotiException("Error: " . $config->getReasonPhrase());
+            }
+            return ["status" => "PDF Created"];
+        } catch (GuzzleException $e) {
+            $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
+                'data' => [ 'operation' => 'session-create', 'header' => $headers]
+            ]);
+            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
+        }
+    }
+    /**
+     * @param string $yotiSessionId
+     * @return array
+     * Generate PDF letter instructions
+     * @throws YotiException
+     */
+    public function getSessionConfigFromYoti(string $yotiSessionId, string $nonce, int $timestamp): array
+    {
+        $headers = $this->getSignedRequest(
+            '/sessions/' . $yotiSessionId . '/configuration',
+            'GET',
+            $nonce,
+            $timestamp,
+            null,
+            $yotiSessionId
+        );
+
+        try {
+            $config = $this->client->get('/idverify/v1/sessions/' . $yotiSessionId . '/configuration', [
+                'headers' => $headers,
+                'query' => [
+                    'sdkId' => $this->sdkId->getValue(),
+                    'sessionId' => $yotiSessionId,
+                    'nonce' => $nonce,
+                    'timestamp' => $timestamp
+                ]
+            ]);
+
+            if ($config->getStatusCode() !== Response::STATUS_CODE_200) {
+                $this->logger->error('Case configuration retrieval was unsuccessful ', [
+                    'data' => [ "sessionId" => $yotiSessionId]
+                ]);
+                throw new YotiException("Error: " . $config->getReasonPhrase());
+            }
+            return json_decode(strval($config->getBody()), true);
+        } catch (GuzzleException $e) {
+            $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
+                'data' => [ "operation" => "session-configuration", "sessionId" => $yotiSessionId ]
+            ]);
+            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param CaseData $caseData
+     * @return array
+     * PDF Stage 2: Retrieve PDF letter contents
+     * @throws YotiException
+     */
+    public function retrieveLetterPDF(CaseData $caseData, string $nonce, int $timestamp): array
+    {
+        $headers = $this->getSignedRequest(
+            '/sessions/' . $caseData->sessionId . '/instructions/pdf',
+            'GET',
+            $nonce,
+            $timestamp,
+            null,
+            $caseData->sessionId
+        );
+        try {
+            $pdfData = $this->client->get('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions/pdf', [
+                'headers' => $headers,
+                'query' => [
+                    'sdkId' => $this->sdkId->getValue(),
+                    'sessionId' => $caseData->sessionId,
+                    'nonce' => $nonce,
+                    'timestamp' => $timestamp
+                ],
+            ]);
+        } catch (GuzzleException $e) {
+            $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
+                'data' => [ 'operation' => 'retrieve-pdf', 'header' => $headers]
+            ]);
+            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
+        }
+        $base64 = base64_encode(strval($pdfData->getBody()));
+        // Convert base64 to pdf
+        $pdf = base64_decode($base64);
+
+        return ["status" => "PDF Created", "pdfData" => $pdf];
+    }
+
+    public function letterConfigPayload(CaseData $caseData, string $requirementId): array
+    {
+        $payload = [];
+
+        $payload["contact_profile"] = [
+            "first_name" => $caseData->firstName,
+            "last_name" => $caseData->lastName,
+            "email" => 'opg-all-team+yoti@digital.justice.gov.uk'
+        ];
+        $payload["documents"] = [
+            [
+                "requirement_id" => $requirementId,
+                "document" => [
+                    "type" => "ID_DOCUMENT",
+                    "country_code" => "GBR",
+                    "document_type" => SessionConfig::getDocType($caseData->idMethod)
+                ]
+            ]
+        ];
+        $payload["branch"] = [
+          "type" => "UK_POST_OFFICE",
+          "fad_code" => $caseData->selectedPostOffice
+        ];
+        return $payload;
+    }
+
+    public function getSignedRequest(
+        string $endpoint,
+        string $method,
+        string $nonce,
+        int $timestamp,
+        string $body = null,
+        string $sessionId = null,
+    ): array {
+        $apiEndpoint = $endpoint . '?sdkId=' . $this->sdkId->getValue();
+        if ($sessionId !== null) {
+            $apiEndpoint = $apiEndpoint . '&sessionId=' . $sessionId;
+        }
+        try {
+            $requestSignature = $this->requestSigner->generateSignature(
+                $apiEndpoint . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                $method,
+                $this->key,
+                $body
+            );
+        } catch (YotiAuthException $e) {
+            throw new YotiException("Request signing issue " . $e->getMessage());
+        }
+        $headers = [
+            'X-Yoti-Auth-Digest' => $requestSignature
+        ];
+
+        return $headers;
     }
 }

@@ -16,8 +16,6 @@ use Psr\Log\LoggerInterface;
 
 class DataImportHandler
 {
-    final public const DATA_FILE_PATH = __DIR__ . '/Data/sampleData.json';
-
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
         private readonly string $tableName,
