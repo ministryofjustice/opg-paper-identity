@@ -84,6 +84,14 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
 
+    #[Annotation\Required(false)]
+    #[Validator(Uuid::class)]
+    public ?string $sessionId = null;
+
+    #[Annotation\Required(false)]
+    #[Validator(Uuid::class)]
+    public ?string $notifyAuthToken = null;
+
     /**
      * @param array<string, mixed> $data
      */
@@ -116,7 +124,9 @@ class CaseData implements JsonSerializable
      *     selectedPostOfficeDeadline?:  string,
      *     selectedPostOffice?: string,
      *     searchPostcode?: string,
-     *     idMethod?: string
+     *     idMethod?: string,
+     *     sessionId?: string,
+     *     notifyAuthToken?: string,
      *     kbvQuestions?: string[]
      * }
      */
@@ -136,6 +146,8 @@ class CaseData implements JsonSerializable
             'selectedPostOffice' => $this->selectedPostOffice,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
+            'sessionId' => $this->sessionId,
+            'notifyAuthToken' => $this->notifyAuthToken
         ];
 
         if ($this->kbvQuestions !== null) {
