@@ -126,6 +126,7 @@ class CaseData implements JsonSerializable
      *     searchPostcode?: string,
      *     idMethod?: string,
      *     sessionId?: string,
+     *     notifyAuthToken?: string,
      *     kbvQuestions?: string[]
      * }
      */
@@ -146,6 +147,7 @@ class CaseData implements JsonSerializable
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
             'sessionId' => $this->sessionId,
+            'notifyAuthToken' => $this->notifyAuthToken
         ];
 
         if ($this->kbvQuestions !== null) {

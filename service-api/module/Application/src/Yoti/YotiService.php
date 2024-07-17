@@ -121,14 +121,8 @@ class YotiService implements YotiServiceInterface
      * PDF Stage 1: Prepare PDF letter for applicant
      * @throws YotiException
      */
-    public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp): array
+    public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp, string $sessionId): array
     {
-        $sessionId = $caseData->sessionId;
-
-        if ($sessionId === null) {
-            throw new YotiException("SessionID does not exist to prepare PDF for this case");
-        }
-
         $config = $this->getSessionConfigFromYoti($sessionId, $nonce, $timestamp);
         $requirementID = $config['capture']['required_resources'][0]['id'];
         $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
@@ -138,31 +132,31 @@ class YotiService implements YotiServiceInterface
         $timestamp = $dateTime->getTimestamp();
 
         $headers = $this->getSignedRequest(
-            '/sessions/' . $caseData->sessionId . '/instructions',
+            '/sessions/' . $sessionId . '/instructions',
             'PUT',
             $nonce,
             $timestamp,
             $payload,
-            $caseData->sessionId
+            $sessionId
         );
 
         try {
-            $config = $this->client->put('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions', [
+            $instructions = $this->client->put('/idverify/v1/sessions/' . $sessionId . '/instructions', [
                 'headers' => $headers,
                 'query' => [
                     'sdkId' => $this->sdkId->getValue(),
-                    'sessionId' => $caseData->sessionId,
+                    'sessionId' => $sessionId,
                     'nonce' => $nonce,
                     'timestamp' => $timestamp
                 ],
                 'body' => $payload
             ]);
 
-            if ($config->getStatusCode() !== Response::STATUS_CODE_200) {
+            if ($instructions->getStatusCode() !== Response::STATUS_CODE_200) {
                 $this->logger->error('PDF letter generation was unsuccessful ', [
                     'data' => [ ]
                 ]);
-                throw new YotiException("Error: " . $config->getReasonPhrase());
+                throw new YotiException("Error: " . $instructions->getReasonPhrase());
             }
             return ["status" => "PDF Created"];
         } catch (GuzzleException $e) {
@@ -216,27 +210,27 @@ class YotiService implements YotiServiceInterface
     }
 
     /**
-     * @param CaseData $caseData
+     * @param string $sessionId
      * @return array
      * PDF Stage 2: Retrieve PDF letter contents
      * @throws YotiException
      */
-    public function retrieveLetterPDF(CaseData $caseData, string $nonce, int $timestamp): array
+    public function retrieveLetterPDF(string $sessionId, string $nonce, int $timestamp): array
     {
         $headers = $this->getSignedRequest(
-            '/sessions/' . $caseData->sessionId . '/instructions/pdf',
+            '/sessions/' . $sessionId . '/instructions/pdf',
             'GET',
             $nonce,
             $timestamp,
             null,
-            $caseData->sessionId
+            $sessionId
         );
         try {
-            $pdfData = $this->client->get('/idverify/v1/sessions/' . $caseData->sessionId . '/instructions/pdf', [
+            $pdfData = $this->client->get('/idverify/v1/sessions/' . $sessionId . '/instructions/pdf', [
                 'headers' => $headers,
                 'query' => [
                     'sdkId' => $this->sdkId->getValue(),
-                    'sessionId' => $caseData->sessionId,
+                    'sessionId' => $sessionId,
                     'nonce' => $nonce,
                     'timestamp' => $timestamp
                 ],
@@ -257,11 +251,12 @@ class YotiService implements YotiServiceInterface
     public function letterConfigPayload(CaseData $caseData, string $requirementId): array
     {
         $payload = [];
+        $email = (string) getenv("YOTI_LETTER_EMAIL") ?: "opg-all-team+yoti@digital.justice.gov.uk";
 
         $payload["contact_profile"] = [
             "first_name" => $caseData->firstName,
             "last_name" => $caseData->lastName,
-            "email" => 'opg-all-team+yoti@digital.justice.gov.uk'
+            "email" => $email
         ];
         $payload["documents"] = [
             [

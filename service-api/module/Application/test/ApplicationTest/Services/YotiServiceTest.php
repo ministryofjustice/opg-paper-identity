@@ -188,7 +188,7 @@ class YotiServiceTest extends TestCase
         $response = new GuzzleResponse(200, [], 'pdf-content');
         $this->client->method('get')->willReturn($response);
 
-        $result = $this->yotiService->retrieveLetterPDF($caseData, $nonce, $timestamp);
+        $result = $this->yotiService->retrieveLetterPDF('session-id', $nonce, $timestamp);
 
         $this->assertEquals('PDF Created', $result['status']);
         $this->assertEquals(base64_decode(base64_encode('pdf-content')), $result['pdfData']);

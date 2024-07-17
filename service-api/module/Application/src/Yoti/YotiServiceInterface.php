@@ -32,16 +32,17 @@ interface YotiServiceInterface
     public function retrieveResults(string $sessionId): array;
 
     /**
-     * @param CaseData $caseData
+     * @param string $sessionId
      * @return array
      * Generate PDF letter for applicant
      */
-    public function retrieveLetterPDF(CaseData $caseData, string $nonce, int $timestamp): array;
+    public function retrieveLetterPDF(string $sessionId, string $nonce, int $timestamp): array;
 
     /**
+     * @psalm-suppress PossiblyUnusedReturnValue
      * @param CaseData $caseData
      * @return array
      * Prepare PDF letter for applicant
      */
-    public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp): array;
+    public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp, string $sessionId): array;
 }
