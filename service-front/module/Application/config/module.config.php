@@ -263,6 +263,16 @@ return [
                             ],
                         ],
                     ],
+                    'cp_post_office_documents' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '[/:uuid]/cp/post-office-documents',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action'     => 'postOfficeDocuments',
+                            ],
+                        ],
+                    ],
                     'cp_name_match_check' => [
                         'type'    => Segment::class,
                         'options' => [
