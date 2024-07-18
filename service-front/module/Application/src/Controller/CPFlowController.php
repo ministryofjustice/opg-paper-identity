@@ -7,8 +7,10 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
 use Application\Forms\BirthDate;
+use Application\Forms\Country;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
@@ -16,13 +18,13 @@ use Application\Forms\PassportDateCp;
 use Application\Forms\PassportDatePo;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
-use Application\Forms\PostOfficePostcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
 use Application\Services\SiriusApiService;
 
@@ -527,6 +529,7 @@ class CPFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/cp/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDatePo::class);
+        $form = (new AttributeBuilder())->createForm(IdMethod::class);
         $view = new ViewModel();
 
         if (count($this->getRequest()->getPost())) {
@@ -543,15 +546,23 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                return $this->redirect()->toRoute("root/cp_choose_country", ['uuid' => $uuid]);
+                $form->setData($this->getRequest()->getPost());
+                $view->setVariable('form', $form);
+                if ($form->isValid()) {
+                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+                    if ($formData['id_method'] == 'euid') {
+                        return $this->redirect()->toRoute("root/cp_choose_country", ['uuid' => $uuid]);
+                    } else {
+                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    }
+                }
             }
         }
 
-        $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
+        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -563,18 +574,25 @@ class CPFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/cp/choose_country'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
+        $form = (new AttributeBuilder())->createForm(Country::class);
 
         if (count($this->getRequest()->getPost())) {
+            $form->setData($this->getRequest()->getPost());
             $formData = $this->getRequest()->getPost()->toArray();
 
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-            return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+                if ($responseData['result'] === 'Updated') {
+                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                } 
+            }
         }
 
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        $view->setVariable('form', $form);
         $view->setVariable('options_data', $idOptionsData);
         $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('details_data', $detailsData);

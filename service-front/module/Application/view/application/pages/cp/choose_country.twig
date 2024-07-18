@@ -31,23 +31,41 @@
                             {{ form.get('country').messages | join(', ', ' and ') }}
                         </p>
                     {% endif %}
-                    <div class="govuk-body" id="choose-country">
-                        {#                        <datalist class="govuk-select" id="countries" name="couuntry"> #}
-                        {#                            {% for datum in countries_data %} #}
-                        {#                                <option value="{{ datum }}">{{ datum }}</option> #}
-                        {#                            {% endfor %} #}
-                        {#                        </datalist> #}
+                        <div class="govuk-form-group" id="choose-country">
+                            <label class="govuk-label" for="sort">
 
-                        <div id="tt-minLength" class="autocomplete-wrapper"><div class="autocomplete__wrapper"><div class="autocomplete__status" style="border: 0px; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin-bottom: -1px; margin-right: -1px; overflow: hidden; padding: 0px; position: absolute; white-space: nowrap; width: 1px;"><div id="autocomplete-minLength__status--A" role="status" aria-atomic="true" aria-live="polite"></div><div id="autocomplete-minLength__status--B" role="status" aria-atomic="true" aria-live="polite"></div></div><input aria-expanded="false" aria-owns="autocomplete-minLength__listbox" aria-autocomplete="list" autocomplete="off" class="autocomplete__input autocomplete__input--default" id="autocomplete-minLength" name="input-autocomplete" placeholder="" type="text" role="combobox"><ul aria-labelledby="autocomplete-minLength" id="autocomplete-minLength__listbox" role="listbox" class="autocomplete__menu autocomplete__menu--inline autocomplete__menu--hidden"><li aria-selected="false" class="autocomplete__option" id="autocomplete-minLength__option--0" role="option" tabindex="-1" aria-posinset="1" aria-setsize="6">Central African Republic</li><li aria-selected="false" class="autocomplete__option autocomplete__option--odd" id="autocomplete-minLength__option--1" role="option" tabindex="-1" aria-posinset="2" aria-setsize="6">France</li><li aria-selected="false" class="autocomplete__option" id="autocomplete-minLength__option--2" role="option" tabindex="-1" aria-posinset="3" aria-setsize="6">French Guiana</li><li aria-selected="false" class="autocomplete__option autocomplete__option--odd" id="autocomplete-minLength__option--3" role="option" tabindex="-1" aria-posinset="4" aria-setsize="6">French Polynesia</li><li aria-selected="false" class="autocomplete__option" id="autocomplete-minLength__option--4" role="option" tabindex="-1" aria-posinset="5" aria-setsize="6">French Southern and Antarctic Lands</li><li aria-selected="false" class="autocomplete__option autocomplete__option--odd" id="autocomplete-minLength__option--5" role="option" tabindex="-1" aria-posinset="6" aria-setsize="6">South Africa</li></ul><span id="autocomplete-minLength__assistiveHint" style="display: none;">When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.</span></div></div>
-
-                    </div>
+                            </label>
+                            <select class="govuk-select" id="country" name="country">
+                                <option value=""></option>
+                                {% for item in countries_data %}
+                                    <option
+                                        value="{{ item }}"
+                                        {% if form.get('country').value == item %}selected{% endif %}
+                                    >
+                                        {{ item }}
+                                    </option>
+                                {%  endfor %}
+                            </select>
+                        </div>
                     <h2 class="govuk-heading-m">Choose document</h2>
+                    {% if form.get('id_method').messages %}
+                        <p id="lpa-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {{ form.get('id_method').messages | join(', ', ' and ') }}
+                        </p>
+                    {% endif %}
                     <div class="govuk-form-group">
                         <div class="govuk-radios" data-module="govuk-radios">
                             {% for key, datum in options_data %}
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="{{ key }}" name="id_method" type="radio"
-                                           value="{{ key }}">
+                                    <input
+                                        class="govuk-radios__input"
+                                        id="{{ key }}"
+                                        name="id_method"
+                                        type="radio"
+                                        value="{{ key }}"
+                                        {% if form.get('id_method').value == key %}checked{% endif %}
+                                    >
                                     <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}</label>
                                 </div>
                             {% endfor %}

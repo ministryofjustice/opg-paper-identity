@@ -25,6 +25,12 @@
             <p class="govuk-body">
                 Select one
             </p>
+            {% if form.get('id_method').messages %}
+                <p id="lpa-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('id_method').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
             <div class="govuk-form-group">
                 <div class="govuk-radios" data-module="govuk-radios">
                     <div class="govuk-radios__item">
