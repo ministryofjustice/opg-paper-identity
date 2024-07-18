@@ -584,7 +584,7 @@ class CPFlowController extends AbstractActionController
                 $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
                 if ($responseData['result'] === 'Updated') {
                     return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-                } 
+                }
             }
         }
 
