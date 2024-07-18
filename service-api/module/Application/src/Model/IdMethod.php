@@ -19,4 +19,8 @@ enum IdMethod: string
     case PostOfficeWithEUDrivingLicense = "po_eud";
     case PostOfficeWithInternationalDrivingLicence = "po_ind";
     case PostOfficeWithNoneOfTheAbove = "po_n";
+    case IntlPassport = 'xpn';
+    case PhotocardDrivingLicence = 'xdln';
+    case NationalIdentityCard = 'xid';
+    case EUId = 'euid';
 }

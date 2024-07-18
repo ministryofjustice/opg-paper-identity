@@ -61,3 +61,13 @@ $govuk-assets-path: "../assets/";
   color:  govuk-colour("brown") ;
   font-weight: bold;
 }
+
+
+.autocomplete-wrapper {
+  max-width: 20em;
+  margin-bottom: 4rem;
+}
+
+.custom-menu-class {
+  box-shadow: 0 3px 0 0 #fd0, 3px 3px 0 0 #fd0, -3px 3px 0 0 #fd0;
+}
