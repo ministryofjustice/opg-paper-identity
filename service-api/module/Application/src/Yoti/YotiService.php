@@ -6,6 +6,7 @@ namespace Application\Yoti;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\CounterService;
 use Application\Yoti\Http\Exception\YotiAuthException;
 use Application\Yoti\Http\Exception\YotiClientException;
 use Application\Yoti\Http\Exception\YotiException;
@@ -268,9 +269,11 @@ class YotiService implements YotiServiceInterface
                 ]
             ]
         ];
+        /** @var CounterService $counterServiceData */
+        $counterServiceData = $caseData->counterService;
         $payload["branch"] = [
           "type" => "UK_POST_OFFICE",
-          "fad_code" => $caseData->selectedPostOffice
+          "fad_code" => $counterServiceData->selectedPostOffice
         ];
         return $payload;
     }

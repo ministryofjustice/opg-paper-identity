@@ -167,8 +167,7 @@ class YotiServiceTest extends TestCase
 
     public function testRetrieveLetterPDFSuccess(): void
     {
-        $caseData = $this->createMock(CaseData::class);
-        $caseData->sessionId = 'session-id';
+        $sessionId = 'session-id';
 
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
@@ -177,8 +176,8 @@ class YotiServiceTest extends TestCase
         $this->requestSigner->expects($this->atLeastOnce())
             ->method("generateSignature")
             ->with(
-                '/sessions/' . $caseData->sessionId . '/instructions/pdf?sdkId=test-sdk-id&sessionId='
-                . $caseData->sessionId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
+                '/sessions/' . $sessionId . '/instructions/pdf?sdkId=test-sdk-id&sessionId='
+                . $sessionId . '&nonce=' . $nonce . '&timestamp=' . $timestamp,
                 'GET',
                 $this->key,
                 null
@@ -188,7 +187,7 @@ class YotiServiceTest extends TestCase
         $response = new GuzzleResponse(200, [], 'pdf-content');
         $this->client->method('get')->willReturn($response);
 
-        $result = $this->yotiService->retrieveLetterPDF('session-id', $nonce, $timestamp);
+        $result = $this->yotiService->retrieveLetterPDF($sessionId, $nonce, $timestamp);
 
         $this->assertEquals('PDF Created', $result['status']);
         $this->assertEquals(base64_decode(base64_encode('pdf-content')), $result['pdfData']);
@@ -206,7 +205,9 @@ class YotiServiceTest extends TestCase
             'address' => [
                 'line1' => '123 long street',
             ],
-            'selectedPostOffice' => '29348729',
+            'counterService' => [
+                'selectedPostOffice' => '29348729',
+            ],
             'lpas' => []
         ]);
 

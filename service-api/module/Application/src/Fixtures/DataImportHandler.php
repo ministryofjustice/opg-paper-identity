@@ -27,7 +27,6 @@ class DataImportHandler
     {
         $marsheler = new Marshaler();
         $encoded = $marsheler->marshalItem($item->jsonSerialize());
-
         $params = [
             'TableName' => $this->tableName,
             'Item' => $encoded

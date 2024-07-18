@@ -91,14 +91,14 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Missing uuid']);
         }
-        $notifyAuthToken = strval(Uuid::uuid4());
+        $notificationsAuthToken = strval(Uuid::uuid4());
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
 
         if (! $caseData) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Case data not found']);
         }
-        $sessionData = $this->sessionConfig->build($caseData, $notifyAuthToken);
+        $sessionData = $this->sessionConfig->build($caseData, $notificationsAuthToken);
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();
@@ -106,22 +106,25 @@ class YotiController extends AbstractActionController
         try {
             $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
             $yotiSessionId = $result["data"]["session_id"];
+            $counterServiceMap = [];
+            //need to add back existing values so it doesn't delete them
+            if ($caseData->counterService !== null) {
+                $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
+                $counterServiceMap["selectedPostOfficeDeadline"] = $caseData->counterService->selectedPostOfficeDeadline;
+            }
+            $counterServiceMap["sessionId"] = $yotiSessionId;
+            $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
 
             if ($result["status"] < 400) {
                 $this->dataImportHandler->updateCaseData(
                     $uuid,
-                    'sessionId',
-                    'S',
-                    $yotiSessionId
+                    'counterService',
+                    'M',
+                    array_map(fn (mixed $v) => [
+                        'S' => $v
+                    ], $counterServiceMap),
                 );
             }
-            //save authToken to case
-            $this->dataImportHandler->updateCaseData(
-                $uuid,
-                'notifyAuthToken',
-                'S',
-                $notifyAuthToken
-            );
             //Prepare and generate PDF
             $this->yotiService->preparePDFLetter($caseData, $nonce, $timestamp, $yotiSessionId);
             $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);

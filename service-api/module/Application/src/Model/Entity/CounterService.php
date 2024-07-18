@@ -11,18 +11,20 @@ use Laminas\Validator\Uuid;
 
 class CounterService implements JsonSerializable
 {
-    #[Annotation\Required(true)]
-    public ?string $selectedPostOffice = null;
+    #[Annotation\Required(false)]
+    public string $selectedPostOffice = '';
+    #[Annotation\Required(false)]
+    public string $selectedPostOfficeDeadline = '';
 
-    #[Annotation\Required(true)]
+    #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
     #[Annotation\Validator(NotEmpty::class)]
-    public string $sessionId;
+    public string $sessionId = '';
 
-    #[Annotation\Required(true)]
+    #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
     #[Annotation\Validator(NotEmpty::class)]
-    public string $notificationsAuthToken;
+    public string $notificationsAuthToken = '';
 
     /**
      * @param array<string, mixed> $data
@@ -45,6 +47,7 @@ class CounterService implements JsonSerializable
     /**
      * @returns array{
      *     selectedPostOffice: string,
+     *     selectedPostOfficeDeadline: string,
      *     sessionId: string,
      *     notificationsAuthToken: string
      * }
@@ -53,6 +56,7 @@ class CounterService implements JsonSerializable
     {
         return [
             'selectedPostOffice' => $this->selectedPostOffice,
+            'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
             'sessionId' => $this->sessionId,
             'notificationsAuthToken' => $this->notificationsAuthToken
         ];
