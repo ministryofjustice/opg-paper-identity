@@ -557,4 +557,29 @@ class CPFlowController extends AbstractActionController
 
         return $view->setTemplate($templates['default']);
     }
+
+    public function chooseCountryAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/cp/choose_country'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+        }
+
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view->setVariable('options_data', $idOptionsData);
+        $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
+    }
 }

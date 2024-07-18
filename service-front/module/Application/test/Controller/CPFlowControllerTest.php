@@ -250,4 +250,23 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_post_office_documents');
     }
+
+    public function testPostOfficeCountriesPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/cp/choose-country", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country');
+    }
 }
