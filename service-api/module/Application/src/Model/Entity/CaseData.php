@@ -84,6 +84,9 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
 
+    #[Annotation\Required(false)]
+    public ?array $id_method_intl = [];
+
     /**
      * @param array<string, mixed> $data
      */
@@ -117,7 +120,8 @@ class CaseData implements JsonSerializable
      *     selectedPostOffice?: string,
      *     searchPostcode?: string,
      *     idMethod?: string
-     *     kbvQuestions?: string[]
+     *     kbvQuestions?: string[],
+     *     id_method_intl?: string[]
      * }
      */
     public function toArray(): array
@@ -136,6 +140,7 @@ class CaseData implements JsonSerializable
             'selectedPostOffice' => $this->selectedPostOffice,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
+            'id_method_intl' => $this->id_method_intl,
         ];
 
         if ($this->kbvQuestions !== null) {
