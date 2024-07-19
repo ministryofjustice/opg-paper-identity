@@ -332,6 +332,26 @@ return [
                     ],
                 ],
             ],
+            'update_cp_po_id' => [
+                'type' => Segment::class,
+                'verb' => 'put',
+                'options' => [
+                    'route' => '/cases/:uuid/update-cp-po-id',
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'updateCpPoId',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

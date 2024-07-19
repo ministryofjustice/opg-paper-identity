@@ -315,4 +315,16 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+
+    public function updateIdMethodWithCountry(string $uuid, array $data): array
+    {
+        $url = sprintf("/cases/%s/update-cp-po-id", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'PUT', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
 }
