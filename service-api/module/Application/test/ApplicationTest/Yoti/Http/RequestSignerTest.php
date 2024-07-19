@@ -19,6 +19,7 @@ class RequestSignerTest extends TestCase
     private Result $privateResult;
     private const PATH = '/api/endpoint';
     private const METHOD = 'POST';
+    private RequestSigner $sut;
     public function setUp(): void
     {
         $this->pemFileMock = $this->createMock(AwsSecret::class);
@@ -30,6 +31,8 @@ class RequestSignerTest extends TestCase
         $this->privateResult = $this->secretsManagerClient->getSecretValue([
             'SecretId' => 'local/paper-identity/yoti/private-key',
         ]);
+
+        $this->sut = new RequestSigner();
     }
 
     /**
@@ -45,7 +48,7 @@ class RequestSignerTest extends TestCase
             ->method("getValue")
             ->willReturn($this->privateResult['SecretString']);
 
-        $signedMessage = RequestSigner::generateSignature(
+        $signedMessage = $this->sut->generateSignature(
             self::PATH,
             self::METHOD,
             $this->pemFileMock,
@@ -74,7 +77,7 @@ class RequestSignerTest extends TestCase
             ->willReturn($this->privateResult["SecretString"]);
 
         // Generate signature
-        $signature = RequestSigner::generateSignature(
+        $signature = $this->sut->generateSignature(
             '/api/endpoint',
             'GET',
             $this->pemFileMock
@@ -94,7 +97,7 @@ class RequestSignerTest extends TestCase
 
         $this->expectException(YotiAuthException::class);
 
-        RequestSigner::generateSignature(
+        $this->sut->generateSignature(
             '/api/endpoint',
             'POST',
             $this->pemFileMock,
