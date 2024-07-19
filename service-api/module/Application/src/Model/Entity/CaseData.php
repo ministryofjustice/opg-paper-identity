@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Model\Entity;
 
 use Application\Model\IdMethod;
+use Application\Model\Entity\CounterService;
 use Application\Validators\Enum;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
@@ -75,14 +76,10 @@ class CaseData implements JsonSerializable
     public ?array $alternateAddress = [];
 
     #[Annotation\Required(false)]
-    public ?string $selectedPostOfficeDeadline = null;
-
-
-    #[Annotation\Required(false)]
-    public ?string $selectedPostOffice = null;
-
-    #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
+
+    #[Annotation\Required(false)]
+    public ?CounterService $counterService = null;
 
     /**
      * @param array<string, mixed> $data
@@ -92,11 +89,13 @@ class CaseData implements JsonSerializable
         $instance = new self();
 
         foreach ($data as $key => $value) {
-            if (! property_exists($instance, $key)) {
+            if ($key === 'counterService') {
+                $instance->counterService = CounterService::fromArray($value);
+            } elseif (property_exists($instance, $key)) {
+                $instance->{$key} = $value;
+            } else {
                 throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
-
-            $instance->{$key} = $value;
         }
 
         return $instance;
@@ -113,10 +112,9 @@ class CaseData implements JsonSerializable
      *     kbvQuestions?: string,
      *     documentComplete: bool,
      *     alternateAddress?: string[],
-     *     selectedPostOfficeDeadline?:  string,
-     *     selectedPostOffice?: string,
      *     searchPostcode?: string,
-     *     idMethod?: string
+     *     idMethod?: string,
+     *     counterService?: string[],
      *     kbvQuestions?: string[]
      * }
      */
@@ -132,11 +130,18 @@ class CaseData implements JsonSerializable
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'alternateAddress' => $this->alternateAddress,
-            'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
-            'selectedPostOffice' => $this->selectedPostOffice,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
+
         ];
+        if ($this->counterService !== null) {
+            $arr['counterService'] = [
+                'selectedPostOffice' => $this->counterService->selectedPostOffice,
+                'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
+                'sessionId' => $this->counterService->sessionId,
+                'notificationsAuthToken' => $this->counterService->notificationsAuthToken
+            ];
+        }
 
         if ($this->kbvQuestions !== null) {
             $arr['kbvQuestions'] = $this->kbvQuestions;

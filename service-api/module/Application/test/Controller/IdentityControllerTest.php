@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
@@ -35,7 +36,6 @@ class IdentityControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
-
 
         parent::setUp();
 

@@ -26,7 +26,7 @@ class RequestSigner
      * If the signing process fails.
      * @throws YotiAuthException
      */
-    public static function generateSignature(
+    public function generateSignature(
         string $endpoint,
         string $httpMethod,
         AwsSecret $pemFile,

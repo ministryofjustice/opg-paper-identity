@@ -211,16 +211,6 @@ return [
                     ],
                 ],
             ],
-            'create_yoti_session' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/counter-service/:uuid/create-session',
-                    'defaults' => [
-                        'controller' => Controller\YotiController::class,
-                        'action'     => 'createSession',
-                    ],
-                ],
-            ],
             'retrieve_yoti_status' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -231,13 +221,13 @@ return [
                     ],
                 ],
             ],
-            'retrieve_pdf_letter' => [
+            'counter_service_start' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/retrieve-letter',
+                    'route'    => '/counter-service/:uuid/start',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getPDFLetter',
+                        'action'     => 'initiateCounterService',
                     ],
                 ]
             ],
