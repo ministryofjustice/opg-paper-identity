@@ -333,12 +333,18 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
+        $counterServiceMap = [
+            "selectedPostOffice" => $data['selected_postoffice']
+        ];
+
         try {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
-                'selectedPostOffice',
-                'S',
-                $data['selected_postoffice']
+                'counterService',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $counterServiceMap),
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -355,18 +361,29 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
+        /** @var CaseData $caseData */
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
+
+        $counterServiceMap = [];
+        if ($caseData->counterService !== null) {
+            $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
+        }
+        $counterServiceMap["selectedPostOfficeDeadline"] = $data['deadline'];
+
         try {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
-                'selectedPostOfficeDeadline',
-                'S',
-                $data['deadline']
+                'counterService',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $counterServiceMap),
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
