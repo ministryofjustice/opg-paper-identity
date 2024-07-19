@@ -17,12 +17,12 @@ class Country
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Please select a country'])]
     public mixed $country;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Please select a document'])]
     public mixed $id_method;
 }

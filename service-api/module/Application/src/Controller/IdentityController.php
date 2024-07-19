@@ -17,6 +17,7 @@ use Application\View\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -33,7 +34,8 @@ class IdentityController extends AbstractActionController
         private readonly DataImportHandler $dataImportHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
-        private readonly KBVServiceInterface $KBVService
+        private readonly KBVServiceInterface $KBVService,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -573,27 +575,23 @@ class IdentityController extends AbstractActionController
         $status = Response::STATUS_CODE_200;
 
         if (! $uuid) {
-            $status = Response::STATUS_CODE_400;
-            $this->getResponse()->setStatusCode($status);
-            $response = [
-                "error" => "Missing UUID"
-            ];
-            return new JsonModel($response);
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem("Missing UUID"));
         }
 
         try {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
-                'id_method_intl',
+                'idMethodIncludingNation',
                 'M',
                 array_map(fn (mixed $v) => [
                     'S' => $v
                 ], $data),
             );
         } catch (\Exception $exception) {
-            $response['result'] = "Not Updated";
-            $response['error'] = $exception->getMessage();
-            return new JsonModel($response);
+            $this->logger->error($exception->getMessage());
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
         }
 
         $this->getResponse()->setStatusCode($status);

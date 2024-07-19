@@ -17,6 +17,6 @@ class IdMethod
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Please select an option'])]
     public mixed $id_method;
 }

@@ -559,9 +559,11 @@ class CPFlowController extends AbstractActionController
             }
         }
 
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
