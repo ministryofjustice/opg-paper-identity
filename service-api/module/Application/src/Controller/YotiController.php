@@ -110,7 +110,8 @@ class YotiController extends AbstractActionController
             //need to add back existing values so it doesn't delete them
             if ($caseData->counterService !== null) {
                 $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
-                $counterServiceMap["selectedPostOfficeDeadline"] = $caseData->counterService->selectedPostOfficeDeadline;
+                $counterServiceMap["selectedPostOfficeDeadline"] =
+                    $caseData->counterService->selectedPostOfficeDeadline;
             }
             $counterServiceMap["sessionId"] = $yotiSessionId;
             $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
