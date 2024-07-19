@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
+use Application\Validators\CountryDocumentValidator;
+use Application\Validators\CountryValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Validator\NotEmpty;
@@ -17,12 +19,12 @@ class Country
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class, ['message' => 'Please select a country'])]
+    #[Annotation\Validator(CountryValidator::class)]
     public mixed $country;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class, ['message' => 'Please select a document'])]
+    #[Annotation\Validator(CountryDocumentValidator::class)]
     public mixed $id_method;
 }

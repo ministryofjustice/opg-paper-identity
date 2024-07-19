@@ -576,6 +576,10 @@ class CPFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/cp/choose_country'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         $form = (new AttributeBuilder())->createForm(Country::class);
 
         if (count($this->getRequest()->getPost())) {
@@ -589,10 +593,6 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
-
-        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $idOptionsData);

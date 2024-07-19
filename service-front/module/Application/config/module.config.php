@@ -6,9 +6,11 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Factories\ConfigHelperFactory;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
+use Application\Helpers\ConfigHelper;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
@@ -496,6 +498,7 @@ return [
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             TwigExtension::class => TwigExtensionFactory::class,
+            ConfigHelper::class => ConfigHelperFactory::class,
         ],
     ],
     'zend_twig' => [

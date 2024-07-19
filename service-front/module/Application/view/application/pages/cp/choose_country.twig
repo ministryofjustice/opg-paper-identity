@@ -37,12 +37,12 @@
                             </label>
                             <select class="govuk-select" id="country" name="country">
                                 <option value=""></option>
-                                {% for item in countries_data %}
+                                {% for code, name in countries_data %}
                                     <option
-                                        value="{{ item }}"
-                                        {% if form.get('country').value == item %}selected{% endif %}
+                                        value="{{ code }}"
+                                        {% if form.get('country').value == code %}selected{% endif %}
                                     >
-                                        {{ item }}
+                                        {{ name }}
                                     </option>
                                 {%  endfor %}
                             </select>
