@@ -1,10 +1,18 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
-  title: Yoti IBV Public API
+  title: Yoti Mock API
+  description: Provides mock for crucial Yoti endpoints spec for local/dev Post Office integrations
   version: 1.0.0
+servers:
+  - url: http://localhost:8002
+    description: Local Imposter server
+x-json-schema-faker:
+  alwaysFakeOptionals: false
+  optionalsProbability: 0.5
+  fillProperties: false
 tags:
   - name: Backend Endpoints
-    description: Endpoints for the Back-End API
+    description: Mock Server Endpoints for the Yoti API
 paths:
   /supported-documents:
     get:
@@ -2006,8 +2014,8 @@ components:
             $ref: "#/components/schemas/Topic"
           example:
             [
-              THANK_YOU_EMAIL_REQUESTED
-              FIRST_BRANCH_VISIT
+              THANK_YOU_EMAIL_REQUESTED,
+              FIRST_BRANCH_VISIT,
               RESOURCE_UPDATE,
               TASK_COMPLETION,
               CHECK_COMPLETION,
@@ -2947,5 +2955,3 @@ components:
       name: X-Yoti-Auth-Digest
       in: header
       description: "Signed request performed by back-end SDKs that includes a 'X-Yoti-Auth-Digest'"
-
-
