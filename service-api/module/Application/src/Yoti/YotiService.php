@@ -26,7 +26,8 @@ class YotiService implements YotiServiceInterface
         private readonly LoggerInterface $logger,
         private readonly AwsSecret $sdkId,
         private readonly AwsSecret $key,
-        private readonly RequestSigner $requestSigner
+        private readonly RequestSigner $requestSigner,
+        private readonly string $notificationEmail
     ) {
     }
 
@@ -252,12 +253,11 @@ class YotiService implements YotiServiceInterface
     public function letterConfigPayload(CaseData $caseData, string $requirementId): array
     {
         $payload = [];
-        $email = (string) getenv("YOTI_LETTER_EMAIL") ?: "opg-all-team+yoti@digital.justice.gov.uk";
 
         $payload["contact_profile"] = [
             "first_name" => $caseData->firstName,
             "last_name" => $caseData->lastName,
-            "email" => $email
+            "email" => $this->notificationEmail
         ];
         $payload["documents"] = [
             [

@@ -35,6 +35,15 @@ class YotiServiceFactory implements FactoryInterface
         $privateKey = new AwsSecret('yoti/certificate');
         $signer = new RequestSigner();
 
-        return new YotiService($client, $container->get(LoggerInterface::class), $sdkId, $privateKey, $signer);
+        $notificationEmail = (string) getenv("YOTI_LETTER_EMAIL") ?: "opg-all-team+yoti@digital.justice.gov.uk";
+
+        return new YotiService(
+            $client,
+            $container->get(LoggerInterface::class),
+            $sdkId,
+            $privateKey,
+            $signer,
+            $notificationEmail
+        );
     }
 }
