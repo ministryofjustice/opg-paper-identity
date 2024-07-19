@@ -498,7 +498,6 @@ return [
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             TwigExtension::class => TwigExtensionFactory::class,
-            ConfigHelper::class => ConfigHelperFactory::class,
         ],
     ],
     'zend_twig' => [
