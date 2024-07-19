@@ -33,6 +33,8 @@ class YotiServiceTest extends TestCase
     private YotiService $yotiService;
     private RequestSigner&MockObject $requestSigner;
 
+    private string $notificationEmail;
+
     protected function setUp(): void
     {
         $this->client = $this->createMock(Client::class);
@@ -43,13 +45,15 @@ class YotiServiceTest extends TestCase
 
         $this->sdkId->method('getValue')->willReturn('test-sdk-id');
         $this->key->method('getValue')->willReturn('test-key');
+        $this->notificationEmail = 'notifications.paper-id';
 
         $this->yotiService = new YotiService(
             $this->client,
             $this->logger,
             $this->sdkId,
             $this->key,
-            $this->requestSigner
+            $this->requestSigner,
+            $this->notificationEmail
         );
     }
 
@@ -220,7 +224,7 @@ class YotiServiceTest extends TestCase
         $payload["contact_profile"] = [
             "first_name" => "Maria",
             "last_name" => "Williams",
-            "email" => 'opg-all-team+yoti@digital.justice.gov.uk'
+            "email" => $this->notificationEmail
         ];
         $payload["documents"] = [
             [
