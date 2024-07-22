@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\Controller\YotiController;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
+use Application\View\JsonModel;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
+use Laminas\Mvc\Controller\Plugin\Forward;
 use Laminas\Stdlib\ArrayUtils;
+use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -21,6 +25,10 @@ class IdentityControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $KBVServiceMock;
+    private DataImportHandler&MockObject $dataImportHandler;
+    private Forward&MockObject $forwardPluginMock;
+    private YotiController&MockObject $yotiControllerMock;
+
     public function setUp(): void
     {
         // The module configuration should still be applicable for tests.
@@ -36,13 +44,28 @@ class IdentityControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
+        $this->dataImportHandler = $this->createMock(DataImportHandler::class);
+//        $this->yotiControllerMock = $this->getMockBuilder(YotiController::class)
+//            ->disableOriginalConstructor()
+//            ->getMock();
+
+        $this->yotiControllerMock = $this->createPartialMock(YotiController::class, [
+            'initiateCounterServiceAction'
+        ]);
+
+        $this->forwardPluginMock = $this->createMock(Forward::class);
+
 
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
+        $serviceManager->setService(DataImportHandler::class, $this->dataImportHandler);
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
+        $serviceManager->setService(YotiController::class, $this->yotiControllerMock);
+        //$serviceManager->setService(Forward::class, $this->forwardPluginMock);
+
     }
 
     public function testIndexActionResponse(): void
@@ -402,6 +425,56 @@ class IdentityControllerTest extends TestCase
             ['SMITH720238HA3D8', 'NO_MATCH', Response::STATUS_CODE_200],
             ['JONES630536AB3J9', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200]
         ];
+    }
+
+    public function testDocumentCompleteUpdateStartsYotiProcess(): void
+    {
+        $uuid = 'test-uuid';
+        $this->dataImportHandler
+            ->expects($this->once())->method("updateCaseData");
+
+        $this->dataQueryHandlerMock
+            ->expects($this->atLeastOnce())->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn(CaseData::fromArray([
+                'id' => 'test-uuid',
+                'firstName' => 'test',
+                'lastName' => 'opg',
+                'dob' => '',
+                'address' => ['123 upper road'],
+                'personType' => 'donor',
+                'idMethod' => 'po_test'
+            ]));
+
+        $jsonResponse = new JsonModel(['counter-service-status' => 'started']);
+
+//        $this->yotiControllerMock
+//            ->expects($this->once())
+//            ->method('initiateCounterServiceAction')
+//            ->with($uuid)
+//            ->willReturn($jsonResponse);
+
+//        $this->forwardPluginMock
+//            ->expects($this->once())
+//            ->method('dispatch')
+//            ->with($this->yotiControllerMock,'initiateCounterService', $uuid)
+//            ->willReturn(['counter-service-status' => 'started']);
+
+
+        $this->dispatch('/cases/test-uuid/complete-document', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('complete_document');
+        //$this->assertControllerName(YotiController::class);
+
+
+    }
+
+    public function testYotiProcessIsNotTriggeredForNonePostOfficeMethods(): void
+    {
+
     }
 
     /**

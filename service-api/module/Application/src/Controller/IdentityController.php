@@ -14,6 +14,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
 use Application\View\JsonModel;
+use Laminas\Cache\Storage\PluginManager;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -529,6 +530,22 @@ class IdentityController extends AbstractActionController
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
             return new JsonModel($response);
+        }
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $idMethod = $case->idMethod;
+
+        if (str_contains($idMethod, "po_")) {
+            //start Yoti process
+            $yotiSession = $this->forward()->dispatch(YotiController::class, [
+                'action' => 'initiateCounterService',
+                'uuid' => $uuid
+            ]);
+            if (is_array($yotiSession) && $yotiSession["counter-service-status"] !== "started") {
+
+                $response['result'] = "Problem starting counter service";
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+                return new JsonModel($response);
+            }
         }
 
         $this->getResponse()->setStatusCode($status);

@@ -136,7 +136,7 @@ class SessionConfig
         $addressFormat = [];
         //@TODO determine what address format we are sending, currently no country_iso, assuming all UK for now
         $addressFormat["address_format"] = "1";
-        $addressFormat["building_number"] = substr($address['line1'], 0, 3);
+        $addressFormat["building_number"] = $address['line1'] ? substr($address['line1'], 0, 3): '1';
         $addressFormat["address_line1"] = $address['line1'];
         $addressFormat["address_line2"] = $address['line2'];
         $addressFormat["town_city"] = $address['line3'] ?? $address['line2'];
