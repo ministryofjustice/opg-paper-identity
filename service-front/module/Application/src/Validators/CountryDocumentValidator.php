@@ -9,9 +9,10 @@ use Laminas\Validator\AbstractValidator;
 
 class CountryDocumentValidator extends AbstractValidator
 {
-    public const INVALID_COUNTRY = 'invalid_document';
+    public const INVALID_DOCUMENT = 'invalid_document';
+
     protected array $messageTemplates = [
-        self::INVALID_COUNTRY => "This document code is not recognised",
+        self::INVALID_DOCUMENT => "This document code is not recognised",
     ];
 
     public function isValid($value): bool
@@ -19,7 +20,7 @@ class CountryDocumentValidator extends AbstractValidator
         $documentCodes = $this->getDocumentCodes();
 
         if (! array_key_exists($value, $documentCodes)) {
-            $this->error(self::INVALID_COUNTRY);
+            $this->error(self::INVALID_DOCUMENT);
             return false;
         }
         return true;

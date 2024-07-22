@@ -27,6 +27,10 @@ class Country
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(CountryDocumentValidator::class)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(NotEmpty::class, options: [
+        "messages" => [
+            NotEmpty::IS_EMPTY  => "Please choose a type of document"
+        ]
+    ])]
     public mixed $id_method;
 }
