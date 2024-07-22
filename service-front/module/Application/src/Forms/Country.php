@@ -20,11 +20,13 @@ class Country
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(CountryValidator::class)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public mixed $country;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(CountryDocumentValidator::class)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public mixed $id_method;
 }
