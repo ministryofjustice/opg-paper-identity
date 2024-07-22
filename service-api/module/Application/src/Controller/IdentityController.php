@@ -550,7 +550,6 @@ class IdentityController extends AbstractActionController
         $idMethod = $case->idMethod;
 
         if (str_contains($idMethod, "po_")) {
-            //var_dump("is called"); die;
             //start Yoti process
             $notificationsAuthToken = strval(Uuid::uuid4());
 
@@ -585,7 +584,7 @@ class IdentityController extends AbstractActionController
                 //Prepare and generate PDF
                 $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
                 $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
-                //@TODO send pdf from above to sirius when ready
+
             } catch (YotiException $e) {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
                 return new JsonModel(new Problem(

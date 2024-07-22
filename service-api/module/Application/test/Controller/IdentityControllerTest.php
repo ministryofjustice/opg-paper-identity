@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
-use Application\Controller\YotiController;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
-use Application\View\JsonModel;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
