@@ -491,7 +491,7 @@ return [
         'identity_methods' => [
             'nin' => 'National Insurance number',
             'pn' => 'UK Passport (current or expired in the last 5 years)',
-            'dln' => 'Driving licence (current)',
+            'dln' => 'UK photocard driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
             'po_ukp' => 'UK passport (up to 18m expired)',
