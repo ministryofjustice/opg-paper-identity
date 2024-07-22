@@ -11,13 +11,14 @@ use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
 use Application\View\JsonModel;
+use Application\Yoti\SessionConfig;
+use Application\Yoti\YotiService;
+use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
-use Laminas\Mvc\Controller\Plugin\Forward;
 use Laminas\Stdlib\ArrayUtils;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -26,8 +27,8 @@ class IdentityControllerTest extends TestCase
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $KBVServiceMock;
     private DataImportHandler&MockObject $dataImportHandler;
-    private Forward&MockObject $forwardPluginMock;
-    private YotiController&MockObject $yotiControllerMock;
+    private YotiService&MockObject $yotiServiceMock;
+    private SessionConfig&MockObject $sessionConfigMock;
 
     public function setUp(): void
     {
@@ -45,15 +46,8 @@ class IdentityControllerTest extends TestCase
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
         $this->dataImportHandler = $this->createMock(DataImportHandler::class);
-//        $this->yotiControllerMock = $this->getMockBuilder(YotiController::class)
-//            ->disableOriginalConstructor()
-//            ->getMock();
-
-        $this->yotiControllerMock = $this->createPartialMock(YotiController::class, [
-            'initiateCounterServiceAction'
-        ]);
-
-        $this->forwardPluginMock = $this->createMock(Forward::class);
+        $this->yotiServiceMock = $this->createMock(YotiService::class);
+        $this->sessionConfigMock = $this->createMock(SessionConfig::class);
 
 
         parent::setUp();
@@ -63,9 +57,8 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(DataImportHandler::class, $this->dataImportHandler);
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
-        $serviceManager->setService(YotiController::class, $this->yotiControllerMock);
-        //$serviceManager->setService(Forward::class, $this->forwardPluginMock);
-
+        $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
+        $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
     }
 
     public function testIndexActionResponse(): void
@@ -430,36 +423,54 @@ class IdentityControllerTest extends TestCase
     public function testDocumentCompleteUpdateStartsYotiProcess(): void
     {
         $uuid = 'test-uuid';
-        $this->dataImportHandler
-            ->expects($this->once())->method("updateCaseData");
+        $caseData = CaseData::fromArray([
+            'id' => 'test-uuid',
+            'firstName' => 'test',
+            'lastName' => 'opg',
+            'dob' => '1980-01-01',
+            'address' => ['123 upper road'],
+            'personType' => 'donor',
+            'idMethod' => 'po_ukp'
+        ]);
+
+        $sessionData = $this->sessionConfig($caseData);
+        $response = [];
+        $response["status"] = 201;
+        $response["data"] = [
+            "client_session_token_ttl" => 2630012,
+            "session_id" => "19eb9325-61ed-4089-88dc-5bbc659443d3",
+            "client_session_token" => "1c9f8e92-3a04-463e-9dd1-98dad2b657f2"
+        ];
+        $pdfResponse = ["status" => "PDF Created"];
+        $pdfLetter = ["status" => "PDF Created", "pdfData" => "contents"];
 
         $this->dataQueryHandlerMock
             ->expects($this->atLeastOnce())->method('getCaseByUUID')
             ->with($uuid)
-            ->willReturn(CaseData::fromArray([
-                'id' => 'test-uuid',
-                'firstName' => 'test',
-                'lastName' => 'opg',
-                'dob' => '',
-                'address' => ['123 upper road'],
-                'personType' => 'donor',
-                'idMethod' => 'po_test'
-            ]));
+            ->willReturn($caseData);
 
-        $jsonResponse = new JsonModel(['counter-service-status' => 'started']);
+        $this->sessionConfigMock
+            ->expects($this->once())->method('build')
+            ->with($caseData)
+            ->willReturn($sessionData);
 
-//        $this->yotiControllerMock
-//            ->expects($this->once())
-//            ->method('initiateCounterServiceAction')
-//            ->with($uuid)
-//            ->willReturn($jsonResponse);
+        $this->yotiServiceMock
+            ->expects($this->once())->method('createSession')
+            ->with($sessionData)
+            ->willReturn($response);
 
-//        $this->forwardPluginMock
-//            ->expects($this->once())
-//            ->method('dispatch')
-//            ->with($this->yotiControllerMock,'initiateCounterService', $uuid)
-//            ->willReturn(['counter-service-status' => 'started']);
+        $this->yotiServiceMock
+            ->expects($this->once())->method('preparePDFLetter')
+            ->with($caseData)
+            ->willReturn($pdfResponse);
 
+        $this->yotiServiceMock
+            ->expects($this->once())->method('retrieveLetterPDF')
+            ->with($response["data"]["session_id"])
+            ->willReturn($pdfLetter);
+
+        $this->dataImportHandler
+            ->expects($this->atLeast(2))->method('updateCaseData');
 
         $this->dispatch('/cases/test-uuid/complete-document', 'GET');
         $this->assertResponseStatusCode(200);
@@ -467,14 +478,40 @@ class IdentityControllerTest extends TestCase
         $this->assertControllerName(IdentityController::class);
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('complete_document');
-        //$this->assertControllerName(YotiController::class);
-
-
     }
 
     public function testYotiProcessIsNotTriggeredForNonePostOfficeMethods(): void
     {
+        $uuid = 'test-uuid';
+        $caseData = CaseData::fromArray([
+            'id' => 'test-uuid',
+            'firstName' => 'test',
+            'lastName' => 'opg',
+            'dob' => '1980-01-01',
+            'address' => ['123 upper road'],
+            'personType' => 'donor',
+            'idMethod' => 'dln'
+        ]);
+        $this->dataQueryHandlerMock
+            ->expects($this->atLeastOnce())->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($caseData);
 
+        $this->sessionConfigMock
+            ->expects($this->never())->method('build');
+
+        $this->yotiServiceMock
+            ->expects($this->never())->method('createSession');
+
+        $this->dataImportHandler
+            ->expects($this->atLeast(1))->method('updateCaseData');
+
+        $this->dispatch('/cases/test-uuid/complete-document', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class);
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('complete_document');
     }
 
     /**
@@ -565,5 +602,47 @@ class IdentityControllerTest extends TestCase
                 ]
             ],
         ];
+    }
+
+    public function sessionConfig(CaseData $case): array
+    {
+        $sessionConfig = [];
+
+        $sessionConfig["session_deadline"] = '2025-05-05 22:00:00';
+        $sessionConfig["user_tracking_id"] = $case->id;
+
+        $sessionConfig["requested_checks"] = [
+            [
+                "type" => "PROFILE_DOCUMENT_MATCH",
+                "config" => [
+                    "manual_check" => "IBV"
+                ]
+            ],
+        ];
+        $sessionConfig["required_documents"] = [
+            [
+                "type" => "ID_DOCUMENT",
+                "filter" => [
+                    "type" => "DOCUMENT_RESTRICTIONS",
+                    "inclusion" => "INCLUDE",
+                    "documents" => [
+                        [
+                            "country_codes" => ["GBR"],
+                            "document_types" => ["PASSPORT"]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $sessionConfig["resources"] = [
+            "applicant_profile" => [
+                "given_names" => $case->firstName,
+                "family_name" => $case->lastName,
+                "date_of_birth" => $case->dob,
+                "structured_postal_address" => [],
+            ]
+        ];
+
+        return $sessionConfig;
     }
 }
