@@ -221,16 +221,6 @@ return [
                     ],
                 ],
             ],
-            'counter_service_start' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/counter-service/:uuid/start',
-                    'defaults' => [
-                        'controller' => Controller\YotiController::class,
-                        'action'     => 'initiateCounterService',
-                    ],
-                ]
-            ],
             'add_search_postcode' => [
                 'type' => Segment::class,
                 'options' => [
