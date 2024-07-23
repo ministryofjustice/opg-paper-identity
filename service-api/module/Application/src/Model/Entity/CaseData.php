@@ -79,6 +79,9 @@ class CaseData implements JsonSerializable
     public ?string $searchPostcode = null;
 
     #[Annotation\Required(false)]
+    #[Annotation\Validator(Uuid::class)]
+    public ?string $sessionId = null;
+    #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
     #[Annotation\Required(false)]
@@ -117,10 +120,9 @@ class CaseData implements JsonSerializable
      *     alternateAddress?: string[],
      *     searchPostcode?: string,
      *     idMethod?: string,
+     *     sessionId?: string,
      *     counterService?: string[],
      *     kbvQuestions?: string[]
-     *     idMethod?: string
-     *     kbvQuestions?: string[],
      *     idMethodIncludingNation?: string[]
      * }
      */
@@ -138,13 +140,13 @@ class CaseData implements JsonSerializable
             'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
+            'sessionId' => $this->sessionId,
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
         ];
         if ($this->counterService !== null) {
             $arr['counterService'] = [
                 'selectedPostOffice' => $this->counterService->selectedPostOffice,
                 'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
-                'sessionId' => $this->counterService->sessionId,
                 'notificationsAuthToken' => $this->counterService->notificationsAuthToken
             ];
         }
