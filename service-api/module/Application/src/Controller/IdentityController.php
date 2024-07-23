@@ -539,7 +539,7 @@ class IdentityController extends AbstractActionController
         }
         $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        if (!$case) {
+        if (! $case) {
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
@@ -584,7 +584,6 @@ class IdentityController extends AbstractActionController
                 //Prepare and generate PDF
                 $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
                 $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
-
             } catch (YotiException $e) {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
                 return new JsonModel(new Problem(
