@@ -22,6 +22,7 @@ use Laminas\Cache\Storage\PluginManager;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -40,7 +41,8 @@ class IdentityController extends AbstractActionController
         private readonly PassportValidator $passportService,
         private readonly KBVServiceInterface $KBVService,
         private readonly SessionConfig $sessionConfig,
-        private readonly YotiServiceInterface $yotiService
+        private readonly YotiServiceInterface $yotiService,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -636,6 +638,39 @@ class IdentityController extends AbstractActionController
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
             return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function updateCpPoIdAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem("Missing UUID"));
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'idMethodIncludingNation',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $data),
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
         }
 
         $this->getResponse()->setStatusCode($status);
