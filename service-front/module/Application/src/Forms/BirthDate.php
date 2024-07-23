@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Forms;
 
 use Application\Validators\BirthDateValidator;
-use Application\Validators\DateValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 

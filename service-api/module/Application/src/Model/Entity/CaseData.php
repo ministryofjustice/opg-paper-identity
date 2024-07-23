@@ -81,6 +81,9 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
+    #[Annotation\Required(false)]
+    public ?array $idMethodIncludingNation = [];
+
     /**
      * @param array<string, mixed> $data
      */
@@ -116,6 +119,9 @@ class CaseData implements JsonSerializable
      *     idMethod?: string,
      *     counterService?: string[],
      *     kbvQuestions?: string[]
+     *     idMethod?: string
+     *     kbvQuestions?: string[],
+     *     idMethodIncludingNation?: string[]
      * }
      */
     public function toArray(): array
@@ -132,7 +138,7 @@ class CaseData implements JsonSerializable
             'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
-
+            'idMethodIncludingNation' => $this->idMethodIncludingNation,
         ];
         if ($this->counterService !== null) {
             $arr['counterService'] = [
