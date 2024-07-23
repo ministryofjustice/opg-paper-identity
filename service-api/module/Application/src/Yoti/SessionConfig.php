@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Model\Entity\CaseData;
+use Application\Yoti\Http\Exception\YotiException;
 use DateTime;
 use Ramsey\Uuid\Uuid;
 
@@ -131,9 +132,15 @@ class SessionConfig
         }
     }
 
+    /**
+     * @throws YotiException
+     */
     public function addressFormatted(array $address): array
     {
         $addressFormat = [];
+        if (! $address['line1'] || $address['line1'] == '') {
+            throw new YotiException("Address line1 missing");
+        }
         //@TODO determine what address format we are sending, currently no country_iso, assuming all UK for now
         $addressFormat["address_format"] = "1";
         $addressFormat["building_number"] = substr($address['line1'], 0, 3);
