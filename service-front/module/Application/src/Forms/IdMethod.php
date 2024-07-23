@@ -6,15 +6,17 @@ namespace Application\Forms;
 
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PostOfficeNumericCode
+class IdMethod
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    public mixed $postoffice;
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Please select an option'])]
+    public mixed $id_method;
 }

@@ -21,6 +21,8 @@ class FormProcessorResponseDtoTest extends TestCase
 
     private array $variables;
 
+    private string $redirect;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -28,6 +30,7 @@ class FormProcessorResponseDtoTest extends TestCase
         $this->form = (new AttributeBuilder())->createForm(TestValidator::class);
         $this->template = 'application/test';
         $this->uuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
+        $this->redirect = "test";
 
         $this->variables = [];
 
@@ -35,7 +38,8 @@ class FormProcessorResponseDtoTest extends TestCase
             $this->uuid,
             $this->form,
             $this->template,
-            $this->variables
+            $this->variables,
+            $this->redirect
         );
     }
 
@@ -71,6 +75,14 @@ class FormProcessorResponseDtoTest extends TestCase
         );
     }
 
+    public function testGetRedirect(): void
+    {
+        $this->assertEquals(
+            $this->redirect,
+            $this->formProcessorResponseDto->getRedirect()
+        );
+    }
+
     public function testToArray(): void
     {
         $this->assertEquals(
@@ -79,6 +91,7 @@ class FormProcessorResponseDtoTest extends TestCase
                 'form' => $this->form,
                 'template' => $this->template,
                 'variables' => [],
+                'redirect' => 'test'
             ],
             $this->formProcessorResponseDto->toArray()
         );

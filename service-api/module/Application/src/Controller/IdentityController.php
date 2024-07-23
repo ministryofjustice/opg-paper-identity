@@ -17,6 +17,7 @@ use Application\View\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -33,7 +34,8 @@ class IdentityController extends AbstractActionController
         private readonly DataImportHandler $dataImportHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
-        private readonly KBVServiceInterface $KBVService
+        private readonly KBVServiceInterface $KBVService,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -331,12 +333,18 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
+        $counterServiceMap = [
+            "selectedPostOffice" => $data['selected_postoffice']
+        ];
+
         try {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
-                'selectedPostOffice',
-                'S',
-                $data['selected_postoffice']
+                'counterService',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $counterServiceMap),
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -353,18 +361,29 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
+        /** @var CaseData $caseData */
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing UUID'));
         }
+
+        $counterServiceMap = [];
+        if ($caseData->counterService !== null) {
+            $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
+        }
+        $counterServiceMap["selectedPostOfficeDeadline"] = $data['deadline'];
+
         try {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
-                'selectedPostOfficeDeadline',
-                'S',
-                $data['deadline']
+                'counterService',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $counterServiceMap),
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -557,6 +576,39 @@ class IdentityController extends AbstractActionController
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
             return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function updateCpPoIdAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem("Missing UUID"));
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'idMethodIncludingNation',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $data),
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
         }
 
         $this->getResponse()->setStatusCode($status);

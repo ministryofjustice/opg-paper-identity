@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\YotiController;
+use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
+use Application\Yoti\Http\Exception\YotiException;
+use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
@@ -13,10 +18,17 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\MockObject\MockObject;
+use Ramsey\Uuid\Uuid;
 
 class YotiControllerTest extends TestCase
 {
     private YotiService&MockObject $YotiServiceMock;
+
+    private DataQueryHandler&MockObject $dataQueryHandlerMock;
+
+    private DataImportHandler&MockObject $dataImportHandler;
+
+    private SessionConfig&MockObject $sessionConfigMock;
     public function setUp(): void
     {
         // The module configuration should still be applicable for tests.
@@ -31,6 +43,9 @@ class YotiControllerTest extends TestCase
         ));
 
         $this->YotiServiceMock = $this->createMock(YotiService::class);
+        $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
+        $this->dataImportHandler = $this->createMock(DataImportHandler::class);
+        $this->sessionConfigMock = $this->createMock(SessionConfig::class);
 
 
         parent::setUp();
@@ -38,6 +53,9 @@ class YotiControllerTest extends TestCase
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(YotiServiceInterface::class, $this->YotiServiceMock);
+        $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
+        $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
+        $serviceManager->setService(DataImportHandler::class, $this->dataImportHandler);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -88,8 +106,10 @@ class YotiControllerTest extends TestCase
      */
     public function testBranchReturnFormat(): void
     {
-        $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. Neots, Cambridgeshire, PE19 1NL"}' .
-                    ',"12345675":{"name":"Hampstead","address":"66 High Street, Hampstead Heath, London, NW3 6LR"}}';
+        $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. ' .
+            'Neots, Cambridgeshire","postcode":"PE19 1NL"}' .
+                    ',"12345675":{"name":"Hampstead","address":"66 High Street, ' .
+            'Hampstead Heath, London","postcode":"NW3 6LR"}}';
         $this->YotiServiceMock
             ->expects($this->once())->method('postOfficeBranch')
             ->with('NW1 4PG')

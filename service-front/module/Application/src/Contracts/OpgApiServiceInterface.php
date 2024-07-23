@@ -28,15 +28,7 @@ interface OpgApiServiceInterface
 
     public function updateIdMethod(string $uuid, string $method): array;
 
-    public function listPostOfficesByPostcode(string $uuid, string $postcode): array;
-
-    public function searchPostOfficesByLocation(
-        string $uuid,
-        string $location,
-        int $page = 1
-    ): array;
-
-    public function getPostOfficeByCode(string $uuid, int $code): array;
+    public function listPostOfficesByPostcode(string $uuid, string $location): array;
 
     public function addSearchPostcode(string $uuid, string $postcode): array;
     public function addSelectedPostOffice(string $uuid, string $postOffice): array;
@@ -49,4 +41,6 @@ interface OpgApiServiceInterface
     public function updateCaseSetDocumentComplete(string $uuid): array;
 
     public function updateCaseSetDob(string $uuid, string $dob): array;
+
+    public function updateIdMethodWithCountry(string $uuid, array $data): array;
 }
