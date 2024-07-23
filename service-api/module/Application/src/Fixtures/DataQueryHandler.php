@@ -49,6 +49,22 @@ class DataQueryHandler
         return $arr ? CaseData::fromArray($arr) : null;
     }
 
+    public function queryByYotiSessionId(string $sessionId): array
+    {
+        //return some subset of data
+        $idKey = [
+            'key' => [
+                'sessionId' => [
+                    'S' => $sessionId,
+                ],
+            ],
+        ];
+        $index = "sessionId-index";
+        $result = $this->query($idKey, $index);
+
+        return $this->returnUnmarshalResult($result);
+    }
+
     public function queryByIDNumber(string $idNumber): array
     {
         //return some subset of data
