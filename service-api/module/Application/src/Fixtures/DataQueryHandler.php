@@ -49,9 +49,8 @@ class DataQueryHandler
         return $arr ? CaseData::fromArray($arr) : null;
     }
 
-    public function queryByYotiSessionId(string $sessionId): array
+    public function queryByYotiSessionId(string $sessionId): ?CaseData
     {
-        //return some subset of data
         $idKey = [
             'key' => [
                 'sessionId' => [
@@ -62,7 +61,9 @@ class DataQueryHandler
         $index = "sessionId-index";
         $result = $this->query($idKey, $index);
 
-        return $this->returnUnmarshalResult($result);
+        $array = $this->returnUnmarshalResult($result)[0];
+
+        return $array ? CaseData::fromArray($array) : null;
     }
 
     public function queryByIDNumber(string $idNumber): array
