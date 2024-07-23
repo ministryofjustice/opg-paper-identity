@@ -82,65 +82,6 @@ class YotiController extends AbstractActionController
 
         return new JsonModel($data);
     }
-    /**
-     * @throws YotiException
-     */
-    public function initiateCounterServiceAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(['error' => 'Missing uuid']);
-        }
-        $notificationsAuthToken = strval(Uuid::uuid4());
-        $caseData = $this->dataQuery->getCaseByUUID($uuid);
-
-        if (! $caseData) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(['error' => 'Case data not found']);
-        }
-        $sessionData = $this->sessionConfig->build($caseData, $notificationsAuthToken);
-        $nonce = strval(Uuid::uuid4());
-        $dateTime = new DateTime();
-        $timestamp = $dateTime->getTimestamp();
-
-        try {
-            $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
-            $yotiSessionId = $result["data"]["session_id"];
-            $counterServiceMap = [];
-            //need to add back existing values so it doesn't delete them
-            if ($caseData->counterService !== null) {
-                $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
-                $counterServiceMap["selectedPostOfficeDeadline"] =
-                    $caseData->counterService->selectedPostOfficeDeadline;
-            }
-            $counterServiceMap["sessionId"] = $yotiSessionId;
-            $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
-
-            if ($result["status"] < 400) {
-                $this->dataImportHandler->updateCaseData(
-                    $uuid,
-                    'counterService',
-                    'M',
-                    array_map(fn (mixed $v) => [
-                        'S' => $v
-                    ], $counterServiceMap),
-                );
-            }
-            //Prepare and generate PDF
-            $this->yotiService->preparePDFLetter($caseData, $nonce, $timestamp, $yotiSessionId);
-            $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
-            //@TODO send pdf from above to sirius when ready
-        } catch (YotiException $e) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-            return new JsonModel(new Problem(
-                'Problem requesting Yoti API',
-                extra: ['errors' => $e->getMessage()],
-            ));
-        }
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        return new JsonModel(['counter-service-status' => 'started']);
-    }
 
     /**
      * @return JsonModel
