@@ -88,12 +88,12 @@ class YotiController extends AbstractActionController
     public function notificationAction(): JsonModel
     {
         $data = json_decode($this->getRequest()->getContent(), true);
-        if ( !isset($data['session_id'], $data['topic'])) {
+        if (! isset($data['session_id'], $data['topic'])) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Missing required parameters'));
         }
 
-        if ( !in_array($data['topic'], array('first_branch_visit', 'session_completion'))) {
+        if (! in_array($data['topic'], ['first_branch_visit', 'session_completion'])) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Invalid type'));
         }
@@ -101,6 +101,11 @@ class YotiController extends AbstractActionController
         $sessionId = filter_var($data['session_id'], FILTER_SANITIZE_SPECIAL_CHARS);
 
         $caseData = $this->dataQuery->queryByYotiSessionId($sessionId);
+
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem('Case with session_id not found'));
+        }
         //now update counterService data
         $counterServiceMap = [];
 
