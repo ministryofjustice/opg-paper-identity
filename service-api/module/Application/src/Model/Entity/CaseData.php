@@ -147,7 +147,8 @@ class CaseData implements JsonSerializable
             $arr['counterService'] = [
                 'selectedPostOffice' => $this->counterService->selectedPostOffice,
                 'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
-                'notificationsAuthToken' => $this->counterService->notificationsAuthToken
+                'notificationsAuthToken' => $this->counterService->notificationsAuthToken,
+                'notificationState' => $this->counterService
             ];
         }
 
