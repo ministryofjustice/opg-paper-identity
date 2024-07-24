@@ -2,7 +2,7 @@
 {% block content %}
     {% include 'layout/id_check_banner.twig' with details_data %}
     <div class="govuk-width-container govuk-!-padding-top-5">
-        <form method="POST">
+        <form method="POST" class="govuk-!-width-three-quarters">
             <h1 class="govuk-heading-xl">
                 {% block title %}
                     LPAs included in the identity check
@@ -26,7 +26,7 @@
                         <div class="govuk-summary-card__content">
                             <dl class="govuk-summary-list">
                                 <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
+                                    <dt class="govuk-summary-list__key  govuk-!-width-one-half">
                                         LPA reference number
                                     </dt>
                                     <dt class="govuk-summary-list__key">
@@ -49,7 +49,12 @@
                                         </dd>
                                         <dd class="govuk-summary-list__value">
                                             {% if lpa_count > 1 %}
-                                                <a href="./remove-lpa/{{ index }}">Remove</a>
+                                                <a
+                                                    href="./remove-lpa/{{ index }}"
+                                                    class="govuk-link"
+                                                >
+                                                    Remove
+                                                </a>
                                             {% endif %}
                                         </dd>
                                     </div>
@@ -77,3 +82,5 @@
         </form>
     </div>
 {% endblock %}
+
+
