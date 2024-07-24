@@ -570,7 +570,6 @@ class IdentityController extends AbstractActionController
                     $counterServiceMap["selectedPostOfficeDeadline"] =
                         $case->counterService->selectedPostOfficeDeadline;
                 }
-                $counterServiceMap["sessionId"] = $yotiSessionId;
                 $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
 
                 if ($result["status"] < 400) {
@@ -581,6 +580,13 @@ class IdentityController extends AbstractActionController
                         array_map(fn (mixed $v) => [
                             'S' => $v
                         ], $counterServiceMap),
+                    );
+
+                    $this->dataImportHandler->updateCaseData(
+                        $uuid,
+                        'sessionId',
+                        'S',
+                        $yotiSessionId
                     );
                 }
                 //Prepare and generate PDF

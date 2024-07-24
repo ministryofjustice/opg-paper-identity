@@ -124,6 +124,80 @@ class YotiControllerTest extends TestCase
         $this->assertMatchedRouteName('find_postoffice_branches');
     }
 
+    public function testYotiNotificationCallsCaseUpdate(): void
+    {
+        $response = '{"Notification Status":"Updated"}';
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('queryByYotiSessionId')
+            ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
+            ->willReturn(CaseData::fromArray([
+                'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'personType' => 'donor',
+                'firstName' => '',
+                'lastName' => '',
+                'dob' => '',
+                'lpas' => [],
+                'address' => [],
+            ]));
+
+        $this->dataImportHandler
+            ->expects($this->once())->method('updateCaseData');
+
+        $this->dispatchJSON('/counter-service/notification', 'POST', [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+            'topic' => 'first_branch_visit'
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
+    public function testYotiNotificationThrowsErrorForCaseNotFound(): void
+    {
+        $response = '{"title":"Case with session_id not found"}';
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('queryByYotiSessionId')
+            ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
+            ->willReturn(null);
+
+        $this->dataImportHandler
+            ->expects($this->never())->method('updateCaseData');
+
+        $this->dispatchJSON('/counter-service/notification', 'POST', [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+            'topic' => 'first_branch_visit'
+        ]);
+        $this->assertResponseStatusCode(500);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
+    public function testYotiNotificationErrorWhenMissingParameters(): void
+    {
+        $response = '{"title":"Missing required parameters"}';
+        $this->dataQueryHandlerMock
+            ->expects($this->never())->method('queryByYotiSessionId');
+
+        $this->dataImportHandler
+            ->expects($this->never())->method('updateCaseData');
+
+        $this->dispatchJSON('/counter-service/notification', 'POST', [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+        ]);
+        $this->assertResponseStatusCode(400);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
     public function dispatchJSON(string $path, string $method, mixed $data = null): void
     {
         $headers = new Headers();

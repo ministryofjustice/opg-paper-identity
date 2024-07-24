@@ -6,7 +6,6 @@ namespace Application\Controller;
 
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
-use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
@@ -81,5 +80,53 @@ class YotiController extends AbstractActionController
         $data = ['status' => $session['state']];
 
         return new JsonModel($data);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function notificationAction(): JsonModel
+    {
+        $data = json_decode($this->getRequest()->getContent(), true);
+        if (! isset($data['session_id'], $data['topic'])) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing required parameters'));
+        }
+
+        if (! in_array($data['topic'], ['first_branch_visit', 'session_completion'])) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Invalid type'));
+        }
+
+        $sessionId = filter_var($data['session_id'], FILTER_SANITIZE_SPECIAL_CHARS);
+
+        $caseData = $this->dataQuery->queryByYotiSessionId($sessionId);
+
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem('Case with session_id not found'));
+        }
+        //now update counterService data
+        $counterServiceMap = [];
+
+        if ($caseData->counterService !== null) {
+            $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
+            $counterServiceMap["selectedPostOfficeDeadline"] =
+                $caseData->counterService->selectedPostOfficeDeadline;
+            $counterServiceMap["notificationsAuthToken"] =
+                $caseData->counterService->notificationsAuthToken;
+        }
+        $counterServiceMap["notificationState"] = $data['topic'];
+        $this->dataImportHandler->updateCaseData(
+            $caseData->id,
+            'counterService',
+            'M',
+            array_map(fn (mixed $v) => [
+                'S' => $v
+            ], $counterServiceMap),
+        );
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        return new JsonModel(["Notification Status" => "Updated"]);
     }
 }
