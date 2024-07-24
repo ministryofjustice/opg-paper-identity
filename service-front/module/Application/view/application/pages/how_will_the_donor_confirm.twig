@@ -4,7 +4,7 @@
     <div class="govuk-width-container govuk-!-padding-top-5">
 
         <form method="POST">
-            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}How will they confirm their identity{% endblock %}</h1>
+            <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}How will they confirm their identity?{% endblock %}</h1>
 
             <p class="govuk-body govuk-!-width-two-thirds">
                 Confirming their identity over the phone is the quickest and easiest option - they'll need an NI number,
@@ -12,7 +12,7 @@
 
                 <br><br>Alternately, they can identify in-person at a post office - this will take longer and incurs a
                 cost
-                to OPG
+                to OPG.
             </p>
 
             <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
@@ -130,12 +130,16 @@
                 </div>
             </div>
             <div class="govuk-form-group">
-                <h2 class="govuk-heading-m">If unable to ID over the phone</h2>
+                <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
                 <div class="govuk-radios__item">
                     <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
                            value="po">
                     <label class="govuk-label govuk-radios__label" for="PostOffice">
-                        Post Office (current UK / EU / international passport or driving licence)
+                        Post Office
+                        <p class="govuk-hint govuk-!-margin-top-0">
+                            UK passport (up to 18 months expired), current UK photocard driving licence
+{#                            , current EU passport / EU photocard driving licence / EU national identity card.#}
+                        </p>
                     </label>
                 </div>
             </div>

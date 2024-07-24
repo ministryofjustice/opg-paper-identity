@@ -7,21 +7,24 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
 use Application\Forms\BirthDate;
+use Application\Forms\Country;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportDateCp;
+use Application\Forms\PassportDatePo;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
-use Application\Forms\PostOfficePostcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
 use Application\Services\SiriusApiService;
 
@@ -61,7 +64,11 @@ class CPFlowController extends AbstractActionController
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
                 $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                if ($formData['id_method'] == 'po') {
+                    return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
+                } else {
+                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                }
             }
         }
 
@@ -515,5 +522,84 @@ class CPFlowController extends AbstractActionController
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
         return $this->redirect()->toRoute("root/cp_confirm_lpas", ['uuid' => $uuid]);
+    }
+
+    public function postOfficeDocumentsAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/cp/post_office_documents'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $dateSubForm = (new AttributeBuilder())->createForm(PassportDatePo::class);
+        $form = (new AttributeBuilder())->createForm(IdMethod::class);
+        $view = new ViewModel();
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if (array_key_exists('check_button', $formData)) {
+                $dateSubForm->setData($formData);
+                $view->setVariable('date_sub_form', $dateSubForm);
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $dateSubForm,
+                    $templates
+                );
+                $view->setVariables($formProcessorResponseDto->getVariables());
+            } else {
+                $form->setData($this->getRequest()->getPost());
+                $view->setVariable('form', $form);
+                if ($form->isValid()) {
+                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+                    if ($formData['id_method'] == 'euid') {
+                        return $this->redirect()->toRoute("root/cp_choose_country", ['uuid' => $uuid]);
+                    } else {
+                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    }
+                }
+            }
+        }
+
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('options_data', $optionsData);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
+    }
+
+    public function chooseCountryAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/cp/choose_country'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $form = (new AttributeBuilder())->createForm(Country::class);
+
+        if (count($this->getRequest()->getPost())) {
+            $form->setData($this->getRequest()->getPost());
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+                if ($responseData['result'] === 'Updated') {
+                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                }
+            }
+        }
+
+        $view->setVariable('form', $form);
+        $view->setVariable('options_data', $idOptionsData);
+        $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
     }
 }

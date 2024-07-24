@@ -211,16 +211,6 @@ return [
                     ],
                 ],
             ],
-            'create_yoti_session' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/counter-service/:uuid/create-session',
-                    'defaults' => [
-                        'controller' => Controller\YotiController::class,
-                        'action'     => 'createSession',
-                    ],
-                ],
-            ],
             'retrieve_yoti_status' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -230,16 +220,6 @@ return [
                         'action'     => 'getSessionStatus',
                     ],
                 ],
-            ],
-            'retrieve_pdf_letter' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route'    => '/counter-service/:uuid/retrieve-letter',
-                    'defaults' => [
-                        'controller' => Controller\YotiController::class,
-                        'action'     => 'getPDFLetter',
-                    ],
-                ]
             ],
             'add_search_postcode' => [
                 'type' => Segment::class,
@@ -339,6 +319,26 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'updateDob',
+                    ],
+                ],
+            ],
+            'update_cp_po_id' => [
+                'type' => Segment::class,
+                'verb' => 'put',
+                'options' => [
+                    'route' => '/cases/:uuid/update-cp-po-id',
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'updateCpPoId',
+                            ],
+                        ],
+                        'may_terminate' => true,
                     ],
                 ],
             ],
