@@ -154,7 +154,7 @@ class IdentityControllerTest extends TestCase
             'firstName' => 'firstName',
             'lastName' => 'lastName',
             'personType' => 'donor',
-            'dob'   => '1980-10-10',
+            'dob' => '1980-10-10',
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
@@ -299,6 +299,7 @@ class IdentityControllerTest extends TestCase
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('get_kbv_questions');
     }
+
     /**
      * @throws Exception
      */
@@ -642,5 +643,174 @@ class IdentityControllerTest extends TestCase
         ];
 
         return $sessionConfig;
+    }
+
+    /**
+     * @dataProvider lpaAddData
+     */
+    public function testAddLpaToCase(
+        string $uuid,
+        string $lpa,
+        CaseData $modelResponse,
+        bool $stop,
+        string $response
+    ): void {
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->willReturn($modelResponse);
+
+        if (! $stop) {
+            $this->dataImportHandler
+                ->expects($this->once())
+                ->method('updateCaseData');
+        }
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/lpas/' . $lpa,
+            'PUT'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+        $this->assertEquals('{"result":"' . $response . '"}', $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('change_case_lpa/put');
+    }
+
+    public static function lpaAddData(): array
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+        $newLpa = 'M-0000-0000-0000';
+        $duplicatedLpa = 'M-XYXY-YAGA-35G3';
+
+        $modelResponse = [
+            "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
+            "personType" => "donor",
+            "firstName" => "Mary Ann",
+            "lastName" => "Chapman",
+            "dob" => "1949-01-01",
+            "address" => [
+                "postcode" => "SW1B 1BB",
+                "country" => "UK",
+                "town" => "town",
+                "line2" => "Road",
+                "line1" => "1 Street"
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+                "M-VGAS-OAGA-34G9"
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "searchPostcode" => null,
+            "idMethod" => null,
+            "idMethodIncludingNation" => [
+            ]
+        ];
+
+        return [
+            [
+                $uuid,
+                $newLpa,
+                CaseData::fromArray($modelResponse),
+                false,
+                "Updated"
+            ],
+            [
+                $uuid,
+                $duplicatedLpa,
+                CaseData::fromArray($modelResponse),
+                true,
+                "LPA is already added to this case"
+            ],
+        ];
+    }
+
+
+    /**
+     * @dataProvider lpaRemoveData
+     */
+    public function testRemoveLpaFromCase(
+        string $uuid,
+        string $lpa,
+        CaseData $modelResponse,
+        bool $stop,
+        string $response
+    ): void {
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->willReturn($modelResponse);
+
+        if (! $stop) {
+            $this->dataImportHandler
+                ->expects($this->once())
+                ->method('updateCaseData');
+        }
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/lpas/' . $lpa,
+            'DELETE'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+        $this->assertEquals('{"result":"' . $response . '"}', $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('change_case_lpa/delete');
+    }
+
+    public static function lpaRemoveData(): array
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+        $notAddedLpa = 'M-0000-0000-0000';
+        $addedLpa = 'M-XYXY-YAGA-35G3';
+
+        $modelResponse = [
+            "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
+            "personType" => "donor",
+            "firstName" => "Mary Ann",
+            "lastName" => "Chapman",
+            "dob" => "1949-01-01",
+            "address" => [
+                "postcode" => "SW1B 1BB",
+                "country" => "UK",
+                "town" => "town",
+                "line2" => "Road",
+                "line1" => "1 Street"
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+                "M-VGAS-OAGA-34G9"
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "searchPostcode" => null,
+            "idMethod" => null,
+            "idMethodIncludingNation" => [
+            ]
+        ];
+
+        return [
+            [
+                $uuid,
+                $addedLpa,
+                CaseData::fromArray($modelResponse),
+                false,
+                "Removed"
+            ],
+            [
+                $uuid,
+                $notAddedLpa,
+                CaseData::fromArray($modelResponse),
+                true,
+                "LPA is not added to this case"
+            ],
+        ];
     }
 }
