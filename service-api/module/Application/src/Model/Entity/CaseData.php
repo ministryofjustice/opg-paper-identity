@@ -80,7 +80,7 @@ class CaseData implements JsonSerializable
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
-    public ?string $sessionId = null;
+    public string $sessionId = '7871cae1-6712-4d3f-9111-1c1e38ceb222';
     #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
@@ -147,8 +147,8 @@ class CaseData implements JsonSerializable
             $arr['counterService'] = [
                 'selectedPostOffice' => $this->counterService->selectedPostOffice,
                 'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
-                'notificationsAuthToken' => $this->counterService->notificationsAuthToken,
-                'notificationState' => $this->counterService
+                'notificationState' => $this->counterService->notificationState,
+                'notificationsAuthToken' => $this->counterService->notificationsAuthToken
             ];
         }
 

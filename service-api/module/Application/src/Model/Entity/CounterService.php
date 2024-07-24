@@ -19,7 +19,6 @@ class CounterService implements JsonSerializable
     #[Annotation\Required(false)]
     public string $notificationState = '';
 
-
     #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
     #[Annotation\Validator(NotEmpty::class)]
