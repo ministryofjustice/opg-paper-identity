@@ -342,6 +342,26 @@ return [
                     ],
                 ],
             ],
+            'abandon_flow' => [
+                'type' => Segment::class,
+                'verb' => 'put',
+                'options' => [
+                    'route' => '/cases/:uuid/abandon-flow',
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'abandonFlow',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

@@ -678,4 +678,36 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    public function abandonFlowAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $route = $this->getRequest()->getQuery('route');
+
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem("Missing UUID"));
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'abandonedRoute',
+                'S',
+                $route
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Abandoned flow recorded at " . $uuid . '/' . $route;
+
+        return new JsonModel($response);
+    }
 }

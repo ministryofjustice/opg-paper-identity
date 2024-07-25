@@ -813,4 +813,47 @@ class IdentityControllerTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider abandonFlowData
+     */
+    public function testAbandonFlow(
+        string $uuid,
+        string $route,
+        array $response
+    ): void {
+
+        $this->dataImportHandler
+            ->expects($this->once())
+            ->method('updateCaseData');
+
+        $path  = sprintf('/cases/%s/abandon-flow?route=%s', $uuid, $route);
+
+        $this->dispatchJSON(
+            $path,
+            'PUT'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+        $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('abandon_flow/put');
+    }
+
+    public static function abandonFlowData(): array
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+        $route = 'name-match-check';
+        $response = json_decode('{"result":"Abandoned flow recorded at ' . $uuid . '/' . $route . '"}', true);
+
+        return [
+            [
+                $uuid,
+                $route,
+                $response
+            ],
+        ];
+    }
 }
