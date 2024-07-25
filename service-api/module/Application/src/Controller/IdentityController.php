@@ -682,7 +682,10 @@ class IdentityController extends AbstractActionController
     public function abandonFlowAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
-        $route = $this->getRequest()->getQuery('route');
+        $data = json_decode(
+            $this->getRequest()->getContent(),
+            true
+        );
 
         $response = [];
         $status = Response::STATUS_CODE_200;
@@ -696,8 +699,10 @@ class IdentityController extends AbstractActionController
             $this->dataImportHandler->updateCaseData(
                 $uuid,
                 'abandonedRoute',
-                'S',
-                $route
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $data),
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
@@ -706,7 +711,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Abandoned flow recorded at " . $uuid . '/' . $route;
+        $response['result'] = "Abandoned flow recorded at " . $uuid . '/' . $data['route'];
 
         return new JsonModel($response);
     }
