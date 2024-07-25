@@ -78,6 +78,11 @@ class YotiControllerTest extends TestCase
 
     public function testStatusWithID(): void
     {
+        $this->YotiServiceMock
+            ->expects($this->once())
+            ->method('retrieveResults')
+            ->willReturn(['state' => 'test']);
+
         $this->dispatch('/counter-service/wuefhdfhaksjd/retrieve-status', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');

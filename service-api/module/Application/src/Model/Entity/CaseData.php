@@ -80,7 +80,7 @@ class CaseData implements JsonSerializable
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
-    public string $yotiSessionId = 'empty';
+    public string $yotiSessionId = 'b2b1508a-f418-49b4-ac01-c315e34cd15f';
     #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
