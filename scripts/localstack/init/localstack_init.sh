@@ -12,9 +12,9 @@ sleep 5
 
 awslocal dynamodb update-table \
     --table-name identity-verify \
-    --attribute-definitions AttributeName=sessionId,AttributeType=S \
+    --attribute-definitions AttributeName=yotiSessionId,AttributeType=S \
     --global-secondary-index-updates \
-        "[{\"Create\":{\"IndexName\": \"sessionId-index\",\"KeySchema\":[{\"AttributeName\":\"sessionId\",\"KeyType\":\"HASH\"}], \
+        "[{\"Create\":{\"IndexName\": \"yotiSessionId-index\",\"KeySchema\":[{\"AttributeName\":\"yotiSessionId\",\"KeyType\":\"HASH\"}], \
         \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 20, \"WriteCapacityUnits\": 10 }, \
         \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 

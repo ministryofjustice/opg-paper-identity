@@ -53,12 +53,12 @@ class DataQueryHandler
     {
         $idKey = [
             'key' => [
-                'sessionId' => [
+                'yotiSessionId' => [
                     'S' => $sessionId,
                 ],
             ],
         ];
-        $index = "sessionId-index";
+        $index = "yotiSessionId-index";
         $result = $this->query($idKey, $index);
 
         $array = $this->returnUnmarshalResult($result)[0];

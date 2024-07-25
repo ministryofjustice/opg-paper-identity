@@ -80,7 +80,7 @@ class CaseData implements JsonSerializable
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
-    public string $sessionId = '7871cae1-6712-4d3f-9111-1c1e38ceb222';
+    public string $yotiSessionId = 'empty';
     #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
@@ -120,7 +120,7 @@ class CaseData implements JsonSerializable
      *     alternateAddress?: string[],
      *     searchPostcode?: string,
      *     idMethod?: string,
-     *     sessionId?: string,
+     *     yotiSessionId?: string,
      *     counterService?: string[],
      *     kbvQuestions?: string[]
      *     idMethodIncludingNation?: string[]
@@ -140,7 +140,7 @@ class CaseData implements JsonSerializable
             'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
-            'sessionId' => $this->sessionId,
+            'yotiSessionId' => $this->yotiSessionId,
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
         ];
         if ($this->counterService !== null) {

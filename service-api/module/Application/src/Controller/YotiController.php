@@ -87,6 +87,15 @@ class YotiController extends AbstractActionController
      */
     public function notificationAction(): JsonModel
     {
+        $authorization = $this->getRequest()->getHeaders()->get('authorization');
+
+        if (preg_match('/Bearer\s+(\S+)/', $authorization->toString(), $matches)) {
+            $token = $matches[1];
+        } else {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+            return new JsonModel(new Problem('Missing authorisation'));
+        }
+
         $data = json_decode($this->getRequest()->getContent(), true);
         if (! isset($data['session_id'], $data['topic'])) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
@@ -106,27 +115,20 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem('Case with session_id not found'));
         }
-        //now update counterService data
-        $counterServiceMap = [];
-
-        if ($caseData->counterService !== null) {
-            $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
-            $counterServiceMap["selectedPostOfficeDeadline"] =
-                $caseData->counterService->selectedPostOfficeDeadline;
-            $counterServiceMap["notificationsAuthToken"] =
-                $caseData->counterService->notificationsAuthToken;
+        //authorize
+        if ($caseData->counterService->notificationsAuthToken === $token) {
+            //now update counterService data
+            $this->dataImportHandler->updateCaseData(
+                $caseData->id,
+                'counterService.notificationState',
+                'S',
+                $data['topic']
+            );
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            return new JsonModel(["Notification Status" => "Updated"]);
         }
-        $counterServiceMap["notificationState"] = $data['topic'];
-        $this->dataImportHandler->updateCaseData(
-            $caseData->id,
-            'counterService',
-            'M',
-            array_map(fn (mixed $v) => [
-                'S' => $v
-            ], $counterServiceMap),
-        );
 
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        return new JsonModel(["Notification Status" => "Updated"]);
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_403);
+        return new JsonModel(new Problem('Unauthorised request'));
     }
 }
