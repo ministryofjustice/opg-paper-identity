@@ -78,6 +78,11 @@ class YotiControllerTest extends TestCase
 
     public function testStatusWithID(): void
     {
+        $this->YotiServiceMock
+            ->expects($this->once())
+            ->method('retrieveResults')
+            ->willReturn(['state' => 'test']);
+
         $this->dispatch('/counter-service/wuefhdfhaksjd/retrieve-status', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -124,12 +129,153 @@ class YotiControllerTest extends TestCase
         $this->assertMatchedRouteName('find_postoffice_branches');
     }
 
-    public function dispatchJSON(string $path, string $method, mixed $data = null): void
+    public function testYotiNotificationRequestFailsWithInvalidToken(): void
+    {
+        $response = '{"title":"Unauthorised request"}';
+        $incorrectToken = 'incorrect';
+        $bearerToken = 'b2b1508a-f418-49b4-ac01-c315e34cd15a';
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('queryByYotiSessionId')
+            ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
+            ->willReturn(CaseData::fromArray([
+                'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'personType' => 'donor',
+                'firstName' => '',
+                'lastName' => '',
+                'dob' => '',
+                'lpas' => [],
+                'address' => [],
+                'counterService' => [
+                    'notificationsAuthToken' => $bearerToken
+                ]
+            ]));
+
+        $this->dataImportHandler
+            ->expects($this->never())->method('updateCaseData');
+
+        $this->dispatchJSON(
+            '/counter-service/notification',
+            'POST',
+            [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+            'topic' => 'first_branch_visit',
+
+            ],
+            'Bearer ' . $incorrectToken,
+        );
+        $this->assertResponseStatusCode(403);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
+    public function testYotiNotificationCallsCaseUpdate(): void
+    {
+        $response = '{"Notification Status":"Updated"}';
+        $bearerToken = 'b2b1508a-f418-49b4-ac01-c315e34cd15a';
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('queryByYotiSessionId')
+            ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
+            ->willReturn(CaseData::fromArray([
+                'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'personType' => 'donor',
+                'firstName' => '',
+                'lastName' => '',
+                'dob' => '',
+                'lpas' => [],
+                'address' => [],
+                'counterService' => [
+                    'notificationsAuthToken' => $bearerToken
+                ]
+            ]));
+
+        $this->dataImportHandler
+            ->expects($this->once())->method('updateCaseData');
+
+        $this->dispatchJSON(
+            '/counter-service/notification',
+            'POST',
+            [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+            'topic' => 'first_branch_visit',
+
+            ],
+            'Bearer ' . $bearerToken,
+        );
+        $this->assertResponseStatusCode(200);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
+    public function testYotiNotificationThrowsErrorForCaseNotFound(): void
+    {
+        $response = '{"title":"Case with session_id not found"}';
+        $bearerToken = 'b2b1508a-f418-49b4-ac01-c315e34cd15a';
+        $this->dataQueryHandlerMock
+            ->expects($this->once())->method('queryByYotiSessionId')
+            ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
+            ->willReturn(null);
+
+        $this->dataImportHandler
+            ->expects($this->never())->method('updateCaseData');
+
+        $this->dispatchJSON(
+            '/counter-service/notification',
+            'POST',
+            [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+            'topic' => 'first_branch_visit',
+            ],
+            'Bearer ' . $bearerToken,
+        );
+        $this->assertResponseStatusCode(500);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
+    public function testYotiNotificationErrorWhenMissingParameters(): void
+    {
+        $response = '{"title":"Missing required parameters"}';
+        $bearerToken = 'b2b1508a-f418-49b4-ac01-c315e34cd15a';
+        $this->dataQueryHandlerMock
+            ->expects($this->never())->method('queryByYotiSessionId');
+
+        $this->dataImportHandler
+            ->expects($this->never())->method('updateCaseData');
+
+        $this->dispatchJSON(
+            '/counter-service/notification',
+            'POST',
+            [
+            'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
+            ],
+            'Bearer ' . $bearerToken,
+        );
+        $this->assertResponseStatusCode(400);
+        $this->assertEquals($response, $this->getResponse()->getContent());
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('yoti_notification');
+    }
+
+    public function dispatchJSON(string $path, string $method, mixed $data = null, string $authorize = null): void
     {
         $headers = new Headers();
         $headers->addHeaderLine('Accept', 'application/json');
         $headers->addHeaderLine('Content-Type', 'application/json');
 
+        if ($authorize) {
+            $headers->addHeaderLine('authorization', $authorize);
+        }
         /** @var HttpRequest $request */
         $request = $this->getRequest();
         $request->setHeaders($headers);
