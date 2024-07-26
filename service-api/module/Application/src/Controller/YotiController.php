@@ -84,6 +84,7 @@ class YotiController extends AbstractActionController
 
     /**
      * @return JsonModel
+     * @psalm-suppress PossiblyInvalidMethodCall, PossiblyUndefinedMethod, PossiblyNullPropertyFetch
      */
     public function notificationAction(): JsonModel
     {
@@ -118,11 +119,11 @@ class YotiController extends AbstractActionController
         //authorize
         if ($caseData->counterService->notificationsAuthToken === $token) {
             //now update counterService data
-            $this->dataImportHandler->updateCaseData(
+            $this->dataImportHandler->updateCaseChildAttribute(
                 $caseData->id,
                 'counterService.notificationState',
                 'S',
-                $data['topic']
+                $data['topic'],
             );
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             return new JsonModel(["Notification Status" => "Updated"]);

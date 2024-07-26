@@ -273,7 +273,7 @@ class YotiControllerTest extends TestCase
         $headers->addHeaderLine('Accept', 'application/json');
         $headers->addHeaderLine('Content-Type', 'application/json');
 
-        if ($authorize) {
+        if ($authorize !== null) {
             $headers->addHeaderLine('authorization', $authorize);
         }
         /** @var HttpRequest $request */
