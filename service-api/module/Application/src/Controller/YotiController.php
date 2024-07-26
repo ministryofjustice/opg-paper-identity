@@ -6,7 +6,6 @@ namespace Application\Controller;
 
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
-use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
@@ -81,5 +80,56 @@ class YotiController extends AbstractActionController
         $data = ['status' => $session['state']];
 
         return new JsonModel($data);
+    }
+
+    /**
+     * @return JsonModel
+     * @psalm-suppress PossiblyInvalidMethodCall, PossiblyUndefinedMethod, PossiblyNullPropertyFetch
+     */
+    public function notificationAction(): JsonModel
+    {
+        $authorization = $this->getRequest()->getHeaders()->get('authorization');
+
+        if (preg_match('/Bearer\s+(\S+)/', $authorization->toString(), $matches)) {
+            $token = $matches[1];
+        } else {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+            return new JsonModel(new Problem('Missing authorisation'));
+        }
+
+        $data = json_decode($this->getRequest()->getContent(), true);
+        if (! isset($data['session_id'], $data['topic'])) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing required parameters'));
+        }
+
+        if (! in_array($data['topic'], ['first_branch_visit', 'session_completion'])) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Invalid type'));
+        }
+
+        $sessionId = filter_var($data['session_id'], FILTER_SANITIZE_SPECIAL_CHARS);
+
+        $caseData = $this->dataQuery->queryByYotiSessionId($sessionId);
+
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem('Case with session_id not found'));
+        }
+        //authorize
+        if ($caseData->counterService->notificationsAuthToken === $token) {
+            //now update counterService data
+            $this->dataImportHandler->updateCaseChildAttribute(
+                $caseData->id,
+                'counterService.notificationState',
+                'S',
+                $data['topic'],
+            );
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            return new JsonModel(["Notification Status" => "Updated"]);
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_403);
+        return new JsonModel(new Problem('Unauthorised request'));
     }
 }
