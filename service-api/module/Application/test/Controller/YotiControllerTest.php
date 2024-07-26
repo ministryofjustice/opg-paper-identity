@@ -151,7 +151,7 @@ class YotiControllerTest extends TestCase
             ]));
 
         $this->dataImportHandler
-            ->expects($this->never())->method('updateCaseData');
+            ->expects($this->never())->method('updateCaseChildAttribute');
 
         $this->dispatchJSON(
             '/counter-service/notification',
@@ -192,7 +192,7 @@ class YotiControllerTest extends TestCase
             ]));
 
         $this->dataImportHandler
-            ->expects($this->once())->method('updateCaseData');
+            ->expects($this->once())->method('updateCaseChildAttribute');
 
         $this->dispatchJSON(
             '/counter-service/notification',
@@ -222,7 +222,7 @@ class YotiControllerTest extends TestCase
             ->willReturn(null);
 
         $this->dataImportHandler
-            ->expects($this->never())->method('updateCaseData');
+            ->expects($this->never())->method('updateCaseChildAttribute');
 
         $this->dispatchJSON(
             '/counter-service/notification',
