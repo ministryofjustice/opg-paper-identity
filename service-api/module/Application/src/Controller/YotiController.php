@@ -108,28 +108,38 @@ class YotiController extends AbstractActionController
             return new JsonModel(new Problem('Invalid type'));
         }
 
-        $sessionId = filter_var($data['session_id'], FILTER_SANITIZE_SPECIAL_CHARS);
+        if ($this->isValidUUID($data['session_id'])) {
+            $caseData = $this->dataQuery->queryByYotiSessionId($data['session_id']);
 
-        $caseData = $this->dataQuery->queryByYotiSessionId($sessionId);
-
-        if (! $caseData) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-            return new JsonModel(new Problem('Case with session_id not found'));
+            if (! $caseData) {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+                return new JsonModel(new Problem('Case with session_id not found'));
+            }
+            //authorize
+            if ($caseData->counterService->notificationsAuthToken === $token) {
+                //now update counterService data
+                $this->dataImportHandler->updateCaseChildAttribute(
+                    $caseData->id,
+                    'counterService.notificationState',
+                    'S',
+                    $data['topic'],
+                );
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+                return new JsonModel(["Notification Status" => "Updated"]);
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_403);
+                return new JsonModel(new Problem('Unauthorised request'));
+            }
+        } else {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('session_id provided is not a valid UUID'));
         }
-        //authorize
-        if ($caseData->counterService->notificationsAuthToken === $token) {
-            //now update counterService data
-            $this->dataImportHandler->updateCaseChildAttribute(
-                $caseData->id,
-                'counterService.notificationState',
-                'S',
-                $data['topic'],
-            );
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-            return new JsonModel(["Notification Status" => "Updated"]);
-        }
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_403);
-        return new JsonModel(new Problem('Unauthorised request'));
+    }
+    public function isValidUUID(string $uuid): bool
+    {
+        // Regular expression pattern to match
+        $pattern = '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/';
+        // Use preg_match to check if the uuid matches the pattern
+        return preg_match($pattern, $uuid) === 1;
     }
 }
