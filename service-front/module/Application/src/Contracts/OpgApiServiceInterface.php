@@ -43,4 +43,6 @@ interface OpgApiServiceInterface
     public function updateCaseSetDob(string $uuid, string $dob): array;
 
     public function updateIdMethodWithCountry(string $uuid, array $data): array;
+
+    public function abandonCase(string $uuid, array $data): array;
 }
