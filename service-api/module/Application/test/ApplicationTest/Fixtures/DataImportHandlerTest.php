@@ -172,6 +172,40 @@ class DataImportHandlerTest extends TestCase
             ])
         );
     }
+    /**
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUpdateCaseChildAttribute(): void
+    {
+        $this->dynamoDbClientMock->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(
+                        ['#CV' => 'counterService','#NV' => 'notificationState'],
+                        $input['ExpressionAttributeNames']
+                    );
+                    return true;
+                })
+            );
+
+        // Expect the logger to be called if an exception occurs
+        $this->loggerMock->expects($this->never())->method('error');
+
+        // Call the updateCaseData method with test data
+        $this->sut->updateCaseChildAttribute(
+            'a9bc8ab8-389c-4367-8a9b-762ab3050491',
+            'counterService.notificationState',
+            'S',
+            'complete'
+        );
+    }
 
     /**
      * @throws Exception
