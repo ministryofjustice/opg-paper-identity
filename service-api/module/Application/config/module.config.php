@@ -342,11 +342,11 @@ return [
                     ],
                 ],
             ],
-            'abandon_flow' => [
+            'update_progress' => [
                 'type' => Segment::class,
                 'verb' => 'put',
                 'options' => [
-                    'route' => '/cases/:uuid/abandon-flow',
+                    'route' => '/cases/:uuid/update-progress',
                 ],
                 'child_routes' => [
                     'put' => [
@@ -355,7 +355,7 @@ return [
                             'verb' => 'put',
                             'defaults' => [
                                 'controller' => Controller\IdentityController::class,
-                                'action' => 'abandonFlow',
+                                'action' => 'updateProgress',
                             ],
                         ],
                         'may_terminate' => true,

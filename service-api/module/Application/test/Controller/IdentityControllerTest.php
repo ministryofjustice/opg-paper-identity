@@ -827,7 +827,7 @@ class IdentityControllerTest extends TestCase
             ->expects($this->once())
             ->method('updateCaseData');
 
-        $path  = sprintf('/cases/%s/abandon-flow', $uuid);
+        $path  = sprintf('/cases/%s/update-progress', $uuid);
 
         $this->dispatchJSON(
             $path,
@@ -840,7 +840,7 @@ class IdentityControllerTest extends TestCase
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('abandon_flow/put');
+        $this->assertMatchedRouteName('update_progress/put');
     }
 
     public static function abandonFlowData(): array
@@ -851,7 +851,7 @@ class IdentityControllerTest extends TestCase
             'reason' => 'ot',
             "notes" => "Caller didn't have all required documents"
         ];
-        $response = json_decode('{"result":"Abandoned flow recorded at ' . $uuid . '/' . $data['route'] . '"}', true);
+        $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['route'] . '"}', true);
 
         return [
             [

@@ -32,8 +32,10 @@ class DonorFlowController extends AbstractActionController
 
     private function getRoute(): string
     {
-        $route = $this->getEvent()->getRouteMatch();
-        return is_null($route) ? "" : $route->getMatchedRouteName();
+        /**
+         * @psalm-suppress UndefinedMethod
+         */
+        return $this->getRequest()->getRequestUri();
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response

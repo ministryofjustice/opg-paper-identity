@@ -328,7 +328,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function abandonCase(string $uuid, array $data): array
+    public function updateCaseProgress(string $uuid, array $data): array
     {
         $url = sprintf("/cases/%s/abandon-flow", $uuid);
 

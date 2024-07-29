@@ -966,7 +966,7 @@ class OpgApiServiceTest extends TestCase
         }
         $this->opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->abandonCase($data['uuid'], $data);
+        $response = $this->opgApiService->updateCaseProgress($data['uuid'], $data);
 
         if ($exception) {
             $this->assertStringContainsString('Client error:', json_encode($response));

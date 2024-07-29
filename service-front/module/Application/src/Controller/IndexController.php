@@ -135,22 +135,27 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
             if ($form->isValid()) {
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                $response = $this->opgApiService->abandonCase($uuid, $formData->toArray());
-                echo json_encode($response);
+                $siriusData = [
+                    "reference" => $uuid,
+                    "actorType" => $detailsData['personType'],
+                    "lpaIds" => $detailsData['lpas'],
+                    "time" => (new \DateTime('NOW'))->format('c'),
+                    "outcome" => "exit"
+                ];
+
+                $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
             }
 //            $this->redirect()->toRoute();
         }
 
         $lastPage = $this->getRequest()->getQuery('last_page');
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('last_page', $lastPage);
         $view->setVariable('form', $form);

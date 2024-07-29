@@ -112,7 +112,7 @@ paths:
                 $ref: "#/components/schemas/CombinedLpa"
         "401":
           description: Error
-  /identity-check:
+  /api/v1/identity-check:
     post:
       operationId: postIdentityCheck
       summary: Manage Identity Check for Donor and / or Certificate Provider

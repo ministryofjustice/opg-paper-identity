@@ -679,7 +679,7 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function abandonFlowAction(): JsonModel
+    public function updateProgressAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode(
@@ -698,7 +698,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataImportHandler->updateCaseData(
                 $uuid,
-                'abandonedRoute',
+                'progressPage',
                 'M',
                 array_map(fn (mixed $v) => [
                     'S' => $v
@@ -711,7 +711,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Abandoned flow recorded at " . $uuid . '/' . $data['route'];
+        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['route'];
 
         return new JsonModel($response);
     }
