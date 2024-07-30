@@ -157,7 +157,7 @@ class CPFlowController extends AbstractActionController
 
             $form->setData($formObject);
 
-            if (!$form->isValid()) {
+            if (! $form->isValid()) {
                 $form->setMessages([
                     'lpa' => [
                         "Not a valid LPA number. Enter an LPA number to continue."
@@ -165,16 +165,21 @@ class CPFlowController extends AbstractActionController
                 ]);
                 return $view->setTemplate('application/pages/cp/add_lpa');
             }
-
+            /**
+             * @psalm-suppress InvalidMethodCall
+             */
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
+                    /**
+                     * @psalm-suppress InvalidMethodCall
+                     */
                     $formObject->get('lpa'),
                     $this->getRequest()
                 );
 
                 $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
-                    $formObject,
+                    $this->getRequest()->getPost(),
                     $form,
                     $siriusCheck,
                     $detailsData,
