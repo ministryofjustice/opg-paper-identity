@@ -83,7 +83,13 @@
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">Type of LPA</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['type_of_lpa'] }}</td>
+                        <td class="govuk-table__cell">
+                            {% if lpa_response['data']['type_of_lpa'] == 'property-and-affairs' %}
+                            Property and affairs
+                            {% elseif lpa_response['data']['type_of_lpa'] == 'personal-welfare' %}
+                            Personal welfare
+                            {%  endif %}
+                        </td>
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
