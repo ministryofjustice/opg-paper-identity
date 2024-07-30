@@ -813,4 +813,60 @@ class IdentityControllerTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider abandonFlowData
+     */
+    public function testAbandonFlow(
+        string $uuid,
+        array $data,
+        array $response
+    ): void {
+
+        $this->dataImportHandler
+            ->expects($this->once())
+            ->method('updateCaseData')
+            ->with(
+                $uuid,
+                "progressPage",
+                "M",
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $data),
+            );
+
+        $path  = sprintf('/cases/%s/update-progress', $uuid);
+
+        $this->dispatchJSON(
+            $path,
+            'PUT',
+            $data
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+        $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('update_progress/put');
+    }
+
+    public static function abandonFlowData(): array
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+        $data = [
+            "route" => "name-match-check",
+            "reason" => "ot",
+            "notes" => "Caller didn't have all required documents"
+        ];
+        $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['route'] . '"}', true);
+
+        return [
+            [
+                $uuid,
+                $data,
+                $response
+            ],
+        ];
+    }
 }

@@ -7,6 +7,7 @@ namespace ApplicationTest\Services;
 use GuzzleHttp\Client;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
+use Laminas\Http\Response;
 use PhpPact\Consumer\InteractionBuilder;
 use PhpPact\Consumer\Matcher\Matcher;
 use PhpPact\Consumer\Model\ConsumerRequest;
@@ -163,5 +164,38 @@ class SiriusApiServicePactTest extends TestCase
         $cpAddress = $lpa['opg.poas.lpastore']['certificateProvider']['address'] ?? [];
         $this->assertEquals('104, Alte Lindenstraße', $cpAddress['line1'] ?? '');
         $this->assertEquals('DE', $cpAddress['country'] ?? '');
+    }
+
+    public function testAbandonCase(): void
+    {
+        $request = new ConsumerRequest();
+        $body = [
+            "reference" => "49895f88-501b-4491-8381-e8aeeaef177d",
+            "actorType" => "donor",
+            "lpaIds" => [
+                "M-0000-0000-0000"
+            ],
+            "time" => "2024-07-30T10:53:57+00:00",
+            "outcome" => "exit"
+        ];
+        $request
+            ->setMethod('POST')
+            ->setPath('/api/v1/identity-check')
+            ->setBody($body);
+
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(204)
+            ->addHeader('Content-Type', 'application/json');
+
+        $this->builder
+            ->uponReceiving('A notification that case was exited')
+            ->with($request)
+            ->willRespondWith($response);
+
+        $response = $this->sut->abandonCase($body, new Request());
+
+        $this->assertEquals(204, $response['status']);
+        $this->assertEquals("", $response['error']);
     }
 }

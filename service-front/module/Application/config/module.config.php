@@ -455,6 +455,16 @@ return [
                             ],
                         ],
                     ],
+                    'abandon_flow' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/abandon-flow',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action' => 'abandonFlow',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
