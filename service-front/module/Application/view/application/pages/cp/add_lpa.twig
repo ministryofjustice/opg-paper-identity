@@ -8,7 +8,7 @@
                 <b>There is a problem</b>
             </p>
             <div class="moj-banner__message">
-                Enter a valid LPA number to continue.
+                Not a valid LPA number. Enter an LPA number to continue.
             </div>
         </div>
     {% endif %}
@@ -22,18 +22,20 @@
                 <div class="moj-banner__message">
                     {{ lpa_response['message'] }}
 
-                    {% if lpa_response['additional_data'] %}
+                    {% if lpa_response['additionalData'] %}
                         <br><br>This ID check is for:
                         <table class="govuk-table govuk-!-width-one-half">
                             <tr class="govuk-table__row">
                                 <th scope="row" class="govuk-table__header">Name</th>
-                                <td class="govuk-table__cell">{{ lpa_response['additional_data']['name'] }}</td>
+                                <td class="govuk-table__cell">{{ lpa_response['additionalData']['name'] }}</td>
                             </tr>
                             <tr class="govuk-table__row">
                                 <th scope="row" class="govuk-table__header">Address</th>
                                 <td class="govuk-table__cell">
-                                    {% for line in lpa_response['additional_data']['address'] %}
-                                        {{ line }}<br>
+                                    {% for line in lpa_response['additionalData']['address'] %}
+                                        {% if line %}
+                                            {{ line }}<br>
+                                        {% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>
@@ -52,12 +54,12 @@
         example: M-0000-0000-0000
     </p>
     <div class="govuk-form-group {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
-        {% if form.get('lpa').messages %}
-            <p id="lpa-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('lpa').messages | join(', ', ' and ') }}
-            </p>
-        {% endif %}
+{#        {% if form.get('lpa').messages %}#}
+{#            <p id="lpa-error" class="govuk-error-message">#}
+{#                <span class="govuk-visually-hidden">Error:</span>#}
+{#                {{ form.get('lpa').messages | join(', ', ' and ') }}#}
+{#            </p>#}
+{#        {% endif %}#}
         <form method="POST">
             <input
                     class="govuk-input govuk-!-width-one-third {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
@@ -83,7 +85,13 @@
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">Type of LPA</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['type_of_lpa'] }}</td>
+                        <td class="govuk-table__cell">
+                            {% if lpa_response['data']['type_of_lpa'] == 'property-and-affairs' %}
+                            Property and affairs
+                            {% elseif lpa_response['data']['type_of_lpa'] == 'personal-welfare' %}
+                            Personal welfare
+                            {%  endif %}
+                        </td>
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
@@ -100,8 +108,8 @@
                         <th scope="row" class="govuk-table__header">CP Name</th>
                         <td class="govuk-table__cell">{{ lpa_response['data']['cp_name'] }}</td>
                         <td class="govuk-table__cell">
-                            {% if lpa_response['data']['status'] == 'no match' %}
-                                {% if lpa_response['additional_data']['name_match'] == false %}
+                            {% if lpa_response['status'] == 'no match' %}
+                                {% if lpa_response['additionalData']['name_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">
                                         Does Not Match
                                     </strong>
@@ -114,17 +122,18 @@
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">CP Address</th>
-                        <td class="govuk-table__cell">
+{#                        <th scope="row" class="govuk-table__header">CP Address</th>#}
+                        <th scope="row" {% if lpa_response['status'] == 'no match' %} {% else %}class="govuk-table__header" {% endif %}>
+                        <td {% if lpa_response['status'] == 'no match' %} class="app-table__cell--no-border" {% else %}class="govuk-table__cell" {% endif %}>
                             {% for line in lpa_response['data']['cp_address'] %}
                                 {% if line %}
                                     {{ line }}<br>
                                 {% endif %}
                             {% endfor %}
                         </td>
-                        <td class="govuk-table__cell">
-                            {% if lpa_response['data']['status'] == 'no match' %}
-                                {% if lpa_response['additional_data']['address_match'] == false %}
+                        <td {% if lpa_response['status'] == 'no match' %} class="app-table__cell--no-border" {% else %}class="govuk-table__cell" {% endif %}>
+                            {% if lpa_response['status'] == 'no match' %}
+                                {% if lpa_response['additionalData']['address_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">
                                         Does Not Match
                                     </strong>
@@ -136,6 +145,15 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% if lpa_response['status'] == 'no match' %}
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell"></td>
+                            <td class="govuk-table__cell"></td>
+                            <td class="govuk-table__cell">
+                                <a href="" class="govuk-link govuk-!-margin-top-5">Edit CP details in Sirius</a>
+                            </td>
+                        </tr>
+                    {% endif %}
                     </tbody>
                 </table>
             </div>
