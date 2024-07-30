@@ -185,8 +185,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $response = new ProviderResponse();
         $response
-            ->setStatus(204)
-            ->addHeader('Content-Type', 'application/json');
+            ->setStatus(204);
 
         $this->builder
             ->uponReceiving('A notification that case was exited')
