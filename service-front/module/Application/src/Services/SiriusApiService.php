@@ -131,14 +131,11 @@ class SiriusApiService
         return json_decode(strval($response->getBody()), true);
     }
 
-    /**
-     * @psalm-suppress PossiblyUnusedReturnValue
-     */
     public function abandonCase(array $data, Request $request): array
     {
         $response = $this->client->post('/api/v1/identity-check', [
             'headers' => $this->getAuthHeaders($request),
-            'data' => $data
+            'json' => $data
         ]);
 
         return [

@@ -825,7 +825,15 @@ class IdentityControllerTest extends TestCase
 
         $this->dataImportHandler
             ->expects($this->once())
-            ->method('updateCaseData');
+            ->method('updateCaseData')
+            ->with(
+                $uuid,
+                "progressPage",
+                "M",
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $data),
+            );
 
         $path  = sprintf('/cases/%s/update-progress', $uuid);
 
@@ -847,8 +855,8 @@ class IdentityControllerTest extends TestCase
     {
         $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
         $data = [
-            'route' => 'name-match-check',
-            'reason' => 'ot',
+            "route" => "name-match-check",
+            "reason" => "ot",
             "notes" => "Caller didn't have all required documents"
         ];
         $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['route'] . '"}', true);
