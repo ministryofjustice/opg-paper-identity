@@ -29,7 +29,7 @@ interface YotiServiceInterface
      * @return array
      * Look up results of a Post Office IBV session
      */
-    public function retrieveResults(string $sessionId): array;
+    public function retrieveResults(string $sessionId, string $nonce, int $timestamp): array;
 
     /**
      * @param string $sessionId

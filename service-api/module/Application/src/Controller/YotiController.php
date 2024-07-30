@@ -73,12 +73,21 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Missing uuid']);
         }
-        //@TODO look up actual sessionId from case and case where this is not created
-        $sessionId = 'AJDAHDFSH';
-        $session = $this->yotiService->retrieveResults($sessionId);
+
+        $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        $sessionId = $caseData->counterService->sessionId;
+        if (!$sessionId) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('SessionId not available'));
+        }
+
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+        $sessionResult = $this->yotiService->retrieveResults($sessionId, $nonce, $timestamp);
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $data = ['status' => $session['state']];
+        $data = ['results' => $sessionResult];
 
         return new JsonModel($data);
     }
