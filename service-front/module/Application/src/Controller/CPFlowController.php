@@ -155,6 +155,17 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formObject = $this->getRequest()->getPost();
 
+            $form->setData($formObject);
+
+            if (!$form->isValid()) {
+                $form->setMessages([
+                    'lpa' => [
+                        "Not a valid LPA number. Enter an LPA number to continue."
+                    ]
+                ]);
+                return $view->setTemplate('application/pages/cp/add_lpa');
+            }
+
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
                     $formObject->get('lpa'),
