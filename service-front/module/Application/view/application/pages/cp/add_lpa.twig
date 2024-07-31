@@ -54,12 +54,6 @@
         example: M-0000-0000-0000
     </p>
     <div class="govuk-form-group {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
-{#        {% if form.get('lpa').messages %}#}
-{#            <p id="lpa-error" class="govuk-error-message">#}
-{#                <span class="govuk-visually-hidden">Error:</span>#}
-{#                {{ form.get('lpa').messages | join(', ', ' and ') }}#}
-{#            </p>#}
-{#        {% endif %}#}
         <form method="POST">
             <input
                     class="govuk-input govuk-!-width-one-third {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
@@ -122,7 +116,6 @@
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
-{#                        <th scope="row" class="govuk-table__header">CP Address</th>#}
                         <th scope="row" {% if lpa_response['status'] == 'no match' %} {% else %}class="govuk-table__header" {% endif %}>
                         <td {% if lpa_response['status'] == 'no match' %} class="app-table__cell--no-border" {% else %}class="govuk-table__cell" {% endif %}>
                             {% for line in lpa_response['data']['cp_address'] %}
