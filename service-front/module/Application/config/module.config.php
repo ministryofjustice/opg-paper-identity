@@ -455,6 +455,26 @@ return [
                             ],
                         ],
                     ],
+                    'abandon_flow' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/abandon-flow',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action' => 'abandonFlow',
+                            ],
+                        ],
+                    ],
+                    'donor_choose_country' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/donor-choose-country',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action' => 'choose_country',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],

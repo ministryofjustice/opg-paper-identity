@@ -221,6 +221,16 @@ return [
                     ],
                 ],
             ],
+            'yoti_notification' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/counter-service/notification',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action'     => 'notification',
+                    ],
+                ],
+            ],
             'add_search_postcode' => [
                 'type' => Segment::class,
                 'options' => [
@@ -336,6 +346,26 @@ return [
                             'defaults' => [
                                 'controller' => Controller\IdentityController::class,
                                 'action' => 'updateCpPoId',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                    ],
+                ],
+            ],
+            'update_progress' => [
+                'type' => Segment::class,
+                'verb' => 'put',
+                'options' => [
+                    'route' => '/cases/:uuid/update-progress',
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'updateProgress',
                             ],
                         ],
                         'may_terminate' => true,

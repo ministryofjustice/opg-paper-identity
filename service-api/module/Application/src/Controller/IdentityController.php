@@ -570,7 +570,6 @@ class IdentityController extends AbstractActionController
                     $counterServiceMap["selectedPostOfficeDeadline"] =
                         $case->counterService->selectedPostOfficeDeadline;
                 }
-                $counterServiceMap["sessionId"] = $yotiSessionId;
                 $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
 
                 if ($result["status"] < 400) {
@@ -581,6 +580,13 @@ class IdentityController extends AbstractActionController
                         array_map(fn (mixed $v) => [
                             'S' => $v
                         ], $counterServiceMap),
+                    );
+
+                    $this->dataImportHandler->updateCaseData(
+                        $uuid,
+                        'sessionId',
+                        'S',
+                        $yotiSessionId
                     );
                 }
                 //Prepare and generate PDF
@@ -675,6 +681,43 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode($status);
         $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
+    public function updateProgressAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode(
+            $this->getRequest()->getContent(),
+            true
+        );
+
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem("Missing UUID"));
+        }
+
+        try {
+            $this->dataImportHandler->updateCaseData(
+                $uuid,
+                'progressPage',
+                'M',
+                array_map(fn (mixed $v) => [
+                    'S' => $v
+                ], $data),
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['route'];
 
         return new JsonModel($response);
     }

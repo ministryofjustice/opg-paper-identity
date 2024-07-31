@@ -18,9 +18,7 @@ class CounterService implements JsonSerializable
     public string $selectedPostOfficeDeadline = '';
 
     #[Annotation\Required(false)]
-    #[Annotation\Validator(Uuid::class)]
-    #[Annotation\Validator(NotEmpty::class)]
-    public string $sessionId = '';
+    public string $notificationState = '';
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
@@ -57,8 +55,8 @@ class CounterService implements JsonSerializable
      * @returns array{
      *     selectedPostOffice: string,
      *     selectedPostOfficeDeadline: string,
-     *     sessionId: string,
      *     notificationsAuthToken: string,
+     *     notificationState: string,
      *     state: string,
      *     result: bool
      * }
@@ -68,8 +66,8 @@ class CounterService implements JsonSerializable
         return [
             'selectedPostOffice' => $this->selectedPostOffice,
             'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
-            'sessionId' => $this->sessionId,
             'notificationsAuthToken' => $this->notificationsAuthToken,
+            'notificationState' => $this->notificationState,
             'state' => $this->state,
             'result' => $this->result
         ];
