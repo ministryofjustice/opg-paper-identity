@@ -125,7 +125,6 @@ class CaseData implements JsonSerializable
      *     searchPostcode?: string,
      *     yotiSessionId?: string,
      *     counterService?: string[],
-     *     kbvQuestions?: string[],
      *     idMethod?: string,
      *     idMethodIncludingNation?: string[],
      *     progressPage?: string,
