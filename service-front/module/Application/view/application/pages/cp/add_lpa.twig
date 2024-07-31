@@ -117,14 +117,14 @@
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" {% if lpa_response['status'] == 'no match' %} {% else %}class="govuk-table__header" {% endif %}>
-                        <td {% if lpa_response['status'] == 'no match' %} class="app-table__cell--no-border" {% else %}class="govuk-table__cell" {% endif %}>
+                        <td class="govuk-table__cell {% if lpa_response['status'] == 'no match' %}app-table__cell--no-border{% endif %}">
                             {% for line in lpa_response['data']['cp_address'] %}
                                 {% if line %}
                                     {{ line }}<br>
                                 {% endif %}
                             {% endfor %}
                         </td>
-                        <td {% if lpa_response['status'] == 'no match' %} class="app-table__cell--no-border" {% else %}class="govuk-table__cell" {% endif %}>
+                        <td class="govuk-table__cell {% if lpa_response['status'] == 'no match' %}app-table__cell--no-border{% endif %}">
                             {% if lpa_response['status'] == 'no match' %}
                                 {% if lpa_response['additionalData']['address_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">

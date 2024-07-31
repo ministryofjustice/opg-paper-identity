@@ -62,7 +62,5 @@ $govuk-assets-path: "../assets/";
   font-weight: bold;
 }
 .app-table__cell--no-border {
-  padding:10px 20px 10px 0;
-  text-align:left;
-  vertical-align:top
+  border-width: 0;
 }
