@@ -54,7 +54,7 @@ class LpaFormHelper
                 ];
             } elseif (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
                 $result['status'] = 'error';
-                $result['message'] = "This LPA has already been added to this ID check.";
+                $result['message'] = "This LPA has already been added to this identity check.";
             } elseif ($statusCheck['error'] === true) {
                 $result['status'] = 'error';
                 $result['message'] = $statusCheck['message'];

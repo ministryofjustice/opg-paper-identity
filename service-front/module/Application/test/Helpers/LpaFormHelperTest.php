@@ -151,7 +151,7 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA has already been added to this ID check.",
+                    "message" => "This LPA has already been added to this identity check.",
                     "status" => "error"
                 ],
                 new Parameters(['lpa' => $alreadyAddedLpa]),

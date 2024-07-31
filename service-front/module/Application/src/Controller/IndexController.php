@@ -6,9 +6,11 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
+use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
+use Laminas\Form\Annotation\AttributeBuilder;
 use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -126,5 +128,39 @@ class IndexController extends AbstractActionController
         }
 
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
+    }
+
+    public function abandonFlowAction(): ViewModel
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (count($this->getRequest()->getPost())) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+            if ($form->isValid()) {
+                $siriusData = [
+                    "reference" => $uuid,
+                    "actorType" => $detailsData['personType'],
+                    "lpaIds" => $detailsData['lpas'],
+                    "time" => (new \DateTime('NOW'))->format('c'),
+                    "outcome" => "exit"
+                ];
+
+                $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
+            }
+//            $this->redirect()->toRoute();
+        }
+
+        $lastPage = $this->getRequest()->getQuery('last_page');
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('last_page', $lastPage);
+        $view->setVariable('form', $form);
+
+
+        return $view->setTemplate('application/pages/abandoned_flow');
     }
 }

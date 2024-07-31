@@ -112,6 +112,27 @@ paths:
                 $ref: "#/components/schemas/CombinedLpa"
         "401":
           description: Error
+  /api/v1/identity-check:
+    post:
+      operationId: postIdentityCheck
+      summary: Manage Identity Check for Donor and / or Certificate Provider
+      description: Manage Identity Check for Donor and / or Certificate Provider
+      tags: [poa]
+      requestBody:
+        description: Incoming request for an identity check
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdentityCheckRequest"
+      responses:
+        "204":
+          description: The identity check has been processed
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     User:
@@ -199,3 +220,52 @@ components:
               type: object
               required:
                 - postcode
+    IdentityCheckRequest:
+      type: object
+      required:
+        - actorType
+        - lpaIds
+        - time
+        - outcome
+      properties:
+        reference:
+          type: string
+          format: uuid
+        actorType:
+          type: string
+          enum:
+            - donor
+            - certificateProvider
+        lpaIds:
+          type: array
+          items:
+            type: string
+            pattern: "M(-[0-9A-Z]{4}){3}"
+        time:
+          type: string
+          format: date-time
+        outcome:
+          type: string
+          enum:
+            - success
+            - exit
+      additionalProperties: false
+    Error:
+      type: object
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: url
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        validation_errors:
+          type: object
+      additionalProperties: false

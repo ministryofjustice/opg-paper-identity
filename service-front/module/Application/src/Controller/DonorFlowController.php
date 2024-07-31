@@ -30,6 +30,14 @@ class DonorFlowController extends AbstractActionController
     ) {
     }
 
+    private function getRoute(): string
+    {
+        /**
+         * @psalm-suppress UndefinedMethod
+         */
+        return $this->getRequest()->getRequestUri();
+    }
+
     public function howWillDonorConfirmAction(): ViewModel|Response
     {
         $templates = ['default' => 'application/pages/how_will_the_donor_confirm'];
@@ -44,6 +52,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
+        $view->setVariable('route', $this->getRoute());
 
         if (count($this->getRequest()->getPost())) {
             if (count($this->getRequest()->getPost())) {
