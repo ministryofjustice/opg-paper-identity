@@ -6,6 +6,8 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Forms\Country;
+use Application\Forms\IdMethod;
 use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficePostcode;
@@ -35,12 +37,16 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/post_office/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDatePo::class);
+        $form = (new AttributeBuilder())->createForm(IdMethod::class);
         $view = new ViewModel();
 
         if (count($this->getRequest()->getPost())) {
+            $formObject = $this->getRequest()->getPost()->toArray();
             $formData = $this->getRequest()->getPost()->toArray();
 
-            if (array_key_exists('check_button', $formData)) {
+            $form->setData($formObject);
+
+            if (array_key_exists('check_button', $this->getRequest()->getPost()->toArray())) {
                 $dateSubForm->setData($formData);
                 $view->setVariable('date_sub_form', $dateSubForm);
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
@@ -51,14 +57,22 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                return $this->redirect()->toRoute("root/po_do_details_match", ['uuid' => $uuid]);
+                if ($form->isValid()) {
+                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
+                    if ($formData['id_method'] == 'euid') {
+                        return $this->redirect()->toRoute("root/donor_choose_country", ['uuid' => $uuid]);
+                    } else {
+                        return $this->redirect()->toRoute("root/po_do_details_match", ['uuid' => $uuid]);
+                    }
+                }
             }
         }
 
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
@@ -232,5 +246,36 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
         return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
+    }
+    public function chooseCountryAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/post_office/choose_country'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $form = (new AttributeBuilder())->createForm(Country::class);
+
+        if (count($this->getRequest()->getPost())) {
+            $form->setData($this->getRequest()->getPost());
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+                if ($responseData['result'] === 'Updated') {
+                    return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
+                }
+            }
+        }
+
+        $view->setVariable('form', $form);
+        $view->setVariable('options_data', $idOptionsData);
+        $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
     }
 }
