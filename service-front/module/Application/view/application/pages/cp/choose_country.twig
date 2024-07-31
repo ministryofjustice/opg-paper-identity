@@ -17,7 +17,7 @@
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                             <strong class="govuk-warning-text__text">
                                 <span class="govuk-visually-hidden">Warning</span>
-                                Note: we do not accept documents from countries not listed.
+                                We do not accept documents from countries not listed.
                             </strong>
                         </div>
                     </div>
@@ -37,6 +37,7 @@
                             </label>
                             <select class="govuk-select" id="country" name="country">
                                 <option value=""></option>
+                                <option value="0">The issuing country is not listed</option>
                                 {% for code, name in countries_data %}
                                     <option
                                         value="{{ code }}"
