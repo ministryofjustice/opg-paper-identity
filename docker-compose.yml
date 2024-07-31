@@ -1,6 +1,6 @@
 services:
   sirius-mock:
-    image: stoplight/prism:5.8.2
+    image: stoplight/prism:5.11.0
     command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
@@ -180,7 +180,7 @@ services:
       - ./service-front:/app
 
   localstack:
-    image: localstack/localstack:3.5
+    image: localstack/localstack:3.6
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
