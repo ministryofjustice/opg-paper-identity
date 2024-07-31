@@ -141,12 +141,7 @@ class CaseData implements JsonSerializable
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
         ];
         if ($this->counterService !== null) {
-            $arr['counterService'] = [
-                'selectedPostOffice' => $this->counterService->selectedPostOffice,
-                'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
-                'sessionId' => $this->counterService->sessionId,
-                'notificationsAuthToken' => $this->counterService->notificationsAuthToken
-            ];
+            $arr['counterService'] = $this->counterService->toArray();
         }
 
         if ($this->kbvQuestions !== null) {
