@@ -123,7 +123,7 @@ jobs:
 
       - name: Push Tag to Parameter Store
         run: |
-          aws ssm put-parameter --name "opg-sirius-lpa-identity-check-latest-green-build" --type "String" --value "${{ needs.semver_tag.outputs.tag }}" --overwrite --region=eu-west-1
+          aws ssm put-parameter --name "opg-paper-identity-latest-green-build" --type "String" --value "${{ needs.semver_tag.outputs.tag }}" --overwrite --region=eu-west-1
 
   end:
     name: 'End of workflow'
