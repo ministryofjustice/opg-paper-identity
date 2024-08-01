@@ -9,6 +9,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\Problem;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
+use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiServiceInterface;
 use DateTime;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -28,7 +29,7 @@ class YotiController extends AbstractActionController
         private readonly YotiServiceInterface $yotiService,
         private readonly DataImportHandler $dataImportHandler,
         private readonly DataQueryHandler $dataQuery,
-        private readonly SessionConfig $sessionConfig,
+        private readonly SessionStatusService $sessionService
     ) {
     }
 
@@ -74,16 +75,13 @@ class YotiController extends AbstractActionController
         }
 
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
-        $sessionId = $caseData->counterService->sessionId;
+        $sessionId = $caseData->yotiSessionId;
         if (!$sessionId) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('SessionId not available'));
         }
 
-        $nonce = strval(Uuid::uuid4());
-        $dateTime = new DateTime();
-        $timestamp = $dateTime->getTimestamp();
-        $sessionResult = $this->yotiService->retrieveResults($sessionId, $nonce, $timestamp);
+        $sessionResult = $this->sessionService->getSessionStatus($uuid);
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $data = ['results' => $sessionResult];
