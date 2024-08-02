@@ -526,7 +526,7 @@ return [
             'dln' => 'UK photocard driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
-            'po_ukp' => 'UK passport (up to 18months expired)',
+            'po_ukp' => 'UK passport (up to 18 months expired)',
             'po_eup' => 'EU passport (must be current)',
             'po_inp' => 'International passport (must be current)',
             'po_ukd' => 'UK Driving licence (must be current)',
