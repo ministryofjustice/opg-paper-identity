@@ -597,7 +597,7 @@ class CPFlowController extends AbstractActionController
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
+//        echo json_encode($detailsData);
 
         $form = (new AttributeBuilder())->createForm(Country::class);
 
@@ -631,7 +631,7 @@ class CPFlowController extends AbstractActionController
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
+        $yotiData = $this->opgApiService->getSupportedDocuments($uuid);
 
         $form = (new AttributeBuilder())->createForm(CountryDocument::class);
 

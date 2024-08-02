@@ -481,7 +481,7 @@ return [
                             'route' => '/:uuid/donor-choose-country',
                             'defaults' => [
                                 'controller' => Controller\DonorPostOfficeFlowController::class,
-                                'action' => 'choose_country',
+                                'action' => 'chooseCountry',
                             ],
                         ],
                     ],

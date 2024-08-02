@@ -255,7 +255,6 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $form = (new AttributeBuilder())->createForm(Country::class);
 
         if (count($this->getRequest()->getPost())) {

@@ -1,0 +1,46 @@
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
+        <form method="POST">
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            {% block title %}
+                                Choose ID type
+                            {% endblock %}
+                        </h1>
+                    </legend>
+                    <h2 class="govuk-heading-m">Choose document</h2>
+                    {% if form.get('id_method').messages %}
+                        <p id="lpa-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {{ form.get('id_method').messages | join(', ', ' and ') }}
+                        </p>
+                    {% endif %}
+                    <div class="govuk-form-group">
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            {% for key, datum in options_data %}
+                                <div class="govuk-radios__item">
+                                    <input
+                                        class="govuk-radios__input"
+                                        id="{{ key }}"
+                                        name="id_method"
+                                        type="radio"
+                                        value="{{ key }}"
+                                        {% if form.get('id_method').value == key %}checked{% endif %}
+                                    >
+                                    <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <input type="submit" class="govuk-button" value="Continue">
+        </form>
+    </div>
+{% endblock %}
+
+
