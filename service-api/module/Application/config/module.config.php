@@ -372,6 +372,16 @@ return [
                     ],
                 ],
             ],
+            'get_supported_documents' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/:uuid/get-supported-documents',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action' => 'supportedDocuments',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

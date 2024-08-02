@@ -285,6 +285,16 @@ return [
                             ],
                         ],
                     ],
+                    'cp_choose_country_id' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '[/:uuid]/cp/choose-country-id',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action' => 'chooseCountryId',
+                            ],
+                        ],
+                    ],
                     'cp_name_match_check' => [
                         'type' => Segment::class,
                         'options' => [

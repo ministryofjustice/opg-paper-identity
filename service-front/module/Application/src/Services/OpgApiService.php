@@ -339,4 +339,16 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+
+    public function getSupportedDocuments(string $uuid): array
+    {
+        $url = sprintf("/%s/get-supported-documents", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'GET');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData;
+    }
 }
