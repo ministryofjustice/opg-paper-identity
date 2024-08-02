@@ -61,7 +61,6 @@ class SessionStatusService
                 'S',
                 $finalResult,
             );
-
         } catch (YotiException $e) {
             return 'Error: ' . $e->getMessage();
         } catch (InvalidArgumentException $exception) {
@@ -78,12 +77,10 @@ class SessionStatusService
     private function evaluateFinalResult(array $checks): bool
     {
         foreach ($checks as $check) {
-            if ($check['report']['recommendation']['value'] === 'APPROVE') {
+            if ($check['report']['recommendation']['value'] !== 'APPROVE') {
                 return false;
             }
         }
         return true;
     }
-
-
 }

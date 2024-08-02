@@ -112,7 +112,7 @@ class YotiService implements YotiServiceInterface
      */
     public function retrieveResults(string $sessionId, string $nonce, int $timestamp): array
     {
-        $headers = $this->getSignedRequest('/sessions/'.$sessionId, 'GET', $nonce, $timestamp);
+        $headers = $this->getSignedRequest('/sessions/' . $sessionId, 'GET', $nonce, $timestamp);
 
         try {
             $results = $this->client->get('/idverify/v1/sessions/' . $sessionId, [
@@ -123,7 +123,6 @@ class YotiService implements YotiServiceInterface
             if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new YotiException($results->getReasonPhrase());
             }
-
         } catch (ClientException $clientException) {
             $this->logger->error('Unable to connect to Yoti Service [' . $clientException->getMessage() . '] ', [
                 'data' => ['operation' => 'session-results', 'header' => $headers]
