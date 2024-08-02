@@ -4,7 +4,7 @@ RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
   && docker-php-ext-install soap \
   && docker-php-ext-enable sodium
-RUN pecl install apcu && docker-php-ext-enable apcu && docker-php-ext-enable soap
+RUN pecl install apcu && docker-php-ext-enable apcu
 
 # Patch Vulnerabilities
 RUN apk upgrade --no-cache openssl
