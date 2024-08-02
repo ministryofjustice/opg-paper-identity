@@ -1,7 +1,8 @@
 FROM php:8.3-fpm-alpine AS app
 
-RUN apk --no-cache add fcgi icu-dev $PHPIZE_DEPS \
+RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
+  && docker-php-ext-install soap \
   && docker-php-ext-enable sodium
 RUN pecl install apcu && docker-php-ext-enable apcu
 
