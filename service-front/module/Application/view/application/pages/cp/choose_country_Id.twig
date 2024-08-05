@@ -12,7 +12,7 @@
                             {% endblock %}
                         </h1>
                     </legend>
-                    <h2 class="govuk-heading-m">Choose document</h2>
+                    <h2 class="govuk-heading-m">Choose from documents accepted for {{ countryName }}</h2>
                     {% if form.get('id_method').messages %}
                         <p id="lpa-error" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span>
@@ -20,18 +20,22 @@
                         </p>
                     {% endif %}
                     <div class="govuk-form-group">
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            {% for key, datum in options_data %}
+                        <div
+                            class="govuk-radios
+                            {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}"
+                            data-module="govuk-radios"
+                        >
+                            {% for doc in supported_docs %}
                                 <div class="govuk-radios__item">
                                     <input
                                         class="govuk-radios__input"
-                                        id="{{ key }}"
+                                        id="{{ doc['type'] }}"
                                         name="id_method"
                                         type="radio"
-                                        value="{{ key }}"
-                                        {% if form.get('id_method').value == key %}checked{% endif %}
+                                        value="{{ doc['type'] }}"
+                                        {% if form.get('id_method').value == doc['type'] %}checked{% endif %}
                                     >
-                                    <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}</label>
+                                    <label class="govuk-label govuk-radios__label" for="{{ doc['type'] }}">{{ doc['display_text'] }}</label>
                                 </div>
                             {% endfor %}
                         </div>

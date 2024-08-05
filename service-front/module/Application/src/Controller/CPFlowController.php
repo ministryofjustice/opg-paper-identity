@@ -628,16 +628,12 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
-
         $docs = $this->getInternationalSupportedDocuments($detailsData);
 
-//        echo json_encode(
-//            $docs
-//        );
-
         $form = (new AttributeBuilder())->createForm(CountryDocument::class);
+        $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $form->setData($this->getRequest()->getPost());
             $formData = $this->getRequest()->getPost()->toArray();
 
@@ -648,11 +644,14 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
-
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $idOptionsData);
         $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('countryName', $idCountriesData[
+            $detailsData['idMethodIncludingNation']['country']
+        ]);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('supported_docs', $docs['supported_documents']);
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate($templates['default']);
@@ -670,25 +669,24 @@ class CPFlowController extends AbstractActionController
         }
 
         foreach ($documents['supported_documents'] as $key => $value) {
-            $value = (function(array $value): string {
+            $value = (function (array $value): string {
                 $string = strtolower($value['type']);
                 $descString = '';
                 $words = explode("_", $string);
                 foreach ($words as $k => $word) {
-                    if($k == 0) {
+                    if ($k == 0) {
                         $descString .= ucfirst($word) . " ";
-                    } else if ($word == 'id') {
+                    } elseif ($word == 'id') {
                         $descString .= strtoupper($word) . " ";
                     } else {
                         $descString .= $word . " ";
                     }
                 }
                 return substr($descString, 0, strlen($descString) - 1);
-
             })($value);
             $documents['supported_documents'][$key] = array_merge(
                 $documents['supported_documents'][$key],
-                ['presentation' => $value]
+                ['display_text' => $value]
             );
         }
         return $documents;
