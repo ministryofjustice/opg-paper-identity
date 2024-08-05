@@ -306,19 +306,4 @@ class YotiService implements YotiServiceInterface
 
         return $headers;
     }
-
-    public function supportedDocuments(): array
-    {
-        try {
-            $results = $this->client->get('/idverify/v1/supported-documents');
-            if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
-                $this->logger->error('Supported documents retrieval unsuccessful');
-                throw new YotiException($results->getReasonPhrase());
-            }
-            return json_decode(strval($results->getBody()), true);
-        } catch (GuzzleException $e) {
-            $this->logger->error('Unable to connect to Post Office Service [' . $e->getMessage() . '] ');
-            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
-        }
-    }
 }

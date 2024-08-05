@@ -321,12 +321,14 @@ class OpgApiService implements OpgApiServiceInterface
         $url = sprintf("/cases/%s/update-cp-po-id", $uuid);
 
         $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+        $methodData = [];
 
         if (array_key_exists('idMethodIncludingNation', $response)) {
             $methodData = $response['idMethodIncludingNation'];
-            foreach ($data as $key => $value) {
-                $methodData[$key] = $value;
-            }
+        }
+
+        foreach ($data as $key => $value) {
+            $methodData[$key] = $value;
         }
 
         try {
@@ -343,18 +345,6 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest($url, 'PUT', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-        return $this->responseData;
-    }
-
-    public function getSupportedDocuments(string $uuid): array
-    {
-        $url = sprintf("/%s/get-supported-documents", $uuid);
-
-        try {
-            $this->makeApiRequest($url, 'GET');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

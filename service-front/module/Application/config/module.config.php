@@ -587,6 +587,707 @@ return [
             'SVN' => 'Slovenia',
             'ESP' => 'Spain',
             'SWE' => 'Sweden',
+        ],
+        "supported_countries_documents" => [
+            [
+                "code" => "AUT",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2002-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "BEL",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "BGR",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "CYP",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "CZE",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "DEU",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "1999-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "DNK",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2013-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "ESP",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2006-06-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "EST",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "FIN",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2011-05-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "FRA",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2013-09-01"
+                        ]
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "GRC",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2009-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "HRV",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2013-07-01"
+                        ]
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "HUN",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2020-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "IRL",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2015-09-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "ITA",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "1999-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2016-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "LTU",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "LUX",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "LVA",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "MLT",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "NLD",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2014-03-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "POL",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2001-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "PRT",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2007-01-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "ROU",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "SVN",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ],
+            [
+                "code" => "SWE",
+                "supported_documents" => [
+                    [
+                        "type" => "DRIVING_LICENCE",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2007-12-01"
+                        ]
+                    ],
+                    [
+                        "type" => "NATIONAL_ID",
+                        "is_strictly_latin" => true,
+                        "requirements" => [
+                            "date_from" => "2009-06-01"
+                        ]
+                    ],
+                    [
+                        "type" => "PASSPORT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "RESIDENCE_PERMIT",
+                        "is_strictly_latin" => true
+                    ],
+                    [
+                        "type" => "TRAVEL_DOCUMENT",
+                        "is_strictly_latin" => true
+                    ]
+                ]
+            ]
         ]
+
+
     ]
 ];

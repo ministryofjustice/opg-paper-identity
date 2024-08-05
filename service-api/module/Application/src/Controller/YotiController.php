@@ -142,19 +142,4 @@ class YotiController extends AbstractActionController
         // Use preg_match to check if the uuid matches the pattern
         return preg_match($pattern, $uuid) === 1;
     }
-
-    public function supportedDocumentsAction(): JsonModel
-    {
-        try {
-            $supportedDocuments = $this->yotiService->supportedDocuments();
-        } catch (YotiException $e) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(new Problem(
-                'Service issue',
-                extra: ['errors' => $e->getMessage()],
-            ));
-        }
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        return new JsonModel($supportedDocuments);
-    }
 }

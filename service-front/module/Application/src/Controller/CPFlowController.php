@@ -597,8 +597,6 @@ class CPFlowController extends AbstractActionController
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-//        echo json_encode($detailsData);
-
         $form = (new AttributeBuilder())->createForm(Country::class);
 
         if (count($this->getRequest()->getPost())) {
@@ -627,11 +625,15 @@ class CPFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/cp/choose_country_id'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $yotiData = $this->opgApiService->getSupportedDocuments($uuid);
+        $docs = $this->getInternationalSupportedDocuments($detailsData);
+
+//        echo json_encode(
+//            $docs
+//        );
 
         $form = (new AttributeBuilder())->createForm(CountryDocument::class);
 
@@ -654,5 +656,41 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate($templates['default']);
+    }
+
+    private function getInternationalSupportedDocuments(array $detailsData): array
+    {
+        $idDocuments = $this->config['opg_settings']['supported_countries_documents'];
+        $documents = [];
+
+        foreach ($idDocuments as $countryDocumentBody) {
+            if ($countryDocumentBody['code'] == $detailsData['idMethodIncludingNation']['country']) {
+                $documents = $countryDocumentBody;
+            }
+        }
+
+        foreach ($documents['supported_documents'] as $key => $value) {
+            $value = (function(array $value): string {
+                $string = strtolower($value['type']);
+                $descString = '';
+                $words = explode("_", $string);
+                foreach ($words as $k => $word) {
+                    if($k == 0) {
+                        $descString .= ucfirst($word) . " ";
+                    } else if ($word == 'id') {
+                        $descString .= strtoupper($word) . " ";
+                    } else {
+                        $descString .= $word . " ";
+                    }
+                }
+                return substr($descString, 0, strlen($descString) - 1);
+
+            })($value);
+            $documents['supported_documents'][$key] = array_merge(
+                $documents['supported_documents'][$key],
+                ['presentation' => $value]
+            );
+        }
+        return $documents;
     }
 }
