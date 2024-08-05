@@ -20,6 +20,8 @@ use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
 use Application\Yoti\SessionConfig;
+use Application\Yoti\SessionStatusService;
+use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
@@ -398,6 +400,10 @@ return [
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
+            ),
+            SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
+                $serviceLocator->get(YotiServiceInterface::class),
+                $serviceLocator->get(DataImportHandler::class)
             ),
             SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,

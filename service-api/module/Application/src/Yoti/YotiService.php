@@ -108,11 +108,27 @@ class YotiService implements YotiServiceInterface
      * @param string $sessionId
      * @return array
      * Look up results of a Post Office IBV session
+     * @throws YotiException
      */
-    public function retrieveResults(string $sessionId): array
+    public function retrieveResults(string $sessionId, string $nonce, int $timestamp): array
     {
-        //can either use client directly like below or use
-        $results = $this->client->get('/sessions/' . $sessionId);
+        $headers = $this->getSignedRequest('/sessions/' . $sessionId, 'GET', $nonce, $timestamp);
+
+        try {
+            $results = $this->client->get('/idverify/v1/sessions/' . $sessionId, [
+                'headers' => $headers,
+                'query' => ['sdkId' => $this->sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
+            ]);
+
+            if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new YotiException($results->getReasonPhrase());
+            }
+        } catch (ClientException $clientException) {
+            $this->logger->error('Unable to connect to Yoti Service [' . $clientException->getMessage() . '] ', [
+                'data' => ['operation' => 'session-results', 'header' => $headers]
+            ]);
+            throw new YotiClientException($clientException->getMessage(), 0, $clientException);
+        }
 
         return json_decode(strval($results->getBody()), true);
     }
