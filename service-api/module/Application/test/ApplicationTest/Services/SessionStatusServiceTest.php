@@ -19,7 +19,6 @@ use PHPUnit\Framework\TestCase;
  */
 class SessionStatusServiceTest extends TestCase
 {
-    private DataQueryHandler&MockObject $dataQueryHandler;
     private DataImportHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiService;
     private SessionStatusService $sut;
@@ -28,12 +27,10 @@ class SessionStatusServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->dataImportHandler = $this->createMock(DataImportHandler::class);
-        $this->dataQueryHandler = $this->createMock(DataQueryHandler::class);
         $this->yotiService = $this->createMock(YotiService::class);
 
         $this->sut = new SessionStatusService(
             $this->yotiService,
-            $this->dataQueryHandler,
             $this->dataImportHandler
         );
     }
@@ -56,11 +53,6 @@ class SessionStatusServiceTest extends TestCase
             'lpas' => []
         ]);
 
-        $this->dataQueryHandler
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
-            ->willReturn($caseData);
-
         $this->yotiService->expects($this->never())->method('retrieveResults');
 
         $expectedResult = CounterService::fromArray([
@@ -71,12 +63,12 @@ class SessionStatusServiceTest extends TestCase
             'result' => false
         ]);
 
-        $result = $this->sut->getSessionStatus('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+        $result = $this->sut->getSessionStatus($caseData);
 
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function testFirstNotificationReturnsInProgress()
+    public function testFirstNotificationReturnsInProgress(): void
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
@@ -93,19 +85,19 @@ class SessionStatusServiceTest extends TestCase
             ]
         ]);
 
-        $this->dataQueryHandler
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
-            ->willReturn($caseData);
-
         $this->yotiService->expects($this->never())->method('retrieveResults');
 
-        $result = $this->sut->getSessionStatus('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+        $result = $this->sut->getSessionStatus($caseData);
 
         $this->assertEquals("In Progress", $result);
     }
 
-    public function testResultsAreFetchedAfterSessionCompletionNotification()
+    /**
+     * @return void
+     * @throws \Exception
+     * @psalm-suppress MissingClosureParamType
+     */
+    public function testResultsAreFetchedAfterSessionCompletionNotification(): void
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
@@ -136,11 +128,6 @@ class SessionStatusServiceTest extends TestCase
             ]
         ];
 
-        $this->dataQueryHandler
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
-            ->willReturn($caseData);
-
         $this->yotiService
             ->expects($this->once())->method('retrieveResults')
             ->withAnyParameters()
@@ -167,11 +154,16 @@ class SessionStatusServiceTest extends TestCase
                 }
             );
 
-        $result = $this->sut->getSessionStatus('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+        $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
     }
 
-    public function testResultsAreFetchedAfterWithOneRejectionSavesFalseResult()
+    /**
+     * @return void
+     * @throws \Exception
+     * @psalm-suppress MissingClosureParamType
+     */
+    public function testResultsAreFetchedAfterWithOneRejectionSavesFalseResult(): void
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
@@ -216,10 +208,6 @@ class SessionStatusServiceTest extends TestCase
             ]
         ];
 
-        $this->dataQueryHandler
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
-            ->willReturn($caseData);
 
         $this->yotiService
             ->expects($this->once())->method('retrieveResults')
@@ -246,11 +234,11 @@ class SessionStatusServiceTest extends TestCase
                 }
             );
 
-        $result = $this->sut->getSessionStatus('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+        $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
     }
 
-    public function testGetSessionStatusSessionCompletionReturnsResultsEvenIfDBSaveFails()
+    public function testGetSessionStatusSessionCompletionReturnsResultsEvenIfDBSaveFails(): void
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
@@ -281,10 +269,6 @@ class SessionStatusServiceTest extends TestCase
             ]
         ];
 
-        $this->dataQueryHandler
-            ->method('getCaseByUUID')
-            ->willReturn($caseData);
-
         $this->yotiService
             ->method('retrieveResults')
             ->willReturn($response);
@@ -293,7 +277,7 @@ class SessionStatusServiceTest extends TestCase
             ->method('updateCaseChildAttribute')
             ->willThrowException(new InvalidArgumentException('Test Invalid Argument Exception'));
 
-        $result = $this->sut->getSessionStatus('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+        $result = $this->sut->getSessionStatus($caseData);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('state', $result);

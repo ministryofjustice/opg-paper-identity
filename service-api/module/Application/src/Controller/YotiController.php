@@ -75,13 +75,18 @@ class YotiController extends AbstractActionController
         }
 
         $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(['error' => 'Case not found']);
+        }
+
         $sessionId = $caseData->yotiSessionId;
-        if (! $sessionId) {
+        if ($sessionId === '00000000-0000-0000-0000-000000000000') {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('SessionId not available'));
         }
 
-        $sessionResult = $this->sessionService->getSessionStatus($uuid);
+        $sessionResult = $this->sessionService->getSessionStatus($caseData);
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $data = ['results' => $sessionResult];

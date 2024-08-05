@@ -403,7 +403,6 @@ return [
             ),
             SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
                 $serviceLocator->get(YotiServiceInterface::class),
-                $serviceLocator->get(DataQueryHandler::class),
                 $serviceLocator->get(DataImportHandler::class)
             ),
             SessionConfig::class => InvokableFactory::class,

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Fixtures\DataImportHandler;
-use Application\Fixtures\DataQueryHandler;
+use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
 use Application\Yoti\Http\Exception\YotiException;
 use DateTime;
@@ -16,14 +16,15 @@ class SessionStatusService
 {
     public function __construct(
         public readonly YotiService $yotiService,
-        public readonly DataQueryHandler $queryHandler,
         public readonly DataImportHandler $dataImportHandler
     ) {
     }
 
-    public function getSessionStatus(string $uuid): string|array|CounterService
+    public function getSessionStatus(CaseData $caseData): string|array|CounterService
     {
-        $caseData = $this->queryHandler->getCaseByUUID($uuid);
+        if ($caseData->counterService === null) {
+            return "Error: counterService is null";
+        }
         $currentNotificationStatus = $caseData->counterService->notificationState;
 
         if ($currentNotificationStatus === 'first_branch_visit') {
@@ -37,7 +38,7 @@ class SessionStatusService
         return $caseData->counterService;
     }
 
-    private function handleSessionCompletion($caseData): mixed
+    private function handleSessionCompletion(CaseData $caseData): mixed
     {
         $nonce = strval(Uuid::uuid4());
         $timestamp = (new DateTime())->getTimestamp();
