@@ -13,6 +13,7 @@ use Application\Yoti\YotiService;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 /**
 
@@ -22,16 +23,18 @@ class SessionStatusServiceTest extends TestCase
     private DataImportHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiService;
     private SessionStatusService $sut;
-
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->dataImportHandler = $this->createMock(DataImportHandler::class);
         $this->yotiService = $this->createMock(YotiService::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->sut = new SessionStatusService(
             $this->yotiService,
-            $this->dataImportHandler
+            $this->dataImportHandler,
+            $this->logger
         );
     }
 
@@ -87,9 +90,7 @@ class SessionStatusServiceTest extends TestCase
 
         $this->yotiService->expects($this->never())->method('retrieveResults');
 
-        $result = $this->sut->getSessionStatus($caseData);
-
-        $this->assertEquals("In Progress", $result);
+        $this->sut->getSessionStatus($caseData);
     }
 
     /**
@@ -277,14 +278,17 @@ class SessionStatusServiceTest extends TestCase
             ->method('updateCaseChildAttribute')
             ->willThrowException(new InvalidArgumentException('Test Invalid Argument Exception'));
 
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with(
+                $this->stringStartsWith(
+                    'Error updating counterService results: '
+                )
+            );
+
         $result = $this->sut->getSessionStatus($caseData);
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('state', $result);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertArrayHasKey('error', $result);
-        $this->assertEquals('COMPLETED', $result['state']);
-        $this->assertTrue($result['result']);
-        $this->assertEquals('Test Invalid Argument Exception', $result['error']);
+        $this->assertEquals('COMPLETED', $result->state);
+        $this->assertTrue($result->result);
     }
 }

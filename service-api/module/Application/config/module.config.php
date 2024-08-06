@@ -403,7 +403,8 @@ return [
             ),
             SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
                 $serviceLocator->get(YotiServiceInterface::class),
-                $serviceLocator->get(DataImportHandler::class)
+                $serviceLocator->get(DataImportHandler::class),
+                $serviceLocator->get(LoggerInterface::class)
             ),
             SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,
@@ -413,6 +414,7 @@ return [
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class
+
         ],
     ],
     'view_manager' => [

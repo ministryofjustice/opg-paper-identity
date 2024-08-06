@@ -10,45 +10,45 @@ use Application\Model\Entity\CounterService;
 use Application\Yoti\Http\Exception\YotiException;
 use DateTime;
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class SessionStatusService
 {
     public function __construct(
         public readonly YotiService $yotiService,
-        public readonly DataImportHandler $dataImportHandler
+        public readonly DataImportHandler $dataImportHandler,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
-    public function getSessionStatus(CaseData $caseData): string|array|CounterService
+    public function getSessionStatus(CaseData $caseData): CounterService
     {
-        if ($caseData->counterService === null) {
-            return "Error: counterService is null";
-        }
-        $currentNotificationStatus = $caseData->counterService->notificationState;
+        if ($caseData->counterService !== null) {
+            $currentNotificationStatus = $caseData->counterService->notificationState;
 
-        if ($currentNotificationStatus === 'first_branch_visit') {
-            return 'In Progress';
+            if (
+                $currentNotificationStatus === 'session_completion'
+                && $caseData->counterService->state !== 'COMPLETED'
+            ) {
+                return $this->handleSessionCompletion($caseData);
+            }
         }
-
-        if ($currentNotificationStatus === 'session_completion' && $caseData->counterService->state !== 'COMPLETED') {
-            return $this->handleSessionCompletion($caseData);
-        }
-
         return $caseData->counterService;
     }
 
-    private function handleSessionCompletion(CaseData $caseData): mixed
+    private function handleSessionCompletion(CaseData $caseData): CounterService
     {
         $nonce = strval(Uuid::uuid4());
         $timestamp = (new DateTime())->getTimestamp();
-        $state = '';
-        $finalResult = false;
 
         try {
             $response = $this->yotiService->retrieveResults($caseData->yotiSessionId, $nonce, $timestamp);
             $state = $response['results']['state'];
             $finalResult = $this->evaluateFinalResult($response['results']['checks']);
+
+            $caseData->counterService->state = $state;
+            $caseData->counterService->result = $finalResult;
 
             $this->dataImportHandler->updateCaseChildAttribute(
                 $caseData->id,
@@ -63,13 +63,9 @@ class SessionStatusService
                 $finalResult,
             );
         } catch (YotiException $e) {
-            return 'Error: ' . $e->getMessage();
+            $this->logger->error('Yoti result error: ' . $e->getMessage());
         } catch (InvalidArgumentException $exception) {
-            return [
-                'state' => $state,
-                'result' => $finalResult,
-                'error' => $exception->getMessage()
-            ];
+            $this->logger->error('Error updating counterService results: ' . $exception->getMessage());
         }
 
         return $caseData->counterService;

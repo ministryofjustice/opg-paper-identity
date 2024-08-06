@@ -109,6 +109,7 @@ class YotiService implements YotiServiceInterface
      * @return array
      * Look up results of a Post Office IBV session
      * @throws YotiException
+     * @throws YotiClientException
      */
     public function retrieveResults(string $sessionId, string $nonce, int $timestamp): array
     {

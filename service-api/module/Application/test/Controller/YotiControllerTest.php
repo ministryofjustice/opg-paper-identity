@@ -103,7 +103,7 @@ class YotiControllerTest extends TestCase
         $this->statusService
             ->expects($this->once())
             ->method('getSessionStatus')
-            ->willReturn(['state' => 'test']);
+            ->willReturn($caseData->counterService);
 
         $this->dispatch('/counter-service/2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc/retrieve-status', 'GET');
         $this->assertResponseStatusCode(200);
