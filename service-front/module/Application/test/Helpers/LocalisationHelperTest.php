@@ -25,8 +25,7 @@ class LocalisationHelperTest extends TestCase
     public function testProcessDocumentBody(
         array $documentData,
         array $expected
-    ): void
-    {
+    ): void {
         $localisationHelper = new LocalisationHelper();
 
         $actual = $localisationHelper->processDocumentBody($documentData);
@@ -101,6 +100,35 @@ class LocalisationHelperTest extends TestCase
                     ]
                 ]
             ]
+        ];
+    }
+
+    /**
+     * @dataProvider wordData
+     */
+    public function testParseWord(string $word, string $expected): void
+    {
+        $localisationHelper = new LocalisationHelper();
+        $actual = $localisationHelper->parseWord($word);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public static function wordData(): array
+    {
+        return [
+          [
+              'DRIVING_LICENCE',
+              'Driving licence',
+          ],
+          [
+              'NATIONAL_ID',
+              'National ID'
+          ],
+          [
+              'PASSPORT',
+              'Passport'
+          ]
         ];
     }
 }

@@ -39,28 +39,31 @@ class LocalisationHelper
     public function processDocumentBody(array $documents): array
     {
         foreach ($documents['supported_documents'] as $key => $value) {
-            $value = (function (array $value): string {
-                $string = strtolower($value['type']);
-                $descString = '';
-                $words = explode("_", $string);
-                foreach ($words as $k => $word) {
-                    if ($k == 0) {
-                        $descString .= ucfirst($word) . " ";
-                    } elseif ($word == 'id') {
-                        $descString .= strtoupper($word) . " ";
-                    } else {
-                        $descString .= $word . " ";
-                    }
-                }
-                return substr($descString, 0, strlen($descString) - 1);
-            })($value);
+            $string = $this->parseWord($value['type']);
 
             $documents['supported_documents'][$key] = array_merge(
                 $documents['supported_documents'][$key],
-                ['display_text' => $value]
+                ['display_text' => $string]
             );
         }
         return $documents;
+    }
+
+    public function parseWord(string $word): string
+    {
+        $string = strtolower($word);
+        $descString = '';
+        $words = explode("_", $string);
+        foreach ($words as $k => $word) {
+            if ($k == 0) {
+                $descString .= ucfirst($word) . " ";
+            } elseif ($word == 'id') {
+                $descString .= strtoupper($word) . " ";
+            } else {
+                $descString .= $word . " ";
+            }
+        }
+        return substr($descString, 0, strlen($descString) - 1);
     }
 
     private function getConfig(): array

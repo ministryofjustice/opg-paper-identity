@@ -485,6 +485,16 @@ return [
                             ],
                         ],
                     ],
+                    'donor_choose_country_id' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/donor-choose-country-id',
+                            'defaults' => [
+                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'action' => 'chooseCountryId',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
