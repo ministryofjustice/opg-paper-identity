@@ -35,6 +35,8 @@ class IndexController extends AbstractActionController
 
     public function indexAction()
     {
+        $this->opgApiService->pingIndex();
+
         return new ViewModel();
     }
 

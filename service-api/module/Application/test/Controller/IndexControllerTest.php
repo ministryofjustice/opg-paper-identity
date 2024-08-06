@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IndexController;
+use Application\Experian\IIQ\IIQClient;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Stdlib\ArrayUtils;
@@ -28,8 +29,27 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         parent::setUp();
     }
 
+    private function mockIIQ(): void
+    {
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+
+        $mockIIQClient = $this->createMock(IIQClient::class);
+        $serviceManager->setService(IIQClient::class, $mockIIQClient);
+
+        $saa = new \stdClass();
+        $saa->SAAResult = new \stdClass();
+        $saa->SAAResult->Questions = [];
+
+        $mockIIQClient->expects($this->once())
+            ->method('__call')
+            ->willReturn($saa);
+    }
+
     public function testIndexActionCanBeAccessed(): void
     {
+        $this->mockIIQ();
+
         $this->dispatch('/', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -40,6 +60,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
     public function testIndexActionResponse(): void
     {
+        $this->mockIIQ();
+
         $this->dispatch('/', 'GET');
         $this->assertEquals('{"Laminas":"Paper ID Service API"}', $this->getResponse()->getContent());
     }
