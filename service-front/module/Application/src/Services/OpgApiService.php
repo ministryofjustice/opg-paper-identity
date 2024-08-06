@@ -339,4 +339,13 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+
+    public function pingIndex(): void
+    {
+        try {
+            $this->makeApiRequest("/", 'GET');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }
