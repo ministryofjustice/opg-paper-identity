@@ -21,6 +21,7 @@ use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\LocalisationHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -38,6 +39,7 @@ class CPFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly LpaFormHelper $lpaFormHelper,
+        private readonly LocalisationHelper $localisationHelper,
         private readonly array $config,
     ) {
     }
@@ -628,7 +630,7 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
-        $docs = $this->getInternationalSupportedDocuments($detailsData);
+        $docs = $this->localisationHelper->getInternationalSupportedDocuments($detailsData);
 
         $form = (new AttributeBuilder())->createForm(CountryDocument::class);
         $view->setVariable('form', $form);
@@ -655,40 +657,5 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate($templates['default']);
-    }
-
-    private function getInternationalSupportedDocuments(array $detailsData): array
-    {
-        $idDocuments = $this->config['opg_settings']['supported_countries_documents'];
-        $documents = [];
-
-        foreach ($idDocuments as $countryDocumentBody) {
-            if ($countryDocumentBody['code'] == $detailsData['idMethodIncludingNation']['country']) {
-                $documents = $countryDocumentBody;
-            }
-        }
-
-        foreach ($documents['supported_documents'] as $key => $value) {
-            $value = (function (array $value): string {
-                $string = strtolower($value['type']);
-                $descString = '';
-                $words = explode("_", $string);
-                foreach ($words as $k => $word) {
-                    if ($k == 0) {
-                        $descString .= ucfirst($word) . " ";
-                    } elseif ($word == 'id') {
-                        $descString .= strtoupper($word) . " ";
-                    } else {
-                        $descString .= $word . " ";
-                    }
-                }
-                return substr($descString, 0, strlen($descString) - 1);
-            })($value);
-            $documents['supported_documents'][$key] = array_merge(
-                $documents['supported_documents'][$key],
-                ['display_text' => $value]
-            );
-        }
-        return $documents;
     }
 }
