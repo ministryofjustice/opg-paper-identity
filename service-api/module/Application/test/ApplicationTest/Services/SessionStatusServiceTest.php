@@ -23,7 +23,7 @@ class SessionStatusServiceTest extends TestCase
     private DataImportHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiService;
     private SessionStatusService $sut;
-    private LoggerInterface $logger;
+    private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {
@@ -239,6 +239,9 @@ class SessionStatusServiceTest extends TestCase
         $this->assertInstanceOf(CounterService::class, $result);
     }
 
+    /**
+     * @psalm-suppress PossiblyNullPropertyFetch
+     */
     public function testGetSessionStatusSessionCompletionReturnsResultsEvenIfDBSaveFails(): void
     {
         $caseData = CaseData::fromArray([

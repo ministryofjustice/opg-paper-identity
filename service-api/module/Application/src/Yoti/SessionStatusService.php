@@ -22,7 +22,7 @@ class SessionStatusService
     ) {
     }
 
-    public function getSessionStatus(CaseData $caseData): CounterService
+    public function getSessionStatus(CaseData $caseData): ?CounterService
     {
         if ($caseData->counterService !== null) {
             $currentNotificationStatus = $caseData->counterService->notificationState;
@@ -37,7 +37,10 @@ class SessionStatusService
         return $caseData->counterService;
     }
 
-    private function handleSessionCompletion(CaseData $caseData): CounterService
+    /**
+     * @psalm-suppress PossiblyNullPropertyAssignment
+     */
+    private function handleSessionCompletion(CaseData $caseData): ?CounterService
     {
         $nonce = strval(Uuid::uuid4());
         $timestamp = (new DateTime())->getTimestamp();
