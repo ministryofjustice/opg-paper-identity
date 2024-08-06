@@ -26,7 +26,7 @@ class AwsSecretsCache
      */
     public function getValue(string $name): string
     {
-        $name = $this->prefix . '/' . $name;
+        $name = $this->prefix . $name;
         $key = self::NAMESPACE_AWS . ':' . $name;
 
         if ($this->storage->hasItem($key)) {
