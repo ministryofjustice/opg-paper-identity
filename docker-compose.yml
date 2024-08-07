@@ -29,6 +29,19 @@ services:
     ports:
       - 8334:8080
 
+  experian-iiq-mock:
+    image: outofcoffee/imposter
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "imposter", "list", "-x" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./docker/experian/iiq:/opt/imposter/config
+    ports:
+      - 8335:8080
+
   api:
     image: paper-identity/api
     build:

@@ -26,6 +26,18 @@ awslocal secretsmanager create-secret --name local/paper-identity/yoti/sdk-clien
     --description "ID of Yoti client" \
     --secret-string "empty"
 
+awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate \
+    --description "Experian IIQ auth certificate" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate-key \
+    --description "Experian IIQ auth certificate private key" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate-key-passphrase \
+    --description "Experian IIQ auth certificate private key passphrase" \
+    --secret-string "empty"
+
 # following keys are mostly for use by tests
 
 openssl genpkey -algorithm RSA -out /tmp/private_key.pem -pkeyopt rsa_keygen_bits:2048
