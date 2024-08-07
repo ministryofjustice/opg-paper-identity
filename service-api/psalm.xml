@@ -41,6 +41,7 @@
     </issueHandlers>
 
     <stubs>
+        <file name="module/Application/test/stubs/container.phpstub"/>
         <file name="module/Application/test/stubs/laminas.phpstub"/>
     </stubs>
 
