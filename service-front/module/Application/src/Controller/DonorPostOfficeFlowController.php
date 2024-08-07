@@ -153,15 +153,15 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
+        
         $date = new \DateTime();
         $date->modify("+90 days");
         $deadline = $date->format("d M Y");
 
-        $postOfficeData = json_decode($detailsData['selectedPostOffice'], true);
+        $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"], true);
 
         $postOfficeAddress = explode(",", $postOfficeData['address']);
-        $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['postcode']]);
+        $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['post_code']]);
 
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
