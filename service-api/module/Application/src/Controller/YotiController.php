@@ -51,7 +51,7 @@ class YotiController extends AbstractActionController
                 $branches[$branch["fad_code"]] = [
                     "name" => $branch["name"],
                     "address" => $branch["address"],
-                    "postcode" => $branch["postcode"]
+                    "post_code" => $branch["post_code"]
                 ];
             }
         } catch (YotiException $e) {

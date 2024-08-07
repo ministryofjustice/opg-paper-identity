@@ -112,9 +112,9 @@ class YotiControllerTest extends TestCase
     public function testBranchReturnFormat(): void
     {
         $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. ' .
-            'Neots, Cambridgeshire","postcode":"PE19 1NL"}' .
+            'Neots, Cambridgeshire","post_code":"PE19 1NL"}' .
                     ',"12345675":{"name":"Hampstead","address":"66 High Street, ' .
-            'Hampstead Heath, London","postcode":"NW3 6LR"}}';
+            'Hampstead Heath, London","post_code":"NW3 6LR"}}';
         $this->YotiServiceMock
             ->expects($this->once())->method('postOfficeBranch')
             ->with('NW1 4PG')
@@ -293,7 +293,7 @@ class YotiControllerTest extends TestCase
                     "fad_code" => "12345678",
                     "name" => "St Neots",
                     "address" => "35 High Street, St. Neots, Cambridgeshire",
-                    "postcode" => "PE19 1NL",
+                    "post_code" => "PE19 1NL",
                     "location" => [
                         "latitude" => 52.22864,
                         "longitude" => -0.26762
@@ -304,7 +304,7 @@ class YotiControllerTest extends TestCase
                     "fad_code" => "12345675",
                     "name" => "Hampstead",
                     "address" => "66 High Street, Hampstead Heath, London",
-                    "postcode" => "NW3 6LR",
+                    "post_code" => "NW3 6LR",
                     "location" => [
                         "latitude" => 52.22864,
                         "longitude" => -0.26762
