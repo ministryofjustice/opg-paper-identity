@@ -10,8 +10,8 @@ use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Form\Annotation\AttributeBuilder;
 use DateTime;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -35,6 +35,10 @@ class IndexController extends AbstractActionController
 
     public function indexAction()
     {
+        $config = $this->params()->fromQuery('config') ?? '';
+
+        $this->opgApiService->pingIndex($config);
+
         return new ViewModel();
     }
 
@@ -53,6 +57,7 @@ class IndexController extends AbstractActionController
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
             $personTypeDescription = $type === 'donor' ? "Donors" : " Certificate Providers";
+
             throw new HttpException(400, "These LPAs are for different " . $personTypeDescription);
         }
         /**
@@ -146,12 +151,12 @@ class IndexController extends AbstractActionController
                     "actorType" => $detailsData['personType'],
                     "lpaIds" => $detailsData['lpas'],
                     "time" => (new \DateTime('NOW'))->format('c'),
-                    "outcome" => "exit"
+                    "outcome" => "exit",
                 ];
 
                 $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
             }
-//            $this->redirect()->toRoute();
+            //            $this->redirect()->toRoute();
         }
 
         $lastPage = $this->getRequest()->getQuery('last_page');
