@@ -14,12 +14,16 @@ use Laminas\Validator\NotEmpty;
  * @psalm-suppress MissingConstructor
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class Country
+class CountryDocument
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(CountryValidator::class)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public mixed $country;
+    #[Annotation\Validator(CountryDocumentValidator::class)]
+    #[Annotation\Validator(NotEmpty::class, options: [
+        "messages" => [
+            NotEmpty::IS_EMPTY  => "Please choose a type of document"
+        ]
+    ])]
+    public mixed $id_method;
 }
