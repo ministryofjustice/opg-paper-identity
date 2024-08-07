@@ -8,17 +8,14 @@ use Application\Controller\YotiController;
 use Application\Fixtures\DataImportHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
-use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
-use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\MockObject\MockObject;
-use Ramsey\Uuid\Uuid;
 
 class YotiControllerTest extends TestCase
 {
@@ -146,8 +143,8 @@ class YotiControllerTest extends TestCase
                 'lpas' => [],
                 'address' => [],
                 'counterService' => [
-                    'notificationsAuthToken' => $bearerToken
-                ]
+                    'notificationsAuthToken' => $bearerToken,
+                ],
             ]));
 
         $this->dataImportHandler
@@ -187,8 +184,8 @@ class YotiControllerTest extends TestCase
                 'lpas' => [],
                 'address' => [],
                 'counterService' => [
-                    'notificationsAuthToken' => $bearerToken
-                ]
+                    'notificationsAuthToken' => $bearerToken,
+                ],
             ]));
 
         $this->dataImportHandler
@@ -233,7 +230,7 @@ class YotiControllerTest extends TestCase
             ],
             'Bearer ' . $bearerToken,
         );
-        $this->assertResponseStatusCode(500);
+        $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(YotiController::class);
@@ -296,8 +293,8 @@ class YotiControllerTest extends TestCase
                     "postcode" => "PE19 1NL",
                     "location" => [
                         "latitude" => 52.22864,
-                        "longitude" => -0.26762
-                    ]
+                        "longitude" => -0.26762,
+                    ],
                 ],
                 [
                     "type" => "UK_POST_OFFICE",
@@ -307,10 +304,10 @@ class YotiControllerTest extends TestCase
                     "postcode" => "NW3 6LR",
                     "location" => [
                         "latitude" => 52.22864,
-                        "longitude" => -0.26762
-                    ]
-                ]
-            ]
+                        "longitude" => -0.26762,
+                    ],
+                ],
+            ],
         ];
     }
 }

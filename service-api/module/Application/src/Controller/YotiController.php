@@ -112,7 +112,7 @@ class YotiController extends AbstractActionController
             $caseData = $this->dataQuery->queryByYotiSessionId($data['session_id']);
 
             if (! $caseData) {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
                 return new JsonModel(new Problem('Case with session_id not found'));
             }
             //authorize

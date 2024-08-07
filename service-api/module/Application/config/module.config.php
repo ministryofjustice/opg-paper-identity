@@ -7,18 +7,21 @@ namespace Application;
 use Application\Aws\DynamoDbClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
+use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\IIQ\IIQClient;
+use Application\Experian\IIQ\IIQClientFactory;
+use Application\Experian\IIQ\WaspClient;
+use Application\Experian\IIQ\WaspClientFactory;
 use Application\Factories\LoggerFactory;
+use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
-use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
-use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
-use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Passport\ValidatorFactory as PassportValidatorFactory;
-use Application\Fixtures\DataImportHandler;
-use Application\Fixtures\DataQueryHandler;
-use Application\Passport\ValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
@@ -30,7 +33,6 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
-
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
@@ -202,32 +204,32 @@ return [
                 ],
             ],
             'find_postoffice_branches' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/branches',
+                    'route' => '/counter-service/branches',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'findPostOffice',
+                        'action' => 'findPostOffice',
                     ],
                 ],
             ],
             'retrieve_yoti_status' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/retrieve-status',
+                    'route' => '/counter-service/:uuid/retrieve-status',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getSessionStatus',
+                        'action' => 'getSessionStatus',
                     ],
                 ],
             ],
             'yoti_notification' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/notification',
+                    'route' => '/counter-service/notification',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'notification',
+                        'action' => 'notification',
                     ],
                 ],
             ],
@@ -379,9 +381,9 @@ return [
             LazyControllerAbstractFactory::class,
         ],
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
-            Controller\YotiController::class => LazyControllerAbstractFactory::class
+            Controller\YotiController::class => LazyControllerAbstractFactory::class,
         ],
     ],
 
@@ -390,11 +392,11 @@ return [
         ],
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
-            DataQueryHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
+            DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName
             ),
-            DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
+            DataImportHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
@@ -406,7 +408,9 @@ return [
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
-            YotiServiceInterface::class => YotiServiceFactory::class
+            YotiServiceInterface::class => YotiServiceFactory::class,
+            IIQClient::class => IIQClientFactory::class,
+            WaspClient::class => WaspClientFactory::class,
         ],
     ],
     'view_manager' => [
