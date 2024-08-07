@@ -640,21 +640,23 @@ class CPFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             if ($form->isValid()) {
-                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-                if ($responseData['result'] === 'Updated') {
-                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-                }
+                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
             }
         }
-        $view->setVariable('form', $form);
-        $view->setVariable('options_data', $idOptionsData);
-        $view->setVariable('countries_data', $idCountriesData);
-        $view->setVariable('countryName', $idCountriesData[
-            $detailsData['idMethodIncludingNation']['country']
+
+        $view->setVariables([
+            'form' => $form,
+            'options_data' => $idOptionsData,
+            'countries_data' => $idCountriesData,
+            'countryName' => $idCountriesData[
+                $detailsData['idMethodIncludingNation']['country']
+            ],
+            'details_data' => $detailsData,
+            'supported_docs' => $docs['supported_documents'],
+            'uuid' => $uuid,
         ]);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('supported_docs', $docs['supported_documents']);
-        $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate($templates['default']);
     }

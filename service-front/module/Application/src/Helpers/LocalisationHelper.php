@@ -8,6 +8,18 @@ use Application\Exceptions\LocalisationException;
 
 class LocalisationHelper
 {
+    public function __construct(private readonly array $config)
+    {
+    }
+
+    private array $wordMap = [
+        'PASSPORT' => "Passport",
+        'DRIVING_LICENCE' => 'Driving licence',
+        'NATIONAL_ID' => 'National ID',
+        'RESIDENCE_PERMIT' => 'Residence permit',
+        'TRAVEL_DOCUMENT' => 'Travel document',
+    ];
+
     /**
      * @throws LocalisationException
      */
@@ -39,7 +51,7 @@ class LocalisationHelper
     public function processDocumentBody(array $documents): array
     {
         foreach ($documents['supported_documents'] as $key => $value) {
-            $string = $this->parseWord($value['type']);
+            $string = $this->addDisplayText($value['type']);
 
             $documents['supported_documents'][$key] = array_merge(
                 $documents['supported_documents'][$key],
@@ -49,25 +61,13 @@ class LocalisationHelper
         return $documents;
     }
 
-    public function parseWord(string $word): string
+    public function addDisplayText(string $word): string
     {
-        $string = strtolower($word);
-        $descString = '';
-        $words = explode("_", $string);
-        foreach ($words as $k => $word) {
-            if ($k == 0) {
-                $descString .= ucfirst($word) . " ";
-            } elseif ($word == 'id') {
-                $descString .= strtoupper($word) . " ";
-            } else {
-                $descString .= $word . " ";
-            }
-        }
-        return substr($descString, 0, strlen($descString) - 1);
+        return $this->wordMap[$word];
     }
 
     private function getConfig(): array
     {
-        return include __DIR__ . './../../config/module.config.php';
+        return $this->config;
     }
 }

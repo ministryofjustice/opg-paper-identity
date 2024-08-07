@@ -32,11 +32,9 @@
                         </p>
                     {% endif %}
                     <div class="govuk-form-group" id="choose-country">
-                        <label class="govuk-label" for="sort">
-
-                        </label>
                         <select class="govuk-select" id="country" name="country">
                             <option value=""></option>
+                            <option value="0">The issuing country is not listed</option>
                             {% for code, name in countries_data %}
                                 <option
                                         value="{{ code }}"
