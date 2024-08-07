@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
 use Application\Forms\Country;
 use Application\Forms\CpAltAddress;
@@ -481,19 +482,26 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+//        $form = (new AttributeBuilder())->createForm(AddressJson::class);
 
         $view = new ViewModel();
-        $view->setVariable('details_data', $detailsData);
+        $view->setVariables([
+            'details_data' => $detailsData,
+//            'form' => $form
+        ]);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
+            $form->setData($params);
 
-            $structuredAddress = json_decode($params->get('address_json'), true);
+            if ($form->isValid()) {
+                $structuredAddress = json_decode($params->get('address_json'), true);
 
-            $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+                $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
-            if ($response) {
-                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+                if ($response) {
+                    return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+                }
             }
         }
         return $view->setTemplate('application/pages/cp/select_address');

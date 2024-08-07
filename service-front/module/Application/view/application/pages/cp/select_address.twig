@@ -1,7 +1,7 @@
 {% extends "layout/layout" %}
 {% block content %}
     {% include 'layout/id_check_banner.twig' with details_data %}
-    <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-width-two-thirds govuk-!-padding-top-2">
         {% block title %}
             What is the address on the ID document?
         {% endblock %}
@@ -9,10 +9,10 @@
     <form method="POST" action="./select-address">
         <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
 
-            {% if form.get('postcode').messages %}
+            {% if form.get('address_json').messages %}
                 <p id="postcode-error" class="govuk-error-message">
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ form.get('postcode').messages | join(', ', ' and ') }}
+                    {{ form.get('address_json').messages | join(', ', ' and ') }}
                 </p>
             {% endif %}
             <div class="govuk-form-group">
