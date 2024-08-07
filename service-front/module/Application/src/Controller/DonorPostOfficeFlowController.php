@@ -153,7 +153,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        
+
         $date = new \DateTime();
         $date->modify("+90 days");
         $deadline = $date->format("d M Y");
