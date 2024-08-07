@@ -40,22 +40,32 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function returnOpgDetailsData(): array
     {
         return [
+            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
+            "personType" => "certificateProvider",
             "firstName" => "Mary Anne",
             "lastName" => "Chapman",
             "dob" => "01 May 1943",
             "address" => [
                 "1 Court Street",
                 "London",
+                "UK",
                 "SW1B 1BB",
-                "UK"
             ],
-            "personType" => "donor",
             "lpas" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
+                "M-XYXY-YAGA-35G3",
             ],
-            "idMethod" => "ukp",
-            "id" => "3b992d91-27d6-4592-8680-ffd7d198c5bf",
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin",
+            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
+            "idMethodIncludingNation" => [
+                "country" => "AUT",
+                "id_method" => "DRIVING_LICENCE"
+            ]
         ];
     }
 
@@ -242,5 +252,24 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(DonorPostOfficeFlowController::class);
         $this->assertControllerClass('DonorPostOfficeFlowController');
         $this->assertMatchedRouteName('root/donor_choose_country');
+    }
+
+    public function testPostOfficeCountriesIdPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/donor-choose-country-id", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorPostOfficeFlowController::class);
+        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertMatchedRouteName('root/donor_choose_country_id');
     }
 }
