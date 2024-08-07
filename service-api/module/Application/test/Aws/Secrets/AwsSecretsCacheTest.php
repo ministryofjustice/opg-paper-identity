@@ -21,7 +21,7 @@ class AwsSecretsCacheTest extends TestCase
     {
         $this->client = $this->createMock(SecretsManagerClient::class);
         $this->storage = $this->createMock(StorageInterface::class);
-        $this->sut = new AwsSecretsCache('local', $this->storage, $this->client);
+        $this->sut = new AwsSecretsCache('local/', $this->storage, $this->client);
     }
 
     /**

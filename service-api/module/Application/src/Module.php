@@ -32,9 +32,7 @@ class Module
         $eventManager->attach(MvcEvent::EVENT_FINISH, [$this, 'onFinish'], 1000000);
 
         $application = $event->getApplication();
-        /** @var ServiceManager $serviceManager */
         $serviceManager = $application->getServiceManager();
-        /** @var AwsSecretsCache $secretsCache */
         $secretsCache = $serviceManager->get(AwsSecretsCache::class);
         AwsSecret::setCache($secretsCache);
     }
