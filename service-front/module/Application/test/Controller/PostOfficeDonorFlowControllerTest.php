@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\DonorPostOfficeFlowController;
+use Application\Controller\PostOfficeFlowController;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -147,8 +147,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-documents", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/post_office_documents');
     }
 
@@ -166,8 +166,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/what_happens_next');
     }
 
@@ -185,8 +185,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-route-not-available", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/post_office_route_not_available');
     }
 
@@ -204,8 +204,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-do-details-match", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_do_details_match');
     }
 
@@ -230,8 +230,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_donor_lpa_check');
     }
 
@@ -249,8 +249,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-choose-country", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/donor_choose_country');
     }
 
@@ -268,8 +268,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/donor-choose-country-id", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/donor_choose_country_id');
     }
 }

@@ -58,6 +58,12 @@
                                 Is this the address for the chosen ID document?
                             </h3>
                         </legend>
+                        {% if form.get('chosenAddress').messages %}
+                            <p id="form-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {{ form.get('chosenAddress').messages | join(', ', ' and ') }}
+                            </p>
+                        {% endif %}
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 <input class="govuk-radios__input" id="chosenAddressYes" name="chosenAddress"

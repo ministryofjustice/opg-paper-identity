@@ -22,7 +22,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
 
-class DonorPostOfficeFlowController extends AbstractActionController
+class PostOfficeFlowController extends AbstractActionController
 {
     protected $plugins;
 

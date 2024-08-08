@@ -9,6 +9,7 @@ use Application\Enums\LpaTypes;
 use Application\Forms\AddressJson;
 use Application\Exceptions\LocalisationException;
 use Application\Forms\BirthDate;
+use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\CpAltAddress;
@@ -248,22 +249,34 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $view->setVariable('details_data', $detailsData);
+        $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
+
+        $view->setVariables([
+            'details_data' => $detailsData,
+            'form' => $form
+        ]);
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
+            $form->setData($params);
 
-            if ($params->get('confirm_alt') == '1') {
-                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
-            }
-
-            if ($params->get('chosenAddress') == 'yes') {
-                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
-            } elseif ($params->get('chosenAddress') == 'no') {
-                return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
+            if ($form->isValid()) {
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
+                if ($params->get('confirm_alt') == '1') {
+                    return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+                }
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
+                if ($params->get('chosenAddress') == 'yes') {
+                    return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+                } elseif ($params->get('chosenAddress') == 'no') {
+                    return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
+                }
             }
         }
-
         return $view->setTemplate('application/pages/cp/confirm_address_match');
     }
 
