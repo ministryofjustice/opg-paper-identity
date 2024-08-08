@@ -23,19 +23,15 @@ class LocalisationHelper
     /**
      * @throws LocalisationException
      */
-    public function getInternationalSupportedDocuments(array $detailsData): array
+    public function getInternationalSupportedDocuments(string $countryCode): array
     {
         $config = $this->getConfig();
 
         $idDocuments = $config['opg_settings']['supported_countries_documents'];
         $documents = [];
 
-        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
-            throw new LocalisationException("Country for document list has not been set.");
-        }
-
         foreach ($idDocuments as $countryDocumentBody) {
-            if ($countryDocumentBody['code'] == $detailsData['idMethodIncludingNation']['country']) {
+            if ($countryDocumentBody['code'] == $countryCode) {
                 $documents = $countryDocumentBody;
             }
         }

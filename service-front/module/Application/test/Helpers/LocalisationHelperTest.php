@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Helpers;
 
+use Application\Exceptions\LocalisationException;
 use Application\Helpers\LocalisationHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -136,6 +137,142 @@ class LocalisationHelperTest extends TestCase
             [
                 'TRAVEL_DOCUMENT',
                 'Travel document'
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider configData
+     */
+    public function testGetInternationalSupportedDocuments(
+        array $config,
+        string $word,
+        array $expected,
+        bool $exception = false
+    ): void {
+        if ($exception) {
+            $this->expectException(LocalisationException::class);
+        }
+        $localisationHelper = new LocalisationHelper($config);
+        $actual = $localisationHelper->getInternationalSupportedDocuments($word);
+
+        $this->assertEquals($expected, $actual['supported_documents']);
+    }
+
+    public static function configData(): array
+    {
+        return [
+          [
+              [
+                  'opg_settings' => [
+                      'acceptable_nations_for_id_documents' => [
+                          'AUT' => 'Austria',
+                      ],
+                      "supported_countries_documents" => [
+                          [
+                              "code" => "AUT",
+                              "supported_documents" => [
+                                  [
+                                      "type" => "DRIVING_LICENCE",
+                                      "is_strictly_latin" => true
+                                  ],
+                                  [
+                                      "type" => "NATIONAL_ID",
+                                      "is_strictly_latin" => true,
+                                      "requirements" => [
+                                          "date_from" => "2002-01-01"
+                                      ]
+                                  ],
+                                  [
+                                      "type" => "PASSPORT",
+                                      "is_strictly_latin" => true
+                                  ],
+                                  [
+                                      "type" => "RESIDENCE_PERMIT",
+                                      "is_strictly_latin" => true
+                                  ],
+                                  [
+                                      "type" => "TRAVEL_DOCUMENT",
+                                      "is_strictly_latin" => true
+                                  ]
+                              ]
+                          ]
+                      ]
+                  ]
+              ],
+              "AUT",
+              [
+                  [
+                      "type" => "DRIVING_LICENCE",
+                      "is_strictly_latin" => true,
+                      "display_text" => "Driving licence"
+                  ],
+                  [
+                      "type" => "NATIONAL_ID",
+                      "is_strictly_latin" => true,
+                      "requirements" => [
+                          "date_from" => "2002-01-01"
+                      ],
+                      "display_text" => "National ID"
+                  ],
+                  [
+                      "type" => "PASSPORT",
+                      "is_strictly_latin" => true,
+                      "display_text" => "Passport"
+                  ],
+                  [
+                      "type" => "RESIDENCE_PERMIT",
+                      "is_strictly_latin" => true,
+                      "display_text" => "Residence permit"
+                  ],
+                  [
+                      "type" => "TRAVEL_DOCUMENT",
+                      "is_strictly_latin" => true,
+                      "display_text" => "Travel document"
+                  ]
+              ]
+          ],
+            [
+                [
+                    'opg_settings' => [
+                        'acceptable_nations_for_id_documents' => [
+                            'AUT' => 'Austria',
+                        ],
+                        "supported_countries_documents" => [
+                            [
+                                "code" => "AUT",
+                                "supported_documents" => [
+                                    [
+                                        "type" => "DRIVING_LICENCE",
+                                        "is_strictly_latin" => true
+                                    ],
+                                    [
+                                        "type" => "NATIONAL_ID",
+                                        "is_strictly_latin" => true,
+                                        "requirements" => [
+                                            "date_from" => "2002-01-01"
+                                        ]
+                                    ],
+                                    [
+                                        "type" => "PASSPORT",
+                                        "is_strictly_latin" => true
+                                    ],
+                                    [
+                                        "type" => "RESIDENCE_PERMIT",
+                                        "is_strictly_latin" => true
+                                    ],
+                                    [
+                                        "type" => "TRAVEL_DOCUMENT",
+                                        "is_strictly_latin" => true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "AU",
+                [],
+                true
             ]
         ];
     }

@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Exceptions\LocalisationException;
 use Application\Forms\BirthDate;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
@@ -622,6 +623,9 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate($templates['default']);
     }
 
+    /**
+     * @throws LocalisationException
+     */
     public function chooseCountryIdAction(): ViewModel|Response
     {
         $templates = ['default' => 'application/pages/cp/choose_country_id'];
@@ -630,7 +634,14 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
-        $docs = $this->localisationHelper->getInternationalSupportedDocuments($detailsData);
+
+        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
+            throw new \Exception("Country for document list has not been set.");
+        }
+
+        $docs = $this->localisationHelper->getInternationalSupportedDocuments(
+            $detailsData['idMethodIncludingNation']['country']
+        );
 
         $form = (new AttributeBuilder())->createForm(CountryDocument::class);
         $view->setVariable('form', $form);
