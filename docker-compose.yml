@@ -84,11 +84,7 @@ services:
         condition: service_healthy
       sirius-mock:
         condition: service_healthy
-    environment:
-      - API_BASE_URI=http://api-web
-      - SIRIUS_BASE_URL=http://sirius-mock:4010 # http://host.docker.internal:8080 for real Sirius
-      - SIRIUS_PUBLIC_URL=http://localhost:8080
-      - APP_DEBUG=1
+    env_file: ./service-front/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
       interval: 15s
@@ -216,6 +212,16 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  cypress:
+    build:
+      dockerfile: docker/cypress/Dockerfile
+    command: [ "--headless", "-b", "electron" ]
+    volumes:
+      - ./e2e-tests/cypress/screenshots:/root/cypress/screenshots:rw,delegated
+    depends_on:
+      front-web:
+        condition: service_healthy
 
 volumes:
   static-content:
