@@ -379,7 +379,7 @@ return [
             LazyControllerAbstractFactory::class,
         ],
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
             Controller\YotiController::class => LazyControllerAbstractFactory::class
         ],
