@@ -339,7 +339,7 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
-    public function createYotiSession(string $uuid): array
+    public function createYotiSession(string $uuid): void
     {
         $url = sprintf("/counter-service/%s/create-session", $uuid);
 
@@ -348,6 +348,5 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
-        return $this->responseData;
     }
 }
