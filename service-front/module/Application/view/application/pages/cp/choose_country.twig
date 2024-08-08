@@ -8,7 +8,7 @@
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h1 class="govuk-fieldset__heading">
                             {% block title %}
-                                Choose country and ID type
+                                Choose country
                             {% endblock %}
                         </h1>
                     </legend>
@@ -17,7 +17,7 @@
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                             <strong class="govuk-warning-text__text">
                                 <span class="govuk-visually-hidden">Warning</span>
-                                Note: we do not accept documents from countries not listed.
+                                We do not accept documents from countries not listed.
                             </strong>
                         </div>
                     </div>
@@ -31,45 +31,19 @@
                             {{ form.get('country').messages | join(', ', ' and ') }}
                         </p>
                     {% endif %}
-                        <div class="govuk-form-group" id="choose-country">
-                            <label class="govuk-label" for="sort">
-
-                            </label>
-                            <select class="govuk-select" id="country" name="country">
-                                <option value=""></option>
-                                {% for code, name in countries_data %}
-                                    <option
+                    <div class="govuk-form-group" id="choose-country">
+                        <select class="govuk-select" id="country" name="country">
+                            <option value=""></option>
+                            <option value="0">The issuing country is not listed</option>
+                            {% for code, name in countries_data %}
+                                <option
                                         value="{{ code }}"
                                         {% if form.get('country').value == code %}selected{% endif %}
-                                    >
-                                        {{ name }}
-                                    </option>
-                                {%  endfor %}
-                            </select>
-                        </div>
-                    <h2 class="govuk-heading-m">Choose document</h2>
-                    {% if form.get('id_method').messages %}
-                        <p id="lpa-error" class="govuk-error-message">
-                            <span class="govuk-visually-hidden">Error:</span>
-                            {{ form.get('id_method').messages | join(', ', ' and ') }}
-                        </p>
-                    {% endif %}
-                    <div class="govuk-form-group">
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            {% for key, datum in options_data %}
-                                <div class="govuk-radios__item">
-                                    <input
-                                        class="govuk-radios__input"
-                                        id="{{ key }}"
-                                        name="id_method"
-                                        type="radio"
-                                        value="{{ key }}"
-                                        {% if form.get('id_method').value == key %}checked{% endif %}
-                                    >
-                                    <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}</label>
-                                </div>
+                                >
+                                    {{ name }}
+                                </option>
                             {% endfor %}
-                        </div>
+                        </select>
                     </div>
                 </fieldset>
             </div>
