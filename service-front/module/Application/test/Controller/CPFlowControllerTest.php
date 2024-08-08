@@ -345,9 +345,9 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $response = $this->getResponse()->getContent();
 
-        $this->assertStringContainsString(' This document code is not recognised', $response);
+        $this->assertStringContainsString('This document code is not recognised', $response);
     }
-    
+
     public function testPostOfficeCountriesIdPostPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
