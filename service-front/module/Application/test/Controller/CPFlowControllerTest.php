@@ -359,6 +359,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateIdMethodWithCountry')
+            ->with($this->uuid, ['id_method' => 'PASSPORT']);
+
         $this->dispatch(
             "/$this->uuid/cp/choose-country-id",
             'POST',

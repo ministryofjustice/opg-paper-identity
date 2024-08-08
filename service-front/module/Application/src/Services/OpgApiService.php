@@ -316,6 +316,9 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
+    /**
+     * @throws OpgApiException
+     */
     public function updateIdMethodWithCountry(string $uuid, array $data): array
     {
         $url = sprintf("/cases/%s/update-cp-po-id", $uuid);
