@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
+use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\IndexController;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
@@ -26,6 +27,16 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
     public function testIndexActionCanBeAccessed(): void
     {
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+
+        $opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+        $opgApiServiceMock
+            ->expects(self::once())
+            ->method('ping');
+
+        $serviceManager->setService(OpgApiServiceInterface::class, $opgApiServiceMock);
+
         $this->dispatch('/', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -36,6 +47,16 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
     public function testIndexActionViewModelTemplateRenderedWithinLayout(): void
     {
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+
+        $opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+        $opgApiServiceMock
+            ->expects(self::once())
+            ->method('ping');
+
+        $serviceManager->setService(OpgApiServiceInterface::class, $opgApiServiceMock);
+
         $this->dispatch('/', 'GET');
         $this->assertQuery('body h1');
     }
