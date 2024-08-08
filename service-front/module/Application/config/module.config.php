@@ -497,6 +497,26 @@ return [
                             ],
                         ],
                     ],
+//                    'cp_find_post_office_branch' => [
+//                        'type' => Segment::class,
+//                        'options' => [
+//                            'route' => '[/:uuid]/cp/find-post-office-branch',
+//                            'defaults' => [
+//                                'controller' => Controller\CpPostOfficeFlowController::class,
+//                                'action' => 'findPostOfficeBranch',
+//                            ],
+//                        ],
+//                    ],
+//                    'cp_confirm_post_office' => [
+//                        'type' => Segment::class,
+//                        'options' => [
+//                            'route' => '[/:uuid]/cp/confirm-post-office',
+//                            'defaults' => [
+//                                'controller' => Controller\CpPostOfficeFlowController::class,
+//                                'action' => 'confirmPostOffice',
+//                            ],
+//                        ],
+//                    ],
                 ],
             ],
         ],

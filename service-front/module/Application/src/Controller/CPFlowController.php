@@ -245,34 +245,26 @@ class CPFlowController extends AbstractActionController
 
     public function confirmAddressAction(): ViewModel|Response
     {
-        $routes = [
-            'nin' => 'root/cp_national_insurance_number',
-            'pn' => 'root/cp_passport_number',
-            'dln' => 'root/cp_driving_licence_number',
-            'po' => 'root/post_office_documents'
-        ];
         $view = new ViewModel();
-        $templates = [
-            'default' => 'application/pages/cp/confirm_address_match',
-        ];
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-        if (count($this->getRequest()->getPost())) {
+
+        if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
 
             if ($params->get('confirm_alt') == '1') {
-                return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
             }
 
             if ($params->get('chosenAddress') == 'yes') {
-                return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
             } elseif ($params->get('chosenAddress') == 'no') {
                 return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
             }
         }
 
-        return $view->setTemplate($templates['default']);
+        return $view->setTemplate('application/pages/cp/confirm_address_match');
     }
 
     public function nationalInsuranceNumberAction(): ViewModel
@@ -486,7 +478,7 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-//        $form = (new AttributeBuilder())->createForm(AddressJson::class);
+        $form = (new AttributeBuilder())->createForm(AddressJson::class);
 
         $view = new ViewModel();
         $view->setVariables([
@@ -499,6 +491,9 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
                 $structuredAddress = json_decode($params->get('address_json'), true);
 
                 $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
