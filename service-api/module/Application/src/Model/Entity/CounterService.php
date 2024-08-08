@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Validators\IsType;
 use JsonSerializable;
 use Laminas\Form\Annotation;
 use Laminas\Validator\NotEmpty;
@@ -23,6 +24,14 @@ class CounterService implements JsonSerializable
     #[Annotation\Validator(Uuid::class)]
     #[Annotation\Validator(NotEmpty::class)]
     public string $notificationsAuthToken = '';
+
+    #[Annotation\Required(false)]
+    public string $state = '';
+
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public bool $result = false;
 
     /**
      * @param array<string, mixed> $data
@@ -47,7 +56,9 @@ class CounterService implements JsonSerializable
      *     selectedPostOffice: string,
      *     selectedPostOfficeDeadline: string,
      *     notificationsAuthToken: string,
-     *     notificationState: string
+     *     notificationState: string,
+     *     state: string,
+     *     result: bool
      * }
      */
     public function toArray(): array
@@ -56,7 +67,9 @@ class CounterService implements JsonSerializable
             'selectedPostOffice' => $this->selectedPostOffice,
             'selectedPostOfficeDeadline' => $this->selectedPostOfficeDeadline,
             'notificationsAuthToken' => $this->notificationsAuthToken,
-            'notificationState' => $this->notificationState
+            'notificationState' => $this->notificationState,
+            'state' => $this->state,
+            'result' => $this->result
         ];
     }
 
