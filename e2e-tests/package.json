@@ -1,0 +1,14 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "npx eslint",
+    "test": "cypress open",
+    "test-headless": "cypress run --headless -b electron"
+  },
+  "devDependencies": {
+    "cypress": "^13.13.2",
+    "typescript": "*",
+    "typescript-eslint": "^8.0.1"
+  }
+}
