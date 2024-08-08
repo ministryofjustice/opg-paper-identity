@@ -61,7 +61,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "selectedPostOfficeDeadline" => null,
             "selectedPostOffice" => null,
             "searchPostcode" => null,
-            "idMethod" => "nin"
+            "idMethod" => "nin",
+            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
+            "idMethodIncludingNation" => [
+                "country" => "AUT",
+                "id_method" => "DRIVING_LICENCE"
+            ]
         ];
     }
 
@@ -268,5 +273,26 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_choose_country');
+    }
+
+    public function testPostOfficeCountriesIdPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/cp/choose-country-id", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
+//        $this->assertTemplateName('cp_choose_country');
+//            $response = $this->getResponse()->getContent();
     }
 }
