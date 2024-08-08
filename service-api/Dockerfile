@@ -17,8 +17,17 @@ COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
 
+COPY docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
+COPY docker/scripts /usr/local/bin/scripts
+
+RUN chmod +x /usr/local/bin/opg-paper-identity-entrypoint
+ENTRYPOINT ["/usr/local/bin/opg-paper-identity-entrypoint"]
+CMD ["php-fpm"]
+
 RUN mkdir /tmp/cache &&\
   chown -R www-data /tmp/cache &&\
+  mkdir -m 700 /opg-private &&\
+  chown -R www-data /opg-private &&\
   chown -R www-data /var/www/
 
 ENV PHP_FPM_MAX_CHILDREN "8"
