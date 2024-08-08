@@ -6,13 +6,15 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Exceptions\LocalisationException;
 use Application\Forms\Country;
+use Application\Forms\CountryDocument;
 use Application\Forms\IdMethod;
 use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeAddress;
-use Application\Forms\PostOfficePostcode;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\LocalisationHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -28,6 +30,7 @@ class DonorPostOfficeFlowController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
+        private readonly LocalisationHelper $localisationHelper,
         private readonly array $config,
     ) {
     }
@@ -158,10 +161,10 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $date->modify("+90 days");
         $deadline = $date->format("d M Y");
 
-        $postOfficeData = json_decode($detailsData['selectedPostOffice'], true);
+        $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"], true);
 
         $postOfficeAddress = explode(",", $postOfficeData['address']);
-        $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['postcode']]);
+        $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['post_code']]);
 
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
@@ -255,10 +258,53 @@ class DonorPostOfficeFlowController extends AbstractActionController
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $form = (new AttributeBuilder())->createForm(Country::class);
 
         if (count($this->getRequest()->getPost())) {
+            $form->setData($this->getRequest()->getPost());
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if ($form->isValid()) {
+                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+                if ($responseData['result'] === 'Updated') {
+                    return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
+                }
+            }
+        }
+
+        $view->setVariable('form', $form);
+        $view->setVariable('options_data', $idOptionsData);
+        $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
+    }
+
+    /**
+     * @throws LocalisationException
+     */
+    public function chooseCountryIdAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/post_office/choose_country_id'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+
+        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
+            throw new \Exception("Country for document list has not been set.");
+        }
+
+        $docs = $this->localisationHelper->getInternationalSupportedDocuments(
+            $detailsData['idMethodIncludingNation']['country']
+        );
+
+        $form = (new AttributeBuilder())->createForm(CountryDocument::class);
+        $view->setVariable('form', $form);
+
+        if ($this->getRequest()->isPost()) {
             $form->setData($this->getRequest()->getPost());
             $formData = $this->getRequest()->getPost()->toArray();
 
@@ -269,11 +315,14 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 }
             }
         }
-
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $idOptionsData);
         $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('countryName', $idCountriesData[
+        $detailsData['idMethodIncludingNation']['country']
+        ]);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('supported_docs', $docs['supported_documents']);
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate($templates['default']);

@@ -584,7 +584,7 @@ class IdentityController extends AbstractActionController
 
                     $this->dataImportHandler->updateCaseData(
                         $uuid,
-                        'sessionId',
+                        'yotiSessionId',
                         'S',
                         $yotiSessionId
                     );
