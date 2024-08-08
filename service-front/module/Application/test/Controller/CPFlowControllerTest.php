@@ -298,7 +298,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertStringContainsString('Choose document', $response);
     }
 
-    public function testPostOfficeCountriesIdPostErrorPage(): void
+    public function testPostOfficeCountriesIdEmptyPostErrorPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
@@ -321,6 +321,33 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertStringContainsString('Please choose a type of document', $response);
     }
 
+    public function testPostOfficeCountriesIdPostFailedValidationErrorPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch(
+            "/$this->uuid/cp/choose-country-id",
+            'POST',
+            ['id_method' => 'PASSPOT']
+        );
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
+
+        $response = $this->getResponse()->getContent();
+
+        $this->assertStringContainsString(' This document code is not recognised', $response);
+    }
+    
     public function testPostOfficeCountriesIdPostPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -338,6 +365,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ['id_method' => 'PASSPORT']
         );
         $this->assertResponseStatusCode(302);
+        $this->assertRedirect();
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
