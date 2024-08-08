@@ -6,8 +6,10 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Exceptions\LocalisationException;
 use Application\Forms\BirthDate;
 use Application\Forms\Country;
+use Application\Forms\CountryDocument;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\IdMethod;
@@ -20,6 +22,7 @@ use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\LocalisationHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -37,6 +40,7 @@ class CPFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly LpaFormHelper $lpaFormHelper,
+        private readonly LocalisationHelper $localisationHelper,
         private readonly array $config,
     ) {
     }
@@ -605,7 +609,7 @@ class CPFlowController extends AbstractActionController
             if ($form->isValid()) {
                 $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
                 if ($responseData['result'] === 'Updated') {
-                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
                 }
             }
         }
@@ -615,6 +619,55 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
+    }
+
+    /**
+     * @throws LocalisationException
+     */
+    public function chooseCountryIdAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/cp/choose_country_id'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+
+        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
+            throw new \Exception("Country for document list has not been set.");
+        }
+
+        $docs = $this->localisationHelper->getInternationalSupportedDocuments(
+            $detailsData['idMethodIncludingNation']['country']
+        );
+
+        $form = (new AttributeBuilder())->createForm(CountryDocument::class);
+        $view->setVariable('form', $form);
+
+        if ($this->getRequest()->isPost()) {
+            $form->setData($this->getRequest()->getPost());
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if ($form->isValid()) {
+                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+            }
+        }
+
+        $view->setVariables([
+            'form' => $form,
+            'options_data' => $idOptionsData,
+            'countries_data' => $idCountriesData,
+            'countryName' => $idCountriesData[
+                $detailsData['idMethodIncludingNation']['country']
+            ],
+            'details_data' => $detailsData,
+            'supported_docs' => $docs['supported_documents'],
+            'uuid' => $uuid,
+        ]);
 
         return $view->setTemplate($templates['default']);
     }
