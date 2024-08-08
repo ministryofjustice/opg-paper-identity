@@ -353,4 +353,14 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+    public function createYotiSession(string $uuid): void
+    {
+        $url = sprintf("/counter-service/%s/create-session", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }

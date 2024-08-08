@@ -45,4 +45,6 @@ interface OpgApiServiceInterface
     public function updateIdMethodWithCountry(string $uuid, array $data): array;
 
     public function updateCaseProgress(string $uuid, array $data): array;
+
+    public function createYotiSession(string $uuid): void;
 }

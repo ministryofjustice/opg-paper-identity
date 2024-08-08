@@ -138,6 +138,9 @@ class DonorPostOfficeFlowController extends AbstractActionController
                 $processableForm,
                 $templates
             );
+            //trigger post office counter service
+            $this->opgApiService->createYotiSession($uuid);
+
             if (! is_null($processed->getRedirect())) {
                 return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
             }
