@@ -259,20 +259,16 @@ class CPFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $form->setData($params);
+            $formArray = $this->getRequest()->getPost()->toArray();
+
+            if ($formArray['confirm_alt'] == 'confirmed') {
+                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+            }
 
             if ($form->isValid()) {
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                if ($params->get('confirm_alt') == '1') {
+                if ($formArray['chosenAddress'] == 'yes') {
                     return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
-                }
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                if ($params->get('chosenAddress') == 'yes') {
-                    return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
-                } elseif ($params->get('chosenAddress') == 'no') {
+                } elseif ($formArray['chosenAddress'] == 'no') {
                     return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
                 }
             }
@@ -491,7 +487,7 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = (new AttributeBuilder())->createForm(AddressJson::class);
+//        $form = (new AttributeBuilder())->createForm(AddressJson::class);
 
         $view = new ViewModel();
         $view->setVariables([
@@ -501,9 +497,9 @@ class CPFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $form->setData($params);
+//            $form->setData($params);
 
-            if ($form->isValid()) {
+//            if ($form->isValid()) {
                 /**
                  * @psalm-suppress InvalidMethodCall
                  */
@@ -511,10 +507,10 @@ class CPFlowController extends AbstractActionController
 
                 $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
-                if ($response) {
-                    return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
-                }
+            if ($response) {
+                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
             }
+//            }
         }
         return $view->setTemplate('application/pages/cp/select_address');
     }

@@ -9,12 +9,12 @@
     <form method="POST" action="./select-address">
         <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
 
-            {% if form.get('address_json').messages %}
-                <p id="postcode-error" class="govuk-error-message">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ form.get('address_json').messages | join(', ', ' and ') }}
-                </p>
-            {% endif %}
+{#            {% if form.get('address_json').messages %}#}
+{#                <p id="postcode-error" class="govuk-error-message">#}
+{#                    <span class="govuk-visually-hidden">Error:</span>#}
+{#                    {{ form.get('address_json').messages | join(', ', ' and ') }}#}
+{#                </p>#}
+{#            {% endif %}#}
             <div class="govuk-form-group">
                 <label for="addresses" class="govuk-label">Select address</label>
                 <select class="govuk-select" id="addresses" name="address_json">

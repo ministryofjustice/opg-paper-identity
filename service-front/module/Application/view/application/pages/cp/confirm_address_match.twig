@@ -40,7 +40,7 @@
 
                     <p class="govuk-body">
                         {% for line in details_data.alternateAddress %}
-                            {% if line > 0 %}
+                            {% if line  %}
                                 {{ line }}<br>
                             {% endif %}
                         {% endfor %}
@@ -48,7 +48,7 @@
                     <p class="govuk-body">
                         <a href="./enter-address-manual">Edit this address</a>
                     </p>
-                    <input type="hidden" name="confirm_alt" value="1">
+                    <input type="hidden" name="confirm_alt" value="confirmed">
                 </div>
             {% else %}
                 <div class="govuk-form-group govuk-!-width-two-thirds">
