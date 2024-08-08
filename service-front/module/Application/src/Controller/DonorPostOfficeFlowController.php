@@ -173,7 +173,8 @@ class DonorPostOfficeFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $responseData = $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
-            if ($responseData['result'] == 'Updated') {
+            $counterService = $this->opgApiService->createYotiSession($uuid);
+            if ($responseData['result'] == 'Updated' && $counterService['result'] == 'Session created') {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
             } else {
                 $view->setVariable('errors', ['API Error']);
