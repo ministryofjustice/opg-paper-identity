@@ -58,3 +58,4 @@ clean-junit-output:
 
 cypress:
 	docker compose run --build cypress
+	docker compose logs > test.log
