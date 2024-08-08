@@ -292,7 +292,55 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_choose_country_id');
-//        $this->assertTemplateName('cp_choose_country');
-//            $response = $this->getResponse()->getContent();
+
+        $response = $this->getResponse()->getContent();
+
+        $this->assertStringContainsString('Choose document', $response);
+    }
+
+    public function testPostOfficeCountriesIdPostErrorPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/cp/choose-country-id", 'POST', []);
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
+
+        $response = $this->getResponse()->getContent();
+
+        $this->assertStringContainsString('Please choose a type of document', $response);
+    }
+
+    public function testPostOfficeCountriesIdPostPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch(
+            "/$this->uuid/cp/choose-country-id",
+            'POST',
+            ['id_method' => 'PASSPORT']
+        );
+        $this->assertResponseStatusCode(302);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
     }
 }
