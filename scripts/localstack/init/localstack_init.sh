@@ -25,3 +25,15 @@ awslocal secretsmanager create-secret --name local/paper-identity/yoti/certifica
 awslocal secretsmanager create-secret --name local/paper-identity/yoti/sdk-client-id \
     --description "ID of Yoti client" \
     --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate \
+    --description "Experian IIQ auth certificate" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate-key \
+    --description "Experian IIQ auth certificate private key" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate-key-passphrase \
+    --description "Experian IIQ auth certificate private key passphrase" \
+    --secret-string "empty"
