@@ -29,8 +29,6 @@ class AwsSecretsCacheFactory implements FactoryInterface
 
         $secretsManagerClient = new SecretsManagerClient($config['aws']);
 
-        $logger = new Log
-
         return new AwsSecretsCache(
             $config['secrets_prefix'],
             $storage, $secretsManagerClient,
