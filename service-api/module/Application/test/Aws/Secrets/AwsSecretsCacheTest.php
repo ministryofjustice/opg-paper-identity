@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Aws\Secrets;
 
-
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;
 use Application\Factory\Service\Logging\LoggerFactory;
