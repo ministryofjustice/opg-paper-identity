@@ -40,8 +40,6 @@ class IdentityController extends AbstractActionController
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly KBVServiceInterface $KBVService,
-        private readonly SessionConfig $sessionConfig,
-        private readonly YotiServiceInterface $yotiService,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -538,67 +536,6 @@ class IdentityController extends AbstractActionController
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
             return new JsonModel($response);
-        }
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        if (! $case) {
-            $status = Response::STATUS_CODE_400;
-            $this->getResponse()->setStatusCode($status);
-            $response = [
-                "error" => "Unable to locate case"
-            ];
-            return new JsonModel($response);
-        }
-        $idMethod = $case->idMethod;
-
-        if (str_contains($idMethod, "po_")) {
-            //start Yoti process
-            $notificationsAuthToken = strval(Uuid::uuid4());
-
-            $sessionData = $this->sessionConfig->build($case, $notificationsAuthToken);
-            $nonce = strval(Uuid::uuid4());
-            $dateTime = new DateTime();
-            $timestamp = $dateTime->getTimestamp();
-
-            try {
-                $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
-                $yotiSessionId = $result["data"]["session_id"];
-                $counterServiceMap = [];
-
-                if ($case->counterService !== null) {
-                    $counterServiceMap["selectedPostOffice"] = $case->counterService->selectedPostOffice;
-                    $counterServiceMap["selectedPostOfficeDeadline"] =
-                        $case->counterService->selectedPostOfficeDeadline;
-                }
-                $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
-
-                if ($result["status"] < 400) {
-                    $this->dataImportHandler->updateCaseData(
-                        $uuid,
-                        'counterService',
-                        'M',
-                        array_map(fn (mixed $v) => [
-                            'S' => $v
-                        ], $counterServiceMap),
-                    );
-
-                    $this->dataImportHandler->updateCaseData(
-                        $uuid,
-                        'yotiSessionId',
-                        'S',
-                        $yotiSessionId
-                    );
-                }
-                //Prepare and generate PDF
-                $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
-                $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
-            } catch (YotiException $e) {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-                return new JsonModel(new Problem(
-                    'Problem requesting Yoti API',
-                    extra: ['errors' => $e->getMessage()],
-                ));
-            }
         }
 
         $this->getResponse()->setStatusCode($status);
