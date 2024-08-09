@@ -83,15 +83,24 @@ class DonorFlowController extends AbstractActionController
     public function donorDetailsMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-
+        $idMethods = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
+            $nextPage = './post-office-donor-lpa-check';
+        } else {
+            $nextPage = './donor-lpa-check';
+        }
 
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
 
         $view = new ViewModel();
 
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
+        $view->setVariables([
+            'details_data' => $detailsData,
+            'uuid' => $uuid,
+            'next_page' => $nextPage,
+        ]);
 
         return $view->setTemplate('application/pages/donor_details_match_check');
     }
