@@ -25,6 +25,9 @@ permissions:
   security-events: write
   checks: write
 
+env:
+  COMPOSE_FILE: docker-compose.yml
+
 jobs:
   test:
     strategy:
