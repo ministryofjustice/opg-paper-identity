@@ -194,4 +194,22 @@ class FormProcessorHelper
             $redirect
         );
     }
+
+    public function processDataForm(array $params): string
+    {
+        if (strlen($params['dob_year']) == 2) {
+            $year = (int)$params['dob_year'] < 6 ?
+                sprintf("20%s", $params['dob_year']) :
+                sprintf("19%s", $params['dob_year']);
+        } else {
+            $year = $params['dob_year'];
+        }
+
+        return sprintf(
+            "%s-%s-%s",
+            $year,
+            $params['dob_month'],
+            $params['dob_day'],
+        );
+    }
 }

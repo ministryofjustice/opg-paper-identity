@@ -218,12 +218,7 @@ class CPFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
-            $dateOfBirth = sprintf(
-                "%s-%s-%s",
-                $params->get('dob_year'),
-                $params->get('dob_month'),
-                $params->get('dob_day'),
-            );
+            $dateOfBirth = $this->formProcessorHelper->processDataForm($params->toArray());
             $params->set('date', $dateOfBirth);
             $form->setData($params);
 
