@@ -460,7 +460,7 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/identity_check_failed');
     }
 
-    public function enterPostcodeAction(): ViewModel
+    public function enterPostcodeAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -472,13 +472,17 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
             $form->setData($params);
+            /**
+             * @psalm-suppress InvalidMethodCall
+             */
+            $postcode = $params->get('postcode');
 
             if ($form->isValid()) {
                 return $this->redirect()->toRoute(
                     'root/cp_select_address',
                     [
                         'uuid' => $uuid,
-                        'postcode' => $params->get('postcode')
+                        'postcode' => $postcode
                     ]
                 );
             }
@@ -501,9 +505,6 @@ class CPFlowController extends AbstractActionController
             'form' => $form
         ]);
 
-        /**
-         * @psalm-suppress InvalidMethodCall
-         */
         $response = $this->siriusApiService->searchAddressesByPostcode(
             $postcode,
             $this->getRequest()
