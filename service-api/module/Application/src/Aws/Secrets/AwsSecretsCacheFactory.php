@@ -9,6 +9,7 @@ use Laminas\Cache\Storage\Adapter\Apcu;
 use Laminas\Cache\Storage\Plugin\ExceptionHandler;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class AwsSecretsCacheFactory implements FactoryInterface
 {
@@ -28,6 +29,12 @@ class AwsSecretsCacheFactory implements FactoryInterface
 
         $secretsManagerClient = new SecretsManagerClient($config['aws']);
 
-        return new AwsSecretsCache($config['secrets_prefix'], $storage, $secretsManagerClient);
+        $logger = new Log
+
+        return new AwsSecretsCache(
+            $config['secrets_prefix'],
+            $storage, $secretsManagerClient,
+            $container->get(LoggerInterface::class)
+        );
     }
 }
