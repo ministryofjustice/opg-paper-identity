@@ -25,6 +25,9 @@ permissions:
   security-events: write
   checks: write
 
+env:
+  COMPOSE_FILE: docker-compose.yml
+
 jobs:
   test:
     strategy:
@@ -74,3 +77,26 @@ jobs:
           files: service-${{ matrix.service }}/build/*.xml
           test_file_prefix: +service-${{ matrix.service }}/
           check_name: ${{ matrix.service }} ${{ matrix.suite }} tests
+  cypress:
+    name: Cypress Tests
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run cypress
+        run: make cypress
+      - name: Store screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: e2e-tests/cypress/screenshots
+      - name: Write logs to file
+        if: failure()
+        run: docker compose logs > test.log
+      - name: Store logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: logs
+          path: test.log
