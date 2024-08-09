@@ -4,24 +4,29 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Aws\Secrets;
 
+
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;
+use Application\Factory\Service\Logging\LoggerFactory;
 use Aws\SecretsManager\SecretsManagerClient;
 use Laminas\Cache\Storage\StorageInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class AwsSecretsCacheTest extends TestCase
 {
     private SecretsManagerClient|MockObject $client;
     private StorageInterface|MockObject $storage;
+    private LoggerInterface|MockObject $logger;
     private AwsSecretsCache $sut;
 
     public function setUp(): void
     {
         $this->client = $this->createMock(SecretsManagerClient::class);
         $this->storage = $this->createMock(StorageInterface::class);
-        $this->sut = new AwsSecretsCache('local/', $this->storage, $this->client);
+        $this->logger = $this->createMock(LoggerInterface::class);
+        $this->sut = new AwsSecretsCache('local/', $this->storage, $this->client, $this->logger);
     }
 
     /**

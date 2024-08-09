@@ -34,7 +34,7 @@ class AwsSecretsCache
         if ($this->storage->hasItem($key)) {
             return $this->storage->getItem($key);
         }
-        $this->logger->info("SecretKey accessed : ". $name);
+        $this->logger->info("SecretKey accessed : " . $name);
 
         $value = $this->getValueFromAWS($name);
         $this->storage->setItem($key, $value);

@@ -31,7 +31,8 @@ class AwsSecretsCacheFactory implements FactoryInterface
 
         return new AwsSecretsCache(
             $config['secrets_prefix'],
-            $storage, $secretsManagerClient,
+            $storage,
+            $secretsManagerClient,
             $container->get(LoggerInterface::class)
         );
     }
