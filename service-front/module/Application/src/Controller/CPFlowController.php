@@ -36,6 +36,7 @@ use Application\Services\SiriusApiService;
 class CPFlowController extends AbstractActionController
 {
     protected $plugins;
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
@@ -176,9 +177,9 @@ class CPFlowController extends AbstractActionController
              */
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
-                    /**
-                     * @psalm-suppress InvalidMethodCall
-                     */
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
                     $formObject->get('lpa'),
                     $this->getRequest()
                 );
@@ -213,7 +214,6 @@ class CPFlowController extends AbstractActionController
         ];
         $uuid = $this->params()->fromRoute("uuid");
         $form = (new AttributeBuilder())->createForm(BirthDate::class);
-
 
 
         if (count($this->getRequest()->getPost())) {
@@ -474,24 +474,13 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                $response = $this->siriusApiService->searchAddressesByPostcode(
-                    $params->get('postcode'),
-                    $this->getRequest()
+                return $this->redirect()->toRoute(
+                    'root/cp_select_address',
+                    [
+                        'uuid' => $uuid,
+                        'postcode' => $params->get('postcode')
+                    ]
                 );
-                $processedAddresses = [];
-                foreach ($response as $foundAddress) {
-                    $processedAddresses[] = $this->addressProcessorHelper->processAddress(
-                        $foundAddress,
-                        'siriusAddressType'
-                    );
-                }
-                $addressStrings = $this->addressProcessorHelper->stringifyAddresses($processedAddresses);
-                $view->setVariable('addresses', $addressStrings);
-                $view->setVariable('addresses_count', count($addressStrings));
-                return $view->setTemplate('application/pages/cp/select_address');
             }
         }
 
@@ -501,20 +490,40 @@ class CPFlowController extends AbstractActionController
     public function selectAddressAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
+        $postcode = $this->params()->fromRoute("postcode");
+
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-//        $form = (new AttributeBuilder())->createForm(AddressJson::class);
+        $form = (new AttributeBuilder())->createForm(AddressJson::class);
 
         $view = new ViewModel();
         $view->setVariables([
             'details_data' => $detailsData,
-//            'form' => $form
+            'form' => $form
         ]);
+
+        /**
+         * @psalm-suppress InvalidMethodCall
+         */
+        $response = $this->siriusApiService->searchAddressesByPostcode(
+            $postcode,
+            $this->getRequest()
+        );
+        $processedAddresses = [];
+        foreach ($response as $foundAddress) {
+            $processedAddresses[] = $this->addressProcessorHelper->processAddress(
+                $foundAddress,
+                'siriusAddressType'
+            );
+        }
+        $addressStrings = $this->addressProcessorHelper->stringifyAddresses($processedAddresses);
+        $view->setVariable('addresses', $addressStrings);
+        $view->setVariable('addresses_count', count($addressStrings));
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-//            $form->setData($params);
+            $form->setData($params);
 
-//            if ($form->isValid()) {
+            if ($form->isValid()) {
                 /**
                  * @psalm-suppress InvalidMethodCall
                  */
@@ -522,10 +531,10 @@ class CPFlowController extends AbstractActionController
 
                 $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
-            if ($response) {
-                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+                if ($response) {
+                    return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+                }
             }
-//            }
         }
         return $view->setTemplate('application/pages/cp/select_address');
     }
@@ -688,9 +697,7 @@ class CPFlowController extends AbstractActionController
             'form' => $form,
             'options_data' => $idOptionsData,
             'countries_data' => $idCountriesData,
-            'countryName' => $idCountriesData[
-                $detailsData['idMethodIncludingNation']['country']
-            ],
+            'countryName' => $idCountriesData[$detailsData['idMethodIncludingNation']['country']],
             'details_data' => $detailsData,
             'supported_docs' => $docs['supported_documents'],
             'uuid' => $uuid,

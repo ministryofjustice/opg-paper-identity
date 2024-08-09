@@ -430,7 +430,7 @@ return [
                     'cp_select_address' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/select-address',
+                            'route' => '[/:uuid]/cp/select-address/:postcode',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'selectAddress',
