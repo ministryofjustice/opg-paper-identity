@@ -19,6 +19,9 @@ permissions:
   security-events: write
   pull-requests: read
 
+env:
+  COMPOSE_FILE: docker-compose.yml
+
 jobs:
   docker_build_scan:
     strategy:
