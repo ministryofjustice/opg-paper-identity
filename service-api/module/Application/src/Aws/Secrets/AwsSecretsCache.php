@@ -8,6 +8,7 @@ use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;
 use Aws\SecretsManager\SecretsManagerClient;
 use Laminas\Cache\Exception\ExceptionInterface;
 use Laminas\Cache\Storage\StorageInterface;
+use Psr\Log\LoggerInterface;
 
 class AwsSecretsCache
 {
@@ -16,7 +17,8 @@ class AwsSecretsCache
     public function __construct(
         private readonly string $prefix,
         private readonly StorageInterface $storage,
-        private readonly SecretsManagerClient $client
+        private readonly SecretsManagerClient $client,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -32,6 +34,7 @@ class AwsSecretsCache
         if ($this->storage->hasItem($key)) {
             return $this->storage->getItem($key);
         }
+        $this->logger->info("SecretKey accessed : ". $name);
 
         $value = $this->getValueFromAWS($name);
         $this->storage->setItem($key, $value);
