@@ -10,8 +10,6 @@ services:
       retries: 3
     volumes:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
-    ports:
-      - 8088:4010
 
   yoti-mock:
     image: paper-identity/yoti-mock
@@ -26,8 +24,6 @@ services:
       retries: 3
     volumes:
       - ./docker/yoti:/opt/imposter/config
-    ports:
-      - 8334:8080
 
   api:
     image: paper-identity/api
@@ -46,9 +42,6 @@ services:
       interval: 15s
       timeout: 10s
       retries: 3
-    volumes:
-      - ./service-api:/var/www
-      - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
 
   api-test:
     image: paper-identity/api-test
@@ -72,11 +65,6 @@ services:
       start_period: 30s
     volumes:
       - ./service-api/build:/var/www/build
-      - ./service-api/config:/var/www/config
-      - ./service-api/module:/var/www/module
-      - ./service-api/phpcs.xml:/var/www/phpcs.xml
-      - ./service-api/phpunit.xml:/var/www/phpunit.xml
-      - ./service-api/psalm.xml:/var/www/psalm.xml
 
   front:
     image: paper-identity/front
@@ -96,8 +84,6 @@ services:
       retries: 3
       start_period: 30s
     volumes:
-      - ./service-front:/var/www
-      - ./service-front/config/development.config.php.dist:/var/www/config/development.config.php
       - static-content:/var/www/public
 
   front-test:
@@ -117,11 +103,6 @@ services:
       start_period: 30s
     volumes:
       - ./service-front/build:/var/www/build
-      - ./service-front/config:/var/www/config
-      - ./service-front/module:/var/www/module
-      - ./service-front/phpcs.xml:/var/www/phpcs.xml
-      - ./service-front/phpunit.xml:/var/www/phpunit.xml
-      - ./service-front/psalm.xml:/var/www/psalm.xml
 
   api-web:
     build: nginx
@@ -135,8 +116,6 @@ services:
       APP_NAME: api
       APP_PORT: 9000
       NGINX_LOG_LEVEL: info
-    ports:
-      - 8001:80
     healthcheck:
       test: curl -f http://localhost/nginx-health || exit 1
       interval: 15s
@@ -165,26 +144,11 @@ services:
     volumes:
       - static-content:/var/www/public
 
-  api-composer:
-    image: composer
-    command: [ "install", "--ignore-platform-reqs" ]
-    volumes:
-      - ~/.composer:/tmp
-      - ./service-api:/app
-
-  front-composer:
-    image: composer
-    command: [ "install", "--ignore-platform-reqs" ]
-    volumes:
-      - ~/.composer:/tmp
-      - ./service-front:/app
-
   localstack:
     image: localstack/localstack:3.6
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"
-
     environment:
       AWS_DEFAULT_REGION: eu-west-1
     healthcheck:
