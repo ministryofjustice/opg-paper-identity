@@ -192,7 +192,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/post-office-documents',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeDocuments',
                             ],
                         ],
@@ -202,7 +202,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/post-office-do-details-match',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'doDetailsMatch',
                             ],
                         ],
@@ -212,7 +212,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/post-office-donor-lpa-check',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'donorLpaCheck',
                             ],
                         ],
@@ -222,7 +222,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/find-post-office-branch',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'findPostOfficeBranch',
                             ],
                         ],
@@ -232,7 +232,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/confirm-post-office',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'confirmPostOffice',
                             ],
                         ],
@@ -242,7 +242,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/what-happens-next',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'whatHappensNext',
                             ],
                         ],
@@ -252,7 +252,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/post-office-route-not-available',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeRouteNotAvailable',
                             ],
                         ],
@@ -430,7 +430,7 @@ return [
                     'cp_select_address' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/select-address',
+                            'route' => '[/:uuid]/cp/select-address/:postcode',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'selectAddress',
@@ -462,7 +462,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/remove-lpa/:lpa',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'removeLpa',
                             ],
                         ],
@@ -482,7 +482,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/donor-choose-country',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountry',
                             ],
                         ],
@@ -492,8 +492,28 @@ return [
                         'options' => [
                             'route' => '/:uuid/donor-choose-country-id',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountryId',
+                            ],
+                        ],
+                    ],
+                    'cp_find_post_office_branch' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '[/:uuid]/cp/find-post-office-branch',
+                            'defaults' => [
+                                'controller' => Controller\PostOfficeFlowController::class,
+                                'action' => 'findPostOfficeBranch',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_post_office' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '[/:uuid]/cp/confirm-post-office',
+                            'defaults' => [
+                                'controller' => Controller\PostOfficeFlowController::class,
+                                'action' => 'confirmPostOffice',
                             ],
                         ],
                     ],
@@ -507,7 +527,7 @@ return [
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
-            Controller\DonorPostOfficeFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\PostOfficeFlowController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [

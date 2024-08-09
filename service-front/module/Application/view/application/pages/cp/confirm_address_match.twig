@@ -40,7 +40,7 @@
 
                     <p class="govuk-body">
                         {% for line in details_data.alternateAddress %}
-                            {% if line > 0 %}
+                            {% if line  %}
                                 {{ line }}<br>
                             {% endif %}
                         {% endfor %}
@@ -48,7 +48,7 @@
                     <p class="govuk-body">
                         <a href="./enter-address-manual">Edit this address</a>
                     </p>
-                    <input type="hidden" name="confirm_alt" value="1">
+                    <input type="hidden" name="confirm_alt" value="confirmed">
                 </div>
             {% else %}
                 <div class="govuk-form-group govuk-!-width-two-thirds">
@@ -58,6 +58,12 @@
                                 Is this the address for the chosen ID document?
                             </h3>
                         </legend>
+                        {% if form.get('chosenAddress').messages %}
+                            <p id="form-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {{ form.get('chosenAddress').messages | join(', ', ' and ') }}
+                            </p>
+                        {% endif %}
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 <input class="govuk-radios__input" id="chosenAddressYes" name="chosenAddress"
