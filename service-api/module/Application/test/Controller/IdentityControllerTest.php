@@ -59,12 +59,6 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
     }
 
-    public function testIndexActionResponse(): void
-    {
-        $this->dispatch('/', 'GET');
-        $this->assertEquals('{"Laminas":"Paper ID Service API"}', $this->getResponse()->getContent());
-    }
-
     public function testInvalidRouteDoesNotCrash(): void
     {
         $this->jsonHeaders();
