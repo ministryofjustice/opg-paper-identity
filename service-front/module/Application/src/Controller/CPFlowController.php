@@ -248,8 +248,23 @@ class CPFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
+        $idMethods = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
+
+        $routes = [
+            'nin' => 'root/cp_national_insurance_number',
+            'dln' => 'root/cp_driving_licence_number',
+            'pn' => 'root/cp_passport_number',
+        ];
+
+//        echo json_encode($detailsData);
+
+        if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
+            $nextRoute = 'root/cp_find_post_office_branch';
+        } else {
+            $nextRoute = $routes[$detailsData['idMethod']];
+        }
 
         $view->setVariables([
             'details_data' => $detailsData,
@@ -267,7 +282,7 @@ class CPFlowController extends AbstractActionController
 
             if ($form->isValid()) {
                 if ($formArray['chosenAddress'] == 'yes') {
-                    return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($nextRoute, ['uuid' => $uuid]);
                 } elseif ($formArray['chosenAddress'] == 'no') {
                     return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
                 }

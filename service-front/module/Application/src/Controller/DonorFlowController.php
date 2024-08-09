@@ -86,7 +86,7 @@ class DonorFlowController extends AbstractActionController
         $idMethods = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (! in_array($detailsData['idMethod'], $idMethods)) {
+        if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
             $nextPage = './post-office-donor-lpa-check';
         } else {
             $nextPage = './donor-lpa-check';
