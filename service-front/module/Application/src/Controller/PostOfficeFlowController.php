@@ -109,6 +109,8 @@ class PostOfficeFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(PostOfficeAddress::class);
         $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
 
+        echo json_encode($detailsData);
+
         if (! isset($detailsData['searchPostcode'])) {
             $searchString = $detailsData['address']['postcode'];
         } else {
@@ -175,7 +177,7 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('post_office_summary', true);
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
-        $view->setVariable('id_method', $optionsdata[$detailsData['idMethod']]);
+        $view->setVariable('display_id_method', $optionsdata[$detailsData['idMethod']]);
 
         if (count($this->getRequest()->getPost())) {
             $responseData = $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);

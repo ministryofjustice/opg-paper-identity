@@ -12,14 +12,6 @@ class LocalisationHelper
     {
     }
 
-    private array $wordMap = [
-        'PASSPORT' => "Passport",
-        'DRIVING_LICENCE' => 'Driving licence',
-        'NATIONAL_ID' => 'National ID',
-        'RESIDENCE_PERMIT' => 'Residence permit',
-        'TRAVEL_DOCUMENT' => 'Travel document',
-    ];
-
     /**
      * @throws LocalisationException
      */
@@ -57,9 +49,33 @@ class LocalisationHelper
         return $documents;
     }
 
+    /**
+     * @throws LocalisationException
+     */
     public function addDisplayText(string $word): string
     {
-        return $this->wordMap[$word];
+        if (array_key_exists($word, $this->config['opg_settings']['yoti_identity_methods'])) {
+            return $this->config['opg_settings']['yoti_identity_methods'][$word];
+        } else {
+            throw new LocalisationException("This identity document type is not supported.");
+        }
+    }
+
+    public function processDocumentTypes(string $key, array $detailsData = []): string
+    {
+        if (array_key_exists('idMethodIncludingNation', $detailsData)) {
+            
+        }
+
+        if (array_key_exists($key, $this->config['opg_settings']['identity_methods'])) {
+
+        } elseif (array_key_exists($key, $this->config['opg_settings']['post_office_identity_methods'])) {
+
+        } elseif (array_key_exists($key, $this->config['opg_settings']['non_uk_identity_methods'])) {
+
+        } elseif (array_key_exists($key, $this->config['opg_settings']['yoti_identity_methods'])) {
+
+        }
     }
 
     private function getConfig(): array

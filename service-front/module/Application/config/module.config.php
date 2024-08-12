@@ -592,6 +592,13 @@ return [
             'xdln' => 'Photocard driving licence',
             'xid' => 'National identity card',
         ],
+        'yoti_identity_methods' => [
+            'PASSPORT' => "Passport",
+            'DRIVING_LICENCE' => 'Driving licence',
+            'NATIONAL_ID' => 'National ID',
+            'RESIDENCE_PERMIT' => 'Residence permit',
+            'TRAVEL_DOCUMENT' => 'Travel document',
+        ],
         'acceptable_nations_for_id_documents' => [
             'AUT' => 'Austria',
             'BEL' => 'Belgium',
