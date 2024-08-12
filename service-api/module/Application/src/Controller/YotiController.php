@@ -9,6 +9,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\Problem;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
+use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiServiceInterface;
 use DateTime;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -28,7 +29,8 @@ class YotiController extends AbstractActionController
         private readonly YotiServiceInterface $yotiService,
         private readonly DataImportHandler $dataImportHandler,
         private readonly DataQueryHandler $dataQuery,
-        private readonly SessionConfig $sessionConfig,
+        private readonly SessionStatusService $sessionService,
+        private readonly SessionConfig $sessionConfig
     ) {
     }
 
@@ -135,12 +137,23 @@ class YotiController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(['error' => 'Missing uuid']);
         }
-        //@TODO look up actual sessionId from case and case where this is not created
-        $sessionId = 'AJDAHDFSH';
-        $session = $this->yotiService->retrieveResults($sessionId);
+
+        $caseData = $this->dataQuery->getCaseByUUID($uuid);
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(['error' => 'Case not found']);
+        }
+
+        $sessionId = $caseData->yotiSessionId;
+        if ($sessionId === '00000000-0000-0000-0000-000000000000') {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('SessionId not available'));
+        }
+
+        $sessionResult = $this->sessionService->getSessionStatus($caseData);
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $data = ['status' => $session['state']];
+        $data = ['results' => $sessionResult];
 
         return new JsonModel($data);
     }

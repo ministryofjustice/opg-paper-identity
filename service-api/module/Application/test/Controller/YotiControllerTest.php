@@ -10,6 +10,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
+use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
@@ -17,12 +18,14 @@ use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
+use phpmock\Mock;
 use PHPUnit\Framework\MockObject\MockObject;
 use Ramsey\Uuid\Uuid;
 
 class YotiControllerTest extends TestCase
 {
     private YotiService&MockObject $YotiServiceMock;
+    private SessionStatusService&MockObject $statusService;
 
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
 
@@ -44,6 +47,7 @@ class YotiControllerTest extends TestCase
         ));
 
         $this->YotiServiceMock = $this->createMock(YotiService::class);
+        $this->statusService = $this->createMock(SessionStatusService::class);
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->dataImportHandler = $this->createMock(DataImportHandler::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
@@ -55,6 +59,7 @@ class YotiControllerTest extends TestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(YotiServiceInterface::class, $this->YotiServiceMock);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
+        $serviceManager->setService(SessionStatusService::class, $this->statusService);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(DataImportHandler::class, $this->dataImportHandler);
     }
@@ -79,12 +84,29 @@ class YotiControllerTest extends TestCase
 
     public function testStatusWithID(): void
     {
-        $this->YotiServiceMock
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'personType' => 'donor',
+            'firstName' => '',
+            'lastName' => '',
+            'yotiSessionId' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1dd',
+            'address' => [],
+            'counterService' => [
+                'notificationsAuthToken' => ''
+            ]
+        ]);
+        $this->dataQueryHandlerMock
             ->expects($this->once())
-            ->method('retrieveResults')
-            ->willReturn(['state' => 'test']);
+            ->method('getCaseByUUID')
+            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
+            ->willReturn($caseData);
 
-        $this->dispatch('/counter-service/wuefhdfhaksjd/retrieve-status', 'GET');
+        $this->statusService
+            ->expects($this->once())
+            ->method('getSessionStatus')
+            ->willReturn($caseData->counterService);
+
+        $this->dispatch('/counter-service/2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc/retrieve-status', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(YotiController::class);
