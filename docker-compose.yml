@@ -25,6 +25,19 @@ services:
     volumes:
       - ./docker/yoti:/opt/imposter/config
 
+  experian-iiq-mock:
+    image: outofcoffee/imposter
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "imposter", "list", "-x" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./docker/experian-iiq:/opt/imposter/config
+    ports:
+      - 8335:8080
+
   api:
     image: paper-identity/api
     build:
@@ -33,6 +46,8 @@ services:
       target: production
     depends_on:
       localstack:
+        condition: service_healthy
+      experian-iiq-mock:
         condition: service_healthy
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: ["php-fpm"]
