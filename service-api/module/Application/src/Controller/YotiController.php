@@ -29,7 +29,8 @@ class YotiController extends AbstractActionController
         private readonly YotiServiceInterface $yotiService,
         private readonly DataImportHandler $dataImportHandler,
         private readonly DataQueryHandler $dataQuery,
-        private readonly SessionStatusService $sessionService
+        private readonly SessionStatusService $sessionService,
+        private readonly SessionConfig $sessionConfig
     ) {
     }
 

@@ -16,7 +16,7 @@ use Ramsey\Uuid\Uuid;
 class SessionStatusService
 {
     public function __construct(
-        public readonly YotiService $yotiService,
+        public readonly YotiServiceInterface $yotiService,
         public readonly DataImportHandler $dataImportHandler,
         private readonly LoggerInterface $logger,
     ) {
