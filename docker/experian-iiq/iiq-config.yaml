@@ -1,0 +1,5 @@
+---
+plugin: soap
+wsdlFile: iiq.wsdl
+response:
+  scriptFile: iiq-response.js
