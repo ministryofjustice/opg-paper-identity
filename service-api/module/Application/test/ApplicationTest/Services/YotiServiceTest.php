@@ -210,7 +210,7 @@ class YotiServiceTest extends TestCase
                 'line1' => '123 long street',
             ],
             'counterService' => [
-                'selectedPostOffice' => '29348729',
+                'selectedPostOffice' => json_encode(['fad' => '29348729'])
             ],
             'lpas' => []
         ]);

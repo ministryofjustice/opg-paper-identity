@@ -1,0 +1,50 @@
+{% extends "layout/layout" %}
+{% block content %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+    <div class="govuk-width-container govuk-!-padding-top-5">
+        <form method="POST">
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" role="group">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            {% block title %}
+                                Choose document
+                            {% endblock %}
+                        </h1>
+                    </legend>
+                    <h2 class="govuk-heading-m">Choose from documents accepted for {{ countryName }}</h2>
+                    {% if form.get('id_method').messages %}
+                        <p id="lpa-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {{ form.get('id_method').messages | join(', ', ' and ') }}
+                        </p>
+                    {% endif %}
+                    <div class="govuk-form-group">
+                        <div
+                            class="govuk-radios
+                            {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}"
+                            data-module="govuk-radios"
+                        >
+                            {% for doc in supported_docs %}
+                                <div class="govuk-radios__item">
+                                    <input
+                                        class="govuk-radios__input"
+                                        id="{{ doc['type'] }}"
+                                        name="id_method"
+                                        type="radio"
+                                        value="{{ doc['type'] }}"
+                                        {% if form.get('id_method').value == doc['type'] %}checked{% endif %}
+                                    >
+                                    <label class="govuk-label govuk-radios__label" for="{{ doc['type'] }}">{{ doc['display_text'] }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <input type="submit" class="govuk-button" value="Continue">
+        </form>
+    </div>
+{% endblock %}
+
+

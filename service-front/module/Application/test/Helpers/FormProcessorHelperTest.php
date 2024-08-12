@@ -359,4 +359,55 @@ class FormProcessorHelperTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider dateData
+     */
+    public function testProcessDataForm(array $params, string $expected): void
+    {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+
+        $actual = $formProcessorHelper->processDataForm($params);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public static function dateData(): array
+    {
+        return [
+            [
+                [
+                    'dob_year' => "2002",
+                    'dob_month' => "04",
+                    'dob_day' => "01"
+                ],
+                "2002-04-01"
+            ],
+            [
+                [
+                    'dob_year' => "02",
+                    'dob_month' => "04",
+                    'dob_day' => "01"
+                ],
+                "2002-04-01"
+            ],
+            [
+                [
+                    'dob_year' => "1986",
+                    'dob_month' => "04",
+                    'dob_day' => "01"
+                ],
+                "1986-04-01"
+            ],
+            [
+                [
+                    'dob_year' => "86",
+                    'dob_month' => "04",
+                    'dob_day' => "01"
+                ],
+                "1986-04-01"
+            ],
+        ];
+    }
 }

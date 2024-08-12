@@ -18,6 +18,7 @@ class Module
     {
         /** @var array $config */
         $config = include __DIR__ . '/../config/module.config.php';
+
         return $config;
     }
 
@@ -33,7 +34,6 @@ class Module
         $application = $event->getApplication();
         /** @var ServiceManager $serviceManager */
         $serviceManager = $application->getServiceManager();
-        /** @var AwsSecretsCache $secretsCache */
         $secretsCache = $serviceManager->get(AwsSecretsCache::class);
         AwsSecret::setCache($secretsCache);
     }
@@ -61,21 +61,24 @@ class Module
         /** @var Response */
         $response = $event->getResponse();
 
+        $exception = $event->getParam('exception');
+
+        if ($exception instanceof Throwable) {
+            $serviceManager = $event->getApplication()->getServiceManager();
+            $logger = $serviceManager->get(LoggerInterface::class);
+
+            $logger->error("an unexpected error occurred", ['exception' => $exception]);
+        }
+
         if (
             $response->getStatusCode() >= 400 &&
             (empty($response->getBody()) || $this->isGenericErrorResponse($response->getBody()))
         ) {
-            $exception = $event->getParam('exception');
             $problem = [
                 'status' => $response->getStatusCode(),
             ];
 
             if ($exception instanceof Throwable) {
-                $serviceManager = $event->getApplication()->getServiceManager();
-                $logger = $serviceManager->get(LoggerInterface::class);
-
-                $logger->error("an unexpected error occurred", ['exception' => $exception]);
-
                 $problem['type'] = 'UnexpectedError';
                 $problem['title'] = "An unexpected error occurred";
                 $problem['detail'] = $exception->getMessage();

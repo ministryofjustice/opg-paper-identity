@@ -12,14 +12,14 @@
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
-                    Note:  the chosen ID document must meet the date requirements / must be in date when taken to the Post Office.
+                    The chosen ID document must meet the date requirements / must be in date when taken to the Post Office.
                 </strong>
             </div>
             <div class="govuk-warning-text">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
-                    Note: the documents must be taken to the post office within 6 months of signing the LPA or the LPA cannot be registered and the money will not be refunded.
+                    The documents must be taken to the post office within 6 months of signing the LPA or the LPA cannot be registered and the money will not be refunded.
                 </strong>
             </div>
             <p class="govuk-body">
@@ -35,8 +35,8 @@
                 <div class="govuk-radios" data-module="govuk-radios">
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="pn" name="id_method" type="radio"
-                               value="pn">
-                        <label class="govuk-label govuk-radios__label" for="pn">UK passport (up to 18m expired)
+                               value="po_ukp">
+                        <label class="govuk-label govuk-radios__label" for="pn">UK passport (up to 18 months expired)
 
                             <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
                                 <summary class="govuk-details__summary">
@@ -125,24 +125,14 @@
                     </div>
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="dln" name="id_method" type="radio"
-                               value="dln">
+                               value="po_ukd">
                         <label class="govuk-label govuk-radios__label" for="dln">UK photocard driving licence (must be current)</label>
                     </div>
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="euid" name="id_method" type="radio"
                                value="euid">
                         <label class="govuk-label govuk-radios__label" for="euid">
-                            EU passport, EU photocard driving licence, EU national identity card (must be current)
-                            <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-0">
-                                <summary class="govuk-details__summary">
-                                    <span class="govuk-details__summary-text">
-                                      See which countries are acceptable
-                                    </span>
-                                </summary>
-                                <div class="govuk-details__text">
-                                    {{ countries_data | join(', ') }}
-                                </div>
-                            </details>
+                            ID from another country
                         </label>
                     </div>
                 </div>

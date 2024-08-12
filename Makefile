@@ -13,19 +13,19 @@ down: ## Stop application
 	docker compose down
 
 api-psalm: ## Run Psalm checks against API code
-	docker compose -p api-psalm run --rm api-test vendor/bin/psalm -c ./psalm.xml --report=build/psalm-junit.xml
+	docker compose -p api-psalm run --rm --no-deps api-test vendor/bin/psalm -c ./psalm.xml --report=build/psalm-junit.xml
 
 api-phpcs: ## Run PHPCS checks against API code
-	docker compose -p api-phpcs run --rm api-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
+	docker compose -p api-phpcs run --rm --no-deps api-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
 
 api-unit-test: ## Run API unit tests
-	docker compose -p api-unit-test run --rm api-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
+	docker compose -p api-unit-test run --rm --no-deps api-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
 
 front-psalm: ## Run Psalm checks against front end code
-	docker compose -p front-psalm run --rm front-test vendor/bin/psalm -c ./psalm.xml --report=build/psalm-junit.xml
+	docker compose -p front-psalm run --rm --no-deps front-test vendor/bin/psalm -c ./psalm.xml --report=build/psalm-junit.xml
 
 front-phpcs: ## Run PHPCS checks against front end code
-	docker compose -p front-phpcs run --rm front-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
+	docker compose -p front-phpcs run --rm --no-deps front-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
 
 front-unit-test: ## Run front end unit tests
 	docker compose -p front-unit-test run --rm --volume ${PWD}/build/output/pacts:/tmp/pacts front-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
@@ -55,3 +55,6 @@ clean-junit-output:
 	sed -i -E 's/testcase name="(.*?)\/var\/www\/([^ ]+?)( \(([0-9]+):[0-9]+\))?"/& file="\2" line="\4"/g' ./service-front/build/phpcs-junit.xml
 	sed -i -E 's/testcase name="(.*?):([0-9]+)"/& file="\1" line="\2"/g' ./service-api/build/psalm-junit.xml
 	sed -i -E 's/testcase name="(.*?):([0-9]+)"/& file="\1" line="\2"/g' ./service-front/build/psalm-junit.xml
+
+cypress:
+	docker compose run --build cypress

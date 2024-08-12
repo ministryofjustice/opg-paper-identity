@@ -6,8 +6,12 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Forms\AddressJson;
+use Application\Exceptions\LocalisationException;
 use Application\Forms\BirthDate;
+use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
+use Application\Forms\CountryDocument;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\IdMethod;
@@ -20,6 +24,7 @@ use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\LocalisationHelper;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -31,12 +36,14 @@ use Application\Services\SiriusApiService;
 class CPFlowController extends AbstractActionController
 {
     protected $plugins;
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly LpaFormHelper $lpaFormHelper,
+        private readonly LocalisationHelper $localisationHelper,
         private readonly array $config,
     ) {
     }
@@ -170,9 +177,9 @@ class CPFlowController extends AbstractActionController
              */
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
-                    /**
-                     * @psalm-suppress InvalidMethodCall
-                     */
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
                     $formObject->get('lpa'),
                     $this->getRequest()
                 );
@@ -209,15 +216,9 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(BirthDate::class);
 
 
-
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
-            $dateOfBirth = sprintf(
-                "%s-%s-%s",
-                $params->get('dob_year'),
-                $params->get('dob_month'),
-                $params->get('dob_day'),
-            );
+            $dateOfBirth = $this->formProcessorHelper->processDataForm($params->toArray());
             $params->set('date', $dateOfBirth);
             $form->setData($params);
 
@@ -240,34 +241,49 @@ class CPFlowController extends AbstractActionController
 
     public function confirmAddressAction(): ViewModel|Response
     {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $idMethods = $this->config['opg_settings']['identity_methods'];
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
+
         $routes = [
             'nin' => 'root/cp_national_insurance_number',
-            'pn' => 'root/cp_passport_number',
             'dln' => 'root/cp_driving_licence_number',
-            'po' => 'root/post_office_documents'
+            'pn' => 'root/cp_passport_number',
         ];
-        $view = new ViewModel();
-        $templates = [
-            'default' => 'application/pages/cp/confirm_address_match',
-        ];
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $view->setVariable('details_data', $detailsData);
-        if (count($this->getRequest()->getPost())) {
-            $params = $this->getRequest()->getPost();
 
-            if ($params->get('confirm_alt') == '1') {
-                return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
-            }
+//        echo json_encode($detailsData);
 
-            if ($params->get('chosenAddress') == 'yes') {
-                return $this->redirect()->toRoute($routes[$detailsData['idMethod']], ['uuid' => $uuid]);
-            } elseif ($params->get('chosenAddress') == 'no') {
-                return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
-            }
+        if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
+            $nextRoute = 'root/cp_find_post_office_branch';
+        } else {
+            $nextRoute = $routes[$detailsData['idMethod']];
         }
 
-        return $view->setTemplate($templates['default']);
+        $view->setVariables([
+            'details_data' => $detailsData,
+            'form' => $form
+        ]);
+
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $form->setData($params);
+            $formArray = $this->getRequest()->getPost()->toArray();
+
+            if ($formArray['confirm_alt'] == 'confirmed') {
+                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+            }
+
+            if ($form->isValid()) {
+                if ($formArray['chosenAddress'] == 'yes') {
+                    return $this->redirect()->toRoute($nextRoute, ['uuid' => $uuid]);
+                } elseif ($formArray['chosenAddress'] == 'no') {
+                    return $this->redirect()->toRoute('root/cp_enter_postcode', ['uuid' => $uuid]);
+                }
+            }
+        }
+        return $view->setTemplate('application/pages/cp/confirm_address_match');
     }
 
     public function nationalInsuranceNumberAction(): ViewModel
@@ -439,7 +455,7 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/identity_check_failed');
     }
 
-    public function enterPostcodeAction(): ViewModel
+    public function enterPostcodeAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -451,26 +467,19 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
             $form->setData($params);
+            /**
+             * @psalm-suppress InvalidMethodCall
+             */
+            $postcode = $params->get('postcode');
 
             if ($form->isValid()) {
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                $response = $this->siriusApiService->searchAddressesByPostcode(
-                    $params->get('postcode'),
-                    $this->getRequest()
+                return $this->redirect()->toRoute(
+                    'root/cp_select_address',
+                    [
+                        'uuid' => $uuid,
+                        'postcode' => $postcode
+                    ]
                 );
-                $processedAddresses = [];
-                foreach ($response as $foundAddress) {
-                    $processedAddresses[] = $this->addressProcessorHelper->processAddress(
-                        $foundAddress,
-                        'siriusAddressType'
-                    );
-                }
-                $addressStrings = $this->addressProcessorHelper->stringifyAddresses($processedAddresses);
-                $view->setVariable('addresses', $addressStrings);
-                $view->setVariable('addresses_count', count($addressStrings));
-                return $view->setTemplate('application/pages/cp/select_address');
             }
         }
 
@@ -480,20 +489,47 @@ class CPFlowController extends AbstractActionController
     public function selectAddressAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
+        $postcode = $this->params()->fromRoute("postcode");
+
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = (new AttributeBuilder())->createForm(AddressJson::class);
 
         $view = new ViewModel();
-        $view->setVariable('details_data', $detailsData);
+        $view->setVariables([
+            'details_data' => $detailsData,
+            'form' => $form
+        ]);
 
-        if (count($this->getRequest()->getPost())) {
+        $response = $this->siriusApiService->searchAddressesByPostcode(
+            $postcode,
+            $this->getRequest()
+        );
+        $processedAddresses = [];
+        foreach ($response as $foundAddress) {
+            $processedAddresses[] = $this->addressProcessorHelper->processAddress(
+                $foundAddress,
+                'siriusAddressType'
+            );
+        }
+        $addressStrings = $this->addressProcessorHelper->stringifyAddresses($processedAddresses);
+        $view->setVariable('addresses', $addressStrings);
+        $view->setVariable('addresses_count', count($addressStrings));
+
+        if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
+            $form->setData($params);
 
-            $structuredAddress = json_decode($params->get('address_json'), true);
+            if ($form->isValid()) {
+                /**
+                 * @psalm-suppress InvalidMethodCall
+                 */
+                $structuredAddress = json_decode($params->get('address_json'), true);
 
-            $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+                $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
-            if ($response) {
-                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+                if ($response) {
+                    return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
+                }
             }
         }
         return $view->setTemplate('application/pages/cp/select_address');
@@ -605,7 +641,7 @@ class CPFlowController extends AbstractActionController
             if ($form->isValid()) {
                 $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
                 if ($responseData['result'] === 'Updated') {
-                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
                 }
             }
         }
@@ -615,6 +651,53 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
+
+        return $view->setTemplate($templates['default']);
+    }
+
+    /**
+     * @throws LocalisationException
+     */
+    public function chooseCountryIdAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/cp/choose_country_id'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
+        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+
+        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
+            throw new \Exception("Country for document list has not been set.");
+        }
+
+        $docs = $this->localisationHelper->getInternationalSupportedDocuments(
+            $detailsData['idMethodIncludingNation']['country']
+        );
+
+        $form = (new AttributeBuilder())->createForm(CountryDocument::class);
+        $view->setVariable('form', $form);
+
+        if ($this->getRequest()->isPost()) {
+            $form->setData($this->getRequest()->getPost());
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if ($form->isValid()) {
+                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+            }
+        }
+
+        $view->setVariables([
+            'form' => $form,
+            'options_data' => $idOptionsData,
+            'countries_data' => $idCountriesData,
+            'countryName' => $idCountriesData[$detailsData['idMethodIncludingNation']['country']],
+            'details_data' => $detailsData,
+            'supported_docs' => $docs['supported_documents'],
+            'uuid' => $uuid,
+        ]);
 
         return $view->setTemplate($templates['default']);
     }

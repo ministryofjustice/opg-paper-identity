@@ -288,9 +288,10 @@ class YotiService implements YotiServiceInterface
         ];
         /** @var CounterService $counterServiceData */
         $counterServiceData = $caseData->counterService;
+        $postOfficeData = json_decode($counterServiceData->selectedPostOffice, true);
         $payload["branch"] = [
           "type" => "UK_POST_OFFICE",
-          "fad_code" => $counterServiceData->selectedPostOffice
+          "fad_code" => $postOfficeData['fad']
         ];
         return $payload;
     }

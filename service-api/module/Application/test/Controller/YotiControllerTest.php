@@ -32,6 +32,7 @@ class YotiControllerTest extends TestCase
     private DataImportHandler&MockObject $dataImportHandler;
 
     private SessionConfig&MockObject $sessionConfigMock;
+
     public function setUp(): void
     {
         // The module configuration should still be applicable for tests.
@@ -134,9 +135,9 @@ class YotiControllerTest extends TestCase
     public function testBranchReturnFormat(): void
     {
         $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. ' .
-            'Neots, Cambridgeshire","postcode":"PE19 1NL"}' .
+            'Neots, Cambridgeshire","post_code":"PE19 1NL"}' .
                     ',"12345675":{"name":"Hampstead","address":"66 High Street, ' .
-            'Hampstead Heath, London","postcode":"NW3 6LR"}}';
+            'Hampstead Heath, London","post_code":"NW3 6LR"}}';
         $this->YotiServiceMock
             ->expects($this->once())->method('postOfficeBranch')
             ->with('NW1 4PG')
@@ -149,6 +150,72 @@ class YotiControllerTest extends TestCase
         $this->assertControllerName(YotiController::class);
         $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('find_postoffice_branches');
+    }
+
+    public function testSessionCreationStartsYotiProcess(): void
+    {
+        $uuid = 'test-uuid';
+        $caseData = CaseData::fromArray([
+            'id' => 'test-uuid',
+            'firstName' => 'test',
+            'lastName' => 'opg',
+            'dob' => '1980-01-01',
+            'address' => ['123 upper road'],
+            'personType' => 'donor',
+            'idMethod' => 'po_ukp',
+            'counterService' => [
+                'selectedPostOffice' => ''
+            ]
+        ]);
+
+        $sessionData = $this->sessionConfig($caseData);
+        $response = [];
+        $response["status"] = 201;
+        $response["data"] = [
+            "client_session_token_ttl" => 2630012,
+            "session_id" => "19eb9325-61ed-4089-88dc-5bbc659443d3",
+            "client_session_token" => "1c9f8e92-3a04-463e-9dd1-98dad2b657f2"
+        ];
+        $pdfResponse = ["status" => "PDF Created"];
+        $pdfLetter = ["status" => "PDF Created", "pdfData" => "contents"];
+
+        $this->dataQueryHandlerMock
+            ->expects($this->atLeastOnce())->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($caseData);
+
+        $this->sessionConfigMock
+            ->expects($this->once())->method('build')
+            ->with($caseData)
+            ->willReturn($sessionData);
+
+        $this->YotiServiceMock
+            ->expects($this->once())->method('createSession')
+            ->with($sessionData)
+            ->willReturn($response);
+
+        $this->YotiServiceMock
+            ->expects($this->once())->method('preparePDFLetter')
+            ->with($caseData)
+            ->willReturn($pdfResponse);
+
+        $this->YotiServiceMock
+            ->expects($this->once())->method('retrieveLetterPDF')
+            ->with($response["data"]["session_id"])
+            ->willReturn($pdfLetter);
+
+        $this->dataImportHandler
+            ->expects($this->atLeast(1))->method('updateCaseData');
+
+        $this->dataImportHandler
+            ->expects($this->atLeast(1))->method('updateCaseChildAttribute');
+
+        $this->dispatch('/counter-service/test-uuid/create-session', 'POST', []);
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(YotiController::class);
+        $this->assertControllerClass('YotiController');
+        $this->assertMatchedRouteName('create_yoti_session');
     }
 
     public function testYotiNotificationRequestFailsWithInvalidToken(): void
@@ -315,7 +382,7 @@ class YotiControllerTest extends TestCase
                     "fad_code" => "12345678",
                     "name" => "St Neots",
                     "address" => "35 High Street, St. Neots, Cambridgeshire",
-                    "postcode" => "PE19 1NL",
+                    "post_code" => "PE19 1NL",
                     "location" => [
                         "latitude" => 52.22864,
                         "longitude" => -0.26762
@@ -326,7 +393,7 @@ class YotiControllerTest extends TestCase
                     "fad_code" => "12345675",
                     "name" => "Hampstead",
                     "address" => "66 High Street, Hampstead Heath, London",
-                    "postcode" => "NW3 6LR",
+                    "post_code" => "NW3 6LR",
                     "location" => [
                         "latitude" => 52.22864,
                         "longitude" => -0.26762
@@ -334,5 +401,47 @@ class YotiControllerTest extends TestCase
                 ]
             ]
         ];
+    }
+
+    public function sessionConfig(CaseData $case): array
+    {
+        $sessionConfig = [];
+
+        $sessionConfig["session_deadline"] = '2025-05-05 22:00:00';
+        $sessionConfig["user_tracking_id"] = $case->id;
+
+        $sessionConfig["requested_checks"] = [
+            [
+                "type" => "PROFILE_DOCUMENT_MATCH",
+                "config" => [
+                    "manual_check" => "IBV"
+                ]
+            ],
+        ];
+        $sessionConfig["required_documents"] = [
+            [
+                "type" => "ID_DOCUMENT",
+                "filter" => [
+                    "type" => "DOCUMENT_RESTRICTIONS",
+                    "inclusion" => "INCLUDE",
+                    "documents" => [
+                        [
+                            "country_codes" => ["GBR"],
+                            "document_types" => ["PASSPORT"]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $sessionConfig["resources"] = [
+            "applicant_profile" => [
+                "given_names" => $case->firstName,
+                "family_name" => $case->lastName,
+                "date_of_birth" => $case->dob,
+                "structured_postal_address" => [],
+            ]
+        ];
+
+        return $sessionConfig;
     }
 }

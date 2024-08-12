@@ -19,7 +19,7 @@ class CountryDocumentValidator extends AbstractValidator
     {
         $documentCodes = $this->getDocumentCodes();
 
-        if (! array_key_exists($value, $documentCodes)) {
+        if (! in_array($value, $documentCodes)) {
             $this->error(self::INVALID_DOCUMENT);
             return false;
         }
@@ -29,8 +29,16 @@ class CountryDocumentValidator extends AbstractValidator
     private function getDocumentCodes(): array
     {
         $config = $this->getConfig();
+        $docTypeList = [];
 
-        return $config['opg_settings']['non_uk_identity_methods'];
+        foreach ($config['opg_settings']['supported_countries_documents'] as $docBody) {
+            foreach ($docBody['supported_documents'] as $docType) {
+                if (! in_array($docType['type'], $docTypeList)) {
+                    $docTypeList[] = $docType['type'];
+                }
+            }
+        }
+        return $docTypeList;
     }
 
     public function getConfig(): array

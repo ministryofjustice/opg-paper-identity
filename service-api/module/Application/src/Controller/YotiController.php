@@ -52,7 +52,7 @@ class YotiController extends AbstractActionController
                 $branches[$branch["fad_code"]] = [
                     "name" => $branch["name"],
                     "address" => $branch["address"],
-                    "postcode" => $branch["postcode"]
+                    "post_code" => $branch["post_code"]
                 ];
             }
         } catch (YotiException $e) {
@@ -65,6 +65,69 @@ class YotiController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($branches);
     }
+    public function createSessionAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $case = $this->dataQuery->getCaseByUUID($uuid);
+        $response = [];
+
+        if (! $case) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Unable to locate case"
+            ];
+            return new JsonModel($response);
+        }
+
+        //start Yoti process
+        $notificationsAuthToken = strval(Uuid::uuid4());
+
+        $sessionData = $this->sessionConfig->build($case, $notificationsAuthToken);
+        $nonce = strval(Uuid::uuid4());
+        $dateTime = new DateTime();
+        $timestamp = $dateTime->getTimestamp();
+
+        try {
+            $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
+            $yotiSessionId = $result["data"]["session_id"];
+
+            if ($case->counterService !== null) {
+                $case->counterService->notificationsAuthToken = $notificationsAuthToken;
+            }
+
+            if ($result["status"] < 400) {
+                $this->dataImportHandler->updateCaseChildAttribute(
+                    $uuid,
+                    'counterService.notificationsAuthToken',
+                    'S',
+                    $notificationsAuthToken
+                );
+
+                $this->dataImportHandler->updateCaseData(
+                    $uuid,
+                    'yotiSessionId',
+                    'S',
+                    $yotiSessionId
+                );
+            }
+            //Prepare and generate PDF
+            $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
+            $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
+        } catch (YotiException $e) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem(
+                'Problem requesting Yoti API',
+                extra: ['errors' => $e->getMessage()],
+            ));
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        $response['result'] = "Session created";
+
+        return new JsonModel($response);
+    }
+
     public function getSessionStatusAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
