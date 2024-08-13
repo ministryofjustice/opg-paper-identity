@@ -133,6 +133,38 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /api/v1/lpas/{lpa}/documents:
+    post:
+      parameters:
+        - name: lpa
+          in: query
+          required: true
+          schema:
+            type: string
+            nullable: false
+            pattern: (M(-[A-Z0-9]{4}){3})
+
+      operationId: postPostOfficeLetterSuffix
+      summary: Send Yoti Letter PDF data
+      description: Send base64 encoded PDF data for Post office letter
+      tags: [ poa ]
+      requestBody:
+        description: Sirius LPA document data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/YotiPdfSuffixRequest"
+      responses:
+        "204":
+          description: PDD data has been processed
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     User:
@@ -250,6 +282,27 @@ components:
             - success
             - exit
       additionalProperties: false
+
+    YotiPdfSuffixRequest:
+      type: object
+      required:
+        - systemType
+        - suffix
+        - correspondentName
+      properties:
+        type:
+          type: string
+        systemType:
+          type: string
+        content:
+          type: string
+        suffix:
+          type: string
+        correspondentName:
+          type: string
+        correspondentAddress:
+          type: array
+
     Error:
       type: object
       required:

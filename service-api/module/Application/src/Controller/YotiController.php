@@ -112,7 +112,7 @@ class YotiController extends AbstractActionController
             }
             //Prepare and generate PDF
             $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
-            $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
+            $pdf = $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
         } catch (YotiException $e) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem(
@@ -123,6 +123,7 @@ class YotiController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         $response['result'] = "Session created";
+        $response['pdfBase64'] = $pdf['pdfBase64'];
 
         return new JsonModel($response);
     }

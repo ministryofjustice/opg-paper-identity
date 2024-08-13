@@ -143,4 +143,27 @@ class SiriusApiService
             'error' => json_decode(strval($response->getBody()), true)
         ];
     }
+
+    public function sendPostOfficePDf(string $base64suffix, array $caseDetails): array
+    {
+        $data = [
+            "type" => "Save",
+            "systemType" => "DLP-ID-PO-D",
+            "content" => "",
+            "suffix" => $base64suffix,
+            "correspondentName" => $caseDetails['firstName']. ' ' . $caseDetails['lastName'],
+            "correspondentAddress" => $caseDetails['address']
+        ];
+        $lpa = $caseDetails['lpas'][0];
+
+        $response = $this->client->post('/api/v1/lpas/'.$lpa.'/documents', [
+            'headers' => $this->getAuthHeaders($request),
+            'json' => $data
+        ]);
+
+        return [
+            'status' => $response->getStatusCode(),
+            'error' => json_decode(strval($response->getBody()), true)
+        ];
+    }
 }
