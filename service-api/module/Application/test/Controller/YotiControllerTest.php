@@ -18,9 +18,7 @@ use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
-use phpmock\Mock;
 use PHPUnit\Framework\MockObject\MockObject;
-use Ramsey\Uuid\Uuid;
 
 class YotiControllerTest extends TestCase
 {
