@@ -658,4 +658,9 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    public function estimatePostofficeDeadline(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+    }
 }

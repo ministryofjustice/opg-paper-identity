@@ -271,6 +271,17 @@ return [
                     ],
                 ],
             ],
+            'estimate_postoffice_deadline' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/estimate-postoffice-deadline',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'estimatePostofficeDeadline',
+                    ],
+                ],
+            ],
+
             'change_case_lpa' => [
                 'type' => Segment::class,
                 'verb' => 'put',
