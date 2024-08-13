@@ -149,12 +149,7 @@ class CaseData implements JsonSerializable
             'progressPage' => $this->progressPage,
         ];
         if ($this->counterService !== null) {
-            $arr['counterService'] = [
-                'selectedPostOffice' => $this->counterService->selectedPostOffice,
-                'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
-                'notificationState' => $this->counterService->notificationState,
-                'notificationsAuthToken' => $this->counterService->notificationsAuthToken
-            ];
+            $arr['counterService'] = $this->counterService->toArray();
         }
 
         if ($this->kbvQuestions !== null) {
