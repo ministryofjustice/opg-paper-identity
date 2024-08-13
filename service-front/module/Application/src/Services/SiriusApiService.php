@@ -146,18 +146,26 @@ class SiriusApiService
 
     public function sendPostOfficePDf(string $base64suffix, array $caseDetails): array
     {
+        $address = array(
+            $caseDetails["address"]["line1"],
+            $caseDetails["address"]["line2"],
+            $caseDetails["address"]["line3"],
+            $caseDetails["address"]["town"],
+            $caseDetails["address"]["country"],
+            $caseDetails["address"]["postcode"]
+        );
+
         $data = [
             "type" => "Save",
             "systemType" => "DLP-ID-PO-D",
             "content" => "",
             "suffix" => $base64suffix,
             "correspondentName" => $caseDetails['firstName']. ' ' . $caseDetails['lastName'],
-            "correspondentAddress" => $caseDetails['address']
+            "correspondentAddress" => $address
         ];
         $lpa = $caseDetails['lpas'][0];
 
         $response = $this->client->post('/api/v1/lpas/'.$lpa.'/documents', [
-            'headers' => $this->getAuthHeaders($request),
             'json' => $data
         ]);
 
