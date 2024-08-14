@@ -61,20 +61,19 @@ class LocalisationHelper
         }
     }
 
-    public function processDocumentTypes(string $key, array $detailsData = []): string
+    public function getDocumentTypeString(array $detailsData): string
     {
-        if (array_key_exists('idMethodIncludingNation', $detailsData)) {
-            
+        $key = $detailsData['idMethod'];
+
+        if (array_key_exists($key, $this->config['opg_settings']['post_office_identity_methods'])) {
+            return $this->config['opg_settings']['post_office_identity_methods'][$key];
         }
 
-        if (array_key_exists($key, $this->config['opg_settings']['identity_methods'])) {
-
-        } elseif (array_key_exists($key, $this->config['opg_settings']['post_office_identity_methods'])) {
-
-        } elseif (array_key_exists($key, $this->config['opg_settings']['non_uk_identity_methods'])) {
-
-        } elseif (array_key_exists($key, $this->config['opg_settings']['yoti_identity_methods'])) {
-
+        if (array_key_exists('idMethodIncludingNation', $detailsData)) {
+            $country =
+                $this->config['opg_settings']['acceptable_nations_for_id_documents'][$detailsData['idMethodIncludingNation']['country']];
+            $document = $this->config['opg_settings']['identity_documents'];
+            return "$document ($country)";
         }
     }
 

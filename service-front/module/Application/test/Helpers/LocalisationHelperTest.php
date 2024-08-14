@@ -27,7 +27,7 @@ class LocalisationHelperTest extends TestCase
         array $documentData,
         array $expected
     ): void {
-        $localisationHelper = new LocalisationHelper([]);
+        $localisationHelper = new LocalisationHelper($this->configData());
 
         $actual = $localisationHelper->processDocumentBody($documentData);
 
@@ -109,7 +109,7 @@ class LocalisationHelperTest extends TestCase
      */
     public function testDisplayText(string $word, string $expected): void
     {
-        $localisationHelper = new LocalisationHelper([]);
+        $localisationHelper = new LocalisationHelper($this->configData());
         $actual = $localisationHelper->addDisplayText($word);
 
         $this->assertEquals($expected, $actual);
@@ -142,7 +142,7 @@ class LocalisationHelperTest extends TestCase
     }
 
     /**
-     * @dataProvider configData
+     * @dataProvider getInternationalSupportedDocumentsData
      */
     public function testGetInternationalSupportedDocuments(
         array $config,
@@ -159,47 +159,166 @@ class LocalisationHelperTest extends TestCase
         $this->assertEquals($expected, $actual['supported_documents']);
     }
 
-    public static function configData(): array
+    public function configData(): array
     {
         return [
+            'opg_settings' => [
+                'identity_documents' => [
+                    'PASSPORT' => "Passport",
+                    'DRIVING_LICENCE' => 'Driving licence',
+                    'NATIONAL_ID' => 'National ID',
+                    'RESIDENCE_PERMIT' => 'Residence permit',
+                    'TRAVEL_DOCUMENT' => 'Travel document',
+                    'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number'
+                ],
+                'identity_routes' => [
+                    'TELEPHONE' => 'Telephone',
+                    'POST_OFFICE' => 'Post office',
+                ],
+                'identity_methods' => [
+                    'nin' => 'National Insurance number',
+                    'pn' => 'UK Passport (current or expired in the last 5 years)',
+                    'dln' => 'UK photocard driving licence (must be current) ',
+                ],
+                'post_office_identity_methods' => [
+                    'po_ukp' => 'UK passport (up to 18 months expired)',
+                    'po_eup' => 'EU passport (must be current)',
+                    'po_inp' => 'International passport (must be current)',
+                    'po_ukd' => 'UK Driving licence (must be current)',
+                    'po_eud' => 'EU Driving licence (must be current)',
+                    'po_ind' => 'International driving licence (must be current)',
+                    'po_n' => 'None of the above',
+                ],
+                'non_uk_identity_methods' => [
+                    'xpn' => 'Passport',
+                    'xdln' => 'Photocard driving licence',
+                    'xid' => 'National identity card',
+                ],
+                'yoti_identity_methods' => [
+                    'PASSPORT' => "Passport",
+                    'DRIVING_LICENCE' => 'Driving licence',
+                    'NATIONAL_ID' => 'National ID',
+                    'RESIDENCE_PERMIT' => 'Residence permit',
+                    'TRAVEL_DOCUMENT' => 'Travel document',
+                ],
+                'acceptable_nations_for_id_documents' => [
+                    'AUT' => 'Austria',
+                ],
+                "supported_countries_documents" => [
+                    [
+                        "code" => "AUT",
+                        "supported_documents" => [
+                            [
+                                "type" => "DRIVING_LICENCE",
+                                "is_strictly_latin" => true
+                            ],
+                            [
+                                "type" => "NATIONAL_ID",
+                                "is_strictly_latin" => true,
+                                "requirements" => [
+                                    "date_from" => "2002-01-01"
+                                ]
+                            ],
+                            [
+                                "type" => "PASSPORT",
+                                "is_strictly_latin" => true
+                            ],
+                            [
+                                "type" => "RESIDENCE_PERMIT",
+                                "is_strictly_latin" => true
+                            ],
+                            [
+                                "type" => "TRAVEL_DOCUMENT",
+                                "is_strictly_latin" => true
+                            ]
+                        ]
+                    ],
+                ]
+            ]
+        ];
+    }
+
+    public static function getInternationalSupportedDocumentsData(): array
+    {
+        $config = [
+            'opg_settings' => [
+                'identity_documents' => [
+                    'PASSPORT' => "Passport",
+                    'DRIVING_LICENCE' => 'Driving licence',
+                    'NATIONAL_ID' => 'National ID',
+                    'RESIDENCE_PERMIT' => 'Residence permit',
+                    'TRAVEL_DOCUMENT' => 'Travel document',
+                    'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number'
+                ],
+                'identity_routes' => [
+                    'TELEPHONE' => 'Telephone',
+                    'POST_OFFICE' => 'Post office',
+                ],
+                'identity_methods' => [
+                    'nin' => 'National Insurance number',
+                    'pn' => 'UK Passport (current or expired in the last 5 years)',
+                    'dln' => 'UK photocard driving licence (must be current) ',
+                ],
+                'post_office_identity_methods' => [
+                    'po_ukp' => 'UK passport (up to 18 months expired)',
+                    'po_eup' => 'EU passport (must be current)',
+                    'po_inp' => 'International passport (must be current)',
+                    'po_ukd' => 'UK Driving licence (must be current)',
+                    'po_eud' => 'EU Driving licence (must be current)',
+                    'po_ind' => 'International driving licence (must be current)',
+                    'po_n' => 'None of the above',
+                ],
+                'non_uk_identity_methods' => [
+                    'xpn' => 'Passport',
+                    'xdln' => 'Photocard driving licence',
+                    'xid' => 'National identity card',
+                ],
+                'yoti_identity_methods' => [
+                    'PASSPORT' => "Passport",
+                    'DRIVING_LICENCE' => 'Driving licence',
+                    'NATIONAL_ID' => 'National ID',
+                    'RESIDENCE_PERMIT' => 'Residence permit',
+                    'TRAVEL_DOCUMENT' => 'Travel document',
+                ],
+                'acceptable_nations_for_id_documents' => [
+                    'AUT' => 'Austria',
+                ],
+                "supported_countries_documents" => [
+                    [
+                        "code" => "AUT",
+                        "supported_documents" => [
+                            [
+                                "type" => "DRIVING_LICENCE",
+                                "is_strictly_latin" => true
+                            ],
+                            [
+                                "type" => "NATIONAL_ID",
+                                "is_strictly_latin" => true,
+                                "requirements" => [
+                                    "date_from" => "2002-01-01"
+                                ]
+                            ],
+                            [
+                                "type" => "PASSPORT",
+                                "is_strictly_latin" => true
+                            ],
+                            [
+                                "type" => "RESIDENCE_PERMIT",
+                                "is_strictly_latin" => true
+                            ],
+                            [
+                                "type" => "TRAVEL_DOCUMENT",
+                                "is_strictly_latin" => true
+                            ]
+                        ]
+                    ],
+                ]
+            ]
+        ];
+
+        return [
           [
-              [
-                  'opg_settings' => [
-                      'acceptable_nations_for_id_documents' => [
-                          'AUT' => 'Austria',
-                      ],
-                      "supported_countries_documents" => [
-                          [
-                              "code" => "AUT",
-                              "supported_documents" => [
-                                  [
-                                      "type" => "DRIVING_LICENCE",
-                                      "is_strictly_latin" => true
-                                  ],
-                                  [
-                                      "type" => "NATIONAL_ID",
-                                      "is_strictly_latin" => true,
-                                      "requirements" => [
-                                          "date_from" => "2002-01-01"
-                                      ]
-                                  ],
-                                  [
-                                      "type" => "PASSPORT",
-                                      "is_strictly_latin" => true
-                                  ],
-                                  [
-                                      "type" => "RESIDENCE_PERMIT",
-                                      "is_strictly_latin" => true
-                                  ],
-                                  [
-                                      "type" => "TRAVEL_DOCUMENT",
-                                      "is_strictly_latin" => true
-                                  ]
-                              ]
-                          ]
-                      ]
-                  ]
-              ],
+              $config,
               "AUT",
               [
                   [
@@ -233,43 +352,7 @@ class LocalisationHelperTest extends TestCase
               ]
           ],
             [
-                [
-                    'opg_settings' => [
-                        'acceptable_nations_for_id_documents' => [
-                            'AUT' => 'Austria',
-                        ],
-                        "supported_countries_documents" => [
-                            [
-                                "code" => "AUT",
-                                "supported_documents" => [
-                                    [
-                                        "type" => "DRIVING_LICENCE",
-                                        "is_strictly_latin" => true
-                                    ],
-                                    [
-                                        "type" => "NATIONAL_ID",
-                                        "is_strictly_latin" => true,
-                                        "requirements" => [
-                                            "date_from" => "2002-01-01"
-                                        ]
-                                    ],
-                                    [
-                                        "type" => "PASSPORT",
-                                        "is_strictly_latin" => true
-                                    ],
-                                    [
-                                        "type" => "RESIDENCE_PERMIT",
-                                        "is_strictly_latin" => true
-                                    ],
-                                    [
-                                        "type" => "TRAVEL_DOCUMENT",
-                                        "is_strictly_latin" => true
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
+                $config,
                 "AU",
                 [],
                 true

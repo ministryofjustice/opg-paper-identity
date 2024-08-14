@@ -125,7 +125,7 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             if ($this->getRequest()->getPost('postoffice') == 'none') {
                 return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
             }
@@ -159,7 +159,7 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
+        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $date = new \DateTime();
@@ -171,15 +171,15 @@ class PostOfficeFlowController extends AbstractActionController
         $postOfficeAddress = explode(",", $postOfficeData['address']);
         $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['post_code']]);
 
-        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
         $view->setVariable('post_office_summary', true);
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
-        $view->setVariable('display_id_method', $optionsdata[$detailsData['idMethod']]);
+        $view->setVariable('display_id_method', $this->localisationHelper->getDocumentTypeString($detailsData));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $responseData = $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
             if ($responseData['result'] == 'Updated') {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
