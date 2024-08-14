@@ -197,4 +197,55 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals(204, $response['status']);
         $this->assertEquals("", $response['error']);
     }
+
+    public function testSendPostOfficePdf(): void
+    {
+        $details = [];
+        $details["firstName"] = "Joe";
+        $details["lastName"] = "Blogs";
+        $details["address"]["line1"] = '123 Ferndale Road';
+        $details["address"]["line2"] = 'Lambeth';
+        $details["address"]["line3"] = '';
+        $details["address"]["town"] = 'London';
+        $details["address"]["country"] = 'England';
+        $details["address"]["postcode"] = 'SW4 7SS';
+        $details["lpas"][0] = "789";
+
+        $suffix = base64_encode('Test');
+        $address = [
+            '123 Ferndale Road',
+            'Lambeth',
+            '',
+            'London',
+            'England',
+            'SW4 7SS'
+        ];
+        $body = [
+            "type" => "Save",
+            "systemType" => "DLP-ID-PO-D",
+            "content" => "",
+            "suffix" => $suffix,
+            "correspondentName" => "Joe Blogs",
+            "correspondentAddress" => $address
+        ];
+
+        $request = new ConsumerRequest();
+        $request
+            ->setMethod('POST')
+            ->setPath('/api/v1/lpas/789/documents')
+            ->setBody($body);
+
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(204);
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('A post request /api/v1/lpas/7000-0000-0001/documents')
+            ->with($request)
+            ->willRespondWith($response);
+
+        $result = $this->sut->sendPostOfficePDf($suffix, $details);
+        $this->assertEquals(204, $result['status']);
+    }
 }
