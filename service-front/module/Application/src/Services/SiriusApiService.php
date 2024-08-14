@@ -149,7 +149,7 @@ class SiriusApiService
         $address = [
             $caseDetails["address"]["line1"],
             $caseDetails["address"]["line2"],
-            $caseDetails["address"]["line3"],
+            $caseDetails["address"]["line3"] ?? "N/A",
             $caseDetails["address"]["town"],
             $caseDetails["address"]["country"],
             $caseDetails["address"]["postcode"]

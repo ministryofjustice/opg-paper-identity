@@ -205,7 +205,7 @@ class SiriusApiServicePactTest extends TestCase
         $details["lastName"] = "Blogs";
         $details["address"]["line1"] = '123 Ferndale Road';
         $details["address"]["line2"] = 'Lambeth';
-        $details["address"]["line3"] = '';
+        $details["address"]["line3"] = 'Line 3';
         $details["address"]["town"] = 'London';
         $details["address"]["country"] = 'England';
         $details["address"]["postcode"] = 'SW4 7SS';
