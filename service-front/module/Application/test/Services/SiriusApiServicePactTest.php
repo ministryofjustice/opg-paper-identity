@@ -215,7 +215,7 @@ class SiriusApiServicePactTest extends TestCase
         $address = [
             '123 Ferndale Road',
             'Lambeth',
-            '',
+            'Line 3',
             'London',
             'England',
             'SW4 7SS'
@@ -241,7 +241,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('A post request /api/v1/lpas/7000-0000-0001/documents')
+            ->uponReceiving('A post request /api/v1/lpas/789/documents')
             ->with($request)
             ->willRespondWith($response);
 
