@@ -72,7 +72,7 @@ class LocalisationHelper
         if (array_key_exists('idMethodIncludingNation', $detailsData)) {
             $country =
                 $this->config['opg_settings']['acceptable_nations_for_id_documents'][$detailsData['idMethodIncludingNation']['country']];
-            $document = $this->config['opg_settings']['identity_documents'];
+            $document = $this->config['opg_settings']['identity_documents'][$detailsData['idMethodIncludingNation']['id_method']];
             return "$document ($country)";
         }
     }

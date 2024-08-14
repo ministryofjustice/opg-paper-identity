@@ -109,8 +109,6 @@ class PostOfficeFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(PostOfficeAddress::class);
         $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
 
-        echo json_encode($detailsData);
-
         if (! isset($detailsData['searchPostcode'])) {
             $searchString = $detailsData['address']['postcode'];
         } else {
@@ -161,6 +159,8 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        echo json_encode($detailsData);
 
         $date = new \DateTime();
         $date->modify("+90 days");
