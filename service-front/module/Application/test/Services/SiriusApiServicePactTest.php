@@ -237,7 +237,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $response = new ProviderResponse();
         $response
-            ->setStatus(204);
+            ->setStatus(201);
 
         $this->builder
             ->given('A digital LPA exists')
@@ -246,6 +246,6 @@ class SiriusApiServicePactTest extends TestCase
             ->willRespondWith($response);
 
         $result = $this->sut->sendPostOfficePDf($suffix, $details);
-        $this->assertEquals(204, $result['status']);
+        $this->assertEquals(201, $result['status']);
     }
 }

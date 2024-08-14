@@ -171,7 +171,7 @@ class SiriusApiService
 
         return [
             'status' => $response->getStatusCode(),
-            'error' => json_decode(strval($response->getBody()), true)
+            'response' => json_decode(strval($response->getBody()), true)
         ];
     }
 }
