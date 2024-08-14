@@ -261,10 +261,8 @@ class YotiService implements YotiServiceInterface
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
         $base64 = base64_encode(strval($pdfData->getBody()));
-        // Convert base64 to pdf
-        $pdf = base64_decode($base64);
 
-        return ["status" => "PDF Created", "pdfData" => $pdf];
+        return ["status" => "PDF Created", "pdfBase64" => $base64];
     }
 
     public function letterConfigPayload(CaseData $caseData, string $requirementId): array
