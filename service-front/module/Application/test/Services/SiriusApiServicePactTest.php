@@ -241,7 +241,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('A post request /api/v1/lpas/789/documents')
+            ->uponReceiving('A post request /api/v1/lpas/7000-0000-0001/documents')
             ->with($request)
             ->willRespondWith($response);
 
