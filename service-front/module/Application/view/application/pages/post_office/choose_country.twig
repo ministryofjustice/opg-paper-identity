@@ -35,12 +35,12 @@
                         <select class="govuk-select" id="country" name="country">
                             <option value=""></option>
                             <option value="0">The issuing country is not listed</option>
-                            {% for code, name in countries_data %}
+                            {% for code, option in countries_data %}
                                 <option
                                         value="{{ code }}"
                                         {% if form.get('country').value == code %}selected{% endif %}
                                 >
-                                    {{ name }}
+                                    {{ option.name }}
                                 </option>
                             {% endfor %}
                         </select>
