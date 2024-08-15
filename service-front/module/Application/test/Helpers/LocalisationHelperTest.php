@@ -201,11 +201,8 @@ class LocalisationHelperTest extends TestCase
                     'RESIDENCE_PERMIT' => 'Residence permit',
                     'TRAVEL_DOCUMENT' => 'Travel document',
                 ],
-                'acceptable_nations_for_id_documents' => [
-                    'AUT' => 'Austria',
-                ],
-                "supported_countries_documents" => [
-                    [
+                'localisation' => [
+                    "AUT" => [
                         "code" => "AUT",
                         "supported_documents" => [
                             [
@@ -231,9 +228,10 @@ class LocalisationHelperTest extends TestCase
                                 "type" => "TRAVEL_DOCUMENT",
                                 "is_strictly_latin" => true
                             ]
-                        ]
+                        ],
+                        "name" => "Austria"
                     ],
-                ]
+                ],
             ]
         ];
     }
@@ -280,11 +278,8 @@ class LocalisationHelperTest extends TestCase
                     'RESIDENCE_PERMIT' => 'Residence permit',
                     'TRAVEL_DOCUMENT' => 'Travel document',
                 ],
-                'acceptable_nations_for_id_documents' => [
-                    'AUT' => 'Austria',
-                ],
-                "supported_countries_documents" => [
-                    [
+                'localisation' => [
+                    "AUT" => [
                         "code" => "AUT",
                         "supported_documents" => [
                             [
@@ -310,9 +305,10 @@ class LocalisationHelperTest extends TestCase
                                 "type" => "TRAVEL_DOCUMENT",
                                 "is_strictly_latin" => true
                             ]
-                        ]
+                        ],
+                        "name" => "Austria"
                     ],
-                ]
+                ],
             ]
         ];
 

@@ -19,7 +19,7 @@ class LocalisationHelper
     {
         $config = $this->getConfig();
 
-        $idDocuments = $config['opg_settings']['supported_countries_documents'];
+        $idDocuments = $config['opg_settings']['localisation'];
         $documents = [];
 
         foreach ($idDocuments as $countryDocumentBody) {
@@ -63,6 +63,7 @@ class LocalisationHelper
 
     public function getDocumentTypeString(array $detailsData): string
     {
+        $documentString = "";
         $key = $detailsData['idMethod'];
 
         if (array_key_exists($key, $this->config['opg_settings']['post_office_identity_methods'])) {
@@ -71,10 +72,13 @@ class LocalisationHelper
 
         if (array_key_exists('idMethodIncludingNation', $detailsData)) {
             $country =
-                $this->config['opg_settings']['acceptable_nations_for_id_documents'][$detailsData['idMethodIncludingNation']['country']];
-            $document = $this->config['opg_settings']['identity_documents'][$detailsData['idMethodIncludingNation']['id_method']];
-            return "$document ($country)";
+                $this->config['opg_settings']['localisation'][$detailsData['idMethodIncludingNation']['country']];
+            $document = $this->config['opg_settings']['identity_documents'][
+                $detailsData['idMethodIncludingNation']['id_method']
+            ];
+            $documentString = $document . ' (' . $country['name'] . ')';
         }
+        return $documentString;
     }
 
     private function getConfig(): array

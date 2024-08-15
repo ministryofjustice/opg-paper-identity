@@ -71,7 +71,7 @@ class PostOfficeFlowController extends AbstractActionController
             }
         }
 
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $idCountriesData = $this->config['opg_settings']['localisation'];
         $optionsdata = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -159,8 +159,6 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        echo json_encode($detailsData);
 
         $date = new \DateTime();
         $date->modify("+90 days");
@@ -260,8 +258,7 @@ class PostOfficeFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/post_office/choose_country'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
-        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $idCountriesData = $this->config['opg_settings']['localisation'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(Country::class);
 
@@ -278,7 +275,6 @@ class PostOfficeFlowController extends AbstractActionController
         }
 
         $view->setVariable('form', $form);
-        $view->setVariable('options_data', $idOptionsData);
         $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
@@ -296,7 +292,7 @@ class PostOfficeFlowController extends AbstractActionController
         $view = new ViewModel();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $idCountriesData = $this->config['opg_settings']['localisation'];
 
         if (! isset($detailsData['idMethodIncludingNation']['country'])) {
             throw new \Exception("Country for document list has not been set.");
@@ -324,8 +320,8 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('options_data', $idOptionsData);
         $view->setVariable('countries_data', $idCountriesData);
         $view->setVariable('countryName', $idCountriesData[
-        $detailsData['idMethodIncludingNation']['country']
-        ]);
+            $detailsData['idMethodIncludingNation']['country']
+        ]['name']);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('supported_docs', $docs['supported_documents']);
         $view->setVariable('uuid', $uuid);
