@@ -197,4 +197,87 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals(204, $response['status']);
         $this->assertEquals("", $response['error']);
     }
+
+    public function testSendPostOfficePdf(): void
+    {
+        $details = [];
+        $details["firstName"] = "Joe";
+        $details["lastName"] = "Blogs";
+        $details["address"]["line1"] = '123 Ferndale Road';
+        $details["address"]["line2"] = 'Lambeth';
+        $details["address"]["line3"] = 'Line 3';
+        $details["address"]["town"] = 'London';
+        $details["address"]["country"] = 'England';
+        $details["address"]["postcode"] = 'SW4 7SS';
+        $details["lpas"][0] = "7000-0000-0001";
+
+        $suffix = base64_encode('Test');
+        $address = [
+            '123 Ferndale Road',
+            'Lambeth',
+            'Line 3',
+            'London',
+            'England',
+            'SW4 7SS'
+        ];
+        $body = [
+            "type" => "Save",
+            "systemType" => "DLP-ID-PO-D",
+            "content" => "",
+            "suffix" => $suffix,
+            "correspondentName" => "Joe Blogs",
+            "correspondentAddress" => $address
+        ];
+
+        $matcher = new Matcher();
+        $request1 = new ConsumerRequest();
+        $request1
+            ->setMethod('GET')
+            ->setPath('/api/v1/digital-lpas/7000-0000-0001');
+
+        $response1 = new ProviderResponse();
+        $response1
+            ->setStatus(200)
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody([
+                'opg.poas.sirius' => [
+                    'id' => 789
+                ],
+                'opg.poas.lpastore' => [
+                    'certificateProvider' => [
+                        'firstNames' => $matcher->like('Dorian'),
+                        'lastName' => $matcher->like('Rehkop'),
+                        'address' => [
+                            'line1' => $matcher->like('104, Alte Lindenstraße'),
+                            'country' => $matcher->like('DE'),
+                        ]
+                    ]
+                ]
+            ]);
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('Request for an LPA via sendPDF')
+            ->with($request1)
+            ->willRespondWith($response1);
+
+        $request = new ConsumerRequest();
+        $request
+            ->setMethod('POST')
+            ->setPath('/api/v1/lpas/789/documents')
+            ->setBody($body);
+
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(201);
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('AA request to /api/v1/lpas/789/documents')
+            ->with($request)
+            ->willRespondWith($response);
+
+        $result = $this->sut->sendPostOfficePDf($suffix, $details, new Request());
+        $this->assertEquals(201, $result['status']);
+    }
 }
