@@ -143,4 +143,53 @@ class SiriusApiService
             'error' => json_decode(strval($response->getBody()), true)
         ];
     }
+
+    /**
+     * @param string $base64suffix
+     * @param array $caseDetails
+     * @param Request $request
+     * @return array
+     * @throws GuzzleException
+     *
+     * @psalm-suppress InvalidArrayOffset
+     */
+    public function sendPostOfficePDf(string $base64suffix, array $caseDetails, Request $request): array
+    {
+        $address = [
+            $caseDetails["address"]["line1"],
+            $caseDetails["address"]["line2"],
+            $caseDetails["address"]["line3"] ?? "N/A",
+            $caseDetails["address"]["town"],
+            $caseDetails["address"]["country"],
+            $caseDetails["address"]["postcode"]
+        ];
+
+        $data = [
+            "type" => "Save",
+            "systemType" => "DLP-ID-PO-D",
+            "content" => "",
+            "suffix" => $base64suffix,
+            "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
+            "correspondentAddress" => $address
+        ];
+        $lpa = $caseDetails['lpas'][0];
+
+        $lpaDetails = $this->getLpaByUid($lpa, $request);
+        $lpaId = $lpaDetails["opg.poas.sirius"]["id"];
+
+        if (! $lpaId) {
+            return [
+                'status' => 400,
+                'response' => 'LPA Id not found'
+            ];
+        }
+        $response = $this->client->post('/api/v1/lpas/' . $lpaId . '/documents', [
+            'json' => $data
+        ]);
+
+        return [
+            'status' => $response->getStatusCode(),
+            'response' => json_decode(strval($response->getBody()), true)
+        ];
+    }
 }

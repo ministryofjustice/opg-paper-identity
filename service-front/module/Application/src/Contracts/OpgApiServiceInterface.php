@@ -46,5 +46,5 @@ interface OpgApiServiceInterface
 
     public function updateCaseProgress(string $uuid, array $data): array;
 
-    public function createYotiSession(string $uuid): void;
+    public function createYotiSession(string $uuid): array;
 }
