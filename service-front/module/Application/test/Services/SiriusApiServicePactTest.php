@@ -209,7 +209,7 @@ class SiriusApiServicePactTest extends TestCase
         $details["address"]["town"] = 'London';
         $details["address"]["country"] = 'England';
         $details["address"]["postcode"] = 'SW4 7SS';
-        $details["lpas"][0] = "789";
+        $details["lpas"][0] = "M-1234-9876-4567";
 
         $suffix = base64_encode('Test');
         $address = [
@@ -229,6 +229,38 @@ class SiriusApiServicePactTest extends TestCase
             "correspondentAddress" => $address
         ];
 
+        $matcher = new Matcher();
+        $request1 = new ConsumerRequest();
+        $request1
+            ->setMethod('GET')
+            ->setPath('/api/v1/digital-lpas/M-1234-9876-4567');
+
+        $response1 = new ProviderResponse();
+        $response1
+            ->setStatus(200)
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody([
+                'opg.poas.sirius' => [
+                    'id' => 789
+                ],
+                'opg.poas.lpastore' => [
+                    'certificateProvider' => [
+                        'firstNames' => $matcher->like('Dorian'),
+                        'lastName' => $matcher->like('Rehkop'),
+                        'address' => [
+                            'line1' => $matcher->like('104, Alte Lindenstraße'),
+                            'country' => $matcher->like('DE'),
+                        ]
+                    ]
+                ]
+            ]);
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('Request for an LPA via sendPDF')
+            ->with($request1)
+            ->willRespondWith($response1);
+
         $request = new ConsumerRequest();
         $request
             ->setMethod('POST')
@@ -241,11 +273,11 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('A post request /api/v1/lpas/789/documents')
+            ->uponReceiving('AA request to /api/v1/lpas/789/documents')
             ->with($request)
             ->willRespondWith($response);
 
-        $result = $this->sut->sendPostOfficePDf($suffix, $details);
+        $result = $this->sut->sendPostOfficePDf($suffix, $details, new Request());
         $this->assertEquals(201, $result['status']);
     }
 }

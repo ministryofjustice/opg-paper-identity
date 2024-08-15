@@ -181,8 +181,10 @@ class PostOfficeFlowController extends AbstractActionController
             //trigger post office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
             $pdfData = $counterService['pdfBase64'];
-
-            $pdf = $this->siriusApiService->sendPostOfficePDf($pdfData, $detailsData);
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $pdf = $this->siriusApiService->sendPostOfficePDf($pdfData, $detailsData, $this->request);
 
             if ($responseData['result'] == 'Updated' && $pdf['status'] === 201) {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
