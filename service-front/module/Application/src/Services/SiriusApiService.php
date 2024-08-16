@@ -184,6 +184,7 @@ class SiriusApiService
             ];
         }
         $response = $this->client->post('/api/v1/lpas/' . $lpaId . '/documents', [
+            'headers' => $this->getAuthHeaders($request),
             'json' => $data
         ]);
 
