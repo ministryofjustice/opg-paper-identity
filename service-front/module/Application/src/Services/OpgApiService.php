@@ -370,7 +370,7 @@ class OpgApiService implements OpgApiServiceInterface
         $url = sprintf("/counter-service/%s/estimate-postoffice-deadline", $uuid);
 
         try {
-            $this->makeApiRequest($url, 'POST');
+            $this->makeApiRequest($url, 'GET');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
