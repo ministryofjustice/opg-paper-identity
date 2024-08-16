@@ -138,8 +138,6 @@ class PostOfficeFlowController extends AbstractActionController
                 $processableForm,
                 $templates
             );
-            //trigger post office counter service
-            $this->opgApiService->createYotiSession($uuid);
 
             if (! is_null($processed->getRedirect())) {
                 return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
@@ -179,7 +177,16 @@ class PostOfficeFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $responseData = $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
-            if ($responseData['result'] == 'Updated') {
+
+            //trigger post office counter service & send pdf to sirius
+            $counterService = $this->opgApiService->createYotiSession($uuid);
+            $pdfData = $counterService['pdfBase64'];
+            /**
+             * @psalm-suppress ArgumentTypeCoercion
+             */
+            $pdf = $this->siriusApiService->sendPostOfficePDf($pdfData, $detailsData, $this->request);
+
+            if ($responseData['result'] == 'Updated' && $pdf['status'] === 201) {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
             } else {
                 $view->setVariable('errors', ['API Error']);
