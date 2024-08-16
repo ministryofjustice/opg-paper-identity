@@ -209,7 +209,7 @@ class SiriusApiServicePactTest extends TestCase
         $details["address"]["town"] = 'London';
         $details["address"]["country"] = 'England';
         $details["address"]["postcode"] = 'SW4 7SS';
-        $details["lpas"][0] = "7000-0000-0001";
+        $details["lpas"][0] = "M-1234-9876-4567";
 
         $suffix = base64_encode('Test');
         $address = [
@@ -233,7 +233,7 @@ class SiriusApiServicePactTest extends TestCase
         $request1 = new ConsumerRequest();
         $request1
             ->setMethod('GET')
-            ->setPath('/api/v1/digital-lpas/7000-0000-0001');
+            ->setPath('/api/v1/digital-lpas/M-1234-9876-4567');
 
         $response1 = new ProviderResponse();
         $response1
@@ -273,7 +273,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('AA request to /api/v1/lpas/789/documents')
+            ->uponReceiving('A request to /api/v1/lpas/789/documents')
             ->with($request)
             ->willRespondWith($response);
 

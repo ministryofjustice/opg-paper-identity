@@ -10,7 +10,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Headers;
 use Laminas\Http\Request;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * @psalm-suppress DeprecatedMethod
