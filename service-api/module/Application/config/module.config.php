@@ -276,10 +276,10 @@ return [
             'estimate_postoffice_deadline' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/estimate-postoffice-deadline',
+                    'route' => '/counter-service/:uuid/estimate-postoffice-deadline',
                     'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'estimatePostofficeDeadline',
+                        'controller' => Controller\YotiController::class,
+                        'action' => 'estimatePostOfficeDeadline',
                     ],
                 ],
             ],
