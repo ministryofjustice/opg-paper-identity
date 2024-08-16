@@ -241,7 +241,7 @@ class SiriusApiServicePactTest extends TestCase
             ->addHeader('Content-Type', 'application/json')
             ->setBody([
                 'opg.poas.sirius' => [
-                    'id' => 789
+                    'id' => 77
                 ],
                 'opg.poas.lpastore' => [
                     'certificateProvider' => [
