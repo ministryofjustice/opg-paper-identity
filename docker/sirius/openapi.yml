@@ -141,9 +141,8 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: integer
             nullable: false
-            pattern: (M(-[A-Z0-9]{4}){3})
       operationId: postPostOfficeLetterSuffix
       summary: Send Yoti Letter PDF data
       description: Send base64 encoded PDF data for Post office letter
@@ -155,7 +154,7 @@ paths:
             schema:
               $ref: "#/components/schemas/YotiPdfSuffixRequest"
       responses:
-        "204":
+        "201":
           description: PDD data has been processed
         "400":
           description: Bad request
