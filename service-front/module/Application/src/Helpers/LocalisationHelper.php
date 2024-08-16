@@ -12,14 +12,6 @@ class LocalisationHelper
     {
     }
 
-    private array $wordMap = [
-        'PASSPORT' => "Passport",
-        'DRIVING_LICENCE' => 'Driving licence',
-        'NATIONAL_ID' => 'National ID',
-        'RESIDENCE_PERMIT' => 'Residence permit',
-        'TRAVEL_DOCUMENT' => 'Travel document',
-    ];
-
     /**
      * @throws LocalisationException
      */
@@ -27,7 +19,7 @@ class LocalisationHelper
     {
         $config = $this->getConfig();
 
-        $idDocuments = $config['opg_settings']['supported_countries_documents'];
+        $idDocuments = $config['opg_settings']['localisation'];
         $documents = [];
 
         foreach ($idDocuments as $countryDocumentBody) {
@@ -57,9 +49,36 @@ class LocalisationHelper
         return $documents;
     }
 
+    /**
+     * @throws LocalisationException
+     */
     public function addDisplayText(string $word): string
     {
-        return $this->wordMap[$word];
+        if (array_key_exists($word, $this->config['opg_settings']['yoti_identity_methods'])) {
+            return $this->config['opg_settings']['yoti_identity_methods'][$word];
+        } else {
+            throw new LocalisationException("This identity document type is not supported.");
+        }
+    }
+
+    public function getDocumentTypeString(array $detailsData): string
+    {
+        $documentString = "";
+        $key = $detailsData['idMethod'];
+
+        if (array_key_exists($key, $this->config['opg_settings']['post_office_identity_methods'])) {
+            return $this->config['opg_settings']['post_office_identity_methods'][$key];
+        }
+
+        if (array_key_exists('idMethodIncludingNation', $detailsData)) {
+            $country =
+                $this->config['opg_settings']['localisation'][$detailsData['idMethodIncludingNation']['country']];
+            $document = $this->config['opg_settings']['identity_documents'][
+                $detailsData['idMethodIncludingNation']['id_method']
+            ];
+            $documentString = $document . ' (' . $country['name'] . ')';
+        }
+        return $documentString;
     }
 
     private function getConfig(): array
