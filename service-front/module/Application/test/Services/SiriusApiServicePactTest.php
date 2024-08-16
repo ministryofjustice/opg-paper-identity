@@ -264,7 +264,7 @@ class SiriusApiServicePactTest extends TestCase
         $request = new ConsumerRequest();
         $request
             ->setMethod('POST')
-            ->setPath('/api/v1/lpas/789/documents')
+            ->setPath('/api/v1/lpas/77/documents')
             ->setBody($body);
 
         $response = new ProviderResponse();
@@ -273,7 +273,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('A request to /api/v1/lpas/789/documents')
+            ->uponReceiving('A request to /api/v1/lpas/77/documents')
             ->with($request)
             ->willRespondWith($response);
 
