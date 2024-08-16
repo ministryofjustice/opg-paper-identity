@@ -273,6 +273,17 @@ return [
                     ],
                 ],
             ],
+            'estimate_postoffice_deadline' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/counter-service/:uuid/estimate-postoffice-deadline',
+                    'defaults' => [
+                        'controller' => Controller\YotiController::class,
+                        'action' => 'estimatePostOfficeDeadline',
+                    ],
+                ],
+            ],
+
             'change_case_lpa' => [
                 'type' => Segment::class,
                 'verb' => 'put',
