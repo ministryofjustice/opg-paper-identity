@@ -36,7 +36,7 @@ class CountryValidator extends AbstractValidator
     {
         $config = $this->getConfig();
 
-        return $config['opg_settings']['acceptable_nations_for_id_documents'];
+        return $config['opg_settings']['localisation'];
     }
 
     public function getConfig(): array

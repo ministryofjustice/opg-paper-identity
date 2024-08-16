@@ -253,8 +253,6 @@ class CPFlowController extends AbstractActionController
             'pn' => 'root/cp_passport_number',
         ];
 
-//        echo json_encode($detailsData);
-
         if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
             $nextRoute = 'root/cp_find_post_office_branch';
         } else {
@@ -611,7 +609,7 @@ class CPFlowController extends AbstractActionController
             }
         }
 
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $idCountriesData = $this->config['opg_settings']['localisation'];
         $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -629,7 +627,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $idCountriesData = $this->config['opg_settings']['localisation'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = (new AttributeBuilder())->createForm(Country::class);
@@ -665,7 +663,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['acceptable_nations_for_id_documents'];
+        $idCountriesData = $this->config['opg_settings']['localisation'];
 
         if (! isset($detailsData['idMethodIncludingNation']['country'])) {
             throw new \Exception("Country for document list has not been set.");
@@ -693,7 +691,7 @@ class CPFlowController extends AbstractActionController
             'form' => $form,
             'options_data' => $idOptionsData,
             'countries_data' => $idCountriesData,
-            'countryName' => $idCountriesData[$detailsData['idMethodIncludingNation']['country']],
+            'countryName' => $idCountriesData[$detailsData['idMethodIncludingNation']['country']]['name'],
             'details_data' => $detailsData,
             'supported_docs' => $docs['supported_documents'],
             'uuid' => $uuid,

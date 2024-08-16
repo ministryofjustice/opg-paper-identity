@@ -31,7 +31,7 @@ class CountryDocumentValidator extends AbstractValidator
         $config = $this->getConfig();
         $docTypeList = [];
 
-        foreach ($config['opg_settings']['supported_countries_documents'] as $docBody) {
+        foreach ($config['opg_settings']['localisation'] as $docBody) {
             foreach ($docBody['supported_documents'] as $docType) {
                 if (! in_array($docType['type'], $docTypeList)) {
                     $docTypeList[] = $docType['type'];
