@@ -144,7 +144,6 @@ paths:
             type: string
             nullable: false
             pattern: (M(-[A-Z0-9]{4}){3})
-
       operationId: postPostOfficeLetterSuffix
       summary: Send Yoti Letter PDF data
       description: Send base64 encoded PDF data for Post office letter
@@ -282,7 +281,6 @@ components:
             - success
             - exit
       additionalProperties: false
-
     YotiPdfSuffixRequest:
       type: object
       required:
@@ -302,7 +300,6 @@ components:
           type: string
         correspondentAddress:
           type: array
-
     Error:
       type: object
       required:
