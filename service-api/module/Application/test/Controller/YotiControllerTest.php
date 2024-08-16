@@ -175,7 +175,7 @@ class YotiControllerTest extends TestCase
             "client_session_token" => "1c9f8e92-3a04-463e-9dd1-98dad2b657f2"
         ];
         $pdfResponse = ["status" => "PDF Created"];
-        $pdfLetter = ["status" => "PDF Created", "pdfData" => "contents"];
+        $pdfLetter = ["status" => "PDF Created", "pdfBase64" => "contents"];
 
         $this->dataQueryHandlerMock
             ->expects($this->atLeastOnce())->method('getCaseByUUID')
