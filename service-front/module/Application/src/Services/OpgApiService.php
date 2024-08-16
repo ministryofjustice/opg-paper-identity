@@ -364,4 +364,16 @@ class OpgApiService implements OpgApiServiceInterface
         }
         return $this->responseData;
     }
+
+    public function estimatePostofficeDeadline(string $uuid): string
+    {
+        $url = sprintf("/counter-service/%s/estimate-postoffice-deadline", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'GET');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+        return $this->responseData['deadline'];
+    }
 }

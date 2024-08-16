@@ -158,9 +158,8 @@ class PostOfficeFlowController extends AbstractActionController
         $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $date = new \DateTime();
-        $date->modify("+90 days");
-        $deadline = $date->format("d M Y");
+        $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
+        ;
 
         $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"], true);
 

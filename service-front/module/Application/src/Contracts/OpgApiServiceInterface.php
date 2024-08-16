@@ -47,4 +47,6 @@ interface OpgApiServiceInterface
     public function updateCaseProgress(string $uuid, array $data): array;
 
     public function createYotiSession(string $uuid): array;
+
+    public function estimatePostofficeDeadline(string $uuid): string;
 }

@@ -219,4 +219,9 @@ class YotiController extends AbstractActionController
         // Use preg_match to check if the uuid matches the pattern
         return preg_match($pattern, $uuid) === 1;
     }
+
+    public function estimatePostOfficeDeadlineAction(): JsonModel
+    {
+        return new JsonModel(['deadline' => $this->sessionConfig->deadlineDate()]);
+    }
 }
