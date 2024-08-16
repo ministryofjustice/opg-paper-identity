@@ -20,7 +20,7 @@ awslocal dynamodb update-table \
 
 awslocal secretsmanager create-secret --name local/paper-identity/yoti/certificate \
     --description "PEM certificate for authentication with Yoti API" \
-    --secret-string "empty"
+    --secret-string "$(openssl genpkey -algorithm RSA -out - -pkeyopt rsa_keygen_bits:2048 -quiet)"
 
 awslocal secretsmanager create-secret --name local/paper-identity/yoti/sdk-client-id \
     --description "ID of Yoti client" \
