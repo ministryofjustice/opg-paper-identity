@@ -47,8 +47,8 @@ class SessionStatusService
 
         try {
             $response = $this->yotiService->retrieveResults($caseData->yotiSessionId, $nonce, $timestamp);
-            $state = $response['results']['state'];
-            $finalResult = $this->evaluateFinalResult($response['results']['checks']);
+            $state = $response['state'];
+            $finalResult = $this->evaluateFinalResult($response['checks']);
 
             $caseData->counterService->state = $state;
             $caseData->counterService->result = $finalResult;
@@ -62,9 +62,11 @@ class SessionStatusService
             $this->dataImportHandler->updateCaseChildAttribute(
                 $caseData->id,
                 'counterService.result',
-                'S',
+                'BOOL',
                 $finalResult,
             );
+            //add to logs until we can send status updates directly to Sirius
+            $this->logger->info("Update for CaseId " . $caseData->id . "- State: $state, Result: " . $finalResult);
         } catch (YotiException $e) {
             $this->logger->error('Yoti result error: ' . $e->getMessage());
         } catch (InvalidArgumentException $exception) {

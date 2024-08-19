@@ -115,7 +115,6 @@ class SessionStatusServiceTest extends TestCase
             ]
         ]);
         $response = [
-            'results' => [
                 'state' => 'COMPLETED',
                 'checks' => [
                     [
@@ -126,7 +125,6 @@ class SessionStatusServiceTest extends TestCase
                         ]
                     ]
                 ]
-            ]
         ];
 
         $this->yotiService
@@ -148,7 +146,7 @@ class SessionStatusServiceTest extends TestCase
                     [
                         '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                         'counterService.result',
-                        'S',
+                        'BOOL',
                         true
                     ] => null,
                     default => self::fail('Did not expect:' . print_r($parameters, true))
@@ -181,7 +179,6 @@ class SessionStatusServiceTest extends TestCase
             ]
         ]);
         $response = [
-            'results' => [
                 'state' => 'COMPLETED',
                 'checks' => [
                     [
@@ -206,7 +203,6 @@ class SessionStatusServiceTest extends TestCase
                         ]
                     ]
                 ]
-            ]
         ];
 
 
@@ -228,7 +224,7 @@ class SessionStatusServiceTest extends TestCase
                     [
                         '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                         'counterService.result',
-                        'S',
+                        'BOOL',
                         false
                     ] => null,
                     default => self::fail('Did not expect:' . print_r($parameters, true))
@@ -259,7 +255,6 @@ class SessionStatusServiceTest extends TestCase
             ]
         ]);
         $response = [
-            'results' => [
                 'state' => 'COMPLETED',
                 'checks' => [
                     [
@@ -270,7 +265,6 @@ class SessionStatusServiceTest extends TestCase
                         ]
                     ]
                 ]
-            ]
         ];
 
         $this->yotiService

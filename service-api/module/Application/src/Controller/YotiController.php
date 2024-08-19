@@ -15,6 +15,7 @@ use DateTime;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -30,7 +31,8 @@ class YotiController extends AbstractActionController
         private readonly DataImportHandler $dataImportHandler,
         private readonly DataQueryHandler $dataQuery,
         private readonly SessionStatusService $sessionService,
-        private readonly SessionConfig $sessionConfig
+        private readonly SessionConfig $sessionConfig,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -162,6 +164,8 @@ class YotiController extends AbstractActionController
     /**
      * @return JsonModel
      * @psalm-suppress PossiblyInvalidMethodCall, PossiblyUndefinedMethod, PossiblyNullPropertyFetch
+     * @psalm-suppress PossiblyNullPropertyAssignment
+     * /
      */
     public function notificationAction(): JsonModel
     {
@@ -201,9 +205,15 @@ class YotiController extends AbstractActionController
                     'S',
                     $data['topic'],
                 );
+                $caseData->counterService->notificationState = $data['topic'];
+                //fetch full session results if applicable
+                $this->logger->info("Notifications & Status for case: " . $caseData->id . ": " . $data['topic']);
+                $this->sessionService->getSessionStatus($caseData);
+
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
                 return new JsonModel(["Notification Status" => "Updated"]);
             } else {
+                $this->logger->info("Unauthorized notification for case: " . $caseData->id . ": " . $data['topic']);
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_403);
                 return new JsonModel(new Problem('Unauthorised request'));
             }
