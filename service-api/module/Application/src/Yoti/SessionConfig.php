@@ -80,8 +80,8 @@ class SessionConfig
                     "inclusion" => "INCLUDE",
                     "documents" => [
                         [
-                            "country_codes" => ["GBR"],
-                            "document_types" => [$this->getDocType($case->idMethod)]
+                            "country_codes" => [$this->getIDCountry($case)],
+                            "document_types" => [$this->getDocType($case)]
                         ]
                     ]
                 ]
@@ -122,10 +122,25 @@ class SessionConfig
         return $currentDate->format(DateTime::ATOM);
     }
 
-    public static function getDocType(?string $idMethod): string
+    public static function getIDCountry(CaseData $case): string
     {
+        $nonUKIDs = $case->idMethodIncludingNation;
+        if ($nonUKIDs['country']) {
+            return $nonUKIDs['country'];
+        }
+
+        return 'GBR';
+    }
+
+    public static function getDocType(CaseData $case): string
+    {
+        $nonUKIDs = $case->idMethodIncludingNation;
+        if ($nonUKIDs['id_method']) {
+            return $nonUKIDs['id_method'];
+        }
+
         $drivingLicenceOptions = ["po_ukd", "po_eud"];
-        if (in_array($idMethod, $drivingLicenceOptions)) {
+        if (in_array($case->idMethod, $drivingLicenceOptions)) {
             return "DRIVING_LICENCE";
         } else {
             return "PASSPORT";
