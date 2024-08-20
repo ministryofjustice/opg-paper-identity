@@ -48,6 +48,21 @@ class SessionConfigTest extends TestCase
         $this->assertEquals($this->sessionConfigExpected(), $sessionConfig);
     }
 
+    public function testSessionWithForeignId(): void
+    {
+        $idIncludingNation = ["country" => "ITA", "id_method" => "DRIVING_LICENCE"];
+        $this->caseMock->idMethodIncludingNation = $idIncludingNation;
+
+        $expectedConfig = $this->sessionConfigExpected();
+        $expectedConfig["required_documents"][0]["filter"]["documents"][0]["country_codes"][0] = "ITA";
+        $expectedConfig["required_documents"][0]["filter"]["documents"][0]["document_types"][0] = "DRIVING_LICENCE";
+
+        $sessionConfig = $this->sut->build($this->caseMock, $this->uuid);
+
+        $this->assertEquals($expectedConfig, $sessionConfig);
+    }
+
+
     public function sessionConfigExpected(): array
     {
         $currentDate = new DateTime();

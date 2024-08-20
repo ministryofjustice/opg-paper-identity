@@ -122,20 +122,30 @@ class SessionConfig
         return $currentDate->format(DateTime::ATOM);
     }
 
+    /**
+     * @param CaseData $case
+     * @return string
+     * @psalm-suppress PossiblyNullArrayAccess
+     */
     public static function getIDCountry(CaseData $case): string
     {
         $nonUKIDs = $case->idMethodIncludingNation;
-        if ($nonUKIDs['country']) {
+        if (isset($nonUKIDs['country'])) {
             return $nonUKIDs['country'];
         }
 
         return 'GBR';
     }
 
+    /**
+     * @param CaseData $case
+     * @return string
+     * @psalm-suppress PossiblyNullArrayAccess
+     */
     public static function getDocType(CaseData $case): string
     {
         $nonUKIDs = $case->idMethodIncludingNation;
-        if ($nonUKIDs['id_method']) {
+        if (isset($nonUKIDs['id_method'])) {
             return $nonUKIDs['id_method'];
         }
 
