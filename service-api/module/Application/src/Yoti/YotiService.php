@@ -279,8 +279,8 @@ class YotiService implements YotiServiceInterface
                 "requirement_id" => $requirementId,
                 "document" => [
                     "type" => "ID_DOCUMENT",
-                    "country_code" => "GBR",
-                    "document_type" => SessionConfig::getDocType($caseData->idMethod)
+                    "country_code" => SessionConfig::getIDCountry($caseData),
+                    "document_type" => SessionConfig::getDocType($caseData)
                 ]
             ]
         ];
