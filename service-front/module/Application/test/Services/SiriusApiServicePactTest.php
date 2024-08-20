@@ -224,7 +224,7 @@ class SiriusApiServicePactTest extends TestCase
             "type" => "Save",
             "systemType" => "DLP-ID-PO-D",
             "content" => "",
-            "suffix" => $suffix,
+            "pdfSuffix" => $suffix,
             "correspondentName" => "Joe Blogs",
             "correspondentAddress" => $address
         ];
@@ -241,7 +241,7 @@ class SiriusApiServicePactTest extends TestCase
             ->addHeader('Content-Type', 'application/json')
             ->setBody([
                 'opg.poas.sirius' => [
-                    'id' => 77
+                    'id' => $matcher->like(789),
                 ],
                 'opg.poas.lpastore' => [
                     'certificateProvider' => [
@@ -264,7 +264,7 @@ class SiriusApiServicePactTest extends TestCase
         $request = new ConsumerRequest();
         $request
             ->setMethod('POST')
-            ->setPath('/api/v1/lpas/77/documents')
+            ->setPath('/api/v1/lpas/789/documents')
             ->setBody($body);
 
         $response = new ProviderResponse();
@@ -273,7 +273,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('A request to /api/v1/lpas/77/documents')
+            ->uponReceiving('A request to /api/v1/lpas/789/documents')
             ->with($request)
             ->willRespondWith($response);
 
