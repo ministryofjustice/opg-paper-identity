@@ -125,7 +125,6 @@ class SessionConfig
     /**
      * @param CaseData $case
      * @return string
-     * @psalm-suppress PossiblyNullArrayAccess
      */
     public static function getIDCountry(CaseData $case): string
     {
@@ -140,7 +139,6 @@ class SessionConfig
     /**
      * @param CaseData $case
      * @return string
-     * @psalm-suppress PossiblyNullArrayAccess
      */
     public static function getDocType(CaseData $case): string
     {
