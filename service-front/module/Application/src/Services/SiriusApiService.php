@@ -168,7 +168,7 @@ class SiriusApiService
             "type" => "Save",
             "systemType" => "DLP-ID-PO-D",
             "content" => "",
-            "suffix" => $base64suffix,
+            "pdfSuffix" => $base64suffix,
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];
