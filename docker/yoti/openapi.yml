@@ -92,11 +92,7 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               examples:
                 PAYLOAD_VALIDATION:
-                  value:
-                    code: PAYLOAD_VALIDATION
-                    errors:
-                      - property: requested_checks
-                        message: must not be empty
+                  $ref: "#/components/examples/PayloadValidationError"
                 MALFORMED_REQUEST:
                   $ref: "#/components/examples/MalformedRequestDigestError"
         401:
