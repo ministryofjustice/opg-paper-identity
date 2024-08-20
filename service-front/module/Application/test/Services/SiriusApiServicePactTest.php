@@ -224,7 +224,7 @@ class SiriusApiServicePactTest extends TestCase
             "type" => "Save",
             "systemType" => "DLP-ID-PO-D",
             "content" => "",
-            "suffix" => $suffix,
+            "pdfSuffix" => $suffix,
             "correspondentName" => "Joe Blogs",
             "correspondentAddress" => $address
         ];
