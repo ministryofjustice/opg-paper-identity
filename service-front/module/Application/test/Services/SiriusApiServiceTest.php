@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
-use GuzzleHttp\Client;
 use Application\Services\SiriusApiService;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Headers;
 use Laminas\Http\Request;
@@ -27,12 +27,17 @@ class SiriusApiServiceTest extends TestCase
         $request = new Request();
         $headers = $request->getHeaders();
         assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1");
+        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
 
         $clientMock
             ->expects($this->once())
             ->method("get")
-            ->with("/api/v1/users/current", ['headers' => ['Cookie' => 'mycookie=1']]);
+            ->with("/api/v1/users/current", [
+                'headers' => [
+                    'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
+                    'X-XSRF-TOKEN' => 'abcd',
+                ],
+            ]);
 
         $ret = $sut->checkAuth($request);
         $this->assertTrue($ret);
@@ -52,7 +57,7 @@ class SiriusApiServiceTest extends TestCase
         $this->assertFalse($ret);
     }
 
-    public function testCheckAuthFailureNotAuthed(): void
+    public function testCheckAuthFailureNoXSRF(): void
     {
         $clientMock = $this->createMock(Client::class);
 
@@ -63,12 +68,32 @@ class SiriusApiServiceTest extends TestCase
         assert($headers instanceof Headers);
         $headers->addHeaderLine("cookie", "mycookie=1");
 
+        $ret = $sut->checkAuth($request);
+        $this->assertFalse($ret);
+    }
+
+    public function testCheckAuthFailureNotAuthed(): void
+    {
+        $clientMock = $this->createMock(Client::class);
+
+        $sut = new SiriusApiService($clientMock);
+
+        $request = new Request();
+        $headers = $request->getHeaders();
+        assert($headers instanceof Headers);
+        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+
         $exception = $this->createMock(GuzzleException::class);
 
         $clientMock
             ->expects($this->once())
             ->method("get")
-            ->with("/api/v1/users/current", ['headers' => ['Cookie' => 'mycookie=1']])
+            ->with("/api/v1/users/current", [
+                'headers' => [
+                    'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
+                    'X-XSRF-TOKEN' => 'abcd',
+                ],
+            ])
             ->willThrowException($exception);
 
         $ret = $sut->checkAuth($request);
