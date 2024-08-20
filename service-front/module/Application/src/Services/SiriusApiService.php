@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
-use Application\Helpers\AddressProcessorHelper;
 
 /**
  * @psalm-type Address = array{
@@ -50,7 +50,6 @@ use Application\Helpers\AddressProcessorHelper;
  *  },
  * }
  */
-
 class SiriusApiService
 {
     public function __construct(
@@ -66,12 +65,13 @@ class SiriusApiService
 
         $cookieHeader = $request->getHeader('Cookie');
 
-        if (! ($cookieHeader instanceof Cookie)) {
+        if (! ($cookieHeader instanceof Cookie) || !isset($cookieHeader['XSRF-TOKEN'])) {
             return null;
         }
 
         return [
             'Cookie' => $cookieHeader->getFieldValue(),
+            'X-XSRF-TOKEN' => $cookieHeader['XSRF-TOKEN'],
         ];
     }
 
