@@ -57,4 +57,4 @@ clean-junit-output:
 	sed -i -E 's/testcase name="(.*?):([0-9]+)"/& file="\1" line="\2"/g' ./service-front/build/psalm-junit.xml
 
 cypress:
-	docker compose run --build cypress
+	docker compose run cypress
