@@ -107,8 +107,10 @@ class SiriusApiService
 
         $responseArray = json_decode(strval($response->getBody()), true);
 
-        $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
-            ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+        if (isset($responseArray['opg.poas.lpastore']['certificateProvider']['address'])) {
+            $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
+                ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+        }
 
         return $responseArray;
     }
