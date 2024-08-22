@@ -50,7 +50,7 @@ class DataQueryHandler
 
         return $array ? CaseData::fromArray($array) : null;
     }
-    
+
     /**
      * @param array<string, mixed> $key
      * @param string $dbIndex
