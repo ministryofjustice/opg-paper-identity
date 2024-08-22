@@ -907,6 +907,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RequiredResources"
+          example:
+            - type: ID_DOCUMENT
+              id: d430440c-5c6d-402c-9855-3aebc8145a94
       required:
         - biometric_consent
         - required_resources
