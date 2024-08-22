@@ -102,30 +102,6 @@ class IdentityController extends AbstractActionController
         return new JsonModel(new Problem('Case not found'));
     }
 
-    public function findByNameAction(): JsonModel
-    {
-        /** @var string $name */
-        $name = $this->getRequest()->getQuery('username');
-        $data = $this->dataQueryHandler->queryByName($name);
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
-        return new JsonModel($data);
-    }
-
-    public function findByIdNumberAction(): JsonModel
-    {
-        /** @var string $id */
-        $id = $this->getRequest()->getQuery('id');
-        $data = $this->dataQueryHandler->queryByIDNumber($id);
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
-        return new JsonModel($data);
-    }
-
     public function addressVerificationAction(): JsonModel
     {
         $data = [
