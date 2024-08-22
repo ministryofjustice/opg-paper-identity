@@ -1,0 +1,114 @@
+swagger: '2.0'
+info:
+  title: CrossCore API
+  version: '2.21.0'
+host: env-region-api.experian.com
+basePath: /decisionanalytics/crosscore/{routing_id}/services/v0/applications
+schemes:
+  - https
+paths:
+  /api/v1/healthcheck:
+    get:
+      summary: Healthcheck
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GenericResponse"
+        "401":
+          description: Error
+  /oauth2/experianone/v1/token:
+    post:
+      summary: Oauth2 token
+      parameters:
+        - in: header
+          name: Content-Type
+          type: string
+        - in: header
+          name: Accept
+          type: string
+          description: 'Accepts mime type application/json'
+        - in: header
+          name: X-Correlation-Id
+          type: string
+          description: 'Auto generated UUID'
+        - in: header
+          name: X-User-Domain
+          type: string
+          description: 'Unique domain for client'
+        - in: body
+          name: body
+          description: CrossCore Request
+          required: true
+          schema:
+            $ref: '#/definitions/TokenRequest'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/TokenResponse"
+        "401":
+          description: Error
+          schema:
+            $ref: "#/definitions/TokenError"
+definitions:
+  GenericResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+  Error:
+    type: object
+    required:
+      - title
+      - status
+      - detail
+    properties:
+      type:
+        type: string
+        format: url
+      title:
+        type: string
+      status:
+        type: integer
+      detail:
+        type: string
+      validation_errors:
+        type: object
+    additionalProperties: false
+  TokenRequest:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      client_id:
+        type: string
+      client_secret:
+        type: string
+  TokenResponse:
+    type: object
+    properties:
+      issued_at:
+        type: string
+      expires_in:
+        type: string
+      token_type:
+        type: string
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+  TokenError:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          errorType:
+            type: string
+          message:
+            type: string
+      success:
+        type: boolean
