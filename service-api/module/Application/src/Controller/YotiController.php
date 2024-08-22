@@ -185,6 +185,11 @@ class YotiController extends AbstractActionController
         }
 
         if (! in_array($data['topic'], ['first_branch_visit', 'session_completion'])) {
+            $this->logger->info('Unhandled topic from Yoti notification', [
+                'session_id' => $data['session_id'],
+                'topic' => $data['topic'],
+            ]);
+
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Invalid type'));
         }
