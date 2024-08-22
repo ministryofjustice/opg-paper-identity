@@ -13,7 +13,6 @@ class ExperianCrosscoreAuthResponseDTO
         private readonly string $expiresIn,
         private readonly string $tokenType,
     ) {
-
     }
 
     public function accessToken(): string

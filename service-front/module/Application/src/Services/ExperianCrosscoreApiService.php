@@ -15,7 +15,6 @@ class ExperianCrosscoreApiService
     public function __construct(
         private readonly Client $client
     ) {
-
     }
 
     private function generateXCorrelationId(): string

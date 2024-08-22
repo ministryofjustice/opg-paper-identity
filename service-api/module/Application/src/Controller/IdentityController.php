@@ -658,4 +658,16 @@ class IdentityController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    public function getSecretAction(): JsonModel
+    {
+        $secretNames = $this->params()->fromQuery('secrets');
+        $response = [];
+
+        foreach ($secretNames as $secretName) {
+            $secretValue = new AwsSecret($secretName);
+            $response[$secretName] = $secretValue->getValue();
+        }
+        return new JsonModel($response);
+    }
 }

@@ -395,6 +395,16 @@ return [
                     ],
                 ],
             ],
+            'get_secret' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/:uuid/get-secret',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'getSecret',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

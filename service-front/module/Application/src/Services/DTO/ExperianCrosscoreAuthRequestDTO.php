@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Services\DTO;
 
-class
-ExperianCrosscoreAuthRequestDTO
+class ExperianCrosscoreAuthRequestDTO
 {
     public function __construct(
         private readonly string $userName,
@@ -13,7 +12,6 @@ ExperianCrosscoreAuthRequestDTO
         private readonly string $clientId,
         private readonly string $clientSecret
     ) {
-
     }
 
     public function userName(): string
