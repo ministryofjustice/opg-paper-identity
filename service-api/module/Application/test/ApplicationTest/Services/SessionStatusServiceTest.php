@@ -92,11 +92,6 @@ class SessionStatusServiceTest extends TestCase
         $this->sut->getSessionStatus($caseData);
     }
 
-    /**
-     * @return void
-     * @throws \Exception
-     * @psalm-suppress MissingClosureParamType
-     */
     public function testResultsAreFetchedAfterSessionCompletionNotification(): void
     {
         $caseData = CaseData::fromArray([
@@ -141,12 +136,7 @@ class SessionStatusServiceTest extends TestCase
         $this->assertTrue($result->result);
         $this->assertEquals('COMPLETED', $result->state);
     }
-
-    /**
-     * @return void
-     * @throws \Exception
-     * @psalm-suppress MissingClosureParamType
-     */
+    
     public function testResultsAreFetchedAfterWithOneRejectionSavesFalseResult(): void
     {
         $caseData = CaseData::fromArray([
