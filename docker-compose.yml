@@ -11,6 +11,30 @@ services:
     volumes:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
 
+  experian-crosscore-mock:
+    image: stoplight/prism:5.11.1
+    command: mock -h 0.0.0.0 -p 4011 -d /tmp/openapi.yml
+    restart: unless-stopped
+    healthcheck:
+      test: wget -O /dev/null -S 'http://0.0.0.0:4011/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
+
+  experian-crosscore-auth-mock:
+    image: stoplight/prism:5.11.1
+    command: mock -h 0.0.0.0 -p 4012 -d /tmp/openapi.yml
+    restart: unless-stopped
+    healthcheck:
+      test: wget -O /dev/null -S 'http://0.0.0.0:4012/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
+
   yoti-mock:
     image: paper-identity/yoti-mock
     build:
