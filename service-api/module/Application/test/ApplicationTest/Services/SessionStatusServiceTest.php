@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
-use Application\Fixtures\DataImportHandler;
-use Application\Fixtures\DataQueryHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
 use Application\Yoti\SessionStatusService;
@@ -20,20 +19,20 @@ use Psr\Log\LoggerInterface;
  */
 class SessionStatusServiceTest extends TestCase
 {
-    private DataImportHandler&MockObject $dataImportHandler;
+    private DataWriteHandler&MockObject $dataHandler;
     private YotiService&MockObject $yotiService;
     private SessionStatusService $sut;
     private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {
-        $this->dataImportHandler = $this->createMock(DataImportHandler::class);
+        $this->dataHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiService = $this->createMock(YotiService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->sut = new SessionStatusService(
             $this->yotiService,
-            $this->dataImportHandler,
+            $this->dataHandler,
             $this->logger
         );
     }
@@ -132,29 +131,15 @@ class SessionStatusServiceTest extends TestCase
             ->withAnyParameters()
             ->willReturn($response);
 
-        $this->dataImportHandler
-            ->expects(self::exactly(2))
-            ->method('updateCaseChildAttribute')
-            ->willReturnCallback(
-                fn (...$parameters) => match ($parameters) {
-                    [
-                        '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                        'counterService.state',
-                        'S',
-                        'COMPLETED'
-                    ],
-                    [
-                        '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                        'counterService.result',
-                        'BOOL',
-                        true
-                    ] => null,
-                    default => self::fail('Did not expect:' . print_r($parameters, true))
-                }
-            );
+        $this->dataHandler
+            ->expects(self::exactly(1))
+            ->method('insertUpdateData')
+            ->with($caseData);
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
+        $this->assertTrue($result->result);
+        $this->assertEquals('COMPLETED', $result->state);
     }
 
     /**
@@ -210,29 +195,15 @@ class SessionStatusServiceTest extends TestCase
             ->expects($this->once())->method('retrieveResults')
             ->willReturn($response);
 
-        $this->dataImportHandler
-            ->expects(self::exactly(2))
-            ->method('updateCaseChildAttribute')
-            ->willReturnCallback(
-                fn (...$parameters) => match ($parameters) {
-                    [
-                        '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                        'counterService.state',
-                        'S',
-                        'COMPLETED'
-                    ],
-                    [
-                        '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                        'counterService.result',
-                        'BOOL',
-                        false
-                    ] => null,
-                    default => self::fail('Did not expect:' . print_r($parameters, true))
-                }
-            );
+        $this->dataHandler
+            ->expects(self::once())
+            ->method('insertUpdateData')
+            ->with($caseData);
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
+        $this->assertEquals('COMPLETED', $result->state);
+        $this->assertFalse($result->result);
     }
 
     /**
@@ -271,8 +242,8 @@ class SessionStatusServiceTest extends TestCase
             ->method('retrieveResults')
             ->willReturn($response);
 
-        $this->dataImportHandler
-            ->method('updateCaseChildAttribute')
+        $this->dataHandler
+            ->method('insertUpdateData')
             ->willThrowException(new InvalidArgumentException('Test Invalid Argument Exception'));
 
         $this->logger->expects($this->once())
