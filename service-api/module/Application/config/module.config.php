@@ -7,6 +7,7 @@ namespace Application;
 use Application\Aws\DynamoDbClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\Factories\ExperianCrosscoreAuthApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
@@ -32,6 +33,7 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
@@ -444,8 +446,8 @@ return [
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
-            YotiServiceInterface::class => YotiServiceFactory::class
-
+            YotiServiceInterface::class => YotiServiceFactory::class,
+            ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class
         ],
     ],
     'view_manager' => [

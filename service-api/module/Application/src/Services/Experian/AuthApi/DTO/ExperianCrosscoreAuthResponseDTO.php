@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\DTO;
+namespace Application\Services\Experian\AuthApi\DTO;
 
 class ExperianCrosscoreAuthResponseDTO
 {
@@ -43,11 +43,11 @@ class ExperianCrosscoreAuthResponseDTO
     public function toArray(): array
     {
         return [
-            $this->accessToken,
-            $this->refreshToken,
-            $this->issuedAt,
-            $this->expiresIn,
-            $this->tokenType,
+            'access_token' => $this->accessToken,
+            'refresh_token' => $this->refreshToken,
+            'issued_at' => $this->issuedAt,
+            'expires_in' => $this->expiresIn,
+            'token_type' => $this->tokenType,
         ];
     }
 }

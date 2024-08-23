@@ -7,33 +7,27 @@ namespace Application\Factories;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Application\Services\ExperianCrosscoreApiService;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 use RuntimeException;
 
-class ExperianCrosscoreApiServiceFactory implements FactoryInterface
+class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
      * @param string                          $requestedName
      * @param array<mixed>|null               $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ExperianCrosscoreApiService
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ExperianCrosscoreAuthApiService
     {
         $authUri = getenv("EXPERIAN_AUTH_URL");
         if (! is_string($authUri) || empty($authUri)) {
             throw new RuntimeException("EXPERIAN_AUTH_URL is empty");
         }
 
-        $baseUri = getenv("EXPERIAN_BASE_URI");
-        if (! is_string($baseUri) || empty($baseUri)) {
-            throw new RuntimeException("EXPERIAN_BASE_URI is empty");
-        }
-
         $guzzleClient = new Client([
-            'auth_uri' => $authUri,
-            'base_uri' => $baseUri
+            'auth_uri' => $authUri
         ]);
 
-        return new ExperianCrosscoreApiService($guzzleClient);
+        return new ExperianCrosscoreAuthApiService($guzzleClient);
     }
 }

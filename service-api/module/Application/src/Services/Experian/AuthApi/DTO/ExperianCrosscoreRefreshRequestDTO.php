@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\DTO;
+namespace Application\Services\Experian\AuthApi\DTO;
 
-class ExperianCrosscoreAuthRequestDTO
+class ExperianCrosscoreRefreshRequestDTO
 {
     public function __construct(
-        private readonly string $userName,
-        private readonly string $password,
+        private readonly string $refreshToken,
+        private readonly string $grantType,
         private readonly string $clientId,
         private readonly string $clientSecret
     ) {
     }
 
-    public function userName(): string
+    public function refreshToken(): string
     {
-        return $this->userName;
+        return $this->refreshToken;
     }
 
-    public function password(): string
+    public function grantType(): string
     {
-        return $this->password;
+        return $this->grantType;
     }
 
     public function clientId(): string
@@ -37,10 +37,9 @@ class ExperianCrosscoreAuthRequestDTO
     public function toArray(): array
     {
         return [
-            $this->userName,
-            $this->password,
+            $this->refreshToken,
+            $this->grantType,
             $this->clientId,
-            $this->clientSecret,
             $this->clientSecret,
         ];
     }
