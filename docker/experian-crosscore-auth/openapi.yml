@@ -1,11 +1,7 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
-  title: CrossCore API
-  version: '2.21.0'
-host: env-region-api.experian.com
-basePath: /decisionanalytics/crosscore/{routing_id}/services/v0/applications
-schemes:
-  - https
+  title: CrossCore Auth API
+  version: '1.0.0'
 paths:
   /api/v1/healthcheck:
     get:
@@ -13,102 +9,115 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/GenericResponse"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
         "401":
           description: Error
   /oauth2/experianone/v1/token:
     post:
-      summary: Oauth2 token
       parameters:
         - in: header
-          name: Content-Type
-          type: string
-        - in: header
-          name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
-        - in: header
-          name: X-Correlation-Id
-          type: string
-          description: 'Auto generated UUID'
-        - in: header
-          name: X-User-Domain
-          type: string
-          description: 'Unique domain for client'
-        - in: body
-          name: body
-          description: CrossCore Request
+          name: "x-correlation-id"
+          schema:
+            type: string
+            example: "08efeee5-2e10-4dde-955b-be0f816d2e3d"
           required: true
+        - in: header
+          name: "x-user-domain"
           schema:
-            $ref: '#/definitions/TokenRequest'
+            type: string
+            example: "publicguardian.com"
+          required: true
+        - in: header
+          name: "content-type"
+          schema:
+            type: string
+            example: "application/json"
+          required: true
+        - in: header
+          name: cookie
+          schema:
+            type: string
+            example: "XSRF-TOKEN=09b44586-734f-4c1f-97d1-867b866a372e; incap_ses_9210_1333072=NW3pJuCxHFdnrNpuPX7Qf+hNyGYAAAAA4rqxEfZb/F57WZAJEEgvBg==; nlbi_1333072=QWy7GBAFKmiTRqAuX+OoDgAAAAD2CxSSI21Z/LChCCSh/08D; visid_incap_1333072=W6I8YZF7TK2jq0rlGHszIHoJxmYAAAAAQUIPAAAAAAD/zi52UtsZ/cokYKrq2TjO"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "SYSTEM.UATAPI@publicguardian.com"
+                password:
+                  type: string
+                  example: "58ehgvb74uh8812uw89i329gijv9ekk"
+                client_id:
+                  type: string
+                  example: "o0mdjhtybndu73jertoijsogfkidk3i"
+                client_secret:
+                  type: string
+                  example: "1ffg85rb7du83wvre"
       responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/TokenResponse"
-        "401":
-          description: Error
-          schema:
-            $ref: "#/definitions/TokenError"
-definitions:
-  GenericResponse:
-    type: object
-    properties:
-      id:
-        type: integer
-  Error:
-    type: object
-    required:
-      - title
-      - status
-      - detail
-    properties:
-      type:
-        type: string
-        format: url
-      title:
-        type: string
-      status:
-        type: integer
-      detail:
-        type: string
-      validation_errors:
-        type: object
-    additionalProperties: false
-  TokenRequest:
-    type: object
-    properties:
-      username:
-        type: string
-      password:
-        type: string
-      client_id:
-        type: string
-      client_secret:
-        type: string
-  TokenResponse:
-    type: object
-    properties:
-      issued_at:
-        type: string
-      expires_in:
-        type: string
-      token_type:
-        type: string
-      access_token:
-        type: string
-      refresh_token:
-        type: string
-  TokenError:
-    type: object
-    properties:
-      errors:
-        type: object
-        properties:
-          errorType:
-            type: string
-          message:
-            type: string
-      success:
-        type: boolean
+        200:
+          description: "HTTP Status 200"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  issued_at:
+                    type: string
+                    example: "1724403176"
+                  expires_in:
+                    type: string
+                    example: "1800"
+                  token_type:
+                    type: string
+                    example: "Bearer"
+                  access_token:
+                    type: string
+                    example: "eyJraWQiOiJJSmpTMXJQQjdJODBHWjgybmNsSlZPQkF3V3B3ZTVYblNKZUdSZHdpcEY5IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJTWVNURU0uVUFUQVBJQHB1YmxpY2d1YXJkaWFuLmNvbSIsIkVtYWlsIjpudWxsLCJGaXJzdE5hbWUiOm51bGwsImlzcyI6IkVYUEVSSUFOIiwiTGFzdE5hbWUiOm51bGwsImV4cCI6MTcyNDQwNDk3NiwiaWF0IjoxNzI0NDAzMTc2LCJqdGkiOiJkZWEyZjllNy1mMzlkLTRjMjktYTRlYS05ZWI4NmQzMDc4MDEifQ.ryjAREmPi7nZqQRqTKljaHxoyxjP4yMMhJC5jwZUXjQFX3mS4duyXEJDiwOhuPIHUZN8Q2Cr31agt84sXsuDTT1kfWKqcrk47sVNMwXBL9Ot40KdCFP_uPUdkyNMfznScxUjSwgHZkQDqY9TJ_YEuoJ0w5GNMeSnKjGO2dpMLkcyt9dJ8ktXP2RzAFXiI1G3WzXYp9eNzAfEZ89abzlEh-3I1vfkFkW0nr3TIvmlZHfrrbTkXQhawGj5r3jJpjkQIqqvzvOGf2g_A7-_jiU_iou7vTQkxRa3Mc70fARbjGKSqU-ewHlWkTW7oWc9qTka13DcZ_rLSgQa6DWAup-LRg"
+                  refresh_token:
+                    type: string
+                    example: "TU7LNmRQUrFjRCPG5Q83XYR8fA4SlOvF"
+        401:
+          description: "HTTP Status 200"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                  success:
+                    type: string
+                    example: false
+components:
+  schemas:
+    GenericResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+    Error:
+      type: object
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: url
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        validation_errors:
+          type: object
+      additionalProperties: false
