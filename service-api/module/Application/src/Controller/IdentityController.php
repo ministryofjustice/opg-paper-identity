@@ -9,7 +9,7 @@ use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\KBV\KBVServiceInterface;
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
@@ -36,7 +36,7 @@ class IdentityController extends AbstractActionController
     public function __construct(
         private readonly ValidatorInterface $ninoService,
         private readonly DataQueryHandler $dataQueryHandler,
-        private readonly DataImportHandler $dataImportHandler,
+        private readonly DataWriteHandler $dataHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly KBVServiceInterface $KBVService,
@@ -63,7 +63,7 @@ class IdentityController extends AbstractActionController
             $caseData->id = strval(Uuid::uuid4());
 
             try {
-                $this->dataImportHandler->insertData($caseData);
+                $this->dataHandler->insertUpdateData($caseData);
             } catch (\Exception $exception) {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
                 return new JsonModel(new Problem($exception->getMessage()));
@@ -207,7 +207,7 @@ class IdentityController extends AbstractActionController
         } else {
             $questions = $this->KBVService->fetchFormattedQuestions($uuid);
 
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'kbvQuestions',
                 'S',
@@ -259,7 +259,7 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem("Missing UUID"));
         }
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethod',
                 'S',
@@ -287,7 +287,7 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem('Missing UUID'));
         }
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'searchPostcode',
                 'S',
@@ -319,7 +319,7 @@ class IdentityController extends AbstractActionController
         ];
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
                 'M',
@@ -358,7 +358,7 @@ class IdentityController extends AbstractActionController
         $counterServiceMap["selectedPostOfficeDeadline"] = $data['deadline'];
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
                 'M',
@@ -391,7 +391,7 @@ class IdentityController extends AbstractActionController
             $lpas = $data->lpas;
             if (! in_array($lpa, $lpas)) {
                 $lpas[] = $lpa;
-                $this->dataImportHandler->updateCaseData(
+                $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
                     'SS',
@@ -429,7 +429,7 @@ class IdentityController extends AbstractActionController
                         $keptLpas[] = $keptLpa;
                     }
                 }
-                $this->dataImportHandler->updateCaseData(
+                $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
                     'SS',
@@ -465,7 +465,7 @@ class IdentityController extends AbstractActionController
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'alternateAddress',
                 'M',
@@ -502,7 +502,7 @@ class IdentityController extends AbstractActionController
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'documentComplete',
                 'BOOL',
@@ -547,7 +547,7 @@ class IdentityController extends AbstractActionController
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'dob',
                 'S',
@@ -578,7 +578,7 @@ class IdentityController extends AbstractActionController
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethodIncludingNation',
                 'M',
@@ -615,7 +615,7 @@ class IdentityController extends AbstractActionController
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'progressPage',
                 'M',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
 use Application\Yoti\Http\Exception\YotiException;
@@ -17,7 +17,7 @@ class SessionStatusService
 {
     public function __construct(
         public readonly YotiServiceInterface $yotiService,
-        public readonly DataImportHandler $dataImportHandler,
+        public readonly DataWriteHandler $dataImportHandler,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -53,18 +53,8 @@ class SessionStatusService
             $caseData->counterService->state = $state;
             $caseData->counterService->result = $finalResult;
 
-            $this->dataImportHandler->updateCaseChildAttribute(
-                $caseData->id,
-                'counterService.state',
-                'S',
-                $state,
-            );
-            $this->dataImportHandler->updateCaseChildAttribute(
-                $caseData->id,
-                'counterService.result',
-                'BOOL',
-                $finalResult,
-            );
+            $this->dataImportHandler->insertUpdateData($caseData);
+
             //add to logs until we can send status updates directly to Sirius
             $this->logger->info("Update for CaseId " . $caseData->id . "- State: $state, Result: " . $finalResult);
         } catch (YotiException $e) {
