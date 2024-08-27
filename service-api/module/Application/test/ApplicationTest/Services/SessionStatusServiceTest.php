@@ -136,7 +136,7 @@ class SessionStatusServiceTest extends TestCase
         $this->assertTrue($result->result);
         $this->assertEquals('COMPLETED', $result->state);
     }
-    
+
     public function testResultsAreFetchedAfterWithOneRejectionSavesFalseResult(): void
     {
         $caseData = CaseData::fromArray([
