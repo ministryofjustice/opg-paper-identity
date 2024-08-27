@@ -35,7 +35,7 @@ services:
     volumes:
       - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
     ports:
-      - 4011:8081
+      - 8081:4011
 
   yoti-mock:
     image: paper-identity/yoti-mock

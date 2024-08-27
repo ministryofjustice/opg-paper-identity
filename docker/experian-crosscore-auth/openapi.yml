@@ -36,12 +36,6 @@ paths:
             type: string
             example: "application/json"
           required: true
-        - in: header
-          name: cookie
-          schema:
-            type: string
-            example: "XSRF-TOKEN=09b44586-734f-4c1f-97d1-867b866a372e; incap_ses_9210_1333072=NW3pJuCxHFdnrNpuPX7Qf+hNyGYAAAAA4rqxEfZb/F57WZAJEEgvBg==; nlbi_1333072=QWy7GBAFKmiTRqAuX+OoDgAAAAD2CxSSI21Z/LChCCSh/08D; visid_incap_1333072=W6I8YZF7TK2jq0rlGHszIHoJxmYAAAAAQUIPAAAAAAD/zi52UtsZ/cokYKrq2TjO"
-          required: true
       requestBody:
         content:
           application/json:
@@ -70,19 +64,19 @@ paths:
                 properties:
                   issued_at:
                     type: string
-                    example: "1724403176"
+                    pattern: "1724403176"
                   expires_in:
                     type: string
-                    example: "1800"
+                    pattern: "1800"
                   token_type:
                     type: string
-                    example: "Bearer"
+                    pattern: "Bearer"
                   access_token:
                     type: string
-                    example: "eyJraWQiOiJJSmpTMXJQQjdJODBHWjgybmNsSlZPQkF3V3B3ZTVYblNKZUdSZHdpcEY5IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJTWVNURU0uVUFUQVBJQHB1YmxpY2d1YXJkaWFuLmNvbSIsIkVtYWlsIjpudWxsLCJGaXJzdE5hbWUiOm51bGwsImlzcyI6IkVYUEVSSUFOIiwiTGFzdE5hbWUiOm51bGwsImV4cCI6MTcyNDQwNDk3NiwiaWF0IjoxNzI0NDAzMTc2LCJqdGkiOiJkZWEyZjllNy1mMzlkLTRjMjktYTRlYS05ZWI4NmQzMDc4MDEifQ.ryjAREmPi7nZqQRqTKljaHxoyxjP4yMMhJC5jwZUXjQFX3mS4duyXEJDiwOhuPIHUZN8Q2Cr31agt84sXsuDTT1kfWKqcrk47sVNMwXBL9Ot40KdCFP_uPUdkyNMfznScxUjSwgHZkQDqY9TJ_YEuoJ0w5GNMeSnKjGO2dpMLkcyt9dJ8ktXP2RzAFXiI1G3WzXYp9eNzAfEZ89abzlEh-3I1vfkFkW0nr3TIvmlZHfrrbTkXQhawGj5r3jJpjkQIqqvzvOGf2g_A7-_jiU_iou7vTQkxRa3Mc70fARbjGKSqU-ewHlWkTW7oWc9qTka13DcZ_rLSgQa6DWAup-LRg"
+                    pattern: 'ey[A-Za-z0-9]{700}'
                   refresh_token:
                     type: string
-                    example: "TU7LNmRQUrFjRCPG5Q83XYR8fA4SlOvF"
+                    pattern: '[0-9A-Za-z-]{30}'
         401:
           description: "HTTP Status 200"
           content:
