@@ -7,6 +7,7 @@ namespace ApplicationTest\Services;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
+use Application\Sirius\EventSender;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use InvalidArgumentException;
@@ -23,17 +24,20 @@ class SessionStatusServiceTest extends TestCase
     private YotiService&MockObject $yotiService;
     private SessionStatusService $sut;
     private LoggerInterface&MockObject $logger;
+    private EventSender&MockObject $eventSender;
 
     protected function setUp(): void
     {
         $this->dataHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiService = $this->createMock(YotiService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->eventSender = $this->createMock(EventSender::class);
 
         $this->sut = new SessionStatusService(
             $this->yotiService,
             $this->dataHandler,
-            $this->logger
+            $this->logger,
+            $this->eventSender,
         );
     }
 
@@ -74,6 +78,7 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'lpas' => ['M-TIU9-0TJU-84TU'],
             'firstName' => 'Maria',
             'lastName' => 'Williams',
             'personType' => 'donor',
@@ -96,6 +101,7 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'lpas' => ['M-TIU9-0TJU-84TU'],
             'firstName' => 'Maria',
             'lastName' => 'Williams',
             'personType' => 'donor',
@@ -110,6 +116,7 @@ class SessionStatusServiceTest extends TestCase
         ]);
         $response = [
                 'state' => 'COMPLETED',
+                'resources' => ['id_documents' => [['created_at' => '2019-04-18T14:08:18Z']]],
                 'checks' => [
                     [
                         'report' => [
@@ -131,6 +138,17 @@ class SessionStatusServiceTest extends TestCase
             ->method('insertUpdateData')
             ->with($caseData);
 
+        $this->eventSender
+            ->expects($this->once())
+            ->method('send')
+            ->with('identity-check-resolved', [
+                'reference' => 'opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'actorType' => 'donor',
+                'lpaIds' => ['M-TIU9-0TJU-84TU'],
+                'time' => '2019-04-18T14:08:18Z',
+                'outcome' => 'success',
+            ]);
+
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
         $this->assertTrue($result->result);
@@ -141,6 +159,7 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'lpas' => ['M-TIU9-0TJU-84TU'],
             'firstName' => 'Maria',
             'lastName' => 'Williams',
             'personType' => 'donor',
@@ -155,6 +174,7 @@ class SessionStatusServiceTest extends TestCase
         ]);
         $response = [
                 'state' => 'COMPLETED',
+                'resources' => ['id_documents' => [['created_at' => '2019-04-18T14:08:18Z']]],
                 'checks' => [
                     [
                         'report' => [
@@ -189,6 +209,17 @@ class SessionStatusServiceTest extends TestCase
             ->expects(self::once())
             ->method('insertUpdateData')
             ->with($caseData);
+
+        $this->eventSender
+            ->expects($this->once())
+            ->method('send')
+            ->with('identity-check-resolved', [
+                'reference' => 'opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'actorType' => 'donor',
+                'lpaIds' => ['M-TIU9-0TJU-84TU'],
+                'time' => '2019-04-18T14:08:18Z',
+                'outcome' => 'failure',
+            ]);
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
