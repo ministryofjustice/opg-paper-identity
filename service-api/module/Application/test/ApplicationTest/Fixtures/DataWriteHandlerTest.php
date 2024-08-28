@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Fixtures;
 
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\IdMethod;
 use Aws\CommandInterface;
@@ -16,11 +16,11 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class DataImportHandlerTest extends TestCase
+class DataWriteHandlerTest extends TestCase
 {
     private DynamoDbClient|MockObject $dynamoDbClientMock;
     private LoggerInterface|MockObject $loggerMock;
-    private DataImportHandler $sut;
+    private DataWriteHandler $sut;
 
     public function setUp(): void
     {
@@ -30,7 +30,7 @@ class DataImportHandlerTest extends TestCase
         $this->dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
         // Create an instance of SUT with mocked dependencies
-        $this->sut = new DataImportHandler($this->dynamoDbClientMock, 'cases', $this->loggerMock);
+        $this->sut = new DataWriteHandler($this->dynamoDbClientMock, 'cases', $this->loggerMock);
     }
 
     /**
@@ -74,7 +74,7 @@ class DataImportHandlerTest extends TestCase
         $this->loggerMock->expects($this->never())->method('error');
 
         // Call the insertData method with test data
-        $this->sut->insertData($case);
+        $this->sut->insertUpdateData($case);
     }
 
 
@@ -123,7 +123,7 @@ class DataImportHandlerTest extends TestCase
             );
 
         // Call the insertData method with test data
-        $this->sut->insertData($caseData);
+        $this->sut->insertUpdateData($caseData);
     }
 
     /**

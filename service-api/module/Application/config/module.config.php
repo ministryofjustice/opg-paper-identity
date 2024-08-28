@@ -16,7 +16,7 @@ use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
 use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Passport\ValidatorFactory as PassportValidatorFactory;
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
 use Application\Yoti\SessionConfig;
@@ -417,14 +417,14 @@ return [
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName
             ),
-            DataImportHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataImportHandler(
+            DataWriteHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataWriteHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
             ),
             SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
                 $serviceLocator->get(YotiServiceInterface::class),
-                $serviceLocator->get(DataImportHandler::class),
+                $serviceLocator->get(DataWriteHandler::class),
                 $serviceLocator->get(LoggerInterface::class)
             ),
             SessionConfig::class => InvokableFactory::class,
