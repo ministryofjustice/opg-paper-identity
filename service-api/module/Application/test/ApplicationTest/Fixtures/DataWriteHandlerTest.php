@@ -16,7 +16,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class DataImportHandlerTest extends TestCase
+class DataWriteHandlerTest extends TestCase
 {
     private DynamoDbClient|MockObject $dynamoDbClientMock;
     private LoggerInterface|MockObject $loggerMock;
