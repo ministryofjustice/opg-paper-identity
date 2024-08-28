@@ -13,4 +13,7 @@ return [
         'endpoint' => getenv('AWS_DYNAMODB_ENDPOINT') ?: '',
         'region' => getenv('AWS_REGION') ?: "eu-west-1",
     ],
+    'eventbridge' => [
+        'sirius_event_bus_name' => getenv('OUTBOUND_EVENT_BUS_NAME') ?: "local-poas",
+    ],
 ];
