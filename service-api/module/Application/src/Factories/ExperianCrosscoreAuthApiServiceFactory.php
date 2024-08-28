@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Factories;
 
+use Application\Cache\ApcHelper;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -28,6 +29,8 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
             'auth_uri' => $authUri
         ]);
 
-        return new ExperianCrosscoreAuthApiService($guzzleClient);
+        $apcHelper = new ApcHelper();
+
+        return new ExperianCrosscoreAuthApiService($guzzleClient, $apcHelper);
     }
 }

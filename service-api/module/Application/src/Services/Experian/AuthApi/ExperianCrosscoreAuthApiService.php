@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Services\Experian\AuthApi;
 
 use Application\Aws\Secrets\AwsSecret;
+use Application\Cache\ApcHelper;
 use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
 use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
 use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreRefreshRequestDTO;
@@ -16,7 +17,8 @@ use Ramsey\Uuid\Uuid;
 class ExperianCrosscoreAuthApiService
 {
     public function __construct(
-        private readonly Client $client
+        private readonly Client $client,
+        private readonly ApcHelper $apcHelper
     ) {
     }
 
@@ -50,7 +52,10 @@ class ExperianCrosscoreAuthApiService
 
     private function cacheTokenResponse(ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO): void
     {
-
+        $this->apcHelper->setValue(
+            'experian_crosscore_access_token',
+            $experianCrosscoreAuthResponseDTO->accessToken()
+        );
     }
 
     private function retrieveCachedTokenResponse(): ExperianCrosscoreAuthResponseDTO
