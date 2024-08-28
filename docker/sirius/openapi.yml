@@ -210,7 +210,9 @@ components:
               x-faker: name.lastName
             dob:
               type: string
-              format: date
+              pattern: "[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}"
+              x-faker:
+                helpers.replaceSymbols: "1#/0#/19##"
             addressLine1:
               type: string
               x-faker: address.streetAddress
