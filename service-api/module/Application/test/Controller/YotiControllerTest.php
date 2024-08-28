@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\YotiController;
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiException;
@@ -27,7 +27,7 @@ class YotiControllerTest extends TestCase
 
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
 
-    private DataImportHandler&MockObject $dataImportHandler;
+    private DataWriteHandler&MockObject $dataHandler;
 
     private SessionConfig&MockObject $sessionConfigMock;
 
@@ -47,7 +47,7 @@ class YotiControllerTest extends TestCase
         $this->YotiServiceMock = $this->createMock(YotiService::class);
         $this->statusService = $this->createMock(SessionStatusService::class);
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
-        $this->dataImportHandler = $this->createMock(DataImportHandler::class);
+        $this->dataHandler = $this->createMock(DataWriteHandler::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
 
 
@@ -59,7 +59,7 @@ class YotiControllerTest extends TestCase
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(SessionStatusService::class, $this->statusService);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
-        $serviceManager->setService(DataImportHandler::class, $this->dataImportHandler);
+        $serviceManager->setService(DataWriteHandler::class, $this->dataHandler);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -202,11 +202,8 @@ class YotiControllerTest extends TestCase
             ->with($response["data"]["session_id"])
             ->willReturn($pdfLetter);
 
-        $this->dataImportHandler
-            ->expects($this->atLeast(1))->method('updateCaseData');
-
-        $this->dataImportHandler
-            ->expects($this->atLeast(1))->method('updateCaseChildAttribute');
+        $this->dataHandler
+            ->expects($this->once())->method('insertUpdateData');
 
         $this->dispatch('/counter-service/test-uuid/create-session', 'POST', []);
         $this->assertResponseStatusCode(200);
@@ -237,7 +234,7 @@ class YotiControllerTest extends TestCase
                 ]
             ]));
 
-        $this->dataImportHandler
+        $this->dataHandler
             ->expects($this->never())->method('updateCaseChildAttribute');
 
         $this->dispatchJSON(
@@ -278,7 +275,7 @@ class YotiControllerTest extends TestCase
                 ]
             ]));
 
-        $this->dataImportHandler
+        $this->dataHandler
             ->expects($this->once())->method('updateCaseChildAttribute');
 
         $this->dispatchJSON(
@@ -308,7 +305,7 @@ class YotiControllerTest extends TestCase
             ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
             ->willReturn(null);
 
-        $this->dataImportHandler
+        $this->dataHandler
             ->expects($this->never())->method('updateCaseChildAttribute');
 
         $this->dispatchJSON(
@@ -335,7 +332,7 @@ class YotiControllerTest extends TestCase
         $this->dataQueryHandlerMock
             ->expects($this->never())->method('queryByYotiSessionId');
 
-        $this->dataImportHandler
+        $this->dataHandler
             ->expects($this->never())->method('updateCaseData');
 
         $this->dispatchJSON(

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
@@ -24,7 +24,7 @@ class IdentityControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $KBVServiceMock;
-    private DataImportHandler&MockObject $dataImportHandler;
+    private DataWriteHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
 
@@ -43,7 +43,7 @@ class IdentityControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
-        $this->dataImportHandler = $this->createMock(DataImportHandler::class);
+        $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
 
@@ -53,7 +53,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
-        $serviceManager->setService(DataImportHandler::class, $this->dataImportHandler);
+        $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
