@@ -16,10 +16,13 @@ use Ramsey\Uuid\Uuid;
 
 class ExperianCrosscoreAuthApiService
 {
+    const EXPIRY = 1800; // 30 minutes
+
     public function __construct(
-        private readonly Client $client,
+        private readonly Client    $client,
         private readonly ApcHelper $apcHelper
-    ) {
+    )
+    {
     }
 
     private function generateXCorrelationId(): string
@@ -35,32 +38,56 @@ class ExperianCrosscoreAuthApiService
     public function makeHeaders(): array
     {
         return [
-            'Content-Type'     => 'application/json',
+            'Content-Type' => 'application/json',
             'X-Correlation-Id' => $this->generateXCorrelationId(),
-            'X-User-Domain'    => getenv('EXPERIAN_DOMAIN')
+            'X-User-Domain' => getenv('EXPERIAN_DOMAIN')
         ];
     }
 
-    public function authenticate(bool $refresh = false): void
+    /**
+     * @throws GuzzleException
+     * @throws ExperianCrosscoreAuthApiException
+     */
+    public function authenticate(bool $refresh = false): ExperianCrosscoreAuthResponseDTO
     {
         $credentials = $this->getCredentials();
 
         $tokenResponse = $this->getToken($credentials);
 
         $this->cacheTokenResponse($tokenResponse);
+
+        return $tokenResponse;
     }
 
-    private function cacheTokenResponse(ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO): void
+    private function cacheTokenResponse(
+        ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO,
+    ): void
     {
         $this->apcHelper->setValue(
             'experian_crosscore_access_token',
-            $experianCrosscoreAuthResponseDTO->accessToken()
+            json_encode([
+                'access_token' => $experianCrosscoreAuthResponseDTO->accessToken(),
+                'time' => $experianCrosscoreAuthResponseDTO->issuedAt()
+            ])
         );
     }
 
-    private function retrieveCachedTokenResponse(): ExperianCrosscoreAuthResponseDTO
+    /**
+     * @throws GuzzleException
+     * @throws ExperianCrosscoreAuthApiException
+     */
+    private function retrieveCachedTokenResponse(): string
     {
-        return new ExperianCrosscoreAuthResponseDTO();
+        $tokenResponse = json_decode(
+            $this->apcHelper->getValue('experian_crosscore_access_token'),
+            true
+        );
+
+        if (($tokenResponse['time'] + 1800) > time()) {
+            return $tokenResponse['access_token'];
+        } else {
+            return $this->authenticate()->accessToken();
+        }
     }
 
     /**
@@ -86,7 +113,8 @@ class ExperianCrosscoreAuthApiService
      */
     public function getToken(
         ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
-    ): ExperianCrosscoreAuthResponseDTO {
+    ): ExperianCrosscoreAuthResponseDTO
+    {
         try {
             $response = $this->client->post(
                 $this->getAuthUrl(),
@@ -112,7 +140,8 @@ class ExperianCrosscoreAuthApiService
 
     public function refreshToken(
         ExperianCrosscoreRefreshRequestDTO $experianCrosscoreRefreshRequestDTO
-    ): ExperianCrosscoreAuthResponseDTO {
+    ): ExperianCrosscoreAuthResponseDTO
+    {
         try {
             $response = $this->client->post(
                 $this->getAuthUrl(),
