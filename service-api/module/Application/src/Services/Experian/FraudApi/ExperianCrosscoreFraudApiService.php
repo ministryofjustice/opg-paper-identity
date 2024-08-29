@@ -2,47 +2,36 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\AuthApi;
+namespace Application\Services\Experian\FraudApi;
 
-use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Ramsey\Uuid\Uuid;
 
-class ExperianCrosscoreAuthApiService
+class ExperianCrosscoreFraudApiService
 {
     const EXPIRY = 1800; // 30 minutes
 
     public function __construct(
         private readonly Client $client,
-        private readonly ApcHelper $apcHelper,
-        private readonly ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
+        private readonly ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService
     ) {
-    }
-
-    private function generateXCorrelationId(): string
-    {
-        return Uuid::uuid4()->toString();
     }
 
     public function makeHeaders(): array
     {
         return [
             'Content-Type' => 'application/json',
-            'X-Correlation-Id' => $this->generateXCorrelationId(),
             'X-User-Domain' => getenv('EXPERIAN_DOMAIN')
         ];
     }
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws ExperianCrosscoreFraudApiException
      */
-    public function authenticate(): ExperianCrosscoreAuthResponseDTO
+    public function getFraudscore(): array
     {
         $credentials = $this->getCredentials();
 
@@ -53,23 +42,12 @@ class ExperianCrosscoreAuthApiService
         return $tokenResponse;
     }
 
-    private function cacheTokenResponse(
-        ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO,
-    ): void {
-        $this->apcHelper->setValue(
-            'experian_crosscore_access_token',
-            json_encode([
-                'access_token' => $experianCrosscoreAuthResponseDTO->accessToken(),
-                'time' => $experianCrosscoreAuthResponseDTO->issuedAt()
-            ])
-        );
-    }
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws ExperianCrosscoreFraudApiException
      */
-    public function retrieveCachedTokenResponse(): string
+    public function retrieveCachedToken(): string
     {
         $tokenResponse = json_decode(
             $this->apcHelper->getValue('experian_crosscore_access_token'),
@@ -84,24 +62,24 @@ class ExperianCrosscoreAuthApiService
     }
 
     /**
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws ExperianCrosscoreFraudApiException
      */
-    public function getCredentials(): ExperianCrosscoreAuthRequestDTO
+    public function getCredentials(): ExperianCrosscoreFraudRequestDTO
     {
         try {
             return $this->experianCrosscoreAuthRequestDTO;
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreAuthApiException($exception->getMessage());
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
         }
     }
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws ExperianCrosscoreFraudApiException
      */
     private function getToken(
-        ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
-    ): ExperianCrosscoreAuthResponseDTO {
+        ExperianCrosscoreFraudRequestDTO $experianCrosscoreAuthRequestDTO
+    ): ExperianCrosscoreFraudResponseDTO {
         try {
             $response = $this->client->request(
                 'POST',
@@ -113,7 +91,7 @@ class ExperianCrosscoreAuthApiService
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
 
-            return new ExperianCrosscoreAuthResponseDTO(
+            return new ExperianCrosscoreFraudResponseDTO(
                 $responseArray['access_token'],
                 $responseArray['refresh_token'],
                 $responseArray['issued_at'],
@@ -121,7 +99,7 @@ class ExperianCrosscoreAuthApiService
                 $responseArray['token_type']
             );
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreAuthApiException($exception->getMessage());
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
         }
     }
 }

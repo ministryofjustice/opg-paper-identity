@@ -10,10 +10,11 @@ use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreFraudRequestDTO;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreFraudApiService;
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 use RuntimeException;
 
-class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
+class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
@@ -22,9 +23,9 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ExperianCrosscoreFraudApiService
     {
-        $baseUri = getenv("EXPERIAN_AUTH_URL");
+        $baseUri = getenv("EXPERIAN_FRAUD_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new $baseUri("EXPERIAN_AUTH_URL is empty");
+            throw new $baseUri("EXPERIAN_FRAUD_URL is empty");
         }
 
         $guzzleClient = new Client([
@@ -45,10 +46,15 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
             $clientSecret
         );
 
-        return new ExperianCrosscoreFraudApiService(
+        $experianCrosscoreAuthApiService = new ExperianCrosscoreAuthApiService(
             $guzzleClient,
             $apcHelper,
             $experianCrosscoreAuthRequestDTO
+        );
+
+        return new ExperianCrosscoreFraudApiService(
+            $guzzleClient,
+            $experianCrosscoreAuthApiService
         );
     }
 }

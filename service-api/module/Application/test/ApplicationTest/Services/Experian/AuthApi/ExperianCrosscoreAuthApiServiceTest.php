@@ -6,8 +6,8 @@ namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi;
 
 use Application\Cache\ApcHelper;
 use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
 use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -21,7 +21,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
 
     private ApcHelper $apcHelper;
 
-    private ExperianCrosscoreAuthRequestDto $experianCrosscoreAuthRequestDto;
+    private ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDto;
 
     private ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService;
 

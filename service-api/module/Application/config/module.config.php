@@ -33,7 +33,7 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreFraudApiService;
 
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
@@ -447,7 +447,7 @@ return [
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
-            ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class
+            ExperianCrosscoreFraudApiService::class => ExperianCrosscoreAuthApiServiceFactory::class
         ],
     ],
     'view_manager' => [
