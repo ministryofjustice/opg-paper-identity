@@ -2,26 +2,18 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Services;
+namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi;
 
-use Application\Aws\Secrets\AwsSecretsCache;
-use Application\Exceptions\HttpException;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
+use Application\Cache\ApcHelper;
+use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
 use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 use Throwable;
-
-use Application\Aws\Secrets\AwsSecret;
-use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
 
 class ExperianCrosscoreAuthApiServiceTest extends TestCase
 {
@@ -76,7 +68,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
      * @dataProvider tokenResponseData
      * @param class-string<Throwable>|null $expectedException
      */
-    public function testAuthenticate(Client $client, array $responseData = null, ?string $expectedException): void
+    public function testAuthenticate(Client $client, ?array $responseData, ?string $expectedException): void
     {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
@@ -86,7 +78,6 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
             $client,
             $this->apcHelper,
             $this->experianCrosscoreAuthRequestDto,
-
         );
 
         $response = $experianCrosscoreAuthApiService->authenticate();

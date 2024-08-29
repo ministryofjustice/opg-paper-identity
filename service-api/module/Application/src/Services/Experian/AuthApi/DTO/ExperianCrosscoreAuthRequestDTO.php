@@ -37,10 +37,10 @@ class ExperianCrosscoreAuthRequestDTO
     public function toArray(): array
     {
         return [
-            $this->userName,
-            $this->password,
-            $this->clientId,
-            $this->clientSecret,
+            'userName' => $this->userName,
+            'password' => $this->password,
+            'clientId' => $this->clientId,
+            'clientSecret' => $this->clientSecret,
         ];
     }
 }
