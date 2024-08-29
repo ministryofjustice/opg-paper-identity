@@ -11,7 +11,7 @@ class ApcHelper
      */
     public function __construct()
     {
-        if (!function_exists('apcu_enabled') && apcu_enabled()) {
+        if (! function_exists('apcu_enabled') && apcu_enabled()) {
             throw new \Exception("APCU Cache is not available.");
         }
     }

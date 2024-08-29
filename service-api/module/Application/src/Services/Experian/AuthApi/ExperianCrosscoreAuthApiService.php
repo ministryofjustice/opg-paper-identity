@@ -19,20 +19,15 @@ class ExperianCrosscoreAuthApiService
     const EXPIRY = 1800; // 30 minutes
 
     public function __construct(
-        private readonly Client    $client,
-        private readonly ApcHelper $apcHelper
-    )
-    {
+        private readonly Client $client,
+        private readonly ApcHelper $apcHelper,
+        private readonly ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
+    ) {
     }
 
     private function generateXCorrelationId(): string
     {
         return Uuid::uuid4()->toString();
-    }
-
-    private function getAuthUrl(): string
-    {
-        return getenv('EXPERIAN_AUTH_URL');
     }
 
     public function makeHeaders(): array
@@ -48,7 +43,7 @@ class ExperianCrosscoreAuthApiService
      * @throws GuzzleException
      * @throws ExperianCrosscoreAuthApiException
      */
-    public function authenticate(bool $refresh = false): ExperianCrosscoreAuthResponseDTO
+    public function authenticate(): ExperianCrosscoreAuthResponseDTO
     {
         $credentials = $this->getCredentials();
 
@@ -61,8 +56,7 @@ class ExperianCrosscoreAuthApiService
 
     private function cacheTokenResponse(
         ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO,
-    ): void
-    {
+    ): void {
         $this->apcHelper->setValue(
             'experian_crosscore_access_token',
             json_encode([
@@ -76,7 +70,7 @@ class ExperianCrosscoreAuthApiService
      * @throws GuzzleException
      * @throws ExperianCrosscoreAuthApiException
      */
-    private function retrieveCachedTokenResponse(): string
+    public function retrieveCachedTokenResponse(): string
     {
         $tokenResponse = json_decode(
             $this->apcHelper->getValue('experian_crosscore_access_token'),
@@ -96,12 +90,7 @@ class ExperianCrosscoreAuthApiService
     public function getCredentials(): ExperianCrosscoreAuthRequestDTO
     {
         try {
-            return new ExperianCrosscoreAuthRequestDTO(
-                (new AwsSecret('experian-crosscore/username'))->getValue(),
-                (new AwsSecret('experian-crosscore/password'))->getValue(),
-                (new AwsSecret('experian-crosscore/client-id'))->getValue(),
-                (new AwsSecret('experian-crosscore/client-secret'))->getValue()
-            );
+            return $this->experianCrosscoreAuthRequestDTO;
         } catch (\Exception $exception) {
             throw new ExperianCrosscoreAuthApiException($exception->getMessage());
         }
@@ -111,43 +100,15 @@ class ExperianCrosscoreAuthApiService
      * @throws GuzzleException
      * @throws ExperianCrosscoreAuthApiException
      */
-    public function getToken(
+    private function getToken(
         ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
-    ): ExperianCrosscoreAuthResponseDTO
-    {
+    ): ExperianCrosscoreAuthResponseDTO {
         try {
-            $response = $this->client->post(
-                $this->getAuthUrl(),
-                [
+            $response = $this->client->request(
+                'POST',
+                'oauth2/experianone/v1/token', [
                     'headers' => $this->makeHeaders(),
                     'json' => $experianCrosscoreAuthRequestDTO->toArray()
-                ]
-            );
-
-            $responseArray = json_decode($response->getBody()->getContents(), true);
-
-            return new ExperianCrosscoreAuthResponseDTO(
-                $responseArray['access_token'],
-                $responseArray['refresh_token'],
-                $responseArray['issued_at'],
-                $responseArray['expires_in'],
-                $responseArray['token_type']
-            );
-        } catch (\Exception $exception) {
-            throw new ExperianCrosscoreAuthApiException($exception->getMessage());
-        }
-    }
-
-    public function refreshToken(
-        ExperianCrosscoreRefreshRequestDTO $experianCrosscoreRefreshRequestDTO
-    ): ExperianCrosscoreAuthResponseDTO
-    {
-        try {
-            $response = $this->client->post(
-                $this->getAuthUrl(),
-                [
-                    'headers' => $this->makeHeaders(),
-                    'json' => $experianCrosscoreRefreshRequestDTO->toArray()
                 ]
             );
 
