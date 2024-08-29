@@ -48,7 +48,8 @@ class SessionStatusService
         try {
             $response = $this->yotiService->retrieveResults($caseData->yotiSessionId, $nonce, $timestamp);
             $state = $response['state'];
-            $finalResult = $this->evaluateFinalResult($response['checks']);
+            $mediaId = $response['resources']['applicant_profiles'][0]['media']['id'];
+            $finalResult = $this->evaluateFinalResult($response['checks'], $mediaId, $caseData);
 
             $caseData->counterService->state = $state;
             $caseData->counterService->result = $finalResult;
@@ -66,8 +67,36 @@ class SessionStatusService
         return $caseData->counterService;
     }
 
-    private function evaluateFinalResult(array $checks): bool
+    public function getDocumentScanned(string $mediaId, string $yotiSessionId): mixed
     {
+        $nonce = strval(Uuid::uuid4());
+        $timestamp = (new DateTime())->getTimestamp();
+
+        try {
+            $response = $this->yotiService->retrieveMedia($yotiSessionId, $mediaId, $nonce, $timestamp);
+
+        } catch (YotiException $e) {
+            $this->logger->error('Yoti media result error: ' . $e->getMessage());
+        } catch (InvalidArgumentException $exception) {
+            $this->logger->error('Error retreiving media results: ' . $exception->getMessage());
+        }
+    }
+
+    private function evaluateFinalResult(array $checks, string $mediaId, CaseData $caseData): bool
+    {
+        //If UK passport ensure document presented was in date range
+        if ($caseData->idMethod === "po_ukp") {
+            $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
+            $expiry = new DateTime($documentScanned["expiration_date"]);
+
+            $currentDate = new DateTime();
+            $acceptDate = (clone $currentDate)->modify('-18 months');
+
+            if ($expiry < $acceptDate) {
+                return false;
+            }
+        }
+
         foreach ($checks as $check) {
             if ($check['report']['recommendation']['value'] !== 'APPROVE') {
                 return false;

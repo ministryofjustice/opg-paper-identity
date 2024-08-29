@@ -265,6 +265,40 @@ class YotiService implements YotiServiceInterface
         return ["status" => "PDF Created", "pdfBase64" => $base64];
     }
 
+    public function retrieveMedia(string $sessionId, string $mediaId, string $nonce, int $timestamp): array
+    {
+        $headers = $this->getSignedRequest(
+            '/sessions/' . $sessionId . '/media/' . $mediaId. '/content',
+            'GET',
+            $nonce,
+            $timestamp,
+            null,
+            $sessionId,
+            $mediaId
+        );
+        try {
+            var_dump("Calling .. " . '/idverify/v1/sessions/'.$sessionId.'/media/'.$mediaId.'/content');
+            $document = $this->client->get('/idverify/v1/sessions/'.$sessionId.'/media/'.$mediaId.'/content', [
+                'headers' => $headers,
+                'query' => [
+                    'sdkId' => $this->sdkId->getValue(),
+                    'sessionId' => $sessionId,
+                    'mediaId' => $mediaId,
+                    'nonce' => $nonce,
+                    'timestamp' => $timestamp
+                ],
+            ]);
+        } catch (GuzzleException $e) {
+            $this->logger->error('Unable to connect to Yoti service [' . $e->getMessage() . '] ', [
+                'data' => [ 'operation' => 'retrieve-media', 'header' => $headers]
+            ]);
+            throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
+        }
+        $response = json_decode(strval($document->getBody()));
+
+        return ["status" => "Media retrieved", "response" => $response];
+    }
+
     public function letterConfigPayload(CaseData $caseData, string $requirementId): array
     {
         $payload = [];
@@ -301,10 +335,14 @@ class YotiService implements YotiServiceInterface
         int $timestamp,
         string $body = null,
         string $sessionId = null,
+        string $mediaId = null,
     ): array {
         $apiEndpoint = $endpoint . '?sdkId=' . $this->sdkId->getValue();
         if ($sessionId !== null) {
             $apiEndpoint = $apiEndpoint . '&sessionId=' . $sessionId;
+        }
+        if ($mediaId !== null) {
+            $apiEndpoint = $apiEndpoint . '&mediaId=' . $mediaId;
         }
         try {
             $requestSignature = $this->requestSigner->generateSignature(
