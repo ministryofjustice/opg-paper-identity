@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
+use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\Factories\LoggerFactory;
@@ -14,17 +15,20 @@ use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Factories\EventSenderFactory;
 use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Passport\ValidatorFactory as PassportValidatorFactory;
 use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Passport\ValidatorInterface;
+use Application\Sirius\EventSender;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\EventBridge\EventBridgeClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Method;
@@ -413,6 +417,7 @@ return [
         ],
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
+            EventBridgeClient::class => EventBridgeClientFactory::class,
             DataQueryHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName
@@ -425,7 +430,8 @@ return [
             SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
                 $serviceLocator->get(YotiServiceInterface::class),
                 $serviceLocator->get(DataWriteHandler::class),
-                $serviceLocator->get(LoggerInterface::class)
+                $serviceLocator->get(LoggerInterface::class),
+                $serviceLocator->get(EventSender::class),
             ),
             SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,
@@ -434,8 +440,8 @@ return [
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
-            YotiServiceInterface::class => YotiServiceFactory::class
-
+            YotiServiceInterface::class => YotiServiceFactory::class,
+            EventSender::class => EventSenderFactory::class,
         ],
     ],
     'view_manager' => [

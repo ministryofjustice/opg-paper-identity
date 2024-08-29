@@ -122,7 +122,6 @@ class CPFlowController extends AbstractActionController
 
             /**
              * @psalm-suppress PossiblyNullArrayAccess
-             * @psalm-suppress InvalidArrayOffset
              * @psalm-suppress PossiblyNullArgument
              */
             $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
