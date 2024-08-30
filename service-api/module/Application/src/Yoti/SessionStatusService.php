@@ -47,8 +47,11 @@ class SessionStatusService
 
         try {
             $response = $this->yotiService->retrieveResults($caseData->yotiSessionId, $nonce, $timestamp);
+            $mediaId = null;
             $state = $response['state'];
-            $mediaId = $response['resources']['applicant_profiles'][0]['media']['id'];
+            if (isset($response["resources"])) {
+                $mediaId = $response['resources']['applicant_profiles'][0]['media']['id'];
+            }
             $finalResult = $this->evaluateFinalResult($response['checks'], $mediaId, $caseData);
 
             $caseData->counterService->state = $state;
@@ -67,33 +70,37 @@ class SessionStatusService
         return $caseData->counterService;
     }
 
-    public function getDocumentScanned(string $mediaId, string $yotiSessionId): mixed
+    public function getDocumentScanned(string $mediaId, string $yotiSessionId): array
     {
         $nonce = strval(Uuid::uuid4());
         $timestamp = (new DateTime())->getTimestamp();
+        $result = [];
 
         try {
-            $response = $this->yotiService->retrieveMedia($yotiSessionId, $mediaId, $nonce, $timestamp);
-
+            $result = $this->yotiService->retrieveMedia($yotiSessionId, $mediaId, $nonce, $timestamp);
         } catch (YotiException $e) {
             $this->logger->error('Yoti media result error: ' . $e->getMessage());
         } catch (InvalidArgumentException $exception) {
             $this->logger->error('Error retreiving media results: ' . $exception->getMessage());
         }
+
+        return $result["response"];
     }
 
-    private function evaluateFinalResult(array $checks, string $mediaId, CaseData $caseData): bool
+    private function evaluateFinalResult(array $checks, ?string $mediaId, CaseData $caseData): bool
     {
         //If UK passport ensure document presented was in date range
-        if ($caseData->idMethod === "po_ukp") {
+        if (is_string($mediaId) && $caseData->idMethod === "po_ukp") {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
-            $expiry = new DateTime($documentScanned["expiration_date"]);
+            if (is_string($documentScanned["expiration_date"])) {
+                $expiry = new DateTime($documentScanned["expiration_date"]);
 
-            $currentDate = new DateTime();
-            $acceptDate = (clone $currentDate)->modify('-18 months');
+                $currentDate = new DateTime();
+                $acceptDate = (clone $currentDate)->modify('-18 months');
 
-            if ($expiry < $acceptDate) {
-                return false;
+                if ($expiry < $acceptDate) {
+                    return false;
+                }
             }
         }
 

@@ -268,7 +268,7 @@ class YotiService implements YotiServiceInterface
     public function retrieveMedia(string $sessionId, string $mediaId, string $nonce, int $timestamp): array
     {
         $headers = $this->getSignedRequest(
-            '/sessions/' . $sessionId . '/media/' . $mediaId. '/content',
+            '/sessions/' . $sessionId . '/media/' . $mediaId . '/content',
             'GET',
             $nonce,
             $timestamp,
@@ -277,8 +277,7 @@ class YotiService implements YotiServiceInterface
             $mediaId
         );
         try {
-            var_dump("Calling .. " . '/idverify/v1/sessions/'.$sessionId.'/media/'.$mediaId.'/content');
-            $document = $this->client->get('/idverify/v1/sessions/'.$sessionId.'/media/'.$mediaId.'/content', [
+            $document = $this->client->get('/idverify/v1/sessions/' . $sessionId . '/media/' . $mediaId . '/content', [
                 'headers' => $headers,
                 'query' => [
                     'sdkId' => $this->sdkId->getValue(),
@@ -294,7 +293,7 @@ class YotiService implements YotiServiceInterface
             ]);
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
-        $response = json_decode(strval($document->getBody()));
+        $response = json_decode(strval($document->getBody()), true);
 
         return ["status" => "Media retrieved", "response" => $response];
     }
