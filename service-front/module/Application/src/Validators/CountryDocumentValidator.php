@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Validators;
 
-use Laminas\Di\Config;
+use Application\PostOffice\DocumentType;
 use Laminas\Validator\AbstractValidator;
 
 class CountryDocumentValidator extends AbstractValidator
@@ -17,32 +17,12 @@ class CountryDocumentValidator extends AbstractValidator
 
     public function isValid($value): bool
     {
-        $documentCodes = $this->getDocumentCodes();
-
-        if (! in_array($value, $documentCodes)) {
+        if (! is_string($value) || DocumentType::tryFrom($value) === null) {
             $this->error(self::INVALID_DOCUMENT);
+
             return false;
         }
+
         return true;
-    }
-
-    private function getDocumentCodes(): array
-    {
-        $config = $this->getConfig();
-        $docTypeList = [];
-
-        foreach ($config['opg_settings']['localisation'] as $docBody) {
-            foreach ($docBody['supported_documents'] as $docType) {
-                if (! in_array($docType['type'], $docTypeList)) {
-                    $docTypeList[] = $docType['type'];
-                }
-            }
-        }
-        return $docTypeList;
-    }
-
-    public function getConfig(): array
-    {
-        return include __DIR__ . './../../config/module.config.php';
     }
 }
