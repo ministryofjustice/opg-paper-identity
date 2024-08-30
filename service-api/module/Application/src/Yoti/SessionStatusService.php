@@ -92,6 +92,7 @@ class SessionStatusService
         //If UK passport ensure document presented was in date range
         if (is_string($mediaId) && $caseData->idMethod === "po_ukp") {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
+            
             if (is_string($documentScanned["expiration_date"])) {
                 $expiry = new DateTime($documentScanned["expiration_date"]);
 
