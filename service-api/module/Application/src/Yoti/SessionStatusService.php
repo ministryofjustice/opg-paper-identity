@@ -42,8 +42,6 @@ class SessionStatusService
 
     /**
      * @psalm-suppress PossiblyNullPropertyAssignment
-     * @psalm-suppress PossiblyUndefinedArrayOffset
-     * @psalm-suppress PossiblyNullArrayAccess
      */
     private function handleSessionCompletion(CaseData $caseData): ?CounterService
     {
