@@ -35,12 +35,12 @@
                         <select class="govuk-select" id="country" name="country" data-module="app-natural-autocomplete">
                             <option value=""></option>
                             <option value="0">The issuing country is not listed</option>
-                            {% for code, option in countries_data %}
+                            {% for country in countries_data %}
                                 <option
-                                        value="{{ code }}"
-                                        {% if form.get('country').value == code %}selected{% endif %}
+                                        value="{{ country.value }}"
+                                        {% if form.get('country').value == country.value %}selected{% endif %}
                                 >
-                                    {{- option.name -}}
+                                    {{- country.translate() -}}
                                 </option>
                             {% endfor %}
                         </select>
