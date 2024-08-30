@@ -70,7 +70,7 @@ class SessionStatusService
         return $caseData->counterService;
     }
 
-    public function getDocumentScanned(string $mediaId, string $yotiSessionId): array
+    private function getDocumentScanned(string $mediaId, string $yotiSessionId): array
     {
         $nonce = strval(Uuid::uuid4());
         $timestamp = (new DateTime())->getTimestamp();
