@@ -27,170 +27,46 @@ paths:
       parameters:
         - in: header
           name: Accept-Language
-          type: string
+          schema:
+            type: string
+            example: "EN"
         - in: header
           name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
+          schema:
+            type: string
+            description: 'Accepts mime type application/json'
+            example: "*/*"
         - in: header
           name: Authorization
-          type: string
-          description: 'JWT Bearer token'
-        - in: header
-          name: hmac-signature
-          type: string
-          description: 'HMAC signature for CC1 migration support only'
-        - in: body
-          name: body
-          description: CrossCore Request
-          required: true
           schema:
-            $ref: '#/definitions/RequestMessage'
+            type: string
+            description: 'JWT Bearer token'
+            example: "ey5jhgg4i945eh8v43her8v5793ouwsg8943iw8utg98j543cuw9aos4lig8ifj29403oieyghbd1uiqwikfeis2jkd95e984ujf8543"
+          required: true
+        - in: header
+          name: X-User-Domain
+          schema:
+            type: string
+            description: 'Experian required domain'
+            example: "publicguardian.com"
+          required: true
+        - in: header
+          name: "content-type"
+          schema:
+            type: string
+            example: "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/RequestMessage'
       responses:
         '200':
           description: successful operation
           schema:
             $ref: '#/definitions/ResponseMessage'
-  /getrecord:
-    post:
-      summary: CrossCore GetRecord Endpoint
-      description: Endpoint for retrieval of records
-      operationId: getRecord
-      parameters:
-        - in: header
-          name: Accept-Language
-          type: string
-        - in: header
-          name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
-        - in: header
-          name: Authorization
-          type: string
-          description: 'JWT Bearer token'
-        - in: body
-          name: body
-          description: CrossCore GetRecord Request
-          required: true
-          schema:
-            $ref: '#/definitions/GetRecordRequest'
-      responses:
-        '200':
-          description: GetRecord Successful request
-          schema:
-            $ref: '#/definitions/GetRecordResponse'
-  /feedback:
-    post:
-      summary: CrossCore Feedback Endpoint
-      description: Endpoint for posting feedback for an event.
-      operationId: feedback
-      parameters:
-        - in: header
-          name: Accept-Language
-          type: string
-        - in: header
-          name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
-        - in: header
-          name: Authorization
-          type: string
-          description: 'JWT Bearer token'
-        - in: body
-          name: body
-          description: CrossCore Feedback Request
-          required: true
-          schema:
-            $ref: '#/definitions/Feedback'
-      responses:
-        '200':
-          description: Feedback message received
-          schema:
-            $ref: '#/definitions/FeedbackResponse'
-  /purgeData:
-    post: 
-      summary: API endpoing for purging individual expRequestId data
-      description: Request purge
-      operationId: purge
-      parameters:
-        - in: header
-          name: Accept-Language
-          type: string
-        - in: header
-          name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
-        - in: header
-          name: Authorization
-          type: string
-          description: 'JWT Bearer token'
-        - in: body
-          name: body
-          description: Purge data
-          required: true
-          schema:
-            $ref: '#/definitions/PurgeRequest'
-      responses:
-        '200':
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/PurgeResponse'
-  /backingAppResume:
-    post:
-      summary: Backing app resume calls
-      description: restricted endpoint for backing applications to callback to CrossCore
-      operationId: resume
-      parameters:
-        - in: header
-          name: Accept-Language
-          type: string
-        - in: header
-          name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
-        - in: header
-          name: Authorization
-          type: string
-          description: 'JWT Bearer token'
-        - in: body
-          name: body
-          description: Backing application resume Request
-          required: true
-          schema:
-            $ref: '#/definitions/BackingAppResumeRequest'
-      responses:
-        '200':
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/BackingAppResumeResponse'
-  /caseStatus:
-    post:
-      summary: CrossCore Case Status Endpoint
-      description: Endpoint for posting case status for an event.
-      operationId: caseStatus
-      parameters:
-        - in: header
-          name: Accept-Language
-          type: string
-        - in: header
-          name: Accept
-          type: string
-          description: 'Accepts mime type application/json'
-        - in: header
-          name: Authorization
-          type: string
-          description: 'JWT Bearer token'
-        - in: body
-          name: body
-          description: Case status API request
-          required: true
-          schema:
-            $ref: '#/definitions/CaseStatus'
-      responses:
-        '200':
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/CaseStatusResponse'
+        "401":
+          description: Error
 definitions:
   GenericResponse:
     type: object
