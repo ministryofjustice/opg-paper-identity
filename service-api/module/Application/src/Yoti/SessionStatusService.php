@@ -42,6 +42,8 @@ class SessionStatusService
 
     /**
      * @psalm-suppress PossiblyNullPropertyAssignment
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     * @psalm-suppress PossiblyNullArrayAccess
      */
     private function handleSessionCompletion(CaseData $caseData): ?CounterService
     {
@@ -52,7 +54,7 @@ class SessionStatusService
             $response = $this->yotiService->retrieveResults($caseData->yotiSessionId, $nonce, $timestamp);
             $mediaId = null;
             $state = $response['state'];
-            if (isset($response["resources"])) {
+            if (isset($response["resources"]["applicant_profiles"])) {
                 $mediaId = $response['resources']['applicant_profiles'][0]['media']['id'];
             }
             $finalResult = $this->evaluateFinalResult($response['checks'], $mediaId, $caseData);
@@ -103,7 +105,7 @@ class SessionStatusService
         //If UK passport ensure document presented was in date range
         if (is_string($mediaId) && $caseData->idMethod === "po_ukp") {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
-            
+
             if (is_string($documentScanned["expiration_date"])) {
                 $expiry = new DateTime($documentScanned["expiration_date"]);
 

@@ -289,6 +289,7 @@ class SessionStatusServiceTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'idMethod' => 'po_ukp',
+            'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
                 'selectedPostOffice' => '29348729',
@@ -296,7 +297,8 @@ class SessionStatusServiceTest extends TestCase
                 'notificationState' => 'session_completion',
                 'state' => '',
                 'result' => false
-            ]
+            ],
+            'lpas' => []
         ]);
         $response = [
             'state' => 'COMPLETED',
@@ -342,6 +344,7 @@ class SessionStatusServiceTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'idMethod' => 'po_ukp',
+            'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
                 'selectedPostOffice' => '29348729',
@@ -349,7 +352,8 @@ class SessionStatusServiceTest extends TestCase
                 'notificationState' => 'session_completion',
                 'state' => '',
                 'result' => false
-            ]
+            ],
+            'lpas' => []
         ]);
         $response = [
             'state' => 'COMPLETED',
@@ -395,6 +399,7 @@ class SessionStatusServiceTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'idMethod' => 'po_eup',
+            'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
                 'selectedPostOffice' => '29348729',
@@ -402,7 +407,8 @@ class SessionStatusServiceTest extends TestCase
                 'notificationState' => 'session_completion',
                 'state' => '',
                 'result' => false
-            ]
+            ],
+            'lpas' => []
         ]);
         $response = [
             'state' => 'COMPLETED',
