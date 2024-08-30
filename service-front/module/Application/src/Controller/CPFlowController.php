@@ -7,7 +7,6 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
 use Application\Forms\AddressJson;
-use Application\Exceptions\LocalisationException;
 use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
@@ -24,14 +23,14 @@ use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
-use Application\Helpers\LocalisationHelper;
 use Application\Helpers\LpaFormHelper;
+use Application\PostOffice\Country as PostOfficeCountry;
+use Application\PostOffice\DocumentTypeRepository;
+use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
-use Application\Services\SiriusApiService;
 
 class CPFlowController extends AbstractActionController
 {
@@ -43,7 +42,7 @@ class CPFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly LpaFormHelper $lpaFormHelper,
-        private readonly LocalisationHelper $localisationHelper,
+        private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
     ) {
     }
@@ -51,7 +50,7 @@ class CPFlowController extends AbstractActionController
     public function howWillCpConfirmAction(): ViewModel|Response
     {
         $templates = [
-            'default' => 'application/pages/cp/how_will_the_cp_confirm'
+            'default' => 'application/pages/cp/how_will_the_cp_confirm',
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -128,7 +127,7 @@ class CPFlowController extends AbstractActionController
 
             $lpaDetails[$lpa] = [
                 'name' => $name,
-                'type' => $type
+                'type' => $type,
             ];
         }
 
@@ -166,9 +165,10 @@ class CPFlowController extends AbstractActionController
             if (! $form->isValid()) {
                 $form->setMessages([
                     'lpa' => [
-                        "Not a valid LPA number. Enter an LPA number to continue."
-                    ]
+                        "Not a valid LPA number. Enter an LPA number to continue.",
+                    ],
                 ]);
+
                 return $view->setTemplate('application/pages/cp/add_lpa');
             }
             /**
@@ -176,9 +176,9 @@ class CPFlowController extends AbstractActionController
              */
             if ($formObject->get('lpa')) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
+                    /**
+                     * @psalm-suppress InvalidMethodCall
+                     */
                     $formObject->get('lpa'),
                     $this->getRequest()
                 );
@@ -193,6 +193,7 @@ class CPFlowController extends AbstractActionController
 
                 $view->setVariables(['lpa_response' => $processed->constructFormVariables()]);
                 $view->setVariable('form', $processed->getForm());
+
                 return $view->setTemplate('application/pages/cp/add_lpa');
             } else {
                 $responseData = $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
@@ -202,6 +203,7 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
+
         return $view->setTemplate('application/pages/cp/add_lpa');
     }
 
@@ -224,6 +226,7 @@ class CPFlowController extends AbstractActionController
             if ($form->isValid()) {
                 try {
                     $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+
                     return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
                 } catch (\Exception $exception) {
                     $form->setMessages(["There was an error saving the data"]);
@@ -260,7 +263,7 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariables([
             'details_data' => $detailsData,
-            'form' => $form
+            'form' => $form,
         ]);
 
         if ($this->getRequest()->isPost()) {
@@ -280,6 +283,7 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
+
         return $view->setTemplate('application/pages/cp/confirm_address_match');
     }
 
@@ -288,7 +292,7 @@ class CPFlowController extends AbstractActionController
         $templates = [
             'default' => 'application/pages/national_insurance_number',
             'success' => 'application/pages/national_insurance_number_success',
-            'fail' => 'application/pages/national_insurance_number_fail'
+            'fail' => 'application/pages/national_insurance_number_fail',
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -314,6 +318,7 @@ class CPFlowController extends AbstractActionController
 
             return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
+
         return $view->setTemplate($templates['default']);
     }
 
@@ -322,7 +327,7 @@ class CPFlowController extends AbstractActionController
         $templates = [
             'default' => 'application/pages/driving_licence_number',
             'success' => 'application/pages/driving_licence_number_success',
-            'fail' => 'application/pages/driving_licence_number_fail'
+            'fail' => 'application/pages/driving_licence_number_fail',
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -349,6 +354,7 @@ class CPFlowController extends AbstractActionController
 
             return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
+
         return $view->setTemplate($templates['default']);
     }
 
@@ -357,7 +363,7 @@ class CPFlowController extends AbstractActionController
         $templates = [
             'default' => 'application/pages/passport_number',
             'success' => 'application/pages/passport_number_success',
-            'fail' => 'application/pages/passport_number_fail'
+            'fail' => 'application/pages/passport_number_fail',
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -397,8 +403,10 @@ class CPFlowController extends AbstractActionController
             foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
                 $view->setVariable($key, $variable);
             }
+
             return $view->setTemplate($formProcessorResponseDto->getTemplate());
         }
+
         return $view->setTemplate($templates['default']);
     }
 
@@ -474,7 +482,7 @@ class CPFlowController extends AbstractActionController
                     'root/cp_select_address',
                     [
                         'uuid' => $uuid,
-                        'postcode' => $postcode
+                        'postcode' => $postcode,
                     ]
                 );
             }
@@ -494,7 +502,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $view->setVariables([
             'details_data' => $detailsData,
-            'form' => $form
+            'form' => $form,
         ]);
 
         $response = $this->siriusApiService->searchAddressesByPostcode(
@@ -529,6 +537,7 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
+
         return $view->setTemplate('application/pages/cp/select_address');
     }
 
@@ -608,12 +617,8 @@ class CPFlowController extends AbstractActionController
             }
         }
 
-        $idCountriesData = $this->config['opg_settings']['localisation'];
-        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view->setVariable('countries_data', $idCountriesData);
-        $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -626,7 +631,6 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
         $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['localisation'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = (new AttributeBuilder())->createForm(Country::class);
@@ -643,34 +647,31 @@ class CPFlowController extends AbstractActionController
             }
         }
 
+        $countriesData = PostOfficeCountry::cases();
+
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $idOptionsData);
-        $view->setVariable('countries_data', $idCountriesData);
+        $view->setVariable('countries_data', $countriesData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate($templates['default']);
     }
 
-    /**
-     * @throws LocalisationException
-     */
     public function chooseCountryIdAction(): ViewModel|Response
     {
         $templates = ['default' => 'application/pages/cp/choose_country_id'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
-        $idCountriesData = $this->config['opg_settings']['localisation'];
 
         if (! isset($detailsData['idMethodIncludingNation']['country'])) {
             throw new \Exception("Country for document list has not been set.");
         }
 
-        $docs = $this->localisationHelper->getInternationalSupportedDocuments(
-            $detailsData['idMethodIncludingNation']['country']
-        );
+        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country']);
+
+        $docs = $this->documentTypeRepository->getByCountry($country);
 
         $form = (new AttributeBuilder())->createForm(CountryDocument::class);
         $view->setVariable('form', $form);
@@ -688,11 +689,9 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariables([
             'form' => $form,
-            'options_data' => $idOptionsData,
-            'countries_data' => $idCountriesData,
-            'countryName' => $idCountriesData[$detailsData['idMethodIncludingNation']['country']]['name'],
+            'countryName' => $country->translate(),
             'details_data' => $detailsData,
-            'supported_docs' => $docs['supported_documents'],
+            'supported_docs' => $docs,
             'uuid' => $uuid,
         ]);
 
