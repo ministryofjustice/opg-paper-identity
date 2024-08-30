@@ -13,6 +13,9 @@ up: ## Start application
 down: ## Stop application
 	docker compose down
 
+download-reference-data:
+	curl https://api.yoti.com/idverify/v1/supported-documents > ./service-front/module/Application/config/yoti-supported-documents.json
+
 api-psalm: ## Run Psalm checks against API code
 	docker compose -p api-psalm run --rm --no-deps api-test vendor/bin/psalm -c ./psalm.xml --report=build/psalm-junit.xml
 

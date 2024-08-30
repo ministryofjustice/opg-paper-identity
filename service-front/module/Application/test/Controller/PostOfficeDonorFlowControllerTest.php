@@ -7,6 +7,9 @@ namespace ApplicationTest\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\PostOffice\Country;
+use Application\PostOffice\DocumentType;
+use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -258,6 +261,16 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
 
+        $documentTypeRepository = $this->createMock(DocumentTypeRepository::class);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(DocumentTypeRepository::class, $documentTypeRepository);
+
+        $documentTypeRepository->expects($this->once())
+            ->method('getByCountry')
+            ->with(Country::AUT)
+            ->willReturn([DocumentType::Passport, DocumentType::NationalId]);
+
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -271,5 +284,28 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(PostOfficeFlowController::class);
         $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/donor_choose_country_id');
+    }
+
+    public function testPostOfficeCountriesIdPageSubmit(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateIdMethodWithCountry')
+            ->with($this->uuid, ['id_method' => 'PASSPORT']);
+
+        $this->dispatch("/$this->uuid/donor-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
+        $this->assertResponseStatusCode(302);
+
+        $this->assertRedirectTo(sprintf('/%s/donor-details-match-check', $this->uuid));
     }
 }
