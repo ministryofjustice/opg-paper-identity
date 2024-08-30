@@ -19,3 +19,9 @@ resources:
     response:
       statusCode: 200
       scriptFile: letterConfiguration.groovy
+
+  - path: "/idverify/v1/sessions/{sessionId}/media/{mediaId}/content"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: mediaRetrieval.groovy
