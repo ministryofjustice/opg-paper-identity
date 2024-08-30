@@ -11,8 +11,6 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class ExperianCrosscoreFraudApiService
 {
-    const EXPIRY = 1800; // 30 minutes
-
     public function __construct(
         private readonly Client $client,
         private readonly ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService
@@ -31,46 +29,13 @@ class ExperianCrosscoreFraudApiService
      * @throws GuzzleException
      * @throws ExperianCrosscoreFraudApiException
      */
-    public function getFraudscore(): array
+    public function getFraudScore(): array
     {
-        $credentials = $this->getCredentials();
-
         $tokenResponse = $this->getToken($credentials);
 
         $this->cacheTokenResponse($tokenResponse);
 
         return $tokenResponse;
-    }
-
-
-    /**
-     * @throws GuzzleException
-     * @throws ExperianCrosscoreFraudApiException
-     */
-    public function retrieveCachedToken(): string
-    {
-        $tokenResponse = json_decode(
-            $this->apcHelper->getValue('experian_crosscore_access_token'),
-            true
-        );
-
-        if (($tokenResponse['time'] + 1800) > time()) {
-            return $tokenResponse['access_token'];
-        } else {
-            return $this->authenticate()->accessToken();
-        }
-    }
-
-    /**
-     * @throws ExperianCrosscoreFraudApiException
-     */
-    public function getCredentials(): ExperianCrosscoreFraudRequestDTO
-    {
-        try {
-            return $this->experianCrosscoreAuthRequestDTO;
-        } catch (\Exception $exception) {
-            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
-        }
     }
 
     /**
@@ -103,3 +68,7 @@ class ExperianCrosscoreFraudApiService
         }
     }
 }
+
+
+
+
