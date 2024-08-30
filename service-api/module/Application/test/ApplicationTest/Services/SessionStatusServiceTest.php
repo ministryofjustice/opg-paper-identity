@@ -280,4 +280,162 @@ class SessionStatusServiceTest extends TestCase
         $this->assertEquals('COMPLETED', $result->state);
         $this->assertTrue($result->result);
     }
+
+    /**
+     * @psalm-suppress PossiblyNullPropertyFetch
+     */
+    public function testPassportValidityCheckIfUKPassportUsed(): void
+    {
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'idMethod' => 'po_ukp',
+            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+            'counterService' => [
+                'selectedPostOffice' => '29348729',
+                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+                'notificationState' => 'session_completion',
+                'state' => '',
+                'result' => false
+            ]
+        ]);
+        $response = [
+            'state' => 'COMPLETED',
+            'checks' => [
+                [
+                    'report' => [
+                        'recommendation' => [
+                            'value' => 'APPROVE'
+                        ]
+                    ]
+                ]
+            ],
+            'resources' => [
+                'applicant_profiles' => [
+                    [
+                        'media' => [
+                            'id' => '1e9e27b4-0586-4e86-9228-8c6db5c05252'
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $this->yotiService
+            ->method('retrieveResults')
+            ->willReturn($response);
+
+        $this->yotiService
+            ->expects($this->once())
+            ->method('retrieveMedia')
+            ->willReturn(["status" => "OK", "response" => ["expiration_date" => "2045-01-01"]]);
+
+        $result = $this->sut->getSessionStatus($caseData);
+
+        $this->assertEquals('COMPLETED', $result->state);
+        $this->assertTrue($result->result);
+    }
+    /**
+     * @psalm-suppress PossiblyNullPropertyFetch
+     */
+    public function testExpiredPassportReturnsAFalseResult(): void
+    {
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'idMethod' => 'po_ukp',
+            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+            'counterService' => [
+                'selectedPostOffice' => '29348729',
+                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+                'notificationState' => 'session_completion',
+                'state' => '',
+                'result' => false
+            ]
+        ]);
+        $response = [
+            'state' => 'COMPLETED',
+            'checks' => [
+                [
+                    'report' => [
+                        'recommendation' => [
+                            'value' => 'APPROVE'
+                        ]
+                    ]
+                ]
+            ],
+            'resources' => [
+                'applicant_profiles' => [
+                    [
+                        'media' => [
+                            'id' => '1e9e27b4-0586-4e86-9228-8c6db5c05252'
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $this->yotiService
+            ->method('retrieveResults')
+            ->willReturn($response);
+
+        $this->yotiService
+            ->expects($this->once())
+            ->method('retrieveMedia')
+            ->willReturn(["status" => "OK", "response" => ["expiration_date" => "2018-01-01"]]);
+
+        $result = $this->sut->getSessionStatus($caseData);
+
+        $this->assertEquals('COMPLETED', $result->state);
+        $this->assertFalse($result->result);
+    }
+
+    /**
+     * @psalm-suppress PossiblyNullPropertyFetch
+     */
+    public function testMediaRetrievalAPINotCalledIfNonUKPassport(): void
+    {
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'idMethod' => 'po_eup',
+            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+            'counterService' => [
+                'selectedPostOffice' => '29348729',
+                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+                'notificationState' => 'session_completion',
+                'state' => '',
+                'result' => false
+            ]
+        ]);
+        $response = [
+            'state' => 'COMPLETED',
+            'checks' => [
+                [
+                    'report' => [
+                        'recommendation' => [
+                            'value' => 'APPROVE'
+                        ]
+                    ]
+                ]
+            ],
+            'resources' => [
+                'applicant_profiles' => [
+                    [
+                        'media' => [
+                            'id' => '1e9e27b4-0586-4e86-9228-8c6db5c05252'
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $this->yotiService
+            ->method('retrieveResults')
+            ->willReturn($response);
+
+        $this->yotiService
+            ->expects($this->never())
+            ->method('retrieveMedia');
+
+        $result = $this->sut->getSessionStatus($caseData);
+
+        $this->assertEquals('COMPLETED', $result->state);
+        $this->assertTrue($result->result);
+    }
 }
