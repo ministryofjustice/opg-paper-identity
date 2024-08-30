@@ -40,6 +40,8 @@ ENV PHP_FPM_MIN_SPARE_SERVERS "2"
 ENV PHP_FPM_MAX_SPARE_SERVERS "4"
 ENV PHP_FPM_MEMORY_LIMIT "256M"
 
+RUN curl https://api.yoti.com/idverify/v1/supported-documents > /var/www/module/Application/config/yoti-supported-documents.json
+
 USER "www-data"
 VOLUME ["/var/www/public"]
 
