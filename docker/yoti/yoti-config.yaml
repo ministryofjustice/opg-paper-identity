@@ -1,5 +1,5 @@
 plugin: openapi
-specFile: openapi.yml
+specFile: openapi.yml-bk
 
 resources:
   - path: "/idverify/v1/sessions/{sessionId}"

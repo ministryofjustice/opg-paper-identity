@@ -1,0 +1,6032 @@
+swagger: '3.0.0'
+info:
+  title: CrossCore API
+  version: '2.21.0'
+host: env-region-api.experian.com
+basePath: /decisionanalytics/crosscore/{routing_id}/services/v0/applications
+schemes:
+  - https  
+paths:
+  /api/v1/healthcheck:
+    get:
+      summary: Healthcheck
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/GenericResponse"
+        "401":
+          description: Error
+  /3:
+    post:
+      summary: CrossCore Submit
+      description: CrossCore API Submit Request
+      operationId: submit
+      parameters:
+        - in: header
+          name: Accept-Language
+          schema:
+            type: string
+            example: "EN"
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            description: 'Accepts mime type application/json'
+            example: "*/*"
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            description: 'JWT Bearer token'
+            example: "ey5jhgg4i945eh8v43her8v5793ouwsg8943iw8utg98j543cuw9aos4lig8ifj29403oieyghbd1uiqwikfeis2jkd95e984ujf8543"
+          required: true
+        - in: header
+          name: X-User-Domain
+          schema:
+            type: string
+            description: 'Experian required domain'
+            example: "publicguardian.com"
+          required: true
+        - in: header
+          name: "content-type"
+          schema:
+            type: string
+            example: "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/RequestMessage'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ResponseMessage'
+        "401":
+          description: Error
+definitions:
+  GenericResponse:
+    type: object
+    properties:
+      id: int
+  Error:
+    type: object
+    required:
+      - title
+      - status
+      - detail
+    properties:
+      type:
+        type: string
+        format: url
+      title:
+        type: string
+      status:
+        type: integer
+      detail:
+        type: string
+      validation_errors:
+        type: object
+    additionalProperties: false
+  CaseStatus:
+    type: object
+    properties:
+      expRequestId:
+        type: string
+        maxLength: 40
+        example: '--- Experian request ID ---'
+      tenantID:
+        type: string
+        maxLength: 30
+        example: "-- tenantId supplied in the request --"
+      status:
+        type: string
+        maxLength: 30
+        enum:
+          - COMPLETED
+          - ON_HOLD
+          - IN_PROGRESS
+      userId:
+        type: string
+      statusTimestamp:
+        type: string
+        format: date-time
+        example: "2022-03-02T14:20:04Z"
+        maxLength: 30
+  CaseStatusResponse:
+    type: object
+    properties:
+      responseCode:
+        type: string
+        maxLength: 20
+        example: "-- Response code --"
+      responseType:
+        type: string
+        maxLength: 20
+        example: "-- Response type -- "
+      responseMessage:
+        type: string
+        maxLength: 300
+        example: "-- Response message --"
+  BackingAppResumeRequest:
+    type: object
+    properties:
+      header:
+        $ref: '#/definitions/RequestHeader'
+      payload:
+        $ref: '#/definitions/RequestPayload'
+  BackingAppResumeResponse:
+    type: object
+    properties:
+      responseHeader:
+        $ref: '#/definitions/BackingAppResumeResponseHeader'
+  BackingAppResumeResponseHeader:
+    type: object
+    properties:
+      requestType:
+        type: string
+        maxLength: 40
+        example: "-- requestType supplied in request --"
+      clientReferenceId:
+        type: string
+        maxLength: 40
+        example: "-- clientReferenceId supplied in request --"
+      expRequestId:
+        type: string
+        maxLength: 90
+        example: "-- Experian generated unique reference --"
+      messageTime:
+        type: string
+        format: date-time
+        example: "-- dateTime of message --"
+        maxLength: 30
+      responseCode:
+        type: string
+        maxLength: 20
+        example: "-- Response code --"
+      responseType:
+        type: string
+        maxLength: 20
+        example: "-- Response type -- "
+      responseMessage:
+        type: string
+        maxLength: 300
+        example: "-- Response message --"
+      tenantID:
+        type: string
+        maxLength: 30
+        example: "-- tenantId supplied in the request --"
+      category:
+        type: string
+        maxLength: 30
+        example: "AO"
+  PurgeRequest:
+    type: object
+    properties:
+      tenantId:
+        type: string
+        maxLength: 30
+        example: 'TENANT1'
+      expRequestId:
+        type: string
+        maxLength: 40
+        example: '--- Experian reference to retrieve record ---'
+  PurgeResponse:
+    type: object
+    properties:
+      responseCode:
+        type: string
+        maxLength: 20
+        example: "-- Response code --"
+      responseType:
+        type: string
+        maxLength: 20
+        example: "-- Response type -- "
+      responseMessage:
+        type: string
+        maxLength: 300
+        example: "-- Response message --"
+  GetRecordRequest:
+    type: object
+    properties:
+      expRequestId:
+        type: string
+        example: '--- Experian reference to retrieve record ---'
+      tenantId:
+        type: string
+        maxLength: 30
+        example: 'TENANT1'
+      clientReferenceId:
+        type: string
+        example: "ClientRef123456"
+  GetRecordResponse:
+    type: object
+    properties:
+      responseMessage:
+        $ref: '#/definitions/ResponseMessage'
+      feedbacks:
+        type: array
+        items:
+          $ref: '#/definitions/Feedback'
+      caseStatuses:
+        type: array
+        items:
+          $ref: '#/definitions/CaseStatus'
+  Feedback:
+    type: object
+    properties:
+      feedbackHeader:
+        $ref: '#/definitions/FeedbackHeader'
+      feedbackPayload:
+        $ref: '#/definitions/FeedbackPayload'
+  FeedbackHeader:
+    type: object
+    properties:
+      tenantId:
+        type: string
+        example: 'TENANT1'
+        maxLength: 30
+      expRequestId:
+        type: string
+      clientReferenceId:
+        type: string
+        maxLength: 90
+        example: '-- Your unique Client reference --'
+      messageTime:
+        type: string
+        format: date-time
+      overallResponse:
+        $ref: '#/definitions/OverallResponse'
+      requestOriginator:
+        type: string
+        example: "-- Your Tenant ID provided by delivery --"
+        maxLength: 40
+  FeedbackPayload:
+    type: object
+    properties:
+      fulfilmentAction:
+        type: string
+        example: "APPROVE"
+        maxLength: 10
+        enum:
+          - APPROVE
+          - REJECT
+          - SUSPECT
+      fraudStatus:
+        type: string
+        example: "CONFIRMED_NOT_FRAUD"
+        maxLength: 40
+        enum: 
+         - CONFIRMED_FRAUD
+         - CONFIRMED_NOT_FRAUD
+         - SUSPECTED_FRAUD
+      industry:
+        type: string
+        maxLength: 50
+        example: "ECOMMERCE"
+      useCase:
+        type: string
+        maxLength: 50
+        example: "AO"
+        enum:
+          - AO
+          - ATO
+          - ECOM
+          - AML
+          - AGE
+      fraudType:
+        type: string
+        example: "FIRST_PARTY"
+        maxLength: 30
+        enum:
+         - FIRST_PARTY
+         - SECOND_PARTY
+         - THIRD_PARTY
+         - UNKNOWN
+      standardizedReason:
+        type: string
+        example: "SYNTHETIC_IDENTITY"
+        maxLength: 60
+        enum:
+         - CHECK_WIRE_FRAUD
+         - CHARGEBACK_FRAUD
+         - CHARGEBACK_NOT_FRAUD         
+         - INSURANCE_CLAIM_FRAUD
+         - ACCOUNT_OPENING
+         - ACCOUNT_TAKE_OVER
+         - STOLEN_PAYMENT_INFORMATION
+         - SYNTHETIC_IDENTITY
+         - POLICY
+         - MISREPRESENTED_ID_DATA
+         - REPUTATION
+         - OTHER
+         - UNKNOWN
+      subReasons:
+        type: array
+        items:
+          type: string
+          example: "HUNTER-1234"
+          maxLength: 40
+      riskLevel:
+        type: string
+      investigatorActions:
+        $ref: '#/definitions/InvestigatorActions'
+      feedback:
+        type: array
+        items:
+          $ref: '#/definitions/FeedbackArray'
+      payments:
+        $ref: '#/definitions/Payment'
+      memos:
+        type: array
+        items:
+          $ref: '#/definitions/MemoArray'
+      backingAppReferences:
+        type: array
+        items: 
+          $ref: '#/definitions/BackingAppReference'
+  BackingAppReference:
+    type: object
+    properties:
+      serviceName:
+        type: string
+        example: '-- Backing App serviceName --'
+        maxLength: 40
+      appReference:
+        type: string
+        example: REF123456
+        maxLength: 100
+  Payment:
+    type: object
+    properties:
+      transactionId:
+        type: string
+      amount:
+        type: number
+      currencyCode:
+        type: string
+        example: "USD"
+        maxLength: 3
+      chargeBackTime:
+        type: string
+        format: date-time
+      transactionTypeCode:
+        type: string
+  InvestigatorActions:
+    type: object
+    properties:
+      reasonCodes:
+        type: array
+        items:
+          type: string
+      action:
+        type: string
+  FeedbackArray:
+    type: object
+    properties:
+      type:
+        type: string
+      reasonCodes:
+        type: string
+      ref:
+        type: string
+  MemoArray:
+    type: object
+    properties:
+      username:
+        type: string
+      memo:
+        type: string
+  FeedbackResponse:
+    type: object
+    properties:
+      responseHeader:
+        $ref: '#/definitions/FeedbackResponseHeader'
+  FeedbackResponseHeader:
+    type: object
+    properties:
+      responseCode:
+        type: string
+        maxLength: 20
+        example: "-- Response code --"
+      responseType:
+        type: string
+        maxLength: 20
+        example: "-- Response type -- "
+      responseMessage:
+        type: string
+        maxLength: 300
+        example: "-- Response message --"
+  RequestMessage:
+    type: object
+    required:
+      - header
+      - payload
+    properties:
+      header:
+        $ref: '#/definitions/RequestHeader'
+      payload:
+        $ref: '#/definitions/RequestPayload'
+  RequestHeader:
+    type: object
+    properties:
+      requestType:
+        type: string
+        maxLength: 40
+        example: "--Your Request Type provided by Delivery--"
+      clientReferenceId:
+        type: string
+        maxLength: 90
+        example: '-- Your unique Client reference --'
+      expRequestId:
+        type: string
+        maxLength: 90
+        example: null
+      messageTime:
+        type: string
+        format: date-time
+        maxLength: 30
+        example: '2018-11-30T14:20:04Z --Please replace with most recent datetime--'
+      tenantId:
+        type: string
+        maxLength: 30
+        example: '-- Your Tenant ID provided by delivery --'
+      userId:
+        type: string
+        maxLength: 150
+        example: 'CCUI-Manual-User-12345'
+      source:
+        type: string
+        maxLength: 50
+        example: 'API_SUBMIT'
+        enum:
+          - MANUAL_SUBMIT
+          - API_SUBMIT
+          - BATCH_SUBMIT
+          - OTHER
+      options:
+        $ref: '#/definitions/Options'
+  RequestPayload:
+    type: object
+    properties:
+      control:
+        type: array
+        items:
+          $ref: '#/definitions/ControlOption'
+      source:
+        type: string
+        example: "WEB"
+        maxLength: 20
+        enum:
+          - WEB
+          - FAX
+          - KIOSK
+          - MOBILE
+          - PHONE
+          - UNKNOWN
+          - POSTAL
+          - BRANCH
+          - DIRECT
+          - STORE
+          - STORE_INSTANT_CREDIT
+      contacts:
+        type: array
+        items:
+          $ref: '#/definitions/Contact'
+      financialAccounts:
+        type: array
+        items:
+          $ref: '#/definitions/FinancialAccount'
+      contracts:
+        type: array
+        items:
+          $ref: '#/definitions/Contract'
+      vehicles:
+        type: array
+        items:
+          $ref: '#/definitions/Vehicle'
+      assets:
+        type: array
+        items:
+          $ref: '#/definitions/Asset'
+      application:
+        $ref: '#/definitions/Application'
+      device:
+        $ref: '#/definitions/Device'
+      userAccount:
+        $ref: '#/definitions/UserAccount'
+      loyaltyProgram:
+        $ref: '#/definitions/LoyaltyProgram'
+      session:
+        $ref: '#/definitions/Session'
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+      orders:
+        type: array
+        items:
+          $ref: '#/definitions/Order'
+      services:
+        type: array
+        items:
+          $ref: '#/definitions/Service'
+      externalResults:
+        type: array
+        items:
+          $ref: '#/definitions/ExternalResult'
+      externalLookups:
+        type: array
+        items:
+          $ref: '#/definitions/ExternalLookup'
+      userDefinedFields:
+        type: array
+        items:
+          $ref: '#/definitions/UserDefinedField'
+      kba:
+        $ref: '#/definitions/KnowledgeBasedAuthentication'
+      generalData:
+        type: array
+        items:
+          $ref: '#/definitions/GeneralData'
+      decisionElements:
+        type: array
+        items:
+          $ref: '#/definitions/DecisionElements'
+  ResponseMessage:
+    type: object
+    properties:
+      responseHeader:
+        $ref: '#/definitions/ResponseHeader'
+      originalRequestData:
+        $ref: '#/definitions/RequestPayload'
+      clientResponsePayload:
+        $ref: '#/definitions/ClientResponsePayload'
+  ResponseHeader:
+    type: object
+    properties:
+      requestType:
+        type: string
+        maxLength: 40
+        example: "-- requestType supplied in request --"
+      clientReferenceId:
+        type: string
+        maxLength: 40
+        example: "-- clientReferenceId supplied in request --"
+      expRequestId:
+        type: string
+        maxLength: 90
+        example: "-- Experian generated unique reference --"
+      messageTime:
+        type: string
+        format: date-time
+        example: "-- dateTime of message --"
+        maxLength: 30
+      overallResponse:
+        $ref: '#/definitions/OverallResponse'
+      responseCode:
+        type: string
+        maxLength: 20
+        example: "-- Response code --"
+      responseType:
+        type: string
+        maxLength: 20
+        example: "-- Response type -- "
+      responseMessage:
+        type: string
+        maxLength: 300
+        example: "-- Response message --"
+      tenantID:
+        type: string
+        maxLength: 30
+        example: "-- tenantId supplied in the request --"
+      category:
+        type: string
+        maxLength: 30
+        example: "AO"
+      expirationDate:
+        type: string
+        format: date-time
+        maxLength: 30
+        example: "-- dateTime record expires --"
+  ClientResponsePayload:
+    type: object
+    properties:
+      orchestrationDecisions:
+        type: array
+        items:
+          $ref: '#/definitions/OrchestrationDecision'
+      decisionElements:
+        type: array
+        items:
+          $ref: '#/definitions/DecisionElements'
+  ControlOption:
+    type: object
+    properties:
+      option:
+        type: string
+        maxLength: 40
+        example: " -- multiple options, details Provided by Delivery--"
+        enum:
+          - PIDXML_VERSION
+          - VENDOR_VERSION
+          - SUBSCRIBER_PREAMBLE
+          - SUBSCRIBER_OPERATOR_INITIAL
+          - SUBSCRIBER_SUB_CODE
+          - VENDOR
+          - BROKER_NUMBER
+          - FREEZE_KEY_PIN
+          - PRODUCT_OPTION
+          - TARGET_COUNTRY
+          - DECISION_CODE
+          - NFD_SUBSCRIBER_NUMBER
+          - PID_USERNAME
+          - PID_PASSWORD
+          - MODEL_CODE
+          - ORG_CODE
+          - EVENT_ID
+          - EVENT_TYPE
+          - END_USER
+          - PROVEID_USERNAME
+          - PROVEID_PASSWORD
+          - NFD_DETAILED_RESPONSE
+          - DETAIL_REQUEST
+          - VERBOSE
+          - CUSTOMERID
+          - WANTMOBILE
+          - NAMEMATCHSCORE
+          - NAMEMATCHVALUE
+          - PFAMS
+          - PFAMV
+          - ISEMAIL
+          - ISMOBILE
+          - ISVOTERID
+          - ISPAN
+          - TRANSORIGIN
+          - USER_EMAIL
+          - CLIENTID
+          - SESSIONTYPE
+          - DOC_CONTROL
+          - QUERY
+          - RESOLVE_CLIENTID
+          - PRIVACYTYPE_DNT
+          - PRIVACYTYPE_IOS
+          - PRIVACYTYPE_PC
+          - HAS_ANOMALY
+          - WHY_ANOMALY
+          - DOC_VRF_GET_RSLT
+          - SESSIONID
+          - PFA_ADDRESS
+          - BIZID_USERNAME
+          - BIZID_PASSWORD
+          - CF_GROUP_ID
+          - CF_ACCOUNT_ID
+          - CF_LOCATION_ID
+          - CF_USERNAME
+          - CF_PASSWORD
+          - CF_CONTROL_FILE_NAME
+          - CF_CONTROL_FILE_VERSION_NUMBER
+          - CF_INQUIRY_PURPOSE_TYPE
+          - CF_INQUIRY_TRADELINE_TYPE
+          - CF_INITIATING_INQUIRY
+          - AUTHENTICATION_KEY
+          - BIZID_EAI
+          - BIZID_DB_HOST
+          - VALIDATE_OTP
+          - XML_VERSION
+          - ASSOCIATION_KEY
+          - DAON_FLOW_TYPE
+          - DAON_FLOW_STAGE
+          - DAON_REQUEST_ID
+          - DAON_REGISTRATION_ID
+          - DAON_DESCRIPTION
+          - DAON_POLICY_ID
+          - DAON_APPLICATION_ID
+          - FRAUD_MODEL
+          - BIZID_SUB_CODE
+          - BIZID_PREAMBLE
+          - BIZID_OP_INITIALS
+          - BIZID_PROD_OPT
+          - MILITARY_LENDING_ACT
+          - DAON_CHALLENGE_ID
+          - DAON_IDCHECK_ID
+          - DAON_CHALLENGE_DIGEST_ALGORITHM
+          - DAON_CHALLENGE_DIGEST
+          - IDA_EVENTTYPE
+          - IDA_INDUSTRYTYPE
+          - DAON_LIVENESS_VIDEO_ID
+          - RETRIEVAL_ID
+          - NUDATA_SESSION
+          - PIPL_KEY
+          - PIPL_PRETTY
+          - PIPL_MIN_PROB
+          - PIPL_INFER_PERSON
+          - PIPL_MIN_MATCH
+          - PIPL_SHOW_SOURCES
+          - PIPL_HIDE_SPONSORED
+          - PIPL_LIVE_FEEDS
+          - PIPL_MATCH_REQ
+          - PIPL_SOURCE_CAT_REQ
+          - PIPL_CALLBACK
+          - PIPL_QUERY_SEARCH_POINT
+          - PIPL_NO_LOG
+          - PIPL_TOP_MATCH
+          - ONF_CALL
+          - ONF_APPLICANTID
+          - ONF_DOCUMENTID
+          - ONF_PHOTOID
+          - ONF_VIDEOID
+          - ONF_CHECKID
+          - ONF_APPLICATIONID
+          - ONF_CHECKTYPE
+          - HS_JOBID
+          - HS_METHOD
+          - CHD_MEMBERID
+          - CHD_PURPOSE
+          - CHD_PRODUCT
+          - CHD_INQPURPOSE
+          - CHD_UIQVERSION
+          - CHD_UOFVERSION
+          - ALERT_MODEL
+          - SCORE_MODEL
+          - IS_CUSTOM_SCORE
+          - IDFY_OPTIONS
+          - RAPIDAPI_OPTIONS
+          - PRIVYID_API
+          - PRIVYID_TOKEN
+          - PRIVYID_DOC_TOKEN
+          - PRIVYID_DOCTYPE
+          - IDFY_UIDAI_SHARECODE
+          - IDFY_POLL_REQUESTID
+          - IDFY_FETCH_PROFILEID
+          - USE_CASE
+          - BIOCATCH_TIMEOUT
+          - PID_CONFIG_NUMBER
+          - IDFY_DOC_OCR
+          - IDFY_DOC_IMAGE_VALIDATION
+          - IDFY_DATABASE_CHECK
+          - IDFY_FACE_CHECK
+          - IDFY_FACE_COMPARE
+          - IDFY_DOC_MASKING
+          - IDFY_NAME_COMPARE
+          - BIOCATCH_ACTION
+          - BIOCATCH_SOLUTION
+          - DAON_DOCUMENT_ID
+          - ACUANT_REVIEW_STATUS
+          - ACCEPTED_LANGUAGE
+          - AUTHENTICID_CHANNEL
+          - AUTHENTICID_LIVENESS_SELFIE
+          - AUTHENTICID_TRANSID
+          - AUTHENTICID_LOCATION
+          - AUTHENTICID_AUTOCROP
+          - AUTHENTICID_OPERATION
+          - AUTHENTICID_TOKEN
+          - MITEK_REQUESTID
+          - BIOCATCH_UPDATE
+          - AGEVERIFY_LOWERBOUND
+          - AGEVERIFY_UPPERBOUND
+          - ML_MODEL_CODE
+          - DI_VERBOSE
+          - PROVE_RISKDETAILS
+          - PROVE_CALLBACK
+          - PROVE_NOADDRESSES
+          - PROVE_NOEMAILS
+      value:
+        type: string
+        maxLength: 40
+        example: '--Add corresponding option values here / Provided by Delivery--'
+  Contact:
+    type: object
+    properties:
+      id:
+        type: string
+        maxLength: 40
+        example: "MAINCONTACT_1"
+      person:
+        $ref: '#/definitions/Person'
+      addresses:
+        type: array
+        items:
+          $ref: '#/definitions/Address'
+      identityDocuments:
+        type: array
+        items:
+          $ref: '#/definitions/IdentityDocument'
+      organization:
+        $ref: '#/definitions/Organization'
+      telephones:
+        type: array
+        items:
+          $ref: '#/definitions/Telephone'
+      emails:
+        type: array
+        items:
+          $ref: '#/definitions/Email'
+      employmentHistory:
+        type: array
+        items:
+          $ref: '#/definitions/EmploymentHistory'
+      bankAccount:
+        $ref: '#/definitions/BankAccount'
+      cards:
+        type: array
+        items:
+          $ref: '#/definitions/Card'
+      biometrics:
+        $ref: '#/definitions/Biometric'
+      incomes:
+        type: array
+        items:
+          $ref: '#/definitions/Income'
+      socialMediaAccounts:
+        type: array
+        items:
+          $ref: '#/definitions/SocialMediaAccount'
+  Person:
+    type: object
+    properties:
+      typeOfPerson:
+        type: string
+        maxLength: 20
+        enum:
+          - APPLICANT
+          - CO_APPLICANT
+          - EMPLOYER
+          - WITNESS
+          - GUARANTOR
+          - RELATIVE
+          - PRINCIPAL
+          - ACCOUNTANT
+          - SALES_AGENT
+          - POLICY_HOLDER
+          - MAIN_DRIVER
+          - ADD_DRIVER
+          - CLAIMANT
+          - REFERENCE
+          - BROKER
+          - BUILDER
+          - CONVEYANCER
+          - CO_OWNER
+          - INTRODUCER
+          - NEXT_OF_KIN
+          - REFEREE
+          - SOLICITOR
+          - SUPPLIER
+          - VALUER
+          - VENDOR
+          - VENDOR AGENT
+          - VENDOR SOLICITOR
+          - OTHER
+          - INITIATING_AGENT
+          - PROCESSING_AGENT
+          - CONTACT
+      personIdentifier:
+        type: string
+        maxLength: 20
+        example: "P12345"
+      personDetails:
+        $ref: '#/definitions/PersonDetails'
+      names:
+        type: array
+        items:
+          $ref: '#/definitions/Name'
+  PersonDetails:
+    type: object
+    properties:
+      dateOfBirth:
+        type: string
+        format: date
+        maxLength: 10
+        example: "1978-01-10"
+      yearOfBirth:
+        type: string
+        format: date-year
+        maxLength: 4
+        example: "1978"
+      age:
+        type: number
+        maxLength: 3
+        example: 40
+      gender:
+        type: string
+        maxLength: 3
+        enum:
+          - M
+          - F
+          - U
+          - OTH
+      placeOfBirth:
+        type: string
+        maxLength: 80
+        example: "London"
+      countryOfBirth:
+        type: string
+        maxLength: 4
+        example: "GBR"
+      nationalityCountryCode:
+        type: string
+        maxLength: 3
+        example: "GBR"
+      dateOfDeath:
+        type: string
+        format: date
+        maxLength: 10
+        example: "1990-01-14"
+      mothersMaidenName:
+        type: string
+        maxLength: 40
+        example: "Smith"
+      spouseName:
+        type: string
+        maxLength: 96
+        example: "Jones"
+      noOfDependents:
+        type: number
+        maxLength: 2
+        example: 2
+      occupancyStatus:
+        type: string
+        maxLength: 5
+        example: "OWE"
+        enum:
+          - OWE
+          - LPA
+          - TNFUR
+          - TNU
+          - RNTCO
+          - TEN
+          - JTO
+          - OTH
+          - Q
+          - Z
+          - OWN
+          - DTB
+          - OUT
+          - FAM
+          - DTH
+          - LWP
+          - FRI
+          - OWO
+          - RTP
+          - SDH
+          - SMD
+          - SHR
+          - TRC
+          - BOAR
+          - CARV
+          - OWNM
+      maritalStatus:
+        type: string
+        maxLength: 20
+        example: "SIN"
+        enum:
+          - SIN
+          - MAR
+          - C
+          - CIP
+          - LIV
+          - DIV
+          - D
+          - SEP
+          - WID
+          - M
+          - OTH
+          - S
+          - SPD
+          - W
+          - X
+          - MIP
+          - UNK
+      dateOfBirthType:
+        type: string
+        maxLength: 1
+        example: "A"
+        enum:
+          - A
+          - D
+          - V
+      qualificationType:
+        type: string
+        example: "ENGINEER"
+        maxLength: 21
+        enum:
+          - ENGINEER
+          - BELOW_MATRIC
+          - DIPLOMA
+          - DOCTORATE
+          - DEGREE
+          - HSC
+          - IT_TECH_DIPLOMA
+          - ILLITERATE
+          - MATRIC
+          - POST_GRADUATE
+          - PROFESSIONAL
+          - UNDER_GRADUATE
+          - OTHER
+          - HIGH_SCHOOL
+          - COLLEGE
+          - UNFINISHED_UNIVERSITY
+          - UNIVERSITY
+          - GRADUATE_PHD
+      firstTimeBuyer:
+        type: string
+        maxLength: 3
+        example: "YES"
+        enum:
+          - YES
+          - NO
+      isBankrupt:
+        type: string
+        maxLength: 3
+        example: "YES"
+        enum:
+          - YES
+          - NO
+      mortgageRentalPayment:
+        $ref: '#/definitions/MortgageRentalPayment'
+      outstandingMortgage:
+        $ref: '#/definitions/MonetaryAmount'
+      relationshipType :
+        type: string
+        maxLength: 10
+        example: "SPOUSE"
+        enum:
+          - FATHER
+          - MOTHER
+          - SISTER
+          - BROTHER
+          - SPOUSE
+          - OTHER
+          - FRIEND
+      principalRole:
+        type: string
+        maxLength: 50
+        example: "Owner"
+      ownerSince:
+        type: string
+        format: date
+        example: "1999-01-31"
+        maxLength: 10
+      ownerShare:
+        type: number
+        example: "70"
+        maxLength: 3
+      mothersFullName:
+        type: string
+        maxLength: 150
+        example: "Jane Joanne Jones"
+      occupation:
+        type: string
+        example: "Manager"
+        maxLength: 50
+      politicallyExposed:
+        type: boolean
+        example: false
+      fathersFullName:
+        type: string
+        example: "Frank Smith"
+        maxLength: 100
+      noOfDrivingConvictions:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfYearsDriving:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfAccidents:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfPreviousClaims:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfNonFaultClaims:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfFaultClaims:
+        type: number
+        example: 1
+        maxLength: 3
+      previousClaims:
+        type: array
+        items:
+          $ref: '#/definitions/PreviousClaim'
+      pepsSanctionsFlag:
+        type: string
+        example: "Y"
+        maxLength: 1
+      previousDateOfBirth:
+        type: string
+        example: "1978-01-31"
+        format: date
+        maxLength: 10
+      departmentOfBirth:
+        type: string
+        maxLength: 100
+      residencyStatus:
+        type: string
+        maxLength: 50
+        example: 'NZ Permanent Resident'
+        description: "Legal residency status of person, relating to citizenship and residency status"
+      persVer:
+        type: string
+        maxLength: 20
+        example: "12345678"
+      contactReg:
+        type: string
+        maxLength: 20
+        example: "12345678"
+      ageRange:
+        type: string
+        example: "10-20"
+        maxLength: 10
+      specialCreditIndicator:
+        type: string
+        example: "GAF"
+        maxLength: 20
+      firstContactDate:
+        type: string
+        format: date
+        maxLength: 10
+        example: "2012-03-05"
+      creditGrade:
+        type: string
+        maxLength: 20
+        example: "D2"
+      clientStatus:
+        type: string
+        maxLength: 30
+        example: "Z"
+      countryOfResidence:
+        type: string
+        maxLength: 3
+        example: "GBR"
+      incomeRange:
+        type: string
+        maxLength: 20
+        example: "25k-50k"
+  MortgageRentalPayment:
+    type: object
+    properties:
+      amount:
+       type: number
+       maxLength: 10
+       example: 40000
+      currencyCode:
+        type: string
+        maxLength: 3
+        example: "USD"
+      frequency:
+        type: string
+        maxLength: 15
+        example: "MONTHLY"
+        enum:
+          - HOURLY
+          - DAILY
+          - WEEKLY
+          - BIWEEKLY
+          - MONTHLY
+          - SEMI_MONTHLY
+          - YEARLY
+          - QUATERLY
+          - SEMI_ANNUALLY
+          - ANNUALLY
+      type:
+        type: string
+        maxLength: 8
+        example: "MORTGAGE"
+        enum:
+          - MORTGAGE
+          - RENTAL
+  PreviousClaim:
+    type: object
+    properties:
+      claimLossDate:
+        type: string
+        format: date
+        example: "2018-01-31"
+        maxLength: 10
+      typeOfFault:
+        type: string
+        example: "Fault Example"
+        maxLength: 50
+      typeOfClaim:
+        type: string
+        example: "Claim Example"
+        maxLength: 50
+  Name:
+    type: object
+    properties:
+      id:
+        type: string
+        maxLength: 40
+        example: "MAINPERSONNAME_1"
+      type:
+        type: string
+        maxLength: 30
+        example: "CURRENT"
+        enum:
+          - CURRENT
+          - PREVIOUS
+          - MAIDEN
+          - ALIAS
+          - OTHER
+          - FATHER
+          - HUSBAND
+          - NAME
+          - NAME_NATIVE
+      title:
+        type: string
+        maxLength: 15
+        example: "MR"
+      givenNames:
+        type: string
+        maxLength: 100
+        example: "FRANK SIMON"
+      firstName:
+        type: string
+        maxLength: 40
+        example: "FRANK"
+      middleNames:
+        type: string
+        maxLength: 100
+        example: "SIMON"
+      surName:
+        type: string
+        maxLength: 40
+        example: "SMITH"
+      namePrefix:
+        type: string
+        maxLength: 20
+        example: "PROFESSOR"
+      nameSuffix:
+        type: string
+        maxLength: 20
+        example: "JR"
+      nameCode:
+        type: string
+        maxLength: 10
+        example: "E"
+        enum:
+          - P
+          - E
+          - T
+          - O
+      initials:
+        type: string
+        maxLength: 15
+        example: "F S"
+      fullNames:
+        type: string
+        maxLength: 100
+        example: "Raymond John Ian Smith"
+      surname2:
+        type: string
+        maxLength: 40
+        example: "JOHNSON"
+      fullNameCode:
+        type: string
+        maxLength: 40
+  Address:
+    type: object
+    properties:
+      id:
+        type: string
+        maxLength: 40
+        example: "MAINADDRESS_1"
+      addressType:
+        type: string
+        maxLength: 20
+        example: CURRENT
+        enum:
+          - CURRENT
+          - PREVIOUS
+          - PRIMARY
+          - SECONDARY
+          - REGISTERED_OFFICE
+          - TRADING
+          - CORRESPONDANCE
+          - LINKED
+          - RISK
+          - GARAGE
+          - INSPECTION_ADDRESS
+          - INCIDENT_LOCATION
+          - INSURED_ADDRESS
+          - BILLING
+          - DELIVERY
+          - COLLATERAL
+          - FINANCED
+          - SERVICE
+          - SUPPLY
+          - STORE_ADDRESS
+      addressIdentifier:
+        type: string
+        maxLength: 20
+        example: "A1234"
+      indicator:
+        type: string
+        maxLength: 20
+        example: "RESIDENTIAL"
+        enum:
+          - RESIDENTIAL
+          - COMMERCIAL
+          - NON_RESIDENTIAL
+          - OTHER
+          - UNKNOWN
+      poBoxNumber:
+        type: string
+        maxLength: 40
+        example: "PO BOX 1234"
+      subBuilding:
+        type: string
+        maxLength: 40
+        example: "The Barn"
+      buildingName:
+        type: string
+        maxLength: 40
+        example: "Sycamore Farm"
+      buildingNumber:
+        type: string
+        maxLength: 10
+        example: "78"
+      street:
+        type: string
+        maxLength: 40
+        example: "Acacia Avenue"
+      street2:
+        type: string
+        maxLength: 50
+        example: "Honeysuckle Lane"
+      county:
+        type: string
+        maxLength: 40
+        example: "Greater London"
+      postTown:
+        type: string
+        maxLength: 40
+        example: "London"
+      postal:
+        type: string
+        maxLength: 10
+        example: "SE1 8EZ"
+      stateProvinceCode:
+        type: string
+        maxLength: 4
+        example: "CA"
+      countryCode:
+        type: string
+        maxLength: 3
+        example: "GBR"
+      subLocality:
+        type: string
+        maxLength: 40
+        example: "Southwark"
+      locality:
+        type: string
+        maxLength: 40
+        example: "South London"
+      residentFrom:
+        $ref: '#/definitions/ResidentFrom'
+      residentTo:
+        $ref: '#/definitions/ResidentTo'
+      timeAtAddress:
+        $ref: '#/definitions/TimeAtAddress'
+      propertyValue:
+        $ref: '#/definitions/MonetaryAmount'
+      postOfficeName:
+        type: string
+        maxLength: 50
+        example: "PO 1234 AB"
+      careOfName:
+        type: string
+        maxLength: 100
+        example: "John Smith"
+      propertyType:
+        type: string
+        maxLength: 30
+        example: "FLAT"
+        enum:
+          - COTTAGE
+          - NOT_KNOWN
+          - PURPOSE_BUILT
+          - BUNGALOW
+          - LAND
+          - DETACHED
+          - FLAT
+          - SEMI_DETATCHED
+          - TERRACED
+          - MAISONETTE
+          - OTHER
+      purchasePrice:
+        $ref: '#/definitions/MonetaryAmount'
+      landmark:
+        type: string
+        example: "Main Square"
+        maxLength: 100
+      buildingAge:
+        type: number
+        example: 100
+        maxLength: 3
+      typeOfHouse:
+        type: string
+        example: "DETATCHED"
+        maxLength: 30
+      buildingConstruction:
+        type: string
+        maxLength: 100
+      rebuildValue:
+        $ref: '#/definitions/MonetaryAmount'
+      noOfBedrooms:
+        type: number
+        example: 3
+        maxLength: 3
+      noOfReceptionRooms:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfBathrooms:
+        type: number
+        example: 2
+        maxLength: 3
+      noOfOtherRooms:
+        type: number
+        example: 3
+        maxLength: 3
+      ownOrRent:
+        type: string
+        example: "OWNER"
+        maxLength: 6
+      isUsedForBusiness:
+        type: boolean
+        example: false
+        maxLength: 5
+      noOfResidents:
+        type: number
+        example: 4
+        maxLength: 3
+      valueOfContents:
+        $ref: '#/definitions/MonetaryAmount'
+      highRiskItemValue:
+        $ref: '#/definitions/MonetaryAmount'
+      windowDoorLocks:
+        type: string
+        example: ""
+        maxLength: 100
+      burglarAlarm:
+        type: boolean
+        example: true
+        maxLength: 5
+      maxDaysEmpty:
+        type: number
+        example: 99
+        maxLength: 4
+      riskOfFlooding:
+        type: string
+        example: "Low"
+        maxLength: 100
+      streetType:
+        type: string
+        maxLength: 20
+        example: "Street"
+      streetCode:
+        type: string
+        maxLength: 6
+      townCode:
+        type: string
+        maxLength: 6
+      floor:
+        type: string
+        maxLength: 6
+        example: "3rd"
+      subPremise:
+        type: string
+        maxLength: 20
+        example: "Flat 1"
+      entrance:
+        type: string
+        maxLength: 5
+        example: "Front"
+      propertyArea:
+        $ref: '#/definitions/PropertyArea' 
+      linkDate:
+        type: string
+        format: date
+        example: "2021-11-30"
+        maxLength: 10
+      partialPostal:
+        type: string
+        maxLength: 10
+        example: "SE1 8EZ"
+      last4Postal:
+        type: string
+        maxLength: 4
+        example: "1122"
+      timeAtAddressRange:
+        type: string
+        example: "20-25"
+        maxLength: 5
+  PropertyArea:
+    type: object
+    properties:
+      unit:
+        type: string
+        maxLength: 10
+        example: "SQFT"
+      value:
+        type: number
+        maxLength: 6
+        example: 10000        
+  TimeAtAddress:
+    type: object
+    properties:
+      value:
+        type: number
+        maxLength: 3
+        example: 24
+      unit:
+        type: string
+        enum:
+          - MONTH
+          - YEAR
+          - DAY
+          - HOUR
+        example: "MONTH"            
+  Applicant:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "MAINAPPLICANT_1"
+        maxLength: 40
+      type:
+        type: string
+        example: "INDIVIDUAL"
+        maxLength: 40
+        enum:
+          - INDIVIDUAL
+          - JOINT
+          - COMMERCIAL
+          - POLICY_HOLDER
+          - MAIN_DRIVER
+          - ADD_DRIVER
+          - CLAIMANT
+      applicantType:
+        type: string
+        example: "APPLICANT"
+        maxLength: 26
+        enum:
+          - APPLICANT
+          - CO_APPLICANT
+          - GUARANTOR
+          - MAIN_APPLICANT
+          - JOINT_APPLICANT
+          - ADDITIONAL_CARDHOLDER
+          - APPLYING_ORGANIZATION
+          - DIRECTOR
+          - COMPANY_SECRETARY
+          - POLICY_HOLDER
+          - ADDITIONAL_DRIVER
+          - CLAIMANT
+          - POLICY_HOLDER_ORGANIZATION
+          - CLAIMANT_ORGANIZATION
+          - CO_APPLICANT_ORGANIZATION
+          - GUARANTOR_ORGANIZATION
+          - OWNER_PERSON
+          - OWNER_ORGANIZATION
+          - REFERENCE
+          - GUARANTOR_FULL
+          - ULTIMATE_BENEFICIAL_OWNER
+      consent:
+        type: boolean
+        example: true
+        maxLength: 5
+      knownCustomer:
+        type: boolean
+        example: true
+        maxLength: 5
+      roleInAccident:
+        type: string
+        example: "CLAIMANT"
+        maxLength: 40
+        enum:
+          - CLAIMANT
+          - DRIVER
+          - DRIVER_NOT_KNOWN
+          - POLICYHOLDER
+          - POLICYHOLDER_CLAIMANT
+          - POLICYHOLDER_DRIVER
+          - PREMIUM_PAYER
+          - THIRD_PARTY
+          - PASSENGER_INSURED_VEHICLE
+          - PASSENGER_OTHER_VEHICLE
+          - OWNER
+          - PEDESTRIAN
+          - CYCLIST
+          - RIDER
+          - OTHER_INJURED_PERSON
+          - OTHER
+      consentId:
+        type: string
+        example: "uyciydfoudqwg912863017"
+        maxLength: 128
+      consentTimeStamp:
+        type: string
+        format: date-time
+        example: "2016-11-30T14:20:04Z"
+        maxLength: 30
+      contactId:
+        type: string
+        example: "MAINCONTACT_1"
+        maxLength: 40
+      vehicleId:
+        type: string
+        example: "VEHICLE_1"
+        maxLength: 40
+      assetId:
+        type: string
+        example: "ASSET_1"
+        maxLength: 40
+      applicantReference:
+        type: string
+        maxLength: 20
+        example: "TRANS000002"
+  Service:
+    type: object
+    properties:
+      id:
+        type: string
+        maxLength: 40
+        example: TRAVEL_SERVICE_1
+      type:
+        type: string
+        example: "FLIGHT"
+        maxLength: 40
+      serviceOrigin:
+        type: string
+        example: "LHR"
+        maxLength: 3
+      serviceDestination:
+        type: string
+        example: "SYD"
+        maxLength: 3
+      bookings:
+        type: array
+        items:
+          $ref: '#/definitions/Booking'
+      tickets:
+        type: array
+        items:
+          $ref: '#/definitions/Ticket'
+      segments:
+        type: array
+        items:
+          $ref: '#/definitions/Segment'
+      hospitality:
+        type: array
+        items:
+          $ref: '#/definitions/Hospitality'
+  Booking:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "BOOKING_1"
+        maxLength: 40
+      bookingReference:
+        type: string
+        example: "PNRABC"
+        maxLength: 20
+      bookingType:
+        type: string
+        example: "FLIGHT"
+        maxLength: 30
+      bookingContactIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["CONTACT_1","CONTACT_2"]
+      fareType:
+        type: string
+        example: "RETURN"
+        maxLength: 30
+      destination:
+        type: string
+        example: "LAX"
+        maxLength: 3
+      noInParty:
+        type: number
+        example: 3
+        maxLength: 3
+      noOfAdults:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfChildren:
+        type: number
+        example: 1
+        maxLength: 3
+      noOfInfants:
+        type: number
+        example: 1
+        maxLength: 3
+      bookingDate:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:00Z"
+        maxLength: 30
+      travelStartDate:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:00Z"
+        maxLength: 30
+      travelEndDate:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:00Z"
+        maxLength: 30
+      segmentsIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["SEGMENT_1","SEGMENT_2"]
+      ticketIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["TICKET_1","TICKET_2"]
+      hospitalityIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["ACCOMM_1","ACCOMM_2"]
+      pickupLocationContactId:
+        type: string
+        example: "CARHIRE_CONTACT1"
+        maxLength: 40
+  Segment:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "SEGMENT_1"
+        maxLength: 40
+      segmentNo:
+        type: string
+        example: "1"
+        maxLength: 2
+      flightNumber:
+        type: string
+        example: "BAW999"
+        maxLength: 7
+      departureTime:
+        type: string
+        format: date-time
+        example: "2016-11-30T14:20:04Z"
+        maxLength: 30
+      origin:
+        type: string
+        example: "LHR"
+        maxLength: 3
+      arrivalTime:
+        type: string
+        format: date-time
+        example: "2016-11-30T14:20:04Z"
+        maxLength: 30
+      destination:
+        type: string
+        example: "LAX"
+        maxLength: 3
+      operatingAirline:
+        type: string
+        example: "BAW"
+        maxLength: 3
+      marketingAirline:
+        type: string
+        example: "AAL"
+        maxLength: 3
+      stops:
+        type: array
+        items:
+          type: string
+          maxLength: 3
+        example: ["MSO","ORD"]
+      serviceClass:
+        type: string
+        example: "BUSINESS"
+        maxLength: 20
+      bookingClass:
+        type: string
+        example: "N"
+        maxLength: 1
+  Ticket:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "TICKET_1"
+        maxLength: 30
+      ticketNumber:
+        type: string
+        example: "10001235467"
+        maxLength: 50
+      passangerContactId:
+        type: string
+        example: "CONTACT_1"
+        maxLength: 40
+      loyaltyProgramNumber:
+        type: string
+        example: "LOYALTY_1"
+        maxLength: 30
+  Hospitality:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "HOTEL_1"
+        maxLength: 40
+      type:
+        type: string
+        example: "Hotel"
+        maxLength: 40
+      hospitalityContactId:
+        type: string
+        example: "HOTEL_CONTACT_1"
+        maxLength: 40
+      noOfRooms:
+        type: number
+        example: 2
+        maxLength: 3
+      rooms:
+        type: array
+        items:
+          $ref: '#/definitions/Room'
+  Room:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "ROOM_1"
+        maxLength: 40
+      roomType:
+        type: string
+        example: "STANDARD"
+        maxLength: 30
+      extras:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["Cot","Non Smoking"]
+      noOfOccupants:
+        type: number
+        example: 2
+        maxLength: 3
+      roomRate:
+        $ref: '#/definitions/MonetaryAmount'
+      durationOfStay:
+        $ref: '#/definitions/TimeSpan'
+  Asset:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "ASSET_1"
+        maxLength: 40
+      type:
+        type: string
+        example: "FINANCED"
+        maxLength: 50
+        enum:
+          - FINANCED
+          - COLLATERAL
+      objectType:
+        type: string
+        example: "OBJECT"
+        maxLength: 50
+      ownersContactId:
+        type: string
+        example: "CONTACT_1"
+        maxLength: 40
+      estValue:
+        $ref: '#/definitions/EstValue'
+  EstValue:
+    type: object
+    properties:
+      amount:
+        type: number
+        example: 20000
+        maxLength: 10
+      currencyCode:
+        type: string
+        example: USD
+        maxLength: 3
+  Application:
+    type: object
+    properties:
+      originalRequestTime:
+        type: string
+        format: date-time
+        example: "2016-11-30T14:20:04Z"
+        maxLength: 30
+      utcOffset:
+        type: string
+        example: "+01:00"
+        maxLength: 6
+      type:
+        type: string
+        example: "CREDIT"
+        maxLength: 16
+        enum:
+          - BANK
+          - LOAN
+          - CREDIT
+          - OTHER
+          - EXTERNAL
+          - TELCO_CONTRACT
+          - INVESTMENT
+          - SAVINGS
+          - ISA
+          - SHARE
+          - MORTGAGE
+          - CREDITCARD
+          - INSURANCE_CLAIM
+          - INSURANCE_POLICY
+          - INSTANT_CREDIT
+      durationInMillis:
+        type: number
+        example: 200000
+        maxLength: 10
+      status:
+        type: string
+        example: "ACCEPTED"
+        maxLength: 20
+        enum:
+          - ACCEPTED
+          - DECLINED
+          - UNKNOWN
+          - WITHDRAWN
+          - REFERRED
+          - CANCELLED
+          - PENDING
+          - ERROR
+          - EXPIRED
+          - CONFIRMATION
+      notificationRequired:
+        type: boolean
+        example: true
+        maxLength: 5
+      brand:
+        type: string
+        example: "My Bank"
+        maxLength: 40
+      sourceOfIntroduction:
+        type: string
+        example: "Broker"
+        maxLength: 10
+      productDetails:
+        $ref: '#/definitions/ProductDetails'
+      policyDetails:
+        $ref: '#/definitions/PolicyDetails'
+      claimDetails:
+        $ref: '#/definitions/ClaimDetails'
+      applicants:
+        type: array
+        items:
+          $ref: '#/definitions/Applicant'
+      applicationEntities:
+        type: array
+        items:
+          $ref: '#/definitions/ApplicationEntity'
+      memo:
+        type: string
+        example: "free text field with note relating to application"
+        maxLength: 200
+      oneTimePasscode:
+        type: string
+        example: "112233"
+        maxLength: 10
+      messageTime:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      expReference:
+        type: string
+        example: "Ref12345"
+        maxLength: 10
+      aps:
+        type: string
+        example: "Authenticate"
+        maxLength: 20
+      apsUserId:
+        type: string
+        example: "ID12345"
+        maxLength: 100
+      operatorId:
+        type: string
+        example: "JY5678832"
+        maxLength: 20
+      operatorName:
+        type: string
+        example: "John Smith"
+        maxLength: 50
+      creditProtection:
+        type: string
+        example: "Yes"
+        maxLength: 20
+      branchName:
+        type: string
+        example: "Main Branch"
+        maxLength: 100
+      leadGen:
+        type: string
+        example: "Lead Gen Example"
+        maxLength: 100
+      otpMsgType:
+        type: string
+        example: "TEXT"
+        maxLength: 8
+      dealerId:
+        type: string
+        example: "DEALER12345"
+        maxLength: 20
+      dealerName:
+        type: string
+        example: "Dealer Name Example"
+        maxLength: 50
+      financialAccountIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["FinancialID_1", "FinancialID_2"]
+      contractIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["ContractID_1", "ContractID_2"]
+      applicationId:
+        type: string
+        example: "APPLICATION_1"
+        maxLength: 40
+      clientApplicationNumber:
+        type: string
+        example: "TRANS10000002"
+        maxLength: 100
+      retroDate:
+        type: string
+        format: date
+        example: "2022-01-30"
+      minTrustScore:
+        type: number
+        example: 100
+        maxLength: 5
+  ApplicationEntity:
+    type: object
+    properties:
+      entityType:
+        type: string
+        example: "BROKER"
+        maxLength: 22
+        enum:
+          - BROKER
+          - SURVEYOR
+          - VENDOR
+          - VALUER
+          - APPLYING_ORG
+          - SECURITY_ADDRESS
+          - ACCOUNTANT
+          - ESTATE_AGENT
+          - SOLICITOR
+          - LENDER
+          - ACCIDENT_MANAGEMENT
+          - THIRD_PARTY
+          - INJURED_PARTY
+          - WITNESS
+          - BRANCH
+          - REFERENCE
+          - GUARANTOR_ORGANIZATION
+          - RELATIVE
+          - SALES_AGENT
+          - DEALER_ORGANIZATION
+          - 3RD_PARTY_EXPERT
+          - 3RD_PARTY_ORG
+          - TRUSTEE
+          - BENEFICIARY
+          - LANDLORD
+          - TENANT
+          - DESTINATION_ACCOUNT
+          - ASSET
+          - PARENT_ORGANIZATION
+          - INITIATING_AGENT
+          - PROCESSING_AGENT
+          - CONTACT
+          - PEP_ORG
+          - STAFF_MEMBER
+      approvedSupplier:
+        type: boolean
+        example: false
+        maxLength: 5
+      roleInAccident:
+        type: string
+        example: "CLAIMANT"
+        maxLength: 40
+        enum:
+          - CLAIMANT
+          - DRIVER
+          - DRIVER_NOT_KNOWN
+          - POLICYHOLDER
+          - POLICYHOLDER_CLAIMANT
+          - POLICYHOLDER_DRIVER
+          - PREMIUM_PAYER
+          - THIRD_PARTY
+          - PASSENGER_INSURED_VEHICLE
+          - PASSENGER_OTHER_VEHICLE
+          - OWNER
+          - PEDESTRIAN
+          - CYCLIST
+          - RIDER
+          - OTHER_INJURED_PERSON
+          - OTHER
+      contactId:
+        type: string
+        example: "APPLICATION_ENTITY_1"
+        maxLength: 40
+      vehicleId:
+        type: string
+        example: "VEHICLE_1"
+        maxLength: 40
+      assetId:
+        type: string
+        example: "ASSET_1"
+        maxLength: 40
+  AccountHolder:
+    type: object
+    properties:
+      customerType:
+        type: string
+        example: "COMMERCIAL"
+        maxLength: 20
+        enum:
+          - INDIVIDUAL
+          - COMMERCIAL
+      contactId:
+        type: string
+        example: "MAINCONTACT_1"
+        maxLength: 40
+  AssociationStatistics:
+    description: Association counts for associated data elements and time periods. i.e. The number of times (totalCount) a FULLNAME has been seen linked/associated with different IP_ADDRESS
+    type: object
+    properties:
+      duration:
+        description: Statistics for this duration. ISO 8601 duration. May be null. The end of the period is
+          header.messageTime.   start time = messageTime - duration
+        type: string
+        example: PT24H
+      totalCount:
+        description: The total number of times this data element has been seen across all clients and all dimensions globally
+        type: number
+        minimum: 0
+        example: 50
+      table:
+        $ref: '#/definitions/StatisticsTable'
+      statisticIdentifier:
+        $ref: '#/definitions/StatisticsIdentifierAssociation'
+  Authorization:
+    type: object
+    properties:
+      declined:
+        type: boolean
+        example: false
+        maxLength: 5
+      approvalCode:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      avsAddress:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      avsZip:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      cvv2:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      threeDsecure:
+        type: string
+        example: "Y"
+        maxLength: 1
+        enum:
+          - Y
+          - N
+          - X
+      enhAuthPhone:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      enhAuthName:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      enhAuthEmail:
+        type: string
+        example: "M"
+        maxLength: 1
+        enum:
+          - M
+          - N
+          - X
+      psAddr:
+        type: string
+        example: "C"
+        maxLength: 1
+        enum:
+          - C
+          - U
+      psPayer:
+        type: string
+        example: "V"
+        maxLength: 1
+        enum:
+          - V
+          - U
+  BankAccount:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "BANKACCOUNT_1"
+        maxLength: 40
+      openedDate:
+        type: string
+        format: date-time
+        example: "1999-12-30"
+        maxLength: 10
+      closedDate:
+        type: string
+        format: date-time
+        example: "1999-12-30"
+        maxLength: 10
+      balance:
+        $ref: '#/definitions/MonetaryAmount'
+      hashedAccountNumber:
+        type: string
+        example: "A64B54911B4859AC1AC42A96FEA530F4264FDF15ED36B7DF9C9A9DC6E3839D89"
+        maxLength: 100
+      routingNumber:
+        type: string
+        example: "123456"
+        maxLength: 15
+      sortCode:
+        type: string
+        example: "202020"
+        maxLength: 10
+      clearAccountNumber:
+        type: string
+        example: "123456789"
+        maxLength: 20
+      rollNumber:
+        type: string
+        example: "12345678901"
+        maxLength: 50
+      accountCode:
+        type: string
+        example: "12ABCD12"
+        maxLength: 15
+      branch:
+        type: string
+        example: "Branch Name"
+        maxLength: 30
+      type:
+        type: string
+        example: "CURRENT"
+        maxLength: 12
+        enum:
+          - JOINT
+          - SINGLE
+          - CURRENT
+          - TRANSMISSION
+          - SAVINGS
+          - CREDIT_CARD
+          - CHEQUE
+          - CHECKING
+          - CHECKING_AND_SAVINGS
+          - CHECKING_AND_OTHER_INST_SAVINGS
+          - SAVINGS_AND_OTHER_INST_CHECKING
+          - OTHER_INST_SAVINGS
+          - OTHER_INST_CHECKING
+          - OTHER_INST_CHECKING_AND_SAVINGS
+      timeWithBank:
+        $ref: '#/definitions/TimeSpan'
+      bankName:
+        type: string
+        example: "Bank Name"
+        maxLength: 100
+      accountName:
+        type: string
+        example: "Account Name"
+        maxLength: 50
+      IBAN:
+        type: string
+        example: "GB00BANK2020201234"
+        maxLength: 30
+      BIC:
+        type: string
+        example: "BANKGB200001"
+        maxLength: 20
+      status:
+        type: string
+        example: "CURRENT"
+        maxLength: 20
+        enum:
+          - CURRENT
+          - PREVIOUS
+      isoCountry:
+        type: string
+        maxLength: 2
+        example: "US"
+      checkingLevel:
+        type: string
+        maxLength: 15
+        example: "ACCOUNT"
+        enum:
+         - ACCOUNT
+         - BRANCH
+         - DOMESTIC
+         - BIC
+      dataRequired:
+        type: string
+        maxLength: 10
+        example: "ALL"
+        enum:
+         - ALL
+         - SEPA
+         - SWIFT
+         - UK
+      bbans:
+        type: array
+        items:
+            type: string
+            example: "BBAN1234567890"
+            maxLength: 100
+      caccHeld:
+        type: string
+        example: "Y"
+        maxLength: 2
+      chqHeld:
+        type: string
+        maxLength: 2
+        example: "Q"
+  Biometric:
+    type: object
+    properties:
+      metaPip:
+        type: string
+        example: "108.101.99.99"
+        maxLength: 18
+      metaLot:
+        type: string
+        example: "G"
+        maxLength: 1
+      metaLov:
+        type: string
+        example: "50.123456, -0.000001"
+        maxLength: 25
+      metaFdc:
+        type: string
+        example: "Fdc Example"
+        maxLength: 500
+      biosVerificationTkn:
+        type: string
+        example: "Bios Token Example"
+        maxLength: 500
+      biometricData:
+        type: array
+        items:
+          $ref: '#/definitions/BiometricData'
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/FaceImage'
+  BiometricData:
+    type: object
+    properties:
+      value:
+        type: string
+        example: "70,77,82,0,32,50,48,0,0,0,1,-68,0,0,1,0,1,-112,0,-59,0,[...truncated]"
+        maxLength: 999
+      fingerPosition:
+        type: string
+        example: "UNKNOWN"
+        maxLength: 15
+        enum:
+          - LEFT_IRIS
+          - RIGHT_IRIS
+          - LEFT_INDEX
+          - LEFT_LITTLE
+          - LEFT_MIDDLE
+          - LEFT_RING
+          - LEFT_THUMB
+          - RIGHT_INDEX
+          - RIGHT_LITTLE
+          - RIGHT_MIDDLE
+          - RIGHT_RING
+          - RIGHT_THUMB
+          - UNKNOWN
+      type:
+        type: string
+        example: "FMR"
+        maxLength: 10
+  Card:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "CARD_1"
+        maxLength: 30
+      type:
+        type: string
+        example: "CREDIT"
+        maxLength: 10
+        enum:
+          - CREDIT
+          - DEBIT
+      brand:
+        type: string
+        example: "VIS"
+        maxLength: 3
+        enum:
+          - AMX
+          - CUP
+          - DIN
+          - DSC
+          - JCB
+          - LSR
+          - MST
+          - MCD
+          - SMS
+          - VIS
+          - ELO
+          - HIP
+      cardHolderName:
+        type: string
+        example: "MR JOHN A SMITH"
+        maxLength: 40
+      cardBinNumber:
+        type: string
+        example: "444433"
+        maxLength: 6
+      cardIssuer:
+        type: string
+        example: "BANK NAME"
+        maxLength: 20
+      hashedCardNumber:
+        type: string
+        example: "xrJf+sXSxQ9BrzrE2X0H2V/U8tX5/O+ Y3HCeV0EGBQg="
+        maxLength: 100
+      tokenisedCardNumber:
+        type: string
+        example: "444433nnnnnn1111"
+        maxLength: 25
+      clearCardNumber:
+        type: string
+        example: "444433nnnnnn1111"
+        maxLength: 25
+      expireDate:
+        type: string
+        example: "01/03"
+        maxLength: 5
+      startDate:
+        type: string
+        example: "01/03"
+        maxLength: 5
+      cardLast4Digits:
+        type: string
+        example: "1234"
+        maxLength: 4
+      issueNumber:
+        type: number
+        example: 2
+        maxLength: 3
+      securityCode:
+        type: string
+        example: "1234"
+        maxLength: 4
+      cardBillingAddressId:
+        type: string
+        example: "ADDRESS_1"
+        maxLength: 40
+      status:
+        type: string
+        example: "CURRENT"
+        maxLength: 20
+        enum:
+          - CURRENT
+          - PREVIOUS
+      cardsHeld:
+        $ref: '#/definitions/CardsHeld'
+  CardsHeld:
+    type: object
+    properties:
+        ccHeld1:
+          type: string
+          example: Q
+          maxLength: 2
+        ccHeld2:
+          type: string
+          example: Q
+          maxLength: 2
+        ccHeld3:
+          type: string
+          example: Q
+          maxLength: 2
+        ccHeld4:
+          type: string
+          example: Q
+          maxLength: 2
+        ccHeld5:
+          type: string
+          example: Q
+          maxLength: 2
+        ccHeld6:
+          type: string
+          example: Q
+          maxLength: 2
+        ccHeld7:
+          type: string
+          example: Q
+          maxLength: 2
+  ClaimDetails:
+    type: object
+    properties:
+      claimStatus:
+        type: string
+        example: "OPEN"
+        maxLength: 40
+        enum:
+          - CLOSED
+          - EX_GPAY
+          - FINALISED
+          - OPEN
+          - OUTSTANDING
+          - REOPENED
+          - SETTLED
+          - SETTLED_NO_COST
+          - UNAFFECTED
+          - WITHDRAWN
+          - REPUDIATED
+      finalLoss:
+        $ref: '#/definitions/MonetaryAmount'
+      reason:
+        type: string
+        example: "Claim Reason"
+        maxLength: 100
+      claimType:
+        type: string
+        example: "Claim Type Example"
+        maxLength: 40
+      causeOfLoss:
+        type: string
+        example: "ACC"
+        maxLength: 10
+        enum:
+          - ACC
+          - AD
+          - AL
+          - BRK
+          - COLCY
+          - COLTP
+          - EQ
+          - EX
+          - FD
+          - FI
+          - FL
+          - FT
+          - FUEL
+          - GL
+          - IMP
+          - KEYS
+          - LI
+          - LY
+          - MD
+          - OL
+          - OT
+          - OVER
+          - PA
+          - REAR
+          - RIOT
+          - SF
+          - SL
+          - ST
+          - TA
+          - TC
+          - TH
+          - TL
+          - TPPRP
+          - TPREV
+          - TPROW
+          - TPSHT
+          - TT
+          - TV
+          - U
+          - WD
+          - WS
+      noOfClaimants:
+        type: number
+        example: 1
+        maxLength: 3
+      damageExtent:
+        type: string
+        example: "Damage Extent example"
+        maxLength: 100
+      totalLoss:
+        type: boolean
+        example: false
+        maxLength: 5
+      salvageCode:
+        type: string
+        example: "Salvage Code Example"
+        maxLength: 20
+      description:
+        type: string
+        example: "Description"
+        maxLength: 100
+      incidentTime:
+        type: string
+        format: date-time
+        example: "2016-11-30T14:20:04Z"
+      causeNature:
+        type: string
+        example: "Cause Example"
+        maxLength: 40
+      emergencyServices:
+        type: string
+        example: "Emergency Services Example"
+        maxLength: 100
+      speed:
+        $ref: '#/definitions/Speed'
+      dates:
+        type: array
+        items:
+          $ref: '#/definitions/InsuranceDate'
+      liability:
+        type: string
+        example: "DRIVER_INS_VEHICLE"
+        maxLength: 30
+        enum:
+          - DRIVER_INS_VEHICLE
+          - THIRD_PARTY
+          - BOTH
+          - CANT_SAY
+      liabilityAccept:
+        type: boolean
+        example: false
+        maxLength: 5
+      injuryDescription:
+        type: string
+        example: "Whiplash"
+        maxLength: 100
+  Speed:
+    type: object
+    properties:
+      value:
+        type: number
+        example: 89
+        maxLength: 4
+      unit:
+        type: string
+        example: "MPH"
+        maxLength: 3
+  CombinationStatistics:
+    description: Combination counts for selected tuples of data elements and time periods. i.e. how many times has this
+      IP address, email, and phone number been seen together?
+    type: object
+    properties:
+      totalCount:
+        description: The total number of times this data element has been seen across all clients and all dimensions globally
+        type: number
+        minimum: 0
+        example: 50
+      duration:
+        description: Statistics for this duration. ISO 8601 duration. The end of the period is
+          header.messageTime.   start time = messageTime - duration
+        type: string
+        example: PT24H
+      statisticIdentifier:
+        type: array
+        items:
+            $ref: '#/definitions/StatisticsIdentifier'
+      table:
+        $ref: '#/definitions/StatisticsTable'
+  ConfirmedFraudStatistics:
+    type: object
+    properties:
+      duration:
+        type: string
+        example: PT24H
+      totalCount:
+        type: number
+        minimum: 0
+        example: 50
+      table:
+        $ref: '#/definitions/StatisticsTable'
+      statisticIdentifier:
+        $ref: '#/definitions/StatisticsIdentifier'
+  ContactName:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: "John"
+        maxLength: 30
+      middleNames:
+        type: string
+        example: "Richard"
+        maxLength: 30
+      initials:
+        type: string
+        example: "J R"
+        maxLength: 10
+      surName:
+        type: string
+        example: "Smith"
+        maxLength: 30
+      contactJobTitle:
+        type: string
+        example: "Job Title Example"
+        maxLength: 80
+      surname2:
+        type: string
+        maxLength: 40
+        example: "JOHNSON"
+  Contract:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "CONTRACT_1"
+        maxLength: 30
+      type:
+        type: string
+        example: "INDIVIDUAL"
+        maxLength: 15
+        enum:
+          - INDIVIDUAL
+          - COMMERCIAL
+      contractType:
+        type: string
+        example: "TELCO"
+        maxLength: 15
+      status:
+        type: string
+        example: "PENDING"
+        maxLength: 15
+        enum:
+          - PENDING
+          - EXISTING
+      noOfHandsets:
+        type: number
+        example: 1
+        maxLength: 2
+      handsetType:
+        type: string
+        example: "iPhone"
+        maxLength: 30
+      network:
+        type: string
+        example: "Phone Network Provider"
+        maxLength: 30
+      charges:
+        $ref: '#/definitions/Charges'
+      tariff:
+        $ref: '#/definitions/Tariff'
+      store:
+        $ref: '#/definitions/Store'
+  Store:
+    type: object
+    properties:
+      storeId:
+        type: string
+      contactId:
+        type: string
+        description: reference to the payload contact.id details that belong to the Store.
+        maxLength: 40
+  Tariff:
+    type: object
+    properties:
+      length:
+        type: number
+        example: 24
+        maxLength: 4
+      lengthUnit:
+        type: string
+        example: "MONTH"
+        maxLength: 10
+        enum:
+          - DAY
+          - WEEK
+          - MONTH
+          - YEAR
+      value:
+        type: number
+        example: 720
+        maxLength: 6
+      currencyCode:
+        type: string
+        example: "GBP"
+        maxLength: 3
+  Charges:
+    type: object
+    properties:
+      type:
+        type: string
+        example: "ONE_OFF"
+        maxLength: 20
+      amount:
+        type: number
+        example: 100.23
+        maxLength: 10
+      currencyCode:
+        type: string
+        example: "USD"
+        maxLength: 3            
+  DataCount:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "NoOfMatches"
+        maxLength: 90
+      value:
+        type: number
+        example: 3
+        maxLength: 10
+  Decision:
+    type: object
+    properties:
+      element:
+        type: string
+        example: "Element Name"
+        maxLength: 100
+      value:
+        type: string
+        example: "ACCEPT"
+        maxLength: 40
+      reason:
+        type: string
+        example: "No Risk Detected"
+        maxLength: 90
+  DecisionElements:
+    type: object
+    properties:
+      serviceName:
+        type: string
+        example: '-- Backing App serviceName --'
+        maxLength: 40
+      applicantId:
+        type: string
+        example: "APPLICANT_1"
+        maxLength: 40
+      decision:
+        type: string
+        example: "ACCEPT"
+        maxLength: 20
+      score:
+        type: number
+        example: 999
+        maxLength: 10
+      normalizedScore:
+        type: number
+        example: 100
+        maxLength: 10
+      decisionText:
+        type: string
+        example: "ACCEPT"
+        maxLength: 20
+      decisionReason:
+        type: string
+        example: "NOT FRAUD"
+        maxLength: 90
+      appReference:
+        type: string
+        example: "REF123456"
+        maxLength: 100
+      rules:
+        type: array
+        items:
+          $ref: '#/definitions/Rule'
+      warningsErrors:
+        type: array
+        items:
+          $ref: '#/definitions/WarningOrError'
+      otherData:
+        type: object
+        additionalProperties:
+          type: object
+      decisions:
+        type: array
+        items:
+          $ref: '#/definitions/Decision'
+      matches:
+        type: array
+        items:
+          $ref: '#/definitions/Match'
+      dataCounts:
+        type: array
+        items:
+          $ref: '#/definitions/DataCount'
+      scores:
+        type: array
+        items:
+          $ref: '#/definitions/Score'
+      records:
+        type: array
+        items:
+          $ref: '#/definitions/Record'
+      statisticDataElements:
+        type: array
+        items:
+          $ref: '#/definitions/StatisticDataElement'
+      velocityStatistics:
+        type: array
+        items:
+          $ref: '#/definitions/VelocityStatistics'
+      associationStatistics:
+        type: array
+        items:
+          $ref: '#/definitions/AssociationStatistics'
+      combinationStatistics:
+        type: array
+        items:
+          $ref: '#/definitions/CombinationStatistics'
+      confirmedFraudVelocityStatistics:
+        type: array
+        items:
+          $ref: '#/definitions/CombinationStatistics'
+      confirmedFraudStatistics:
+        type: array
+        items:
+          $ref: '#/definitions/ConfirmedFraudStatistics'
+      auditLogs:
+        type: array
+        items:
+          $ref: '#/definitions/AuditLog'
+      fraudAttributes:
+        type: array
+        items:
+          $ref: '#/definitions/FraudAttribute'
+  FraudAttribute:
+    type: object
+    properties:
+      contactId:
+        type: string
+        example: "MAINCONTACT_1"
+        maxLength: 40
+      attributes:
+        type: object
+        additionalProperties:
+          type: string
+  AuditLog:
+    type: object
+    properties:
+        eventType:
+          type: string
+          maxLength: 50
+          example: "JourneyStart"
+        eventDate:
+          type: string
+          format: date-time
+          example: "2015-11-30T14:20:04Z"
+        eventOutcome:
+          type: string
+  Device:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "DEVICE_1"
+        maxLength: 30
+      ipAddress:
+        type: string
+        example: "83.122.99.2"
+        maxLength: 30
+      headers:
+        type: array
+        items:
+          $ref: '#/definitions/DeviceHeaders'
+      userIdentityCookies:
+        type: array
+        items:
+          $ref: '#/definitions/UserIdentityCookie'
+      jsc:
+        type: string
+        example: "Nla44j1cclY5BNvcKyAdM...[truncated]"
+        maxLength: 4000
+      hdim:
+        $ref: '#/definitions/Hdim'
+      serverTime:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04.001Z"
+        maxLength: 25
+      deviceLocation:
+        type: string
+        example: "33.635462, -111.928752"
+        maxLength: 22
+      deviceIdentifiers:
+        type: array
+        items:
+          $ref: '#/definitions/DeviceIdentifiers'
+      deviceDetails:
+        $ref: '#/definitions/DeviceDetails'
+      geoLocation:
+        $ref: '#/definitions/GeoLocation'
+      identifiers:
+        type: array
+        items:
+          $ref: '#/definitions/Identifiers'
+      deviceIpStatus:
+        type: string
+        example: "known"
+        maxLength: 20
+      recommendedAction:
+        type: string
+        example: "PASS"
+        maxLength: 20
+      causeNature:
+        type: string
+        example: "Unknown Page Diff"
+        maxLength: 150
+  GeoLocation:
+    type: object
+    properties:
+      isp:
+        type: string
+        maxLength: 40
+        example: "AT&T"
+      countryCode:
+        type: string
+        maxLength: 3
+        example: "USA"
+      locality:
+        type: string
+        maxLength: 40
+        example: "Arizona"
+      postTown:
+        type: string
+        maxLength: 40
+        example: "Scottsdale"          
+  DeviceDetails:
+    type: object
+    properties:
+      os:
+        type: string
+        example: "iOS"
+        maxLength: 20
+      osVersion:
+        type: string
+        example: "11.2.1"
+        maxLength: 20
+      deviceType:
+        type: string
+        example: "iPhone 8"
+        maxLength: 20
+      deviceName:
+        type: string
+        example: "Users iPhone 8"
+        maxLength: 20
+      browser:
+        type: string
+        maxLength: 40
+        example: "Chrome"
+      browserLanguage:
+        type: string
+        maxLength: 40
+        example: "en_GB"
+      timeZoneOffsetHours:
+        type: string
+        maxLength: 5
+        example: "200"
+      platform:
+        type: string
+        example: "MOBILE_APP"
+        maxLength: 50
+        enum:
+          - WEB
+          - MOBILE_BROWSER
+          - MOBILE_APP
+          - UNKNOWN
+  Hdim:
+    type: object
+    properties:
+      payload:
+        type: string
+        example: "*payload example*"
+        maxLength: 4000
+  Identifiers:
+    type: object
+    properties:
+      key:
+         type: string
+         maxLength: 100
+         example: "hostName"
+      value:
+         type: string
+         maxLength: 100
+         example: "<hostName>"
+  DeviceIdentifiers:
+    type: object
+    properties:
+      deviceIdentifier:
+        type: string
+        example: 980CD185-08AF-680F-418B-717C66B1B0D9
+        maxLength: 200
+      deviceSource:
+        type: string
+        example: "Resolve"
+        maxLength: 50
+  Email:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "EMAIL_1"
+        maxLength: 30
+      type:
+        type: string
+        example: "WORK"
+        maxLength: 10
+        enum:
+          - WORK
+          - HOME
+          - OTHER
+          - UNKNOWN
+      email:
+        type: string
+        example: "email@domain.com"
+        maxLength: 60
+      status:
+        type: string
+        example: "CURRENT"
+        maxLength: 20
+        enum:
+          - CURRENT
+          - PREVIOUS
+  EmploymentHistory:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "EMPLOYMENT_1"
+        maxLength: 30
+      employerName:
+        type: string
+        example: "Employer LTD"
+        maxLength: 90
+      employerAddress:
+        $ref: '#/definitions/Address'
+      employerTelephones:
+        type: array
+        items:
+          $ref: '#/definitions/Telephone'
+      employmentType:
+        type: string
+        example: "CURRENT"
+        maxLength: 15
+        enum:
+          - CURRENT
+          - PREVIOUS
+      employmentStatus:
+        type: string
+        example: "EMPLOYED"
+        maxLength: 30
+        enum:
+          - EMPLOYED
+          - UNEMPLOYED
+          - SELF_EMPLOYED
+          - PART_TIME
+          - HOMEMAKER
+          - RETIRED
+          - HOUSEWIFE
+          - HUF
+          - NRI
+          - FULL TIME
+          - GENERAL
+          - SELF_EMPLOYED_NON_PROFESSIONAL
+          - SELF_EMPLOYED_PROFESSIONAL
+          - STUDENT
+          - SURROGATE
+          - OTHER
+          - SOLE_OWNER
+          - MEMBER_DIRECTOR
+          - MILITARY
+          - CASUAL
+          - COMMISSION_EARNER
+          - CONTRACT
+          - FIXED_TERM_CONTRACT
+          - HOUSE_PERSON
+      timeWithEmployer:
+        $ref: '#/definitions/TimeWithEmployer'
+      occupationType:
+        type: string
+        example: "PROFESSIONAL"
+        maxLength: 30
+        enum:
+          - CLERICAL
+          - CREATIVE
+          - DIRECTOR
+          - DRIVER
+          - HOUSEWIFE
+          - JUNIOR
+          - LABOURER
+          - LEGAL
+          - MANAGER
+          - MEDICAL
+          - MILITARY
+          - UNSKILLED
+          - OFFICE
+          - OTHER
+          - OWNER
+          - PROFESSIONAL
+          - PUBLIC_SECTOR
+          - RETIRED
+          - SALES
+          - SELF_EMPLOYED
+          - SEMI_PROFESSIONAL
+          - SERVICE
+          - SKILLED_WORKER
+          - SPORTS
+          - SEMI_SKILLED
+          - STUDENT
+          - SUPERVISOR
+          - SOCIAL_WORKER
+          - TRADE
+          - UKNNOWN
+          - UNEMPLOYED
+      incomes:
+        type: array
+        items:
+          $ref: '#/definitions/Income'
+      empContactName:
+        type: string
+        example: "Raymond Smith"
+        maxLength: 40
+      empEmail:
+        type: string
+        example: "email@employer.com"
+        maxLength: 30
+      empStartDate:
+        type: string
+        format: date
+        example: "1999-12-30"
+        maxLength: 10
+      empEndDate:
+        type: string
+        format: date
+        example: "1999-12-30"
+        maxLength: 10
+      employeeNumber:
+        type: string
+        example: "EMP123456"
+        maxLength: 30
+      jobType:
+        type: string
+        example: "CLERICAL"
+        maxLength: 30
+        enum:
+          - CLERICAL
+          - CREATIVE
+          - DIRECTOR
+          - DRIVER
+          - HOUSEWIFE
+          - JUNIOR
+          - LABOURER
+          - LEGAL
+          - MANAGER
+          - MEDICAL
+          - MILITARY
+          - UNSKILLED
+          - OFFICE
+          - OTHRE
+          - OWNER
+          - PROFESSIONAL
+          - PUBLIC_SECTOR
+          - RETIRED
+          - SALES
+          - SELF_EMPLOYED
+          - SEMI_PROFESSIONAL
+          - SERVICE
+          - SKILLED_WORKER
+          - SPROTS
+          - SEMI_SKILLED
+          - STUDENT
+          - SUPERVISOR
+          - SOCIAL_WORKER
+          - TRADE
+          - UKNNOWN
+          - UNEMPLOYED
+      typeOfOrganization:
+        type: string
+        example: "BUSINESS"
+        maxLength: 23
+        enum:
+          - BUSINESS
+          - INSTITUTION
+          - BANK
+          - SOLICITOR
+          - ADMINISTRATION
+          - AGRICULTURE
+          - ARMED_FORCES
+          - CONSTRUCTION
+          - DESIGN
+          - EDUCATION
+          - ENGINEERING
+          - ENTERTAINMENT
+          - EXCISE
+          - FINANCIAL_SERVICES
+          - FOOD
+          - GEMS_AND_JEWELLERY
+          - GOVERNMENT_SERVICES
+          - HEALTHCARE
+          - HOSPITALITY_AND_TOURISM
+          - HOUSE_WIFE
+          - INDUSTRIAL
+          - INFORMATION_TECHNOLOGY
+          - LEGAL_SERVICES
+          - MANAFACTURING
+          - MEDIA_AND_ADVERTISING
+          - NATURAL_RESOURCES
+          - OTHER
+          - PACKAGING
+          - REAL_ESTATE
+          - RETAIL
+          - SALES
+          - SCIENCE
+          - SERVICES
+          - SKILLED_CRAFTS
+          - SPORTS_AND_LEISURE
+          - SUPPLY
+          - TELECOMMUNICATIONS
+          - TEXTILES
+          - TRADING
+          - TRANSPORT_AND_LOGISTICS
+          - TRAVEL
+          - INSURER
+          - ACCOUNTANT
+          - BROKER
+          - BUILDER
+          - CONVEYANCER
+          - CO_OWNER
+          - INTRODUCER
+          - REFERENCE
+          - SUPPLIER
+          - VALUER
+          - VENDOR
+          - VENDOR_AGENT
+          - VENDOR_SOLICITOR
+      employerRegistrationNumber:
+        type: string
+        example: "C000112233"
+        maxLength: 100
+      employerIndustry:
+        type: string
+        example: "Retail"
+        maxLength: 100
+      jobTitle:
+        type: string
+        example: "Head of Communications, EMEA"
+        maxLength: 100
+      employeeType:
+        type: string
+        example: 'Management of Data Analysis Acquisition'
+        maxLength: 60
+  TimeWithEmployer:
+    type: object
+    properties:
+      duration:
+        type: number
+        example: 3
+        maxLength: 4
+      unit:
+        type: string
+        example: "YEAR"
+        maxLength: 10
+        enum:
+          - DAY
+          - WEEK
+          - MONTH
+          - YEAR        
+  EncodedData:
+    type: object
+    properties:
+      encoding:
+        type: string
+        example: "PDF417"
+        maxLength: 20
+      data:
+        type: string
+        example: " -- encoded string here --"
+        # no maximum defined. Base64 encoded string
+  ExternalDataElement1:
+    type: object
+    properties:
+      fieldName:
+        type: string
+        example: "FieldName_1"
+        maxLength: 40
+      fieldValue:
+        type: string
+        example: "FieldValue_1"
+        maxLength: 40
+      externalDataName:
+        type: string
+        example: "Detect"
+        maxLength: 50
+      externalDataElements:
+        type: array
+        items:
+          $ref: '#/definitions/ExternalDataElement2'
+  ExternalDataElement2:
+    type: object
+    properties:
+      fieldName:
+        type: string
+        example: "FieldName_1"
+        maxLength: 40
+      fieldValue:
+        type: string
+        example: "FieldValue_1"
+        maxLength: 40
+      externalDataName:
+        type: string
+        example: "Detect"
+        maxLength: 50
+  ExternalLookup:
+    type: object
+    properties:
+      source:
+        type: string
+        example: "EXPERIAN"
+        maxLength: 30
+      parameter:
+        type: string
+        example: "Entire Application"
+        maxLength: 50
+      externalData:
+        type: array
+        items:
+          $ref: '#/definitions/ExternalDataElement1'
+      link:
+        $ref: '#/definitions/Link'
+      contactId:
+        type: string
+        description: reference to the payload contact.id details that belong to the ExternalLookup.
+        maxLength: 40
+      addressId:
+        type: string
+        example: "ADDRESS_1"
+        maxLength: 40
+  ExternalResult:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "EXTERNAL_RESULTS_1"
+        maxLength: 40
+      source:
+        type: string
+        example: "THIRD_PARTY_RISK"
+        maxLength: 30
+      scores:
+        type: array
+        items:
+          $ref: '#/definitions/Score'
+      code:
+        type: string
+        example: "AB12345"
+        maxLength: 20
+      rules:
+        type: array
+        items:
+          $ref: '#/definitions/Rule'
+  FinancialAccount:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "FINACIAL_ACCOUNT1"
+        maxLength: 30
+      accountType:
+        type: string
+        example: "BANK"
+        maxLength: 20
+        enum:
+          - BANK
+          - LOAN
+          - CREDIT
+          - OTHER
+          - EXTERNAL
+          - TELCO_CONTRACT
+          - INVESTMENT
+          - SAVINGS
+          - ISA
+          - SHARE
+          - MORTGAGE
+          - CREDITCARD
+      accountNumber:
+        type: string
+        example: "00111999"
+        maxLength: 20          
+      hashedAccountNumber:
+        type: string
+        example: "A64B54911B4859AC1AC42A96FEA530F4264FDF15ED36B7DF9C9A9DC6E3839D89"
+        maxLength: 100          
+      subType:
+        type: string
+        example: "CHECKING"
+        maxLength: 20
+        enum:
+          - CHECKING
+          - SAVINGS
+      type:
+        type: string
+        example: "JOINT"
+        maxLength: 10
+        enum:
+          - SINGLE
+          - JOINT
+      status:
+        type: string
+        example: "PENDING"
+        maxLength: 10
+        enum:
+          - PENDING
+          - EXISTING
+      accountName:
+        type: string
+        example: "PREMIER"
+        maxLength: 30
+      accountHolders:
+        type: array
+        items:
+          $ref: '#/definitions/AccountHolder'
+      bankAccount:
+        $ref: '#/definitions/BankAccount'
+      lineOfBusiness:
+        type: string
+        example: "COMMERCIAL"
+        maxLength: 20
+      institutionContactId:
+        type: string
+        example: "ORGANIZATION_CONTACT_1"
+        maxLength: 40
+      lastWithdrawal:
+        $ref: '#/definitions/LastWithdrawal'
+  LastWithdrawal:
+    type: object
+    properties:
+        amount:
+           $ref: '#/definitions/MonetaryAmount'
+        time:
+            type: string
+            format: date-time
+            example: "2015-11-30T14:20:04Z"
+            maxLength: 30
+  DeviceHeaders:
+    type: object
+    properties:
+      headerName:
+        type: string
+        example: "content-type"
+        maxLength: 100
+      headerValue:
+        type: string
+        example: "application/x-www-form-urlencoded"
+        maxLength: 100
+  IdentityDocument:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "DOCUMENT_1"
+        maxLength: 30
+      documentNumber:
+        type: string
+        example: "94440946"
+        maxLength: 20
+      clearDocumentNumber:
+        type: string
+        example: "94440946"
+        maxLength: 20
+      hashedDocumentNumber:
+        type: string
+        example: "A64B54911B4859AC1AC42A96FEA530F4264FDF15ED36B7DF9C9A9DC6E3839D89"
+        maxLength: 100
+      documentType:
+        type: string
+        example: "PASSPORT"
+        maxLength: 20
+        enum:
+          - PASSPORT
+          - DRIVER_LICENSE
+          - SSN
+          - TAX_NUMBER
+          - NATIONAL_INSURANCE
+          - IDCARD
+          - TRAVEL_VISA
+          - SIN
+          - MEDICARE
+          - VOTER_ID
+          - NATIONAL_ID
+          - PAN
+          - COMPANY_TAN
+          - ECI
+          - AADHAAR
+          - PERSONAL_NUMBER
+          - BMD_CERT
+          - MILITARY_ID
+          - NHS_CARD
+          - RESIDENCE_PERMIT
+          - HGV_LICENSE
+          - FIREARMS_CERTIFICATE
+          - MEDICAL_CARD
+          - OTHER
+          - CONCESSION_CARD
+          - CREDIT_CARD
+          - COUNCIL_RATES
+          - BANK_STATEMENT
+          - BENEFITS_LETTER
+          - UTILITY_BILL
+          - LETTER_SOLICITOR
+          - CENTRELINK
+          - CHEQUE
+          - GST
+          - MCA
+          - VEHICLE_REGISTRATION
+          - NIK
+          - KTP
+          - EVIDENCE
+          - RATION_CARD
+          - UNIVERSAL_ID
+          - CPAN
+          - DIN
+      validFromDate:
+        type: string
+        format: date
+        example: "2018-01-02"
+        maxLength: 10
+      expiresDate:
+        type: string
+        format: date
+        example: "2022-01-02"
+        maxLength: 10
+      personalNumber:
+        type: string
+        example: "A12345678901"
+        maxLength: 15
+      nationalityCountryCode:
+        type: string
+        example: "GBR"
+        maxLength: 3
+      issueCountryCode:
+        type: string
+        example: "GBR"
+        maxLength: 3
+      stateProvinceCode:
+        type: string
+        example: "CA"
+        maxLength: 4
+      issueAuthority:
+        type: string
+        example: "UKPA"
+        maxLength: 10
+      MRZLine1:
+        type: string
+        example: "P<ITAROSSINI<DEL<MONTE<PIU<LUNGO<DICQUARA<<F"
+        maxLength: 50
+      MRZLine2:
+        type: string
+        example: "KK00000000ITA6812089F1704017<<<<<<<<<<<<<<06"
+        maxLength: 50
+      MRZLine3:
+        type: string
+        example: "KK00000000ITA6812089F1704017<<<<<<<<<<<<<<06"
+        maxLength: 50
+      placeOfBirth:
+        type: string
+        example: "London"
+        maxLength: 20
+      countryOfBirth:
+        type: string
+        example: "GBR"
+        maxLength: 3
+      documentName:
+        $ref: '#/definitions/Name'
+      documentDateOfBirth:
+        type: string
+        format: date
+        example: "1999-01-01"
+        maxLength: 10
+      clearDocumentDateOfBirth:
+        type: string
+        format: date
+        example: "1999-01-01"
+        maxLength: 10
+      mrzName:
+        $ref: '#/definitions/Name'
+      documentAddressId:
+        type: string
+        example: "ADDRESS_1"
+        maxLength: 30
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      encodedData:
+        $ref: '#/definitions/EncodedData'
+      placeOfIssue:
+        type: string
+        example: "United Kingdom"
+        maxLength: 50
+      subType:
+        type: string
+        example: "UKFDL"
+        maxLength: 40
+      mrtdChipData:
+        type: array
+        items:
+          $ref: '#/definitions/MrtdChipData'
+      individuals:
+        $ref: '#/definitions/MedicareIndividuals'
+      status:
+        type: string
+        example: "CURRENT"
+        maxLength: 20
+        enum:
+          - CURRENT
+          - PREVIOUS
+      idType:
+        type: string
+        example: "PRIMARY"
+        maxLength: 20
+        enum:
+          - PRIMARY
+          - SECONDARY
+      ssnLast4:
+        type: string
+        maxLength: 4
+        example: "1234"
+      cardNumber:
+        type: string
+        description: "Australian NSW state Driver License card number"
+        example: "1234567890"
+        maxLength: 10
+  Image:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "IMAGE_1"
+        maxLength: 100
+      imageData:
+        type: string
+        example: "-- encoded string here --"
+      fileName:
+        type: string
+        example: "DriverLicenceFront.jpg"
+        maxLength: 100
+      fileType:
+        type: string
+        example: "JPEG"
+        maxLength: 10
+      documentPart:
+        type: string
+        example: "FRONT"
+        maxLength: 20
+        enum:
+          - FRONT
+          - BACK
+          - UNKONWN
+          - croppedDocument
+          - croppedPortrait
+          - croppedSignature
+  FaceImage:
+    type: object
+    properties:
+      id:
+        type: string
+        maxLength: 30
+        example: "FACE_1"
+      faceImage:
+        type: string
+        example: "--- endcoded string here ---"
+      source:
+        type: string
+        maxLength: 30
+        example: "MiSnap"
+      fileType:
+        type: string
+        example: "JPEG"
+        maxLength: 10
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ImageItems'
+      clientData:
+        type: string
+  ImageItems:
+    type: object
+    properties:
+      start:
+        type: integer
+        example: 0
+        maxLength: 10
+      stop:
+        type: integer
+        example: 1000
+        maxLength: 10
+      refId:
+        type: string
+        example: "LDHweLlu-coTViezNQPzCw"
+        maxLength: 100
+      type:
+        type: string
+        example: "BLINK"
+        maxLength: 10
+  MrtdChipData:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "DATAGROUP_1"
+        maxLength: 40
+      name:
+        type: string
+        example: "EF.COM"
+        maxLength: 40
+      data:
+        type: string
+        example: "--base64--"
+  MedicareIndividuals:
+    type: object
+    properties:
+      individualReferenceNumber:
+        type: string
+        maxLength: 1
+        example: "1"
+      fullName1:
+        type: string
+        maxLength: 100
+        example: "Bruce David Jones"
+      fullName2:
+        type: string
+        maxLength: 100
+        example: "Bruce David Jones"
+      fullName3:
+        type: string
+        maxLength: 100
+        example: "Bruce David Jones"
+      fullName4:
+        type: string
+        maxLength: 100
+        example: "Bruce David Jones"
+  Income:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "INCOME_1"
+        maxLength: 30
+      typeOfIncome:
+        type: string
+        example: "GROSS"
+        maxLength: 20
+        enum:
+          - GROSS
+          - NET
+          - TOTAL_GROSS
+          - OTHER_GROSS
+          - OTHER
+      profitIndicator:
+        type: boolean
+        example: false
+        maxLength: 5
+      source:
+        type: string
+        example: "EMPLOYMENT"
+        maxLength: 20
+        enum:
+          - EMPLOYMENT
+          - REVENUE
+          - SECONDARY_EMPLOYMENT
+          - SELF_EMPLOYED
+          - GIFTS
+          - SAVINGS
+          - INVESTMENTS
+          - BENEFITS
+          - PENSION
+          - COMPENSATION
+          - TAX_REBATE
+          - INSURANCE_PAYOUT
+          - INHERITENCE
+          - PROPERTY_SALE
+          - PROPERTY_RENTAL
+          - DIVIDEND
+      frequency:
+        type: string
+        example: "MONTHLY"
+        maxLength: 20
+        enum:
+          - HOURLY
+          - DAILY
+          - WEEKLY
+          - BIWEEKLY
+          - MONTHLY
+          - SEMI_MONTHLY
+          - YEARLY
+          - QUATERLY
+          - SEMI_ANNUALLY
+          - ANNUALLY
+      amount:
+        type: number
+        example: 100
+        maxLength: 10
+      currencyCode:
+        type: string
+        example: "USD"
+        maxLength: 3
+      nextPayday:
+        type: string
+        format: date-time
+        example: "2018-02-01"
+      directDeposit:
+        type: boolean
+        example: false
+        maxLength: 5
+  SocialMediaAccount:
+    type: object
+    properties:
+      network:
+        type: string
+        example: "Facebook"
+        maxLength: 50
+      token:
+        type: string
+        example: "FACEBOOK_ACCESS_TOKEN"
+      tokenObject:
+       type: object
+       additionalProperties:
+          type: object
+  KbaAnswers:
+    type: object
+    properties:
+      outWalletAnswer1:
+        type: string
+        example: "1"
+        maxLength: 1
+      outWalletAnswer2:
+        type: string
+        example: "2"
+        maxLength: 1
+      outWalletAnswer3:
+        type: string
+        example: "3"
+        maxLength: 1
+      outWalletAnswer4:
+        type: string
+        example: "4"
+        maxLength: 1
+      outWalletAnswer5:
+        type: string
+        example: "5"
+        maxLength: 1
+      outWalletAnswer6:
+        type: string
+        example: "6"
+        maxLength: 1
+      outWalletAnswer7:
+        type: string
+        example: "7"
+        maxLength: 1
+      outWalletAnswer8:
+        type: string
+        example: "8"
+        maxLength: 1
+  KbaUserDefinedDates:
+    type: object
+    properties:
+      userDefinedDate1:
+        type: string
+        example: "01312015"
+        maxLength: 10
+      userDefinedDate2:
+        type: string
+        example: "02282015"
+        maxLength: 10
+  KbaUserDefinedNumerics:
+    type: object
+    properties:
+      userDefinedNumeric1:
+        type: number
+        example: 1
+        maxLength: 3
+      userDefinedNumeric2:
+        type: number
+        example: 2
+        maxLength: 3
+      userDefinedNumeric3:
+        type: number
+        example: 3
+        maxLength: 3
+      userDefinedNumeric4:
+        type: number
+        example: 4
+        maxLength: 3
+  KbaUserDefinedTexts:
+    type: object
+    properties:
+      userDefinedText1:
+        type: string
+        example: "TEXT1"
+        maxLength: 50
+      userDefinedText2:
+        type: string
+        example: "TEXT2"
+        maxLength: 50
+      userDefinedText3:
+        type: string
+        example: "TEXT3"
+        maxLength: 50
+      userDefinedText4:
+        type: string
+        example: "TEXT4"
+        maxLength: 50
+  KnowledgeBasedAuthentication:
+    type: object
+    properties:
+      riskStrategyNumber:
+        type: string
+        example: "KBA_1"
+        maxLength: 30
+      languageCode:
+        type: string
+        example: "en"
+        maxLength: 10
+      championChallengerRandomNumber:
+        type: number
+        example: 123456789
+        maxLength: 20
+      outWalletQuestionsRequest:
+        type: string
+        example: "Yes"
+        maxLength: 5
+      answers:
+        $ref: '#/definitions/KbaAnswers'
+      userDefinedNumerics:
+        $ref: '#/definitions/KbaUserDefinedNumerics'
+      userDefinedTexts:
+        $ref: '#/definitions/KbaUserDefinedTexts'
+      userDefinedDates:
+        $ref: '#/definitions/KbaUserDefinedDates'
+      sessionId:
+        type: string
+        example: "SESSIONID"
+        maxLength: 50
+  LastActionTimes:
+    type: object
+    properties:
+      previousSuccessfulLogin:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      transferThresholdUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      phoneUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      addressUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      emailUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      updatedViaCallCenter:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      passwordUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      beneficiaryUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      payeeUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      signerUpdated:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      contacted:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      onlineAccountOpenDate:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      lastMFADate:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+  LineItem:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "LINE_ITEM_1"
+        maxLength: 40
+      name:
+        type: string
+        example: "Pizza"
+        maxLength: 40
+      description:
+        type: string
+        example: "delicious"
+        maxLength: 100
+      sku:
+        type: string
+        example: "SKU10001"
+        maxLength: 40
+      promoCode:
+        type: string
+        example: "all-meat-bundle"
+        maxLength: 40
+      category:
+        type: string
+        example: "Italian Food"
+        maxLength: 40
+      unitWeight:
+        $ref: '#/definitions/UnitWeight'
+      quantity:
+        type: number
+        example: 2
+        maxLength: 5
+      unitCost:
+        $ref: '#/definitions/MonetaryAmount'
+      totalCost:
+        $ref: '#/definitions/MonetaryAmount'
+      serviceId:
+        type: string
+        example: "TRAVEL_SERVICE_1"
+        maxLength: 40
+  Link:
+    type: object
+    properties:
+      url:
+        type: string
+        example: "http://www.host.com/path"
+        maxLength: 200
+      title:
+        type: string
+        example: "Link Title"
+        maxLength: 50
+      description:
+        type: string
+        example: "Detailed description"
+        maxLength: 100
+  LoyaltyProgram:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "LOYALTY_1"
+        maxLength: 30
+      customer:
+        type: string
+        example: "CONTACT_1"
+        maxLength: 40
+      programName:
+        type: string
+        example: "Loyalty Club Name"
+        maxLength: 30
+      memberId:
+        type: string
+        example: "12345678"
+        maxLength: 30
+      status:
+        type: string
+        example: "Active"
+        maxLength: 30
+      vendorCode:
+        type: string
+        example: "FrequentFlyerClub"
+        maxLength: 10
+      currentPoints:
+        type: number
+        example: 123456
+        maxLength: 10
+      totalPoints:
+        type: number
+        example: 22222222
+        maxLength: 10
+      signupDate:
+        type: string
+        format: date
+        example: "2010-01-29"
+      effectiveDate:
+        type: string
+        format: date
+        example: "2010-01-29"
+      expireDate:
+        type: string
+        format: date
+        example: "2010-01-29"
+      level:
+        type: string
+        example: "Platinum"
+        maxLength: 20
+  Match:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "Name and Address Match"
+        maxLength: 40
+      value:
+        type: string
+        example: "MATCH"
+        maxLength: 40
+  Method:
+    type: object
+    properties:
+      type:
+        type: string
+        example: "CARD"
+        maxLength: 15
+        enum:
+          - CARD
+          - DIRECT_DEBIT
+          - LENDING
+          - LOYALTY
+          - GIFT_CARD
+          - PAYMENT_SERVICE
+          - INSTANT_CREDIT
+          - VOUCHER
+          - OTHER
+          - FIRST_PAYMENT
+          - ROLLOVER
+          - COLLECTION
+      authorization:
+        $ref: '#/definitions/Authorization'
+      paymentServiceBrand:
+        type: string
+        example: "PPL"
+        maxLength: 3
+        enum:
+          - BML
+          - DBL
+          - EBM
+          - GGL
+          - PPL
+      paymentServiceId:
+        type: string
+        example: "1000200202"
+        maxLength: 20
+      cardId:
+        type: string
+        example: "CARD_1"
+        maxLength: 30
+      financialAccountId:
+        type: string
+        example: "FINACIAL_ACCOUNT1"
+        maxLength: 30
+      loyaltyProgramId:
+        type: string
+        example: "LOYALTY_1"
+        maxLength: 30
+  MonetaryAmount:
+    type: object
+    properties:
+      amount:
+        type: number
+        example: 200
+        maxLength: 10
+      currencyCode:
+        type: string
+        example: "USD"
+        maxLength: 3
+  NetProfitYear:
+    type: object
+    properties:
+      year:
+        type: string
+        example: "1"
+        maxLength: 1
+      amount:
+        type: number
+        example: 10000
+      currencyCode:
+        type: string
+        example: "USD"
+        maxLength: 3
+  OrchestrationDecision:
+    type: object
+    properties:
+      sequenceId:
+        type: string
+        example: "-- Strategy sequenceId --"
+        maxLength: 40
+      decisionSource:
+        type: string
+        example: "-- serviceName of the strategy decision point --"
+        maxLength: 20
+      decision:
+        type: string
+        example: "-- Outcome from strategy for service --"
+        maxLength: 10
+      decisionReasons:
+        type: array
+        items:
+          type: string
+          example: "-- Array of decisionReasons --"
+          maxLength: 90
+      score:
+        type: number
+        example: 9999
+        maxLength: 10
+      decisionText:
+        type: string
+        example: "-- text defined in strategy --"
+        maxLength: 30
+      nextAction:
+        type: string
+        example: "-- defined in strategy --"
+        maxLength: 20
+      appReference:
+        type: string
+        example: "REF1234567"
+        maxLength: 90
+      decisionTime:
+        type: string
+        format: date-time
+        example: "2016-09-09T04:06:53Z"
+        maxLength: 90
+  Order:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "ORDER_1"
+        maxLength: 40
+      source:
+        type: string
+        example: "onlinebanking.com"
+        maxLength: 100
+      promoCode:
+        type: string
+        example: "PROMO1"
+        maxLength: 100
+      failedPaymentAttempts:
+        type: number
+        example: 2
+        maxLength: 5
+      lineItems:
+        type: array
+        items:
+          $ref: '#/definitions/LineItem'
+      shipments:
+        type: array
+        items:
+          $ref: '#/definitions/Shipment'
+      totalAmount:
+        $ref: '#/definitions/MonetaryAmount'
+  Organization:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "ORGANIZATION_1"
+        maxLength: 40
+      typeOfOrganization:
+        type: string
+        example: "BUSINESS"
+        maxLength: 23
+        enum:
+          - BUSINESS
+          - INSTITUTION
+          - BANK
+          - SOLICITOR
+          - ADMINISTRATION
+          - AGRICULTURE
+          - ARMED_FORCES
+          - CONSTRUCTION
+          - DESIGN
+          - EDUCATION
+          - ENGINEERING
+          - ENTERTAINMENT
+          - EXCISE
+          - FINANCIAL_SERVICES
+          - FOOD
+          - GEMS_AND_JEWELLERY
+          - GOVERNMENT_SERVICES
+          - HEALTHCARE
+          - HOSPITALITY_AND_TOURISM
+          - HOUSE_WIFE
+          - INDUSTRIAL
+          - INFORMATION_TECHNOLOGY
+          - LEGAL_SERVICES
+          - MANAFACTURING
+          - MEDIA_AND_ADVERTISING
+          - NATURAL_RESOURCES
+          - OTHER
+          - PACKAGING
+          - REAL_ESTATE
+          - RETAIL
+          - SALES
+          - SCIENCE
+          - SERVICES
+          - SKILLED_CRAFTS
+          - SPORTS_AND_LEISURE
+          - SUPPLY
+          - TELECOMMUNICATIONS
+          - TEXTILES
+          - TRADING
+          - TRANSPORT_AND_LOGISTICS
+          - TRAVEL
+          - INSURER
+      orgName:
+        type: string
+        example: "Experian PLC"
+        maxLength: 30
+      companyType:
+        type: string
+        example: "LLP"
+        maxLength: 30
+        enum:
+          - F
+          - G
+          - L
+          - LLP
+          - LP
+          - N
+          - O
+          - P
+          - S
+          - T
+          - UA
+          - C
+          - UC
+          - SOLICITOR
+          - NFP
+          - PL
+      companyRegistrationNumber:
+        type: string
+        example: "C12345667"
+        maxLength: 15
+      contactNames:
+        type: array
+        items:
+          $ref: '#/definitions/ContactName'
+      netProfitYear:
+        type: array
+        items:
+          $ref: '#/definitions/NetProfitYear'
+      dxNumber:
+        type: string
+        example: "DX12346"
+        maxLength: 50
+      status:
+        type: string
+        example: "Active"
+        maxLength: 20
+      miscReference:
+        type: string
+        example: "REF1234"
+        maxLength: 40
+      taxNumber:
+        type: string
+        example: "TAX123467"
+        maxLength: 30
+      tradingAsName:
+        type: string
+        example: "Experian PLC"
+        maxLength: 40
+      registrationDate:
+        type: string
+        format: date
+        example: "1999-12-30"
+        maxLength: 10
+      tradingPeriod:
+        $ref: '#/definitions/TimeSpan'
+      numberOfEmployees:
+        type: number
+        example: 250
+        maxLength: 10
+      legalStatus:
+        type: string
+        example: "Sole trader"
+        maxLength: 50
+      forecastedTurnover:
+        $ref: '#/definitions/MonetaryAmount'
+      directorsContactIds:
+        type: string
+        example: "CONTACT_1"
+        maxLength: 40
+      dateOfDissolution:
+        type: string
+        format: date
+        maxLength: 10
+        example: "2019-12-31"
+      noOfCurrentDirectors:
+        type: number
+        example: 2
+        maxLength: 5
+      noOfDirectorDisqualifications:
+        type: number
+        example: 2
+        maxLength: 5
+      noOfPreviousDirectors:
+        type: number
+        example: 10
+        maxLength: 5
+      noOfSecretaries:
+        type: number
+        example: 5
+        maxLength: 5
+      noOfRecentDirectories:
+        type: number
+        example: 5
+        maxLength: 5
+        description: "Deprecated. Correct field noOfRecentDirectors added to replace"
+      noOfRecentDirectors:
+        type: number
+        example: 5
+        maxLength: 5
+      sicCode:
+        type: string
+        example: "5000"
+        maxLength: 20
+      contactReg:
+        type: string
+        maxLength: 20
+        example: "12345678"
+      incorporatedDate:
+        type: string
+        format: date
+        example: '1999-12-30'
+        maxLength: 10
+      website:
+        type: string
+        example: "www.experian.com"
+        maxLength: 100
+      aliasOrgName:
+        type: string
+        example: "Experian LTD"
+        maxLength: 30
+  OverallResponse:
+    type: object
+    properties:
+      decision:
+        type: string
+        example: ACCEPT
+        maxLength: 10
+      score:
+        type: number
+        example: 999
+        maxLength: 5
+      decisionText:
+        type: string
+        example: "NO FRAUD"
+        maxLength: 30
+      decisionReasons:
+        type: array
+        items:
+          type: string
+        example: ["DECISION_1","DECISION_2"]
+      recommendedNextActions:
+        type: array
+        items:
+          type: string
+          maxLength: 200
+        example: ["Action_1","Action_2"]
+      spareObjects:
+        type: array
+        items:
+          type: string
+          maxLength: 200
+        example: ["Spare_1","Spare_2"]
+  PetDetails:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "Spot"
+        maxLength: 100
+      age:
+        type: number
+        example: 5
+        maxLength: 3
+      gender:
+        type: string
+        example: "M"
+        maxLength: 1
+      type:
+        type: string
+        example: "Dog"
+        maxLength: 20
+      isPedigree:
+        type: boolean
+        example: true
+        maxLength: 5
+      spayedOrNeutered:
+        type: boolean
+        example: true
+        maxLength: 5
+      breed:
+        type: string
+        example: "Labrador"
+        maxLength: 30
+      purchasePrice:
+        $ref: '#/definitions/MonetaryAmount'
+  PolicyDetails:
+    type: object
+    properties:
+      coverType:
+        type: string
+        example: "COMPREHENSIVE"
+        maxLength: 40
+        enum:
+          - THIRDPARTY_ONLY
+          - TP_FIRETHEFT
+          - COMPEHENSIVE
+          - COMERCIAL_PROPERTY
+          - OTHER
+          - THEFT
+          - TP_THEFT
+          - TP_FIRETHEFT_MALICIOUS
+          - TP_FIRE
+          - ACCIDENTAL_DMG_FIRETHEFT
+          - BUILDINGS
+          - CONTENTS
+          - BUILDINGS_CONTENTS
+          - ACCIDENTAL_DAMAGE
+          - EMERGENCY_REPAIR
+          - NEW_BUILD
+          - BREAKDOWN
+          - SINGLE_TRAVELLER
+          - MULTI_TRAVELLER
+          - SINGLE_TRIP
+          - MULTI_ANNUAL
+          - ADVENTURE_ACTIVITIES
+          - CRUISE
+          - EUROPEAN
+          - WORLDWIDE
+          - BUSINESS
+          - LIFE_SINGLE
+          - LIFE_JOINT
+          - HEALTH_SINGLE
+          - HEALTH_JOINT
+          - MEDICAL
+          - INCOME_PROTECTION
+          - MORTGAGE_PROTECTION
+          - REDUNDANCY
+          - UNEMPLOYMENT
+          - CRITICAL_ILLNESS
+          - PUBLIC_LIABILITY
+          - LANDLORD
+          - BUSINESS_INUSRANCE_OTHER
+          - HOTEL_INSURANCE
+          - BAR_INSURANCE
+          - RESTAURANT_INSURANCE
+          - SHOP_INSURANCE
+          - PET_LIFETIME
+          - PET_LIMITED_TIME
+          - PET_ACCIDENT_ONLY
+          - PET_MAX_BENEFIT
+      policyNumber:
+        type: string
+        example: "P123456778"
+        maxLength: 40
+      policyStatus:
+        type: string
+        example: "Active"
+        maxLength: 20
+      premium:
+        $ref: '#/definitions/MonetaryAmount'
+      sumInsured:
+        $ref: '#/definitions/MonetaryAmount'
+      policyPaymentMethod:
+        type: string
+        example: "DIRECT_DEBIT"
+      policyExcess:
+        $ref: '#/definitions/MonetaryAmount'
+      noOfYearsNoClaimsDiscount:
+        type: number
+        example: 3
+        maxLength: 5
+      noClaimFreeYears:
+        type: number
+        example: 3
+        maxLength: 5
+      noOfPreviousClaims:
+        type: number
+        example: 3
+        maxLength: 5
+      yearsDriverLicenseHeld:
+        type: number
+        example: 3
+        maxLength: 5
+      policyOptions:
+        type: array
+        items:
+          type: string
+          example: "VEHICLE_BREAKDOWN"
+          maxLength: 40
+          enum:
+            - DANGEROUS_SPORTS
+            - BREAKDOWN_COVER
+            - WINDSCREEN_COVER
+            - LEGAL_COVER
+            - DRIVING_ABROAD
+            - COURTESY_CAR
+            - DRIVING_OTHER_CARS
+            - NO_CLAIMS_BONUS_PROTECTION
+            - AUDIO_SYSTEM_COVER
+            - CONTENTS_COVER
+            - PERSONAL_ACCIDENT
+            - REPLACEMENT_KEY
+            - DENTAL
+            - OPTICAL
+            - EMPLOYMENT
+            - CRITICAL_ILLNESS
+            - REDUNDANCY
+            - INCOME_PROTECTION
+            - MEDICAL
+            - ADVENTURE
+        example: ["ADVENTURE","VEHICLE_BREAKDOWN"]
+      travelDestination:
+        type: string
+        example: "Europe"
+        maxLength: 40
+      permanentUkResident:
+        type: boolean
+        example: true
+        maxLength: 5
+      existingMedicalConditions:
+        type: array
+        items:
+          type: string
+          maxLength: 50
+        example: ["None","..."]
+      petDetails:
+        $ref: '#/definitions/PetDetails'
+      annualMileage:
+        type: number
+        example: 12000
+        maxLength: 7
+      noOfPolicyPrevVoided:
+        type: number
+        example: 0
+        maxLength: 3
+      vehicleIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["VEHICLE_1","VEHICLE_2"]
+      dates:
+        type: array
+        items:
+          $ref: '#/definitions/InsuranceDate'
+      quoteRefNumber:
+        type: string
+        example: "REF12345"
+        maxLength: 50
+      cancellationReason:
+        type: string
+        example: "Sold Car"
+        maxLength: 100
+      brokerReference:
+        type: string
+        example: "REF12345"
+        maxLength: 50
+  ProductDetails:
+    type: object
+    properties:
+      productType:
+        type: string
+        example: "LOAN"
+        maxLength: 20
+        enum:
+          - BANK
+          - LOAN
+          - CREDIT
+          - OTHER
+          - EXTERNAL
+          - TELCO_CONTRACT
+          - INVESTMENT
+          - SAVINGS
+          - ISA
+          - SHARE
+          - MORTGAGE
+          - CREDITCARD
+          - WRITTEN_INSTRUCTIONS
+          - VEHICLE
+          - BUILDINGS
+          - CONTENTS
+          - PURCHASE
+          - TRAVEL
+          - LIFE
+          - PET
+          - BUSINESS
+          - PENSION
+          - INSTANT_CREDIT
+      productAmount:
+        $ref: '#/definitions/MonetaryAmount'
+      depositAmount:
+        $ref: '#/definitions/MonetaryAmount'
+      abbreviatedAmount:
+        $ref: '#/definitions/MonetaryAmount'
+      instantCreditAmount:
+        $ref: '#/definitions/MonetaryAmount'
+      noOfBalanceTransfers:
+        type: number
+        maxLength: 5
+        example: 2
+      interestRate:
+        type: number
+        example: 6.5
+        maxLength: 4
+      maturityDate:
+        type: string
+        format: date
+        example: "2022-01-12"
+        maxLength: 10
+      lendingTerm:
+        $ref: '#/definitions/LendingTerm'
+      purposeOfLoan:
+        type: string
+        example: "Refinaincing"
+        maxLength: 30
+      ltv:
+        type: number
+        example: 6.9
+        maxLength: 30
+      productCode:
+        type: string
+        example: "00 Buy to Let 85"
+        maxLength: 50
+      assetValue:
+        $ref: '#/definitions/MonetaryAmount'
+      originalAssetValue:
+        $ref: '#/definitions/MonetaryAmount'
+      productSubchannel:
+        type: string
+        example: "BROKER12346"
+        maxLength: 30
+      loanReference:
+        type: string
+        example: "REF12345"
+      productDescription:
+        type: string
+        maxLength: 50
+        example: "Description of Product"
+      serviceCategory:
+        type: string
+        maxLength: 50
+        example: "books"  
+      market:
+       type: string
+       maxLength: 40
+      repaymentMethod:
+       type: string
+       example: "CIR"
+       maxLength: 20
+       enum:
+        - CIR
+        - INO
+        - PAP
+      basketItems:
+        type: number
+        maxLength: 5
+        example: 4
+      requestedLimit:
+        type: number
+        maxLength: 7
+        example: 2000
+      ecapsAppType:
+        type: string
+        example: "CO"
+        maxLength: 2
+      valueRange:
+        type: string
+        maxLength: 20
+  LendingTerm:  
+    type: object
+    properties:
+      duration:
+        type: number
+        example: 3
+        maxLength: 4
+      unit:
+        type: string
+        example: "YEAR"
+        maxLength: 10
+        enum:
+          - DAY
+          - WEEK
+          - MONTH
+          - YEAR        
+  Record:
+    type: object
+    properties:
+      contacts:
+        type: array
+        items:
+          $ref: '#/definitions/Contact'
+      deviceIdentifiers:
+        type: object
+        additionalProperties:
+          type: string
+      externalLookups:
+        type: array
+        items:
+          $ref: '#/definitions/ExternalLookup'
+      httpHeaders:
+        type: object
+        additionalProperties:
+          type: string
+  ResidentFrom:
+    type: object
+    properties:
+      fullDateFrom:
+        type: string
+        format: date
+        example: "2018-01-01"
+        maxLength: 10
+      yearFrom:
+        type: string
+        example: "2018"
+        maxLength: 4
+      monthFrom:
+        type: string
+        example: "01"
+        maxLength: 2
+      dayFrom:
+        type: string
+        example: "01"
+        maxLength: 2
+  ResidentTo:
+    type: object
+    properties:
+      fullDateTo:
+        type: string
+        format: date
+        example: "2018-01-01"
+        maxLength: 10
+      yearTo:
+        type: string
+        example: "2018"
+        maxLength: 4
+      monthTo:
+        type: string
+        example: "01"
+        maxLength: 2
+      dayTo:
+        type: string
+        example: "01"
+        maxLength: 2
+  Rule:
+    type: object
+    properties:
+      ruleId:
+        type: string
+        example: "SAFEIP"
+        maxLength: 200
+      ruleName:
+        type: string
+        example: "SUSPECT IP ADDRESS"
+        maxLength: 200
+      ruleScore:
+        type: number
+        example: 999
+        maxLength: 10
+      ruleText:
+        type: string
+        example: "SUSPECT UP ADDRESS FOUND"
+        maxLength: 200
+      rule:
+        type: string
+        example: 'SUSPECT IP ADDRESS'
+      value:
+        type: string
+        example: "Rule Value 1234"
+  Score:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "SCORE NAME"
+        maxLength: 40
+      score:
+        type: number
+        example: 999
+        maxLength: 10
+      type:
+        type: string
+        example: "SCORE"
+        maxLength: 40
+  Session:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "SESSION_1"
+        maxLength: 30
+      sessionId:
+        type: string
+        example: "49C5E3479AAA14B676609186B7D2E234"
+        maxLength: 100
+      durationInMillis:
+        type: number
+        example: 1234567
+        maxLength: 10
+      loggedIn:
+        type: boolean
+        example: true
+        maxLength: 5
+      failedLoginAttempts:
+        type: number
+        example: 4
+        maxLength: 5
+      multiFactorAuthenticated:
+        type: boolean
+        example: true
+        maxLength: 5
+      challengeAttempts:
+        type: number
+        example: 4
+        maxLength: 5
+      thirdPartySessionId:
+        type: string
+        example: "15457743245342300000"
+        maxLength: 100
+      activityPageCode:
+        type: string
+        example: "LONGIN001"
+        maxLength: 20
+      itemsRemoved:
+        type: boolean
+        example: true
+        maxLength: 5
+      sessionType:
+        type: string
+        example: "User"
+        maxLength: 40
+      thirdPartyFlow:
+       type: string
+       example: "ASIP"
+       maxLength: 40
+      brand:
+       type: string
+       maxLength: 40
+  Shipment:
+    type: object
+    properties:
+      scheduledShipTime:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      insured:
+        type: boolean
+        example: true
+        maxLength: 5
+      method:
+        type: string
+        example: "DIGITAL"
+        maxLength: 40
+        enum:
+          - DIGITAL
+          - GROUND
+          - IN_STORE
+          - OVERNIGHT
+          - SAME_DAY
+          - THIRD_DAY
+          - UNKNOWN
+      cost:
+        $ref: '#/definitions/MonetaryAmount'
+      recipientContactId:
+        type: string
+        example: "CONTACT_1"
+        maxLength: 40
+      lineItemIds:
+        type: array
+        items:
+          type: string
+          maxLength: 40
+        example: ["LineItem_1","LineItem_2"]
+  StatisticAddressDataElement:
+    type: object
+    properties:
+      poBoxNumber:
+        type: string
+        maxLength: 40
+        example: "PO BOX 1234"
+      subBuilding:
+        type: string
+        maxLength: 40
+        example: "The Barn"
+      buildingName:
+        type: string
+        maxLength: 40
+        example: "Sycamore Farm"
+      buildingNumber:
+        type: string
+        maxLength: 10
+        example: "78"
+      street:
+        type: string
+        maxLength: 40
+        example: "Acacia Avenue"
+      street2:
+        type: string
+        maxLength: 50
+        example: "Honeysuckle Lane"
+      postTown:
+        type: string
+        maxLength: 40
+        example: "London"
+      postal:
+        type: string
+        maxLength: 10
+        example: "SE1 8EZ"
+      stateProvinceCode:
+        type: string
+        maxLength: 4
+        example: "CA"
+      countryCode:
+        type: string
+        maxLength: 3
+        example: "GBR"
+      subLocality:
+        type: string
+        maxLength: 40
+        example: "Southwark"
+      locality:
+        type: string
+        maxLength: 40
+        example: "South London"
+  StatisticDataElement:
+    type: object
+    properties:
+      dataElementId:
+        type: string
+        example: "1"
+      matchingContactIds:
+        type: array
+        items:
+          type: string
+        example: MAINCONTACT_1
+      elementName:
+        type: string
+        example: ipAddress
+      matchTypeInfo: 
+        type: array
+        items: 
+          "$ref": "#/definitions/MatchTypeInfo"
+      ipAddress:
+        type: string
+        format: ipv4 ipv6
+        example: 192.168.0.1
+      deviceIdentifier:
+        type: string
+        example: 980CD185-08AF-680F-418B-717C66B1B0D9
+      email:
+        $ref: '#/definitions/StatisticEmailDataElement'
+      telephone:
+        $ref: '#/definitions/StatisticTelephoneDataElement'
+      name:
+        $ref: '#/definitions/StatisticNameDataElement'
+      address:
+        $ref: '#/definitions/StatisticAddressDataElement'
+  MatchTypeInfo: 
+    type: object
+    properties: 
+      firstSeen: 
+        type: string
+        format: date-time
+      lastSeen: 
+        type: string
+        format: date-time
+      dataMatchType: 
+        type: string
+        example: "NAME"
+        maxLength: 20
+        enum: 
+          - IP_ADDRESS
+          - DEVICE_ID
+          - TELEPHONE
+          - EMAIL
+          - NAME
+          - FIRST_AND_LAST
+          - ADDRESS_FULL
+          - ADDRESS1_ZIP
+  StatisticEmailDataElement:
+    type: object
+    properties:
+      email:
+        type: string
+        example: "email@domain.com"
+  StatisticNameDataElement:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: FRANK
+      middleNames:
+        type: string
+        example: SIMON
+      surName:
+        type: string
+        example: SMITH
+      surName2:
+        type: string
+        example: JOHNSON
+      nameSuffix:
+        type: string
+        example: JR
+  StatisticsIdentifierAssociation:
+    type: object
+    description: Identifies the statisticDataElement and dataMatchType used to calculate this statistic and what
+      is being counted
+    required:
+      - countOf
+      - dataElementId
+      - dataMatchType
+    properties:
+      countOf:
+        description: This statistic counts the number of different values of this dataMatchType associated 
+          with the dataElementId when matched by dataMatchType
+        type: string
+        example: "NAME"
+        enum:
+          - IP_ADDRESS
+          - DEVICE_ID
+          - TELEPHONE
+          - EMAIL
+          - NAME
+          - FIRST_AND_LAST
+          - ADDRESS_FULL
+          - ADDRESS1_ZIP
+      dataElementId:
+        description: The ID of the statisticDataElement used to calculate this statistic
+        type: string
+        minLength: 1
+      dataMatchType:
+        description: The dataMatchType applied to the statisticDataElement used to calculate this statistic
+        type: string
+        example: "NAME"
+        enum:
+          - IP_ADDRESS
+          - DEVICE_ID
+          - TELEPHONE
+          - EMAIL
+          - NAME
+          - FIRST_AND_LAST
+          - ADDRESS_FULL
+          - ADDRESS1_ZIP
+  StatisticsIdentifier:
+    type: object
+    description:  Identifies the statisticDataElement and dataMatchType used to calculate this statistic
+    required:
+      - dataElementId
+      - dataMatchType
+    properties:
+      dataElementId:
+        description: The ID of the statisticDataElement used to calculate this statistic
+        type: string
+        minLength: 1
+      dataMatchType:
+        description: The dataMatchType applied to the statisticDataElement used to calculate this statistic
+        type: string
+        example: "NAME"
+        enum:
+          - IP_ADDRESS
+          - DEVICE_ID
+          - TELEPHONE
+          - EMAIL
+          - NAME
+          - FIRST_AND_LAST
+          - ADDRESS_FULL
+          - ADDRESS1_ZIP
+  StatisticRow:
+    type: object
+    properties:
+      dimensionValues:
+        type: array
+        items:
+          type: string
+        example: "login"
+      count:
+        type: number
+        minimum: 0
+        example: 23
+  StatisticsTable:
+    type: object
+    properties:
+      dimensionNames:
+        type: array
+        minItems: 1
+        items:
+          type: string
+        example: Sector
+      rows:
+        type: array
+        items:
+          $ref: '#/definitions/StatisticRow'
+  StatisticTelephoneDataElement:
+    type: object
+    properties:
+      internationalCode:
+        type: string
+        example: "+1"
+      areaCode:
+        type: string
+        example: "480"
+      number:
+        type: string
+        example: "555-1212"
+  Telephone:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "MAINAPPLICANT_PHONE"
+        maxLength: 40
+      number:
+        type: string
+        example: "03444810800"
+        maxLength: 15
+      type:
+        type: string
+        example: "WORK"
+        maxLength: 10
+        enum:
+          - LANDLINE
+          - MOBILE
+          - IP
+          - SATELLITE
+          - OTHER
+          - FAX
+      areaCode:
+        type: string
+        example: "0208"
+        maxLength: 10
+      internationalCode:
+        type: string
+        example: "44"
+        maxLength: 4
+      provider:
+        type: string
+        example: "BT"
+        maxLength: 15
+      phoneIdentifier:
+        type: string
+        example: "HOME"
+        maxLength: 15
+        enum:
+          - HOME
+          - WORK
+          - MOBILE
+          - FAX
+          - BUS
+          - OTH
+          - DAY
+          - EVE
+      stdCode:
+        type: string
+        example: "X"
+        maxLength: 6
+        enum:
+          - X
+          - N
+          - Q
+      extension:
+        type: string
+        example: "44444"
+        maxLength: 10
+      status:
+        type: string
+        example: "CURRENT"
+        maxLength: 20
+        enum:
+          - CURRENT
+          - PREVIOUS
+  TimeSpan:
+    type: object
+    properties:
+      unit:
+        type: string
+        example: "YEAR"
+        maxLength: 10
+        enum:
+          - DAY
+          - WEEK
+          - MONTH
+          - YEAR
+      value:
+        type: number
+        example: 5
+        maxLength: 4
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "TRANSACTION_1"
+        maxLength: 30
+      type:
+        type: string
+        example: "PAYMENT"
+        maxLength: 30
+        enum:
+          - PAYMENT
+          - TRANSFER
+          - BILL_PAY
+      cashValue:
+        $ref: '#/definitions/MonetaryAmount'
+      pointsRedeemed:
+        type: number
+        example: 4000
+        maxLength: 10
+      time:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      category:
+        type: string
+        example: "SALE"
+        maxLength: 15
+        enum:
+          - SALE
+          - REFUND
+          - DEPOSIT
+          - REDEEM
+      method:
+        $ref: '#/definitions/Method'
+      transferType:
+        type: string
+        example: "WIRE"
+        maxLength: 20
+        enum:
+          - WIRE
+          - P2P
+          - BETWEEN_ACCOUNTS
+      memo:
+        type: string
+        example: "Free text field with note relating to transfer"
+        maxLength: 100
+      payerContactId:
+        type: string
+        example: "MAINCONTACT_1"
+        maxLength: 40
+      recurrentPayee:
+       type: boolean
+       example: true
+       maxLength: 5
+      fromAccountId:
+        type: string
+        example: "ACCOUNT_1"
+        maxLength: 40
+      toAccountId:
+        type: string
+        example: "ACCOUNT_1"
+        maxLength: 40
+      billPayContactId:
+        type: string
+        example: "MAINCONTACT_1"
+        maxLength: 40
+      invoiceNumber:
+       type: string
+       example: "INV1000129234"
+       maxLength: 40
+  InsuranceDate:
+    type: object
+    properties:
+      dateType:
+        type: string
+        example: "ORIGINAL_INCEPTION_DATE"
+        maxLength: 40
+        enum:
+          - ORIGINAL_INCEPTION_DATE
+          - POLICY_END_DATE
+          - RENEWAL_DATE
+          - EFFECTIVE_DATE
+          - CLAIM_CLOSED
+          - LOSS_DATE
+          - NOTIFICATION_DATE
+          - ATTACHED_DATE
+          - TERMINATED_DATE
+          - NATIONAL_INSURANCE
+          - COVER_START
+          - ADDED_DATE
+          - EXPIRY_DATE
+      date:
+        type: string
+        format: date-time
+        example: "1999-12-30"
+        maxLength: 10
+  UnitWeight:
+    type: object
+    properties:
+      weight:
+        type: number
+        example: 10
+        maxLength: 5
+      unit:
+        type: string
+        example: "KILOGRAM"
+        maxLength: 10
+        enum:
+          - KILOGRAM
+          - POUND
+          - OUNCE
+          - GRAM
+          - UNKNOWN
+  UserAccount:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "USERACCOUNT_1"
+        maxLength: 30
+      userAccountId:
+        type: string
+        example: "ID12345"
+        maxLength: 20
+      username:
+        type: string
+        example: "USER_1"
+        maxLength: 20
+      hashedPassword:
+        type: string
+        example: "A64B54911B4859AC1AC42A96FEA530F4264FDF15ED36B7DF9C9A9DC6E3839D89"
+        maxLength: 100
+      enrollmentTime:
+        type: string
+        format: date-time
+        example: "2015-11-30T14:20:04Z"
+        maxLength: 30
+      accountHolder:
+        $ref: '#/definitions/UserAccountHolder'
+      returnCustomer:
+        type: boolean
+        example: false
+        maxLength: 5
+      lastActionTimes:
+        $ref: '#/definitions/LastActionTimes'
+      currentlyTraveling:
+        type: boolean
+        example: true
+        maxLength: 5
+      loyaltyProgramId:
+        type: string
+        example: "LOYALTY_1"
+        maxLength: 40
+      activityType:
+       type: string
+       example: "CHANGE_ADDRESS"
+       maxLength: 40
+       enum:
+         - ACCESS_ADMIN_PAGE
+         - WIRE_PAYMENT
+         - ADD_OPERATOR
+         - OB_BULK_PAYMENT
+         - AUTHORISES_SMARTCARD
+         - OB_CONSENT_SUBMISSION
+         - CANCEL_SMARTCARD
+         - OB_CR_IDENTIFY
+         - IMPORT_SPREADSHEETS
+         - OB_FUNDS_CHECK
+         - REGISTER_ACCOUNT_ACCESS
+         - OB_MI
+         - ACCOUNT_ACTIVATION
+         - OB_PASSWORD
+         - CARD_ACTIVATION
+         - CC_REPLACEMENT
+         - CHANGE_ADDRESS
+         - ENROLLMENT
+         - CHANGE_BENEFICIARY_DETAILS
+         - NEW_APPLICATION
+         - CHANGE_DETAILS
+         - OPEN_NEW_ACCOUNT
+         - CHANGE_EMAIL
+         - SUBMIT
+         - CHANGE_MEMORABLE_WORD
+         - VIEW_CARD_INFO
+         - CHANGE_PASSWORD
+         - VIEW_STATEMENTS
+         - CHANGE_PHONE
+         - CHANGES_BENEFICIARY_TEMPLATES
+         - REQUEST_NEW_PIN
+         - UPDATE_TEXT_ALERTS
+         - ECOM_LOAN
+         - ECOM_LOGIN
+         - ECOM_PAYMENT
+         - LOGIN
+         - RESET_PASSWORD
+         - SECOND_LOGIN
+         - ADD_CARD
+         - ADD_INTERNATIONAL_PAYEE
+         - ADD_PAYEE_PAY_A_BILL
+         - ADD_PAYEE_PAY_A_PERSON
+         - AUTHORIZE_PAYMENT
+         - BALANCE_TRANSFER
+         - BILL_PAYMENT
+         - INTERNATIONAL_PAYMENT
+         - PAYMENT_P2P
+         - PERSON_PAYMENT
+         - REQUEST_CREDIT
+         - REQUEST_LOAN
+      activityName:
+       type: string
+       example: "Change Addres"
+       maxLength: 40
+      userType:
+       type: string
+       example: "Admin"
+       maxLength: 40
+      authenticationResult:
+       type: string
+       example: "failed"
+       maxLength: 40
+      authMethod:
+       type: string
+       example: "otpEmail"
+       maxLength: 40
+      biometricLogin:
+       type: boolean
+       example: true
+       maxLength: 5
+      isLocked:
+       type: boolean
+       example: false
+       maxLength: 5
+      loginSuccess:
+       type: boolean
+       example: false
+       maxLength: 5
+      membershipId:
+       type: string
+       example: "MEM12346778"
+       maxLength: 50
+      noOfFailedAuth:
+       type: number
+       example: 0
+       maxLength: 10
+      permissionsRequested:
+       type: string
+       example: "access to checking"
+       maxLength: 100
+      custEstablishedDate:
+        type: string
+        format: date
+        example: "2020-01-27"
+        maxLength: 10
+      stepUpResult:
+        type: boolean
+        example: true
+        maxLength: 5
+      stepUpResultDetail:
+        type: string
+        maxLength: 50
+        example: "Passed ID Check"
+  UserAccountHolder:
+    type: object
+    properties:
+      contactId:
+        type: string
+        example: "MAINCONTACT_1"
+        maxLength: 40
+  UserDefinedElement:
+    type: object
+    properties:
+      fieldName:
+        type: string
+        example: "--Field Name here--"
+        maxLength: 30
+      fieldValue:
+        type: string
+        example: "--Field Value here--"
+        maxLength: 30
+  UserDefinedField:
+    type: object
+    properties:
+      userDefinedTableName:
+        type: string
+        example: "--Table Name here--"
+        maxLength: 64
+      userDefinedElements:
+        type: array
+        items:
+          $ref: '#/definitions/UserDefinedElement'
+  UserIdentityCookie:
+    type: object
+    properties:
+      key:
+        type: string
+        example: "JSESSIONID"
+        maxLength: 100
+      value:
+        type: string
+        example: "E9BBCE8410DE7F5572295159C45B0207"
+        maxLength: 100
+  Vehicle:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "VEHICLE_1"
+        maxLength: 40
+      type:
+        type: string
+        example: "INSURED"
+        maxLength: 40
+        enum:
+          - INSURED
+          - THIRD_PARTY
+          - FINANCED
+          - TRADE_IN
+          - COLLATERAL
+      ownersContactId:
+        type: string
+        example: "CONTACT_OWNER"
+        maxLength: 40
+      keeperContactId:
+        type: string
+        example: "KEEPER_CONTACT"
+        maxLength: 40
+      vin:
+        type: string
+        example: "1HGBH41JXMN109186"
+        maxLength: 60
+      plateNumber:
+        type: string
+        example: "BCD123MP"
+        maxLength: 20
+      make:
+        type: string
+        example: "Car Maker"
+        maxLength: 60
+      model:
+        type: string
+        example: "Car Model"
+        maxLength: 100
+      color:
+        type: string
+        example: "White"
+        maxLength: 40
+      vehicleType:
+        type: string
+        example: "CAR"
+        maxLength: 60
+        enum:
+          - CAR
+          - MOTORBIKE
+          - VAN
+          - HGV
+          - OTHER
+          - BICYCLE
+          - BUS
+          - CAMPER_VAN
+          - TAXI
+      engineSize:
+        type: string
+        example: "3928cc"
+        maxLength: 10
+      bodyStyle:
+        type: string
+        example: "SALOON"
+        maxLength: 50
+        enum:
+          - SALOON
+          - HATCHBACK
+          - COUPE
+          - ESTATE
+          - SUV
+          - CONVERTIBLE
+          - MPV
+          - PEOPLE_CARRIER
+          - MICRO
+          - SUB_COMPACT
+          - COMPACT
+          - MINIVAN
+          - STATION_WAGON
+          - PICKUP
+          - SPORTS
+          - LIMOUSINE
+          - BUS
+          - CAMPER
+      yearOfManufacture:
+        type: string
+        example: "2016"
+        maxLength: 4
+      yearOfRegistration:
+        type: string
+        example: "2016"
+        maxLength: 4
+      value:
+        $ref: '#/definitions/MonetaryAmount'
+      driveable:
+        type: boolean
+        example: false
+        maxLength: 5
+      tracking:
+        type: string
+        example: "Y"
+        maxLength: 5
+      modifications:
+        type: string
+        example: "None"
+        maxLength: 100
+      engineType:
+        type: string
+        example: "DIESEL"
+        maxLength: 90
+        enum:
+          - DIESEL
+          - PETROL
+          - LPG
+          - ELECTRIC
+          - PETROL_HYBRID
+          - DIESEL_HYBRID
+          - HYDROGEN
+          - BIODIESEL
+          - BIOETHANOL
+      carTrim:
+        type: string
+        example: "Standard"
+        maxLength: 100
+      overnightParkingLocation:
+        type: string
+        example: "GARAGE"
+        maxLength: 50
+        enum:
+          - GARAGE
+          - ON_STREET
+          - DRIVEWAY
+      annualMileage:
+        type: number
+        example: 12000
+        maxLength: 10
+  VelocityStatistics:
+    type: object
+    properties:
+      duration:
+        type: string
+        example: PT24H
+      totalCount:
+        type: number
+        minimum: 0
+        example: 50
+      table:
+        $ref: '#/definitions/StatisticsTable'
+      statisticIdentifier:
+        $ref: '#/definitions/StatisticsIdentifier'
+  WarningOrError:
+    type: object
+    properties:
+      responseType:
+        type: string
+        example: "Info"
+        maxLength: 40
+      responseCode:
+        type: string
+        example: "INF001"
+        maxLength: 40
+      responseMessage:
+        type: string
+        example: "date of birth not provide"
+        maxLength: 300
+  Options:
+    type: object
+    properties:
+      version:
+        type: string
+        maxLength: 4
+      customOption1:
+        type: string
+        maxLength: 40
+      customOption2:
+        type: string
+        maxLength: 40
+      customOption3:
+        type: string
+        maxLength: 40
+      customOption4:
+        type: string
+        maxLength: 40
+      customOption5:
+        type: string
+        maxLength: 40
+      customOption6:
+        type: string
+        maxLength: 40
+      customOption7:
+        type: string
+        maxLength: 40
+  GeneralData:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "DATA_1"
+        maxLength: 40
+      dataName:
+        type: string
+        example: "value"
+        maxLength: 100
+      description:
+        type: string
+        maxLength: 1000
+        example: "What this field is"
+      properties:
+        type: array
+        items:
+          $ref: '#/definitions/DataProperties'
+  DataProperties:
+    type: object
+    properties:
+      key:
+        type: string
+        maxLength: 100
+        example: "date-field"
+      value:
+        type: string
+        example: "1900-01-01"
+      valueType:
+        type: string
+        maxLength: 20
+        example: "date"
