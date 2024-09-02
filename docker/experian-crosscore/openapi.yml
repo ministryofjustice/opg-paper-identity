@@ -58,85 +58,13 @@ paths:
               $ref: '#/components/schemas/RequestMessage'
       responses:
         '200':
-          description: successful operation
-          schema:
-            $ref: '#/components/schemas/ResponseMessage'
+          description: "HTTP Status 200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
         "401":
           description: Error
-  /oauth2/experianone/v1/token:
-    post:
-      parameters:
-        - in: header
-          name: "x-correlation-id"
-          schema:
-            type: string
-            example: "08efeee5-2e10-4dde-955b-be0f816d2e3d"
-          required: true
-        - in: header
-          name: "x-user-domain"
-          schema:
-            type: string
-            example: "publicguardian.com"
-          required: true
-        - in: header
-          name: "content-type"
-          schema:
-            type: string
-            example: "application/json"
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: "SYSTEM.UATAPI@publicguardian.com"
-                password:
-                  type: string
-                  example: "58ehgvb74uh8812uw89i329gijv9ekk"
-                client_id:
-                  type: string
-                  example: "o0mdjhtybndu73jertoijsogfkidk3i"
-                client_secret:
-                  type: string
-                  example: "1ffg85rb7du83wvre"
-      responses:
-        200:
-          description: "HTTP Status 200"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  issued_at:
-                    type: string
-                    pattern: "1724403176"
-                  expires_in:
-                    type: string
-                    pattern: "1800"
-                  token_type:
-                    type: string
-                    pattern: "Bearer"
-                  access_token:
-                    type: string
-                    pattern: 'ey[A-Za-z0-9]{700}'
-                  refresh_token:
-                    type: string
-                    pattern: '[0-9A-Za-z-]{30}'
-        401:
-          description: "HTTP Status 200"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  errors:
-                    type: object
-                  success:
-                    type: string
-                    example: false
 components:
   schemas:
     GenericResponse:
@@ -215,10 +143,6 @@ components:
     RequestPayload:
       type: object
       properties:
-        control:
-          type: array
-          items:
-            $ref: '#/components/schemas/ControlOption'
         source:
           type: string
           example: "WEB"
@@ -239,66 +163,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Contact'
-        financialAccounts:
-          type: array
-          items:
-            $ref: '#/components/schemas/FinancialAccount'
-        contracts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Contract'
-        vehicles:
-          type: array
-          items:
-            $ref: '#/components/schemas/Vehicle'
-        assets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Asset'
-        application:
-          $ref: '#/components/schemas/Application'
-        device:
-          $ref: '#/components/schemas/Device'
-        userAccount:
-          $ref: '#/components/schemas/UserAccount'
-        loyaltyProgram:
-          $ref: '#/components/schemas/LoyaltyProgram'
-        session:
-          $ref: '#/components/schemas/Session'
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Transaction'
-        orders:
-          type: array
-          items:
-            $ref: '#/components/schemas/Order'
-        services:
-          type: array
-          items:
-            $ref: '#/components/schemas/Service'
-        externalResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExternalResult'
-        externalLookups:
-          type: array
-          items:
-            $ref: '#/components/schemas/ExternalLookup'
-        userDefinedFields:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserDefinedField'
-        kba:
-          $ref: '#/components/schemas/KnowledgeBasedAuthentication'
-        generalData:
-          type: array
-          items:
-            $ref: '#/components/schemas/GeneralData'
-        decisionElements:
-          type: array
-          items:
-            $ref: '#/components/schemas/DecisionElements'
     ResponseMessage:
       type: object
       properties:
@@ -554,40 +418,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Address'
-        identityDocuments:
-          type: array
-          items:
-            $ref: '#/components/schemas/IdentityDocument'
-        organization:
-          $ref: '#/components/schemas/Organization'
-        telephones:
-          type: array
-          items:
-            $ref: '#/components/schemas/Telephone'
-        emails:
-          type: array
-          items:
-            $ref: '#/components/schemas/Email'
-        employmentHistory:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmploymentHistory'
-        bankAccount:
-          $ref: '#/components/schemas/BankAccount'
-        cards:
-          type: array
-          items:
-            $ref: '#/components/schemas/Card'
-        biometrics:
-          $ref: '#/components/schemas/Biometric'
-        incomes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Income'
-        socialMediaAccounts:
-          type: array
-          items:
-            $ref: '#/components/schemas/SocialMediaAccount'
     Person:
       type: object
       properties:
@@ -725,6 +555,7 @@ components:
           type: string
           maxLength: 20
           example: "SIN"
+          required: false
           enum:
             - SIN
             - MAR
