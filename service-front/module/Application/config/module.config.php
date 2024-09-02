@@ -6,18 +6,18 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
-use Application\Factories\LocalisationHelperFactory;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
-use Application\Helpers\LocalisationHelper;
+use Application\PostOffice\DocumentTypeRepository;
+use Application\PostOffice\DocumentTypeRepositoryFactory;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
+use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
-use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Psr\Log\LoggerInterface;
 use Twig\Extension\DebugExtension;
 
@@ -25,8 +25,6 @@ $prefix = getenv("PREFIX");
 if (! is_string($prefix)) {
     $prefix = '';
 }
-
-$localisationConfig = 'localisation.config.php';
 
 return [
     'router' => [
@@ -531,7 +529,7 @@ return [
         ],
     ],
     'listeners' => [
-        AuthListener::class
+        AuthListener::class,
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
@@ -560,7 +558,7 @@ return [
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             TwigExtension::class => TwigExtensionFactory::class,
-            LocalisationHelper::class => LocalisationHelperFactory::class,
+            DocumentTypeRepository::class => DocumentTypeRepositoryFactory::class,
         ],
     ],
     'zend_twig' => [
@@ -579,7 +577,7 @@ return [
             'NATIONAL_ID' => 'National ID',
             'RESIDENCE_PERMIT' => 'Residence permit',
             'TRAVEL_DOCUMENT' => 'Travel document',
-            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number'
+            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
         ],
         'identity_routes' => [
             'TELEPHONE' => 'Telephone',
@@ -604,13 +602,6 @@ return [
             'xdln' => 'Photocard driving licence',
             'xid' => 'National identity card',
         ],
-        'yoti_identity_methods' => [
-            'PASSPORT' => "Passport",
-            'DRIVING_LICENCE' => 'Driving licence',
-            'NATIONAL_ID' => 'National ID',
-            'RESIDENCE_PERMIT' => 'Residence permit',
-            'TRAVEL_DOCUMENT' => 'Travel document',
-        ],
-        'localisation' => include $localisationConfig,
-    ]
+        'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
+    ],
 ];
