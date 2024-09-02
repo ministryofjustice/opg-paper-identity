@@ -103,7 +103,7 @@ class IndexController extends AbstractActionController
             return [
                 'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
                 'last_name' => $data['opg.poas.sirius']['donor']['surname'],
-                'dob' => (new DateTime($data['opg.poas.sirius']['donor']['dob']))->format("Y-m-d"),
+                'dob' => DateTime::createFromFormat('d/m/Y', $data['opg.poas.sirius']['donor']['dob'])->format("Y-m-d"),
                 'address' => $address,
             ];
         } elseif ($type === 'certificateProvider') {

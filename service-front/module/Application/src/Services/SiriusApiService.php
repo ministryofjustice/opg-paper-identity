@@ -23,6 +23,7 @@ use Laminas\Stdlib\RequestInterface;
  *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
+ *    caseSubtype: string,
  *    donor: array{
  *      firstname: string,
  *      surname: string,
@@ -36,6 +37,7 @@ use Laminas\Stdlib\RequestInterface;
  *    },
  *  },
  *  "opg.poas.lpastore": ?array{
+ *    lpaType: string,
  *    donor: array{
  *      firstNames: string,
  *      lastName: string,

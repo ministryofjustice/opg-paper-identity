@@ -15,7 +15,7 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\InputFilter\InputInterface;
 use Psr\Log\LoggerInterface;
 
-class DataImportHandler
+class DataWriteHandler
 {
     public function __construct(
         private readonly DynamoDbClient $dynamoDbClient,
@@ -24,7 +24,7 @@ class DataImportHandler
     ) {
     }
 
-    public function insertData(CaseData $item): void
+    public function insertUpdateData(CaseData $item): void
     {
         $marsheler = new Marshaler();
         $encoded = $marsheler->marshalItem($item->jsonSerialize());

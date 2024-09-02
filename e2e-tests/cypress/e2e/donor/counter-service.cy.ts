@@ -42,7 +42,8 @@ describe("Counter service donor journey", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Choose country");
-    cy.getInputByLabel("Choose country").select("Austria");
+    cy.getInputByLabel("Choose country").type("Austria");
+    cy.contains("Austria").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Choose document");

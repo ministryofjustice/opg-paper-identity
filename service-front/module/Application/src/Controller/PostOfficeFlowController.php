@@ -19,7 +19,6 @@ use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Validator\NotEmpty;
 use Laminas\View\Model\ViewModel;
 
 class PostOfficeFlowController extends AbstractActionController
@@ -159,7 +158,7 @@ class PostOfficeFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
-        ;
+
 
         $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"], true);
 
@@ -191,6 +190,7 @@ class PostOfficeFlowController extends AbstractActionController
                 $view->setVariable('errors', ['API Error']);
             }
         }
+
         return $view->setTemplate('application/pages/post_office/confirm_post_office');
     }
 
@@ -200,6 +200,7 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
+
         return $view->setTemplate('application/pages/post_office/what_happens_next');
     }
 
@@ -209,6 +210,7 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
+
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
     }
 
@@ -224,22 +226,22 @@ class PostOfficeFlowController extends AbstractActionController
              * @psalm-suppress ArgumentTypeCoercion
              */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
 
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             * @psalm-suppress InvalidArrayOffset
-             * @psalm-suppress PossiblyNullArgument
-             */
-            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            if (! empty($lpasData['opg.poas.lpastore'])) {
+                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            } else {
+                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
+                    $lpasData['opg.poas.sirius']['donor']['surname'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            }
 
             $lpaDetails[$lpa] = [
                 'name' => $name,
-                'type' => $type
+                'type' => $type,
             ];
         }
 

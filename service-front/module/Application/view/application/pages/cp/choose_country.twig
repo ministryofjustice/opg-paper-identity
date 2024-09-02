@@ -31,8 +31,8 @@
                             {{ form.get('country').messages | join(', ', ' and ') }}
                         </p>
                     {% endif %}
-                    <div class="govuk-form-group" id="choose-country">
-                        <select class="govuk-select" id="country" name="country">
+                    <div class="govuk-form-group govuk-body govuk-!-width-one-half" id="choose-country">
+                        <select class="govuk-select" id="country" name="country" data-module="app-natural-autocomplete">
                             <option value=""></option>
                             <option value="0">The issuing country is not listed</option>
                             {% for code, option in countries_data %}
@@ -40,7 +40,7 @@
                                         value="{{ code }}"
                                         {% if form.get('country').value == code %}selected{% endif %}
                                 >
-                                    {{ option.name }}
+                                    {{- option.name -}}
                                 </option>
                             {% endfor %}
                         </select>
