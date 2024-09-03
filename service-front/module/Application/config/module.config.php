@@ -6,6 +6,8 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Controller\Factory\DonorFlowControllerFactory;
+use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
@@ -522,10 +524,10 @@ return [
     'controllers' => [
         'factories' => [
             Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
-            Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
-            Controller\PostOfficeFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
         ],
     ],
     'listeners' => [
