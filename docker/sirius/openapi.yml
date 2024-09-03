@@ -145,7 +145,7 @@ paths:
             nullable: false
       operationId: postPostOfficeLetterSuffix
       summary: Send Yoti Letter PDF data
-      description: Send base64 encoded PDF data for Post office letter
+      description: Send base64 encoded PDF data for Post Office letter
       tags: [ poa ]
       requestBody:
         description: Sirius LPA document data

@@ -12,7 +12,7 @@ interface YotiServiceInterface
     /**
      * @param string $postCode
      * @return array
-     * Get post offices near the location
+     * Get Post Offices near the location
      * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array;

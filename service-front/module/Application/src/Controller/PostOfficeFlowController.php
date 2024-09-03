@@ -181,7 +181,7 @@ class PostOfficeFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $responseData = $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
 
-            //trigger post office counter service & send pdf to sirius
+            //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
             $pdfData = $counterService['pdfBase64'];
             /**
