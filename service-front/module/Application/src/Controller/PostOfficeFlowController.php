@@ -87,8 +87,9 @@ class PostOfficeFlowController extends AbstractActionController
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
 
         $view = new ViewModel();
-
-        $siriusEditUrl = getenv("SIRIUS_BASE_URL"). '/lpa/frontend/lpa/'. $detailsData["lpas"][0];
+        /** @var string $base */
+        $base = getenv("SIRIUS_BASE_URL");
+        $siriusEditUrl = $base . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
         $view->setVariable('sirius_edit_url', $siriusEditUrl);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);

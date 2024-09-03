@@ -95,8 +95,9 @@ class DonorFlowController extends AbstractActionController
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
 
         $view = new ViewModel();
-
-        $siriusEditUrl = getenv("SIRIUS_BASE_URL"). '/lpa/frontend/lpa/'. $detailsData["lpas"][0];
+        /** @var string $base */
+        $base = getenv("SIRIUS_BASE_URL");
+        $siriusEditUrl = $base . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
 
         $view->setVariables([
             'details_data' => $detailsData,
