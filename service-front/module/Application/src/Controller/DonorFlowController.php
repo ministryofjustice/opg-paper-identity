@@ -27,6 +27,7 @@ class DonorFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
+        private readonly string $siriusBaseUrl,
     ) {
     }
 
@@ -95,9 +96,8 @@ class DonorFlowController extends AbstractActionController
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
 
         $view = new ViewModel();
-        /** @var string $base */
-        $base = getenv("SIRIUS_BASE_URL");
-        $siriusEditUrl = $base . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
 
         $view->setVariables([
             'details_data' => $detailsData,

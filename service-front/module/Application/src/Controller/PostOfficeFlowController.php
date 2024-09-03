@@ -32,6 +32,7 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
+        private readonly string $siriusBaseUrl,
     ) {
     }
 
@@ -87,9 +88,8 @@ class PostOfficeFlowController extends AbstractActionController
         $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
 
         $view = new ViewModel();
-        /** @var string $base */
-        $base = getenv("SIRIUS_BASE_URL");
-        $siriusEditUrl = $base . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
         $view->setVariable('sirius_edit_url', $siriusEditUrl);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
