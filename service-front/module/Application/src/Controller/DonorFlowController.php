@@ -96,10 +96,13 @@ class DonorFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
+        $siriusEditUrl = getenv("SIRIUS_BASE_URL"). '/lpa/frontend/lpa/'. $detailsData["lpas"][0];
+
         $view->setVariables([
             'details_data' => $detailsData,
             'uuid' => $uuid,
             'next_page' => $nextPage,
+            'sirius_edit_url' => $siriusEditUrl
         ]);
 
         return $view->setTemplate('application/pages/donor_details_match_check');
