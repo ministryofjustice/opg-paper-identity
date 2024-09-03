@@ -23,7 +23,8 @@ class PostOfficeFlowControllerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null): PostOfficeFlowController {
+        array $options = null
+    ): PostOfficeFlowController {
         /** @var string $siriusBaseUrl */
         $siriusBaseUrl = getenv("SIRIUS_BASE_URL");
         $config = $container->get('Config');
