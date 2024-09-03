@@ -7,40 +7,40 @@ namespace Application\Services\Experian\FraudApi\DTO;
 class ExperianCrosscoreFraudRequestDTO
 {
     public function __construct(
-        private readonly string $userName,
-        private readonly string $password,
-        private readonly string $clientId,
-        private readonly string $clientSecret
+        private readonly string $firstName,
+        private readonly string $lastName,
+        private readonly string $dob,
+        private readonly array $address
     ) {
     }
 
-    public function userName(): string
+    public function firstName(): string
     {
-        return $this->userName;
+        return $this->firstName;
     }
 
-    public function password(): string
+    public function lastName(): string
     {
-        return $this->password;
+        return $this->lastName;
     }
 
-    public function clientId(): string
+    public function dob(): string
     {
-        return $this->clientId;
+        return $this->dob;
     }
 
-    public function clientSecret(): string
+    public function address(): array
     {
-        return $this->clientSecret;
+        return $this->address;
     }
 
     public function toArray(): array
     {
         return [
-            'userName' => $this->userName,
-            'password' => $this->password,
-            'clientId' => $this->clientId,
-            'clientSecret' => $this->clientSecret,
+            'userName' => $this->firstName,
+            'password' => $this->lastName,
+            'clientId' => $this->dob,
+            'clientSecret' => $this->address,
         ];
     }
 }

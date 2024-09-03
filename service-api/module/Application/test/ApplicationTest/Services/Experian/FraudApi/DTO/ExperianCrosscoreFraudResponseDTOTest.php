@@ -7,7 +7,7 @@ namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi\DTO;
 use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
 use PHPUnit\Framework\TestCase;
 
-class ExperianCrosscoreAuthResponseDTOTest extends TestCase
+class ExperianCrosscoreFraudResponseDTOTest extends TestCase
 {
     private readonly ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO;
 
