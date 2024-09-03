@@ -163,6 +163,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Contact'
+        control:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlOption'
+        application:
+          $ref: '#/components/schemas/Application'
     ResponseMessage:
       type: object
       properties:
@@ -178,7 +184,9 @@ components:
         requestType:
           type: string
           maxLength: 40
-          example: "-- requestType supplied in request --"
+          example: "FraudScore"
+          enum:
+            - FraudScore
         clientReferenceId:
           type: string
           maxLength: 40
@@ -1512,10 +1520,12 @@ components:
           format: date-time
           example: "2016-11-30T14:20:04Z"
           maxLength: 30
+          required: false
         utcOffset:
           type: string
           example: "+01:00"
           maxLength: 6
+          required: false
         type:
           type: string
           example: "CREDIT"
@@ -1536,14 +1546,17 @@ components:
             - INSURANCE_CLAIM
             - INSURANCE_POLICY
             - INSTANT_CREDIT
+          required: false
         durationInMillis:
           type: number
           example: 200000
           maxLength: 10
+          required: false
         status:
           type: string
           example: "ACCEPTED"
           maxLength: 20
+          required: false
           enum:
             - ACCEPTED
             - DECLINED
@@ -1559,93 +1572,115 @@ components:
           type: boolean
           example: true
           maxLength: 5
+          required: false
         brand:
           type: string
           example: "My Bank"
           maxLength: 40
+          required: false
         sourceOfIntroduction:
           type: string
           example: "Broker"
           maxLength: 10
-        productDetails:
-          $ref: '#/components/schemas/ProductDetails'
-        policyDetails:
-          $ref: '#/components/schemas/PolicyDetails'
-        claimDetails:
-          $ref: '#/components/schemas/ClaimDetails'
+          required: false
+#        productDetails:
+#          $ref: '#/components/schemas/ProductDetails'
+#        policyDetails:
+#          $ref: '#/components/schemas/PolicyDetails'
+#
+#        claimDetails:
+#          $ref: '#/components/schemas/ClaimDetails'
+#
         applicants:
           type: array
           items:
             $ref: '#/components/schemas/Applicant'
         applicationEntities:
           type: array
+          required: false
           items:
             $ref: '#/components/schemas/ApplicationEntity'
         memo:
           type: string
           example: "free text field with note relating to application"
           maxLength: 200
+          required: false
         oneTimePasscode:
           type: string
           example: "112233"
           maxLength: 10
+          required: false
         messageTime:
           type: string
           format: date-time
           example: "2015-11-30T14:20:04Z"
           maxLength: 30
+          required: false
         expReference:
           type: string
           example: "Ref12345"
           maxLength: 10
+          required: false
         aps:
           type: string
           example: "Authenticate"
           maxLength: 20
+          required: false
         apsUserId:
           type: string
           example: "ID12345"
           maxLength: 100
+          required: false
         operatorId:
           type: string
           example: "JY5678832"
           maxLength: 20
+          required: false
         operatorName:
           type: string
           example: "John Smith"
           maxLength: 50
+          required: false
         creditProtection:
           type: string
           example: "Yes"
           maxLength: 20
+          required: false
         branchName:
           type: string
           example: "Main Branch"
           maxLength: 100
+          required: false
         leadGen:
           type: string
           example: "Lead Gen Example"
           maxLength: 100
+          required: false
         otpMsgType:
           type: string
           example: "TEXT"
           maxLength: 8
+          required: false
         dealerId:
           type: string
           example: "DEALER12345"
           maxLength: 20
+          required: false
         dealerName:
           type: string
           example: "Dealer Name Example"
           maxLength: 50
+          required: false
         financialAccountIds:
           type: array
+          required: false
           items:
             type: string
             maxLength: 40
           example: ["FinancialID_1", "FinancialID_2"]
         contractIds:
           type: array
+          required: false
           items:
             type: string
             maxLength: 40
@@ -1654,18 +1689,22 @@ components:
           type: string
           example: "APPLICATION_1"
           maxLength: 40
+          required: false
         clientApplicationNumber:
           type: string
           example: "TRANS10000002"
           maxLength: 100
+          required: false
         retroDate:
           type: string
           format: date
           example: "2022-01-30"
+          required: false
         minTrustScore:
           type: number
           example: 100
           maxLength: 5
+          required: false
     ApplicationEntity:
       type: object
       properties:
@@ -4224,6 +4263,11 @@ components:
           type: string
           example: ACCEPT
           maxLength: 10
+          enum:
+            - ACCEPT
+            - NODECISION
+            - REFER
+            - CONTINUE
         score:
           type: number
           example: 999

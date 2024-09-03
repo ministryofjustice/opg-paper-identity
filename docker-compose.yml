@@ -22,6 +22,8 @@ services:
       retries: 3
     volumes:
       - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
+    ports:
+     - 8082:4010
 
   experian-crosscore-auth-mock:
     image: stoplight/prism:5.11.1
@@ -75,8 +77,8 @@ services:
         condition: service_healthy
       experian-iiq-mock:
         condition: service_healthy
-    entrypoint: /usr/local/bin/docker-php-entrypoint
-    command: ["php-fpm"]
+#    entrypoint: /usr/local/bin/docker-php-entrypoint
+#    command: ["php-fpm"]
     env_file: ./service-api/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
