@@ -6,7 +6,7 @@ describe("Counter service donor journey", () => {
     cy.contains("label", "Post Office").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which document will they take to the Post office?");
+    cy.contains("Which document will they take to the Post Office?");
     cy.contains("UK passport").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -37,7 +37,7 @@ describe("Counter service donor journey", () => {
     cy.contains("label", "Post Office").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which document will they take to the Post office?");
+    cy.contains("Which document will they take to the Post Office?");
     cy.contains("ID from another country").click();
     cy.get(".govuk-button").contains("Continue").click();
 
