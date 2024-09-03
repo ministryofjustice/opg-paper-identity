@@ -22,8 +22,6 @@ services:
       retries: 3
     volumes:
       - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
-    ports:
-     - 8082:4010
 
   experian-crosscore-auth-mock:
     image: stoplight/prism:5.11.1
@@ -36,8 +34,6 @@ services:
       retries: 3
     volumes:
       - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
-    ports:
-      - 8081:4011
 
   yoti-mock:
     image: paper-identity/yoti-mock
