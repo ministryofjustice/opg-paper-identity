@@ -11,6 +11,34 @@ services:
     volumes:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
 
+  experian-crosscore-mock:
+    image: stoplight/prism:5.11.1
+    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
+    restart: unless-stopped
+    healthcheck:
+      test: wget -O /dev/null -S 'http://0.0.0.0:4010/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
+    ports:
+     - 8082:4010
+
+  experian-crosscore-auth-mock:
+    image: stoplight/prism:5.11.1
+    command: mock -h 0.0.0.0 -p 4011 -d /tmp/openapi.yml
+    restart: unless-stopped
+    healthcheck:
+      test: wget -O /dev/null -S 'http://0.0.0.0:4011/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
+    ports:
+      - 8081:4011
+
   yoti-mock:
     image: paper-identity/yoti-mock
     build:
@@ -49,8 +77,8 @@ services:
         condition: service_healthy
       experian-iiq-mock:
         condition: service_healthy
-    entrypoint: /usr/local/bin/docker-php-entrypoint
-    command: ["php-fpm"]
+#    entrypoint: /usr/local/bin/docker-php-entrypoint
+#    command: ["php-fpm"]
     env_file: ./service-api/docker-compose.env
     healthcheck:
       test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
