@@ -25,7 +25,7 @@ class ExperianCrosscoreAuthResponseDTOTest extends TestCase
             'token_type' => 'tokenType'
         ];
 
-        $this->experianCrosscoreAuthResponseDTO = New ExperianCrosscoreAuthResponseDTO(
+        $this->experianCrosscoreAuthResponseDTO = new ExperianCrosscoreAuthResponseDTO(
             $this->data['access_token'],
             $this->data['refresh_token'],
             $this->data['issued_at'],

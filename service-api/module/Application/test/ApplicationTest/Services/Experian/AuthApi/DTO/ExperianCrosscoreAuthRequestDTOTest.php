@@ -24,7 +24,7 @@ class ExperianCrosscoreAuthRequestDTOTest extends TestCase
             'clientSecret' => 'clientSecret',
         ];
 
-        $this->experianCrosscoreAuthRequestDTO = New ExperianCrosscoreAuthRequestDTO(
+        $this->experianCrosscoreAuthRequestDTO = new ExperianCrosscoreAuthRequestDTO(
             $this->data['userName'],
             $this->data['password'],
             $this->data['clientId'],

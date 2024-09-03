@@ -74,7 +74,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
             $this->expectException($expectedException);
         }
 
-        $experianCrosscoreAuthApiService =  new ExperianCrosscoreAuthApiService(
+        $experianCrosscoreAuthApiService = new ExperianCrosscoreAuthApiService(
             $client,
             $this->apcHelper,
             $this->experianCrosscoreAuthRequestDto,

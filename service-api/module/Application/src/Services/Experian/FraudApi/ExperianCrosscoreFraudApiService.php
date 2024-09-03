@@ -48,7 +48,8 @@ class ExperianCrosscoreFraudApiService
         try {
             $response = $this->client->request(
                 'POST',
-                'oauth2/experianone/v1/token', [
+                'oauth2/experianone/v1/token',
+                [
                     'headers' => $this->makeHeaders(),
                     'json' => $experianCrosscoreAuthRequestDTO->toArray()
                 ]
@@ -68,7 +69,3 @@ class ExperianCrosscoreFraudApiService
         }
     }
 }
-
-
-
-
