@@ -648,6 +648,10 @@ class CPFlowController extends AbstractActionController
         }
 
         $countriesData = PostOfficeCountry::cases();
+        $countriesData = array_filter(
+            $countriesData,
+            fn (PostOfficeCountry $country) => $country !== PostOfficeCountry::GBR
+        );
 
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $idOptionsData);
