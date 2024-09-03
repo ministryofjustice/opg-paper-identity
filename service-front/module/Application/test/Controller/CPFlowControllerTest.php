@@ -276,6 +276,9 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_choose_country');
+
+        $this->assertQueryContentContains('[name="country"] > option[value="AUT"]', 'Austria');
+        $this->assertNotQuery('[name="country"] > option[value="GBR"]');
     }
 
     public function testPostOfficeCountriesIdPage(): void
