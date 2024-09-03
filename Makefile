@@ -1,4 +1,5 @@
 SHELL = '/bin/bash'
+.PHONY: build
 
 help:
 	@grep --no-filename -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -11,6 +12,9 @@ up: ## Start application
 
 down: ## Stop application
 	docker compose down
+
+download-reference-data:
+	curl https://api.yoti.com/idverify/v1/supported-documents > ./service-front/module/Application/config/yoti-supported-documents.json
 
 api-psalm: ## Run Psalm checks against API code
 	docker compose -p api-psalm run --rm --no-deps api-test vendor/bin/psalm -c ./psalm.xml --report=build/psalm-junit.xml
@@ -57,4 +61,4 @@ clean-junit-output:
 	sed -i -E 's/testcase name="(.*?):([0-9]+)"/& file="\1" line="\2"/g' ./service-front/build/psalm-junit.xml
 
 cypress:
-	docker compose run --build cypress
+	docker compose run cypress

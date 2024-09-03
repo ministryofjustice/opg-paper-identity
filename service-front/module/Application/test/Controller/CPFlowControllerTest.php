@@ -7,6 +7,9 @@ namespace ApplicationTest\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\PostOffice\Country;
+use Application\PostOffice\DocumentType;
+use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -273,6 +276,9 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_choose_country');
+
+        $this->assertQueryContentContains('[name="country"] > option[value="AUT"]', 'Austria');
+        $this->assertNotQuery('[name="country"] > option[value="GBR"]');
     }
 
     public function testPostOfficeCountriesIdPage(): void
@@ -308,6 +314,16 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $documentTypeRepository = $this->createMock(DocumentTypeRepository::class);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(DocumentTypeRepository::class, $documentTypeRepository);
+
+        $documentTypeRepository->expects($this->once())
+            ->method('getByCountry')
+            ->with(Country::AUT)
+            ->willReturn([DocumentType::Passport, DocumentType::NationalId]);
 
         $this->dispatch("/$this->uuid/cp/choose-country-id", 'POST', []);
         $this->assertResponseStatusCode(200);
@@ -371,7 +387,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ['id_method' => 'PASSPORT']
         );
         $this->assertResponseStatusCode(302);
-        $this->assertRedirect();
+        $this->assertRedirectTo(sprintf('/%s/cp/name-match-check', $this->uuid));
         $this->assertModuleName('application');
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');

@@ -23,6 +23,7 @@ use Laminas\Stdlib\RequestInterface;
  *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
+ *    caseSubtype: string,
  *    donor: array{
  *      firstname: string,
  *      surname: string,
@@ -36,6 +37,7 @@ use Laminas\Stdlib\RequestInterface;
  *    },
  *  },
  *  "opg.poas.lpastore": ?array{
+ *    lpaType: string,
  *    donor: array{
  *      firstNames: string,
  *      lastName: string,
@@ -107,8 +109,10 @@ class SiriusApiService
 
         $responseArray = json_decode(strval($response->getBody()), true);
 
-        $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
-            ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+        if (isset($responseArray['opg.poas.lpastore']['certificateProvider']['address'])) {
+            $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
+                ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+        }
 
         return $responseArray;
     }
@@ -168,7 +172,7 @@ class SiriusApiService
             "type" => "Save",
             "systemType" => "DLP-ID-PO-D",
             "content" => "",
-            "suffix" => $base64suffix,
+            "pdfSuffix" => $base64suffix,
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];

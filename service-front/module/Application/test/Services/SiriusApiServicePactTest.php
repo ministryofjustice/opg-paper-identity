@@ -198,6 +198,20 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals("", $response['error']);
     }
 
+    /**
+     * Returns an example of a tiny PDF with visible content
+     */
+    private function getMinimalPdf(): string
+    {
+        return "%PDF-1.2 \n
+9 0 obj\n<<\n>>\nstream\nBT/ 32 Tf(  YOUR TEXT HERE   )' ET\nendstream\nendobj\n
+4 0 obj\n<<\n/Type /Page\n/Parent 5 0 R\n/Contents 9 0 R\n>>\nendobj\n
+5 0 obj\n<<\n/Kids [4 0 R ]\n/Count 1\n/Type /Pages\n/MediaBox [ 0 0 250 50 ]\n>>\nendobj\n
+3 0 obj\n<<\n/Pages 5 0 R\n/Type /Catalog\n>>\nendobj\n
+trailer\n<<\n/Root 3 0 R\n>>\n
+%%EOF";
+    }
+
     public function testSendPostOfficePdf(): void
     {
         $details = [];
@@ -211,7 +225,7 @@ class SiriusApiServicePactTest extends TestCase
         $details["address"]["postcode"] = 'SW4 7SS';
         $details["lpas"][0] = "M-1234-9876-4567";
 
-        $suffix = base64_encode('Test');
+        $suffix = base64_encode($this->getMinimalPdf());
         $address = [
             '123 Ferndale Road',
             'Lambeth',
@@ -224,7 +238,7 @@ class SiriusApiServicePactTest extends TestCase
             "type" => "Save",
             "systemType" => "DLP-ID-PO-D",
             "content" => "",
-            "suffix" => $suffix,
+            "pdfSuffix" => $suffix,
             "correspondentName" => "Joe Blogs",
             "correspondentAddress" => $address
         ];
@@ -241,7 +255,7 @@ class SiriusApiServicePactTest extends TestCase
             ->addHeader('Content-Type', 'application/json')
             ->setBody([
                 'opg.poas.sirius' => [
-                    'id' => 77
+                    'id' => $matcher->like(789),
                 ],
                 'opg.poas.lpastore' => [
                     'certificateProvider' => [
@@ -264,7 +278,7 @@ class SiriusApiServicePactTest extends TestCase
         $request = new ConsumerRequest();
         $request
             ->setMethod('POST')
-            ->setPath('/api/v1/lpas/77/documents')
+            ->setPath('/api/v1/lpas/789/documents')
             ->setBody($body);
 
         $response = new ProviderResponse();
@@ -273,7 +287,7 @@ class SiriusApiServicePactTest extends TestCase
 
         $this->builder
             ->given('A digital LPA exists')
-            ->uponReceiving('A request to /api/v1/lpas/77/documents')
+            ->uponReceiving('A request to /api/v1/lpas/789/documents')
             ->with($request)
             ->willRespondWith($response);
 

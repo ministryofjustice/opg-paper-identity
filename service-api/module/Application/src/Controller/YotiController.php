@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Fixtures\DataImportHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\Problem;
 use Application\Yoti\Http\Exception\YotiException;
@@ -28,7 +28,7 @@ class YotiController extends AbstractActionController
 {
     public function __construct(
         private readonly YotiServiceInterface $yotiService,
-        private readonly DataImportHandler $dataImportHandler,
+        private readonly DataWriteHandler $dataHandler,
         private readonly DataQueryHandler $dataQuery,
         private readonly SessionStatusService $sessionService,
         private readonly SessionConfig $sessionConfig,
@@ -94,25 +94,14 @@ class YotiController extends AbstractActionController
         try {
             $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
             $yotiSessionId = $result["data"]["session_id"];
+            $case->yotiSessionId = $yotiSessionId;
 
             if ($case->counterService !== null) {
                 $case->counterService->notificationsAuthToken = $notificationsAuthToken;
             }
 
             if ($result["status"] < 400) {
-                $this->dataImportHandler->updateCaseChildAttribute(
-                    $uuid,
-                    'counterService.notificationsAuthToken',
-                    'S',
-                    $notificationsAuthToken
-                );
-
-                $this->dataImportHandler->updateCaseData(
-                    $uuid,
-                    'yotiSessionId',
-                    'S',
-                    $yotiSessionId
-                );
+                $this->dataHandler->insertUpdateData($case);
             }
             //Prepare and generate PDF
             $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
@@ -185,6 +174,11 @@ class YotiController extends AbstractActionController
         }
 
         if (! in_array($data['topic'], ['first_branch_visit', 'session_completion'])) {
+            $this->logger->info('Unhandled topic from Yoti notification', [
+                'session_id' => $data['session_id'],
+                'topic' => $data['topic'],
+            ]);
+
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Invalid type'));
         }
@@ -199,7 +193,7 @@ class YotiController extends AbstractActionController
             //authorize
             if ($caseData->counterService->notificationsAuthToken === $token) {
                 //now update counterService data
-                $this->dataImportHandler->updateCaseChildAttribute(
+                $this->dataHandler->updateCaseChildAttribute(
                     $caseData->id,
                     'counterService.notificationState',
                     'S',
