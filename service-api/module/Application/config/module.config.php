@@ -8,23 +8,20 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
+use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Factories\EventSenderFactory;
 use Application\Factories\LoggerFactory;
+use Application\Fixtures\DataQueryHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
-use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
-use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
-use Application\Factories\EventSenderFactory;
-use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Passport\ValidatorFactory as PassportValidatorFactory;
-use Application\Fixtures\DataWriteHandler;
-use Application\Fixtures\DataQueryHandler;
-use Application\Passport\ValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Sirius\EventSender;
 use Application\Yoti\SessionConfig;
-use Application\Yoti\SessionStatusService;
-use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
@@ -426,12 +423,6 @@ return [
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
-            ),
-            SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
-                $serviceLocator->get(YotiServiceInterface::class),
-                $serviceLocator->get(DataWriteHandler::class),
-                $serviceLocator->get(LoggerInterface::class),
-                $serviceLocator->get(EventSender::class),
             ),
             SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,
