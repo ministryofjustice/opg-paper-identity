@@ -402,6 +402,16 @@ return [
                     ],
                 ],
             ],
+            'request_fraud_check' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/request-fraud-check-dob',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'requestFraudCheck',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

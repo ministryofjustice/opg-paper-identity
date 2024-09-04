@@ -13,6 +13,9 @@ use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
+use Application\Services\Experian\FraudApi\DTO\CrosscoreAddressDTO;
+use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use Application\View\JsonModel;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
@@ -40,7 +43,8 @@ class IdentityController extends AbstractActionController
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly KBVServiceInterface $KBVService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService
     ) {
     }
 
@@ -644,6 +648,40 @@ class IdentityController extends AbstractActionController
             $secretValue = new AwsSecret($secretName);
             $response[$secretName] = $secretValue->getValue();
         }
+        return new JsonModel($response);
+    }
+
+    public function requestFraudCheckAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing uuid'));
+        }
+
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+        if (! empty($case)) {
+            return new JsonModel($case);
+        }
+
+        $addressDto = new CrosscoreAddressDTO(
+            $case->address['line1'],
+            $case->address['line2'],
+            $case->address['line3'],
+            $case->address['town'],
+            $case->address['postcode'],
+            $case->address['country'],
+        );
+
+        $dto = new ExperianCrosscoreFraudRequestDTO(
+            $case->firstName,
+            $case->lastName,
+            $case->dob,
+            $addressDto
+        );
+        $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
         return new JsonModel($response);
     }
 }
