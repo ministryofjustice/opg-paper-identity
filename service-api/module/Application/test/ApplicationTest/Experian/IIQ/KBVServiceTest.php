@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Experian\IIQ;
 
+use Application\Experian\IIQ\IIQService;
 use Application\Experian\IIQ\KBVService;
-use Application\Experian\IIQ\WaspService;
 use Application\Mock\KBV\KBVService as MockKBVService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -17,15 +17,15 @@ class KBVServiceTest extends TestCase
         $uuid = '68f0bee7-5b05-41da-95c4-2f1d5952184d';
         $questions = ['test' => 'value'];
 
-        $waspService = $this->createMock(WaspService::class);
-        $waspService->expects($this->once())
-            ->method('loginWithCertificate')
-            ->willReturn('my-token');
+        $iiqService = $this->createMock(IIQService::class);
+        $iiqService->expects($this->once())
+            ->method('startAuthenticationAttempt')
+            ->willReturn([1, 2, 3]);
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('info')
-            ->with('Token length 8');
+            ->with('Found 3 questions');
 
         $mockKbvService = $this->createMock(MockKBVService::class);
         $mockKbvService->expects($this->once())
@@ -33,7 +33,7 @@ class KBVServiceTest extends TestCase
             ->with($uuid)
             ->willReturn($questions);
 
-        $sut = new KBVService($waspService, $logger, $mockKbvService);
+        $sut = new KBVService($iiqService, $logger, $mockKbvService);
 
         $this->assertEquals($questions, $sut->fetchFormattedQuestions($uuid));
     }

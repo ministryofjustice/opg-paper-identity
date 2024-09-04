@@ -10,6 +10,8 @@ use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\IIQ\Soap\IIQClient;
+use Application\Experian\IIQ\Soap\IIQClientFactory;
 use Application\Experian\IIQ\Soap\WaspClient;
 use Application\Experian\IIQ\Soap\WaspClientFactory;
 use Application\Factories\EventSenderFactory;
@@ -439,6 +441,7 @@ return [
             ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
             WaspClient::class => WaspClientFactory::class,
+            IIQClient::class => IIQClientFactory::class,
         ],
     ],
     'view_manager' => [
