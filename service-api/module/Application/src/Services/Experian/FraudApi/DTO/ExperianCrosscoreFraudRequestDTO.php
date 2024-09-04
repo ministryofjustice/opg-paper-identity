@@ -10,7 +10,7 @@ class ExperianCrosscoreFraudRequestDTO
         private readonly string $firstName,
         private readonly string $lastName,
         private readonly string $dob,
-        private readonly array $address
+        private readonly CrosscoreAddressDTO $address
     ) {
     }
 
@@ -29,7 +29,7 @@ class ExperianCrosscoreFraudRequestDTO
         return $this->dob;
     }
 
-    public function address(): array
+    public function address(): CrosscoreAddressDTO
     {
         return $this->address;
     }
@@ -37,10 +37,10 @@ class ExperianCrosscoreFraudRequestDTO
     public function toArray(): array
     {
         return [
-            'userName' => $this->firstName,
-            'password' => $this->lastName,
-            'clientId' => $this->dob,
-            'clientSecret' => $this->address,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'dob' => $this->dob,
+            'address' => $this->address->toArray(),
         ];
     }
 }

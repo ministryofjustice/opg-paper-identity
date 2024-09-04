@@ -21,8 +21,8 @@ class ApcHelper
         return apcu_fetch($index);
     }
 
-    public function setValue(string $index, mixed $value): bool
+    public function setValue(string $index, mixed $value): void
     {
-        return apcu_store($index, $value);
+        apcu_store($index, $value);
     }
 }

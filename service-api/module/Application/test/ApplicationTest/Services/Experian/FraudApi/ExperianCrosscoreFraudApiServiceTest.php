@@ -7,6 +7,8 @@ namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi;
 use Application\Cache\ApcHelper;
 use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
 use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
+use Application\Services\Experian\FraudApi\DTO\CrosscoreAddressDTO;
+use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
 use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
 use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use GuzzleHttp\Client;
@@ -22,10 +24,17 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
 
     private ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService;
 
+    private array $config;
+
     private ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService;
 
     public function setUp(): void
     {
+        $this->config = [
+            'domain' => 'test.com',
+            'tenantId' => 'test'
+        ];
+
         $this->client = $this->createMock(Client::class);
         $apcHelper = $this->createMock(ApcHelper::class);
         $experianCrosscoreAuthRequestDto = new ExperianCrosscoreAuthRequestDTO(
@@ -35,31 +44,56 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             'clientSecret',
         );
 
-        $this->experianCrosscoreAuthApiService = new ExperianCrosscoreAuthApiService(
-            $this->client,
-            $apcHelper,
-            $experianCrosscoreAuthRequestDto
-        );
+        $this->experianCrosscoreAuthApiService = $this->createMock(ExperianCrosscoreAuthApiService::class);
 
         $this->experianCrosscoreFraudApiService = new ExperianCrosscoreFraudApiService(
             $this->client,
-            $this->experianCrosscoreAuthApiService
+            $this->experianCrosscoreAuthApiService,
+            $this->config
         );
     }
 
-    public function testGetHeaders(): void
-    {
-        $headers = $this->experianCrosscoreAuthApiService->makeHeaders();
-
-        $this->assertArrayHasKey('Content-Type', $headers);
-        $this->assertArrayHasKey('X-Correlation-Id', $headers);
-        $this->assertArrayHasKey('X-User-Domain', $headers);
-
-        $this->assertMatchesRegularExpression(
-            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $headers['X-Correlation-Id']
-        );
-    }
+//    public function testMakePersonId(): void
+//    {
+//        $data = [
+//            'firstName' => 'firstName',
+//            'lastName' => 'lastName',
+//            'dob' => '1982-01-01',
+//            'address' => [
+//                'address_line_1' => 'address_line_1',
+//                'address_line_2' => 'address_line_2',
+//                'town' => 'town',
+//                'postcode' => 'postcode',
+//            ]
+//        ];
+//
+//        $dto = new ExperianCrosscoreFraudRequestDTO(
+//            $data['firstName'],
+//            $data['lastName'],
+//            $data['dob'],
+//            $data['address']
+//        );
+//
+//        $this->assertEquals(
+//            'FL1',
+//            $this->experianCrosscoreFraudApiService->makePersonId($dto)
+//        );
+//    }
+//
+//
+//    public function testGetHeaders(): void
+//    {
+//        $headers = $this->experianCrosscoreAuthApiService->makeHeaders();
+//
+//        $this->assertArrayHasKey('Content-Type', $headers);
+//        $this->assertArrayHasKey('X-Correlation-Id', $headers);
+//        $this->assertArrayHasKey('X-User-Domain', $headers);
+//
+//        $this->assertMatchesRegularExpression(
+//            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
+//            $headers['X-Correlation-Id']
+//        );
+//    }
 
     public function testGetCredentials(): void
     {
@@ -72,31 +106,55 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
      * @dataProvider fraudScoreResponseData
      * @param class-string<Throwable>|null $expectedException
      */
-    public function testGetFraudScore(Client $client, ?array $requestData, ?array $responseData, ?string $expectedException): void
-    {
+    public function testGetFraudScore(
+        Client $client,
+        ExperianCrosscoreFraudRequestDTO $mockRequestDto,
+        ?array $requestData,
+        ?array $responseData,
+        ?string $expectedException
+    ): void {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
 
+        $this->experianCrosscoreAuthApiService->expects($this->once());
+
+//        $this->experianCrosscoreAuthApiService->retrieveCachedTokenResponse()->
+
         $experianCrosscoreFraudApiService = new ExperianCrosscoreFraudApiService(
             $client,
-            $this->experianCrosscoreAuthApiService
+            $this->experianCrosscoreAuthApiService,
+            $this->config
         );
 
-        $response = $experianCrosscoreFraudApiService->getFraudScore();
+        $response = $experianCrosscoreFraudApiService->getFraudScore($mockRequestDto);
 
-        $this->assertEquals($responseData, $response->toArray());
+        $this->assertEquals($responseData, $response);
     }
 
     public static function fraudScoreResponseData(): array
     {
+        $mockRequestDto = new ExperianCrosscoreFraudRequestDTO(
+            "MARK",
+            "ADOLFSON",
+            "1955-06-23",
+            new CrosscoreAddressDTO(
+                "17  FOX LEA WALK",
+                "",
+                "",
+                "CRAMLINGTON",
+                "NE23 7TD",
+                "UK"
+            )
+        );
+
         $mockRequestData = [
             "header" => [
-                "tenantId" => "tenantID",
-                "requestType" => "requestType",
-                "clientReferenceId" => "expUuid-FraudScore-continue",
-                "expRequestId" => null,
-                "messageTime" => "timestamp",
+                "tenantId" => "test",
+                "requestType" => "FraudScore",
+                "clientReferenceId" => "7a9c3f81-33c3-48d1-9064-abb98ecc844a-FraudScore-continue",
+                "expRequestId" => "7a9c3f81-33c3-48d1-9064-abb98ecc844a",
+                "messageTime" => "2024-09-04T11:26:30Z",
                 "options" => [
                 ]
             ],
@@ -106,11 +164,8 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                         "id" => "MA1",
                         "person" => [
                             "personDetails" => [
-                                "maritalStatus" => "SIN",
-                                "occupancyStatus" => "OWE",
                                 "dateOfBirth" => "1955-06-23"
                             ],
-                            "personIdentifier" => "",
                             "names" => [
                                 [
                                     "type" => "CURRENT",
@@ -142,49 +197,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                                 "residentTo" => [
                                     "fullDateTo" => "2020-08-25"
                                 ]
-                            ],
-                            [
-                                "id" => "MAPADDRESS1",
-                                "indicator" => "RESIDENTIAL",
-                                "addressType" => "PREVIOUS",
-                                "buildingNumber" => "11",
-                                "postal" => "SA18 3NJ",
-                                "street" => "ARGYLL TERRAC",
-                                "postTown" => "Stockport",
-                                "county" => "Greater Manchester",
-                                "timeAtAddress" => [
-                                    "value" => "36",
-                                    "unit" => "MONTH"
-                                ],
-                                "residentFrom" => [
-                                    "fullDateFrom" => "2000-08-25"
-                                ],
-                                "residentTo" => [
-                                    "fullDateTo" => "2010-08-25"
-                                ]
-                            ]
-                        ],
-                        "telephones" => [
-                            [
-                                "id" => "MATELEPHONE1",
-                                "number" => "0115854258",
-                                "phoneIdentifier" => "HOME"
-                            ]
-                        ],
-                        "emails" => [
-                            [
-                                "id" => "MAEMAIL1",
-                                "type" => "HOME",
-                                "email" => "TestFraud@hotmail.com"
-                            ]
-                        ],
-                        "bankAccount" => [
-                            "id" => "MABANK1",
-                            "sortCode" => "070116",
-                            "clearAccountNumber" => "00136076",
-                            "timeWithBank" => [
-                                "value" => "3",
-                                "unit" => "YEAR"
                             ]
                         ]
                     ]
@@ -196,22 +208,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                     ]
                 ],
                 "application" => [
-                    "originalRequestTime" => "2018-03-18T02:20:04Z",
-                    "status" => "ACCPT",
-                    "type" => "CREDIT",
-                    "productDetails" => [
-                        "productCode" => "DEV_PC",
-                        "productAmount" => [
-                            "amount" => "50000"
-                        ],
-                        "depositAmount" => [
-                            "amount" => "5000"
-                        ],
-                        "lendingTerm" => [
-                            "duration" => "36",
-                            "unit" => "MONTH"
-                        ]
-                    ],
                     "applicants" => [
                         [
                             "id" => "MA_APPLICANT1",
@@ -229,9 +225,9 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
         $successMockResponseData = [
             "responseHeader" => [
                 "requestType" => "FraudScore",
-                "clientReferenceId" => "-FraudScore-continue",
-                "expRequestId" => "RB000000000126",
-                "messageTime" => "2024-07-25T10:51:46Z",
+                "clientReferenceId" => "974daa9e-8128-49cb-9728-682c72fa3801-FraudScore-continue",
+                "expRequestId" => "RB000001416866",
+                "messageTime" => "2024-09-03T11:19:07Z",
                 "overallResponse" => [
                     "decision" => "CONTINUE",
                     "decisionText" => "Continue",
@@ -262,7 +258,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                         "score" => 0,
                         "decisionText" => "Continue",
                         "nextAction" => "Continue",
-                        "decisionTime" => "2024-07-25T10:51:47Z"
+                        "decisionTime" => "2024-09-03T11:19:08Z"
                     ],
                     [
                         "sequenceId" => "2",
@@ -275,27 +271,27 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                         "decisionText" => "Continue",
                         "nextAction" => "Continue",
                         "appReference" => "",
-                        "decisionTime" => "2024-07-25T10:51:47Z"
+                        "decisionTime" => "2024-09-03T11:19:08Z"
                     ]
                 ],
                 "decisionElements" => [
                     [
                         "serviceName" => "uk-crpverify",
                         "applicantId" => "MA_APPLICANT1",
-                        "appReference" => "8GYMT9LX8W",
+                        "appReference" => "8H9NGXVZZV",
                         "warningsErrors" => [
                         ],
                         "otherData" => [
                             "response" => [
                                 "contactId" => "MA1",
                                 "nameId" => "MANAME1",
-                                "uuid" => "dd6d2775-fb55-4631-bbb4-b5dc241fb4fb"
+                                "uuid" => "75467c7e-c7ea-4f3a-b02e-3fd0793191b5"
                             ]
                         ],
                         "auditLogs" => [
                             [
                                 "eventType" => "BUREAU DATA",
-                                "eventDate" => "2024-07-25T10:51:47Z",
+                                "eventDate" => "2024-09-03T11:19:08Z",
                                 "eventOutcome" => "No Match Found"
                             ]
                         ]
@@ -357,7 +353,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                                 -1,
                                 0,
                                 0,
-                                0
+                                -1
                             ]
                         ],
                         "decisions" => [
@@ -376,17 +372,14 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                         "id" => "MA1",
                         "person" => [
                             "personDetails" => [
-                                "maritalStatus" => "SIN",
-                                "occupancyStatus" => "OWE",
-                                "dateOfBirth" => "1955-06-23"
+                                "dateOfBirth" => "1986-09-03"
                             ],
                             "personIdentifier" => "",
                             "names" => [
                                 [
                                     "type" => "CURRENT",
-                                    "title" => "MR",
-                                    "firstName" => "MARK",
-                                    "surName" => "ADOLFSON",
+                                    "firstName" => "lee",
+                                    "surName" => "manthrope",
                                     "middleNames" => "",
                                     "id" => "MANAME1"
                                 ]
@@ -397,64 +390,11 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                                 "id" => "MACADDRESS1",
                                 "addressType" => "CURRENT",
                                 "indicator" => "RESIDENTIAL",
-                                "buildingNumber" => "17",
-                                "postal" => "NE23 7TD",
-                                "street" => "FOX LEA WALK",
-                                "postTown" => "CRAMLINGTON",
-                                "county" => "NORTHUMBERLAND",
-                                "timeAtAddress" => [
-                                    "value" => "36",
-                                    "unit" => "MONTH"
-                                ],
-                                "residentFrom" => [
-                                    "fullDateFrom" => "2010-08-25"
-                                ],
-                                "residentTo" => [
-                                    "fullDateTo" => "2020-08-25"
-                                ]
-                            ],
-                            [
-                                "id" => "MAPADDRESS1",
-                                "indicator" => "RESIDENTIAL",
-                                "addressType" => "PREVIOUS",
-                                "buildingNumber" => "11",
-                                "postal" => "SA18 3NJ",
-                                "street" => "ARGYLL TERRAC",
-                                "postTown" => "Stockport",
-                                "county" => "Greater Manchester",
-                                "timeAtAddress" => [
-                                    "value" => "36",
-                                    "unit" => "MONTH"
-                                ],
-                                "residentFrom" => [
-                                    "fullDateFrom" => "2000-08-25"
-                                ],
-                                "residentTo" => [
-                                    "fullDateTo" => "2010-08-25"
-                                ]
-                            ]
-                        ],
-                        "telephones" => [
-                            [
-                                "id" => "MATELEPHONE1",
-                                "number" => "0115854258",
-                                "phoneIdentifier" => "HOME"
-                            ]
-                        ],
-                        "emails" => [
-                            [
-                                "id" => "MAEMAIL1",
-                                "type" => "HOME",
-                                "email" => "TestFraud@hotmail.com"
-                            ]
-                        ],
-                        "bankAccount" => [
-                            "id" => "MABANK1",
-                            "sortCode" => "070116",
-                            "clearAccountNumber" => "00136076",
-                            "timeWithBank" => [
-                                "value" => "3",
-                                "unit" => "YEAR"
+                                "buildingNumber" => "18",
+                                "postal" => "SO15 3AA",
+                                "street" => "BOURNE COURT",
+                                "postTown" => "southampton",
+                                "county" => ""
                             ]
                         ]
                     ]
@@ -466,22 +406,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                     ]
                 ],
                 "application" => [
-                    "originalRequestTime" => "2018-03-18T02:20:04Z",
-                    "status" => "ACCPT",
-                    "type" => "CREDIT",
-                    "productDetails" => [
-                        "productCode" => "DEV_PC",
-                        "productAmount" => [
-                            "amount" => "50000"
-                        ],
-                        "depositAmount" => [
-                            "amount" => "5000"
-                        ],
-                        "lendingTerm" => [
-                            "duration" => "36",
-                            "unit" => "MONTH"
-                        ]
-                    ],
                     "applicants" => [
                         [
                             "id" => "MA_APPLICANT1",
@@ -505,7 +429,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             ],
             "success" => false
         ];
-
 
         $failBadRequestResponse = [
             "responseHeader" => [
@@ -539,22 +462,24 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
         $fail400Client = new Client(['handler' => $handlerStack]);
 
 
-
         return [
             [
                 $successClient,
+                $mockRequestDto,
                 $mockRequestData,
                 $successMockResponseData,
                 null
             ],
             [
                 $fail401Client,
+                $mockRequestDto,
                 $mockRequestData,
                 null,
                 ExperianCrosscoreFraudApiException::class,
             ],
             [
                 $fail400Client,
+                $mockRequestDto,
                 $mockRequestData,
                 null,
                 ExperianCrosscoreFraudApiException::class,

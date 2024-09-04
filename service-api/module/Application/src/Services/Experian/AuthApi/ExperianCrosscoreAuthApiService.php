@@ -76,7 +76,7 @@ class ExperianCrosscoreAuthApiService
             true
         );
 
-        if (($tokenResponse['time'] + 1800) > time()) {
+        if (is_null($tokenResponse) || ($tokenResponse['time'] + 1790) > time()) {
             return $tokenResponse['access_token'];
         } else {
             return $this->authenticate()->accessToken();

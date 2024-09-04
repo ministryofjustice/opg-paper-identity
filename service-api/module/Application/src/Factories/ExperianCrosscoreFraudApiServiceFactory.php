@@ -6,13 +6,13 @@ namespace Application\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreFraudRequestDTO;
+use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-use RuntimeException;
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
 
 class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 {
@@ -25,7 +25,7 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
     {
         $baseUri = getenv("EXPERIAN_FRAUD_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new $baseUri("EXPERIAN_FRAUD_URL is empty");
+            throw new ExperianCrosscoreFraudApiException("EXPERIAN_FRAUD_URL is empty");
         }
 
         $guzzleClient = new Client([
@@ -38,8 +38,10 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
         $password = (new AwsSecret('experian-crosscore/password'))->getValue();
         $clientId = (new AwsSecret('experian-crosscore/client-id'))->getValue();
         $clientSecret = (new AwsSecret('experian-crosscore/client-secret'))->getValue();
+        $domain = (new AwsSecret('experian-crosscore/domain'))->getValue();
+        $tenantId = (new AwsSecret('experian-crosscore/tenant-id'))->getValue();
 
-        $experianCrosscoreAuthRequestDTO = new ExperianCrosscoreFraudRequestDTO(
+        $experianCrosscoreAuthRequestDTO = new ExperianCrosscoreAuthRequestDTO(
             $username,
             $password,
             $clientId,
@@ -54,7 +56,11 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 
         return new ExperianCrosscoreFraudApiService(
             $guzzleClient,
-            $experianCrosscoreAuthApiService
+            $experianCrosscoreAuthApiService,
+            [
+                'domain' => $domain,
+                'tenantId' => $tenantId
+            ]
         );
     }
 }

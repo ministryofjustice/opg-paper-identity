@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi\DTO;
+namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi\DTO;
 
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
+use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudResponseDTO;
 use PHPUnit\Framework\TestCase;
 
 class ExperianCrosscoreFraudResponseDTOTest extends TestCase
 {
-    private readonly ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO;
+    private readonly ExperianCrosscoreFraudResponseDTO $experianCrosscoreFraudResponseDTO;
 
     private array $data;
 
@@ -17,49 +17,19 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
     {
         parent::setUp();
 
-        $this->data = [
-            'access_token' => 'accessToken',
-            'refresh_token' => 'refreshToken',
-            'issued_at' => 'issuedAt',
-            'expires_in' => 'expiresIn',
-            'token_type' => 'tokenType'
-        ];
+        $this->data = [];
 
-        $this->experianCrosscoreAuthResponseDTO = new ExperianCrosscoreAuthResponseDTO(
-            $this->data['access_token'],
-            $this->data['refresh_token'],
-            $this->data['issued_at'],
-            $this->data['expires_in'],
-            $this->data['token_type'],
+        $this->experianCrosscoreFraudResponseDTO = new ExperianCrosscoreFraudResponseDTO(
+            $this->data
         );
     }
 
-    public function testAccessToken(): void
-    {
-        $this->assertEquals('accessToken', $this->experianCrosscoreAuthResponseDTO->accessToken());
-    }
-
-    public function testRefreshToken(): void
-    {
-        $this->assertEquals('refreshToken', $this->experianCrosscoreAuthResponseDTO->refreshToken());
-    }
-
-    public function testIssuedAt(): void
-    {
-        $this->assertEquals('issuedAt', $this->experianCrosscoreAuthResponseDTO->issuedAt());
-    }
-
-    public function testExpiresIn(): void
-    {
-        $this->assertEquals('expiresIn', $this->experianCrosscoreAuthResponseDTO->expiresIn());
-    }
-
-    public function testTokenType(): void
-    {
-        $this->assertEquals('tokenType', $this->experianCrosscoreAuthResponseDTO->tokenType());
-    }
     public function testArray(): void
     {
-        $this->assertEquals($this->data, $this->experianCrosscoreAuthResponseDTO->toArray());
+        $this->assertEquals(
+        [
+            'response' => $this->data
+        ],
+        $this->experianCrosscoreFraudResponseDTO->toArray());
     }
 }

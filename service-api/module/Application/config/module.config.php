@@ -9,6 +9,7 @@ use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\Factories\ExperianCrosscoreAuthApiServiceFactory;
+use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
@@ -37,7 +38,8 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreFraudApiService;
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
@@ -453,8 +455,8 @@ return [
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
-            ExperianCrosscoreFraudApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
-            YotiServiceInterface::class => YotiServiceFactory::class,
+            ExperianCrosscoreFraudApiService::class => ExperianCrosscoreFraudApiServiceFactory::class,
+            ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
         ],
     ],
