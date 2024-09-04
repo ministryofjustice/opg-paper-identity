@@ -10,6 +10,8 @@ use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\IIQ\Soap\WaspClient;
+use Application\Experian\IIQ\Soap\WaspClientFactory;
 use Application\Factories\EventSenderFactory;
 use Application\Factories\LoggerFactory;
 use Application\Fixtures\DataQueryHandler;
@@ -32,7 +34,6 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
-
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
@@ -204,42 +205,42 @@ return [
                 ],
             ],
             'find_postoffice_branches' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/branches',
+                    'route' => '/counter-service/branches',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'findPostOffice',
+                        'action' => 'findPostOffice',
                     ],
                 ],
             ],
             'create_yoti_session' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/create-session',
+                    'route' => '/counter-service/:uuid/create-session',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'createSession',
+                        'action' => 'createSession',
                     ],
                 ],
             ],
             'retrieve_yoti_status' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/retrieve-status',
+                    'route' => '/counter-service/:uuid/retrieve-status',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getSessionStatus',
+                        'action' => 'getSessionStatus',
                     ],
                 ],
             ],
             'yoti_notification' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/notification',
+                    'route' => '/counter-service/notification',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'notification',
+                        'action' => 'notification',
                     ],
                 ],
             ],
@@ -404,7 +405,7 @@ return [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
-            Controller\YotiController::class => LazyControllerAbstractFactory::class
+            Controller\YotiController::class => LazyControllerAbstractFactory::class,
         ],
     ],
 
@@ -414,11 +415,11 @@ return [
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
             EventBridgeClient::class => EventBridgeClientFactory::class,
-            DataQueryHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
+            DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName
             ),
-            DataWriteHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataWriteHandler(
+            DataWriteHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataWriteHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
@@ -431,6 +432,7 @@ return [
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
+            WaspClient::class => WaspClientFactory::class,
         ],
     ],
     'view_manager' => [
