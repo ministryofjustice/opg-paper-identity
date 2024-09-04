@@ -8,25 +8,23 @@ use Application\Aws\DynamoDbClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
+use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\IIQ\Soap\WaspClient;
+use Application\Experian\IIQ\Soap\WaspClientFactory;
+use Application\Factories\EventSenderFactory;
 use Application\Factories\ExperianCrosscoreAuthApiServiceFactory;
 use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
+use Application\Fixtures\DataQueryHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
 use Application\Nino\ValidatorInterface as NinoValidatorInterface;
-use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
-use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
-use Application\Factories\EventSenderFactory;
-use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Passport\ValidatorFactory as PassportValidatorFactory;
-use Application\Fixtures\DataWriteHandler;
-use Application\Fixtures\DataQueryHandler;
-use Application\Passport\ValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Sirius\EventSender;
-use Application\Yoti\SessionConfig;
-use Application\Yoti\SessionStatusService;
-use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
@@ -40,7 +38,6 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
 use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
@@ -212,42 +209,42 @@ return [
                 ],
             ],
             'find_postoffice_branches' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/branches',
+                    'route' => '/counter-service/branches',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'findPostOffice',
+                        'action' => 'findPostOffice',
                     ],
                 ],
             ],
             'create_yoti_session' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/create-session',
+                    'route' => '/counter-service/:uuid/create-session',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'createSession',
+                        'action' => 'createSession',
                     ],
                 ],
             ],
             'retrieve_yoti_status' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/:uuid/retrieve-status',
+                    'route' => '/counter-service/:uuid/retrieve-status',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'getSessionStatus',
+                        'action' => 'getSessionStatus',
                     ],
                 ],
             ],
             'yoti_notification' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/counter-service/notification',
+                    'route' => '/counter-service/notification',
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
-                        'action'     => 'notification',
+                        'action' => 'notification',
                     ],
                 ],
             ],
@@ -403,16 +400,6 @@ return [
                     ],
                 ],
             ],
-            'get_secret' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/:uuid/get-secret',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'getSecret',
-                    ],
-                ],
-            ],
         ],
     ],
     'controllers' => [
@@ -422,7 +409,7 @@ return [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
-            Controller\YotiController::class => LazyControllerAbstractFactory::class
+            Controller\YotiController::class => LazyControllerAbstractFactory::class,
         ],
     ],
 
@@ -432,22 +419,15 @@ return [
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
             EventBridgeClient::class => EventBridgeClientFactory::class,
-            DataQueryHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
+            DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName
             ),
-            DataWriteHandler::class => fn(ServiceLocatorInterface $serviceLocator) => new DataWriteHandler(
+            DataWriteHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataWriteHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class)
             ),
-            SessionStatusService::class => fn(ServiceLocatorInterface $serviceLocator) => new SessionStatusService(
-                $serviceLocator->get(YotiServiceInterface::class),
-                $serviceLocator->get(DataWriteHandler::class),
-                $serviceLocator->get(LoggerInterface::class),
-                $serviceLocator->get(EventSender::class),
-            ),
-            SessionConfig::class => InvokableFactory::class,
             LoggerInterface::class => LoggerFactory::class,
             NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
@@ -458,6 +438,7 @@ return [
             ExperianCrosscoreFraudApiService::class => ExperianCrosscoreFraudApiServiceFactory::class,
             ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
+            WaspClient::class => WaspClientFactory::class,
         ],
     ],
     'view_manager' => [

@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Forms\IdQuestions;
+use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Laminas\Form\Annotation\AttributeBuilder;
 
 class KbvController extends AbstractActionController
 {
@@ -39,6 +40,10 @@ class KbvController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(IdQuestions::class);
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
+
+        if ($questionsData === false) {
+            throw new HttpException(500, 'Could not load KBV questions');
+        }
 
         if (is_array($questionsData) && array_key_exists('error', $questionsData)) {
             return $this->redirect()->toRoute('root/thin_file_failure', ['uuid' => $uuid]);
@@ -90,7 +95,7 @@ class KbvController extends AbstractActionController
             "one" => "two",
             "two" => "three",
             "three" => "four",
-            "four" => "end"
+            "four" => "end",
         ];
 
         return $sequence[$question] ?? "";
