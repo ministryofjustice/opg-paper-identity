@@ -25,12 +25,17 @@ class WaspClientFactory implements FactoryInterface
         $awsSecretsCache = $container->get(AwsSecretsCache::class);
         $passphrase = $awsSecretsCache->getValue('experian-idiq/certificate-key-passphrase');
 
+        $pemFilePath = '/opg-private/experian-iiq-cert.pem';
+
+        $config = [];
+        if (file_exists($pemFilePath)) {
+            $config['local_cert'] = $pemFilePath;
+            $config['passphrase'] = $passphrase;
+        }
+
         $client = new WaspClient(
             $wsdlPath,
-            [
-                'local_cert' => '/opg-private/experian-iiq-cert.pem',
-                'passphrase' => $passphrase,
-            ]
+            $config
         );
 
         $endpoint = getenv('EXPERIAN_IIQ_AUTH_LOCATION');
