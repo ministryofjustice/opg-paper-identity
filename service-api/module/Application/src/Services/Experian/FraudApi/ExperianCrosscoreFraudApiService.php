@@ -62,7 +62,6 @@ class ExperianCrosscoreFraudApiService
         try {
 
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
-
             $response = $this->client->request(
                 'POST',
                 '/3',
@@ -118,9 +117,10 @@ class ExperianCrosscoreFraudApiService
                                     "id" => "MACADDRESS1",
                                     "addressType" => "CURRENT",
                                     "indicator" => "RESIDENTIAL",
-//                                  "buildingNumber" => "18",
+                                    "buildingName" => $addressDTO->line1(),
+                                    "street" => $addressDTO->line2(),
+                                    "street2" => $addressDTO->line3(),
                                     "postal" => $addressDTO->postcode(),
-                                    "street" => $addressDTO->line1(),
                                     "postTown" => $addressDTO->town(),
                                     "county" => $addressDTO->country()
                                 ]

@@ -27,9 +27,8 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
     public function testArray(): void
     {
         $this->assertEquals(
-        [
-            'response' => $this->data
-        ],
-        $this->experianCrosscoreFraudResponseDTO->toArray());
+            $this->data,
+            $this->experianCrosscoreFraudResponseDTO->toArray()
+        );
     }
 }

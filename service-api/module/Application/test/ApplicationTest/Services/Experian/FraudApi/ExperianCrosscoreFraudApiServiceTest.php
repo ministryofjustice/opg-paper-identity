@@ -117,7 +117,9 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             $this->expectException($expectedException);
         }
 
-        $this->experianCrosscoreAuthApiService->expects($this->once());
+        $this->experianCrosscoreAuthApiService
+            ->expects($this->once())
+            ->method('retrieveCachedTokenResponse');
 
 //        $this->experianCrosscoreAuthApiService->retrieveCachedTokenResponse()->
 
@@ -182,21 +184,12 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                                 "id" => "MACADDRESS1",
                                 "addressType" => "CURRENT",
                                 "indicator" => "RESIDENTIAL",
-                                "buildingNumber" => "17",
-                                "postal" => "NE23 7TD",
-                                "street" => "FOX LEA WALK",
+                                "buildingName" => "17 FOX LEA WALK",
+                                "street" => "",
+                                "street2" => "",
                                 "postTown" => "CRAMLINGTON",
+                                "postal" => "NE23 7TD",
                                 "county" => "NORTHUMBERLAND",
-                                "timeAtAddress" => [
-                                    "value" => "36",
-                                    "unit" => "MONTH"
-                                ],
-                                "residentFrom" => [
-                                    "fullDateFrom" => "2010-08-25"
-                                ],
-                                "residentTo" => [
-                                    "fullDateTo" => "2020-08-25"
-                                ]
                             ]
                         ]
                     ]
