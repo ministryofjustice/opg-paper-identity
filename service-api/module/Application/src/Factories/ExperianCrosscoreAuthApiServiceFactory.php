@@ -20,8 +20,11 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
      * @param string                          $requestedName
      * @param array<mixed>|null               $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ExperianCrosscoreAuthApiService
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ): ExperianCrosscoreAuthApiService {
         $baseUri = getenv("EXPERIAN_CROSSCORE_AUTH_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
             throw new ExperianCrosscoreAuthApiException("EXPERIAN_CROSSCORE_AUTH_URL is empty");

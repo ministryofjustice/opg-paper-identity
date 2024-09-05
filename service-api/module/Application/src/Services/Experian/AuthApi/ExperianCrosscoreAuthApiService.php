@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 
 class ExperianCrosscoreAuthApiService
 {
-    const EXPIRY = 1800; // 30 minutes
+    private const EXPIRY = 1800; // 30 minutes
 
     public function __construct(
         private readonly Client $client,

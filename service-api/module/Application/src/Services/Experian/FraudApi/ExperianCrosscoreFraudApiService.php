@@ -13,7 +13,9 @@ use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
 use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudResponseDTO;
 use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use Laminas\Http\Response;
 use Ramsey\Uuid\Uuid;
 
 class ExperianCrosscoreFraudApiService
@@ -73,6 +75,11 @@ class ExperianCrosscoreFraudApiService
             return new ExperianCrosscoreFraudResponseDTO(
                 $responseArray
             );
+//        } catch (ClientException $clientException) {
+//            if ($clientException->getCode() == Response::STATUS_CODE_401) {
+//                $this->experianCrosscoreAuthApiService->authenticate();
+//            }
+//            $this->makeRequest($experianCrosscoreFraudRequestDTO);
         } catch (\Exception $exception) {
             throw new ExperianCrosscoreFraudApiException($exception->getMessage());
         }
