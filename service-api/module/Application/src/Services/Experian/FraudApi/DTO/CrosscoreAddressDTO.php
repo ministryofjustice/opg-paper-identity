@@ -8,11 +8,11 @@ class CrosscoreAddressDTO
 {
     public function __construct(
         private readonly string $line1,
-        private readonly string $line2,
-        private readonly string $line3,
-        private readonly string $town,
+        private readonly ?string $line2,
+        private readonly ?string $line3,
+        private readonly ?string $town,
         private readonly string $postcode,
-        private readonly string $country
+        private readonly ?string $country
     ) {
     }
 
@@ -21,17 +21,17 @@ class CrosscoreAddressDTO
         return $this->line1;
     }
 
-    public function line2(): string
+    public function line2(): ?string
     {
         return $this->line2;
     }
 
-    public function line3(): string
+    public function line3(): ?string
     {
         return $this->line3;
     }
 
-    public function town(): string
+    public function town(): ?string
     {
         return $this->town;
     }
@@ -41,7 +41,7 @@ class CrosscoreAddressDTO
         return $this->postcode;
     }
 
-    public function country(): string
+    public function country(): ?string
     {
         return $this->country;
     }

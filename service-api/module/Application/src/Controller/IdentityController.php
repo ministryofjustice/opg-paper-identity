@@ -660,19 +660,21 @@ class IdentityController extends AbstractActionController
         }
 
         $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        if (! empty($case)) {
-            return new JsonModel($case);
+        if (! $case) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Case does not exist'));
         }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         $addressDto = new CrosscoreAddressDTO(
             $case->address['line1'],
-            $case->address['line2'],
-            $case->address['line3'],
-            $case->address['town'],
+            $case->address['line2'] ?? "",
+            $case->address['line3'] ?? "",
+            $case->address['town'] ?? "",
             $case->address['postcode'],
-            $case->address['country'],
+            $case->address['country'] ?? "",
         );
 
         $dto = new ExperianCrosscoreFraudRequestDTO(

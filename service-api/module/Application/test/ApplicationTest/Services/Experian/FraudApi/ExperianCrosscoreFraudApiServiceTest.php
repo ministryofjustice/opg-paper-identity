@@ -20,10 +20,6 @@ use Throwable;
 
 class ExperianCrosscoreFraudApiServiceTest extends TestCase
 {
-    private Client $client;
-
-    private ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService;
-
     private array $config;
 
     private ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService;
@@ -35,65 +31,8 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             'tenantId' => 'test'
         ];
 
-        $this->client = $this->createMock(Client::class);
-        $apcHelper = $this->createMock(ApcHelper::class);
-        $experianCrosscoreAuthRequestDto = new ExperianCrosscoreAuthRequestDTO(
-            'username',
-            'password',
-            'clientId',
-            'clientSecret',
-        );
-
         $this->experianCrosscoreAuthApiService = $this->createMock(ExperianCrosscoreAuthApiService::class);
-
-        $this->experianCrosscoreFraudApiService = new ExperianCrosscoreFraudApiService(
-            $this->client,
-            $this->experianCrosscoreAuthApiService,
-            $this->config
-        );
     }
-
-//    public function testMakePersonId(): void
-//    {
-//        $data = [
-//            'firstName' => 'firstName',
-//            'lastName' => 'lastName',
-//            'dob' => '1982-01-01',
-//            'address' => [
-//                'address_line_1' => 'address_line_1',
-//                'address_line_2' => 'address_line_2',
-//                'town' => 'town',
-//                'postcode' => 'postcode',
-//            ]
-//        ];
-//
-//        $dto = new ExperianCrosscoreFraudRequestDTO(
-//            $data['firstName'],
-//            $data['lastName'],
-//            $data['dob'],
-//            $data['address']
-//        );
-//
-//        $this->assertEquals(
-//            'FL1',
-//            $this->experianCrosscoreFraudApiService->makePersonId($dto)
-//        );
-//    }
-//
-//
-//    public function testGetHeaders(): void
-//    {
-//        $headers = $this->experianCrosscoreAuthApiService->makeHeaders();
-//
-//        $this->assertArrayHasKey('Content-Type', $headers);
-//        $this->assertArrayHasKey('X-Correlation-Id', $headers);
-//        $this->assertArrayHasKey('X-User-Domain', $headers);
-//
-//        $this->assertMatchesRegularExpression(
-//            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-//            $headers['X-Correlation-Id']
-//        );
-//    }
 
     public function testGetCredentials(): void
     {
@@ -109,7 +48,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
     public function testGetFraudScore(
         Client $client,
         ExperianCrosscoreFraudRequestDTO $mockRequestDto,
-        ?array $requestData,
         ?array $responseData,
         ?string $expectedException
     ): void {
@@ -117,11 +55,12 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             $this->expectException($expectedException);
         }
 
+        /**
+         * @psalm-suppress UndefinedMethod
+         */
         $this->experianCrosscoreAuthApiService
             ->expects($this->once())
             ->method('retrieveCachedTokenResponse');
-
-//        $this->experianCrosscoreAuthApiService->retrieveCachedTokenResponse()->
 
         $experianCrosscoreFraudApiService = new ExperianCrosscoreFraudApiService(
             $client,
@@ -149,71 +88,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                 "UK"
             )
         );
-
-        $mockRequestData = [
-            "header" => [
-                "tenantId" => "test",
-                "requestType" => "FraudScore",
-                "clientReferenceId" => "7a9c3f81-33c3-48d1-9064-abb98ecc844a-FraudScore-continue",
-                "expRequestId" => "7a9c3f81-33c3-48d1-9064-abb98ecc844a",
-                "messageTime" => "2024-09-04T11:26:30Z",
-                "options" => [
-                ]
-            ],
-            "payload" => [
-                "contacts" => [
-                    [
-                        "id" => "MA1",
-                        "person" => [
-                            "personDetails" => [
-                                "dateOfBirth" => "1955-06-23"
-                            ],
-                            "names" => [
-                                [
-                                    "type" => "CURRENT",
-                                    "title" => "MR",
-                                    "firstName" => "MARK",
-                                    "surName" => "ADOLFSON",
-                                    "middleNames" => "",
-                                    "id" => "MANAME1"
-                                ]
-                            ]
-                        ],
-                        "addresses" => [
-                            [
-                                "id" => "MACADDRESS1",
-                                "addressType" => "CURRENT",
-                                "indicator" => "RESIDENTIAL",
-                                "buildingName" => "17 FOX LEA WALK",
-                                "street" => "",
-                                "street2" => "",
-                                "postTown" => "CRAMLINGTON",
-                                "postal" => "NE23 7TD",
-                                "county" => "NORTHUMBERLAND",
-                            ]
-                        ]
-                    ]
-                ],
-                "control" => [
-                    [
-                        "option" => "ML_MODEL_CODE",
-                        "value" => "bfs"
-                    ]
-                ],
-                "application" => [
-                    "applicants" => [
-                        [
-                            "id" => "MA_APPLICANT1",
-                            "contactId" => "MA1",
-                            "type" => "INDIVIDUAL",
-                            "applicantType" => "MAIN_APPLICANT",
-                            "consent" => "true"
-                        ]
-                    ]
-                ],
-                "source" => "WEB"
-            ]
-        ];
 
         $successMockResponseData = [
             "responseHeader" => [
@@ -459,21 +333,18 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             [
                 $successClient,
                 $mockRequestDto,
-                $mockRequestData,
                 $successMockResponseData,
                 null
             ],
             [
                 $fail401Client,
                 $mockRequestDto,
-                $mockRequestData,
                 null,
                 ExperianCrosscoreFraudApiException::class,
             ],
             [
                 $fail400Client,
                 $mockRequestDto,
-                $mockRequestData,
                 null,
                 ExperianCrosscoreFraudApiException::class,
             ]

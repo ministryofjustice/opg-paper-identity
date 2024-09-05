@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ExperianCrosscoreAuthRequestDTOTest extends TestCase
 {
-    private readonly ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO;
+    private ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO;
 
     private array $data;
 

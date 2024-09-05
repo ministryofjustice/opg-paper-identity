@@ -19,11 +19,10 @@ use Ramsey\Uuid\Uuid;
 class ExperianCrosscoreFraudApiService
 {
     public function __construct(
-        private readonly Client                          $client,
+        private readonly Client $client,
         private readonly ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService,
-        private readonly array                           $config
-    )
-    {
+        private readonly array $config
+    ) {
     }
 
     /**
@@ -45,8 +44,7 @@ class ExperianCrosscoreFraudApiService
      */
     public function getFraudScore(
         ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
-    ): array
-    {
+    ): array {
         $response = $this->makeRequest($experianCrosscoreFraudRequestDTO);
         return $response->toArray();
     }
@@ -57,11 +55,10 @@ class ExperianCrosscoreFraudApiService
      */
     public function makeRequest(
         ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
-    ): ExperianCrosscoreFraudResponseDTO
-    {
+    ): ExperianCrosscoreFraudResponseDTO {
         try {
-
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
+
             $response = $this->client->request(
                 'POST',
                 '/3',
@@ -83,8 +80,7 @@ class ExperianCrosscoreFraudApiService
 
     public function constructRequestBody(
         ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
-    ): array
-    {
+    ): array {
         $requestUuid = Uuid::uuid4()->toString();
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
         $addressDTO = $experianCrosscoreFraudRequestDTO->address();
@@ -154,8 +150,7 @@ class ExperianCrosscoreFraudApiService
 
     private function makePersonId(
         ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
-    ): string
-    {
+    ): string {
 
         $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));
         $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 1));
@@ -165,12 +160,5 @@ class ExperianCrosscoreFraudApiService
             $fInitial,
             $lInitial
         );
-    }
-
-    private function processAddress(CrosscoreAddressDTO $addressDTO): array
-    {
-        if (preg_match('~[0-9]+~', $addressDTO->line1())) {
-            echo 'string with numbers';
-        }
     }
 }

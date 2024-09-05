@@ -11,11 +11,6 @@ class ExperianCrosscoreFraudResponseDTO
     ) {
     }
 
-    public function response(): array
-    {
-        return $this->response;
-    }
-
     public function toArray(): array
     {
         return $this->response;

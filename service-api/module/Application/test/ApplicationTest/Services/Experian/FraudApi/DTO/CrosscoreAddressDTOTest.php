@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class CrosscoreAddressDTOTest extends TestCase
 {
-    private readonly CrosscoreAddressDTO $addressDTO;
+    private CrosscoreAddressDTO $addressDTO;
 
     private array $data;
 

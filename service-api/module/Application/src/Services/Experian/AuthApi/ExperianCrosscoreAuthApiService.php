@@ -71,10 +71,13 @@ class ExperianCrosscoreAuthApiService
      */
     public function retrieveCachedTokenResponse(): string
     {
-        $tokenResponse = json_decode(
-            $this->apcHelper->getValue('experian_crosscore_access_token'),
-            true
-        );
+        $cachedToken = $this->apcHelper->getValue('experian_crosscore_access_token');
+
+        if (! $cachedToken) {
+            return $this->authenticate()->accessToken();
+        }
+
+        $tokenResponse = json_decode($cachedToken, true);
 
         if (is_null($tokenResponse) || ($tokenResponse['time'] + 1790) > time()) {
             return $tokenResponse['access_token'];
@@ -103,11 +106,13 @@ class ExperianCrosscoreAuthApiService
         ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
     ): ExperianCrosscoreAuthResponseDTO {
         try {
+            $headers = array_merge($this->makeHeaders(), ['X-User-Domain' => 'publicguardian.com']);
+
             $response = $this->client->request(
                 'POST',
-                'oauth2/experianone/v1/token',
+                '/oauth2/experianone/v1/token',
                 [
-                    'headers' => $this->makeHeaders(),
+                    'headers' => $headers,
                     'json' => $experianCrosscoreAuthRequestDTO->toArray()
                 ]
             );

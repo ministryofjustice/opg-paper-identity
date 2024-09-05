@@ -405,7 +405,7 @@ return [
             'request_fraud_check' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/request-fraud-check-dob',
+                    'route' => '/cases/:uuid/request-fraud-check',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'requestFraudCheck',
