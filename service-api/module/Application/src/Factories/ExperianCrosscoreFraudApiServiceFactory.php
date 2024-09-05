@@ -23,9 +23,9 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): ExperianCrosscoreFraudApiService
     {
-        $baseUri = getenv("EXPERIAN_FRAUD_URL");
+        $baseUri = getenv("EXPERIAN_CROSSCORE_BASE_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new ExperianCrosscoreFraudApiException("EXPERIAN_FRAUD_URL is empty");
+            throw new ExperianCrosscoreFraudApiException("EXPERIAN_CROSSCORE_BASE_URL is empty");
         }
 
         $guzzleClient = new Client([
