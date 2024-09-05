@@ -15,6 +15,8 @@ use Application\Experian\IIQ\Soap\IIQClientFactory;
 use Application\Experian\IIQ\Soap\WaspClient;
 use Application\Experian\IIQ\Soap\WaspClientFactory;
 use Application\Factories\EventSenderFactory;
+use Application\Factories\ExperianCrosscoreAuthApiServiceFactory;
+use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
@@ -36,6 +38,8 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
+use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
@@ -398,6 +402,16 @@ return [
                     ],
                 ],
             ],
+            'request_fraud_check' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/request-fraud-check',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'requestFraudCheck',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -433,6 +447,8 @@ return [
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
+            ExperianCrosscoreFraudApiService::class => ExperianCrosscoreFraudApiServiceFactory::class,
+            ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,

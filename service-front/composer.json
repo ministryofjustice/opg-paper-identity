@@ -26,7 +26,8 @@
         "laminas/laminas-session": "^2.16.0",
         "laminas/laminas-skeleton-installer": "^1.3.0",
         "monolog/monolog": "^3.5",
-        "oxcom/zend-twig": "^1.1"
+        "oxcom/zend-twig": "^1.1",
+        "ramsey/uuid": "^4.7"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
