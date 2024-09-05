@@ -581,7 +581,7 @@ return [
         ],
         'identity_routes' => [
             'TELEPHONE' => 'Telephone',
-            'POST_OFFICE' => 'Post office',
+            'POST_OFFICE' => 'Post Office',
         ],
         'identity_methods' => [
             'nin' => 'National Insurance number',
