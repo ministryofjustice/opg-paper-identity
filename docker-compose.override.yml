@@ -54,3 +54,7 @@ services:
     volumes:
       - ~/.composer:/tmp
       - ./service-front:/app
+
+  cypress:
+    volumes:
+      - ./e2e-tests/cypress:/root/cypress
