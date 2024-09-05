@@ -12,7 +12,7 @@ if (!is_string($prefix)) {
 }
 
 $smClient = new SecretsManagerClient([
-  'endpoint' => getenv('SECRETS_MANAGER_ENDPOINT') ?: '',
+    'endpoint' => getenv('SECRETS_MANAGER_ENDPOINT') ?: '',
 ]);
 
 $certificate = $smClient->getSecretValue([
@@ -20,7 +20,7 @@ $certificate = $smClient->getSecretValue([
 ]);
 
 $certificateKey = $smClient->getSecretValue([
-  'SecretId' => $prefix . 'experian-idiq/certificate-key',
+   'SecretId' => $prefix . 'experian-idiq/certificate-key',
 ]);
 
 $pemFilename = '/opg-private/experian-iiq-cert.pem';

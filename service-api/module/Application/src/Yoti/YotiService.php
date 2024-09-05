@@ -46,7 +46,7 @@ class YotiService implements YotiServiceInterface
      *          }
      *      }[]
      *  }
-     * Get post offices near the location
+     * Get Post Offices near the location
      * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array
