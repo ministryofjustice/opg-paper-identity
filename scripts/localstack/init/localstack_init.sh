@@ -37,3 +37,28 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/
 awslocal secretsmanager create-secret --name local/paper-identity/experian-idiq/certificate-key-passphrase \
     --description "Experian IIQ auth certificate private key passphrase" \
     --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-crosscore/username \
+    --description "Experian Crosscore Username" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-crosscore/password \
+    --description "Experian Crosscore Password" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-crosscore/client-id \
+    --description "Experian Crosscore ClientId" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-crosscore/client-secret \
+    --description "Experian Crosscore Client Secret" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-crosscore/domain \
+    --description "Experian Crosscore Assigned Domain" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/experian-crosscore/tenant-id \
+    --description "Experian Crosscore Tenant ID" \
+    --secret-string "empty"
+
