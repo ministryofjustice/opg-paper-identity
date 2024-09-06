@@ -6,14 +6,14 @@ namespace Application\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
+use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\AuthApi\AuthApiException;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
+use Application\Experian\Crosscore\FraudApi\FraudApiException;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
 
 class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 {
@@ -26,10 +26,10 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): ExperianCrosscoreFraudApiService {
+    ): FraudApiService {
         $authBaseUri = getenv("EXPERIAN_CROSSCORE_AUTH_URL");
         if (! is_string($authBaseUri) || empty($authBaseUri)) {
-            throw new ExperianCrosscoreAuthApiException("EXPERIAN_CROSSCORE_AUTH_URL is empty");
+            throw new AuthApiException("EXPERIAN_CROSSCORE_AUTH_URL is empty");
         }
 
         $guzzleAuthClient = new Client([
@@ -38,7 +38,7 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 
         $baseUri = getenv("EXPERIAN_CROSSCORE_BASE_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new ExperianCrosscoreFraudApiException("EXPERIAN_CROSSCORE_BASE_URL is empty");
+            throw new FraudApiException("EXPERIAN_CROSSCORE_BASE_URL is empty");
         }
 
         $guzzleClient = new Client([
@@ -54,20 +54,20 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
         $domain = (new AwsSecret('experian-crosscore/domain'))->getValue();
         $tenantId = (new AwsSecret('experian-crosscore/tenant-id'))->getValue();
 
-        $experianCrosscoreAuthRequestDTO = new ExperianCrosscoreAuthRequestDTO(
+        $experianCrosscoreAuthRequestDTO = new RequestDTO(
             $username,
             $password,
             $clientId,
             $clientSecret
         );
 
-        $experianCrosscoreAuthApiService = new ExperianCrosscoreAuthApiService(
+        $experianCrosscoreAuthApiService = new AuthApiService(
             $guzzleAuthClient,
             $apcHelper,
             $experianCrosscoreAuthRequestDTO
         );
 
-        return new ExperianCrosscoreFraudApiService(
+        return new FraudApiService(
             $guzzleClient,
             $experianCrosscoreAuthApiService,
             [

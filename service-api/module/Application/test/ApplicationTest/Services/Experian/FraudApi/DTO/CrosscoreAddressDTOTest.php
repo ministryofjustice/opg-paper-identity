@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi\DTO;
 
-use Application\Services\Experian\FraudApi\DTO\CrosscoreAddressDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use PHPUnit\Framework\TestCase;
 
 class CrosscoreAddressDTOTest extends TestCase
 {
-    private CrosscoreAddressDTO $addressDTO;
+    private AddressDTO $addressDTO;
 
     private array $data;
 
@@ -26,7 +26,7 @@ class CrosscoreAddressDTOTest extends TestCase
             'country' => 'country'
         ];
 
-        $this->addressDTO = new CrosscoreAddressDTO(
+        $this->addressDTO = new AddressDTO(
             $this->data['line1'],
             $this->data['line2'],
             $this->data['line3'],

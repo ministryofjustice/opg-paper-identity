@@ -10,6 +10,8 @@ use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Experian\IIQ\AuthManager;
 use Application\Experian\IIQ\AuthManagerFactory;
 use Application\Experian\IIQ\Soap\IIQClient;
@@ -40,8 +42,6 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
 
@@ -449,8 +449,8 @@ return [
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
-            ExperianCrosscoreFraudApiService::class => ExperianCrosscoreFraudApiServiceFactory::class,
-            ExperianCrosscoreAuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
+            FraudApiService::class => ExperianCrosscoreFraudApiServiceFactory::class,
+            AuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,

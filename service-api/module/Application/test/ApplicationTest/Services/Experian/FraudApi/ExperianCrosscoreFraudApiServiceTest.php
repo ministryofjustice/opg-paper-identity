@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi;
 
-use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-use Application\Services\Experian\FraudApi\DTO\CrosscoreAddressDTO;
-use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
+use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO as AuthRequestDTO;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
+use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\FraudApiException;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
@@ -23,7 +20,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
 {
     private array $config;
 
-    private ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService;
+    private AuthApiService $experianCrosscoreAuthApiService;
 
     public function setUp(): void
     {
@@ -32,14 +29,14 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             'tenantId' => 'test'
         ];
 
-        $this->experianCrosscoreAuthApiService = $this->createMock(ExperianCrosscoreAuthApiService::class);
+        $this->experianCrosscoreAuthApiService = $this->createMock(AuthApiService::class);
     }
 
     public function testGetCredentials(): void
     {
         $credentials = $this->experianCrosscoreAuthApiService->getCredentials();
 
-        $this->assertInstanceOf(ExperianCrosscoreAuthRequestDTO::class, $credentials);
+        $this->assertInstanceOf(AuthRequestDTO::class, $credentials);
     }
 
     /**
@@ -48,7 +45,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
      */
     public function testGetFraudScore(
         Client $client,
-        ExperianCrosscoreFraudRequestDTO $mockRequestDto,
+        RequestDTO $mockRequestDto,
         ?array $responseData,
         ?string $expectedException
     ): void {
@@ -63,7 +60,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                 ->method('retrieveCachedTokenResponse');
         }
 
-        $experianCrosscoreFraudApiService = new ExperianCrosscoreFraudApiService(
+        $experianCrosscoreFraudApiService = new FraudApiService(
             $client,
             $this->experianCrosscoreAuthApiService,
             $this->config
@@ -76,11 +73,11 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
 
     public static function fraudScoreResponseData(): array
     {
-        $mockRequestDto = new ExperianCrosscoreFraudRequestDTO(
+        $mockRequestDto = new RequestDTO(
             "MARK",
             "ADOLFSON",
             "1955-06-23",
-            new CrosscoreAddressDTO(
+            new \Application\Experian\Crosscore\FraudApi\DTO\AddressDTO(
                 "17  FOX LEA WALK",
                 "",
                 "",
@@ -341,13 +338,13 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                 $fail401Client,
                 $mockRequestDto,
                 null,
-                ExperianCrosscoreFraudApiException::class,
+                FraudApiException::class,
             ],
             [
                 $fail400Client,
                 $mockRequestDto,
                 null,
-                ExperianCrosscoreFraudApiException::class,
+                FraudApiException::class,
             ]
         ];
     }

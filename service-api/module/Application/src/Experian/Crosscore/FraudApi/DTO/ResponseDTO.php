@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\FraudApi\DTO;
+namespace Application\Experian\Crosscore\FraudApi\DTO;
 
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
+use Application\Experian\Crosscore\FraudApi\FraudApiException;
 
-class ExperianCrosscoreFraudResponseDTO
+class ResponseDTO
 {
     public function __construct(
         private readonly array $response
@@ -23,7 +23,7 @@ class ExperianCrosscoreFraudResponseDTO
         try {
             return $this->response['responseHeader'];
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+            throw new FraudApiException($exception->getMessage());
         }
     }
 
@@ -32,7 +32,7 @@ class ExperianCrosscoreFraudResponseDTO
         try {
             return $this->response['responseHeader']['overallResponse']['decision'];
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+            throw new FraudApiException($exception->getMessage());
         }
     }
 
@@ -41,7 +41,7 @@ class ExperianCrosscoreFraudResponseDTO
         try {
             return $this->response['responseHeader']['overallResponse']['score'];
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+            throw new FraudApiException($exception->getMessage());
         }
     }
 }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi\DTO;
 
-use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudResponseDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use PHPUnit\Framework\TestCase;
 
 class ExperianCrosscoreFraudResponseDTOTest extends TestCase
 {
-    private ExperianCrosscoreFraudResponseDTO $experianCrosscoreFraudResponseDTO;
+    private ResponseDTO $experianCrosscoreFraudResponseDTO;
 
     private array $data;
 
@@ -216,7 +216,7 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
             ]
         ];
 
-        $this->experianCrosscoreFraudResponseDTO = new ExperianCrosscoreFraudResponseDTO(
+        $this->experianCrosscoreFraudResponseDTO = new ResponseDTO(
             $this->data
         );
     }

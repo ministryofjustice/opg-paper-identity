@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\FraudApi\DTO;
+namespace Application\Experian\Crosscore\FraudApi\DTO;
 
-class CrosscoreAddressDTO
+class AddressDTO
 {
     public function __construct(
         private readonly string $line1,

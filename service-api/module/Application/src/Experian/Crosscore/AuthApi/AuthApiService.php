@@ -2,25 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\AuthApi;
+namespace Application\Experian\Crosscore\AuthApi;
 
-use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
+use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\AuthApi\DTO\ResponseDTO;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Ramsey\Uuid\Uuid;
 
-class ExperianCrosscoreAuthApiService
+class AuthApiService
 {
     private const EXPIRY = 1800; // 30 minutes
 
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
-        private readonly ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
+        private readonly RequestDTO $experianCrosscoreAuthRequestDTO
     ) {
     }
 
@@ -40,9 +38,9 @@ class ExperianCrosscoreAuthApiService
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws AuthApiException
      */
-    public function authenticate(): ExperianCrosscoreAuthResponseDTO
+    public function authenticate(): ResponseDTO
     {
         $credentials = $this->getCredentials();
 
@@ -54,7 +52,7 @@ class ExperianCrosscoreAuthApiService
     }
 
     private function cacheTokenResponse(
-        ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO,
+        ResponseDTO $experianCrosscoreAuthResponseDTO,
     ): void {
         $this->apcHelper->setValue(
             'experian_crosscore_access_token',
@@ -67,7 +65,7 @@ class ExperianCrosscoreAuthApiService
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws AuthApiException
      */
     public function retrieveCachedTokenResponse(): string
     {
@@ -87,24 +85,24 @@ class ExperianCrosscoreAuthApiService
     }
 
     /**
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws AuthApiException
      */
-    public function getCredentials(): ExperianCrosscoreAuthRequestDTO
+    public function getCredentials(): RequestDTO
     {
         try {
             return $this->experianCrosscoreAuthRequestDTO;
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreAuthApiException($exception->getMessage());
+            throw new AuthApiException($exception->getMessage());
         }
     }
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws AuthApiException
      */
     private function getToken(
-        ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO
-    ): ExperianCrosscoreAuthResponseDTO {
+        RequestDTO $experianCrosscoreAuthRequestDTO
+    ): ResponseDTO {
         try {
             $headers = array_merge($this->makeHeaders(), ['X-User-Domain' => 'publicguardian.com']);
 
@@ -119,7 +117,7 @@ class ExperianCrosscoreAuthApiService
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
 
-            return new ExperianCrosscoreAuthResponseDTO(
+            return new ResponseDTO(
                 $responseArray['access_token'],
                 $responseArray['refresh_token'],
                 $responseArray['issued_at'],
@@ -127,7 +125,7 @@ class ExperianCrosscoreAuthApiService
                 $responseArray['token_type']
             );
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreAuthApiException($exception->getMessage());
+            throw new AuthApiException($exception->getMessage());
         }
     }
 }

@@ -6,12 +6,12 @@ namespace Application\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
+use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\AuthApi\AuthApiException;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
 
 class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
 {
@@ -24,10 +24,10 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): ExperianCrosscoreAuthApiService {
+    ): AuthApiService {
         $baseUri = getenv("EXPERIAN_CROSSCORE_AUTH_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new ExperianCrosscoreAuthApiException("EXPERIAN_CROSSCORE_AUTH_URL is empty");
+            throw new AuthApiException("EXPERIAN_CROSSCORE_AUTH_URL is empty");
         }
 
         $guzzleClient = new Client([
@@ -41,14 +41,14 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
         $clientId = (new AwsSecret('experian-crosscore/client-id'))->getValue();
         $clientSecret = (new AwsSecret('experian-crosscore/client-secret'))->getValue();
 
-        $experianCrosscoreAuthRequestDTO = new ExperianCrosscoreAuthRequestDTO(
+        $experianCrosscoreAuthRequestDTO = new RequestDTO(
             $username,
             $password,
             $clientId,
             $clientSecret
         );
 
-        return new ExperianCrosscoreAuthApiService(
+        return new AuthApiService(
             $guzzleClient,
             $apcHelper,
             $experianCrosscoreAuthRequestDTO

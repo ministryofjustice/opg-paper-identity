@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi;
 
 use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
+use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\AuthApi\AuthApiException;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -21,22 +21,22 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
 
     private ApcHelper $apcHelper;
 
-    private ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDto;
+    private RequestDTO $experianCrosscoreAuthRequestDto;
 
-    private ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService;
+    private AuthApiService $experianCrosscoreAuthApiService;
 
     public function setUp(): void
     {
         $this->client = $this->createMock(Client::class);
         $this->apcHelper = $this->createMock(ApcHelper::class);
-        $this->experianCrosscoreAuthRequestDto = new ExperianCrosscoreAuthRequestDTO(
+        $this->experianCrosscoreAuthRequestDto = new RequestDTO(
             'username',
             'password',
             'clientId',
             'clientSecret',
         );
 
-        $this->experianCrosscoreAuthApiService = new ExperianCrosscoreAuthApiService(
+        $this->experianCrosscoreAuthApiService = new AuthApiService(
             $this->client,
             $this->apcHelper,
             $this->experianCrosscoreAuthRequestDto
@@ -61,7 +61,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
     {
         $credentials = $this->experianCrosscoreAuthApiService->getCredentials();
 
-        $this->assertInstanceOf(ExperianCrosscoreAuthRequestDTO::class, $credentials);
+        $this->assertInstanceOf(RequestDTO::class, $credentials);
     }
 
     /**
@@ -74,7 +74,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
             $this->expectException($expectedException);
         }
 
-        $experianCrosscoreAuthApiService = new ExperianCrosscoreAuthApiService(
+        $experianCrosscoreAuthApiService = new AuthApiService(
             $client,
             $this->apcHelper,
             $this->experianCrosscoreAuthRequestDto,
@@ -123,7 +123,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
             [
                 $failClient,
                 null,
-                ExperianCrosscoreAuthApiException::class,
+                AuthApiException::class,
             ]
         ];
     }

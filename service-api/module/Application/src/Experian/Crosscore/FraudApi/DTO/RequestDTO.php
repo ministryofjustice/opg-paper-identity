@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\FraudApi\DTO;
+namespace Application\Experian\Crosscore\FraudApi\DTO;
 
-class ExperianCrosscoreFraudRequestDTO
+class RequestDTO
 {
     public function __construct(
         private readonly string $firstName,
         private readonly string $lastName,
         private readonly string $dob,
-        private readonly CrosscoreAddressDTO $address
+        private readonly AddressDTO $address
     ) {
     }
 
@@ -29,7 +29,7 @@ class ExperianCrosscoreFraudRequestDTO
         return $this->dob;
     }
 
-    public function address(): CrosscoreAddressDTO
+    public function address(): AddressDTO
     {
         return $this->address;
     }

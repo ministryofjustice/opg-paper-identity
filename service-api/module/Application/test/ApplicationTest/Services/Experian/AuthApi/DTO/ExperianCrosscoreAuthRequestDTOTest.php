@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services\Experian\AuthApi\DTO;
 
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
+use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
 use PHPUnit\Framework\TestCase;
 
 class ExperianCrosscoreAuthRequestDTOTest extends TestCase
 {
-    private ExperianCrosscoreAuthRequestDTO $experianCrosscoreAuthRequestDTO;
+    private RequestDTO $experianCrosscoreAuthRequestDTO;
 
     private array $data;
 
@@ -24,7 +24,7 @@ class ExperianCrosscoreAuthRequestDTOTest extends TestCase
             'clientSecret' => 'clientSecret',
         ];
 
-        $this->experianCrosscoreAuthRequestDTO = new ExperianCrosscoreAuthRequestDTO(
+        $this->experianCrosscoreAuthRequestDTO = new RequestDTO(
             $this->data['userName'],
             $this->data['password'],
             $this->data['clientId'],

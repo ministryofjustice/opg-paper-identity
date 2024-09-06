@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\AuthApi\DTO;
+namespace Application\Experian\Crosscore\AuthApi\DTO;
 
-class ExperianCrosscoreAuthResponseDTO
+class ResponseDTO
 {
     public function __construct(
         private readonly string $accessToken,

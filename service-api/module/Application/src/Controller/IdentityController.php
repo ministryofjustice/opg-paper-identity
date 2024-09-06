@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
-use Application\Services\Experian\FraudApi\DTO\CrosscoreAddressDTO;
-use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use Application\View\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -36,7 +36,7 @@ class IdentityController extends AbstractActionController
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
-        private readonly ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService
+        private readonly FraudApiService $experianCrosscoreFraudApiService
     ) {
     }
 
@@ -44,6 +44,7 @@ class IdentityController extends AbstractActionController
     {
         return new JsonModel();
     }
+
 
     public function createAction(): JsonModel
     {
@@ -601,7 +602,7 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        $addressDto = new CrosscoreAddressDTO(
+        $addressDto = new AddressDTO(
             $case->address['line1'],
             $case->address['line2'] ?? "",
             $case->address['line3'] ?? "",
@@ -610,7 +611,7 @@ class IdentityController extends AbstractActionController
             $case->address['country'] ?? "",
         );
 
-        $dto = new ExperianCrosscoreFraudRequestDTO(
+        $dto = new RequestDTO(
             $case->firstName,
             $case->lastName,
             $case->dob,

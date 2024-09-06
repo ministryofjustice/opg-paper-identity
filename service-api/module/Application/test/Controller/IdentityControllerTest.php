@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
-use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
@@ -25,7 +25,7 @@ class IdentityControllerTest extends TestCase
     private DataWriteHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
-    private ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService;
+    private FraudApiService $experianCrosscoreFraudApiService;
 
     public function setUp(): void
     {
@@ -44,7 +44,7 @@ class IdentityControllerTest extends TestCase
         $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
-        $this->experianCrosscoreFraudApiService = $this->createMock(ExperianCrosscoreFraudApiService::class);
+        $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
 
 
         parent::setUp();
@@ -55,7 +55,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
-        $serviceManager->setService(ExperianCrosscoreFraudApiService::class, $this->experianCrosscoreFraudApiService);
+        $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
     }
 
     public function testInvalidRouteDoesNotCrash(): void

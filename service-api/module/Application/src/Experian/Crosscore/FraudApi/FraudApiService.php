@@ -2,27 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Application\Services\Experian\FraudApi;
+namespace Application\Experian\Crosscore\FraudApi;
 
-use Application\Cache\ApcHelper;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthRequestDTO;
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiException;
-use Application\Services\Experian\FraudApi\DTO\CrosscoreAddressDTO;
-use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
-use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudResponseDTO;
-use Application\Services\Experian\AuthApi\ExperianCrosscoreAuthApiService;
+use Application\Experian\Crosscore\AuthApi\AuthApiException;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
+use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Ramsey\Uuid\Uuid;
 
-class ExperianCrosscoreFraudApiService
+class FraudApiService
 {
     public function __construct(
         private readonly Client $client,
-        private readonly ExperianCrosscoreAuthApiService $experianCrosscoreAuthApiService,
+        private readonly AuthApiService $experianCrosscoreAuthApiService,
         private readonly array $config
     ) {
     }
@@ -31,7 +27,7 @@ class ExperianCrosscoreFraudApiService
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreAuthApiException
+     * @throws AuthApiException
      */
     public function makeHeaders(): array
     {
@@ -44,10 +40,10 @@ class ExperianCrosscoreFraudApiService
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreFraudApiException
+     * @throws FraudApiException
      */
     public function getFraudScore(
-        ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
+        RequestDTO $experianCrosscoreFraudRequestDTO
     ): array {
         $response = $this->makeRequest($experianCrosscoreFraudRequestDTO);
         return $response->toArray();
@@ -55,12 +51,12 @@ class ExperianCrosscoreFraudApiService
 
     /**
      * @throws GuzzleException
-     * @throws ExperianCrosscoreFraudApiException
+     * @throws FraudApiException
      * @psalm-suppress InvalidReturnType
      */
     public function makeRequest(
-        ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
-    ): ExperianCrosscoreFraudResponseDTO {
+        RequestDTO $experianCrosscoreFraudRequestDTO
+    ): ResponseDTO {
         $this->authCount++;
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
@@ -76,7 +72,7 @@ class ExperianCrosscoreFraudApiService
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
 
-            return new ExperianCrosscoreFraudResponseDTO(
+            return new ResponseDTO(
                 $responseArray
             );
         } catch (ClientException $clientException) {
@@ -89,12 +85,12 @@ class ExperianCrosscoreFraudApiService
                 throw $clientException;
             }
         } catch (\Exception $exception) {
-            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+            throw new FraudApiException($exception->getMessage());
         }
     }
 
     public function constructRequestBody(
-        ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
+        RequestDTO $experianCrosscoreFraudRequestDTO
     ): array {
         $requestUuid = Uuid::uuid4()->toString();
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
@@ -164,7 +160,7 @@ class ExperianCrosscoreFraudApiService
     }
 
     private function makePersonId(
-        ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
+        RequestDTO $experianCrosscoreFraudRequestDTO
     ): string {
 
         $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));

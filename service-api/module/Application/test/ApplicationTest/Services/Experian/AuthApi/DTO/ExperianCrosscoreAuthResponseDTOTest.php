@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi\DTO;
 
-use Application\Services\Experian\AuthApi\DTO\ExperianCrosscoreAuthResponseDTO;
+use Application\Experian\Crosscore\AuthApi\DTO\ResponseDTO;
 use PHPUnit\Framework\TestCase;
 
 class ExperianCrosscoreAuthResponseDTOTest extends TestCase
 {
-    private ExperianCrosscoreAuthResponseDTO $experianCrosscoreAuthResponseDTO;
+    private ResponseDTO $experianCrosscoreAuthResponseDTO;
 
     private array $data;
 
@@ -25,7 +25,7 @@ class ExperianCrosscoreAuthResponseDTOTest extends TestCase
             'token_type' => 'tokenType'
         ];
 
-        $this->experianCrosscoreAuthResponseDTO = new ExperianCrosscoreAuthResponseDTO(
+        $this->experianCrosscoreAuthResponseDTO = new ResponseDTO(
             $this->data['access_token'],
             $this->data['refresh_token'],
             $this->data['issued_at'],
