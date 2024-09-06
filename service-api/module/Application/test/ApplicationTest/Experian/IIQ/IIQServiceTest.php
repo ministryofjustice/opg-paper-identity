@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Experian\IIQ;
 
+use Application\Experian\IIQ\AuthManager;
 use Application\Experian\IIQ\IIQService;
 use Application\Experian\IIQ\Soap\IIQClient;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use SoapHeader;
 
 class IIQServiceTest extends TestCase
 {
@@ -33,8 +36,22 @@ class IIQServiceTest extends TestCase
                 ],
             ]);
 
-        $sut = new IIQService($client);
+        $sut = new IIQService(
+            $this->getMockAuthManager(),
+            $client,
+        );
 
         $this->assertEquals($questions, $sut->startAuthenticationAttempt());
+    }
+
+    private function getMockAuthManager(): AuthManager&MockObject
+    {
+        $authManager = $this->createMock(AuthManager::class);
+
+        $authManager->expects($this->once())
+            ->method('buildSecurityHeader')
+            ->willReturn(new SoapHeader('placeholder', 'header'));
+
+        return $authManager;
     }
 }
