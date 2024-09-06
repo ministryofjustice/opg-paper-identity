@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
-use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
-use Application\KBV\KBVServiceInterface;
+use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
@@ -17,13 +16,11 @@ use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class IdentityControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
-    private KBVServiceInterface&MockObject $KBVServiceMock;
     private DataWriteHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
@@ -42,7 +39,6 @@ class IdentityControllerTest extends TestCase
         ));
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
-        $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
         $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
@@ -54,7 +50,6 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
-        $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
     }
@@ -151,11 +146,11 @@ class IdentityControllerTest extends TestCase
             'dob' => '1980-10-10',
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
-                'M-VGAS-OAGA-34G9'
+                'M-VGAS-OAGA-34G9',
             ],
             'address' => [
-                'address 1, address 2'
-            ]
+                'address 1, address 2',
+            ],
         ];
 
         return [
@@ -164,197 +159,6 @@ class IdentityControllerTest extends TestCase
             [array_merge($validData, ['dob' => '11-11-2020']), Response::STATUS_CODE_400],
             [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],
         ];
-    }
-
-    /**
-     * @dataProvider kbvAnswersData
-     */
-    public function testKbvAnswers(
-        string $uuid,
-        array $provided,
-        CaseData $actual,
-        string $result,
-        int $status
-    ): void {
-        if ($result !== 'error') {
-            $this->dataQueryHandlerMock
-                ->expects($this->once())->method('getCaseByUUID')
-                ->with($uuid)
-                ->willReturn($actual);
-        }
-
-        $this->dispatchJSON(
-            '/cases/' . $uuid . '/kbv-answers',
-            'POST',
-            $provided
-        );
-        $this->assertResponseStatusCode($status);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('check_kbv_answers');
-
-        if ($result === "error") {
-            $response = json_decode($this->getResponse()->getContent(), true);
-            $this->assertEquals('Missing UUID or unable to find case', $response['title']);
-        } else {
-            $this->assertEquals('{"result":"' . $result . '"}', $this->getResponse()->getContent());
-        }
-    }
-
-    public static function kbvAnswersData(): array
-    {
-        $uuid = 'e32a4d31-f15b-43f8-9e21-2fb09c8f45e7';
-        $invalidUUID = 'asdkfh3984ahksdjka';
-        $provided = [
-            'answers' => [
-                'one' => 'VoltWave',
-                'two' => 'Germanotta',
-                'tree' => 'July',
-                'four' => 'Pink'
-            ]
-        ];
-        $providedIncomplete = $provided;
-        unset($providedIncomplete['answers']['four']);
-
-        $providedIncorrect = $provided;
-        $providedIncorrect['answers']['two'] = 'incorrect answer';
-
-        $actual = CaseData::fromArray([
-            'personType' => 'donor',
-            'firstName' => '',
-            'lastName' => '',
-            'dob' => '',
-            'lpas' => [],
-            'address' => [],
-        ]);
-
-        $actual->kbvQuestions = json_encode([
-            'one' => ['answer' => 'VoltWave'],
-            'two' => ['answer' => 'Germanotta'],
-            'tree' => ['answer' => 'July'],
-            'four' => ['answer' => 'Pink']
-        ]);
-
-        return [
-            [$uuid, $provided, $actual, 'pass', Response::STATUS_CODE_200],
-            [$uuid, $providedIncomplete, $actual, 'fail', Response::STATUS_CODE_200],
-            [$uuid, $providedIncorrect, $actual, 'fail', Response::STATUS_CODE_200],
-            [$invalidUUID, $provided, $actual, 'error', Response::STATUS_CODE_400],
-        ];
-    }
-
-    public function testKBVQuestionsWithNoUUID(): void
-    {
-        $this->dispatch('/cases/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(400);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('get_kbv_questions');
-
-        $response = json_decode($this->getResponse()->getContent(), true);
-        $this->assertEquals('Missing UUID', $response['title']);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testKBVQuestionsWithVerifiedDocsCaseGeneratesQuestions(): void
-    {
-        $caseData = CaseData::fromArray([
-            'personType' => '',
-            'firstName' => 'test',
-            'lastName' => 'name',
-            'dob' => '',
-            'lpas' => [],
-            'address' => [],
-        ]);
-
-        $caseData->documentComplete = true;
-
-        $formattedQuestions = $this->formattedQuestions();
-
-        $this->dataQueryHandlerMock
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn($caseData);
-
-        $this->KBVServiceMock
-            ->expects($this->once())->method('fetchFormattedQuestions')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn($formattedQuestions);
-
-        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertStringContainsString('Who is your electricity supplier?', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('get_kbv_questions');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testKBVQuestionsWithVerifiedDocsCaseAndExistingQuestions(): void
-    {
-        $caseData = CaseData::fromArray([
-            'personType' => '',
-            'firstName' => 'test',
-            'lastName' => 'name',
-            'dob' => '',
-            'lpas' => [],
-            'address' => [],
-        ]);
-
-        $caseData->kbvQuestions = json_encode($this->formattedQuestions());
-        $caseData->documentComplete = true;
-
-        $this->dataQueryHandlerMock
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn($caseData);
-
-        $this->KBVServiceMock
-            ->expects($this->never())->method('fetchFormattedQuestions')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999');
-
-        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertStringContainsString('Who is your electricity supplier?', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('get_kbv_questions');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testKBVQuestionsWithUnVerifiedDocsCase(): void
-    {
-        $response = '{"error":"Document checks incomplete or unable to locate case"}';
-        $caseData = CaseData::fromArray([
-            'personType' => '',
-            'firstName' => 'test',
-            'lastName' => 'name',
-            'dob' => '',
-            'lpas' => [],
-            'address' => [],
-        ]);
-
-        $this->dataQueryHandlerMock->expects($this->once())->method('getCaseByUUID')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn($caseData);
-
-        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('get_kbv_questions');
     }
 
     /**
@@ -381,7 +185,7 @@ class IdentityControllerTest extends TestCase
             ['AA112233A', 'PASS', Response::STATUS_CODE_200],
             ['BB112233A', 'PASS', Response::STATUS_CODE_200],
             ['AA112233D', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
-            ['AA112233C', 'NO_MATCH', Response::STATUS_CODE_200]
+            ['AA112233C', 'NO_MATCH', Response::STATUS_CODE_200],
         ];
     }
 
@@ -409,7 +213,7 @@ class IdentityControllerTest extends TestCase
             ['CHAPM301534MA9AY', 'PASS', Response::STATUS_CODE_200],
             ['SMITH710238HA3DY', 'PASS', Response::STATUS_CODE_200],
             ['SMITH720238HA3D8', 'NO_MATCH', Response::STATUS_CODE_200],
-            ['JONES630536AB3J9', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200]
+            ['JONES630536AB3J9', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
         ];
     }
 
@@ -454,54 +258,6 @@ class IdentityControllerTest extends TestCase
         $request->setContent(is_string($data) ? $data : json_encode($data));
 
         $this->dispatch($path, $method);
-    }
-
-    public function formattedQuestions(): array
-    {
-        return [
-            'formattedQuestions' => [
-                'one' => [
-                    'question' => 'Who is your electricity supplier?',
-                    'prompts' => [
-                        0 => 'VoltWave',
-                        1 => 'Glow Electric',
-                        2 => 'Powergrid Utilities',
-                        3 => 'Bright Bristol Power'
-                    ],
-                    'answer' => 'VoltWave'
-                ],
-                'two' => [
-                    'question' => 'How much was your last phone bill?',
-                    'prompts' => [
-                        0 => "£5.99",
-                        1 => "£11",
-                        2 => "£16.84",
-                        3 => "£1.25"
-                    ],
-                    'answer' => "£5.99"
-                ]
-            ],
-            'questionsWithoutAnswers' => [
-                'one' => [
-                    'question' => 'Who is your electricity supplier?',
-                    'prompts' => [
-                        0 => 'VoltWave',
-                        1 => 'Glow Electric',
-                        2 => 'Powergrid Utilities',
-                        3 => 'Bright Bristol Power'
-                    ]
-                ],
-                'two' => [
-                    'question' => 'How much was your last phone bill?',
-                    'prompts' => [
-                        0 => "£5.99",
-                        1 => "£11",
-                        2 => "£16.84",
-                        3 => "£1.25"
-                    ]
-                ]
-            ],
-        ];
     }
 
     /**
@@ -555,11 +311,11 @@ class IdentityControllerTest extends TestCase
                 "country" => "UK",
                 "town" => "town",
                 "line2" => "Road",
-                "line1" => "1 Street"
+                "line1" => "1 Street",
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
-                "M-VGAS-OAGA-34G9"
+                "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
             "alternateAddress" => [
@@ -567,7 +323,7 @@ class IdentityControllerTest extends TestCase
             "searchPostcode" => null,
             "idMethod" => null,
             "idMethodIncludingNation" => [
-            ]
+            ],
         ];
 
         return [
@@ -576,14 +332,14 @@ class IdentityControllerTest extends TestCase
                 $newLpa,
                 CaseData::fromArray($modelResponse),
                 false,
-                "Updated"
+                "Updated",
             ],
             [
                 $uuid,
                 $duplicatedLpa,
                 CaseData::fromArray($modelResponse),
                 true,
-                "LPA is already added to this case"
+                "LPA is already added to this case",
             ],
         ];
     }
@@ -640,11 +396,11 @@ class IdentityControllerTest extends TestCase
                 "country" => "UK",
                 "town" => "town",
                 "line2" => "Road",
-                "line1" => "1 Street"
+                "line1" => "1 Street",
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
-                "M-VGAS-OAGA-34G9"
+                "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
             "alternateAddress" => [
@@ -652,7 +408,7 @@ class IdentityControllerTest extends TestCase
             "searchPostcode" => null,
             "idMethod" => null,
             "idMethodIncludingNation" => [
-            ]
+            ],
         ];
 
         return [
@@ -661,14 +417,14 @@ class IdentityControllerTest extends TestCase
                 $addedLpa,
                 CaseData::fromArray($modelResponse),
                 false,
-                "Removed"
+                "Removed",
             ],
             [
                 $uuid,
                 $notAddedLpa,
                 CaseData::fromArray($modelResponse),
                 true,
-                "LPA is not added to this case"
+                "LPA is not added to this case",
             ],
         ];
     }
@@ -690,11 +446,11 @@ class IdentityControllerTest extends TestCase
                 "progressPage",
                 "M",
                 array_map(fn (mixed $v) => [
-                    'S' => $v
+                    'S' => $v,
                 ], $data),
             );
 
-        $path  = sprintf('/cases/%s/update-progress', $uuid);
+        $path = sprintf('/cases/%s/update-progress', $uuid);
 
         $this->dispatchJSON(
             $path,
@@ -716,7 +472,7 @@ class IdentityControllerTest extends TestCase
         $data = [
             "route" => "name-match-check",
             "reason" => "ot",
-            "notes" => "Caller didn't have all required documents"
+            "notes" => "Caller didn't have all required documents",
         ];
         $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['route'] . '"}', true);
 
@@ -724,7 +480,7 @@ class IdentityControllerTest extends TestCase
             [
                 $uuid,
                 $data,
-                $response
+                $response,
             ],
         ];
     }
