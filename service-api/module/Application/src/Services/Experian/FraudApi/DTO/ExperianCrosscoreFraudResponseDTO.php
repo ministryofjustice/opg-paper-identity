@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Services\Experian\FraudApi\DTO;
 
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
+use phpDocumentor\Reflection\PseudoTypes\Numeric_;
+
 class ExperianCrosscoreFraudResponseDTO
 {
     public function __construct(
@@ -14,5 +17,50 @@ class ExperianCrosscoreFraudResponseDTO
     public function toArray(): array
     {
         return $this->response;
+    }
+
+    public function clientResponsePayload(): array
+    {
+        try {
+            return $this->response['clientResponsePayload'];
+        } catch (\Exception $exception) {
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+        }
+    }
+
+    public function originalRequestData(): array
+    {
+        try {
+            return $this->response['originalRequestData'];
+        } catch (\Exception $exception) {
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+        }
+    }
+
+    public function responseHeader(): array
+    {
+        try {
+            return $this->response['responseHeader'];
+        } catch (\Exception $exception) {
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+        }
+    }
+
+    public function decision(): string
+    {
+        try {
+            return $this->response['responseHeader']['overallResponse']['decision'];
+        } catch (\Exception $exception) {
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+        }
+    }
+
+    public function score(): float
+    {
+        try {
+            return $this->response['responseHeader']['overallResponse']['score'];
+        } catch (\Exception $exception) {
+            throw new ExperianCrosscoreFraudApiException($exception->getMessage());
+        }
     }
 }
