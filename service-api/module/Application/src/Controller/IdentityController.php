@@ -35,7 +35,6 @@ class IdentityController extends AbstractActionController
         private readonly DataWriteHandler $dataHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
-        private readonly KBVServiceInterface $KBVService,
         private readonly LoggerInterface $logger,
         private readonly ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService
     ) {

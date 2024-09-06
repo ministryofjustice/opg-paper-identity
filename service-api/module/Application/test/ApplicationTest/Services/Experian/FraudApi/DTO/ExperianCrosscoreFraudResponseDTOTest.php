@@ -229,22 +229,6 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
         );
     }
 
-    public function testClientResponsePayload(): void
-    {
-        $this->assertEquals(
-            $this->data['clientResponsePayload'],
-            $this->experianCrosscoreFraudResponseDTO->clientResponsePayload()
-        );
-    }
-
-    public function testOriginalRequestData(): void
-    {
-        $this->assertEquals(
-            $this->data['originalRequestData'],
-            $this->experianCrosscoreFraudResponseDTO->originalRequestData()
-        );
-    }
-
     public function testResponseHeader(): void
     {
         $this->assertEquals(

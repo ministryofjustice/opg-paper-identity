@@ -27,6 +27,8 @@ class ExperianCrosscoreFraudApiService
     ) {
     }
 
+    public int $authCount = 0;
+
     /**
      * @throws GuzzleException
      * @throws ExperianCrosscoreAuthApiException
@@ -59,6 +61,7 @@ class ExperianCrosscoreFraudApiService
     public function makeRequest(
         ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
     ): ExperianCrosscoreFraudResponseDTO {
+        $this->authCount++;
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
 
@@ -80,6 +83,10 @@ class ExperianCrosscoreFraudApiService
             if ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401) {
                 $this->experianCrosscoreAuthApiService->authenticate();
                 $this->makeRequest($experianCrosscoreFraudRequestDTO);
+            } elseif ($this->authCount > 2) {
+                throw $clientException;
+            } else {
+                throw $clientException;
             }
         } catch (\Exception $exception) {
             throw new ExperianCrosscoreFraudApiException($exception->getMessage());
@@ -99,7 +106,7 @@ class ExperianCrosscoreFraudApiService
                 "requestType" => "FraudScore",
                 "clientReferenceId" => "$requestUuid-FraudScore-continue",
                 "expRequestId" => $requestUuid,
-                "messageTime" => date("Y-m-d\TH:i:s.000\Z", time()),
+                "messageTime" => date("Y-m-d\TH:i:s.000\Z"),
                 "options" => []
             ],
             'payload' => [
