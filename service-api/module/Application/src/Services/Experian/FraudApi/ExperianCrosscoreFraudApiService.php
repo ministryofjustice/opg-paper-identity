@@ -54,6 +54,7 @@ class ExperianCrosscoreFraudApiService
     /**
      * @throws GuzzleException
      * @throws ExperianCrosscoreFraudApiException
+     * @psalm-suppress InvalidReturnType
      */
     public function makeRequest(
         ExperianCrosscoreFraudRequestDTO $experianCrosscoreFraudRequestDTO
@@ -78,8 +79,8 @@ class ExperianCrosscoreFraudApiService
         } catch (ClientException $clientException) {
             if ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401) {
                 $this->experianCrosscoreAuthApiService->authenticate();
+                $this->makeRequest($experianCrosscoreFraudRequestDTO);
             }
-            $this->makeRequest($experianCrosscoreFraudRequestDTO);
         } catch (\Exception $exception) {
             throw new ExperianCrosscoreFraudApiException($exception->getMessage());
         }

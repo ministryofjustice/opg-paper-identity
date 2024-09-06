@@ -684,6 +684,7 @@ class IdentityController extends AbstractActionController
             $addressDto
         );
         $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
+
         return new JsonModel($response);
     }
 }

@@ -12,6 +12,7 @@ use Application\Services\Experian\FraudApi\DTO\ExperianCrosscoreFraudRequestDTO;
 use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiException;
 use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
@@ -53,14 +54,14 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
     ): void {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
+        } else {
+            /**
+             * @psalm-suppress UndefinedMethod
+             */
+            $this->experianCrosscoreAuthApiService
+                ->expects($this->once())
+                ->method('retrieveCachedTokenResponse');
         }
-
-        /**
-         * @psalm-suppress UndefinedMethod
-         */
-        $this->experianCrosscoreAuthApiService
-            ->expects($this->once())
-            ->method('retrieveCachedTokenResponse');
 
         $experianCrosscoreFraudApiService = new ExperianCrosscoreFraudApiService(
             $client,
