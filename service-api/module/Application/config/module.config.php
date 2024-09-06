@@ -10,6 +10,8 @@ use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\IIQ\AuthManager;
+use Application\Experian\IIQ\AuthManagerFactory;
 use Application\Experian\IIQ\Soap\IIQClient;
 use Application\Experian\IIQ\Soap\IIQClientFactory;
 use Application\Experian\IIQ\Soap\WaspClient;
@@ -175,8 +177,8 @@ return [
                 'options' => [
                     'route' => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'getKbvQuestions',
+                        'controller' => Controller\KbvController::class,
+                        'action' => 'getQuestions',
                     ],
                 ],
             ],
@@ -185,8 +187,8 @@ return [
                 'options' => [
                     'route' => '/cases/:uuid/kbv-answers',
                     'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'checkKbvAnswers',
+                        'controller' => Controller\KbvController::class,
+                        'action' => 'checkAnswers',
                     ],
                 ],
             ],
@@ -452,6 +454,7 @@ return [
             EventSender::class => EventSenderFactory::class,
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,
+            AuthManager::class => AuthManagerFactory::class,
         ],
     ],
     'view_manager' => [
