@@ -9,10 +9,33 @@ use Application\Experian\IIQ\IIQService;
 use Application\Experian\IIQ\Soap\IIQClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use SoapFault;
 use SoapHeader;
 
 class IIQServiceTest extends TestCase
 {
+    private IIQClient&MockObject $iiqClient;
+    private LoggerInterface&MockObject $logger;
+    private AuthManager&MockObject $authManager;
+
+    private IIQService $sut;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->iiqClient = $this->createMock(IIQClient::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
+        $this->authManager = $this->createMock(AuthManager::class);
+
+        $this->sut = new IIQService(
+            $this->authManager,
+            $this->iiqClient,
+            $this->logger,
+        );
+    }
+
     public function testStartAuthenticationAttempt(): void
     {
         $questions = [
@@ -20,9 +43,11 @@ class IIQServiceTest extends TestCase
             ['id' => 2],
         ];
 
-        $client = $this->createMock(IIQClient::class);
+        $this->authManager->expects($this->once())
+            ->method('buildSecurityHeader')
+            ->willReturn(new SoapHeader('placeholder', 'header'));
 
-        $client->expects($this->once())
+        $this->iiqClient->expects($this->once())
             ->method('__call')
             ->with(
                 'SAA',
@@ -36,22 +61,33 @@ class IIQServiceTest extends TestCase
                 ],
             ]);
 
-        $sut = new IIQService(
-            $this->getMockAuthManager(),
-            $client,
-        );
-
-        $this->assertEquals($questions, $sut->startAuthenticationAttempt());
+        $this->assertEquals($questions, $this->sut->startAuthenticationAttempt());
     }
 
-    private function getMockAuthManager(): AuthManager&MockObject
+    public function testStartAuthenticationAttemptsOneRetry(): void
     {
-        $authManager = $this->createMock(AuthManager::class);
+        $soapFault = new SoapFault('0', 'Unauthorized');
 
-        $authManager->expects($this->once())
+        $this->authManager->expects($this->exactly(2))
             ->method('buildSecurityHeader')
-            ->willReturn(new SoapHeader('placeholder', 'header'));
+            ->with($this->callback(function (bool $forceNewToken) {
+                static $i = 0;
+                return match (++$i) {
+                    1 => $forceNewToken === false,
+                    2 => $forceNewToken === true,
+                    default => $this->fail("Did not expect attempt $i at calling `buildSecurityHeader`"),
+                };
+            }))
+            ->willReturn(new SoapHeader('placeholder', 'bad-token'));
 
-        return $authManager;
+        $this->iiqClient->expects($this->exactly(2))
+            ->method('__call')
+            ->with('SAA', $this->anything())
+            ->willThrowException($soapFault);
+
+        $this->expectException(SoapFault::class);
+        $this->expectExceptionMessage('Unauthorized');
+
+        $this->assertIsArray($this->sut->startAuthenticationAttempt());
     }
 }

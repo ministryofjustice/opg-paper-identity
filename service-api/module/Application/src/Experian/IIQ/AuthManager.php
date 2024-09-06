@@ -31,8 +31,12 @@ class AuthManager
         return $token;
     }
 
-    public function buildSecurityHeader(): SoapHeader
+    public function buildSecurityHeader(bool $forceNewToken = false): SoapHeader
     {
+        if ($forceNewToken) {
+            $this->storage->removeItem(self::CACHE_KEY);
+        }
+
         $token = $this->getToken();
 
         $wsseNamespace = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
