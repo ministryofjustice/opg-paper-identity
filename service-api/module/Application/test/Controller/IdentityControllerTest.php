@@ -9,6 +9,7 @@ use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
+use Application\Services\Experian\FraudApi\ExperianCrosscoreFraudApiService;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
@@ -27,6 +28,7 @@ class IdentityControllerTest extends TestCase
     private DataWriteHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
+    private ExperianCrosscoreFraudApiService $experianCrosscoreFraudApiService;
 
     public function setUp(): void
     {
@@ -46,6 +48,7 @@ class IdentityControllerTest extends TestCase
         $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
+        $this->experianCrosscoreFraudApiService = $this->createMock(ExperianCrosscoreFraudApiService::class);
 
 
         parent::setUp();
@@ -57,6 +60,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
+        $serviceManager->setService(ExperianCrosscoreFraudApiService::class, $this->experianCrosscoreFraudApiService);
     }
 
     public function testInvalidRouteDoesNotCrash(): void

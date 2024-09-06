@@ -75,11 +75,11 @@ class ExperianCrosscoreFraudApiService
             return new ExperianCrosscoreFraudResponseDTO(
                 $responseArray
             );
-//        } catch (ClientException $clientException) {
-//            if ($clientException->getCode() == Response::STATUS_CODE_401) {
-//                $this->experianCrosscoreAuthApiService->authenticate();
-//            }
-//            $this->makeRequest($experianCrosscoreFraudRequestDTO);
+        } catch (ClientException $clientException) {
+            if ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401) {
+                $this->experianCrosscoreAuthApiService->authenticate();
+            }
+            $this->makeRequest($experianCrosscoreFraudRequestDTO);
         } catch (\Exception $exception) {
             throw new ExperianCrosscoreFraudApiException($exception->getMessage());
         }
