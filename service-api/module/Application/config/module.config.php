@@ -173,8 +173,8 @@ return [
                 'options' => [
                     'route' => '/cases/[:uuid/]kbv-questions',
                     'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'getKbvQuestions',
+                        'controller' => Controller\KbvController::class,
+                        'action' => 'getQuestions',
                     ],
                 ],
             ],
@@ -183,8 +183,8 @@ return [
                 'options' => [
                     'route' => '/cases/:uuid/kbv-answers',
                     'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'checkKbvAnswers',
+                        'controller' => Controller\KbvController::class,
+                        'action' => 'checkAnswers',
                     ],
                 ],
             ],
