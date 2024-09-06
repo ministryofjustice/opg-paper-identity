@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
@@ -24,6 +25,7 @@ class IdentityControllerTest extends TestCase
     private DataWriteHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
+    private FraudApiService $experianCrosscoreFraudApiService;
 
     public function setUp(): void
     {
@@ -42,6 +44,7 @@ class IdentityControllerTest extends TestCase
         $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
+        $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
 
 
         parent::setUp();
@@ -52,6 +55,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
+        $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -482,6 +486,289 @@ class IdentityControllerTest extends TestCase
                 $data,
                 $response,
             ],
+        ];
+    }
+
+
+    /**
+     * @dataProvider requestFraudCheckData
+     */
+    public function testRequestFraudCheck(
+        string $uuid,
+        CaseData $modelResponse,
+        array $response
+    ): void {
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($modelResponse);
+
+        /**
+         * @psalm-suppress UndefinedMethod
+         */
+        $this->experianCrosscoreFraudApiService
+            ->expects($this->once())
+            ->method('getFraudScore')
+            ->willReturn($response);
+
+        $path  = sprintf('/cases/%s/request-fraud-check', $uuid);
+
+        $this->dispatchJSON(
+            $path,
+            'GET'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+        $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
+        $this->assertModuleName('application');
+        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('IdentityController');
+        $this->assertMatchedRouteName('request_fraud_check');
+    }
+
+    public static function requestFraudCheckData(): array
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+
+        $modelResponse = [
+            "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
+            "personType" => "donor",
+            "firstName" => "Mary Ann",
+            "lastName" => "Chapman",
+            "dob" => "1949-01-01",
+            "address" => [
+                "postcode" => "SW1B 1BB",
+                "country" => "UK",
+                "town" => "town",
+                "line2" => "Road",
+                "line1" => "1 Street"
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+                "M-VGAS-OAGA-34G9"
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "searchPostcode" => null,
+            "idMethod" => null,
+            "idMethodIncludingNation" => [
+            ]
+        ];
+
+        $successMockResponseData = [
+            "responseHeader" => [
+                "requestType" => "FraudScore",
+                "clientReferenceId" => "974daa9e-8128-49cb-9728-682c72fa3801-FraudScore-continue",
+                "expRequestId" => "RB000001416866",
+                "messageTime" => "2024-09-03T11:19:07Z",
+                "overallResponse" => [
+                    "decision" => "CONTINUE",
+                    "decisionText" => "Continue",
+                    "decisionReasons" => [
+                        "Processing completed successfully",
+                        "Low Risk Machine Learning score"
+                    ],
+                    "recommendedNextActions" => [
+                    ],
+                    "spareObjects" => [
+                    ]
+                ],
+                "responseCode" => "R0201",
+                "responseType" => "INFO",
+                "responseMessage" => "Workflow Complete.",
+                "tenantID" => "623c97f7ff2e44528aa3fba116372d",
+                "category" => "COMPLIANCE_INQUIRY"
+            ],
+            "clientResponsePayload" => [
+                "orchestrationDecisions" => [
+                    [
+                        "sequenceId" => "1",
+                        "decisionSource" => "uk-crp",
+                        "decision" => "CONTINUE",
+                        "decisionReasons" => [
+                            "Processing completed successfully"
+                        ],
+                        "score" => 0,
+                        "decisionText" => "Continue",
+                        "nextAction" => "Continue",
+                        "decisionTime" => "2024-09-03T11:19:08Z"
+                    ],
+                    [
+                        "sequenceId" => "2",
+                        "decisionSource" => "MachineLearning",
+                        "decision" => "ACCEPT",
+                        "decisionReasons" => [
+                            "Low Risk Machine Learning score"
+                        ],
+                        "score" => 265,
+                        "decisionText" => "Continue",
+                        "nextAction" => "Continue",
+                        "appReference" => "",
+                        "decisionTime" => "2024-09-03T11:19:08Z"
+                    ]
+                ],
+                "decisionElements" => [
+                    [
+                        "serviceName" => "uk-crpverify",
+                        "applicantId" => "MA_APPLICANT1",
+                        "appReference" => "8H9NGXVZZV",
+                        "warningsErrors" => [
+                        ],
+                        "otherData" => [
+                            "response" => [
+                                "contactId" => "MA1",
+                                "nameId" => "MANAME1",
+                                "uuid" => "75467c7e-c7ea-4f3a-b02e-3fd0793191b5"
+                            ]
+                        ],
+                        "auditLogs" => [
+                            [
+                                "eventType" => "BUREAU DATA",
+                                "eventDate" => "2024-09-03T11:19:08Z",
+                                "eventOutcome" => "No Match Found"
+                            ]
+                        ]
+                    ],
+                    [
+                        "serviceName" => "MachineLearning",
+                        "normalizedScore" => 100,
+                        "score" => 265,
+                        "appReference" => "fraud-score-1.0",
+                        "otherData" => [
+                            "probabilities" => [
+                                0.73476599388745,
+                                0.26523400611255
+                            ],
+                            "probabilityMultiplier" => 1000,
+                            "modelInputs" => [
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                -1,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                -1,
+                                -1,
+                                0,
+                                0,
+                                -1
+                            ]
+                        ],
+                        "decisions" => [
+                            [
+                                "element" => "Reason 1",
+                                "value" => "6.7",
+                                "reason" => "PA04 - Number of previous vehicle financing applications"
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "originalRequestData" => [
+                "contacts" => [
+                    [
+                        "id" => "MA1",
+                        "person" => [
+                            "personDetails" => [
+                                "dateOfBirth" => "1986-09-03"
+                            ],
+                            "personIdentifier" => "",
+                            "names" => [
+                                [
+                                    "type" => "CURRENT",
+                                    "firstName" => "lee",
+                                    "surName" => "manthrope",
+                                    "middleNames" => "",
+                                    "id" => "MANAME1"
+                                ]
+                            ]
+                        ],
+                        "addresses" => [
+                            [
+                                "id" => "MACADDRESS1",
+                                "addressType" => "CURRENT",
+                                "indicator" => "RESIDENTIAL",
+                                "buildingNumber" => "18",
+                                "postal" => "SO15 3AA",
+                                "street" => "BOURNE COURT",
+                                "postTown" => "southampton",
+                                "county" => ""
+                            ]
+                        ]
+                    ]
+                ],
+                "control" => [
+                    [
+                        "option" => "ML_MODEL_CODE",
+                        "value" => "bfs"
+                    ]
+                ],
+                "application" => [
+                    "applicants" => [
+                        [
+                            "id" => "MA_APPLICANT1",
+                            "contactId" => "MA1",
+                            "type" => "INDIVIDUAL",
+                            "applicantType" => "MAIN_APPLICANT",
+                            "consent" => "true"
+                        ]
+                    ]
+                ],
+                "source" => ""
+            ]
+        ];
+
+        return [
+            [
+                $uuid,
+                CaseData::fromArray($modelResponse),
+                $successMockResponseData,
+            ],
+//            [
+//                $uuid,
+//                $notAddedLpa,
+//                CaseData::fromArray($modelResponse),
+//                true,
+//                "LPA is not added to this case"
+//            ],
         ];
     }
 }
