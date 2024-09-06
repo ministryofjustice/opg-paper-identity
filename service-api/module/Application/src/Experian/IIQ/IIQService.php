@@ -8,12 +8,29 @@ use Application\Experian\IIQ\Soap\IIQClient;
 
 class IIQService
 {
-    public function __construct(private readonly IIQClient $client)
+    private bool $isAuthenticated = false;
+
+    public function __construct(
+        private readonly AuthManager $authManager,
+        private readonly IIQClient $client,
+    ) {
+    }
+
+    public function authenticate(): void
     {
+        if (!$this->isAuthenticated) {
+            $this->client->__setSoapHeaders([
+                $this->authManager->buildSecurityHeader(),
+            ]);
+
+            $this->isAuthenticated = true;
+        }
     }
 
     public function startAuthenticationAttempt(): array
     {
+        $this->authenticate();
+
         $request = $this->client->SAA([
             'sAARequest' => [
                 'Applicant' => [
