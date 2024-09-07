@@ -35,7 +35,6 @@ use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Method;
 use Laminas\Router\Http\Segment;
-use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Psr\Log\LoggerInterface;
 
@@ -48,26 +47,6 @@ if (! is_string($tableName) || empty($tableName)) {
 return [
     'router' => [
         'routes' => [
-            'home' => [
-                'type' => Literal::class,
-                'options' => [
-                    'route' => '/',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action' => 'index',
-                    ],
-                ],
-            ],
-            'application' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/application[/:action]',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action' => 'index',
-                    ],
-                ],
-            ],
             'details' => [
                 'type' => Literal::class,
                 'options' => [
@@ -407,7 +386,6 @@ return [
             LazyControllerAbstractFactory::class,
         ],
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
             Controller\YotiController::class => LazyControllerAbstractFactory::class,
         ],
