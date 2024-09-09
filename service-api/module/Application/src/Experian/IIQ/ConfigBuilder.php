@@ -11,8 +11,8 @@ class ConfigBuilder
     public function buildSAA(CaseData $case): array
     {
         $saaConfig = [];
-        $saaConfig['sAARequest'] = [];
-        $saaConfig['sAARequest']['Applicant'] = [
+
+        $saaConfig['Applicant'] = [
             'ApplicantIdentifier' => $case->id,
             'Name' => [
                 'Title' => '',
@@ -22,20 +22,20 @@ class ConfigBuilder
         ];
 
         if (isset($case->dob)) {
-            $saaConfig['sAARequest']['Applicant']['DateOfBirth'] = [
+            $saaConfig['Applicant']['DateOfBirth'] = [
                 'CCYY' => date('Y', strtotime(date($case->dob))),
                 'MM' => date('m', strtotime(date($case->dob))),
                 'DD' => date('d', strtotime(date($case->dob))),
             ];
         }
 
-        $saaConfig['sAARequest']['ApplicationData'] = [
+        $saaConfig['ApplicationData'] = [
             'SearchConsent' => 'Y',
         ];
-        $saaConfig['sAARequest']['Control'] = [
+        $saaConfig['Control'] = [
                     'TestDatabase' => 'A',
         ];
-        $saaConfig['sAARequest']['LocationDetails'] = [
+        $saaConfig['LocationDetails'] = [
             'LocationIdentifier' => '1',
             'MultilineLocation' => [
                 $case->address["line1"],

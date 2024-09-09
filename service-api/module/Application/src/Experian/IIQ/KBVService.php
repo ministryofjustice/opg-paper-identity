@@ -6,7 +6,6 @@ namespace Application\Experian\IIQ;
 
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
-use Application\Mock\KBV\KBVService as MockKBVService;
 use Psr\Log\LoggerInterface;
 
 class KBVService implements KBVServiceInterface
@@ -14,11 +13,17 @@ class KBVService implements KBVServiceInterface
     public function __construct(
         private readonly IIQService $authService,
         private readonly LoggerInterface $logger,
-        private readonly MockKBVService $mockKbvService,
         private readonly DataQueryHandler $queryHandler
     ) {
     }
 
+    /**
+     * @param string $uuid
+     * @return array[]
+     * @throws Exception\CannotGetQuestionsException
+     * @psalm-suppress PossiblyNullArgument
+     * @psalm-suppress InvalidArrayOffset
+     */
     public function fetchFormattedQuestions(string $uuid): array
     {
         $caseData = $this->queryHandler->getCaseByUUID($uuid);
@@ -32,9 +37,10 @@ class KBVService implements KBVServiceInterface
             '3' => 'four'
         ];
         //could also count how many questions have already been fetched prior
-        $currentQuestionCount = $caseData->kbvQuestions ? count($caseData->kbvQuestions) : null;
+        $currentQuestionCount =
+            isset($caseData->kbvQuestions) ? count(json_decode($caseData->kbvQuestions, true)) : null;
         //how do we know if we have already had questions created for this case?
-        $counter = $currentQuestionCount ? $currentQuestionCount - 1 : 0;
+        $counter = is_int($currentQuestionCount) ? $currentQuestionCount - 1 : 0;
         foreach ($questions as $question) {
             $number = $mapNumber[$counter];
             $formattedQuestions[$number] = [
@@ -51,7 +57,7 @@ class KBVService implements KBVServiceInterface
             ];
             $counter++;
         }
-
+        //@todo array merge of questions upstream where it's saved back
         $this->logger->info(sprintf('Found %d questions', count($questions)));
 
         return ['formattedQuestions' => $formattedQuestions, 'questionsWithoutAnswers' => $formattedQuestions];

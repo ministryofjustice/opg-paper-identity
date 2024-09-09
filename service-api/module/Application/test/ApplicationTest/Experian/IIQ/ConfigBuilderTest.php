@@ -44,35 +44,33 @@ class ConfigBuilderTest extends TestCase
     public function sAAFormatExpected(): array
     {
         $saaConfig = [
-            'sAARequest' => [
-                'Applicant' => [
-                    'ApplicantIdentifier' => '1',
-                    'Name' => [
-                        'Title' => '',
-                        'Forename' => 'Maria',
-                        'Surname' => 'Williams',
-                    ],
-                    'DateOfBirth' => [
-                        'CCYY' => '1960',
-                        'MM' => '01',
-                        'DD' => '01',
-                    ],
+            'Applicant' => [
+                'ApplicantIdentifier' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'Name' => [
+                    'Title' => '',
+                    'Forename' => 'Maria',
+                    'Surname' => 'Williams',
                 ],
-                'ApplicationData' => [
-                    'SearchConsent' => 'Y',
+                'DateOfBirth' => [
+                    'CCYY' => '1960',
+                    'MM' => '01',
+                    'DD' => '01',
                 ],
-                'Control' => [
-                    'TestDatabase' => 'A',
-                ],
-                'LocationDetails' => [
-                    'LocationIdentifier' => '1',
-                    'MultilineLocation' => [
-                        '123 long street',
-                        'Kings Cross',
-                        'London',
-                        'England',
-                        'NW1 1SP'
-                    ],
+            ],
+            'ApplicationData' => [
+                'SearchConsent' => 'Y',
+            ],
+            'Control' => [
+                'TestDatabase' => 'A',
+            ],
+            'LocationDetails' => [
+                'LocationIdentifier' => '1',
+                'MultilineLocation' => [
+                    '123 long street',
+                    'Kings Cross',
+                    'London',
+                    'England',
+                    'NW1 1SP'
                 ],
             ],
         ];
