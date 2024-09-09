@@ -76,11 +76,9 @@ class FraudApiService
                 $responseArray
             );
         } catch (ClientException $clientException) {
-            if ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401) {
+            if ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 && $this->authCount < 2) {
                 $this->experianCrosscoreAuthApiService->authenticate();
                 $this->makeRequest($experianCrosscoreFraudRequestDTO);
-            } elseif ($this->authCount > 2) {
-                throw $clientException;
             } else {
                 throw $clientException;
             }
