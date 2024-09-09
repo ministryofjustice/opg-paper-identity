@@ -81,6 +81,8 @@ class CPFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        echo json_encode($detailsData);
+
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
@@ -630,7 +632,6 @@ class CPFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/cp/choose_country'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
-        $idOptionsData = $this->config['opg_settings']['non_uk_identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = (new AttributeBuilder())->createForm(Country::class);
@@ -654,7 +655,6 @@ class CPFlowController extends AbstractActionController
         );
 
         $view->setVariable('form', $form);
-        $view->setVariable('options_data', $idOptionsData);
         $view->setVariable('countries_data', $countriesData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);

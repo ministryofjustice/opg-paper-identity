@@ -31,7 +31,7 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
-        private readonly array $config,
+        //        private readonly array $config,
     ) {
     }
 
@@ -146,7 +146,8 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
+//        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
+//        $optionsData = [];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
@@ -163,13 +164,13 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
 
-        if (array_key_exists($detailsData['idMethod'], $optionsData)) {
-            $idMethodForDisplay = $optionsData[$detailsData['idMethod']];
-        } else {
+//        if (array_key_exists($detailsData['idMethod'], $optionsData)) {
+//            $idMethodForDisplay = $optionsData[$detailsData['idMethod']];
+//        } else {
             $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country']);
             $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method']);
             $idMethodForDisplay = sprintf('%s (%s)', $idMethod->translate(), $country->translate());
-        }
+//        }
 
         $view->setVariable('display_id_method', $idMethodForDisplay);
 
