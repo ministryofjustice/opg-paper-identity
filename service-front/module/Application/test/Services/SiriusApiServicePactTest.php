@@ -4,46 +4,41 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
-use GuzzleHttp\Client;
 use Application\Services\SiriusApiService;
+use GuzzleHttp\Client;
 use Laminas\Http\Request;
-use Laminas\Http\Response;
 use PhpPact\Consumer\InteractionBuilder;
 use PhpPact\Consumer\Matcher\Matcher;
 use PhpPact\Consumer\Model\ConsumerRequest;
 use PhpPact\Consumer\Model\ProviderResponse;
+use PhpPact\Standalone\MockService\MockServerConfigInterface;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
 use PHPUnit\Framework\TestCase;
-use Throwable;
 
 class SiriusApiServicePactTest extends TestCase
 {
+    private MockServerConfigInterface $pactConfig;
     private InteractionBuilder $builder;
-    private SiriusApiService $sut;
 
     public function setUp(): void
     {
-        $config = new MockServerEnvConfig();
+        parent::setUp();
+        $this->pactConfig = new MockServerEnvConfig();
 
-        $client = new Client(['base_uri' => $config->getBaseUri()]);
-        $this->sut = new SiriusApiService($client);
+        $this->builder = new InteractionBuilder($this->pactConfig);
+    }
 
-        $this->builder = new InteractionBuilder($config);
+    private function buildService(): SiriusApiService
+    {
+        $client = new Client(['base_uri' => $this->pactConfig->getBaseUri()]);
+
+        return new SiriusApiService($client);
     }
 
     public function tearDown(): void
     {
-        try {
-            $this->assertTrue($this->builder->verify());
-        } catch (Throwable) {
-        }
-
-        try {
-            $this->builder->finalize();
-        } catch (Throwable) {
-        }
-
         parent::tearDown();
+        $this->builder->verify();
     }
 
     public function testSearchAddressesByPostcode(): void
@@ -52,7 +47,7 @@ class SiriusApiServicePactTest extends TestCase
         $request
             ->setMethod('GET')
             ->setPath('/api/v1/postcode-lookup')
-            ->setQuery('postcode=B1%201TT');
+            ->setQuery(['postcode' => 'B1 1TT']);
 
         $matcher = new Matcher();
         $response = new ProviderResponse();
@@ -73,7 +68,7 @@ class SiriusApiServicePactTest extends TestCase
             ->with($request)
             ->willRespondWith($response);
 
-        $addresses = $this->sut->searchAddressesByPostcode('B1 1TT', new Request());
+        $addresses = $this->buildService()->searchAddressesByPostcode('B1 1TT', new Request());
 
         $this->assertEquals('18 Leith Road', $addresses[0]['addressLine1']);
         $this->assertEquals('West Verpar', $addresses[0]['addressLine2']);
@@ -116,7 +111,7 @@ class SiriusApiServicePactTest extends TestCase
                         'address' => [
                             'line1' => $matcher->like('Flat 19'),
                             'country' => $matcher->like('GB'),
-                        ]
+                        ],
                     ],
                     'certificateProvider' => [
                         'firstNames' => $matcher->like('Dorian'),
@@ -124,11 +119,10 @@ class SiriusApiServicePactTest extends TestCase
                         'address' => [
                             'line1' => $matcher->like('104, Alte Lindenstraße'),
                             'country' => $matcher->like('DE'),
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
-
 
         $this->builder
             ->given('A digital LPA exists')
@@ -136,7 +130,7 @@ class SiriusApiServicePactTest extends TestCase
             ->with($request)
             ->willRespondWith($response);
 
-        $lpa = $this->sut->getLpaByUid('M-1234-9876-4567', new Request());
+        $lpa = $this->buildService()->getLpaByUid('M-1234-9876-4567', new Request());
 
         $this->assertEquals('18 Leith Road', $lpa['opg.poas.sirius']['donor']['addressLine1']);
 
@@ -173,10 +167,10 @@ class SiriusApiServicePactTest extends TestCase
             "reference" => "49895f88-501b-4491-8381-e8aeeaef177d",
             "actorType" => "donor",
             "lpaIds" => [
-                "M-0000-0000-0000"
+                "M-0000-0000-0000",
             ],
             "time" => "2024-07-30T10:53:57+00:00",
-            "outcome" => "exit"
+            "outcome" => "exit",
         ];
         $request
             ->setMethod('POST')
@@ -192,7 +186,7 @@ class SiriusApiServicePactTest extends TestCase
             ->with($request)
             ->willRespondWith($response);
 
-        $response = $this->sut->abandonCase($body, new Request());
+        $response = $this->buildService()->abandonCase($body, new Request());
 
         $this->assertEquals(204, $response['status']);
         $this->assertEquals("", $response['error']);
@@ -232,7 +226,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             'Line 3',
             'London',
             'England',
-            'SW4 7SS'
+            'SW4 7SS',
         ];
         $body = [
             "type" => "Save",
@@ -240,40 +234,8 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             "content" => "",
             "pdfSuffix" => $suffix,
             "correspondentName" => "Joe Blogs",
-            "correspondentAddress" => $address
+            "correspondentAddress" => $address,
         ];
-
-        $matcher = new Matcher();
-        $request1 = new ConsumerRequest();
-        $request1
-            ->setMethod('GET')
-            ->setPath('/api/v1/digital-lpas/M-1234-9876-4567');
-
-        $response1 = new ProviderResponse();
-        $response1
-            ->setStatus(200)
-            ->addHeader('Content-Type', 'application/json')
-            ->setBody([
-                'opg.poas.sirius' => [
-                    'id' => $matcher->like(789),
-                ],
-                'opg.poas.lpastore' => [
-                    'certificateProvider' => [
-                        'firstNames' => $matcher->like('Dorian'),
-                        'lastName' => $matcher->like('Rehkop'),
-                        'address' => [
-                            'line1' => $matcher->like('104, Alte Lindenstraße'),
-                            'country' => $matcher->like('DE'),
-                        ]
-                    ]
-                ]
-            ]);
-
-        $this->builder
-            ->given('A digital LPA exists')
-            ->uponReceiving('Request for an LPA via sendPDF')
-            ->with($request1)
-            ->willRespondWith($response1);
 
         $request = new ConsumerRequest();
         $request
@@ -291,7 +253,16 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             ->with($request)
             ->willRespondWith($response);
 
-        $result = $this->sut->sendPostOfficePDf($suffix, $details, new Request());
+        $client = new Client(['base_uri' => $this->pactConfig->getBaseUri()]);
+
+        $service = new class ($client) extends SiriusApiService {
+            public function getLpaByUid(string $uid, Request $request): array
+            {
+                return ['opg.poas.sirius' => ['id' => 789]];
+            }
+        };
+
+        $result = $service->sendPostOfficePDf($suffix, $details, new Request());
         $this->assertEquals(201, $result['status']);
     }
 }
