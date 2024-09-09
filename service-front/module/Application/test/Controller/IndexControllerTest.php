@@ -52,6 +52,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     public static function startActionDataProvider(): array
     {
         $siriusData = [
+            'id' => 1234,
             'donor' => [
                 'firstname' => 'Lili', 'surname' => 'Laur', 'dob' => '18/02/2019',
                 'addressLine1' => '17 East Lane', 'addressLine2' => 'Wickerham',
