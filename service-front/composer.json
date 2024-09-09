@@ -84,7 +84,8 @@
         "allow-plugins": {
             "laminas/laminas-component-installer": true,
             "laminas/laminas-skeleton-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "pact-foundation/composer-downloads-plugin": true
         }
     }
 }
