@@ -10,6 +10,8 @@ use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\Experian\Crosscore\AuthApi\AuthApiService;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Experian\IIQ\AuthManager;
 use Application\Experian\IIQ\AuthManagerFactory;
 use Application\Experian\IIQ\Soap\IIQClient;
@@ -17,6 +19,8 @@ use Application\Experian\IIQ\Soap\IIQClientFactory;
 use Application\Experian\IIQ\Soap\WaspClient;
 use Application\Experian\IIQ\Soap\WaspClientFactory;
 use Application\Factories\EventSenderFactory;
+use Application\Factories\ExperianCrosscoreAuthApiServiceFactory;
+use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
@@ -400,6 +404,16 @@ return [
                     ],
                 ],
             ],
+            'request_fraud_check' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/request-fraud-check',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'requestFraudCheck',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -435,6 +449,8 @@ return [
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
+            FraudApiService::class => ExperianCrosscoreFraudApiServiceFactory::class,
+            AuthApiService::class => ExperianCrosscoreAuthApiServiceFactory::class,
             EventSender::class => EventSenderFactory::class,
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,

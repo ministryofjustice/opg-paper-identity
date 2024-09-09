@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
@@ -32,7 +35,8 @@ class IdentityController extends AbstractActionController
         private readonly DataWriteHandler $dataHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly FraudApiService $experianCrosscoreFraudApiService
     ) {
     }
 
@@ -40,6 +44,7 @@ class IdentityController extends AbstractActionController
     {
         return new JsonModel();
     }
+
 
     public function createAction(): JsonModel
     {
@@ -576,6 +581,43 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode($status);
         $response['result'] = "Progress recorded at " . $uuid . '/' . $data['route'];
+
+        return new JsonModel($response);
+    }
+
+    public function requestFraudCheckAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing uuid'));
+        }
+
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+
+        if (! $case) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Case does not exist'));
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+        $addressDto = new AddressDTO(
+            $case->address['line1'],
+            $case->address['line2'] ?? "",
+            $case->address['line3'] ?? "",
+            $case->address['town'] ?? "",
+            $case->address['postcode'],
+            $case->address['country'] ?? "",
+        );
+
+        $dto = new RequestDTO(
+            $case->firstName,
+            $case->lastName,
+            $case->dob,
+            $addressDto
+        );
+        $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
 
         return new JsonModel($response);
     }
