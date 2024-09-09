@@ -16,8 +16,10 @@ class AuthManagerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): AuthManager
     {
+        $hourInSeconds = 60 * 60;
+
         $storage = new Apcu([
-          'ttl' => 25 * 60,
+           'ttl' => 4 * $hourInSeconds,
         ]);
 
         return new AuthManager($storage, $container->get(WaspService::class));
