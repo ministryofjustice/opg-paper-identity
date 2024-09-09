@@ -218,6 +218,10 @@ class IdentityController extends AbstractActionController
         return new JsonModel($questions['questionsWithoutAnswers']);
     }
 
+    /**
+     * @return JsonModel
+     * for real Exp service need to match up answers with their QuestionIDs to send back
+     */
     public function checkKbvAnswersAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');

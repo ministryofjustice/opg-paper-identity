@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Experian\IIQ;
 
+use Application\Fixtures\DataQueryHandler;
 use Application\KBV\KBVServiceInterface;
 use Application\Mock\KBV\KBVService as MockKBVService;
 use Psr\Log\LoggerInterface;
@@ -14,15 +15,45 @@ class KBVService implements KBVServiceInterface
         private readonly IIQService $authService,
         private readonly LoggerInterface $logger,
         private readonly MockKBVService $mockKbvService,
+        private readonly DataQueryHandler $queryHandler
     ) {
     }
 
     public function fetchFormattedQuestions(string $uuid): array
     {
-        $questions = $this->authService->startAuthenticationAttempt();
+        $caseData = $this->queryHandler->getCaseByUUID($uuid);
+        $questions = $this->authService->startAuthenticationAttempt($caseData);
+
+        $formattedQuestions = [];
+        $mapNumber = [
+            '0' => 'one',
+            '1' => 'two',
+            '2' => 'three',
+            '3' => 'four'
+        ];
+        //could also count how many questions have already been fetched prior
+        $currentQuestionCount = $caseData->kbvQuestions ? count($caseData->kbvQuestions) : null;
+        //how do we know if we have already had questions created for this case?
+        $counter = $currentQuestionCount ? $currentQuestionCount - 1 : 0;
+        foreach ($questions as $question) {
+            $number = $mapNumber[$counter];
+            $formattedQuestions[$number] = [
+                'number' => $number,
+                'experianId' => $question->QuestionID,
+                'question' => $question->Text,
+                'prompts' => [
+                    $question->AnswerFormat->AnswerList[0],
+                    $question->AnswerFormat->AnswerList[1],
+                    $question->AnswerFormat->AnswerList[2],
+                    $question->AnswerFormat->AnswerList[3],
+                ]
+
+            ];
+            $counter++;
+        }
 
         $this->logger->info(sprintf('Found %d questions', count($questions)));
 
-        return $this->mockKbvService->fetchFormattedQuestions($uuid);
+        return ['formattedQuestions' => $formattedQuestions, 'questionsWithoutAnswers' => $formattedQuestions];
     }
 }

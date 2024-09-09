@@ -21,7 +21,7 @@ class KBVServiceFactory implements FactoryInterface
         /** @var bool $useMock */
         $useMock = getenv("MOCK_KBV_API");
         if ($useMock) {
-            return new MockKBVService();
+            //return new MockKBVService();
         }
 
         return $container->get(KBVService::class);

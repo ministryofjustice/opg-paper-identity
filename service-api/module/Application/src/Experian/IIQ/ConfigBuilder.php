@@ -13,7 +13,7 @@ class ConfigBuilder
         $saaConfig = [];
         $saaConfig['sAARequest'] = [];
         $saaConfig['sAARequest']['Applicant'] = [
-            'ApplicantIdentifier' => '1',
+            'ApplicantIdentifier' => $case->id,
             'Name' => [
                 'Title' => '',
                 'Forename' => $case->firstName,

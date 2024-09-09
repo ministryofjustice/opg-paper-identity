@@ -4,50 +4,35 @@ declare(strict_types=1);
 
 namespace Application\Experian\IIQ;
 
+use Application\Experian\IIQ\Exception\CannotGetQuestionsException;
 use Application\Experian\IIQ\Soap\IIQClient;
+use Application\Model\Entity\CaseData;
+use Psr\Log\LoggerInterface;
 
 class IIQService
 {
-    public function __construct(private readonly IIQClient $client)
-    {
+    public function __construct(
+        private readonly IIQClient $client,
+        private readonly ConfigBuilder $builder,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
-    public function startAuthenticationAttempt(): array
+    /**
+     * @throws CannotGetQuestionsException
+     */
+    public function startAuthenticationAttempt(CaseData $caseData): array
     {
-        $request = $this->client->SAA([
-            'sAARequest' => [
-                'Applicant' => [
-                    'ApplicantIdentifier' => '1',
-                    'Name' => [
-                        'Title' => 'Mr',
-                        'Forename' => 'Albert',
-                        'Surname' => 'Arkil',
-                    ],
-                    'DateOfBirth' => [
-                        'CCYY' => '1951',
-                        'MM' => '02',
-                        'DD' => '18',
+        $request = $this->client->SAA([$this->builder->buildSAA($caseData)]);
 
-                    ],
-                ],
-                'ApplicationData' => [
-                    'SearchConsent' => 'Y',
-                ],
-                'Control' => [
-                    'TestDatabase' => 'A',
-                ],
-                'LocationDetails' => [
-                    'LocationIdentifier' => '1',
-                    'UKLocation' => [
-                        'HouseNumber' => '3',
-                        'Street' => 'STOCKS HILL',
-                        'District' => 'HIGH HARRINGTON',
-                        'PostTown' => 'WORKINGTON',
-                        'Postcode' => 'CA14 5PH',
-                    ],
-                ],
-            ],
-          ]);
+        if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
+            $this->logger->error($request->SAAResult->Results->Outcome);
+            throw new CannotGetQuestionsException("Error retrieving questions");
+        }
+        if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
+            $this->logger->error($request->SAAResult->Results->NextTransId->string);
+            throw new CannotGetQuestionsException("Error retrieving questions");
+        }
 
         return (array)$request->SAAResult->Questions->Question;
     }
