@@ -20,8 +20,8 @@ FROM php:8.3-fpm-alpine AS app
 RUN mkdir /app
 WORKDIR /var/www
 
-RUN apk --no-cache add fcgi icu-dev autoconf linux-headers $PHPIZE_DEPS \
-    && docker-php-ext-install opcache intl \
+RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DEPS \
+    && docker-php-ext-install ffi intl opcache \
     && docker-php-ext-enable sodium
 
 # Patch Vulnerabilities
@@ -69,6 +69,9 @@ RUN pecl install pcov && docker-php-ext-enable pcov;
 USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
     composer dumpautoload -o
+
+RUN mkdir -p ./build/output/pacts &&\
+    chown -R www-data ./build/output/pacts
 
 COPY phpcs.xml phpcs.xml
 COPY phpunit.xml phpunit.xml
