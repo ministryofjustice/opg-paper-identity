@@ -119,10 +119,6 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         if ($this->getRequest()->isPost()) {
-            if ($this->getRequest()->getPost('postoffice') == 'none') {
-                return $this->redirect()->toRoute('root/post_office_route_not_available', ['uuid' => $uuid]);
-            }
-
             $processableForm = array_key_exists('location', $this->getRequest()->getPost()->toArray())
                 ? $locationForm
                 : $form;
@@ -161,7 +157,6 @@ class PostOfficeFlowController extends AbstractActionController
         $postOfficeAddress = explode(",", $postOfficeData['address']);
         $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['post_code']]);
 
-        $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
         $view->setVariable('post_office_summary', true);
