@@ -23,6 +23,7 @@ use Laminas\Stdlib\RequestInterface;
  *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
+ *    id: int,
  *    caseSubtype: string,
  *    donor: array{
  *      firstname: string,
@@ -154,8 +155,6 @@ class SiriusApiService
      * @param Request $request
      * @return array
      * @throws GuzzleException
-     *
-     * @psalm-suppress InvalidArrayOffset
      */
     public function sendPostOfficePDf(string $base64suffix, array $caseDetails, Request $request): array
     {
