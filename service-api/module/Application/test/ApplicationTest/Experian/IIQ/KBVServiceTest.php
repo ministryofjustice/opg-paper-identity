@@ -17,12 +17,95 @@ class KBVServiceTest extends TestCase
     public function testFetchFormattedQuestions(): void
     {
         $uuid = '68f0bee7-5b05-41da-95c4-2f1d5952184d';
-        $questions = ['test' => 'value'];
+        $questions = [
+            (object)[
+                'QuestionID' => '1',
+                'Text' => 'Question One',
+                'AnswerFormat' => (object)[
+                    'AnswerList' => [
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E'
+                    ]
+                ]
+            ],
+            (object)[
+                'QuestionID' => '2',
+                'Text' => 'Question Two',
+                'AnswerFormat' => (object)[
+                    'AnswerList' => [
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E'
+                    ]
+                ]
+            ]
+        ];
+
+        $formattedQuestions = [
+            'questionsWithoutAnswers' => [
+                'one' => [
+                    'number' => 'one',
+                    'experianId' => '1',
+                    'question' => 'Question One',
+                    'prompts' => [
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E'
+                    ]
+                ],
+                'two' => [
+                    'number' => 'two',
+                    'experianId' => '2',
+                    'question' => 'Question Two',
+                    'prompts' => [
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E'
+                    ]
+                ]
+            ],
+            'formattedQuestions' => [
+                'one' => [
+                    'number' => 'one',
+                    'experianId' => '1',
+                    'question' => 'Question One',
+                    'prompts' => [
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E'
+                    ]
+                ],
+                'two' => [
+                    'number' => 'two',
+                    'experianId' => '2',
+                    'question' => 'Question Two',
+                    'prompts' => [
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E'
+                    ]
+                ]
+            ]
+        ];
 
         $caseData = CaseData::fromArray([
             'id' => '68f0bee7-5b05-41da-95c4-2f1d5952184d',
             'firstName' => 'Albert',
-            'lastName' => 'Williams',
+            'lastName' => 'Arkil',
+            'dob' => '1951-02-18',
             'address' => [
                 'line1' => '123 long street',
             ],
@@ -32,18 +115,13 @@ class KBVServiceTest extends TestCase
         $iiqService->expects($this->once())
             ->method('startAuthenticationAttempt')
             ->with($caseData)
-            ->willReturn([1, 2, 3]);
+            ->willReturn($questions);
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
             ->method('info')
-            ->with('Found 3 questions');
+            ->with('Found 2 questions');
 
-        $mockKbvService = $this->createMock(KBVService::class);
-        $mockKbvService->expects($this->once())
-            ->method('fetchFormattedQuestions')
-            ->with($uuid)
-            ->willReturn($questions);
 
         $queryHandler = $this->createMock(DataQueryHandler::class);
         $queryHandler->expects($this->once())
@@ -53,6 +131,6 @@ class KBVServiceTest extends TestCase
 
         $sut = new KBVService($iiqService, $logger, $queryHandler);
 
-        $this->assertEquals($questions, $sut->fetchFormattedQuestions($uuid));
+        $this->assertEquals($formattedQuestions, $sut->fetchFormattedQuestions($uuid));
     }
 }

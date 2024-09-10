@@ -52,6 +52,7 @@ class KBVService implements KBVServiceInterface
                     $question->AnswerFormat->AnswerList[1],
                     $question->AnswerFormat->AnswerList[2],
                     $question->AnswerFormat->AnswerList[3],
+                    $question->AnswerFormat->AnswerList[4],
                 ]
 
             ];

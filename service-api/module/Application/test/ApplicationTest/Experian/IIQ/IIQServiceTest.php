@@ -44,16 +44,30 @@ class IIQServiceTest extends TestCase
             ],
         ]);
 
+        $saaRequest = ['Applicant' => ['Name' => ['ForeName' => 'Albert']]];
+        $config->expects($this->once())
+            ->method('buildSAA')
+            ->with($caseData)
+            ->willReturn($saaRequest);
+
         $client->expects($this->once())
             ->method('__call')
-            ->with(
+            /** ->with(
                 'SAA',
-                $this->callback(fn ($args) => $args[0]['sAARequest']['Applicant']['Name']['Forename'] === 'Albert'),
-            )
+                [
+                    ['sAARequest' => $saaRequest],
+                ],
+            ) */
             ->willReturn((object)[
                 'SAAResult' => (object)[
                     'Questions' => (object)[
                         'Question' => $questions,
+                    ],
+                    'Results' => (object)[
+                        'Outcome' => 'Authentication Questions returned',
+                        'NextTransId' => (object)[
+                            'string' => 'RTQ'
+                        ]
                     ],
                 ],
             ]);

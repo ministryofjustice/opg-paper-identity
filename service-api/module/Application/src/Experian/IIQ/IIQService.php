@@ -23,7 +23,6 @@ class IIQService
      */
     public function startAuthenticationAttempt(CaseData $caseData): array
     {
-        //request = $this->client->SAA([$this->builder->buildSAA($caseData)]);
         $request = $this->client->SAA([
             'sAARequest' => [
                 $this->builder->buildSAA($caseData)
