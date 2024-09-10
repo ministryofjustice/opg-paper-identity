@@ -27,6 +27,7 @@ class SiriusApiServicePactTest extends TestCase
     {
         parent::setUp();
         $this->pactConfig = new MockServerEnvConfig();
+        $this->pactConfig->setLogLevel('DEBUG');
 
         $this->builder = new InteractionBuilder($this->pactConfig);
     }
