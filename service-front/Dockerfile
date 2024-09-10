@@ -20,8 +20,8 @@ FROM php:8.3-fpm-alpine AS app
 RUN mkdir /app
 WORKDIR /var/www
 
-RUN apk --no-cache add fcgi icu-dev autoconf linux-headers $PHPIZE_DEPS \
-    && docker-php-ext-install opcache intl \
+RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DEPS \
+    && docker-php-ext-install ffi intl opcache \
     && docker-php-ext-enable sodium
 
 # Patch Vulnerabilities

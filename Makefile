@@ -32,7 +32,7 @@ front-phpcs: ## Run PHPCS checks against front end code
 	docker compose -p front-phpcs run --rm --no-deps front-test vendor/bin/phpcs --report=junit --report-file=build/phpcs-junit.xml
 
 front-unit-test: ## Run front end unit tests
-	docker compose -p front-unit-test run --rm --volume ${PWD}/build/output/pacts:/tmp/pacts front-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
+	docker compose -p front-unit-test run --rm --no-deps --volume ${PWD}/build/output/pacts:/tmp/pact-output front-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
 
 	docker run --rm \
 		-v ${PWD}/build/output/pacts:/tmp/output \
