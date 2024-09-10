@@ -25,9 +25,7 @@ class KBVServiceTest extends TestCase
                     'AnswerList' => [
                         'A',
                         'B',
-                        'C',
-                        'D',
-                        'E'
+                        'C'
                     ]
                 ]
             ],
@@ -37,10 +35,7 @@ class KBVServiceTest extends TestCase
                 'AnswerFormat' => (object)[
                     'AnswerList' => [
                         'A',
-                        'B',
-                        'C',
-                        'D',
-                        'E'
+                        'B'
                     ]
                 ]
             ]
@@ -55,9 +50,7 @@ class KBVServiceTest extends TestCase
                     'prompts' => [
                         'A',
                         'B',
-                        'C',
-                        'D',
-                        'E'
+                        'C'
                     ]
                 ],
                 'two' => [
@@ -66,10 +59,7 @@ class KBVServiceTest extends TestCase
                     'question' => 'Question Two',
                     'prompts' => [
                         'A',
-                        'B',
-                        'C',
-                        'D',
-                        'E'
+                        'B'
                     ]
                 ]
             ],
@@ -81,9 +71,7 @@ class KBVServiceTest extends TestCase
                     'prompts' => [
                         'A',
                         'B',
-                        'C',
-                        'D',
-                        'E'
+                        'C'
                     ]
                 ],
                 'two' => [
@@ -92,10 +80,7 @@ class KBVServiceTest extends TestCase
                     'question' => 'Question Two',
                     'prompts' => [
                         'A',
-                        'B',
-                        'C',
-                        'D',
-                        'E'
+                        'B'
                     ]
                 ]
             ]

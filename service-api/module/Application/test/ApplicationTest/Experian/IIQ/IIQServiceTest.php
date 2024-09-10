@@ -52,12 +52,6 @@ class IIQServiceTest extends TestCase
 
         $client->expects($this->once())
             ->method('__call')
-            /** ->with(
-                'SAA',
-                [
-                    ['sAARequest' => $saaRequest],
-                ],
-            ) */
             ->willReturn((object)[
                 'SAAResult' => (object)[
                     'Questions' => (object)[

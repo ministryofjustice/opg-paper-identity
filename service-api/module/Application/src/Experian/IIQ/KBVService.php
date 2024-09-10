@@ -36,10 +36,10 @@ class KBVService implements KBVServiceInterface
             '2' => 'three',
             '3' => 'four'
         ];
-        //could also count how many questions have already been fetched prior
+
         $currentQuestionCount =
             isset($caseData->kbvQuestions) ? count(json_decode($caseData->kbvQuestions, true)) : null;
-        //how do we know if we have already had questions created for this case?
+
         $counter = is_int($currentQuestionCount) ? $currentQuestionCount - 1 : 0;
         foreach ($questions as $question) {
             $number = $mapNumber[$counter];
@@ -47,14 +47,7 @@ class KBVService implements KBVServiceInterface
                 'number' => $number,
                 'experianId' => $question->QuestionID,
                 'question' => $question->Text,
-                'prompts' => [
-                    $question->AnswerFormat->AnswerList[0],
-                    $question->AnswerFormat->AnswerList[1],
-                    $question->AnswerFormat->AnswerList[2],
-                    $question->AnswerFormat->AnswerList[3],
-                    $question->AnswerFormat->AnswerList[4],
-                ]
-
+                'prompts' => $question->AnswerFormat->AnswerList,
             ];
             $counter++;
         }
