@@ -6,18 +6,18 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
-use Application\Factories\ConfigHelperFactory;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
-use Application\Helpers\ConfigHelper;
+use Application\PostOffice\DocumentTypeRepository;
+use Application\PostOffice\DocumentTypeRepositoryFactory;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
+use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
-use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Psr\Log\LoggerInterface;
 use Twig\Extension\DebugExtension;
 
@@ -190,7 +190,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/post-office-documents',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeDocuments',
                             ],
                         ],
@@ -200,7 +200,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/post-office-do-details-match',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'doDetailsMatch',
                             ],
                         ],
@@ -210,7 +210,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/post-office-donor-lpa-check',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'donorLpaCheck',
                             ],
                         ],
@@ -220,7 +220,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/find-post-office-branch',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'findPostOfficeBranch',
                             ],
                         ],
@@ -230,7 +230,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/confirm-post-office',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'confirmPostOffice',
                             ],
                         ],
@@ -240,7 +240,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/what-happens-next',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'whatHappensNext',
                             ],
                         ],
@@ -250,7 +250,7 @@ return [
                         'options' => [
                             'route' => '[/:uuid]/post-office-route-not-available',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeRouteNotAvailable',
                             ],
                         ],
@@ -282,6 +282,16 @@ return [
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'chooseCountry',
+                            ],
+                        ],
+                    ],
+                    'cp_choose_country_id' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '[/:uuid]/cp/choose-country-id',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action' => 'chooseCountryId',
                             ],
                         ],
                     ],
@@ -418,7 +428,7 @@ return [
                     'cp_select_address' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/select-address',
+                            'route' => '[/:uuid]/cp/select-address/:postcode',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'selectAddress',
@@ -450,7 +460,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/remove-lpa/:lpa',
                             'defaults' => [
-                                'controller' => Controller\DonorPostOfficeFlowController::class,
+                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'removeLpa',
                             ],
                         ],
@@ -465,6 +475,46 @@ return [
                             ],
                         ],
                     ],
+                    'donor_choose_country' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/donor-choose-country',
+                            'defaults' => [
+                                'controller' => Controller\PostOfficeFlowController::class,
+                                'action' => 'chooseCountry',
+                            ],
+                        ],
+                    ],
+                    'donor_choose_country_id' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/donor-choose-country-id',
+                            'defaults' => [
+                                'controller' => Controller\PostOfficeFlowController::class,
+                                'action' => 'chooseCountryId',
+                            ],
+                        ],
+                    ],
+                    'cp_find_post_office_branch' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '[/:uuid]/cp/find-post-office-branch',
+                            'defaults' => [
+                                'controller' => Controller\PostOfficeFlowController::class,
+                                'action' => 'findPostOfficeBranch',
+                            ],
+                        ],
+                    ],
+                    'cp_confirm_post_office' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '[/:uuid]/cp/confirm-post-office',
+                            'defaults' => [
+                                'controller' => Controller\PostOfficeFlowController::class,
+                                'action' => 'confirmPostOffice',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -475,11 +525,11 @@ return [
             Controller\DonorFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
-            Controller\DonorPostOfficeFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\PostOfficeFlowController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [
-        AuthListener::class
+        AuthListener::class,
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
@@ -508,6 +558,7 @@ return [
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             TwigExtension::class => TwigExtensionFactory::class,
+            DocumentTypeRepository::class => DocumentTypeRepositoryFactory::class,
         ],
     ],
     'zend_twig' => [
@@ -520,13 +571,25 @@ return [
         ],
     ],
     'opg_settings' => [
+        'identity_documents' => [
+            'PASSPORT' => "Passport",
+            'DRIVING_LICENCE' => 'Driving licence',
+            'NATIONAL_ID' => 'National ID',
+            'RESIDENCE_PERMIT' => 'Residence permit',
+            'TRAVEL_DOCUMENT' => 'Travel document',
+            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
+        ],
+        'identity_routes' => [
+            'TELEPHONE' => 'Telephone',
+            'POST_OFFICE' => 'Post Office',
+        ],
         'identity_methods' => [
             'nin' => 'National Insurance number',
             'pn' => 'UK Passport (current or expired in the last 5 years)',
             'dln' => 'UK photocard driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
-            'po_ukp' => 'UK passport (up to 18m expired)',
+            'po_ukp' => 'UK passport (up to 18 months expired)',
             'po_eup' => 'EU passport (must be current)',
             'po_inp' => 'International passport (must be current)',
             'po_ukd' => 'UK Driving licence (must be current)',
@@ -539,34 +602,6 @@ return [
             'xdln' => 'Photocard driving licence',
             'xid' => 'National identity card',
         ],
-        'acceptable_nations_for_id_documents' => [
-            'AT' => 'Austria',
-            'BD' => 'Belgium',
-            'BG' => 'Bulgaria',
-            'HR' => 'Croatia',
-            'CW' => 'Cyprus',
-            'CZ' => 'Czechia',
-            'DK' => 'Denmark',
-            'EE' => 'Estonia',
-            'FI' => 'Finland',
-            'FR' => 'France',
-            'DE' => 'Germany',
-            'GR' => 'Greece',
-            'HU' => 'Hungary',
-            'IE' => 'Ireland',
-            'IT' => 'Italy',
-            'LV' => 'Latvia',
-            'LT' => 'Lithuania',
-            'LU' => 'Luxembourg',
-            'MT' => 'Malta',
-            'NL' => 'Netherlands',
-            'PL' => 'Poland',
-            'PT' => 'Portugal',
-            'RO' => 'Romania',
-            'SK' => 'Slovakia',
-            'SI' => 'Slovenia',
-            'ES' => 'Spain',
-            'SE' => 'Sweden',
-        ]
-    ]
+        'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
+    ],
 ];

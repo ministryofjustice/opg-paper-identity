@@ -79,6 +79,10 @@ class CaseData implements JsonSerializable
     public ?string $searchPostcode = null;
 
     #[Annotation\Required(false)]
+    #[Annotation\Validator(Uuid::class)]
+    //Due to dynamodb quarks, due to index this always need to have a value
+    public string $yotiSessionId = '00000000-0000-0000-0000-000000000000';
+    #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
     #[Annotation\Required(false)]
@@ -119,11 +123,9 @@ class CaseData implements JsonSerializable
      *     documentComplete: bool,
      *     alternateAddress?: string[],
      *     searchPostcode?: string,
-     *     idMethod?: string,
+     *     yotiSessionId?: string,
      *     counterService?: string[],
-     *     kbvQuestions?: string[]
-     *     idMethod?: string
-     *     kbvQuestions?: string[],
+     *     idMethod?: string,
      *     idMethodIncludingNation?: string[],
      *     progressPage?: string,
      * }
@@ -142,16 +144,12 @@ class CaseData implements JsonSerializable
             'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
             'idMethod' => $this->idMethod,
+            'yotiSessionId' => $this->yotiSessionId,
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
             'progressPage' => $this->progressPage,
         ];
         if ($this->counterService !== null) {
-            $arr['counterService'] = [
-                'selectedPostOffice' => $this->counterService->selectedPostOffice,
-                'selectedPostOfficeDeadline' => $this->counterService->selectedPostOfficeDeadline,
-                'sessionId' => $this->counterService->sessionId,
-                'notificationsAuthToken' => $this->counterService->notificationsAuthToken
-            ];
+            $arr['counterService'] = $this->counterService->toArray();
         }
 
         if ($this->kbvQuestions !== null) {

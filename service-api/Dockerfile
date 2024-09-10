@@ -1,7 +1,8 @@
 FROM php:8.3-fpm-alpine AS app
 
-RUN apk --no-cache add fcgi icu-dev $PHPIZE_DEPS \
+RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
+  && docker-php-ext-install soap \
   && docker-php-ext-enable sodium
 RUN pecl install apcu && docker-php-ext-enable apcu
 
@@ -16,8 +17,17 @@ COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
 
+COPY docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
+COPY docker/scripts /usr/local/bin/scripts
+
+RUN chmod +x /usr/local/bin/opg-paper-identity-entrypoint
+ENTRYPOINT ["/usr/local/bin/opg-paper-identity-entrypoint"]
+CMD ["php-fpm"]
+
 RUN mkdir /tmp/cache &&\
   chown -R www-data /tmp/cache &&\
+  mkdir -m 700 /opg-private &&\
+  chown -R www-data /opg-private &&\
   chown -R www-data /var/www/
 
 ENV PHP_FPM_MAX_CHILDREN "8"

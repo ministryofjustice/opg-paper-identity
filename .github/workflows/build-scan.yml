@@ -19,6 +19,9 @@ permissions:
   security-events: write
   pull-requests: read
 
+env:
+  COMPOSE_FILE: docker-compose.yml
+
 jobs:
   docker_build_scan:
     strategy:
@@ -47,7 +50,7 @@ jobs:
           docker compose build ${{ matrix.service_name }}
       - name: Trivy Image Vulnerability Scanner for ${{ matrix.service_name }}
         id: trivy_scan
-        uses: aquasecurity/trivy-action@0.23.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           image-ref: ${{ matrix.ecr_repository }}:latest
           severity: "HIGH,CRITICAL"

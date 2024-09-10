@@ -1,4 +1,4 @@
-FROM node:21.4.0-alpine3.17 as asset-env
+FROM node:21.4.0-alpine3.17 AS asset-env
 
 WORKDIR /app
 
@@ -12,6 +12,8 @@ RUN yarn
 
 COPY web web
 RUN yarn build
+
+RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/supported-documents
 
 FROM php:8.3-fpm-alpine AS app
 
@@ -55,6 +57,9 @@ COPY public public
 COPY --from=asset-env /app/public public
 COPY config config
 COPY module module
+
+COPY --from=asset-env /app/yoti-supported-documents.json module/Application/config/yoti-supported-documents.json
+
 STOPSIGNAL SIGQUIT
 
 FROM app AS development

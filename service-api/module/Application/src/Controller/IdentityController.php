@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Aws\Secrets\AwsSecret;
-use Application\Nino\ValidatorInterface;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
-use Application\Passport\ValidatorInterface as PassportValidator;
-use Application\KBV\KBVServiceInterface;
-use Application\Fixtures\DataImportHandler;
+use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
+use Application\Nino\ValidatorInterface;
+use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\View\JsonModel;
-use Application\Yoti\Http\Exception\YotiException;
-use Application\Yoti\SessionConfig;
-use Application\Yoti\YotiServiceInterface;
-use DateTime;
-use Laminas\Cache\Storage\PluginManager;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -36,13 +32,11 @@ class IdentityController extends AbstractActionController
     public function __construct(
         private readonly ValidatorInterface $ninoService,
         private readonly DataQueryHandler $dataQueryHandler,
-        private readonly DataImportHandler $dataImportHandler,
+        private readonly DataWriteHandler $dataHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
-        private readonly KBVServiceInterface $KBVService,
-        private readonly SessionConfig $sessionConfig,
-        private readonly YotiServiceInterface $yotiService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly FraudApiService $experianCrosscoreFraudApiService
     ) {
     }
 
@@ -50,6 +44,7 @@ class IdentityController extends AbstractActionController
     {
         return new JsonModel();
     }
+
 
     public function createAction(): JsonModel
     {
@@ -65,13 +60,15 @@ class IdentityController extends AbstractActionController
             $caseData->id = strval(Uuid::uuid4());
 
             try {
-                $this->dataImportHandler->insertData($caseData);
+                $this->dataHandler->insertUpdateData($caseData);
             } catch (\Exception $exception) {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
                 return new JsonModel(new Problem($exception->getMessage()));
             }
 
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
             return new JsonModel(['uuid' => $caseData->id]);
         }
 
@@ -90,6 +87,7 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
             return new JsonModel(new Problem('Missing uuid'));
         }
 
@@ -101,31 +99,8 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+
         return new JsonModel(new Problem('Case not found'));
-    }
-
-    public function findByNameAction(): JsonModel
-    {
-        /** @var string $name */
-        $name = $this->getRequest()->getQuery('username');
-        $data = $this->dataQueryHandler->queryByName($name);
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
-        return new JsonModel($data);
-    }
-
-    public function findByIdNumberAction(): JsonModel
-    {
-        /** @var string $id */
-        $id = $this->getRequest()->getQuery('id');
-        $data = $this->dataQueryHandler->queryByIDNumber($id);
-        /**
-         * @psalm-suppress InvalidArgument
-         * @see https://github.com/laminas/laminas-view/issues/239
-         */
-        return new JsonModel($data);
     }
 
     public function addressVerificationAction(): JsonModel
@@ -146,12 +121,12 @@ class IdentityController extends AbstractActionController
         $data = [
             [
                 'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
-                'donor_name' => 'Mary Anne Chapman'
+                'donor_name' => 'Mary Anne Chapman',
             ],
             [
                 'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
-                'donor_name' => 'Mary Anne Chapman'
-            ]
+                'donor_name' => 'Mary Anne Chapman',
+            ],
         ];
 
         return new JsonModel($data);
@@ -164,7 +139,7 @@ class IdentityController extends AbstractActionController
         $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 
         $response = [
-            'status' => $ninoStatus
+            'status' => $ninoStatus,
         ];
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
@@ -178,7 +153,7 @@ class IdentityController extends AbstractActionController
         $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
 
         $response = [
-            'status' => $licenseStatus
+            'status' => $licenseStatus,
         ];
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
@@ -191,86 +166,10 @@ class IdentityController extends AbstractActionController
         $passportStatus = $this->passportService->validatePassport(intval($data['passport']));
 
         $response = [
-            'status' => $passportStatus
+            'status' => $passportStatus,
         ];
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        return new JsonModel($response);
-    }
-
-    public function getKbvQuestionsAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(new Problem('Missing UUID'));
-        }
-
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        if (is_null($case) || $case->documentComplete === false) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-            $response = [
-                "error" => "Document checks incomplete or unable to locate case"
-            ];
-            return new JsonModel($response);
-        }
-
-        $questionsWithoutAnswers = [];
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-
-        if (! is_null($case->kbvQuestions)) {
-            $questions = json_decode($case->kbvQuestions, true);
-
-            foreach ($questions as $number => $question) {
-                unset($question['answer']);
-                $questionsWithoutAnswers[$number] = $question;
-            }
-            //revisit formatting here, special character outputs
-            return new JsonModel($questionsWithoutAnswers);
-        } else {
-            $questions = $this->KBVService->fetchFormattedQuestions($uuid);
-
-            $this->dataImportHandler->updateCaseData(
-                $uuid,
-                'kbvQuestions',
-                'S',
-                json_encode($questions['formattedQuestions'])
-            );
-        }
-
-        return new JsonModel($questions['questionsWithoutAnswers']);
-    }
-
-    public function checkKbvAnswersAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        $result = 'pass';
-        $response = [];
-
-        if (! $uuid || is_null($case)) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            return new JsonModel(new Problem("Missing UUID or unable to find case"));
-        }
-
-        $questions = json_decode($case->kbvQuestions, true);
-        //compare against all stored answers to ensure all answers passed
-        foreach ($questions as $key => $question) {
-            if (! isset($data['answers'][$key])) {
-                $result = 'fail';
-            } elseif ($data['answers'][$key] != $question['answer']) {
-                $result = 'fail';
-            }
-        }
-
-        $response['result'] = $result;
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         return new JsonModel($response);
     }
 
@@ -282,10 +181,12 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
             return new JsonModel(new Problem("Missing UUID"));
         }
+
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethod',
                 'S',
@@ -293,6 +194,7 @@ class IdentityController extends AbstractActionController
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
@@ -310,10 +212,12 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
             return new JsonModel(new Problem('Missing UUID'));
         }
+
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'searchPostcode',
                 'S',
@@ -321,6 +225,7 @@ class IdentityController extends AbstractActionController
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
@@ -338,23 +243,25 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
             return new JsonModel(new Problem('Missing UUID'));
         }
         $counterServiceMap = [
-            "selectedPostOffice" => $data['selected_postoffice']
+            "selectedPostOffice" => $data['selected_postoffice'],
         ];
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
                 'M',
                 array_map(fn (mixed $v) => [
-                    'S' => $v
+                    'S' => $v,
                 ], $counterServiceMap),
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
@@ -374,6 +281,7 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
             return new JsonModel(new Problem('Missing UUID'));
         }
 
@@ -384,16 +292,17 @@ class IdentityController extends AbstractActionController
         $counterServiceMap["selectedPostOfficeDeadline"] = $data['deadline'];
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
                 'M',
                 array_map(fn (mixed $v) => [
-                    'S' => $v
+                    'S' => $v,
                 ], $counterServiceMap),
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
@@ -410,6 +319,7 @@ class IdentityController extends AbstractActionController
         $data = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
         $status = Response::STATUS_CODE_200;
+
         try {
             /**
              * @psalm-suppress PossiblyNullPropertyFetch
@@ -417,7 +327,7 @@ class IdentityController extends AbstractActionController
             $lpas = $data->lpas;
             if (! in_array($lpa, $lpas)) {
                 $lpas[] = $lpa;
-                $this->dataImportHandler->updateCaseData(
+                $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
                     'SS',
@@ -433,6 +343,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
+
         return new JsonModel($response);
     }
 
@@ -443,6 +354,7 @@ class IdentityController extends AbstractActionController
         $data = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
         $status = Response::STATUS_CODE_200;
+
         try {
             /**
              * @psalm-suppress PossiblyNullPropertyFetch
@@ -455,7 +367,7 @@ class IdentityController extends AbstractActionController
                         $keptLpas[] = $keptLpa;
                     }
                 }
-                $this->dataImportHandler->updateCaseData(
+                $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
                     'SS',
@@ -471,6 +383,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
+
         return new JsonModel($response);
     }
 
@@ -485,23 +398,25 @@ class IdentityController extends AbstractActionController
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
-                "error" => "Missing UUID"
+                "error" => "Missing UUID",
             ];
+
             return new JsonModel($response);
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'alternateAddress',
                 'M',
                 array_map(fn (mixed $v) => [
-                    'S' => $v
+                    'S' => $v,
                 ], $data),
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
+
             return new JsonModel($response);
         }
 
@@ -522,13 +437,14 @@ class IdentityController extends AbstractActionController
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
-                "error" => "Missing UUID"
+                "error" => "Missing UUID",
             ];
+
             return new JsonModel($response);
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'documentComplete',
                 'BOOL',
@@ -537,62 +453,8 @@ class IdentityController extends AbstractActionController
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
+
             return new JsonModel($response);
-        }
-        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        if (! $case) {
-            $status = Response::STATUS_CODE_400;
-            $this->getResponse()->setStatusCode($status);
-            $response = [
-                "error" => "Unable to locate case"
-            ];
-            return new JsonModel($response);
-        }
-        $idMethod = $case->idMethod;
-
-        if (str_contains($idMethod, "po_")) {
-            //start Yoti process
-            $notificationsAuthToken = strval(Uuid::uuid4());
-
-            $sessionData = $this->sessionConfig->build($case, $notificationsAuthToken);
-            $nonce = strval(Uuid::uuid4());
-            $dateTime = new DateTime();
-            $timestamp = $dateTime->getTimestamp();
-
-            try {
-                $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
-                $yotiSessionId = $result["data"]["session_id"];
-                $counterServiceMap = [];
-
-                if ($case->counterService !== null) {
-                    $counterServiceMap["selectedPostOffice"] = $case->counterService->selectedPostOffice;
-                    $counterServiceMap["selectedPostOfficeDeadline"] =
-                        $case->counterService->selectedPostOfficeDeadline;
-                }
-                $counterServiceMap["sessionId"] = $yotiSessionId;
-                $counterServiceMap["notificationsAuthToken"] = $notificationsAuthToken;
-
-                if ($result["status"] < 400) {
-                    $this->dataImportHandler->updateCaseData(
-                        $uuid,
-                        'counterService',
-                        'M',
-                        array_map(fn (mixed $v) => [
-                            'S' => $v
-                        ], $counterServiceMap),
-                    );
-                }
-                //Prepare and generate PDF
-                $this->yotiService->preparePDFLetter($case, $nonce, $timestamp, $yotiSessionId);
-                $this->yotiService->retrieveLetterPDF($yotiSessionId, $nonce, $timestamp);
-            } catch (YotiException $e) {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-                return new JsonModel(new Problem(
-                    'Problem requesting Yoti API',
-                    extra: ['errors' => $e->getMessage()],
-                ));
-            }
         }
 
         $this->getResponse()->setStatusCode($status);
@@ -613,8 +475,9 @@ class IdentityController extends AbstractActionController
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
-                "error" => "Missing UUID"
+                "error" => "Missing UUID",
             ];
+
             return new JsonModel($response);
         }
 
@@ -622,13 +485,14 @@ class IdentityController extends AbstractActionController
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
-                "error" => "Missing Date of Birth"
+                "error" => "Missing Date of Birth",
             ];
+
             return new JsonModel($response);
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'dob',
                 'S',
@@ -637,6 +501,7 @@ class IdentityController extends AbstractActionController
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
             $response['error'] = $exception->getMessage();
+
             return new JsonModel($response);
         }
 
@@ -655,21 +520,23 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem("Missing UUID"));
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethodIncludingNation',
                 'M',
                 array_map(fn (mixed $v) => [
-                    'S' => $v
+                    'S' => $v,
                 ], $data),
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
@@ -692,26 +559,65 @@ class IdentityController extends AbstractActionController
 
         if (! $uuid) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem("Missing UUID"));
         }
 
         try {
-            $this->dataImportHandler->updateCaseData(
+            $this->dataHandler->updateCaseData(
                 $uuid,
                 'progressPage',
                 'M',
                 array_map(fn (mixed $v) => [
-                    'S' => $v
+                    'S' => $v,
                 ], $data),
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
         $this->getResponse()->setStatusCode($status);
         $response['result'] = "Progress recorded at " . $uuid . '/' . $data['route'];
+
+        return new JsonModel($response);
+    }
+
+    public function requestFraudCheckAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing uuid'));
+        }
+
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+
+        if (! $case) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Case does not exist'));
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+        $addressDto = new AddressDTO(
+            $case->address['line1'],
+            $case->address['line2'] ?? "",
+            $case->address['line3'] ?? "",
+            $case->address['town'] ?? "",
+            $case->address['postcode'],
+            $case->address['country'] ?? "",
+        );
+
+        $dto = new RequestDTO(
+            $case->firstName,
+            $case->lastName,
+            $case->dob,
+            $addressDto
+        );
+        $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
 
         return new JsonModel($response);
     }

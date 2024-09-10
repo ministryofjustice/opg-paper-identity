@@ -12,7 +12,7 @@ interface YotiServiceInterface
     /**
      * @param string $postCode
      * @return array
-     * Get post offices near the location
+     * Get Post Offices near the location
      * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array;
@@ -29,7 +29,7 @@ interface YotiServiceInterface
      * @return array
      * Look up results of a Post Office IBV session
      */
-    public function retrieveResults(string $sessionId): array;
+    public function retrieveResults(string $sessionId, string $nonce, int $timestamp): array;
 
     /**
      * @param string $sessionId

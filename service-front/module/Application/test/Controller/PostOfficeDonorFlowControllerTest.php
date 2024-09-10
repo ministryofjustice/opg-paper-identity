@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\DonorPostOfficeFlowController;
+use Application\Controller\PostOfficeFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\PostOffice\Country;
+use Application\PostOffice\DocumentType;
+use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -40,22 +43,32 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function returnOpgDetailsData(): array
     {
         return [
+            "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
+            "personType" => "certificateProvider",
             "firstName" => "Mary Anne",
             "lastName" => "Chapman",
             "dob" => "01 May 1943",
             "address" => [
                 "1 Court Street",
                 "London",
+                "UK",
                 "SW1B 1BB",
-                "UK"
             ],
-            "personType" => "donor",
             "lpas" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
+                "M-XYXY-YAGA-35G3",
             ],
-            "idMethod" => "ukp",
-            "id" => "3b992d91-27d6-4592-8680-ffd7d198c5bf",
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "selectedPostOfficeDeadline" => null,
+            "selectedPostOffice" => null,
+            "searchPostcode" => null,
+            "idMethod" => "nin",
+            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
+            "idMethodIncludingNation" => [
+                "country" => "AUT",
+                "id_method" => "DRIVING_LICENCE",
+            ],
         ];
     }
 
@@ -69,18 +82,18 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                         "line1" => "93274 Goldner Club",
                         "line3" => "Oak Lawn",
                         "postcode" => "YG9 3RV",
-                        "town" => "Caguas"
+                        "town" => "Caguas",
                     ],
                     "channel" => "paper",
                     "firstNames" => "Wilma",
                     "identityCheck" => [
                         "checkedAt" => "1940-11-01T22:28:42.0Z",
-                        "type" => "one-login"
+                        "type" => "one-login",
                     ],
                     "lastName" => "Lynch",
                     "phone" => "proident elit dolor cupidatat ut",
                     "signedAt" => "1967-02-10T08:53:14.0Z",
-                    "uid" => "a72f52bd-1c26-e0ab-88a0-233e5611cd62"
+                    "uid" => "a72f52bd-1c26-e0ab-88a0-233e5611cd62",
                 ],
                 "channel" => "paper",
                 "donor" => [
@@ -89,7 +102,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                         "line1" => "9077 Bertrand Lane",
                         "line2" => "Grady Haven",
                         "line3" => "Hollywood",
-                        "postcode" => "XW0 6ZQ"
+                        "postcode" => "XW0 6ZQ",
                     ],
                     "contactLanguagePreference" => "en",
                     "dateOfBirth" => "1920-02-16",
@@ -97,7 +110,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstNames" => "Akeem",
                     "lastName" => "Wiegand",
                     "otherNamesKnownBy" => "Melba King",
-                    "uid" => "d4c3d084-303a-3cd3-eab0-e981618b1fe8"
+                    "uid" => "d4c3d084-303a-3cd3-eab0-e981618b1fe8",
                 ],
                 "howAttorneysMakeDecisions" => "jointly-for-some-severally-for-others",
                 "howReplacementAttorneysStepInDetails" => "in ut",
@@ -107,7 +120,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "status" => "registered",
                 "uid" => "M-X7BG-VMAO-1V2F",
                 "updatedAt" => "1906-03-13T01:06:58.0Z",
-                "whenTheLpaCanBeUsed" => "when-capacity-lost"
+                "whenTheLpaCanBeUsed" => "when-capacity-lost",
             ],
             "opg.poas.sirius" => [
                 "donor" => [
@@ -116,11 +129,11 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstname" => "Isai",
                     "postcode" => "WR5 4XT",
                     "surname" => "Spencer",
-                    "town" => "Galveston"
+                    "town" => "Galveston",
                 ],
                 "id" => 36902521,
-                "uId" => "M-F4JG-7IHS-STS5"
-            ]
+                "uId" => "M-F4JG-7IHS-STS5",
+            ],
         ];
     }
 
@@ -137,8 +150,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-documents", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/post_office_documents');
     }
 
@@ -156,8 +169,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/what_happens_next');
     }
 
@@ -175,8 +188,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-route-not-available", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/post_office_route_not_available');
     }
 
@@ -194,8 +207,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-do-details-match", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_do_details_match');
     }
 
@@ -220,8 +233,82 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/post-office-donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
-        $this->assertControllerName(DonorPostOfficeFlowController::class);
-        $this->assertControllerClass('DonorPostOfficeFlowController');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_donor_lpa_check');
+    }
+
+    public function testChooseCountryPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/donor-choose-country", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
+        $this->assertMatchedRouteName('root/donor_choose_country');
+
+        $this->assertQueryContentContains('[name="country"] > option[value="AUT"]', 'Austria');
+        $this->assertNotQuery('[name="country"] > option[value="GBR"]');
+    }
+
+    public function testPostOfficeCountriesIdPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $documentTypeRepository = $this->createMock(DocumentTypeRepository::class);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(DocumentTypeRepository::class, $documentTypeRepository);
+
+        $documentTypeRepository->expects($this->once())
+            ->method('getByCountry')
+            ->with(Country::AUT)
+            ->willReturn([DocumentType::Passport, DocumentType::NationalId]);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/donor-choose-country-id", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
+        $this->assertMatchedRouteName('root/donor_choose_country_id');
+    }
+
+    public function testPostOfficeCountriesIdPageSubmit(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateIdMethodWithCountry')
+            ->with($this->uuid, ['id_method' => 'PASSPORT']);
+
+        $this->dispatch("/$this->uuid/donor-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
+        $this->assertResponseStatusCode(302);
+
+        $this->assertRedirectTo(sprintf('/%s/donor-details-match-check', $this->uuid));
     }
 }

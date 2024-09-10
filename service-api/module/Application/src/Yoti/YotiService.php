@@ -46,7 +46,7 @@ class YotiService implements YotiServiceInterface
      *          }
      *      }[]
      *  }
-     * Get post offices near the location
+     * Get Post Offices near the location
      * @throws YotiException
      */
     public function postOfficeBranch(string $postCode): array
@@ -108,11 +108,28 @@ class YotiService implements YotiServiceInterface
      * @param string $sessionId
      * @return array
      * Look up results of a Post Office IBV session
+     * @throws YotiException
+     * @throws YotiClientException
      */
-    public function retrieveResults(string $sessionId): array
+    public function retrieveResults(string $sessionId, string $nonce, int $timestamp): array
     {
-        //can either use client directly like below or use
-        $results = $this->client->get('/sessions/' . $sessionId);
+        $headers = $this->getSignedRequest('/sessions/' . $sessionId, 'GET', $nonce, $timestamp);
+
+        try {
+            $results = $this->client->get('/idverify/v1/sessions/' . $sessionId, [
+                'headers' => $headers,
+                'query' => ['sdkId' => $this->sdkId->getValue(), 'nonce' => $nonce, 'timestamp' => $timestamp],
+            ]);
+
+            if ($results->getStatusCode() !== Response::STATUS_CODE_200) {
+                throw new YotiException($results->getReasonPhrase());
+            }
+        } catch (ClientException $clientException) {
+            $this->logger->error('Unable to connect to Yoti Service [' . $clientException->getMessage() . '] ', [
+                'data' => ['operation' => 'session-results', 'header' => $headers]
+            ]);
+            throw new YotiClientException($clientException->getMessage(), 0, $clientException);
+        }
 
         return json_decode(strval($results->getBody()), true);
     }
@@ -244,10 +261,8 @@ class YotiService implements YotiServiceInterface
             throw new YotiException("A connection error occurred. Previous: " . $e->getMessage());
         }
         $base64 = base64_encode(strval($pdfData->getBody()));
-        // Convert base64 to pdf
-        $pdf = base64_decode($base64);
 
-        return ["status" => "PDF Created", "pdfData" => $pdf];
+        return ["status" => "PDF Created", "pdfBase64" => $base64];
     }
 
     public function letterConfigPayload(CaseData $caseData, string $requirementId): array
@@ -264,16 +279,17 @@ class YotiService implements YotiServiceInterface
                 "requirement_id" => $requirementId,
                 "document" => [
                     "type" => "ID_DOCUMENT",
-                    "country_code" => "GBR",
-                    "document_type" => SessionConfig::getDocType($caseData->idMethod)
+                    "country_code" => SessionConfig::getIDCountry($caseData),
+                    "document_type" => SessionConfig::getDocType($caseData)
                 ]
             ]
         ];
         /** @var CounterService $counterServiceData */
         $counterServiceData = $caseData->counterService;
+        $postOfficeData = json_decode($counterServiceData->selectedPostOffice, true);
         $payload["branch"] = [
           "type" => "UK_POST_OFFICE",
-          "fad_code" => $counterServiceData->selectedPostOffice
+          "fad_code" => $postOfficeData['fad']
         ];
         return $payload;
     }

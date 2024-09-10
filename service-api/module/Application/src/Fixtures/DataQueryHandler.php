@@ -18,21 +18,6 @@ class DataQueryHandler
     ) {
     }
 
-    public function queryByName(string $name): array
-    {
-        $nameKey = [
-            'KEY' => [
-                'name' => [
-                    'S' => $name,
-                ],
-            ],
-        ];
-        $index = "name-index";
-        $result = $this->query($nameKey, $index);
-
-        return $this->returnUnmarshalResult($result);
-    }
-
     public function getCaseByUUID(string $uuid): ?CaseData
     {
         $idKey = [
@@ -49,21 +34,23 @@ class DataQueryHandler
         return $arr ? CaseData::fromArray($arr) : null;
     }
 
-    public function queryByIDNumber(string $idNumber): array
+    public function queryByYotiSessionId(string $sessionId): ?CaseData
     {
-        //return some subset of data
         $idKey = [
             'key' => [
-                'id_number' => [
-                    'S' => $idNumber,
+                'yotiSessionId' => [
+                    'S' => $sessionId,
                 ],
             ],
         ];
-        $index = "id_number-index";
+        $index = "yotiSessionId-index";
         $result = $this->query($idKey, $index);
 
-        return $this->returnUnmarshalResult($result);
+        $array = $this->returnUnmarshalResult($result)[0];
+
+        return $array ? CaseData::fromArray($array) : null;
     }
+
     /**
      * @param array<string, mixed> $key
      * @param string $dbIndex

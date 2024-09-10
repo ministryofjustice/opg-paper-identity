@@ -194,7 +194,7 @@ class YotiServiceTest extends TestCase
         $result = $this->yotiService->retrieveLetterPDF($sessionId, $nonce, $timestamp);
 
         $this->assertEquals('PDF Created', $result['status']);
-        $this->assertEquals(base64_decode(base64_encode('pdf-content')), $result['pdfData']);
+        $this->assertEquals(base64_encode('pdf-content'), $result['pdfBase64']);
     }
 
     public function testLetterConfigPayload(): void
@@ -210,7 +210,7 @@ class YotiServiceTest extends TestCase
                 'line1' => '123 long street',
             ],
             'counterService' => [
-                'selectedPostOffice' => '29348729',
+                'selectedPostOffice' => json_encode(['fad' => '29348729'])
             ],
             'lpas' => []
         ]);

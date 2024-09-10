@@ -7,6 +7,9 @@ namespace ApplicationTest\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\PostOffice\Country;
+use Application\PostOffice\DocumentType;
+use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -61,7 +64,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "selectedPostOfficeDeadline" => null,
             "selectedPostOffice" => null,
             "searchPostcode" => null,
-            "idMethod" => "nin"
+            "idMethod" => "nin",
+            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
+            "idMethodIncludingNation" => [
+                "country" => "AUT",
+                "id_method" => "DRIVING_LICENCE"
+            ]
         ];
     }
 
@@ -268,5 +276,121 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_choose_country');
+
+        $this->assertQueryContentContains('[name="country"] > option[value="AUT"]', 'Austria');
+        $this->assertNotQuery('[name="country"] > option[value="GBR"]');
+    }
+
+    public function testPostOfficeCountriesIdPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/cp/choose-country-id", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
+
+        $response = $this->getResponse()->getContent();
+
+        $this->assertStringContainsString('Choose document', $response);
+    }
+
+    public function testPostOfficeCountriesIdEmptyPostErrorPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $documentTypeRepository = $this->createMock(DocumentTypeRepository::class);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(DocumentTypeRepository::class, $documentTypeRepository);
+
+        $documentTypeRepository->expects($this->once())
+            ->method('getByCountry')
+            ->with(Country::AUT)
+            ->willReturn([DocumentType::Passport, DocumentType::NationalId]);
+
+        $this->dispatch("/$this->uuid/cp/choose-country-id", 'POST', []);
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
+
+        $response = $this->getResponse()->getContent();
+
+        $this->assertStringContainsString('Please choose a type of document', $response);
+    }
+
+    public function testPostOfficeCountriesIdPostFailedValidationErrorPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch(
+            "/$this->uuid/cp/choose-country-id",
+            'POST',
+            ['id_method' => 'PASSPOT']
+        );
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
+
+        $response = $this->getResponse()->getContent();
+
+        $this->assertStringContainsString('This document code is not recognised', $response);
+    }
+
+    public function testPostOfficeCountriesIdPostPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateIdMethodWithCountry')
+            ->with($this->uuid, ['id_method' => 'PASSPORT']);
+
+        $this->dispatch(
+            "/$this->uuid/cp/choose-country-id",
+            'POST',
+            ['id_method' => 'PASSPORT']
+        );
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf('/%s/cp/name-match-check', $this->uuid));
+        $this->assertModuleName('application');
+        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('CpFlowController');
+        $this->assertMatchedRouteName('root/cp_choose_country_id');
     }
 }

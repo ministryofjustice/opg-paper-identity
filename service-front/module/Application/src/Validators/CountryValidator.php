@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Validators;
 
-use Laminas\Di\Config;
+use Application\PostOffice\Country;
 use Laminas\Validator\AbstractValidator;
 
 class CountryValidator extends AbstractValidator
@@ -18,29 +18,16 @@ class CountryValidator extends AbstractValidator
 
     public function isValid($value): bool
     {
-        $countryCodes = $this->getCountryCodes();
-
         if (empty($value)) {
             $this->error(self::EMPTY_COUNTRY);
             return false;
         }
 
-        if (! array_key_exists($value, $countryCodes)) {
+        if (! is_string($value) || Country::tryFrom($value) === null) {
             $this->error(self::INVALID_COUNTRY);
             return false;
         }
+
         return true;
-    }
-
-    private function getCountryCodes(): array
-    {
-        $config = $this->getConfig();
-
-        return $config['opg_settings']['acceptable_nations_for_id_documents'];
-    }
-
-    public function getConfig(): array
-    {
-        return include __DIR__ . './../../config/module.config.php';
     }
 }

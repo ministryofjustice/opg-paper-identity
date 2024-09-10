@@ -133,6 +133,36 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /api/v1/lpas/{lpa}/documents:
+    post:
+      parameters:
+        - name: lpa
+          in: path
+          required: true
+          schema:
+            type: integer
+            nullable: false
+      operationId: postPostOfficeLetterSuffix
+      summary: Send Yoti Letter PDF data
+      description: Send base64 encoded PDF data for Post Office letter
+      tags: [ poa ]
+      requestBody:
+        description: Sirius LPA document data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/YotiPdfSuffixRequest"
+      responses:
+        "201":
+          description: PDD data has been processed
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     User:
@@ -168,6 +198,9 @@ components:
           type: string
           pattern: "M(-[0-9A-Z]{4}){3}"
           example: M-789Q-P4DF-4UX3
+        caseSubtype:
+          type: string
+          enum: [personal-welfare, property-and-affairs]
         donor:
           required: [firstname, surname, dob, address]
           type: object
@@ -180,7 +213,9 @@ components:
               x-faker: name.lastName
             dob:
               type: string
-              format: date
+              pattern: "[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}"
+              x-faker:
+                helpers.replaceSymbols: "1#/0#/19##"
             addressLine1:
               type: string
               x-faker: address.streetAddress
@@ -250,6 +285,25 @@ components:
             - success
             - exit
       additionalProperties: false
+    YotiPdfSuffixRequest:
+      type: object
+      required:
+        - systemType
+        - pdfSuffix
+        - correspondentName
+      properties:
+        type:
+          type: string
+        systemType:
+          type: string
+        content:
+          type: string
+        pdfSuffix:
+          type: string
+        correspondentName:
+          type: string
+        correspondentAddress:
+          type: array
     Error:
       type: object
       required:

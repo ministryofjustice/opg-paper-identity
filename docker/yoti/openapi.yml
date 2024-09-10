@@ -14,7 +14,36 @@ tags:
   - name: Backend Endpoints
     description: Mock Server Endpoints for the Yoti API
 paths:
-  /supported-documents:
+  /idverify/v1/lookup/uk-post-office:
+    post:
+      summary: Given a supplied postcode locate Post Office branches near it
+      requestBody:
+        required: true
+        description: The searchString ( post code )
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchString'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Branch'
+              example:
+                type: UK_POST_OFFICE
+                fad_code: 12345677
+                name: St Neots
+                address: 34 High Street, Notts
+                postcode: PE10 1NL
+                location:
+                  latitude: 53.22864,
+                  longitude: -0.36762
+
+  /idverify/v1/supported-documents:
     get:
       tags:
         - Backend Endpoints
@@ -31,7 +60,7 @@ paths:
               examples:
                 EXAMPLE:
                   $ref: "#/components/examples/SupportedDocuments"
-  /sessions:
+  /idverify/v1/sessions:
     post:
       tags:
         - Backend Endpoints
@@ -63,11 +92,7 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
               examples:
                 PAYLOAD_VALIDATION:
-                  value:
-                    code: PAYLOAD_VALIDATION
-                    errors:
-                      - property: requested_checks
-                        message: must not be empty
+                  $ref: "#/components/examples/PayloadValidationError"
                 MALFORMED_REQUEST:
                   $ref: "#/components/examples/MalformedRequestDigestError"
         401:
@@ -92,7 +117,7 @@ paths:
                   $ref: "#/components/examples/AppNotFoundError"
         503:
           $ref: "#/components/responses/503Response"
-  /sessions/{sessionId}:
+  /idverify/v1/sessions/{sessionId}:
     get:
       tags:
         - Backend Endpoints
@@ -176,7 +201,7 @@ paths:
               examples:
                 RESOURCE_LOCKED:
                   $ref: "#/components/examples/ResourceLockedError"
-  /sessions/{sessionId}/configuration:
+  /idverify/v1/sessions/{sessionId}/configuration:
     get:
       tags:
         - Backend Endpoints
@@ -228,7 +253,7 @@ paths:
         503:
           $ref: "#/components/responses/503Response"
 
-  /sessions/{sessionId}/media/{mediaId}/content:
+  /idverify/v1/sessions/{sessionId}/media/{mediaId}/content:
     get:
       tags:
         - Backend Endpoints
@@ -325,7 +350,7 @@ paths:
                 RESOURCE_LOCKED:
                   $ref: "#/components/examples/ResourceLockedError"
 
-  /sessions/{sessionId}/instructions:
+  /idverify/v1/sessions/{sessionId}/instructions:
     put:
       tags:
         - Public Endpoints
@@ -360,7 +385,7 @@ paths:
           $ref: "#/components/responses/500"
         503:
           $ref: "#/components/responses/503"
-  /sessions/{sessionId}/instructions/pdf:
+  /idverify/v1/sessions/{sessionId}/instructions/pdf:
     get:
       tags:
         - Public Endpoints
@@ -882,6 +907,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RequiredResources"
+          example:
+            - type: ID_DOCUMENT
+              id: d430440c-5c6d-402c-9855-3aebc8145a94
       required:
         - biometric_consent
         - required_resources
@@ -2382,6 +2410,36 @@ components:
         - name
         - address
         - post_code
+
+    SearchString:
+      type: string
+      pattern: ^([A-Za-z]{2}[\d]{1,2}[A-Za-z]?)[\s]+([\d][A-Za-z]{2})$
+      example: BN1 4TB
+
+    Branch:
+      type: object
+      properties:
+        type:
+          type: string
+        fade_code:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        postcode:
+          type: string
+        location:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+    Branches:
+      type: array
+      items:
+        $ref: "#/components/schemas/Branch"
 
     BranchLocationResponse:
       type: object

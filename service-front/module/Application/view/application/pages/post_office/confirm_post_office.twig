@@ -22,7 +22,7 @@
                     <dl class="govuk-summary-list">
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                Donor Address
+                                Address
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 {% for line in details_data.address %}
@@ -48,7 +48,7 @@
                                 Document to take
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                {{ id_method }}
+                                {{ display_id_method }}
                             </dd>
                             <dd class="govuk-summary-list__actions">
                                 <a
@@ -74,7 +74,7 @@
                                 <a
                                     class="govuk-link"
                                     href="find-post-office-branch"
-                                    aria-label="Change post office"
+                                    aria-label="Change Post Office"
                                 >
                                     Change
                                     <span class="govuk-visually-hidden">Post Office</span>

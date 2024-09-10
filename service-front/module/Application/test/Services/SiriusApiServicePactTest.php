@@ -197,4 +197,101 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals(204, $response['status']);
         $this->assertEquals("", $response['error']);
     }
+
+    /**
+     * Returns an example of a tiny PDF with visible content
+     */
+    private function getMinimalPdf(): string
+    {
+        return "%PDF-1.2 \n
+9 0 obj\n<<\n>>\nstream\nBT/ 32 Tf(  YOUR TEXT HERE   )' ET\nendstream\nendobj\n
+4 0 obj\n<<\n/Type /Page\n/Parent 5 0 R\n/Contents 9 0 R\n>>\nendobj\n
+5 0 obj\n<<\n/Kids [4 0 R ]\n/Count 1\n/Type /Pages\n/MediaBox [ 0 0 250 50 ]\n>>\nendobj\n
+3 0 obj\n<<\n/Pages 5 0 R\n/Type /Catalog\n>>\nendobj\n
+trailer\n<<\n/Root 3 0 R\n>>\n
+%%EOF";
+    }
+
+    public function testSendPostOfficePdf(): void
+    {
+        $details = [];
+        $details["firstName"] = "Joe";
+        $details["lastName"] = "Blogs";
+        $details["address"]["line1"] = '123 Ferndale Road';
+        $details["address"]["line2"] = 'Lambeth';
+        $details["address"]["line3"] = 'Line 3';
+        $details["address"]["town"] = 'London';
+        $details["address"]["country"] = 'England';
+        $details["address"]["postcode"] = 'SW4 7SS';
+        $details["lpas"][0] = "M-1234-9876-4567";
+
+        $suffix = base64_encode($this->getMinimalPdf());
+        $address = [
+            '123 Ferndale Road',
+            'Lambeth',
+            'Line 3',
+            'London',
+            'England',
+            'SW4 7SS'
+        ];
+        $body = [
+            "type" => "Save",
+            "systemType" => "DLP-ID-PO-D",
+            "content" => "",
+            "pdfSuffix" => $suffix,
+            "correspondentName" => "Joe Blogs",
+            "correspondentAddress" => $address
+        ];
+
+        $matcher = new Matcher();
+        $request1 = new ConsumerRequest();
+        $request1
+            ->setMethod('GET')
+            ->setPath('/api/v1/digital-lpas/M-1234-9876-4567');
+
+        $response1 = new ProviderResponse();
+        $response1
+            ->setStatus(200)
+            ->addHeader('Content-Type', 'application/json')
+            ->setBody([
+                'opg.poas.sirius' => [
+                    'id' => $matcher->like(789),
+                ],
+                'opg.poas.lpastore' => [
+                    'certificateProvider' => [
+                        'firstNames' => $matcher->like('Dorian'),
+                        'lastName' => $matcher->like('Rehkop'),
+                        'address' => [
+                            'line1' => $matcher->like('104, Alte Lindenstraße'),
+                            'country' => $matcher->like('DE'),
+                        ]
+                    ]
+                ]
+            ]);
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('Request for an LPA via sendPDF')
+            ->with($request1)
+            ->willRespondWith($response1);
+
+        $request = new ConsumerRequest();
+        $request
+            ->setMethod('POST')
+            ->setPath('/api/v1/lpas/789/documents')
+            ->setBody($body);
+
+        $response = new ProviderResponse();
+        $response
+            ->setStatus(201);
+
+        $this->builder
+            ->given('A digital LPA exists')
+            ->uponReceiving('A request to /api/v1/lpas/789/documents')
+            ->with($request)
+            ->willRespondWith($response);
+
+        $result = $this->sut->sendPostOfficePDf($suffix, $details, new Request());
+        $this->assertEquals(201, $result['status']);
+    }
 }

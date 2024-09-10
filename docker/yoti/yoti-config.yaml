@@ -1,9 +1,6 @@
 plugin: openapi
 specFile: openapi.yml
 
-validation:
-  request: true
-
 resources:
   - path: "/idverify/v1/sessions/{sessionId}"
     method: get
@@ -16,3 +13,9 @@ resources:
     response:
       statusCode: 200
       scriptFile: useBranchesFile.groovy
+
+  - path: "/idverify/v1/sessions/{sessionId}/configuration"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: letterConfiguration.groovy

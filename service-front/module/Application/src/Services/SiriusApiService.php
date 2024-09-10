@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
-use Application\Helpers\AddressProcessorHelper;
 
 /**
  * @psalm-type Address = array{
@@ -23,6 +23,7 @@ use Application\Helpers\AddressProcessorHelper;
  *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
+ *    caseSubtype: string,
  *    donor: array{
  *      firstname: string,
  *      surname: string,
@@ -36,6 +37,7 @@ use Application\Helpers\AddressProcessorHelper;
  *    },
  *  },
  *  "opg.poas.lpastore": ?array{
+ *    lpaType: string,
  *    donor: array{
  *      firstNames: string,
  *      lastName: string,
@@ -50,7 +52,6 @@ use Application\Helpers\AddressProcessorHelper;
  *  },
  * }
  */
-
 class SiriusApiService
 {
     public function __construct(
@@ -66,12 +67,13 @@ class SiriusApiService
 
         $cookieHeader = $request->getHeader('Cookie');
 
-        if (! ($cookieHeader instanceof Cookie)) {
+        if (! ($cookieHeader instanceof Cookie) || ! isset($cookieHeader['XSRF-TOKEN'])) {
             return null;
         }
 
         return [
             'Cookie' => $cookieHeader->getFieldValue(),
+            'X-XSRF-TOKEN' => $cookieHeader['XSRF-TOKEN'],
         ];
     }
 
@@ -107,8 +109,10 @@ class SiriusApiService
 
         $responseArray = json_decode(strval($response->getBody()), true);
 
-        $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
-            ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+        if (isset($responseArray['opg.poas.lpastore']['certificateProvider']['address'])) {
+            $responseArray['opg.poas.lpastore']['certificateProvider']['address'] = (new AddressProcessorHelper())
+                ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
+        }
 
         return $responseArray;
     }
@@ -141,6 +145,56 @@ class SiriusApiService
         return [
             'status' => $response->getStatusCode(),
             'error' => json_decode(strval($response->getBody()), true)
+        ];
+    }
+
+    /**
+     * @param string $base64suffix
+     * @param array $caseDetails
+     * @param Request $request
+     * @return array
+     * @throws GuzzleException
+     *
+     * @psalm-suppress InvalidArrayOffset
+     */
+    public function sendPostOfficePDf(string $base64suffix, array $caseDetails, Request $request): array
+    {
+        $address = [
+            $caseDetails["address"]["line1"],
+            $caseDetails["address"]["line2"],
+            $caseDetails["address"]["line3"] ?? "N/A",
+            $caseDetails["address"]["town"],
+            $caseDetails["address"]["country"],
+            $caseDetails["address"]["postcode"]
+        ];
+
+        $data = [
+            "type" => "Save",
+            "systemType" => "DLP-ID-PO-D",
+            "content" => "",
+            "pdfSuffix" => $base64suffix,
+            "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
+            "correspondentAddress" => $address
+        ];
+        $lpa = $caseDetails['lpas'][0];
+
+        $lpaDetails = $this->getLpaByUid($lpa, $request);
+        $lpaId = $lpaDetails["opg.poas.sirius"]["id"];
+
+        if (! $lpaId) {
+            return [
+                'status' => 400,
+                'response' => 'LPA Id not found'
+            ];
+        }
+        $response = $this->client->post('/api/v1/lpas/' . $lpaId . '/documents', [
+            'headers' => $this->getAuthHeaders($request),
+            'json' => $data
+        ]);
+
+        return [
+            'status' => $response->getStatusCode(),
+            'response' => json_decode(strval($response->getBody()), true)
         ];
     }
 }
