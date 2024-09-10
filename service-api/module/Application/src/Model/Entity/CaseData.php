@@ -89,7 +89,7 @@ class CaseData implements JsonSerializable
     public ?array $idMethodIncludingNation = [];
 
     #[Annotation\Required(false)]
-    public ?string $progressPage = null;
+    public ?array $progressPage = null;
 
     /**
      * @param array<string, mixed> $data

@@ -198,7 +198,7 @@ return [
                     'po_do_details_match' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/post-office-do-details-match',
+                            'route' => '[/:uuid]/post-office-do-details-match',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'doDetailsMatch',
@@ -328,7 +328,7 @@ return [
                     'cp_confirm_dob' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/cp/confirm-dob',
+                            'route' => '[/:uuid]/cp/confirm-dob',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'confirmDob',
@@ -338,7 +338,7 @@ return [
                     'cp_confirm_address' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/cp/confirm-address',
+                            'route' => '[/:uuid]/cp/confirm-address',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'confirmAddress',
@@ -438,7 +438,7 @@ return [
                     'remove_lpa' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/remove-lpa/:lpa',
+                            'route' => '[/:uuid]/remove-lpa/:lpa',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'removeLpa',
@@ -448,7 +448,7 @@ return [
                     'cp_remove_lpa' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/cp/remove-lpa/:lpa',
+                            'route' => '[/:uuid]/cp/remove-lpa/:lpa',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'removeLpa',
@@ -458,7 +458,7 @@ return [
                     'po_remove_lpa' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/remove-lpa/:lpa',
+                            'route' => '[/:uuid]/remove-lpa/:lpa',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'removeLpa',
@@ -468,17 +468,17 @@ return [
                     'abandon_flow' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/abandon-flow',
+                            'route' => '[/:uuid]/abandon-flow',
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
-                                'action' => 'abandonFlow',
+                                'action' => 'saveCaseProgress',
                             ],
                         ],
                     ],
                     'donor_choose_country' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-choose-country',
+                            'route' => '[/:uuid]/donor-choose-country',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountry',
@@ -488,7 +488,7 @@ return [
                     'donor_choose_country_id' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-choose-country-id',
+                            'route' => '[/:uuid]/donor-choose-country-id',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountryId',

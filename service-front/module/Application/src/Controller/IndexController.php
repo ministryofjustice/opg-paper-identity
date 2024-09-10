@@ -130,12 +130,18 @@ class IndexController extends AbstractActionController
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    public function abandonFlowAction(): ViewModel
+    public function saveCaseProgressAction(): ViewModel
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $saveProgressData = [];
+
+        $saveProgressData['last_page'] = $this->getRequest()->getQuery('last_page');
+        $saveProgressData['timestamp'] = date("Y-m-d\TH:i:s\Z", time());
+
+        $this->opgApiService->updateCaseProgress($uuid, $saveProgressData);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
@@ -154,12 +160,11 @@ class IndexController extends AbstractActionController
 //            $this->redirect()->toRoute();
         }
 
-        $lastPage = $this->getRequest()->getQuery('last_page');
-
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('last_page', $lastPage);
+        $view->setVariable('last_page', $saveProgressData['last_page']);
         $view->setVariable('form', $form);
 
+        echo json_encode($detailsData);
 
         return $view->setTemplate('application/pages/abandoned_flow');
     }
