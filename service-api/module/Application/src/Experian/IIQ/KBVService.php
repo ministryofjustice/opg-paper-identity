@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Experian\IIQ;
 
 use Application\Fixtures\DataQueryHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\KBV\KBVServiceInterface;
 use Psr\Log\LoggerInterface;
 
@@ -13,7 +14,8 @@ class KBVService implements KBVServiceInterface
     public function __construct(
         private readonly IIQService $authService,
         private readonly LoggerInterface $logger,
-        private readonly DataQueryHandler $queryHandler
+        private readonly DataQueryHandler $queryHandler,
+        private readonly DataWriteHandler $writeHandler
     ) {
     }
 
@@ -41,7 +43,7 @@ class KBVService implements KBVServiceInterface
             isset($caseData->kbvQuestions) ? count(json_decode($caseData->kbvQuestions, true)) : null;
 
         $counter = is_int($currentQuestionCount) ? $currentQuestionCount - 1 : 0;
-        foreach ($questions as $question) {
+        foreach ($questions['questions'] as $question) {
             $number = $mapNumber[$counter];
             $formattedQuestions[$number] = [
                 'number' => $number,
@@ -51,9 +53,22 @@ class KBVService implements KBVServiceInterface
             ];
             $counter++;
         }
+
         //@todo array merge of questions upstream where it's saved back
         $this->logger->info(sprintf('Found %d questions', count($questions)));
 
+        $this->saveIIQControlForRTQ($caseData->id, $questions['control']);
+
         return ['formattedQuestions' => $formattedQuestions, 'questionsWithoutAnswers' => $formattedQuestions];
+    }
+
+    private function saveIIQControlForRTQ(string $caseId, array $control): void
+    {
+        $this->writeHandler->updateCaseData(
+            $caseId,
+            'iqqControl',
+            'S',
+            json_encode($control)
+        );
     }
 }
