@@ -78,10 +78,12 @@ class IIQService
                 throw new CannotGetQuestionsException("No results");
             }
             //need to pass these control structure for RTQ transaction
+            $control = [];
             $control['URN'] = $request->SAAResult->Control->URN;
             $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
 
-            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+            return (array)$request->SAAResult->Questions->Question;
+            //return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
         });
     }
 }
