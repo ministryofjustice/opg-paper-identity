@@ -163,7 +163,7 @@ class IndexController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('last_page', $saveProgressData['last_page']);
         $view->setVariable('form', $form);
-        
+
         return $view->setTemplate('application/pages/abandoned_flow');
     }
 }
