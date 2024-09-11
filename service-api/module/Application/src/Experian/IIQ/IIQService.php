@@ -67,10 +67,10 @@ class IIQService
 
             //@todo remove this after debugging
             if ($request->SAAResponse->SAAResult->Control->URN) {
-                $this->logger->info("URN: " . $request->SAAResponse->SAAResult->Control->URN);
+                $this->logger->info("URN 1: " . $request->SAAResponse->SAAResult->Control->URN);
             }
             if ($request->SAAResult->Control->URN) {
-                $this->logger->info("URN: " . $request->SAAResult->Control->URN);
+                $this->logger->info("URN 2: " . $request->SAAResult->Control->URN);
             }
 
             if ($request->SAAResult) {
