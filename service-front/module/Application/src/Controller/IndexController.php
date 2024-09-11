@@ -134,14 +134,14 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $saveProgressData = [];
 
+        $saveProgressData = [];
         $saveProgressData['last_page'] = $this->getRequest()->getQuery('last_page');
         $saveProgressData['timestamp'] = date("Y-m-d\TH:i:s\Z", time());
-
         $this->opgApiService->updateCaseProgress($uuid, $saveProgressData);
+
+        $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
@@ -163,9 +163,7 @@ class IndexController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('last_page', $saveProgressData['last_page']);
         $view->setVariable('form', $form);
-
-        echo json_encode($detailsData);
-
+        
         return $view->setTemplate('application/pages/abandoned_flow');
     }
 }
