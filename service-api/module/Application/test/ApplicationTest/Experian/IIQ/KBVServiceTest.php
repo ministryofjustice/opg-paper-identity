@@ -7,6 +7,7 @@ namespace ApplicationTest\Experian\IIQ;
 use Application\Experian\IIQ\IIQService;
 use Application\Experian\IIQ\KBVService;
 use Application\Fixtures\DataQueryHandler;
+use Application\Fixtures\DataWriteHandler;
 use Application\Mock\KBV\KBVService as MockKBVService;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\TestCase;
@@ -18,26 +19,32 @@ class KBVServiceTest extends TestCase
     {
         $uuid = '68f0bee7-5b05-41da-95c4-2f1d5952184d';
         $questions = [
-            (object)[
-                'QuestionID' => '1',
-                'Text' => 'Question One',
-                'AnswerFormat' => (object)[
-                    'AnswerList' => [
-                        'A',
-                        'B',
-                        'C'
+            'questions' => [
+                (object)[
+                    'QuestionID' => '1',
+                    'Text' => 'Question One',
+                    'AnswerFormat' => (object)[
+                        'AnswerList' => [
+                            'A',
+                            'B',
+                            'C'
+                        ]
                     ]
-                ]
+                ],
+                (object)[
+                    'QuestionID' => '2',
+                    'Text' => 'Question Two',
+                    'AnswerFormat' => (object)[
+                        'AnswerList' => [
+                            'A',
+                            'B'
+                        ]
+                    ]
+                ],
             ],
-            (object)[
-                'QuestionID' => '2',
-                'Text' => 'Question Two',
-                'AnswerFormat' => (object)[
-                    'AnswerList' => [
-                        'A',
-                        'B'
-                    ]
-                ]
+            'control' => [
+                'URN' => 'test UUID',
+                'AuthRefNo' => 'abc'
             ]
         ];
 
@@ -114,7 +121,9 @@ class KBVServiceTest extends TestCase
             ->with($uuid)
             ->willReturn($caseData);
 
-        $sut = new KBVService($iiqService, $logger, $queryHandler);
+        $writeHandler = $this->createMock(DataWriteHandler::class);
+
+        $sut = new KBVService($iiqService, $logger, $queryHandler, $writeHandler);
 
         $this->assertEquals($formattedQuestions, $sut->fetchFormattedQuestions($uuid));
     }

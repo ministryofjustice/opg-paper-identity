@@ -88,7 +88,9 @@ class IIQServiceTest extends TestCase
                 ],
             ]);
 
-        $this->assertEquals($questions, $this->sut->startAuthenticationAttempt($caseData));
+        $response = $this->sut->startAuthenticationAttempt($caseData);
+
+        $this->assertEquals($questions, $response['questions']);
     }
 
     public function testStartAuthenticationAttemptsOneRetry(): void

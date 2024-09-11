@@ -82,8 +82,7 @@ class IIQService
             $control['URN'] = $request->SAAResult->Control->URN;
             $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
 
-            return (array)$request->SAAResult->Questions->Question;
-            //return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
         });
     }
 }

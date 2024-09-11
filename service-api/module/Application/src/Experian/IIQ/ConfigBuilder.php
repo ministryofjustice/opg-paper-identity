@@ -47,4 +47,21 @@ class ConfigBuilder
         ];
         return $saaConfig;
     }
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    public function buildRTQ(array $answersArray): array
+    {
+        $rtqConfig = [];
+        //@todo add in control stucture
+        foreach ($answersArray as $answer) {
+            $rtqConfig['Responses']['Response'] = [
+                'QuestionID' => $answer['experianId'],
+                'AnswerGiven' => $answer['answer'],
+                'CustResponseFlag' => $answer['flag']
+            ];
+        }
+
+        return $rtqConfig;
+    }
 }
