@@ -66,24 +66,27 @@ class IIQService
             ]);
 
             //@todo remove this after debugging
-            $this->logger->info($request->SAAResponse->SAAResult->Control->URN);
-            $this->logger->info($request->SAAResult->Control->URN);
+            if ($request->SAAResponse->SAAResult->Control->URN) {
+                $this->logger->info("URN: " .$request->SAAResponse->SAAResult->Control->URN);
+            }
+            if ($request->SAAResult->Control->URN) {
+                $this->logger->info("URN: " .$request->SAAResult->Control->URN);
+            }
 
-
-            if ($request->SAAResponse->SAAResult) {
-                if ($request->SAAResponse->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
-                    $this->logger->error($request->SAAResponse->SAAResult->Results->Outcome);
+            if ($request->SAAResult) {
+                if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
+                    $this->logger->error($request->SAAResult->Results->Outcome);
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
-                if ($request->SAAResponse->SAAResult->Results->NextTransId->string !== 'RTQ') {
-                    $this->logger->error($request->SAAResponse->SAAResult->Results->NextTransId->string);
+                if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
+                    $this->logger->error($request->SAAResult->Results->NextTransId->string);
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
             } else {
                 throw new CannotGetQuestionsException("No results");
             }
 
-            return (array)$request->SAAResponse->SAAResult->Questions->Question;
+            return (array)$request->SAAResult->Questions->Question;
         });
     }
 }
