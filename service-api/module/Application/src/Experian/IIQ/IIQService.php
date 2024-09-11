@@ -65,15 +65,7 @@ class IIQService
                 ]
             ]);
 
-            //@todo remove this after debugging
-            if ($request->SAAResponse->SAAResult->Control->URN) {
-                $this->logger->info("URN 1: " . $request->SAAResponse->SAAResult->Control->URN);
-            }
-            if ($request->SAAResult->Control->URN) {
-                $this->logger->info("URN 2: " . $request->SAAResult->Control->URN);
-            }
-
-            if ($request->SAAResult) {
+            if ($request->SAAResult->Results) {
                 if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
                     $this->logger->error($request->SAAResult->Results->Outcome);
                     throw new CannotGetQuestionsException("Error retrieving questions");
@@ -85,8 +77,11 @@ class IIQService
             } else {
                 throw new CannotGetQuestionsException("No results");
             }
+            //need to pass these control structure for RTQ transaction
+            $control['URN'] = $request->SAAResult->Control->URN;
+            $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
 
-            return (array)$request->SAAResult->Questions->Question;
+            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
         });
     }
 }
