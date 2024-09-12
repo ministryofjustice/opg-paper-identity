@@ -78,7 +78,7 @@ class IIQService
             }
 
             //@todo remove this log after debugging
-            $this->logger->info('sAAResponse', $request);
+            $this->logger->info('sAAResponse', ['context' => $request]);
 
             //need to pass these control structure for RTQ transaction
             $control = [];
