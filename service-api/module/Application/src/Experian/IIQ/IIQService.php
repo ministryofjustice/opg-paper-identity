@@ -64,7 +64,7 @@ class IIQService
                     $this->builder->buildSAA($caseData)
                 ]
             ]);
-
+            /**
             if ($request->SAAResult->Results) {
                 if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
                     $this->logger->error($request->SAAResult->Results->Outcome);
@@ -77,6 +77,7 @@ class IIQService
             } else {
                 throw new CannotGetQuestionsException("No results");
             }
+             */
             //need to pass these control structure for RTQ transaction
             $control = [];
             $control['URN'] = $request->SAAResult->Control->URN;
