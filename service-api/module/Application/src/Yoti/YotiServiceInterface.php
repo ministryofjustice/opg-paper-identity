@@ -45,4 +45,6 @@ interface YotiServiceInterface
      * Prepare PDF letter for applicant
      */
     public function preparePDFLetter(CaseData $caseData, string $nonce, int $timestamp, string $sessionId): array;
+
+    public function retrieveMedia(string $sessionId, string $mediaId, string $nonce, int $timestamp): array;
 }
