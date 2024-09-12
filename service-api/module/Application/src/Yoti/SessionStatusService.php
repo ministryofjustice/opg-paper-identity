@@ -107,10 +107,10 @@ class SessionStatusService
             if (is_string($documentScanned["expiration_date"])) {
                 $expiry = new DateTime($documentScanned["expiration_date"]);
 
-                $currentDate = new DateTime();
-                $acceptDate = (clone $currentDate)->modify('-18 months');
+                $acceptDate = (new DateTime())->modify('-18 months');
 
                 if ($expiry < $acceptDate) {
+                    $this->logger->info('sessionStatus: Passport 18 months+ expiry', ['caseId' => $caseData->id]);
                     return false;
                 }
             }

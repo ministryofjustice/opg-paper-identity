@@ -295,7 +295,7 @@ class YotiService implements YotiServiceInterface
         }
         $response = json_decode(strval($document->getBody()), true);
 
-        return ["status" => "Media retrieved", "response" => $response];
+        return ["response" => $response];
     }
 
     public function letterConfigPayload(CaseData $caseData, string $requirementId): array
