@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Experian\IIQ;
 
+use Application\Experian\IIQ\Exception\CannotGetQuestionsException;
 use Application\Experian\IIQ\Soap\IIQClient;
+use Application\Model\Entity\CaseData;
 use Psr\Log\LoggerInterface;
 use SoapFault;
 
 class IIQService
 {
     private bool $isAuthenticated = false;
-
     public function __construct(
         private readonly AuthManager $authManager,
         private readonly IIQClient $client,
+        private readonly ConfigBuilder $builder,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -51,45 +53,56 @@ class IIQService
         }
     }
 
-    public function startAuthenticationAttempt(): array
+    /**
+     * @throws CannotGetQuestionsException
+     * @throws SoapFault
+     */
+    public function startAuthenticationAttempt(CaseData $caseData): array
     {
-        return $this->withAuthentication(function () {
+        return $this->withAuthentication(function () use ($caseData) {
             $request = $this->client->SAA([
                 'sAARequest' => [
-                    'Applicant' => [
-                        'ApplicantIdentifier' => '1',
-                        'Name' => [
-                            'Title' => 'Mr',
-                            'Forename' => 'Albert',
-                            'Surname' => 'Arkil',
-                        ],
-                        'DateOfBirth' => [
-                            'CCYY' => '1951',
-                            'MM' => '02',
-                            'DD' => '18',
-
-                        ],
-                    ],
-                    'ApplicationData' => [
-                        'SearchConsent' => 'Y',
-                    ],
-                    'Control' => [
-                        'TestDatabase' => 'A',
-                    ],
-                    'LocationDetails' => [
-                        'LocationIdentifier' => '1',
-                        'UKLocation' => [
-                            'HouseNumber' => '3',
-                            'Street' => 'STOCKS HILL',
-                            'District' => 'HIGH HARRINGTON',
-                            'PostTown' => 'WORKINGTON',
-                            'Postcode' => 'CA14 5PH',
-                        ],
-                    ],
-                ],
+                    $this->builder->buildSAA($caseData)
+                ]
             ]);
 
-            return (array)$request->SAAResult->Questions->Question;
+            if ($request->SAAResult->Results) {
+                if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
+                    $this->logger->error($request->SAAResult->Results->Outcome);
+                    throw new CannotGetQuestionsException("Error retrieving questions");
+                }
+                if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
+                    $this->logger->error($request->SAAResult->Results->NextTransId->string);
+                    throw new CannotGetQuestionsException("Error retrieving questions");
+                }
+            }
+
+            //@todo remove this log after debugging
+            $this->logger->info('sAAResponse', $request);
+
+            //need to pass these control structure for RTQ transaction
+            $control = [];
+            $control['URN'] = $request->SAAResult->Control->URN;
+            $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
+
+            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+        });
+    }
+
+    /**
+     * @throws SoapFault
+     * @psalm-suppress PossiblyUnusedReturnValue
+     */
+    public function checkAnswers(array $answers, CaseData $caseData): array
+    {
+        return $this->withAuthentication(function () use ($answers, $caseData) {
+            $request = $this->client->RTQ([
+                'web:rTQRequest' => [
+                    $this->builder->buildRTQ($answers, $caseData)
+                ]
+            ]);
+            //@todo determine what to return here
+            return ['result' => $request];
         });
     }
 }
