@@ -17,6 +17,7 @@ use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
+use Application\Model\Entity\CaseProgress;
 
 /**
  * DTO for holding data required to make new case entry post
@@ -89,7 +90,7 @@ class CaseData implements JsonSerializable
     public ?array $idMethodIncludingNation = [];
 
     #[Annotation\Required(false)]
-    public ?string $progressPage = null;
+    public ?CaseProgress $progressPage = null;
 
     /**
      * @param array<string, mixed> $data
@@ -101,6 +102,8 @@ class CaseData implements JsonSerializable
         foreach ($data as $key => $value) {
             if ($key === 'counterService') {
                 $instance->counterService = CounterService::fromArray($value);
+            } elseif ($key === 'progressPage') {
+                $instance->progressPage = CaseProgress::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -127,7 +130,7 @@ class CaseData implements JsonSerializable
      *     counterService?: string[],
      *     idMethod?: string,
      *     idMethodIncludingNation?: string[],
-     *     progressPage?: string,
+     *     progressPage?: CaseProgress,
      * }
      */
     public function toArray(): array
@@ -146,7 +149,6 @@ class CaseData implements JsonSerializable
             'idMethod' => $this->idMethod,
             'yotiSessionId' => $this->yotiSessionId,
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
-            'progressPage' => $this->progressPage,
         ];
         if ($this->counterService !== null) {
             $arr['counterService'] = $this->counterService->toArray();
@@ -154,6 +156,10 @@ class CaseData implements JsonSerializable
 
         if ($this->kbvQuestions !== null) {
             $arr['kbvQuestions'] = $this->kbvQuestions;
+        }
+
+        if ($this->progressPage !== null) {
+            $arr['progressPage'] = $this->progressPage;
         }
 
         return $arr;
