@@ -55,6 +55,7 @@ class IIQService
 
     /**
      * @throws CannotGetQuestionsException
+     * @throws SoapFault
      */
     public function startAuthenticationAttempt(CaseData $caseData): array
     {
@@ -64,7 +65,7 @@ class IIQService
                     $this->builder->buildSAA($caseData)
                 ]
             ]);
-            /**
+
             if ($request->SAAResult->Results) {
                 if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
                     $this->logger->error($request->SAAResult->Results->Outcome);
@@ -77,13 +78,29 @@ class IIQService
             } else {
                 throw new CannotGetQuestionsException("No results");
             }
-             */
+
             //need to pass these control structure for RTQ transaction
             $control = [];
             $control['URN'] = $request->SAAResult->Control->URN;
             $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
 
             return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+        });
+    }
+
+    /**
+     * @throws SoapFault
+     */
+    public function checkAnswers(array $answers, CaseData $caseData): array
+    {
+        return $this->withAuthentication(function () use ($answers, $caseData) {
+            $request = $this->client->RTQ([
+                'web:rTQRequest' => [
+                    $this->builder->buildRTQ($answers, $caseData)
+                ]
+            ]);
+            //@todo determine what to return here
+            return $request;
         });
     }
 }

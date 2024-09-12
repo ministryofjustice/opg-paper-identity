@@ -7,6 +7,7 @@ namespace Application\Experian\IIQ;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\KBVServiceInterface;
+use Application\Model\Entity\CaseData;
 use Psr\Log\LoggerInterface;
 
 class KBVService implements KBVServiceInterface
@@ -60,6 +61,26 @@ class KBVService implements KBVServiceInterface
         $this->saveIIQControlForRTQ($caseData->id, $questions['control']);
 
         return ['formattedQuestions' => $formattedQuestions, 'questionsWithoutAnswers' => $formattedQuestions];
+    }
+
+    public function checkAnswers(array $answers, string $uuid): bool
+    {
+        $caseData = $this->queryHandler->getCaseByUUID($uuid);
+
+        //append experianId back to answers array
+        $questions = json_decode($caseData->kbvQuestions, true);
+        $iqqFormattedAnswers = [];
+        foreach ($questions as $key => $question) {
+            if (key_exists($key, $answers['answers'])) {
+                $iqqFormattedAnswers = [
+                    'experianId' => $question['experianId'],
+                    'answer' => $answers['answers'][$key],
+                    'flag' => 0
+                ];
+            }
+        }
+
+        $results = $this->authService->checkAnswers($iqqFormattedAnswers, $caseData);
     }
 
     private function saveIIQControlForRTQ(string $caseId, array $control): void

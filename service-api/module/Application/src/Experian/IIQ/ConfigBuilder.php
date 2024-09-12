@@ -47,18 +47,25 @@ class ConfigBuilder
         ];
         return $saaConfig;
     }
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     */
-    public function buildRTQ(array $answersArray): array
+
+    public function buildRTQ(array $answersArray, CaseData $case): array
     {
-        $rtqConfig = [];
-        //@todo add in control stucture
+        /** @var string $json */
+        $json = $case->iqqControl;
+        $iqqControl = json_decode($json, true);
+
+        $rtqConfig = [
+                'web:Control' => [
+                    'URN' => $iqqControl['URN'],
+                    'AuthRefNo' => $iqqControl['AuthRefNo']
+                ]
+        ];
+
         foreach ($answersArray as $answer) {
-            $rtqConfig['Responses']['Response'] = [
-                'QuestionID' => $answer['experianId'],
-                'AnswerGiven' => $answer['answer'],
-                'CustResponseFlag' => $answer['flag']
+            $rtqConfig['web:Responses']['web:Response'] = [
+                'web:QuestionID' => $answer['experianId'],
+                'web:AnswerGiven' => $answer['answer'],
+                'web:CustResponseFlag' => $answer['flag']
             ];
         }
 
