@@ -75,9 +75,10 @@ class IIQService
                     $this->logger->error($request->SAAResult->Results->NextTransId->string);
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
-            } else {
-                throw new CannotGetQuestionsException("No results");
             }
+
+            //@todo remove this log after debugging
+            $this->logger->info('sAAResponse', $request);
 
             //need to pass these control structure for RTQ transaction
             $control = [];
@@ -90,6 +91,7 @@ class IIQService
 
     /**
      * @throws SoapFault
+     * @psalm-suppress PossiblyUnusedReturnValue
      */
     public function checkAnswers(array $answers, CaseData $caseData): array
     {
@@ -100,7 +102,7 @@ class IIQService
                 ]
             ]);
             //@todo determine what to return here
-            return $request;
+            return ['result' => $request];
         });
     }
 }

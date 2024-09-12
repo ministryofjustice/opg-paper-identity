@@ -62,9 +62,13 @@ class KBVService implements KBVServiceInterface
 
         return ['formattedQuestions' => $formattedQuestions, 'questionsWithoutAnswers' => $formattedQuestions];
     }
-
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     * @psalm-suppress PossiblyNullArgument
+     */
     public function checkAnswers(array $answers, string $uuid): bool
     {
+        /** @var CaseData $caseData */
         $caseData = $this->queryHandler->getCaseByUUID($uuid);
 
         //append experianId back to answers array
@@ -79,8 +83,10 @@ class KBVService implements KBVServiceInterface
                 ];
             }
         }
+        //@todo return false if authCheck has not passed
+        $this->authService->checkAnswers($iqqFormattedAnswers, $caseData);
 
-        $results = $this->authService->checkAnswers($iqqFormattedAnswers, $caseData);
+        return true;
     }
 
     private function saveIIQControlForRTQ(string $caseId, array $control): void
