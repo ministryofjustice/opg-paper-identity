@@ -60,7 +60,7 @@ return [
                     'donor_id_check' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/donor-id-check',
+                            'route' => '/:uuid/donor-id-check',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'donorIdCheck',
@@ -70,7 +70,7 @@ return [
                     'donor_lpa_check' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/donor-lpa-check',
+                            'route' => '/:uuid/donor-lpa-check',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'donorLpaCheck',
@@ -80,7 +80,7 @@ return [
                     'how_donor_confirms' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/how-will-donor-confirm',
+                            'route' => '/:uuid/how-will-donor-confirm',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'howWillDonorConfirm',
@@ -90,7 +90,7 @@ return [
                     'donor_details_match_check' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/donor-details-match-check',
+                            'route' => '/:uuid/donor-details-match-check',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'donorDetailsMatchCheck',
@@ -100,7 +100,7 @@ return [
                     'address_verification' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/address_verification',
+                            'route' => '/:uuid/address_verification',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'addressVerification',
@@ -110,7 +110,7 @@ return [
                     'national_insurance_number' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/national-insurance-number',
+                            'route' => '/:uuid/national-insurance-number',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'nationalInsuranceNumber',
@@ -120,7 +120,7 @@ return [
                     'driving_licence_number' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/driving-licence-number',
+                            'route' => '/:uuid/driving-licence-number',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'drivingLicenceNumber',
@@ -130,7 +130,7 @@ return [
                     'passport_number' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/passport-number',
+                            'route' => '/:uuid/passport-number',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'passportNumber',
@@ -140,7 +140,7 @@ return [
                     'id_verify_questions' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/id-verify-questions',
+                            'route' => '/:uuid/id-verify-questions',
                             'defaults' => [
                                 'controller' => Controller\KbvController::class,
                                 'action' => 'idVerifyQuestions',
@@ -150,7 +150,7 @@ return [
                     'identity_check_passed' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/identity-check-passed',
+                            'route' => '/:uuid/identity-check-passed',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'identityCheckPassed',
@@ -160,7 +160,7 @@ return [
                     'identity_check_failed' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/identity-check-failed',
+                            'route' => '/:uuid/identity-check-failed',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'identityCheckFailed',
@@ -170,7 +170,7 @@ return [
                     'thin_file_failure' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/thin-file-failure',
+                            'route' => '/:uuid/thin-file-failure',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'thinFileFailure',
@@ -180,7 +180,7 @@ return [
                     'proving_identity' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/proving-identity',
+                            'route' => '/:uuid/proving-identity',
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'provingIdentity',
@@ -190,7 +190,7 @@ return [
                     'post_office_documents' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/post-office-documents',
+                            'route' => '/:uuid/post-office-documents',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeDocuments',
@@ -210,7 +210,7 @@ return [
                     'po_donor_lpa_check' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/post-office-donor-lpa-check',
+                            'route' => '/:uuid/post-office-donor-lpa-check',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'donorLpaCheck',
@@ -220,7 +220,7 @@ return [
                     'find_post_office_branch' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/find-post-office-branch',
+                            'route' => '/:uuid/find-post-office-branch',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'findPostOfficeBranch',
@@ -230,7 +230,7 @@ return [
                     'confirm_post_office' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/confirm-post-office',
+                            'route' => '/:uuid/confirm-post-office',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'confirmPostOffice',
@@ -240,7 +240,7 @@ return [
                     'what_happens_next' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/what-happens-next',
+                            'route' => '/:uuid/what-happens-next',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'whatHappensNext',
@@ -250,7 +250,7 @@ return [
                     'post_office_route_not_available' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/post-office-route-not-available',
+                            'route' => '/:uuid/post-office-route-not-available',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeRouteNotAvailable',
@@ -260,7 +260,7 @@ return [
                     'cp_how_cp_confirms' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/how-will-cp-confirm',
+                            'route' => '/:uuid/cp/how-will-cp-confirm',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'howWillCpConfirm',
@@ -270,7 +270,7 @@ return [
                     'cp_post_office_documents' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/post-office-documents',
+                            'route' => '/:uuid/cp/post-office-documents',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'postOfficeDocuments',
@@ -280,7 +280,7 @@ return [
                     'cp_choose_country' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/choose-country',
+                            'route' => '/:uuid/cp/choose-country',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'chooseCountry',
@@ -290,7 +290,7 @@ return [
                     'cp_choose_country_id' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/choose-country-id',
+                            'route' => '/:uuid/cp/choose-country-id',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'chooseCountryId',
@@ -300,7 +300,7 @@ return [
                     'cp_name_match_check' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/name-match-check',
+                            'route' => '/:uuid/cp/name-match-check',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'nameMatchCheck',
@@ -310,7 +310,7 @@ return [
                     'cp_confirm_lpas' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/confirm-lpas',
+                            'route' => '/:uuid/cp/confirm-lpas',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'confirmLpas',
@@ -320,7 +320,7 @@ return [
                     'cp_add_lpa' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/add-lpa',
+                            'route' => '/:uuid/cp/add-lpa',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'addLpa',
@@ -350,7 +350,7 @@ return [
                     'cp_national_insurance_number' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/national-insurance-number',
+                            'route' => '/:uuid/cp/national-insurance-number',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'nationalInsuranceNumber',
@@ -360,7 +360,7 @@ return [
                     'cp_driving_licence_number' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/driving-licence-number',
+                            'route' => '/:uuid/cp/driving-licence-number',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'drivingLicenceNumber',
@@ -370,7 +370,7 @@ return [
                     'cp_passport_number' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/passport-number',
+                            'route' => '/:uuid/cp/passport-number',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'passportNumber',
@@ -380,7 +380,7 @@ return [
                     'cp_id_verify_questions' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/id-verify-questions',
+                            'route' => '/:uuid/cp/id-verify-questions',
                             'defaults' => [
                                 'controller' => Controller\KbvController::class,
                                 'action' => 'idVerifyQuestions',
@@ -390,7 +390,7 @@ return [
                     'cp_identity_check_passed' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/identity-check-passed',
+                            'route' => '/:uuid/cp/identity-check-passed',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'identityCheckPassed',
@@ -400,7 +400,7 @@ return [
                     'cp_identity_check_failed' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/identity-check-failed',
+                            'route' => '/:uuid/cp/identity-check-failed',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'identityCheckFailed',
@@ -410,7 +410,7 @@ return [
                     'cp_enter_postcode' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/enter-postcode',
+                            'route' => '/:uuid/cp/enter-postcode',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'enterPostcode',
@@ -420,7 +420,7 @@ return [
                     'cp_enter_address_manual' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/enter-address-manual',
+                            'route' => '/:uuid/cp/enter-address-manual',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'enterAddressManual',
@@ -430,7 +430,7 @@ return [
                     'cp_select_address' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/select-address/:postcode',
+                            'route' => '/:uuid/cp/select-address/:postcode',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'selectAddress',
@@ -500,7 +500,7 @@ return [
                     'cp_find_post_office_branch' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/find-post-office-branch',
+                            'route' => '/:uuid/cp/find-post-office-branch',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'findPostOfficeBranch',
@@ -510,7 +510,7 @@ return [
                     'cp_confirm_post_office' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '[/:uuid]/cp/confirm-post-office',
+                            'route' => '/:uuid/cp/confirm-post-office',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'confirmPostOffice',

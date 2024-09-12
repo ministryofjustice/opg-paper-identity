@@ -363,11 +363,11 @@ return [
                     ],
                 ],
             ],
-            'update_progress' => [
+            'save_case_progress' => [
                 'type' => Segment::class,
                 'verb' => 'put',
                 'options' => [
-                    'route' => '/cases/:uuid/update-progress',
+                    'route' => '/cases/:uuid/save-case-progress',
                 ],
                 'child_routes' => [
                     'put' => [
@@ -376,7 +376,7 @@ return [
                             'verb' => 'put',
                             'defaults' => [
                                 'controller' => Controller\IdentityController::class,
-                                'action' => 'updateProgress',
+                                'action' => 'saveCaseProgress',
                             ],
                         ],
                         'may_terminate' => true,

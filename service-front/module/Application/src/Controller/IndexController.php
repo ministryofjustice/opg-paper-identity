@@ -134,6 +134,12 @@ class IndexController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
+
+        $saveProgressData = [];
+        $saveProgressData['last_page'] = $this->getRequest()->getQuery('last_page');
+        $saveProgressData['timestamp'] = date("Y-m-d\TH:i:s\Z", time());
+        $this->opgApiService->updateCaseProgress($uuid, $saveProgressData);
+
         $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -151,15 +157,11 @@ class IndexController extends AbstractActionController
 
                 $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
             }
-//            $this->redirect()->toRoute();
         }
 
-        $lastPage = $this->getRequest()->getQuery('last_page');
-
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('last_page', $lastPage);
+        $view->setVariable('last_page', $saveProgressData['last_page']);
         $view->setVariable('form', $form);
-
 
         return $view->setTemplate('application/pages/abandoned_flow');
     }
