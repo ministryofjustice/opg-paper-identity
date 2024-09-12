@@ -546,7 +546,7 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function updateProgressAction(): JsonModel
+    public function saveCaseProgressAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode(
