@@ -27,6 +27,7 @@ class DonorFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
+        private readonly string $siriusBaseUrl,
     ) {
     }
 
@@ -96,10 +97,13 @@ class DonorFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
+        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
         $view->setVariables([
             'details_data' => $detailsData,
             'uuid' => $uuid,
             'next_page' => $nextPage,
+            'sirius_edit_url' => $siriusEditUrl
         ]);
 
         return $view->setTemplate('application/pages/donor_details_match_check');
