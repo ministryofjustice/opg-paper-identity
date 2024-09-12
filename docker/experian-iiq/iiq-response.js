@@ -4,6 +4,10 @@ const saaEnvelope = `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-e
   <soap:Body>
     <SAAResponse xmlns="http://schema.uk.experian.com/Experian/IdentityIQ/Services/WebService">
       <SAAResult>
+        <Control>
+          <URN>840c9ec2-b685-40e3-a4d8-d6b983297379</URN>
+          <AuthRefNo>6B3TGRWSKC</AuthRefNo>
+        </Control>
         <Questions>
           {{questions}}
         </Questions>
