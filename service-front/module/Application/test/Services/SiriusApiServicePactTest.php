@@ -170,7 +170,7 @@ class SiriusApiServicePactTest extends TestCase
             "reference" => "49895f88-501b-4491-8381-e8aeeaef177d",
             "actorType" => "donor",
             "lpaIds" => [
-                "M-0000-0000-0000",
+                "M-1234-9876-4567",
             ],
             "time" => "2024-07-30T10:53:57+00:00",
             "outcome" => "exit",
@@ -185,6 +185,7 @@ class SiriusApiServicePactTest extends TestCase
             ->setStatus(204);
 
         $this->builder
+            ->given('A digital LPA exists')
             ->uponReceiving('A notification that case was exited')
             ->with($request)
             ->willRespondWith($response);
