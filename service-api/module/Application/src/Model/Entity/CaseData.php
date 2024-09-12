@@ -90,7 +90,7 @@ class CaseData implements JsonSerializable
     public ?array $idMethodIncludingNation = [];
 
     #[Annotation\Required(false)]
-    public ?CaseProgress $progressPage = null;
+    public ?CaseProgress $caseProgress = null;
 
     /**
      * @param array<string, mixed> $data
@@ -102,8 +102,8 @@ class CaseData implements JsonSerializable
         foreach ($data as $key => $value) {
             if ($key === 'counterService') {
                 $instance->counterService = CounterService::fromArray($value);
-            } elseif ($key === 'progressPage') {
-                $instance->progressPage = CaseProgress::fromArray($value);
+            } elseif ($key === 'caseProgress') {
+                $instance->caseProgress = CaseProgress::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -130,7 +130,7 @@ class CaseData implements JsonSerializable
      *     counterService?: string[],
      *     idMethod?: string,
      *     idMethodIncludingNation?: string[],
-     *     progressPage?: CaseProgress,
+     *     caseProgress?: CaseProgress,
      * }
      */
     public function toArray(): array
@@ -158,8 +158,8 @@ class CaseData implements JsonSerializable
             $arr['kbvQuestions'] = $this->kbvQuestions;
         }
 
-        if ($this->progressPage !== null) {
-            $arr['progressPage'] = $this->progressPage;
+        if ($this->caseProgress !== null) {
+            $arr['caseProgress'] = $this->caseProgress;
         }
 
         return $arr;
