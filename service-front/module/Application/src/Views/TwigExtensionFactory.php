@@ -6,6 +6,7 @@ namespace Application\Views;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Laminas\Http\PhpEnvironment\Request;
 
 class TwigExtensionFactory implements FactoryInterface
 {
@@ -17,8 +18,10 @@ class TwigExtensionFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): TwigExtension
     {
         $config = $container->get('config');
+        $request = $container->get(Request::class);
+
         $twigDebug = $config['zend_twig']['environment']['debug'];
 
-        return new TwigExtension($twigDebug);
+        return new TwigExtension($twigDebug, $request);
     }
 }
