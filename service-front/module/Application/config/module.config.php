@@ -471,7 +471,7 @@ return [
                             'route' => '/:uuid/abandon-flow',
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
-                                'action' => 'saveCaseProgress',
+                                'action' => 'abandonFlow',
                             ],
                         ],
                     ],

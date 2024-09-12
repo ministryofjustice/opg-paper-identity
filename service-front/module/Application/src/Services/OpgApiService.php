@@ -344,7 +344,6 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function updateCaseProgress(string $uuid, array $data): array
     {
-//        die(json_encode($data));
         $url = sprintf("/cases/%s/save-case-progress", $uuid);
 
         try {

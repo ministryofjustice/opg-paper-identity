@@ -130,7 +130,7 @@ class IndexController extends AbstractActionController
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    public function saveCaseProgressAction(): ViewModel
+    public function abandonFlowAction(): ViewModel
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -142,7 +142,7 @@ class IndexController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
+        
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
@@ -157,7 +157,6 @@ class IndexController extends AbstractActionController
 
                 $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
             }
-//            $this->redirect()->toRoute();
         }
 
         $view->setVariable('details_data', $detailsData);
