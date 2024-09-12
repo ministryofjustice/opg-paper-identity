@@ -142,7 +142,7 @@ class IndexController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        
+
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);
