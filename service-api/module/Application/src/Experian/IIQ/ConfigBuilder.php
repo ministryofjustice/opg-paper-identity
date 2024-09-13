@@ -5,10 +5,19 @@ declare(strict_types=1);
 namespace Application\Experian\IIQ;
 
 use Application\Model\Entity\CaseData;
+use DateTime;
+use RuntimeException;
 
+/**
+ * @psalm-import-type SAARequest from IIQService
+ */
 class ConfigBuilder
 {
-    public function buildSAA(CaseData $case): array
+    /**
+     * @param CaseData $case
+     * @psalm-return SAARequest
+     */
+    public function buildSAARequest(CaseData $case): array
     {
         $saaConfig = [];
 
@@ -18,57 +27,34 @@ class ConfigBuilder
                 'Title' => '',
                 'Forename' => $case->firstName,
                 'Surname' => $case->lastName,
-            ]
+            ],
         ];
 
-        if (isset($case->dob)) {
-            $saaConfig['Applicant']['DateOfBirth'] = [
-                'CCYY' => date('Y', strtotime(date($case->dob))),
-                'MM' => date('m', strtotime(date($case->dob))),
-                'DD' => date('d', strtotime(date($case->dob))),
-            ];
+        if (!isset($case->dob)) {
+            throw new RuntimeException('Cannot generate KBVs with date of birth');
         }
+
+        $dob = DateTime::createFromFormat('Y-m-d', $case->dob);
+        $saaConfig['Applicant']['DateOfBirth'] = [
+            'CCYY' => $dob->format('Y'),
+            'MM' => $dob->format('m'),
+            'DD' => $dob->format('d'),
+        ];
 
         $saaConfig['ApplicationData'] = [
             'SearchConsent' => 'Y',
         ];
-        $saaConfig['Control'] = [
-                    'TestDatabase' => 'A',
-        ];
         $saaConfig['LocationDetails'] = [
             'LocationIdentifier' => '1',
-            'MultilineLocation' => [
-                $case->address["line1"],
-                $case->address["line2"],
-                $case->address["line3"],
-                $case->address["country"],
-                $case->address["postcode"]
+            'UKLocation' => [
+                'HouseName' => $case->address["line1"],
+                'Street' => $case->address["line2"] ?? '',
+                'District' => $case->address["line3"] ?? '',
+                'PostTown' => $case->address["town"] ?? '',
+                'Postcode' => $case->address["postcode"] ?? '',
             ],
         ];
+
         return $saaConfig;
-    }
-
-    public function buildRTQ(array $answersArray, CaseData $case): array
-    {
-        /** @var string $json */
-        $json = $case->iqqControl;
-        $iqqControl = json_decode($json, true);
-
-        $rtqConfig = [
-                'web:Control' => [
-                    'URN' => $iqqControl['URN'],
-                    'AuthRefNo' => $iqqControl['AuthRefNo']
-                ]
-        ];
-
-        foreach ($answersArray as $answer) {
-            $rtqConfig['web:Responses']['web:Response'] = [
-                'web:QuestionID' => $answer['experianId'],
-                'web:AnswerGiven' => $answer['answer'],
-                'web:CustResponseFlag' => $answer['flag']
-            ];
-        }
-
-        return $rtqConfig;
     }
 }

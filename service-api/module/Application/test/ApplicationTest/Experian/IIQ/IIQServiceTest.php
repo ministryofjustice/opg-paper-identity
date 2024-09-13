@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace ApplicationTest\Experian\IIQ;
 
 use Application\Experian\IIQ\AuthManager;
-use Application\Experian\IIQ\ConfigBuilder;
 use Application\Experian\IIQ\IIQService;
 use Application\Experian\IIQ\Soap\IIQClient;
-use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use SoapHeader;
 use SoapFault;
+use SoapHeader;
 
 class IIQServiceTest extends TestCase
 {
     private LoggerInterface|MockObject $logger;
-    private ConfigBuilder|MockObject $config;
     private IIQClient&MockObject $iiqClient;
     private AuthManager&MockObject $authManager;
     private IIQService $sut;
@@ -30,12 +27,10 @@ class IIQServiceTest extends TestCase
         $this->iiqClient = $this->createMock(IIQClient::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->authManager = $this->createMock(AuthManager::class);
-        $this->config = $this->createMock(ConfigBuilder::class);
 
         $this->sut = new IIQService(
             $this->authManager,
             $this->iiqClient,
-            $this->config,
             $this->logger,
         );
     }
@@ -52,20 +47,7 @@ class IIQServiceTest extends TestCase
             ['id' => 2],
         ];
 
-        $caseData = CaseData::fromArray([
-            'id' => '68f0bee7-5b05-41da-95c4-2f1d5952184d',
-            'firstName' => 'Albert',
-            'lastName' => 'Williams',
-            'address' => [
-                'line1' => '123 long street',
-            ],
-        ]);
-
-        $saaRequest = ['Applicant' => ['Name' => ['ForeName' => 'Albert']]];
-        $this->config->expects($this->once())
-            ->method('buildSAA')
-            ->with($caseData)
-            ->willReturn($saaRequest);
+        $saaRequest = ['Applicant' => ['Name' => ['Forename' => 'Albert']]];
 
         $this->authManager->expects($this->once())
             ->method('buildSecurityHeader')
@@ -76,21 +58,27 @@ class IIQServiceTest extends TestCase
             ->method('__call')
             ->willReturn((object)[
                 'SAAResult' => (object)[
+                    'Control' => (object)[
+                        'URN' => 'abcd',
+                        'AuthRefNo' => '1234',
+                    ],
                     'Questions' => (object)[
                         'Question' => $questions,
                     ],
                     'Results' => (object)[
                         'Outcome' => 'Authentication Questions returned',
                         'NextTransId' => (object)[
-                            'string' => 'RTQ'
-                        ]
+                            'string' => 'RTQ',
+                        ],
                     ],
                 ],
             ]);
 
-        $response = $this->sut->startAuthenticationAttempt($caseData);
+        $response = $this->sut->startAuthenticationAttempt($saaRequest);
 
         $this->assertEquals($questions, $response['questions']);
+        $this->assertEquals('abcd', $response['control']['URN']);
+        $this->assertEquals('1234', $response['control']['AuthRefNo']);
     }
 
     public function testStartAuthenticationAttemptsOneRetry(): void
@@ -101,6 +89,7 @@ class IIQServiceTest extends TestCase
             ->method('buildSecurityHeader')
             ->with($this->callback(function (bool $forceNewToken) {
                 static $i = 0;
+
                 return match (++$i) {
                     1 => $forceNewToken === false,
                     2 => $forceNewToken === true,
@@ -114,18 +103,14 @@ class IIQServiceTest extends TestCase
             ->with('SAA', $this->anything())
             ->willThrowException($soapFault);
 
-        $caseData = CaseData::fromArray([
-            'id' => '68f0bee7-5b05-41da-95c4-2f1d5952184d',
-            'firstName' => 'Albert',
-            'lastName' => 'Williams',
-            'address' => [
-                'line1' => '123 long street',
-            ],
-        ]);
+        $saaRequest = ['Applicant' => [
+            'Name' => ['Forename' => 'Albert', 'surname' => 'Williams'],
+            'LocationDetails' => ['UKLocation' => ['HouseName' => '123 Long Street']],
+        ]];
 
         $this->expectException(SoapFault::class);
         $this->expectExceptionMessage('Unauthorized');
 
-        $this->assertIsArray($this->sut->startAuthenticationAttempt($caseData));
+        $this->assertIsArray($this->sut->startAuthenticationAttempt($saaRequest));
     }
 }

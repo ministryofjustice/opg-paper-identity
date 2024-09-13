@@ -26,9 +26,8 @@ class ConfigBuilderTest extends TestCase
             'address' => [
                 'line1' => '123 long street',
                 'line2' => 'Kings Cross',
-                'line3' => 'London',
+                'town' => 'London',
                 'postcode' => 'NW1 1SP',
-                'country' => 'England'
             ],
         ]);
         // an instance of SUT
@@ -36,7 +35,7 @@ class ConfigBuilderTest extends TestCase
     }
     public function testSAAFormat(): void
     {
-        $saaConfig = $this->sut->buildSAA($this->caseMock);
+        $saaConfig = $this->sut->buildSAARequest($this->caseMock);
 
         $this->assertEquals($this->sAAFormatExpected(), $saaConfig);
     }
@@ -60,20 +59,18 @@ class ConfigBuilderTest extends TestCase
             'ApplicationData' => [
                 'SearchConsent' => 'Y',
             ],
-            'Control' => [
-                'TestDatabase' => 'A',
-            ],
             'LocationDetails' => [
                 'LocationIdentifier' => '1',
-                'MultilineLocation' => [
-                    '123 long street',
-                    'Kings Cross',
-                    'London',
-                    'England',
-                    'NW1 1SP'
+                'UKLocation' => [
+                    'HouseName' => '123 long street',
+                    'Street' => 'Kings Cross',
+                    'District' => '',
+                    'PostTown' => 'London',
+                    'Postcode' => 'NW1 1SP',
                 ],
             ],
         ];
+
         return $saaConfig;
     }
 }

@@ -10,13 +10,53 @@ use Application\Model\Entity\CaseData;
 use Psr\Log\LoggerInterface;
 use SoapFault;
 
+/**
+ * @psalm-type SAARequest = array{
+ *   Applicant: array{
+ *     ApplicantIdentifier: string,
+ *     Name: array{
+ *       Title: string,
+ *       Forename: string,
+ *       Surname: string,
+ *     },
+ *     DateOfBirth: array{
+ *       CCYY: string,
+ *       MM: string,
+ *       DD: string,
+ *     }
+ *   },
+ *   ApplicationData: array{
+ *     SearchConsent: "Y",
+ *   },
+ *   LocationDetails: array{
+ *     LocationIdentifier: string,
+ *     UKLocation: array{
+ *       HouseName: string,
+ *       Street: string,
+ *       District: string,
+ *       PostTown: string,
+ *       Postcode: string,
+ *     },
+ *   }
+ * }
+ *
+ * @psalm-type Question = object{
+ *   QuestionID: string,
+ *   Text: string,
+ *   Tooltip: string,
+ *   AnswerFormat: object{
+ *     Identifier: string,
+ *     FieldType: "G",
+ *     AnswerList: string[]
+ *   }
+ * }
+ */
 class IIQService
 {
     private bool $isAuthenticated = false;
     public function __construct(
         private readonly AuthManager $authManager,
         private readonly IIQClient $client,
-        private readonly ConfigBuilder $builder,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -56,29 +96,35 @@ class IIQService
     /**
      * @throws CannotGetQuestionsException
      * @throws SoapFault
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-param SAARequest $saaRequest
+     * @return array{
+     *   questions: Question[],
+     *   control: array{
+     *     URN: string,
+     *     AuthRefNo: string,
+     *   }
+     * }
      */
-    public function startAuthenticationAttempt(CaseData $caseData): array
+    public function startAuthenticationAttempt(array $saaRequest): array
     {
-        return $this->withAuthentication(function () use ($caseData) {
+        return $this->withAuthentication(function () use ($saaRequest) {
             $request = $this->client->SAA([
-                'sAARequest' => [
-                    $this->builder->buildSAA($caseData)
-                ]
+                'sAARequest' => $saaRequest,
             ]);
 
             if ($request->SAAResult->Results) {
                 if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
                     $this->logger->error($request->SAAResult->Results->Outcome);
+
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
                 if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
                     $this->logger->error($request->SAAResult->Results->NextTransId->string);
+
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
             }
-
-            //@todo remove this log after debugging
-            $this->logger->info('sAAResponse', ['context' => $request]);
 
             //need to pass these control structure for RTQ transaction
             $control = [];
@@ -86,23 +132,6 @@ class IIQService
             $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
 
             return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
-        });
-    }
-
-    /**
-     * @throws SoapFault
-     * @psalm-suppress PossiblyUnusedReturnValue
-     */
-    public function checkAnswers(array $answers, CaseData $caseData): array
-    {
-        return $this->withAuthentication(function () use ($answers, $caseData) {
-            $request = $this->client->RTQ([
-                'web:rTQRequest' => [
-                    $this->builder->buildRTQ($answers, $caseData)
-                ]
-            ]);
-            //@todo determine what to return here
-            return ['result' => $request];
         });
     }
 }

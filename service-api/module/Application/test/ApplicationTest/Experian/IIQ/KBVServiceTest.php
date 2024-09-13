@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Experian\IIQ;
 
+use Application\Experian\IIQ\ConfigBuilder;
 use Application\Experian\IIQ\IIQService;
 use Application\Experian\IIQ\KBVService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
-use Application\Mock\KBV\KBVService as MockKBVService;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -18,79 +18,34 @@ class KBVServiceTest extends TestCase
     public function testFetchFormattedQuestions(): void
     {
         $uuid = '68f0bee7-5b05-41da-95c4-2f1d5952184d';
-        $questions = [
+        $questionsFromIIQ = [
             'questions' => [
                 (object)[
-                    'QuestionID' => '1',
-                    'Text' => 'Question One',
+                    'QuestionID' => 'QU18',
+                    'Text' => 'Question Eighteen',
                     'AnswerFormat' => (object)[
                         'AnswerList' => [
                             'A',
                             'B',
-                            'C'
-                        ]
-                    ]
+                            'C',
+                        ],
+                    ],
                 ],
                 (object)[
-                    'QuestionID' => '2',
-                    'Text' => 'Question Two',
+                    'QuestionID' => 'QU93',
+                    'Text' => 'Question Ninety-Three',
                     'AnswerFormat' => (object)[
                         'AnswerList' => [
                             'A',
-                            'B'
-                        ]
-                    ]
+                            'B',
+                        ],
+                    ],
                 ],
             ],
             'control' => [
                 'URN' => 'test UUID',
-                'AuthRefNo' => 'abc'
-            ]
-        ];
-
-        $formattedQuestions = [
-            'questionsWithoutAnswers' => [
-                'one' => [
-                    'number' => 'one',
-                    'experianId' => '1',
-                    'question' => 'Question One',
-                    'prompts' => [
-                        'A',
-                        'B',
-                        'C'
-                    ]
-                ],
-                'two' => [
-                    'number' => 'two',
-                    'experianId' => '2',
-                    'question' => 'Question Two',
-                    'prompts' => [
-                        'A',
-                        'B'
-                    ]
-                ]
+                'AuthRefNo' => 'abc',
             ],
-            'formattedQuestions' => [
-                'one' => [
-                    'number' => 'one',
-                    'experianId' => '1',
-                    'question' => 'Question One',
-                    'prompts' => [
-                        'A',
-                        'B',
-                        'C'
-                    ]
-                ],
-                'two' => [
-                    'number' => 'two',
-                    'experianId' => '2',
-                    'question' => 'Question Two',
-                    'prompts' => [
-                        'A',
-                        'B'
-                    ]
-                ]
-            ]
         ];
 
         $caseData = CaseData::fromArray([
@@ -103,17 +58,14 @@ class KBVServiceTest extends TestCase
             ],
         ]);
 
-        $iiqService = $this->createMock(IIQService::class);
-        $iiqService->expects($this->once())
-            ->method('startAuthenticationAttempt')
-            ->with($caseData)
-            ->willReturn($questions);
-
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())
-            ->method('info')
-            ->with('Found 2 questions');
-
+        $saaRequest = [
+            'Applicant' => [
+                'Name' => [
+                    'Forename' => 'Vidal',
+                    'Surname' => 'Kovacek-Orn',
+                ],
+            ],
+        ];
 
         $queryHandler = $this->createMock(DataQueryHandler::class);
         $queryHandler->expects($this->once())
@@ -121,10 +73,47 @@ class KBVServiceTest extends TestCase
             ->with($uuid)
             ->willReturn($caseData);
 
+        $configBuilder = $this->createMock(ConfigBuilder::class);
+        $configBuilder->expects($this->once())
+            ->method('buildSAARequest')
+            ->with($caseData)
+            ->willReturn($saaRequest);
+
+        $iiqService = $this->createMock(IIQService::class);
+        $iiqService->expects($this->once())
+            ->method('startAuthenticationAttempt')
+            ->with($saaRequest)
+            ->willReturn($questionsFromIIQ);
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('info')
+            ->with('Found 2 questions');
+
         $writeHandler = $this->createMock(DataWriteHandler::class);
 
-        $sut = new KBVService($iiqService, $logger, $queryHandler, $writeHandler);
+        $sut = new KBVService($iiqService, $logger, $configBuilder, $queryHandler, $writeHandler);
 
-        $this->assertEquals($formattedQuestions, $sut->fetchFormattedQuestions($uuid));
+        $this->assertEquals([
+            [
+                'number' => 'one',
+                'experianId' => 'QU18',
+                'question' => 'Question Eighteen',
+                'prompts' => [
+                    'A',
+                    'B',
+                    'C',
+                ],
+            ],
+            [
+                'number' => 'two',
+                'experianId' => 'QU93',
+                'question' => 'Question Ninety-Three',
+                'prompts' => [
+                    'A',
+                    'B',
+                ],
+            ],
+        ], $sut->fetchFormattedQuestions($uuid));
     }
 }
