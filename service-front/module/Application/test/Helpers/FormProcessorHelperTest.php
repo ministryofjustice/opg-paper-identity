@@ -308,12 +308,12 @@ class FormProcessorHelperTest extends TestCase
         $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
 
         $currentDate = new \DateTime();
-        $periodNPass = 16;
-        $periodNFail = 18;
+        $periodNPass = "P16M";
+        $periodNFail = "P18M";
 
         $today = $currentDate->format('Y-m-d');
-        $validPassortDate = $currentDate->sub(new \DateInterval("P{$periodNPass}M"))->format('Y-m-d');
-        $invalidPassortDate = $currentDate->sub(new \DateInterval("P{$periodNFail}M"))->format('Y-m-d');
+        $validPassortDate = $currentDate->sub(new \DateInterval($periodNPass))->format('Y-m-d');
+        $invalidPassortDate = $currentDate->sub(new \DateInterval($periodNFail))->format('Y-m-d');
 
         $form = (new AttributeBuilder())->createForm(PassportDate::class);
         $templates = [
