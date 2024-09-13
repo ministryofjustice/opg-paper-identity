@@ -17,7 +17,7 @@ class PassportDate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(PassportDateValidator::class, options: ['expiry_allowance' => '+5 year'])]
+    #[Annotation\Validator(PassportDateValidator::class, options: ['expiry_allowance' => '+18 month'])]
     public mixed $passport_date;
     /**
      * @psalm-suppress PossiblyUnusedProperty

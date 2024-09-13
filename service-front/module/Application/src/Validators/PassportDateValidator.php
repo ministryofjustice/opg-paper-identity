@@ -8,7 +8,7 @@ use Laminas\Validator\AbstractValidator;
 
 class PassportDateValidator extends AbstractValidator
 {
-    private string $expiryAllowance = '+5 year';
+    private string $expiryAllowance = '+18 month';
 
     public function setOptions(mixed $options = []): self
     {
