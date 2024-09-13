@@ -308,12 +308,12 @@ class FormProcessorHelperTest extends TestCase
         $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
 
         $currentDate = new \DateTime();
-        $periodNPass = 4;
-        $periodNFail = 6;
+        $periodNPass = "P16M";
+        $periodNFail = "P18M";
 
         $today = $currentDate->format('Y-m-d');
-        $fourYearsAgo = $currentDate->sub(new \DateInterval("P{$periodNPass}Y"))->format('Y-m-d');
-        $sixYearsAgo = $currentDate->sub(new \DateInterval("P{$periodNFail}Y"))->format('Y-m-d');
+        $validPassortDate = $currentDate->sub(new \DateInterval($periodNPass))->format('Y-m-d');
+        $invalidPassortDate = $currentDate->sub(new \DateInterval($periodNFail))->format('Y-m-d');
 
         $form = (new AttributeBuilder())->createForm(PassportDate::class);
         $templates = [
@@ -336,9 +336,9 @@ class FormProcessorHelperTest extends TestCase
             [
                 $caseUuid,
                 new Parameters([
-                    'passport_issued_year' => explode("-", $fourYearsAgo)[0],
-                    'passport_issued_month' => explode("-", $fourYearsAgo)[1],
-                    'passport_issued_day' => explode("-", $fourYearsAgo)[2],
+                    'passport_issued_year' => explode("-", $validPassortDate)[0],
+                    'passport_issued_month' => explode("-", $validPassortDate)[1],
+                    'passport_issued_day' => explode("-", $validPassortDate)[2],
                 ]),
                 $form,
                 $templates,
@@ -348,9 +348,9 @@ class FormProcessorHelperTest extends TestCase
             [
                 $caseUuid,
                 new Parameters([
-                    'passport_issued_year' => explode("-", $sixYearsAgo)[0],
-                    'passport_issued_month' => explode("-", $sixYearsAgo)[1],
-                    'passport_issued_day' => explode("-", $sixYearsAgo)[2],
+                    'passport_issued_year' => explode("-", $invalidPassortDate)[0],
+                    'passport_issued_month' => explode("-", $invalidPassortDate)[1],
+                    'passport_issued_day' => explode("-", $invalidPassortDate)[2],
                 ]),
                 $form,
                 $templates,
