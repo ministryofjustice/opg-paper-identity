@@ -4,14 +4,56 @@ declare(strict_types=1);
 
 namespace Application\Experian\IIQ;
 
+use Application\Experian\IIQ\Exception\CannotGetQuestionsException;
 use Application\Experian\IIQ\Soap\IIQClient;
+use Application\Model\Entity\CaseData;
 use Psr\Log\LoggerInterface;
 use SoapFault;
 
+/**
+ * @psalm-type SAARequest = array{
+ *   Applicant: array{
+ *     ApplicantIdentifier: string,
+ *     Name: array{
+ *       Title: string,
+ *       Forename: string,
+ *       Surname: string,
+ *     },
+ *     DateOfBirth: array{
+ *       CCYY: string,
+ *       MM: string,
+ *       DD: string,
+ *     }
+ *   },
+ *   ApplicationData: array{
+ *     SearchConsent: "Y",
+ *   },
+ *   LocationDetails: array{
+ *     LocationIdentifier: string,
+ *     UKLocation: array{
+ *       HouseName: string,
+ *       Street: string,
+ *       District: string,
+ *       PostTown: string,
+ *       Postcode: string,
+ *     },
+ *   }
+ * }
+ *
+ * @psalm-type Question = object{
+ *   QuestionID: string,
+ *   Text: string,
+ *   Tooltip: string,
+ *   AnswerFormat: object{
+ *     Identifier: string,
+ *     FieldType: "G",
+ *     AnswerList: string[]
+ *   }
+ * }
+ */
 class IIQService
 {
     private bool $isAuthenticated = false;
-
     public function __construct(
         private readonly AuthManager $authManager,
         private readonly IIQClient $client,
@@ -51,45 +93,45 @@ class IIQService
         }
     }
 
-    public function startAuthenticationAttempt(): array
+    /**
+     * @throws CannotGetQuestionsException
+     * @throws SoapFault
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-param SAARequest $saaRequest
+     * @return array{
+     *   questions: Question[],
+     *   control: array{
+     *     URN: string,
+     *     AuthRefNo: string,
+     *   }
+     * }
+     */
+    public function startAuthenticationAttempt(array $saaRequest): array
     {
-        return $this->withAuthentication(function () {
+        return $this->withAuthentication(function () use ($saaRequest) {
             $request = $this->client->SAA([
-                'sAARequest' => [
-                    'Applicant' => [
-                        'ApplicantIdentifier' => '1',
-                        'Name' => [
-                            'Title' => 'Mr',
-                            'Forename' => 'Albert',
-                            'Surname' => 'Arkil',
-                        ],
-                        'DateOfBirth' => [
-                            'CCYY' => '1951',
-                            'MM' => '02',
-                            'DD' => '18',
-
-                        ],
-                    ],
-                    'ApplicationData' => [
-                        'SearchConsent' => 'Y',
-                    ],
-                    'Control' => [
-                        'TestDatabase' => 'A',
-                    ],
-                    'LocationDetails' => [
-                        'LocationIdentifier' => '1',
-                        'UKLocation' => [
-                            'HouseNumber' => '3',
-                            'Street' => 'STOCKS HILL',
-                            'District' => 'HIGH HARRINGTON',
-                            'PostTown' => 'WORKINGTON',
-                            'Postcode' => 'CA14 5PH',
-                        ],
-                    ],
-                ],
+                'sAARequest' => $saaRequest,
             ]);
 
-            return (array)$request->SAAResult->Questions->Question;
+            if ($request->SAAResult->Results) {
+                if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
+                    $this->logger->error($request->SAAResult->Results->Outcome);
+
+                    throw new CannotGetQuestionsException("Error retrieving questions");
+                }
+                if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
+                    $this->logger->error($request->SAAResult->Results->NextTransId->string);
+
+                    throw new CannotGetQuestionsException("Error retrieving questions");
+                }
+            }
+
+            //need to pass these control structure for RTQ transaction
+            $control = [];
+            $control['URN'] = $request->SAAResult->Control->URN;
+            $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
+
+            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
         });
     }
 }
