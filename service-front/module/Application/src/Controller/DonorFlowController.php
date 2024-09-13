@@ -130,17 +130,18 @@ class DonorFlowController extends AbstractActionController
              * @psalm-suppress ArgumentTypeCoercion
              */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
 
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             * @psalm-suppress PossiblyNullArgument
-             */
-            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            if (! empty($lpasData['opg.poas.lpastore'])) {
+                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            } else {
+                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
+                    $lpasData['opg.poas.sirius']['donor']['surname'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            }
 
             $lpaDetails[$lpa] = [
                 'name' => $name,

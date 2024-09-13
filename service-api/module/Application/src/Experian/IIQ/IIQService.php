@@ -6,7 +6,6 @@ namespace Application\Experian\IIQ;
 
 use Application\Experian\IIQ\Exception\CannotGetQuestionsException;
 use Application\Experian\IIQ\Soap\IIQClient;
-use Application\Model\Entity\CaseData;
 use Psr\Log\LoggerInterface;
 use SoapFault;
 

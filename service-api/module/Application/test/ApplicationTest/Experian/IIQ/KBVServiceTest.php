@@ -11,7 +11,6 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 
 class KBVServiceTest extends TestCase
 {
@@ -85,14 +84,9 @@ class KBVServiceTest extends TestCase
             ->with($saaRequest)
             ->willReturn($questionsFromIIQ);
 
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())
-            ->method('info')
-            ->with('Found 2 questions');
-
         $writeHandler = $this->createMock(DataWriteHandler::class);
 
-        $sut = new KBVService($iiqService, $logger, $configBuilder, $queryHandler, $writeHandler);
+        $sut = new KBVService($iiqService, $configBuilder, $queryHandler, $writeHandler);
 
         $this->assertEquals([
             [
