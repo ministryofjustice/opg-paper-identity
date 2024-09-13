@@ -13,15 +13,42 @@ use Psr\Log\LoggerInterface;
 use SoapFault;
 use SoapHeader;
 
+/**
+ * @psalm-import-type SAARequest from IIQService
+ */
 class IIQServiceTest extends TestCase
 {
+    private LoggerInterface|MockObject $logger;
     private IIQClient&MockObject $iiqClient;
-    private LoggerInterface&MockObject $logger;
     private AuthManager&MockObject $authManager;
-
     private IIQService $sut;
 
-    protected function setUp(): void
+    /**
+     * @return SAARequest
+     */
+    private function getSaaRequest(): array
+    {
+        return [
+            'Applicant' => [
+                'ApplicantIdentifier' => '1234',
+                'Name' => ['Title' => '', 'Forename' => 'Albert', 'Surname' => 'Williams'],
+                'DateOfBirth' => ['CCYY' => '1965', 'MM' => '11', 'DD' => '04'],
+            ],
+            'ApplicationData' => ['SearchConsent' => 'Y'],
+            'LocationDetails' => [
+                'LocationIdentifier' => '1',
+                'UKLocation' => [
+                    'HouseName' => '123 Long Street',
+                    'Street' => '',
+                    'District' => '',
+                    'PostTown' => '',
+                    'Postcode' => '',
+                ],
+            ],
+        ];
+    }
+
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -36,6 +63,10 @@ class IIQServiceTest extends TestCase
         );
     }
 
+    /**
+     * @return void
+     * @throws \Application\Experian\IIQ\Exception\CannotGetQuestionsException
+     */
     public function testStartAuthenticationAttempt(): void
     {
         $questions = [
@@ -47,21 +78,32 @@ class IIQServiceTest extends TestCase
             ->method('buildSecurityHeader')
             ->willReturn(new SoapHeader('placeholder', 'header'));
 
+
         $this->iiqClient->expects($this->once())
             ->method('__call')
-            ->with(
-                'SAA',
-                $this->callback(fn ($args) => $args[0]['sAARequest']['Applicant']['Name']['Forename'] === 'Albert'),
-            )
             ->willReturn((object)[
                 'SAAResult' => (object)[
+                    'Control' => (object)[
+                        'URN' => 'abcd',
+                        'AuthRefNo' => '1234',
+                    ],
                     'Questions' => (object)[
                         'Question' => $questions,
+                    ],
+                    'Results' => (object)[
+                        'Outcome' => 'Authentication Questions returned',
+                        'NextTransId' => (object)[
+                            'string' => 'RTQ',
+                        ],
                     ],
                 ],
             ]);
 
-        $this->assertEquals($questions, $this->sut->startAuthenticationAttempt());
+        $response = $this->sut->startAuthenticationAttempt($this->getSaaRequest());
+
+        $this->assertEquals($questions, $response['questions']);
+        $this->assertEquals('abcd', $response['control']['URN']);
+        $this->assertEquals('1234', $response['control']['AuthRefNo']);
     }
 
     public function testStartAuthenticationAttemptsOneRetry(): void
@@ -72,6 +114,7 @@ class IIQServiceTest extends TestCase
             ->method('buildSecurityHeader')
             ->with($this->callback(function (bool $forceNewToken) {
                 static $i = 0;
+
                 return match (++$i) {
                     1 => $forceNewToken === false,
                     2 => $forceNewToken === true,
@@ -88,6 +131,6 @@ class IIQServiceTest extends TestCase
         $this->expectException(SoapFault::class);
         $this->expectExceptionMessage('Unauthorized');
 
-        $this->assertIsArray($this->sut->startAuthenticationAttempt());
+        $this->assertIsArray($this->sut->startAuthenticationAttempt($this->getSaaRequest()));
     }
 }

@@ -48,32 +48,25 @@ class KbvController extends AbstractActionController
             return new JsonModel($response);
         }
 
-        $questionsWithoutAnswers = [];
-
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         if (! is_null($case->kbvQuestions)) {
             $questions = json_decode($case->kbvQuestions, true);
 
-            foreach ($questions as $number => $question) {
-                unset($question['answer']);
-                $questionsWithoutAnswers[$number] = $question;
-            }
-
             //revisit formatting here, special character outputs
-            return new JsonModel($questionsWithoutAnswers);
-        } else {
-            $questions = $this->KBVService->fetchFormattedQuestions($uuid);
-
-            $this->dataWriteHandler->updateCaseData(
-                $uuid,
-                'kbvQuestions',
-                'S',
-                json_encode($questions['formattedQuestions'])
-            );
+            return new JsonModel($questions);
         }
 
-        return new JsonModel($questions['questionsWithoutAnswers']);
+        $questions = $this->KBVService->fetchFormattedQuestions($uuid);
+
+        $this->dataWriteHandler->updateCaseData(
+            $uuid,
+            'kbvQuestions',
+            'S',
+            json_encode($questions)
+        );
+
+        return new JsonModel($questions);
     }
 
     public function checkAnswersAction(): JsonModel
