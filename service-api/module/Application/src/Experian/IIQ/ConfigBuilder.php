@@ -30,7 +30,7 @@ class ConfigBuilder
             ],
         ];
 
-        if (!isset($case->dob)) {
+        if (! isset($case->dob)) {
             throw new RuntimeException('Cannot generate KBVs with date of birth');
         }
 

@@ -13,12 +13,40 @@ use Psr\Log\LoggerInterface;
 use SoapFault;
 use SoapHeader;
 
+/**
+ * @psalm-import-type SAARequest from IIQService
+ */
 class IIQServiceTest extends TestCase
 {
     private LoggerInterface|MockObject $logger;
     private IIQClient&MockObject $iiqClient;
     private AuthManager&MockObject $authManager;
     private IIQService $sut;
+
+    /**
+     * @return SAARequest
+     */
+    private function getSaaRequest(): array
+    {
+        return [
+            'Applicant' => [
+                'ApplicantIdentifier' => '1234',
+                'Name' => ['Title' => '', 'Forename' => 'Albert', 'Surname' => 'Williams'],
+                'DateOfBirth' => ['CCYY' => '1965', 'MM' => '11', 'DD' => '04'],
+            ],
+            'ApplicationData' => ['SearchConsent' => 'Y'],
+            'LocationDetails' => [
+                'LocationIdentifier' => '1',
+                'UKLocation' => [
+                    'HouseName' => '123 Long Street',
+                    'Street' => '',
+                    'District' => '',
+                    'PostTown' => '',
+                    'Postcode' => '',
+                ],
+            ],
+        ];
+    }
 
     public function setUp(): void
     {
@@ -38,7 +66,6 @@ class IIQServiceTest extends TestCase
     /**
      * @return void
      * @throws \Application\Experian\IIQ\Exception\CannotGetQuestionsException
-     * @psalm-suppress PossiblyUndefinedMethod
      */
     public function testStartAuthenticationAttempt(): void
     {
@@ -46,8 +73,6 @@ class IIQServiceTest extends TestCase
             ['id' => 1],
             ['id' => 2],
         ];
-
-        $saaRequest = ['Applicant' => ['Name' => ['Forename' => 'Albert']]];
 
         $this->authManager->expects($this->once())
             ->method('buildSecurityHeader')
@@ -74,7 +99,7 @@ class IIQServiceTest extends TestCase
                 ],
             ]);
 
-        $response = $this->sut->startAuthenticationAttempt($saaRequest);
+        $response = $this->sut->startAuthenticationAttempt($this->getSaaRequest());
 
         $this->assertEquals($questions, $response['questions']);
         $this->assertEquals('abcd', $response['control']['URN']);
@@ -103,14 +128,9 @@ class IIQServiceTest extends TestCase
             ->with('SAA', $this->anything())
             ->willThrowException($soapFault);
 
-        $saaRequest = ['Applicant' => [
-            'Name' => ['Forename' => 'Albert', 'surname' => 'Williams'],
-            'LocationDetails' => ['UKLocation' => ['HouseName' => '123 Long Street']],
-        ]];
-
         $this->expectException(SoapFault::class);
         $this->expectExceptionMessage('Unauthorized');
 
-        $this->assertIsArray($this->sut->startAuthenticationAttempt($saaRequest));
+        $this->assertIsArray($this->sut->startAuthenticationAttempt($this->getSaaRequest()));
     }
 }

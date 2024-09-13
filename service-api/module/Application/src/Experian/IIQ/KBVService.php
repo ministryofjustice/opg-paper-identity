@@ -7,14 +7,11 @@ namespace Application\Experian\IIQ;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\KBVServiceInterface;
-use Psr\Log\LoggerInterface;
-
 
 class KBVService implements KBVServiceInterface
 {
     public function __construct(
         private readonly IIQService $authService,
-        private readonly LoggerInterface $logger,
         private readonly ConfigBuilder $configBuilder,
         private readonly DataQueryHandler $queryHandler,
         private readonly DataWriteHandler $writeHandler
@@ -24,7 +21,6 @@ class KBVService implements KBVServiceInterface
     /**
      * @throws Exception\CannotGetQuestionsException
      * @psalm-suppress PossiblyNullArgument
-     * @psalm-suppress InvalidArrayOffset
      */
     public function fetchFormattedQuestions(string $uuid): array
     {
@@ -49,9 +45,6 @@ class KBVService implements KBVServiceInterface
                 'prompts' => $question->AnswerFormat->AnswerList,
             ];
         }
-
-        //@todo array merge of questions upstream where it's saved back
-        $this->logger->info(sprintf('Found %d questions', count($questions)));
 
         $this->saveIIQControlForRTQ($caseData->id, $questions['control']);
 

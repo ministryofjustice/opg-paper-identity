@@ -30,7 +30,6 @@ class KBVService implements KBVServiceInterface
         $questions = $this->getKBVQuestions();
         $questionsWithoutAnswers = [];
         //update formatting here to match FE expectations
-        $formattedQuestions = [];
         $mapNumber = [
             '0' => 'one',
             '1' => 'two',
@@ -41,12 +40,11 @@ class KBVService implements KBVServiceInterface
             $question = $questions[$i];
             $number = $mapNumber[$i];
             $questionNumbered = array_merge(['number' => $number], $question);
-            $formattedQuestions[$number] = $questionNumbered;
             unset($questionNumbered['answer']);
             $questionsWithoutAnswers[$number] = $questionNumbered;
         }
 
-        return ['questionsWithoutAnswers' => $questionsWithoutAnswers, 'formattedQuestions' => $formattedQuestions];
+        return $questionsWithoutAnswers;
     }
 
     private function questionsList(): array
