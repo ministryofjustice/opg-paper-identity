@@ -61,6 +61,8 @@ class CaseData implements JsonSerializable
 
     public ?string $kbvQuestions = null;
 
+    public ?string $iiqControl = null;
+
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
@@ -123,6 +125,7 @@ class CaseData implements JsonSerializable
      *     address: string[],
      *     lpas: string[],
      *     kbvQuestions?: string,
+     *     iiqControl?: string
      *     documentComplete: bool,
      *     alternateAddress?: string[],
      *     searchPostcode?: string,
@@ -156,6 +159,10 @@ class CaseData implements JsonSerializable
 
         if ($this->kbvQuestions !== null) {
             $arr['kbvQuestions'] = $this->kbvQuestions;
+        }
+
+        if ($this->iiqControl !== null) {
+            $arr['iiqControl'] = $this->iiqControl;
         }
 
         if ($this->caseProgress !== null) {
