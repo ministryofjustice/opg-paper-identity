@@ -27,15 +27,8 @@ class DonorFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
+        private readonly string $siriusBaseUrl,
     ) {
-    }
-
-    private function getRoute(): string
-    {
-        /**
-         * @psalm-suppress UndefinedMethod
-         */
-        return $this->getRequest()->getRequestUri();
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -52,7 +45,6 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('route', $this->getRoute());
 
         if (count($this->getRequest()->getPost())) {
             if (count($this->getRequest()->getPost())) {
@@ -96,10 +88,13 @@ class DonorFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
+        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
         $view->setVariables([
             'details_data' => $detailsData,
             'uuid' => $uuid,
             'next_page' => $nextPage,
+            'sirius_edit_url' => $siriusEditUrl
         ]);
 
         return $view->setTemplate('application/pages/donor_details_match_check');

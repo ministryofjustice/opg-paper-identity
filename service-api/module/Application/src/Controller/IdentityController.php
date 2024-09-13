@@ -546,7 +546,7 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function updateProgressAction(): JsonModel
+    public function saveCaseProgressAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode(
@@ -566,7 +566,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'progressPage',
+                'caseProgress',
                 'M',
                 array_map(fn (mixed $v) => [
                     'S' => $v,
@@ -580,7 +580,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['route'];
+        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['last_page'];
 
         return new JsonModel($response);
     }
