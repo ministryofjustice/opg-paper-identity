@@ -90,7 +90,7 @@ class KBVServiceTest extends TestCase
 
         $this->assertEquals([
             [
-                'experianId' => 'QU18',
+                'externalId' => 'QU18',
                 'question' => 'Question Eighteen',
                 'prompts' => [
                     'A',
@@ -100,7 +100,7 @@ class KBVServiceTest extends TestCase
                 'answered' => false,
             ],
             [
-                'experianId' => 'QU93',
+                'externalId' => 'QU93',
                 'question' => 'Question Ninety-Three',
                 'prompts' => [
                     'A',
