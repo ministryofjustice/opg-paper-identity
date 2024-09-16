@@ -159,7 +159,6 @@ class DataWriteHandlerTest extends TestCase
             'S',
             json_encode([
                 'one' => [
-                    'number' => 'one',
                     'question' => 'Who is your electricity provider?',
                     'prompts' => [
                         0 => 'VoltWave',
@@ -167,7 +166,7 @@ class DataWriteHandlerTest extends TestCase
                         2 => 'Powergrid Utilities',
                         3 => 'Bright Bristol Power'
                     ],
-                    'answer' => 'VoltWave'
+                    'answered' => false,
                 ],
             ])
         );

@@ -6,10 +6,10 @@ namespace Application\KBV;
 
 /**
  * @psalm-type Question = array{
- *   number: string,
  *   experianId: string,
  *   question: string,
  *   prompts: string[],
+ *   answered: bool,
  * }
  */
 interface KBVServiceInterface

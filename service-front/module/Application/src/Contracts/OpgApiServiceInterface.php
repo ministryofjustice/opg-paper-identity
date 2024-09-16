@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Application\Contracts;
 
+/**
+ * @psalm-type Question = array{
+ *   experianId: string,
+ *   question: string,
+ *   prompts: string[],
+ *   answered: bool
+ * }
+ */
 interface OpgApiServiceInterface
 {
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array;
@@ -13,6 +21,10 @@ interface OpgApiServiceInterface
     public function checkNinoValidity(string $nino): string;
     public function checkDlnValidity(string $dln): string;
     public function checkPassportValidity(string $passport): string;
+
+    /**
+     * @return Question[]|false
+     */
     public function getIdCheckQuestions(string $uuid): array|bool;
     public function checkIdCheckAnswers(string $uuid, array $answers): bool;
     public function createCase(

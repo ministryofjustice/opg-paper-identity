@@ -251,7 +251,7 @@ class KbvControllerTest extends TestCase
                         2 => 'Powergrid Utilities',
                         3 => 'Bright Bristol Power',
                     ],
-                    'answer' => 'VoltWave',
+                    'answered' => false,
                 ],
                 'two' => [
                     'question' => 'How much was your last phone bill?',
@@ -261,7 +261,7 @@ class KbvControllerTest extends TestCase
                         2 => "£16.84",
                         3 => "£1.25",
                     ],
-                    'answer' => "£5.99",
+                    'answered' => false,
                 ],
             ],
             'questionsWithoutAnswers' => [
