@@ -44,7 +44,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                     2 => "Lloyds",
                     3 => "HSBC",
                 ],
-                "answered" => false,
+                "answered" => true,
             ],
             [
                 "experianId" => "question-two",
@@ -113,6 +113,12 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(KbvController::class); // as specified in router's controller name alias
         $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('root/id_verify_questions');
+
+        $this->assertQueryContentContains('h1', 'Who provides your personal mobile contract?');
+        $this->assertQuery('input[type="radio"][name="question-two"]');
+        $this->assertQuery('input[type="hidden"][name="question-three"]');
+        $this->assertQuery('input[type="hidden"][name="question-four"]');
+        $this->assertQueryCount('input[type="hidden"]', 2);
     }
 
     public static function personTypeDataProvider(): array
