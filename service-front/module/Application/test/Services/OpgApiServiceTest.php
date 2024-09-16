@@ -437,7 +437,7 @@ class OpgApiServiceTest extends TestCase
 
         $mockResponseData = [
             "one" => [
-                "experianId" => "Q1",
+                "externalId" => "Q1",
                 "question" => "Who provides your mortgage?",
                 "prompts" => [
                     0 => "Nationwide",
@@ -447,7 +447,7 @@ class OpgApiServiceTest extends TestCase
                 ],
             ],
             "two" => [
-                "experianId" => "Q2",
+                "externalId" => "Q2",
                 "question" => "Who provides your personal mobile contract?",
                 "prompts" => [
                     0 => "EE",
@@ -457,7 +457,7 @@ class OpgApiServiceTest extends TestCase
                 ],
             ],
             "three" => [
-                "experianId" => "Q3",
+                "externalId" => "Q3",
                 "question" => "What are the first two letters of the last name of another person
                 on the electroal register at your address?",
                 "prompts" => [
@@ -468,7 +468,7 @@ class OpgApiServiceTest extends TestCase
                 ],
             ],
             "four" => [
-                "experianId" => "Q4",
+                "externalId" => "Q4",
                 "question" => "Who provides your current account?",
                 "prompts" => [
                     0 => "Santander",

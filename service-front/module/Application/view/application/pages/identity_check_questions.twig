@@ -7,11 +7,11 @@
         <form method="post" target="">
             {% for questionBlock in questions_data %}
 
-                {% if questionBlock.experianId != question.experianId %}
+                {% if questionBlock.externalId != question.externalId %}
                     <input
                         type="hidden"
-                        value="{{ form.get(questionBlock.experianId).value }}"
-                        name="{{ questionBlock.experianId }}"
+                        value="{{ form.get(questionBlock.externalId).value }}"
+                        name="{{ questionBlock.externalId }}"
                     />
                 {% else %}
                     <div class="govuk-form-group">
@@ -29,17 +29,17 @@
                                             <input
                                                     class="govuk-radios__input"
                                                     id="{{ datum }}"
-                                                    name="{{ questionBlock.experianId }}"
+                                                    name="{{ questionBlock.externalId }}"
                                                     type="radio"
                                                     value="{{ datum }}"
-                                                    {% if form.get(questionBlock.experianId).value == datum %}checked{% endif %}
+                                                    {% if form.get(questionBlock.externalId).value == datum %}checked{% endif %}
                                             >
                                             <label class="govuk-label govuk-radios__label"
                                                    for="{{ datum }}">{{ datum }}</label>
                                         </div>
                                     {% endfor %}
                                     <div class="govuk-radios__item">
-                                        <input class="govuk-radios__input" id="dontknow" name="{{ questionBlock.experianId }}" type="radio"
+                                        <input class="govuk-radios__input" id="dontknow" name="{{ questionBlock.externalId }}" type="radio"
                                                value="dontknow">
                                         <label class="govuk-label govuk-radios__label" for="dontknow">I don't know</label>
                                     </div>
