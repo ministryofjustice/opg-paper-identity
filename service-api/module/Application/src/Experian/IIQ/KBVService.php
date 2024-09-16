@@ -32,7 +32,7 @@ class KBVService implements KBVServiceInterface
 
         foreach ($questions['questions'] as $question) {
             $formattedQuestions[] = [
-                'experianId' => $question->QuestionID,
+                'externalId' => $question->QuestionID,
                 'question' => $question->Text,
                 'prompts' => $question->AnswerFormat->AnswerList,
                 'answered' => false,
