@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\DonorFlowController;
-use Application\Controller\IndexController;
 use Application\Controller\KbvController;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,46 +35,50 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $mockUuid = 'uuid';
 
         $mockResponseData[$mockUuid] = [
-            "one" => [
+            [
+                "experianId" => "question-one",
                 "question" => "Who provides your mortgage?",
-                "number" => "one",
                 "prompts" => [
                     0 => "Nationwide",
                     1 => "Halifax",
                     2 => "Lloyds",
                     3 => "HSBC",
-                ]
+                ],
+                "answered" => false,
             ],
-            "two" => [
+            [
+                "experianId" => "question-two",
                 "question" => "Who provides your personal mobile contract?",
-                "number" => "two",
                 "prompts" => [
                     0 => "EE",
                     1 => "Vodafone",
                     2 => "BT",
                     3 => "iMobile",
-                ]
+                ],
+                "answered" => false,
             ],
-            "three" => [
+            [
+                "experianId" => "question-three",
                 "question" => "What are the first two letters of the last name of another
                 person on the electoral register at your address?",
-                "number" => "three",
                 "prompts" => [
                     0 => "Ka",
                     1 => "Ch",
                     2 => "Jo",
                     3 => "None of the above",
-                ]
+                ],
+                "answered" => false,
             ],
-            "four" => [
+            [
+                "experianId" => "question-four",
                 "question" => "Who provides your current account?",
-                "number" => "four",
                 "prompts" => [
                     0 => "Santander",
                     1 => "HSBC",
                     2 => "Halifax",
                     3 => "Nationwide",
-                ]
+                ],
+                "answered" => false,
             ]
         ];
 

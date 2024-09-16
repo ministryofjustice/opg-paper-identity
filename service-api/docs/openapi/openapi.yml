@@ -393,15 +393,12 @@ components:
     Question:
       type: object
       properties:
-        number:
-          type: string
-          enum:
-            - ["one", "two", "three", "four"]
         question:
           type: string
         prompts:
           type: array
-
+        answered:
+          type: boolean
     ProblemResponse:
       type: object
       properties:

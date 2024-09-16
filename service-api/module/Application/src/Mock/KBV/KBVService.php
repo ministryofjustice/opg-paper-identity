@@ -29,19 +29,11 @@ class KBVService implements KBVServiceInterface
     {
         $questions = $this->getKBVQuestions();
         $questionsWithoutAnswers = [];
-        //update formatting here to match FE expectations
-        $mapNumber = [
-            '0' => 'one',
-            '1' => 'two',
-            '2' => 'three',
-            '3' => 'four'
-        ];
         for ($i = 0; $i < 4; $i++) {
             $question = $questions[$i];
-            $number = $mapNumber[$i];
-            $questionNumbered = array_merge(['number' => $number], $question);
+            $questionNumbered = array_merge(['answered' => false], $question);
             unset($questionNumbered['answer']);
-            $questionsWithoutAnswers[$number] = $questionNumbered;
+            $questionsWithoutAnswers[] = $questionNumbered;
         }
 
         return $questionsWithoutAnswers;

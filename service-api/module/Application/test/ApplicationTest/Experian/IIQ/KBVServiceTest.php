@@ -90,7 +90,6 @@ class KBVServiceTest extends TestCase
 
         $this->assertEquals([
             [
-                'number' => 'one',
                 'experianId' => 'QU18',
                 'question' => 'Question Eighteen',
                 'prompts' => [
@@ -98,15 +97,16 @@ class KBVServiceTest extends TestCase
                     'B',
                     'C',
                 ],
+                'answered' => false,
             ],
             [
-                'number' => 'two',
                 'experianId' => 'QU93',
                 'question' => 'Question Ninety-Three',
                 'prompts' => [
                     'A',
                     'B',
                 ],
+                'answered' => false,
             ],
         ], $sut->fetchFormattedQuestions($uuid));
     }
