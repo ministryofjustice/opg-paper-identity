@@ -36,7 +36,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
 
         $mockResponseData[$mockUuid] = [
             [
-                "experianId" => "question-one",
+                "externalId" => "question-one",
                 "question" => "Who provides your mortgage?",
                 "prompts" => [
                     0 => "Nationwide",
@@ -47,7 +47,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 "answered" => true,
             ],
             [
-                "experianId" => "question-two",
+                "externalId" => "question-two",
                 "question" => "Who provides your personal mobile contract?",
                 "prompts" => [
                     0 => "EE",
@@ -58,7 +58,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 "answered" => false,
             ],
             [
-                "experianId" => "question-three",
+                "externalId" => "question-three",
                 "question" => "What are the first two letters of the last name of another
                 person on the electoral register at your address?",
                 "prompts" => [
@@ -70,7 +70,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 "answered" => false,
             ],
             [
-                "experianId" => "question-four",
+                "externalId" => "question-four",
                 "question" => "Who provides your current account?",
                 "prompts" => [
                     0 => "Santander",
@@ -79,7 +79,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                     3 => "Nationwide",
                 ],
                 "answered" => false,
-            ]
+            ],
         ];
 
         $mockResponseDataIdDetails = [
@@ -89,9 +89,9 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             "Role" => "donor",
             "LPA" => [
                 "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
+                "PW M-1234-ABCD-AAAA",
             ],
-            "personType" => $personType
+            "personType" => $personType,
         ];
 
         $this
@@ -125,11 +125,11 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             [
-                'personType' => 'certificateProvider'
+                'personType' => 'certificateProvider',
             ],
             [
-                'personType' => 'donor'
-            ]
+                'personType' => 'donor',
+            ],
         ];
     }
 }

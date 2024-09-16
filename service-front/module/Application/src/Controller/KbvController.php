@@ -15,7 +15,6 @@ use Laminas\View\Model\ViewModel;
 
 /**
  * @psalm-import-type Question from OpgApiServiceInterface
- * @package Application\Controller
  */
 class KbvController extends AbstractActionController
 {
@@ -56,7 +55,7 @@ class KbvController extends AbstractActionController
 
         $form = new Form();
         foreach ($questionsData as $question) {
-            $form->add(new Element($question['experianId']));
+            $form->add(new Element($question['externalId']));
         }
 
         $view->setVariable('questions_data', $questionsData);
@@ -90,7 +89,7 @@ class KbvController extends AbstractActionController
     private function getNextQuestion(array $questions, Parameters $formData): ?array
     {
         foreach ($questions as $question) {
-            if (! $formData[$question['experianId']]) {
+            if (! $formData[$question['externalId']]) {
                 return $question;
             }
         }
