@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\DonorFlowController;
-use Application\Controller\IndexController;
 use Application\Controller\KbvController;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,46 +35,50 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $mockUuid = 'uuid';
 
         $mockResponseData[$mockUuid] = [
-            "one" => [
+            [
+                "experianId" => "question-one",
                 "question" => "Who provides your mortgage?",
-                "number" => "one",
                 "prompts" => [
                     0 => "Nationwide",
                     1 => "Halifax",
                     2 => "Lloyds",
                     3 => "HSBC",
-                ]
+                ],
+                "answered" => true,
             ],
-            "two" => [
+            [
+                "experianId" => "question-two",
                 "question" => "Who provides your personal mobile contract?",
-                "number" => "two",
                 "prompts" => [
                     0 => "EE",
                     1 => "Vodafone",
                     2 => "BT",
                     3 => "iMobile",
-                ]
+                ],
+                "answered" => false,
             ],
-            "three" => [
+            [
+                "experianId" => "question-three",
                 "question" => "What are the first two letters of the last name of another
                 person on the electoral register at your address?",
-                "number" => "three",
                 "prompts" => [
                     0 => "Ka",
                     1 => "Ch",
                     2 => "Jo",
                     3 => "None of the above",
-                ]
+                ],
+                "answered" => false,
             ],
-            "four" => [
+            [
+                "experianId" => "question-four",
                 "question" => "Who provides your current account?",
-                "number" => "four",
                 "prompts" => [
                     0 => "Santander",
                     1 => "HSBC",
                     2 => "Halifax",
                     3 => "Nationwide",
-                ]
+                ],
+                "answered" => false,
             ]
         ];
 
@@ -111,6 +113,12 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(KbvController::class); // as specified in router's controller name alias
         $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('root/id_verify_questions');
+
+        $this->assertQueryContentContains('h1', 'Who provides your personal mobile contract?');
+        $this->assertQuery('input[type="radio"][name="question-two"]');
+        $this->assertQuery('input[type="hidden"][name="question-three"]');
+        $this->assertQuery('input[type="hidden"][name="question-four"]');
+        $this->assertQueryCount('input[type="hidden"]', 2);
     }
 
     public static function personTypeDataProvider(): array
