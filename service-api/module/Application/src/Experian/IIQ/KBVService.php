@@ -29,20 +29,13 @@ class KBVService implements KBVServiceInterface
         $questions = $this->authService->startAuthenticationAttempt($saaRequest);
 
         $formattedQuestions = [];
-        $mapNumber = [
-            '0' => 'one',
-            '1' => 'two',
-            '2' => 'three',
-            '3' => 'four',
-        ];
 
-        foreach ($questions['questions'] as $counter => $question) {
-            $number = $mapNumber[$counter];
+        foreach ($questions['questions'] as $question) {
             $formattedQuestions[] = [
-                'number' => $number,
                 'experianId' => $question->QuestionID,
                 'question' => $question->Text,
                 'prompts' => $question->AnswerFormat->AnswerList,
+                'answered' => false,
             ];
         }
 

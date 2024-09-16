@@ -6,13 +6,12 @@ namespace ApplicationTest\Services;
 
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
-use GuzzleHttp\Client;
-use PHPUnit\Framework\MockObject\MockObject;
 use Application\Services\OpgApiService;
+use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Request;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -59,8 +58,8 @@ class OpgApiServiceTest extends TestCase
             "personType" => "donor",
             "lpas" => [
                 "PA M-XYXY-YAGA-35G3",
-                "PW M-VGAS-OAGA-34G9"
-            ]
+                "PW M-VGAS-OAGA-34G9",
+            ],
         ];
         $successMock = new MockHandler([
             new Response(200, [], json_encode($successMockResponseData)),
@@ -84,7 +83,7 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 $successMockResponseData,
-                null
+                null,
             ],
             [
                 $failClient,
@@ -141,12 +140,12 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -172,12 +171,12 @@ class OpgApiServiceTest extends TestCase
         $successMockResponseData = [
             [
                 'lpa_ref' => "PA M-XYXY-YAGA-35G3",
-                'donor_name' => 'Mary Anne Chapman'
+                'donor_name' => 'Mary Anne Chapman',
             ],
             [
                 'lpa_ref' => "PW M-VGAS-OAGA-34G9",
-                'donor_name' => 'Mary Anne Chapman'
-            ]
+                'donor_name' => 'Mary Anne Chapman',
+            ],
         ];
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
@@ -196,12 +195,12 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -230,7 +229,7 @@ class OpgApiServiceTest extends TestCase
 
         $successMockResponseData = [
             'status' => 'PASS',
-            'nino' => $validNino
+            'nino' => $validNino,
         ];
 
         $successMock = new MockHandler([
@@ -241,7 +240,7 @@ class OpgApiServiceTest extends TestCase
 
         $failMockResponseData = [
             'status' => 'NO_MATCH',
-            'nino' => $invalidNino
+            'nino' => $invalidNino,
         ];
         $failMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
@@ -251,7 +250,7 @@ class OpgApiServiceTest extends TestCase
 
         $insufficientMockResponseData = [
             'status' => 'NOT_ENOUGH_DETAILS',
-            'nino' => $insufficientNino
+            'nino' => $insufficientNino,
         ];
         $insufficientMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
@@ -264,19 +263,19 @@ class OpgApiServiceTest extends TestCase
                 $validNino,
                 $successClient,
                 'PASS',
-                false
+                false,
             ],
             [
                 $invalidNino,
                 $failClient,
                 'NO_MATCH',
-                false
+                false,
             ],
             [
                 $insufficientNino,
                 $insufficientClient,
                 'NOT_ENOUGH_DETAILS',
-                false
+                false,
             ],
         ];
     }
@@ -306,7 +305,7 @@ class OpgApiServiceTest extends TestCase
 
         $successMockResponseData = [
             'status' => 'PASS',
-            'dln' => $validDln
+            'dln' => $validDln,
         ];
 
         $successMock = new MockHandler([
@@ -317,7 +316,7 @@ class OpgApiServiceTest extends TestCase
 
         $failMockResponseData = [
             'status' => 'NO_MATCH',
-            'dln' => $invalidDln
+            'dln' => $invalidDln,
         ];
         $failMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
@@ -327,7 +326,7 @@ class OpgApiServiceTest extends TestCase
 
         $insufficientMockResponseData = [
             'status' => 'NOT_ENOUGH_DETAILS',
-            'dln' => $insufficientDln
+            'dln' => $insufficientDln,
         ];
         $insufficientMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
@@ -340,19 +339,19 @@ class OpgApiServiceTest extends TestCase
                 $validDln,
                 $successClient,
                 'PASS',
-                false
+                false,
             ],
             [
                 $invalidDln,
                 $failClient,
                 'NO_MATCH',
-                false
+                false,
             ],
             [
                 $insufficientDln,
                 $insufficientClient,
                 'NOT_ENOUGH_DETAILS',
-                false
+                false,
             ],
         ];
     }
@@ -381,7 +380,7 @@ class OpgApiServiceTest extends TestCase
 
         $successMockResponseData = [
             'status' => 'PASS',
-            'passport' => $validPassport
+            'passport' => $validPassport,
         ];
 
         $successMock = new MockHandler([
@@ -392,7 +391,7 @@ class OpgApiServiceTest extends TestCase
 
         $failMockResponseData = [
             'status' => 'NO_MATCH',
-            'passport' => $invalidPassport
+            'passport' => $invalidPassport,
         ];
         $failMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
@@ -402,7 +401,7 @@ class OpgApiServiceTest extends TestCase
 
         $insufficientMockResponseData = [
             'status' => 'NOT_ENOUGH_DETAILS',
-            'passport' => $insufficientPassport
+            'passport' => $insufficientPassport,
         ];
         $insufficientMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
@@ -415,19 +414,19 @@ class OpgApiServiceTest extends TestCase
                 $validPassport,
                 $successClient,
                 'PASS',
-                false
+                false,
             ],
             [
                 $invalidPassport,
                 $failClient,
                 'NO_MATCH',
-                false
+                false,
             ],
             [
                 $insufficientPassport,
                 $insufficientClient,
                 'NOT_ENOUGH_DETAILS',
-                false
+                false,
             ],
         ];
     }
@@ -438,50 +437,46 @@ class OpgApiServiceTest extends TestCase
 
         $mockResponseData = [
             "one" => [
-                "id" => 1,
+                "experianId" => "Q1",
                 "question" => "Who provides your mortgage?",
-                "number" => "one",
                 "prompts" => [
                     0 => "Nationwide",
                     1 => "Halifax",
                     2 => "Lloyds",
                     3 => "HSBC",
-                ]
+                ],
             ],
             "two" => [
-                "id" => 2,
+                "experianId" => "Q2",
                 "question" => "Who provides your personal mobile contract?",
-                "number" => "two",
                 "prompts" => [
                     0 => "EE",
                     1 => "Vodafone",
                     2 => "BT",
                     3 => "iMobile",
-                ]
+                ],
             ],
             "three" => [
-                "id" => 3,
+                "experianId" => "Q3",
                 "question" => "What are the first two letters of the last name of another person
                 on the electroal register at your address?",
-                "number" => "three",
                 "prompts" => [
                     0 => "Ka",
                     1 => "Ch",
                     2 => "Jo",
                     3 => "None of the above",
-                ]
+                ],
             ],
             "four" => [
-                "id" => 4,
+                "experianId" => "Q4",
                 "question" => "Who provides your current account?",
-                "number" => "four",
                 "prompts" => [
                     0 => "Santander",
                     1 => "HSBC",
                     2 => "Halifax",
                     3 => "Nationwide",
-                ]
-            ]
+                ],
+            ],
         ];
 
         $mock = new MockHandler([
@@ -532,11 +527,11 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $correctResponse = [
-            "result" => "pass"
+            "result" => "pass",
         ];
 
         $failResponse = [
-            "result" => "fail"
+            "result" => "fail",
         ];
 
         $successMock = new MockHandler([
@@ -556,13 +551,13 @@ class OpgApiServiceTest extends TestCase
                 $correctAnswers,
                 $successClient,
                 true,
-                false
+                false,
             ],
             [
                 $wrongAnswers,
                 $failClient,
                 false,
-                false
+                false,
             ],
         ];
     }
@@ -597,7 +592,7 @@ class OpgApiServiceTest extends TestCase
         $dob = "1943-01-01";
         $lpas = [
             "PA M-XYXY-YAGA-35G3",
-            "PW M-VGAS-OAGA-34G9"
+            "PW M-VGAS-OAGA-34G9",
         ];
 
         $postData = [
@@ -610,14 +605,14 @@ class OpgApiServiceTest extends TestCase
                 "Line 1",
                 "Town",
                 "Country",
-                "PostOfficePostcode"
-            ]
+                "PostOfficePostcode",
+            ],
         ];
 
         $successMockResponseData = [
             "case_uuid" => $uuid,
             "name" => $postData['FirstName'] . " " . $postData['LastName'],
-            "lpas" => $lpas
+            "lpas" => $lpas,
         ];
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
@@ -637,13 +632,13 @@ class OpgApiServiceTest extends TestCase
                 $postData,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $postData,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -686,10 +681,10 @@ class OpgApiServiceTest extends TestCase
                 "Line_2" => "Lancaster",
                 "Town" => "Lancashire",
                 "Postcode" => "LA1 1XN",
-                "Country" => "United Kingdom"
+                "Country" => "United Kingdom",
             ],
             "message" => "Success",
-            "status" => 200
+            "status" => 200,
         ];
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
@@ -709,13 +704,13 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $data,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -761,13 +756,13 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $data,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -813,13 +808,13 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $data,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -861,7 +856,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = [
-            'Client error: `'
+            'Client error: `',
         ];
         $failMock = new MockHandler([
             new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
@@ -874,13 +869,13 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $data,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -925,7 +920,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = [
-            'Client error: `'
+            'Client error: `',
         ];
         $failMock = new MockHandler([
             new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
@@ -938,13 +933,13 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $data,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }
@@ -989,7 +984,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = [
-            'Client error: `'
+            'Client error: `',
         ];
         $failMock = new MockHandler([
             new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
@@ -1002,13 +997,13 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $successClient,
                 $successMockResponseData,
-                false
+                false,
             ],
             [
                 $data,
                 $failClient,
                 $failMockResponseData,
-                true
+                true,
             ],
         ];
     }

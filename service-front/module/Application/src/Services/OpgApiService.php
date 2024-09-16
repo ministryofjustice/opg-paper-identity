@@ -11,8 +11,11 @@ use GuzzleHttp\Client;
 use Laminas\Http\Response;
 use Application\Exceptions\OpgApiException;
 use GuzzleHttp\Exception\BadResponseException;
-use Throwable;
 
+/**
+ * @psalm-import-type Question from OpgApiServiceInterface
+ * @package Application\Controller
+ */
 class OpgApiService implements OpgApiServiceInterface
 {
     /**
@@ -139,7 +142,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['status'];
     }
 
-    public function getIdCheckQuestions(string $uuid): array|bool
+    public function getIdCheckQuestions(string $uuid): array|false
     {
         try {
             return $this->makeApiRequest("/cases/$uuid/kbv-questions");
