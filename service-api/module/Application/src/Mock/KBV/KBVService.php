@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Mock\KBV;
 
+use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
 
 class KBVService implements KBVServiceInterface
@@ -38,6 +39,21 @@ class KBVService implements KBVServiceInterface
             ...$question,
             'answered' => false,
         ], $questions);
+    }
+
+    public function checkAnswers(array $answers, string $uuid): AnswersOutcome
+    {
+        $db = $this->getKBVQuestions();
+
+        foreach ($answers as $externalId => $answer) {
+            $question = array_filter($db, fn ($q) => $q['externalId'] === $externalId)[0];
+
+            if ($question['prompts'][0] !== $answer) {
+                return AnswersOutcome::CompleteFail;
+            }
+        }
+
+        return AnswersOutcome::CompletePass;
     }
 
     private function questionsList(): array

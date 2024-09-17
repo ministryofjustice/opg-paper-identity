@@ -6,6 +6,7 @@ namespace Application\Experian\IIQ;
 
 use Application\Experian\IIQ\Exception\CannotGetQuestionsException;
 use Application\Experian\IIQ\Soap\IIQClient;
+use Exception;
 use Psr\Log\LoggerInterface;
 use SoapFault;
 
@@ -47,6 +48,23 @@ use SoapFault;
  *     Identifier: string,
  *     FieldType: "G",
  *     AnswerList: string[]
+ *   }
+ * }
+ *
+ * @psalm-type Control = array{
+ *   URN: string,
+ *   AuthRefNo: string,
+ * }
+ *
+ * @psalm-type RTQRequest = array{
+ *   Control: Control,
+ *   Responses: array{
+ *     Response: array{
+ *       QuestionID: string,
+ *       AnswerGiven: string,
+ *       CustResponseFlag: int,
+ *       AnswerActionFlag: string,
+ *     }[]
  *   }
  * }
  */
@@ -99,10 +117,7 @@ class IIQService
      * @psalm-param SAARequest $saaRequest
      * @return array{
      *   questions: Question[],
-     *   control: array{
-     *     URN: string,
-     *     AuthRefNo: string,
-     *   }
+     *   control: Control
      * }
      */
     public function startAuthenticationAttempt(array $saaRequest): array
@@ -131,6 +146,41 @@ class IIQService
             $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
 
             return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+        });
+    }
+
+    /**
+     * @throws SoapFault
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-param RTQRequest $rtqRequest
+     * @return array{
+     *   questions?: Question[],
+     *   result: array{
+     *     AuthenticationResult?: "Not Authenticated"|"Authenticated",
+     *     NextTransId: object{string: "RTQ"|"END"|string}
+     *   }
+     * }
+     */
+    public function responseToQuestions(array $rtqRequest): array
+    {
+        return $this->withAuthentication(function () use ($rtqRequest) {
+            $request = $this->client->RTQ([
+                'rTQRequest' => $rtqRequest,
+            ]);
+
+            if (isset($request->RTQResult->Error)) {
+                throw new Exception($request->RTQResult->Error->Message);
+            }
+
+            $ret = ['result' => (array)$request->RTQResult->Results];
+
+            if (isset($request?->RTQResult?->Questions?->Question)) {
+                $question = $request->RTQResult->Questions->Question;
+
+                $ret['questions'] = is_array($question) ? $question : [$question];
+            }
+
+            return $ret;
         });
     }
 }
