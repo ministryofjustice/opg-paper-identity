@@ -20,4 +20,9 @@ interface KBVServiceInterface
      * @return Question[]
      */
     public function fetchFormattedQuestions(string $uuid): array;
+
+    /**
+     * @param array<string, string> $answers
+     */
+    public function checkAnswers(array $answers, string $uuid): AnswersOutcome;
 }
