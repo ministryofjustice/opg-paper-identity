@@ -15,6 +15,7 @@ use SoapHeader;
 
 /**
  * @psalm-import-type SAARequest from IIQService
+ * @psalm-import-type RTQRequest from IIQService
  */
 class IIQServiceTest extends TestCase
 {
@@ -43,6 +44,29 @@ class IIQServiceTest extends TestCase
                     'District' => '',
                     'PostTown' => '',
                     'Postcode' => '',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return RTQRequest
+     */
+    private function getRTQRequest(): array
+    {
+        return [
+            'Control' => [
+                'URN' => 'rtq-urn',
+                'AuthRefNo' => 'wasp-auth-ref-no',
+            ],
+            'Responses' => [
+                'Response' => [
+                    [
+                        'QuestionID' => 'QU01234',
+                        'AnswerGiven' => 'SOME BANK',
+                        'CustResponseFlag' => 0,
+                        'AnswerActionFlag' => 'A',
+                    ],
                 ],
             ],
         ];
@@ -132,5 +156,74 @@ class IIQServiceTest extends TestCase
         $this->expectExceptionMessage('Unauthorized');
 
         $this->assertIsArray($this->sut->startAuthenticationAttempt($this->getSaaRequest()));
+    }
+
+    public function testResponseToQuestionsComplete(): void
+    {
+        $rtqRequest = $this->getRTQRequest();
+
+        $this->authManager->expects($this->once())
+            ->method('buildSecurityHeader')
+            ->willReturn(new SoapHeader('placeholder', 'header'));
+
+        $this->iiqClient->expects($this->once())
+            ->method('__call')
+            ->with('RTQ', [[
+                'rTQRequest' => $rtqRequest,
+            ]])
+            ->willReturn((object)[
+                'RTQResult' => (object)[
+                    'Results' => (object)[
+                        'AuthenticationResult' => 'Authenticated',
+                        'NextTransId' => (object)[
+                            'string' => 'END',
+                        ],
+                    ],
+                ],
+            ]);
+
+        $response = $this->sut->responseToQuestions($rtqRequest);
+
+        assert(isset($response['result']['AuthenticationResult']));
+        $this->assertEquals('Authenticated', $response['result']['AuthenticationResult']);
+        $this->assertEquals('END', $response['result']['NextTransId']->string);
+    }
+
+    public function testResponseToQuestionsMoreQuestions(): void
+    {
+        $questions = [
+            ['id' => 1],
+            ['id' => 2],
+        ];
+
+        $rtqRequest = $this->getRTQRequest();
+
+        $this->authManager->expects($this->once())
+            ->method('buildSecurityHeader')
+            ->willReturn(new SoapHeader('placeholder', 'header'));
+
+        $this->iiqClient->expects($this->once())
+            ->method('__call')
+            ->with('RTQ', [[
+                'rTQRequest' => $rtqRequest,
+            ]])
+            ->willReturn((object)[
+                'RTQResult' => (object)[
+                    'Questions' => (object)[
+                        'Question' => $questions,
+                    ],
+                    'Results' => (object)[
+                        'NextTransId' => (object)[
+                            'string' => 'RTQ',
+                        ],
+                    ],
+                ],
+            ]);
+
+        $response = $this->sut->responseToQuestions($rtqRequest);
+
+        assert(isset($response['questions']));
+        $this->assertEquals($questions, $response['questions']);
+        $this->assertEquals('RTQ', $response['result']['NextTransId']->string);
     }
 }

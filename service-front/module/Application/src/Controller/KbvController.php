@@ -68,11 +68,15 @@ class KbvController extends AbstractActionController
             if ($nextQuestion === null) {
                 $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
-                if (! $check) {
-                    return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
+                if (! $check['complete']) {
+                    return $this->redirect()->refresh();
                 }
 
-                return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
+                if ($check['passed'] === true) {
+                    return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
+                }
+
+                return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
             }
             $form->setData($formData);
         }

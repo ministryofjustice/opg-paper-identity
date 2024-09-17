@@ -9,12 +9,13 @@ use DateTime;
 use RuntimeException;
 
 /**
+ * @psalm-import-type Control from IIQService
  * @psalm-import-type SAARequest from IIQService
+ * @psalm-import-type RTQRequest from IIQService
  */
 class ConfigBuilder
 {
     /**
-     * @param CaseData $case
      * @psalm-return SAARequest
      */
     public function buildSAARequest(CaseData $case): array
@@ -56,5 +57,37 @@ class ConfigBuilder
         ];
 
         return $saaConfig;
+    }
+
+    /**
+     * @psalm-return RTQRequest
+     */
+    public function buildRTQRequest(array $answersArray, CaseData $case): array
+    {
+        /** @var string $json */
+        $json = $case->iiqControl;
+        /** @var Control */
+        $iiqControl = json_decode($json, true);
+
+        $rtqConfig = [
+            'Control' => [
+                'URN' => $iiqControl['URN'],
+                'AuthRefNo' => $iiqControl['AuthRefNo'],
+            ],
+            'Responses' => [
+                'Response' => [],
+            ],
+        ];
+
+        foreach ($answersArray as $answer) {
+            $rtqConfig['Responses']['Response'][] = [
+                'QuestionID' => $answer['experianId'],
+                'AnswerGiven' => $answer['answer'],
+                'CustResponseFlag' => $answer['flag'],
+                'AnswerActionFlag' => 'A',
+            ];
+        }
+
+        return $rtqConfig;
     }
 }
