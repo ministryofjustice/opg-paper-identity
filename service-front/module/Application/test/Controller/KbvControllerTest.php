@@ -132,4 +132,91 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider kbvOutcomeProvider
+     */
+    public function testKbvQuestionsResponses(string $personType, array $outcome, string $expectedRedirect): void
+    {
+        $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';
+
+        $this
+            ->opgApiServiceMock
+            ->expects($this->once())
+            ->method('getDetailsData')
+            ->with($uuid)
+            ->willReturn([
+                'personType' => $personType,
+            ]);
+
+        $this
+            ->opgApiServiceMock
+            ->expects($this->once())
+            ->method('getIdCheckQuestions')
+            ->with($uuid)
+            ->willReturn([
+                [
+                    'externalId' => 'Q1',
+                    'question' => 'Question?',
+                    'prompts' => ['Whittaker', 'Broadway'],
+                    'answered' => false,
+                ],
+            ]);
+
+        $this
+            ->opgApiServiceMock
+            ->expects($this->once())
+            ->method('checkIdCheckAnswers')
+            ->with($uuid, [
+                'answers' => [
+                    'Q1' => 'Whittaker',
+                    'Q2' => '27',
+                ],
+            ])
+            ->willReturn($outcome);
+
+        $this->dispatch('/' . $uuid . '/id-verify-questions', 'POST', [
+            'Q1' => 'Whittaker',
+            'Q2' => '27',
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf($expectedRedirect, $uuid));
+    }
+
+    public static function kbvOutcomeProvider(): array
+    {
+        return [
+            [
+                'personType' => 'donor',
+                'outcome' => ['complete' => false, 'passed' => false],
+                'expectedRedirect' => '/%s/id-verify-questions',
+            ],
+            [
+                'personType' => 'donor',
+                'outcome' => ['complete' => true, 'passed' => false],
+                'expectedRedirect' => '/%s/identity-check-failed',
+            ],
+            [
+                'personType' => 'donor',
+                'outcome' => ['complete' => true, 'passed' => true],
+                'expectedRedirect' => '/%s/identity-check-passed',
+            ],
+            [
+                'personType' => 'certificateProvider',
+                'outcome' => ['complete' => false, 'passed' => false],
+                'expectedRedirect' => '/%s/id-verify-questions',
+            ],
+            [
+                'personType' => 'certificateProvider',
+                'outcome' => ['complete' => true, 'passed' => false],
+                'expectedRedirect' => '/%s/cp/identity-check-failed',
+            ],
+            [
+                'personType' => 'certificateProvider',
+                'outcome' => ['complete' => true, 'passed' => true],
+                'expectedRedirect' => '/%s/cp/identity-check-passed',
+            ],
+        ];
+    }
 }
