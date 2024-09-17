@@ -26,7 +26,11 @@ interface OpgApiServiceInterface
      * @return Question[]|false
      */
     public function getIdCheckQuestions(string $uuid): array|bool;
-    public function checkIdCheckAnswers(string $uuid, array $answers): bool;
+
+    /**
+     * @return array{complete: bool, passed: bool}
+     */
+    public function checkIdCheckAnswers(string $uuid, array $answers): array;
     public function createCase(
         string $firstname,
         string $lastname,

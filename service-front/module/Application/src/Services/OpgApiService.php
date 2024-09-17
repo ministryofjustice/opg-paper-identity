@@ -6,11 +6,11 @@ namespace Application\Services;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
+use Application\Exceptions\OpgApiException;
 use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
-use Laminas\Http\Response;
-use Application\Exceptions\OpgApiException;
 use GuzzleHttp\Exception\BadResponseException;
+use Laminas\Http\Response;
 
 /**
  * @psalm-import-type Question from OpgApiServiceInterface
@@ -38,7 +38,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
-                'json' => $data
+                'json' => $data,
             ]);
 
             $this->responseStatus = Response::STATUS_CODE_200;
@@ -47,6 +47,7 @@ class OpgApiService implements OpgApiServiceInterface
             if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
                 throw new OpgApiException($response->getReasonPhrase());
             }
+
             return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
             throw new OpgApiException($exception->getMessage(), 0, $exception);
@@ -151,16 +152,14 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function checkIdCheckAnswers(string $uuid, array $answers): bool
+    public function checkIdCheckAnswers(string $uuid, array $answers): array
     {
         try {
             $response = $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
-            if ($response['result'] !== 'pass') {
-                return false;
-            }
-            return true;
+
+            return $response;
         } catch (OpgApiException $opgApiException) {
-            return false;
+            throw $opgApiException;
         }
     }
 
@@ -179,8 +178,9 @@ class OpgApiService implements OpgApiServiceInterface
             'dob' => $dob,
             'personType' => $personType,
             'lpas' => $lpas,
-            'address' => $address
+            'address' => $address,
         ];
+
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
@@ -205,13 +205,15 @@ class OpgApiService implements OpgApiServiceInterface
     public function updateIdMethod(string $uuid, string $method): array
     {
         $data = [
-            'idMethod' => $method
+            'idMethod' => $method,
         ];
+
         try {
             $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -225,13 +227,14 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
     public function listPostOfficesByPostcode(string $uuid, string $location): array
     {
         $data = [
-            'search_string' => $location
+            'search_string' => $location,
         ];
 
         try {
@@ -239,6 +242,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (OpgApiException $opgApiException) {
             throw new OpgApiException($opgApiException->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -246,26 +250,30 @@ class OpgApiService implements OpgApiServiceInterface
     public function addSearchPostcode(string $uuid, string $postcode): array
     {
         $data = [
-            'selected_postcode' => $postcode
+            'selected_postcode' => $postcode,
         ];
+
         try {
             $this->makeApiRequest("/cases/$uuid/add-search-postcode", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
     public function addSelectedPostOffice(string $uuid, string $postOffice): array
     {
         $data = [
-            'selected_postoffice' => $postOffice
+            'selected_postoffice' => $postOffice,
         ];
+
         try {
             $this->makeApiRequest("/cases/$uuid/add-selected-postoffice", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -273,13 +281,15 @@ class OpgApiService implements OpgApiServiceInterface
     public function confirmSelectedPostOffice(string $uuid, string $deadline): array
     {
         $data = [
-            'deadline' => $deadline
+            'deadline' => $deadline,
         ];
+
         try {
             $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -292,6 +302,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -304,6 +315,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -316,6 +328,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -342,6 +355,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -354,6 +368,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
     public function createYotiSession(string $uuid): array
@@ -365,6 +380,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData;
     }
 
@@ -377,6 +393,7 @@ class OpgApiService implements OpgApiServiceInterface
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
+
         return $this->responseData['deadline'];
     }
 }
