@@ -496,7 +496,7 @@ class OpgApiServiceTest extends TestCase
      * @dataProvider idCheckData
      * @return void
      */
-    public function testCheckIdCheckAnswers(array $answers, Client $client, bool $responseData, bool $exception): void
+    public function testCheckIdCheckAnswers(array $answers, Client $client, bool $passed, bool $exception): void
     {
         if ($exception) {
             $this->expectException(OpgApiException::class);
@@ -507,7 +507,8 @@ class OpgApiServiceTest extends TestCase
 
         $response = $this->opgApiService->checkIdCheckAnswers($uuid, $answers);
 
-        $this->assertEquals($responseData, $response);
+        $this->assertEquals(true, $response['complete']);
+        $this->assertEquals($passed, $response['passed']);
     }
 
     public static function idCheckData(): array
@@ -527,11 +528,13 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $correctResponse = [
-            "result" => "pass",
+            'complete' => true,
+            'passed' => true,
         ];
 
         $failResponse = [
-            "result" => "fail",
+            'complete' => true,
+            'passed' => false,
         ];
 
         $successMock = new MockHandler([
@@ -541,7 +544,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMock = new MockHandler([
-            new Response(400, ['X-Foo' => 'Bar'], json_encode($failResponse)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failResponse)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);

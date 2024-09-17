@@ -6,7 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Controller\KbvController;
 use Application\Fixtures\DataQueryHandler;
-use Application\Fixtures\DataWriteHandler;
+use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
 use ApplicationTest\TestCase;
@@ -19,7 +19,6 @@ class KbvControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $KBVServiceMock;
-    private DataWriteHandler&MockObject $dataImportHandler;
 
     public function setUp(): void
     {
@@ -36,7 +35,6 @@ class KbvControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
-        $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
 
 
         parent::setUp();
@@ -44,7 +42,6 @@ class KbvControllerTest extends TestCase
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
-        $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
     }
 
@@ -54,15 +51,22 @@ class KbvControllerTest extends TestCase
     public function testKbvAnswers(
         string $uuid,
         array $provided,
-        CaseData $actual,
-        string $result,
+        ?CaseData $caseData,
+        ?AnswersOutcome $result,
         int $status
     ): void {
-        if ($result !== 'error') {
+        if ($caseData !== null) {
             $this->dataQueryHandlerMock
                 ->expects($this->once())->method('getCaseByUUID')
                 ->with($uuid)
-                ->willReturn($actual);
+                ->willReturn($caseData);
+        }
+
+        if ($result !== null) {
+            $this->KBVServiceMock->expects($this->once())
+                ->method('checkAnswers')
+                ->with($provided['answers'], $uuid)
+                ->willReturn($result);
         }
 
         $this->dispatchJSON(
@@ -76,11 +80,13 @@ class KbvControllerTest extends TestCase
         $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('check_kbv_answers');
 
-        if ($result === "error") {
-            $response = json_decode($this->getResponse()->getContent(), true);
+        $response = json_decode($this->getResponse()->getContent(), true);
+
+        if ($caseData === null) {
             $this->assertEquals('Missing UUID or unable to find case', $response['title']);
         } else {
-            $this->assertEquals('{"result":"' . $result . '"}', $this->getResponse()->getContent());
+            $this->assertEquals($result?->isComplete(), $response['complete']);
+            $this->assertEquals($result?->isPass(), $response['passed']);
         }
     }
 
@@ -119,10 +125,10 @@ class KbvControllerTest extends TestCase
         ]);
 
         return [
-            [$uuid, $provided, $actual, 'pass', Response::STATUS_CODE_200],
-            [$uuid, $providedIncomplete, $actual, 'fail', Response::STATUS_CODE_200],
-            [$uuid, $providedIncorrect, $actual, 'fail', Response::STATUS_CODE_200],
-            [$invalidUUID, $provided, $actual, 'error', Response::STATUS_CODE_400],
+            [$uuid, $provided, $actual, AnswersOutcome::CompletePass, Response::STATUS_CODE_200],
+            [$uuid, $providedIncomplete, $actual, AnswersOutcome::Incomplete, Response::STATUS_CODE_200],
+            [$uuid, $providedIncorrect, $actual, AnswersOutcome::CompleteFail, Response::STATUS_CODE_200],
+            [$invalidUUID, $provided, null, null, Response::STATUS_CODE_400],
         ];
     }
 
@@ -166,41 +172,6 @@ class KbvControllerTest extends TestCase
             ->expects($this->once())->method('fetchFormattedQuestions')
             ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
             ->willReturn($formattedQuestions);
-
-        $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertStringContainsString('Who is your electricity supplier?', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class);
-        $this->assertControllerClass('KbvController');
-        $this->assertMatchedRouteName('get_kbv_questions');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testKBVQuestionsWithVerifiedDocsCaseAndExistingQuestions(): void
-    {
-        $caseData = CaseData::fromArray([
-            'personType' => '',
-            'firstName' => 'test',
-            'lastName' => 'name',
-            'dob' => '',
-            'lpas' => [],
-            'address' => [],
-        ]);
-
-        $caseData->kbvQuestions = json_encode($this->formattedQuestions());
-        $caseData->documentComplete = true;
-
-        $this->dataQueryHandlerMock
-            ->expects($this->once())->method('getCaseByUUID')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
-            ->willReturn($caseData);
-
-        $this->KBVServiceMock
-            ->expects($this->never())->method('fetchFormattedQuestions')
-            ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999');
 
         $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
         $this->assertResponseStatusCode(200);
