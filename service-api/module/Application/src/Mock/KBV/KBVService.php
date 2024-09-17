@@ -10,6 +10,11 @@ class KBVService implements KBVServiceInterface
 {
     /**
      * @psalm-suppress ArgumentTypeCoercion
+     * @return array{
+     *   externalId: string,
+     *   question: string,
+     *   prompts: string[],
+     * }[]
      */
     private function getKBVQuestions(): array
     {
@@ -28,99 +33,95 @@ class KBVService implements KBVServiceInterface
     public function fetchFormattedQuestions(string $uuid): array
     {
         $questions = $this->getKBVQuestions();
-        $questionsWithoutAnswers = [];
-        for ($i = 0; $i < 4; $i++) {
-            $question = $questions[$i];
-            $questionNumbered = array_merge(['answered' => false], $question);
-            unset($questionNumbered['answer']);
-            $questionsWithoutAnswers[] = $questionNumbered;
-        }
 
-        return $questionsWithoutAnswers;
+        return array_map(fn (array $question) => [
+            ...$question,
+            'answered' => false,
+        ], $questions);
     }
 
     private function questionsList(): array
     {
         return [
-                0 => [
+                [
+                    'externalId' => 'MOCK-01',
                     'question' => 'Who is your electricity supplier?',
                     'prompts' => [
                         0 => 'VoltWave',
                         1 => 'Glow Electric',
                         2 => 'Powergrid Utilities',
-                        3 => 'Bright Bristol Power'
+                        3 => 'Bright Bristol Power',
                     ],
-                    'answer' => 'VoltWave'
                 ],
-                1 => [
+                [
+                    'externalId' => 'MOCK-02',
                     'question' => 'How much was your last phone bill?',
                     'prompts' => [
                         0 => "£5.99",
                         1 => "£11",
                         2 => "£16.84",
-                        3 => "£1.25"
+                        3 => "£1.25",
                     ],
-                    'answer' => "£5.99"
                 ],
-                2 => [
+                [
+                    'externalId' => 'MOCK-03',
                     'question' => "What is your mother’s maiden name?",
                     'prompts' => [
                         0 => 'Germanotta',
                         1 => 'Gumm',
                         2 => 'Micklewhite',
-                        3 => 'Blythe'
+                        3 => 'Blythe',
                     ],
-                    'answer' => 'Germanotta'
                 ],
-                3 => [
+                [
+                    'externalId' => 'MOCK-04',
                     'question' => 'What are the last two characters of your car number plate?',
                     'prompts' => [
                         0 => 'IF',
                         1 => 'SJ',
                         2 => 'WP',
-                        3 => 'PG'
+                        3 => 'PG',
                     ],
-                    'answer' => 'IF'
                 ],
-                4 => [
+                [
+                    'externalId' => 'MOCK-05',
                     'question' => 'Name one of your current account providers',
                     'prompts' => [
                         0 => 'Liberty Trust Bank',
                         1 => 'Heritage Horizon Bank',
                         2 => 'Prosperity Peak Financial',
-                        3 => 'Summit State Saving'
+                        3 => 'Summit State Saving',
                     ],
-                    'answer' => 'Liberty Trust Bank'
                 ],
-                5 => [
+                [
+                    'externalId' => 'MOCK-06',
                     'question' => 'In what month did you move into your current house?',
                     'prompts' => [
                         0 => 'July',
                         1 => 'September',
                         2 => 'March',
-                        3 => 'April'
+                        3 => 'April',
                     ],
-                    'answer' => 'July'
                 ],
-                6 => [
+                [
+                    'externalId' => 'MOCK-07',
                     'question' => 'Which company provides your car insurance?',
                     'prompts' => [
                         0 => 'SafeDrive Insurance',
                         1 => 'Guardian Drive Assurance',
                         2 => 'SheildSafe',
-                        3 => 'Swift Cover Protection'
+                        3 => 'Swift Cover Protection',
                     ],
-                    'answer' => 'SafeDrive Insurance'
                 ],
-                7 => [
+                [
+                    'externalId' => 'MOCK-08',
                     'question' => 'What colour is your front door?',
                     'prompts' => [
                         0 => 'Pink',
                         1 => 'Green',
                         2 => 'Black',
-                        3 => 'Yellow'
+                        3 => 'Yellow',
                     ],
-                    'answer' => 'Pink'
                 ],
         ];
     }

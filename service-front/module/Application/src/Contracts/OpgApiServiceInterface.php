@@ -6,7 +6,7 @@ namespace Application\Contracts;
 
 /**
  * @psalm-type Question = array{
- *   experianId: string,
+ *   externalId: string,
  *   question: string,
  *   prompts: string[],
  *   answered: bool
