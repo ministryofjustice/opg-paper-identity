@@ -185,20 +185,6 @@ class DonorFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/donor_lpa_check');
     }
 
-    public function addressVerificationAction(): ViewModel
-    {
-        $view = new ViewModel();
-
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $view->setVariable('details_data', $detailsData);
-        $data = $this->opgApiService->getAddressVerificationData();
-
-        $view->setVariable('options_data', $data);
-
-        return $view->setTemplate('application/pages/address_verification');
-    }
-
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $templates = [

@@ -97,16 +97,6 @@ return [
                             ],
                         ],
                     ],
-                    'address_verification' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/address_verification',
-                            'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'addressVerification',
-                            ],
-                        ],
-                    ],
                     'national_insurance_number' => [
                         'type' => Segment::class,
                         'options' => [

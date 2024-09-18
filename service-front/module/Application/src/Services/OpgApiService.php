@@ -79,16 +79,6 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getAddressVerificationData(): array
-    {
-        return $this->makeApiRequest('/identity/address_verification');
-    }
-
-    public function getLpasByDonorData(): array
-    {
-        return $this->makeApiRequest('/identity/list_lpas');
-    }
-
     public function checkNinoValidity(string $nino): string
     {
         $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
@@ -241,22 +231,6 @@ class OpgApiService implements OpgApiServiceInterface
             $this->makeApiRequest("/counter-service/branches", 'POST', $data);
         } catch (OpgApiException $opgApiException) {
             throw new OpgApiException($opgApiException->getMessage());
-        }
-
-        return $this->responseData;
-    }
-
-
-    public function addSearchPostcode(string $uuid, string $postcode): array
-    {
-        $data = [
-            'selected_postcode' => $postcode,
-        ];
-
-        try {
-            $this->makeApiRequest("/cases/$uuid/add-search-postcode", 'POST', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
         }
 
         return $this->responseData;
