@@ -194,11 +194,9 @@ class CPFlowController extends AbstractActionController
 
                 return $view->setTemplate('application/pages/cp/add_lpa');
             } else {
-                $responseData = $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
+                $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
 
-                if ($responseData['result'] === 'Updated') {
-                    return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
-                }
+                return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
             }
         }
 
@@ -528,11 +526,9 @@ class CPFlowController extends AbstractActionController
                  */
                 $structuredAddress = json_decode($params->get('address_json'), true);
 
-                $response = $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+                $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
-                if ($response) {
-                    return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
-                }
+                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
             }
         }
 
@@ -546,7 +542,7 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
-        $form->setData($detailsData['alternateAddress']);
+        $form->setData($detailsData['alternateAddress'] ?? []);
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
@@ -557,10 +553,9 @@ class CPFlowController extends AbstractActionController
                 /**
                  * @psalm-suppress InvalidMethodCall
                  */
-                $response = $this->opgApiService->addSelectedAltAddress($uuid, $params->toArray());
-                if ($response) {
-                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
-                }
+                $this->opgApiService->addSelectedAltAddress($uuid, $params->toArray());
+
+                return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
         }
 
@@ -638,10 +633,9 @@ class CPFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             if ($form->isValid()) {
-                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-                if ($responseData['result'] === 'Updated') {
-                    return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
-                }
+                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+                return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
             }
         }
 
