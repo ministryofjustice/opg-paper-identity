@@ -11,13 +11,49 @@ namespace Application\Contracts;
  *   prompts: string[],
  *   answered: bool
  * }
+ *
+ * @psalm-type Address = array{
+ *   line1: string,
+ *   line2?: string,
+ *   line3?: string,
+ *   town?: string,
+ *   postcode: string,
+ *   country?: string,
+ * }
+ *
+ * @psalm-type CaseData = array{
+ *   lpas: string[],
+ *   personType: "donor"|"certificateProvider",
+ *   dob: string,
+ *   address: Address,
+ *   alternateAddress?: Address,
+ *   idMethod: string,
+ *   idMethodIncludingNation?: array{
+ *     country?: string,
+ *     id_method?: string,
+ *   },
+ *   searchPostcode?: string,
+ *   counterService?: array{
+ *     selectedPostOffice: string,
+ *     selectedPostOfficeDeadline: string,
+ *     notificationState: string,
+ *     notificationsAuthToken: string,
+ *     state: string,
+ *     result: bool,
+ *   },
+ * }
  */
 interface OpgApiServiceInterface
 {
-    public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array;
+    /**
+     * @return CaseData
+     */
     public function getDetailsData(string $uuid): array;
+
     public function checkNinoValidity(string $nino): string;
+
     public function checkDlnValidity(string $dln): string;
+
     public function checkPassportValidity(string $passport): string;
 
     /**
@@ -29,6 +65,10 @@ interface OpgApiServiceInterface
      * @return array{complete: bool, passed: bool}
      */
     public function checkIdCheckAnswers(string $uuid, array $answers): array;
+
+    /**
+     * @return array{uuid: string}
+     */
     public function createCase(
         string $firstname,
         string $lastname,
@@ -38,27 +78,36 @@ interface OpgApiServiceInterface
         array $address,
     ): array;
 
-    public function findLpa(string $uuid, string $lpa): array;
+    public function updateIdMethod(string $uuid, string $method): void;
 
-    public function updateIdMethod(string $uuid, string $method): array;
-
+    /**
+     * @return array<string, array{
+     *   name: string,
+     *   address: string,
+     *   post_code: string,
+     * }>
+     */
     public function listPostOfficesByPostcode(string $uuid, string $location): array;
 
-    public function addSelectedPostOffice(string $uuid, string $postOffice): array;
-    public function confirmSelectedPostOffice(string $uuid, string $deadline): array;
+    public function addSelectedPostOffice(string $uuid, string $postOffice): void;
 
-    public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): array;
+    public function confirmSelectedPostOffice(string $uuid, string $deadline): void;
 
-    public function addSelectedAltAddress(string $uuid, array $data): array;
+    public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): void;
 
-    public function updateCaseSetDocumentComplete(string $uuid): array;
+    public function addSelectedAltAddress(string $uuid, array $data): void;
 
-    public function updateCaseSetDob(string $uuid, string $dob): array;
+    public function updateCaseSetDocumentComplete(string $uuid): void;
 
-    public function updateIdMethodWithCountry(string $uuid, array $data): array;
+    public function updateCaseSetDob(string $uuid, string $dob): void;
 
-    public function updateCaseProgress(string $uuid, array $data): array;
+    public function updateIdMethodWithCountry(string $uuid, array $data): void;
 
+    public function updateCaseProgress(string $uuid, array $data): void;
+
+    /**
+     * @return array{pdfBase64: string}
+     */
     public function createYotiSession(string $uuid): array;
 
     public function estimatePostofficeDeadline(string $uuid): string;
