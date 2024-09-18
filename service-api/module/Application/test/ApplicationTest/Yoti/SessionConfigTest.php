@@ -7,7 +7,6 @@ namespace ApplicationTest\Yoti;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\SessionConfig;
 use DateTime;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 
@@ -152,12 +151,12 @@ class SessionConfigTest extends TestCase
                 "structured_postal_address" => [
                     "address_format" => "1",
                     "building_number" => "123",
-                    "address_line1" => $this->caseMock->address['line1'],
-                    "address_line2" => $this->caseMock->address['line2'],
+                    "address_line1" => '123 long street',
+                    "address_line2" => 'Kings Cross',
                     "town_city" => "London",
-                    "country" => $this->caseMock->address['country'],
+                    "country" => 'England',
                     "country_iso" => "GBR",
-                    "postal_code" => $this->caseMock->address['postcode'],
+                    "postal_code" => 'NW1 1SP',
                 ],
             ]
         ];

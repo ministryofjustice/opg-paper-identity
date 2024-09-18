@@ -155,7 +155,7 @@ class PostOfficeFlowController extends AbstractActionController
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
 
 
-        $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"], true);
+        $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"] ?? '', true);
 
         $postOfficeAddress = explode(",", $postOfficeData['address']);
         $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['post_code']]);
@@ -169,15 +169,15 @@ class PostOfficeFlowController extends AbstractActionController
         if (array_key_exists($detailsData['idMethod'], $optionsData)) {
             $idMethodForDisplay = $optionsData[$detailsData['idMethod']];
         } else {
-            $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country']);
-            $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method']);
+            $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country'] ?? '');
+            $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method'] ?? '');
             $idMethodForDisplay = sprintf('%s (%s)', $idMethod->translate(), $country->translate());
         }
 
         $view->setVariable('display_id_method', $idMethodForDisplay);
 
         if ($this->getRequest()->isPost()) {
-            $responseData = $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
+            $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
 
             //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
@@ -187,7 +187,7 @@ class PostOfficeFlowController extends AbstractActionController
              */
             $pdf = $this->siriusApiService->sendPostOfficePDf($pdfData, $detailsData, $this->request);
 
-            if ($responseData['result'] == 'Updated' && $pdf['status'] === 201) {
+            if ($pdf['status'] === 201) {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
             } else {
                 $view->setVariable('errors', ['API Error']);
@@ -278,10 +278,9 @@ class PostOfficeFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             if ($form->isValid()) {
-                $responseData = $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-                if ($responseData['result'] === 'Updated') {
-                    return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
-                }
+                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+                return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
             }
         }
 
