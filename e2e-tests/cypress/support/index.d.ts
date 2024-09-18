@@ -6,5 +6,11 @@ declare namespace Cypress {
      * Get an input element by its label text
      */
     getInputByLabel(string): Chainable<any>;
+
+    /**
+     *
+     * @param string
+     */
+    selectKBVAnswer({ correct: boolean }): Chainable<any>;
   }
 }

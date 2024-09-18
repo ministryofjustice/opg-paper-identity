@@ -28,5 +28,18 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains("Initial identity confirmation complete");
         cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Select answer");
+
+        cy.selectKBVAnswer({ correct: true });
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.selectKBVAnswer({ correct: true });
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.selectKBVAnswer({ correct: true });
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains(".moj-banner", "Identity check passed");
     });
 });
