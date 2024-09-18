@@ -101,26 +101,6 @@ return [
                     ],
                 ],
             ],
-            'address_verification' => [
-                'type' => Literal::class,
-                'options' => [
-                    'route' => '/identity/address_verification',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'addressVerification',
-                    ],
-                ],
-            ],
-            'list_lpas' => [
-                'type' => Literal::class,
-                'options' => [
-                    'route' => '/identity/list_lpas',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'listLpas',
-                    ],
-                ],
-            ],
             'validate_nino' => [
                 'type' => Literal::class,
                 'options' => [
@@ -228,16 +208,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\YotiController::class,
                         'action' => 'notification',
-                    ],
-                ],
-            ],
-            'add_search_postcode' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/add-search-postcode',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'addSearchPostcode',
                     ],
                 ],
             ],

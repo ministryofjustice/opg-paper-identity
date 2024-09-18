@@ -16,8 +16,6 @@ interface OpgApiServiceInterface
 {
     public function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array;
     public function getDetailsData(string $uuid): array;
-    public function getAddressVerificationData(): array;
-    public function getLpasByDonorData(): array;
     public function checkNinoValidity(string $nino): string;
     public function checkDlnValidity(string $dln): string;
     public function checkPassportValidity(string $passport): string;
@@ -46,7 +44,6 @@ interface OpgApiServiceInterface
 
     public function listPostOfficesByPostcode(string $uuid, string $location): array;
 
-    public function addSearchPostcode(string $uuid, string $postcode): array;
     public function addSelectedPostOffice(string $uuid, string $postOffice): array;
     public function confirmSelectedPostOffice(string $uuid, string $deadline): array;
 
