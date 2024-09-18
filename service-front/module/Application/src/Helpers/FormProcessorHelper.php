@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Exceptions\OpgApiException;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
@@ -175,10 +176,10 @@ class FormProcessorHelper
         } else {
             $form->setData($formData);
             if ($form->isValid()) {
-                $responseData = $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
-                if ($responseData['result'] == 'Updated') {
+                try {
+                    $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
                     $redirect = 'root/confirm_post_office';
-                } else {
+                } catch (OpgApiException) {
                     $form->setMessages(['Error saving Post Office to this case.']);
                 }
             } else {

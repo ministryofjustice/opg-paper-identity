@@ -23,7 +23,6 @@ use Application\Model\Entity\CaseProgress;
  * DTO for holding data required to make new case entry post
  * @psalm-suppress MissingConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
- * @psalm-suppress UnusedProperty
  */
 class CaseData implements JsonSerializable
 {
@@ -48,7 +47,14 @@ class CaseData implements JsonSerializable
     public string $lastName;
 
     /**
-     * @var string[]
+     * @var array{
+     *   line1: string,
+     *   line2?: string,
+     *   line3?: string,
+     *   town?: string,
+     *   postcode: string,
+     *   country?: string,
+     * }
      */
     #[Validator(NotEmpty::class)]
     public array $address;
@@ -88,6 +94,9 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?CounterService $counterService = null;
 
+    /**
+     * @var ?array{country?: string, id_method?: string}
+     */
     #[Annotation\Required(false)]
     public ?array $idMethodIncludingNation = [];
 
