@@ -103,35 +103,6 @@ class IdentityController extends AbstractActionController
         return new JsonModel(new Problem('Case not found'));
     }
 
-    public function addressVerificationAction(): JsonModel
-    {
-        $data = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        return new JsonModel($data);
-    }
-
-    public function listLpasAction(): JsonModel
-    {
-        $data = [
-            [
-                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
-                'donor_name' => 'Mary Anne Chapman',
-            ],
-            [
-                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
-                'donor_name' => 'Mary Anne Chapman',
-            ],
-        ];
-
-        return new JsonModel($data);
-    }
-
     public function verifyNinoAction(): JsonModel
     {
         $data = json_decode($this->getRequest()->getContent(), true);
@@ -191,37 +162,6 @@ class IdentityController extends AbstractActionController
                 'idMethod',
                 'S',
                 $data['idMethod']
-            );
-        } catch (\Exception $exception) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-
-            return new JsonModel(new Problem($exception->getMessage()));
-        }
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $response['result'] = "Updated";
-
-        return new JsonModel($response);
-    }
-
-    public function addSearchPostcodeAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
-        $response = [];
-
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-
-            return new JsonModel(new Problem('Missing UUID'));
-        }
-
-        try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'searchPostcode',
-                'S',
-                $data['selected_postcode']
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);

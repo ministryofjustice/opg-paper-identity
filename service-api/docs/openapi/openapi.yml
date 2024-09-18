@@ -81,38 +81,6 @@ paths:
                 items:
                   type: string
 
-  /identity/address_verification:
-    get:
-      operationId: addressVerification
-      summary: Returns supported methods to verify Address ( test purposes )
-      description: Array of Address verification methods available
-      tags: [otm]
-      responses:
-        "200":
-          description: The list of verification methods
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-
-  /identity/list_lpas:
-    get:
-      operationId: listLpas
-      summary: Returns sample LPAs
-      description: Sample selection of LPAs ( for testing purposes? )
-      tags: [otm]
-      responses:
-        "200":
-          description: The list lpas
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-
   /identity/validate_nino:
     parameters:
       - name: nino

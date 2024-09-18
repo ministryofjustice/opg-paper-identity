@@ -146,13 +146,11 @@ class CPFlowController extends AbstractActionController
     public function addLpaAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $lpas = $this->opgApiService->getLpasByDonorData();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
 
         $view = new ViewModel();
-        $view->setVariable('lpas', $lpas);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
         $view->setVariable('case_uuid', $uuid);
