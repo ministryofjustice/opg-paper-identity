@@ -10,14 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigBuilderTest extends TestCase
 {
-    private CaseData $caseMock;
-    private ConfigBuilder $sut;
-
-    public function setUp(): void
+    public function testSAAFormat(): void
     {
-        parent::setUp();
-
-        $this->caseMock = CaseData::fromArray([
+        $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'firstName' => 'Maria',
             'lastName' => 'Williams',
@@ -30,19 +25,12 @@ class ConfigBuilderTest extends TestCase
                 'postcode' => 'NW1 1SP',
             ],
         ]);
-        // an instance of SUT
-        $this->sut = new ConfigBuilder();
-    }
-    public function testSAAFormat(): void
-    {
-        $saaConfig = $this->sut->buildSAARequest($this->caseMock);
 
-        $this->assertEquals($this->sAAFormatExpected(), $saaConfig);
-    }
+        $configBuilder = new ConfigBuilder();
 
-    public function sAAFormatExpected(): array
-    {
-        $saaConfig = [
+        $saaConfig = $configBuilder->buildSAARequest($caseData);
+
+        $this->assertEquals([
             'Applicant' => [
                 'ApplicantIdentifier' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'Name' => [
@@ -69,8 +57,40 @@ class ConfigBuilderTest extends TestCase
                     'Postcode' => 'NW1 1SP',
                 ],
             ],
-        ];
+        ], $saaConfig);
+    }
 
-        return $saaConfig;
+    public function testRTQFormat(): void
+    {
+        $configBuilder = new ConfigBuilder();
+
+        $caseData = CaseData::fromArray([
+            'iiqControl' => '{"URN":"test UUID","AuthRefNo":"abc"}',
+        ]);
+
+        $rtqConfig = $configBuilder->buildRTQRequest([
+            [
+                'experianId' => 'QID21',
+                'answer' => 'BASINGSTOKE',
+                'flag' => 1,
+            ]
+        ], $caseData);
+
+        $this->assertEquals([
+            'Control' => [
+                'URN' => 'test UUID',
+                'AuthRefNo' => 'abc',
+            ],
+            'Responses' => [
+                'Response' => [
+                    [
+                        'QuestionID' => 'QID21',
+                        'AnswerGiven' => 'BASINGSTOKE',
+                        'CustResponseFlag' => 1,
+                        'AnswerActionFlag' => 'A',
+                    ],
+                ],
+            ],
+        ], $rtqConfig);
     }
 }
