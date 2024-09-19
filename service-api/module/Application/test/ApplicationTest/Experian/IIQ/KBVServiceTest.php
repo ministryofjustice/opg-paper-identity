@@ -106,10 +106,10 @@ class KBVServiceTest extends TestCase
             ->willReturnCallback(
                 /** @psalm-suppress MissingClosureParamType */
                 fn (...$params) => match (true) {
-                    $params[0] === $uuid && $params[1] === 'kbvQuestions' && $params[2] === 'S'
-                        && $params[3] === $storedQuestions => null,
-                    $params[0] === $uuid && $params[1] === 'iiqControl' && $params[2] === 'S'
-                        && $params[3] === '{"URN":"test UUID","AuthRefNo":"abc"}' => null,
+                    $params[0] === $uuid && $params[1] === 'kbvQuestions'
+                        && $params[2] === $storedQuestions => null,
+                    $params[0] === $uuid && $params[1] === 'iiqControl'
+                        && $params[2] === '{"URN":"test UUID","AuthRefNo":"abc"}' => null,
                     default => self::fail('Did not expect:' . print_r($params, true))
                 }
             );
@@ -233,7 +233,6 @@ class KBVServiceTest extends TestCase
             ->with(
                 $uuid,
                 'kbvQuestions',
-                'S',
                 json_encode($savedQuestions),
             );
 

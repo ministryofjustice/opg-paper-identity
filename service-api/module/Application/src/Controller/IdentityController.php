@@ -160,7 +160,6 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethod',
-                'S',
                 $data['idMethod']
             );
         } catch (\Exception $exception) {
@@ -194,10 +193,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $counterServiceMap),
+                $counterServiceMap,
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -235,10 +231,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $counterServiceMap),
+                $counterServiceMap,
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -270,7 +263,6 @@ class IdentityController extends AbstractActionController
                 $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
-                    'SS',
                     $lpas
                 );
                 $response['result'] = "Updated";
@@ -310,7 +302,6 @@ class IdentityController extends AbstractActionController
                 $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
-                    'SS',
                     $keptLpas
                 );
                 $response['result'] = "Removed";
@@ -348,10 +339,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'alternateAddress',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                $data,
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
@@ -387,7 +375,6 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'documentComplete',
-                'BOOL',
                 true
             );
         } catch (\Exception $exception) {
@@ -435,7 +422,6 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'dob',
-                'S',
                 $dob
             );
         } catch (\Exception $exception) {
@@ -468,10 +454,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethodIncludingNation',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                $data,
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
@@ -507,10 +490,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'caseProgress',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                $data,
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());

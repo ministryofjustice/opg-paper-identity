@@ -70,14 +70,12 @@ class KBVService implements KBVServiceInterface
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'kbvQuestions',
-            'S',
             json_encode($formattedQuestions)
         );
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'iiqControl',
-            'S',
             json_encode($questions['control'])
         );
 
@@ -129,7 +127,6 @@ class KBVService implements KBVServiceInterface
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'kbvQuestions',
-            'S',
             json_encode($questions)
         );
 
