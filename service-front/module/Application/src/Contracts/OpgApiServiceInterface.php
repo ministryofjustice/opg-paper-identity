@@ -95,14 +95,29 @@ interface OpgApiServiceInterface
 
     public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): void;
 
+    /**
+     * @param Address $data
+     */
     public function addSelectedAltAddress(string $uuid, array $data): void;
 
     public function updateCaseSetDocumentComplete(string $uuid): void;
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
 
+    /**
+     * @param array{
+     *   country?: string,
+     *   id_method?: string,
+     * } $data
+     */
     public function updateIdMethodWithCountry(string $uuid, array $data): void;
 
+    /**
+     * @param array{
+     *   last_page: string,
+     *   timestamp: string,
+     * } $data
+     */
     public function updateCaseProgress(string $uuid, array $data): void;
 
     /**
