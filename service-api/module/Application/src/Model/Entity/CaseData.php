@@ -91,7 +91,9 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(Uuid::class)]
     //Due to dynamodb quarks, due to index this always need to have a value
     public string $yotiSessionId = '00000000-0000-0000-0000-000000000000';
+
     #[Annotation\Required(false)]
+    #[Annotation\ComposedObject(CounterService::class)]
     public ?CounterService $counterService = null;
 
     /**

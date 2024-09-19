@@ -193,10 +193,9 @@ class YotiController extends AbstractActionController
             //authorize
             if ($caseData->counterService->notificationsAuthToken === $token) {
                 //now update counterService data
-                $this->dataHandler->updateCaseChildAttribute(
+                $this->dataHandler->updateCaseData(
                     $caseData->id,
                     'counterService.notificationState',
-                    'S',
                     $data['topic'],
                 );
                 $caseData->counterService->notificationState = $data['topic'];
