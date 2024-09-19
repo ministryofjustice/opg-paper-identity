@@ -1,34 +1,34 @@
 {% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
 {% block content %}
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
-
-        <h3 class="govuk-heading-xl">
-            {% block title %}
-                Choose verification method
-            {% endblock %}
-        </h3>
-        <p class="govuk-body">
-            Things to check:
-        </p>
-        <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                        Where do you live?
-                    </h1>
-                </legend>
-                <div class="govuk-radios" data-module="govuk-radios">
-                    {% for datum in options_data %}
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="whereDoYouLive" name="whereDoYouLive" type="radio" value="england">
-                            <label class="govuk-label govuk-radios__label" for="whereDoYouLive">{{ datum }}</label>
-                        </div>
-                    {% endfor %}
-                </div>
-            </fieldset>
-        </div>
-        <button class="govuk-button">Continue</button>
-
-</div>
+    <h3 class="govuk-heading-xl">
+        {% block title %}
+            Choose verification method
+        {% endblock %}
+    </h3>
+    <p class="govuk-body">
+        Things to check:
+    </p>
+    <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    Where do you live?
+                </h1>
+            </legend>
+            <div class="govuk-radios" data-module="govuk-radios">
+                {% for datum in options_data %}
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="whereDoYouLive" name="whereDoYouLive" type="radio" value="england">
+                        <label class="govuk-label govuk-radios__label" for="whereDoYouLive">{{ datum }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </div>
+    <button class="govuk-button">Continue</button>
 {% endblock %}

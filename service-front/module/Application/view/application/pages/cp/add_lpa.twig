@@ -1,7 +1,10 @@
 {% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
 {% block content %}
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
     {% if form.get('lpa').messages %}
         <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
             <p class="govuk-body">
@@ -143,7 +146,7 @@
                             <td class="govuk-table__cell"></td>
                             <td class="govuk-table__cell"></td>
                             <td class="govuk-table__cell">
-                                <a href="" class="govuk-link govuk-!-margin-top-5">Edit CP details in Sirius</a>
+                                <a href="" class="govuk-link">Edit CP details in Sirius</a>
                             </td>
                         </tr>
                     {% endif %}
@@ -161,6 +164,5 @@
         </form>
     {% endif %}
     <a href="./confirm-lpas" class="govuk-button govuk-button--secondary">Return to LPA list</a>
-</div>
 {% endblock %}
 
