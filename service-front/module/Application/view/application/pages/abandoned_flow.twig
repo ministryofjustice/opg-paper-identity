@@ -1,75 +1,77 @@
 {% extends "layout/layout" %}
-{% block content %}
+
+{% block beforeMain %}
     {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
+{% block content %}
     <form method="post" class="govuk-!-width-two-thirds">
-        <div class="govuk-width-container govuk-!-padding-top-5">
-            <h1 class="govuk-heading-xl">
-                {% block title %}
-                    Exit identity check?
-                {% endblock %}
-            </h1>
-            <div class="govuk-form-group">
-                <input type="hidden"  name="last_page" value="{{ last_page }}">
-                <div class="govuk-form-group {% if form.get('reason').messages %}govuk-form-group--error{% endif %}">
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                        <h2 class="govuk-fieldset__heading govuk-heading-m">
-                            Reason
-                        </h2>
-                    </legend>
-                    {% if form.get('reason').messages %}
-                        <p id="dln-error" class="govuk-error-message">
-                            <span class="govuk-visually-hidden">Error:</span>
-                            {{ form.get('reason').messages | join(', ', ' and ') }}
-                        </p>
-                    {% endif %}
-                    <div class="govuk-radios" data-module="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="reason" name="reason" type="radio" value="cd">
-                            <label class="govuk-label govuk-radios__label" for="reason">
-                                Call dropped
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="reason-2" name="reason" type="radio" value="nc">
-                            <label class="govuk-label govuk-radios__label" for="reason-2">
-                                Caller not able to complete at this time
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="reason-3" name="reason" type="radio" value="ot">
-                            <label class="govuk-label govuk-radios__label" for="reason-3">
-                                Other
-                            </label>
-                        </div>
+        <h1 class="govuk-heading-xl">
+            {% block title %}
+                Exit identity check?
+            {% endblock %}
+        </h1>
+        <div class="govuk-form-group">
+            <input type="hidden"  name="last_page" value="{{ last_page }}">
+            <div class="govuk-form-group {% if form.get('reason').messages %}govuk-form-group--error{% endif %}">
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h2 class="govuk-fieldset__heading govuk-heading-m">
+                        Reason
+                    </h2>
+                </legend>
+                {% if form.get('reason').messages %}
+                    <p id="dln-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ form.get('reason').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="reason" name="reason" type="radio" value="cd">
+                        <label class="govuk-label govuk-radios__label" for="reason">
+                            Call dropped
+                        </label>
                     </div>
-                </fieldset>
-            </div>
-            <div class="govuk-form-group">
-                <h2 class="govuk-label-wrapper">
-                    <label class="govuk-label govuk-label--m" for="notes">
-                        Notes (optional)
-                    </label>
-                </h2>
-                <textarea class="govuk-textarea" id="notes" name="notes" rows="5"></textarea>
-            </div>
-            <div class="govuk-warning-text">
-                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                <strong class="govuk-warning-text__text">
-                    <span class="govuk-visually-hidden">Warning</span>
-                    Warning - progress will not be saved
-                </strong>
-            </div>
-            <div class="govuk-form-group">
-                <button role="button" draggable="false"
-                   class="govuk-button moj-button-menu__item govuk-button--warning" data-module="govuk-button">
-                    Yes, exit identity check
-                </button>
-                <a href="javascript:history.back()" role="button" draggable="false"
-                   class="govuk-button moj-button-menu__item govuk-button--secondary" data-module="govuk-button">
-                    No, continue identity check
-                </a>
-            </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="reason-2" name="reason" type="radio" value="nc">
+                        <label class="govuk-label govuk-radios__label" for="reason-2">
+                            Caller not able to complete at this time
+                        </label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="reason-3" name="reason" type="radio" value="ot">
+                        <label class="govuk-label govuk-radios__label" for="reason-3">
+                            Other
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="govuk-form-group">
+            <h2 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--m" for="notes">
+                    Notes (optional)
+                </label>
+            </h2>
+            <textarea class="govuk-textarea" id="notes" name="notes" rows="5"></textarea>
+        </div>
+        <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                <span class="govuk-visually-hidden">Warning</span>
+                Warning - progress will not be saved
+            </strong>
+        </div>
+        <div class="govuk-form-group">
+            <button role="button" draggable="false"
+                class="govuk-button moj-button-menu__item govuk-button--warning" data-module="govuk-button">
+                Yes, exit identity check
+            </button>
+            <a href="javascript:history.back()" role="button" draggable="false"
+                class="govuk-button moj-button-menu__item govuk-button--secondary" data-module="govuk-button">
+                No, continue identity check
+            </a>
         </div>
     </form>
 {% endblock %}

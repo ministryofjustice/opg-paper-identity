@@ -1,57 +1,59 @@
 {% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
 {% block content %}
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
     <div class="moj-banner__message moj-hidden">{% block title %}Identity check questions{% endblock %}</div>
 
-        <form method="post" target="">
-            {% for questionBlock in questions_data %}
+    <form method="post" target="">
+        {% for questionBlock in questions_data %}
 
-                {% if questionBlock.externalId != question.externalId %}
-                    <input
-                        type="hidden"
-                        value="{{ form.get(questionBlock.externalId).value }}"
-                        name="{{ questionBlock.externalId }}"
-                    />
-                {% else %}
+            {% if questionBlock.externalId != question.externalId %}
+                <input
+                    type="hidden"
+                    value="{{ form.get(questionBlock.externalId).value }}"
+                    name="{{ questionBlock.externalId }}"
+                />
+            {% else %}
+                <div class="govuk-form-group">
+                    <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
                     <div class="govuk-form-group">
-                        <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
-                        <div class="govuk-form-group">
-                            <fieldset class="govuk-fieldset">
-                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                                    <h2 class="govuk-fieldset__heading">
-                                        Select answer
-                                    </h2>
-                                </legend>
-                                <div class="govuk-radios" data-module="govuk-radios">
-                                    {% for datum in questionBlock.prompts %}
-                                        <div class="govuk-radios__item">
-                                            <input
-                                                    class="govuk-radios__input"
-                                                    id="{{ datum }}"
-                                                    name="{{ questionBlock.externalId }}"
-                                                    type="radio"
-                                                    value="{{ datum }}"
-                                                    {% if form.get(questionBlock.externalId).value == datum %}checked{% endif %}
-                                            >
-                                            <label class="govuk-label govuk-radios__label"
-                                                   for="{{ datum }}">{{ datum }}</label>
-                                        </div>
-                                    {% endfor %}
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h2 class="govuk-fieldset__heading">
+                                    Select answer
+                                </h2>
+                            </legend>
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                {% for datum in questionBlock.prompts %}
                                     <div class="govuk-radios__item">
-                                        <input class="govuk-radios__input" id="dontknow" name="{{ questionBlock.externalId }}" type="radio"
-                                               value="dontknow">
-                                        <label class="govuk-label govuk-radios__label" for="dontknow">I don't know</label>
+                                        <input
+                                                class="govuk-radios__input"
+                                                id="{{ datum }}"
+                                                name="{{ questionBlock.externalId }}"
+                                                type="radio"
+                                                value="{{ datum }}"
+                                                {% if form.get(questionBlock.externalId).value == datum %}checked{% endif %}
+                                        >
+                                        <label class="govuk-label govuk-radios__label"
+                                                for="{{ datum }}">{{ datum }}</label>
                                     </div>
+                                {% endfor %}
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="dontknow" name="{{ questionBlock.externalId }}" type="radio"
+                                            value="dontknow">
+                                    <label class="govuk-label govuk-radios__label" for="dontknow">I don't know</label>
                                 </div>
-                            </fieldset>
-                        </div>
-                        <div class="govuk-form-group">
-                            <input class="govuk-button" type="submit" value="Continue">
-                        </div>
+                            </div>
+                        </fieldset>
                     </div>
-                {% endif %}
-            {% endfor %}
-        </form>
-</div>
+                    <div class="govuk-form-group">
+                        <input class="govuk-button" type="submit" value="Continue">
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </form>
 {% endblock %}

@@ -39,8 +39,9 @@
         </div>
     </div>
 </header>
+{% block beforeMain %}{% endblock %}
 <div class="govuk-width-container">
-    <main class="app-main-wrapper govuk-!-padding-bottom-7" id="main-content" role="main">
+    <main class="govuk-main-wrapper" id="main-content" role="main">
         {% block content %}{% endblock %}
     </main>
 </div>

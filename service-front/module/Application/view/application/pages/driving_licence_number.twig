@@ -1,106 +1,109 @@
 {% extends "layout/layout" %}
-{% block content %}
+
+{% block beforeMain %}
     {% include 'layout/id_check_banner.twig' with details_data %}
-    <div class="govuk-width-container govuk-!-padding-top-5">
-        <h1 class="govuk-heading-xl">
-            {% block title %}
-                UK Driving Licence
-            {% endblock %}
-        </h1>
-        <form method="POST" target="">
-            <h2 class="govuk-heading-m">Name on licence</h2>
-            <p class="govuk-body">
-                {{ details_data.firstName }} {{ details_data.lastName }}
-            </p>
-            <h2 class="govuk-heading-m">Date of birth</h2>
-            <p class="govuk-body">
-                {{ dob_full }}
-            </p>
-            <div class="govuk-form-group {% if form.get('dln').messages %}govuk-form-group--error{% endif %}">
-                <h2 class="govuk-label-wrapper">
-                    <label class="govuk-label govuk-label--m" for="dln">
-                        Driving licence number
-                    </label>
-                </h2>
+{% endblock %}
 
-                <details class="govuk-details">
-                    <summary class="govuk-details__summary">
-                        <span class="govuk-details__summary-text">
-                          Where to find the driving licence number
-                        </span>
-                    </summary>
-                    <div class="govuk-details__text govuk-!-padding-bottom-0">
-                        The driving licence number is found in section 5 of the details section for both paper and photo
-                        ID
-                        licences. Example:
-                        <img src="{{ '/assets/images/driving_licence_sample.png' | basepath }}"
-                             alt="Photo of driving licence highlighting location of licence number"/>
-                    </div>
-                </details>
+{% block content %}
+    <h1 class="govuk-heading-xl">
+        {% block title %}
+            UK Driving Licence
+        {% endblock %}
+    </h1>
+    <form method="POST" target="">
+        <h2 class="govuk-heading-m">Name on licence</h2>
+        <p class="govuk-body">
+            {{ details_data.firstName }} {{ details_data.lastName }}
+        </p>
+        <h2 class="govuk-heading-m">Date of birth</h2>
+        <p class="govuk-body">
+            {{ dob_full }}
+        </p>
+        <div class="govuk-form-group {% if form.get('dln').messages %}govuk-form-group--error{% endif %}">
+            <h2 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--m" for="dln">
+                    Driving licence number
+                </label>
+            </h2>
 
-                <p id="dln-hint" class="govuk-hint">
-                    A driving licence number is 16-digits. Example: MORGA657054SM9IJ
+            <details class="govuk-details">
+                <summary class="govuk-details__summary">
+                    <span class="govuk-details__summary-text">
+                        Where to find the driving licence number
+                    </span>
+                </summary>
+                <div class="govuk-details__text govuk-!-padding-bottom-0">
+                    The driving licence number is found in section 5 of the details section for both paper and photo
+                    ID
+                    licences. Example:
+                    <img src="{{ '/assets/images/driving_licence_sample.png' | basepath }}"
+                            alt="Photo of driving licence highlighting location of licence number"/>
+                </div>
+            </details>
+
+            <p id="dln-hint" class="govuk-hint">
+                A driving licence number is 16-digits. Example: MORGA657054SM9IJ
+            </p>
+
+            {% if form.get('dln').messages %}
+                <p id="dln-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('dln').messages | join(', ', ' and ') }}
                 </p>
+            {% endif %}
 
-                {% if form.get('dln').messages %}
+            <input
+                    class="govuk-input govuk-!-width-one-third {% if form.get('dln').messages %}govuk-input--error{% endif %}"
+                    id="dln" name="dln" type="text" autocomplete="dln"
+                    value="{{ form.get('dln').value }}"
+                    aria-describedby="dln-hint {% if form.get('dln').messages %}dln-error{% endif %}"
+            />
+        </div>
+
+        <div class="govuk-form-group {% if form.get('inDate').messages %}govuk-form-group--error{% endif %}">
+            <fieldset class="govuk-fieldset" aria-describedby="govuk-error-message">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h2 class="govuk-fieldset__heading">
+                        Driving licence in date?
+                    </h2>
+                </legend>
+                {% if form.get('inDate').messages %}
                     <p id="dln-error" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
-                        {{ form.get('dln').messages | join(', ', ' and ') }}
+                        {{ form.get('inDate').messages | join(', ', ' and ') }}
                     </p>
                 {% endif %}
-
-                <input
-                        class="govuk-input govuk-!-width-one-third {% if form.get('dln').messages %}govuk-input--error{% endif %}"
-                        id="dln" name="dln" type="text" autocomplete="dln"
-                        value="{{ form.get('dln').value }}"
-                        aria-describedby="dln-hint {% if form.get('dln').messages %}dln-error{% endif %}"
-                />
-            </div>
-
-            <div class="govuk-form-group {% if form.get('inDate').messages %}govuk-form-group--error{% endif %}">
-                <fieldset class="govuk-fieldset" aria-describedby="govuk-error-message">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                        <h2 class="govuk-fieldset__heading">
-                            Driving licence in date?
-                        </h2>
-                    </legend>
-                    {% if form.get('inDate').messages %}
-                        <p id="dln-error" class="govuk-error-message">
-                            <span class="govuk-visually-hidden">Error:</span>
-                            {{ form.get('inDate').messages | join(', ', ' and ') }}
-                        </p>
-                    {% endif %}
-                    <div class="govuk-radios" data-module="govuk-radios">
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="inDateTrue" name="inDate" type="radio"
-                                   value="yes">
-                            <label class="govuk-label govuk-radios__label" for="inDateTrue">Yes</label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="inDateFalse" name="inDate" type="radio"
-                                   value="no">
-                            <label class="govuk-label govuk-radios__label" for="inDateFalse">No</label>
-                        </div>
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="inDateTrue" name="inDate" type="radio"
+                                value="yes">
+                        <label class="govuk-label govuk-radios__label" for="inDateTrue">Yes</label>
                     </div>
-                </fieldset>
-            </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="inDateFalse" name="inDate" type="radio"
+                                value="no">
+                        <label class="govuk-label govuk-radios__label" for="inDateFalse">No</label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="govuk-button-group">
             <button class="govuk-button">Continue</button>
 
             {% if details_data.personType == 'certificateProvider' %}
                 <a href="./how-will-cp-confirm" role="button" draggable="false"
-                   class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
-                   data-module="govuk-button">
+                    class="govuk-button moj-button-menu__item govuk-button--secondary"
+                    data-module="govuk-button">
                     Try a different method
                 </a>
             {% else %}
                 <a href="./how-will-donor-confirm" role="button" draggable="false"
-                   class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
-                   data-module="govuk-button">
+                    class="govuk-button moj-button-menu__item govuk-button--secondary"
+                    data-module="govuk-button">
                     Try a different method
                 </a>
             {% endif %}
-
-        </form>
-
-    </div>
+        </div>
+    </form>
 {% endblock %}
