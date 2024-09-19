@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Helpers\DTO\FormProcessorResponseDto;
-use Laminas\Form\FormInterface;
-use Laminas\Stdlib\Parameters;
 
+/**
+ * @psalm-import-type Address from OpgApiServiceInterface
+ */
 class AddressProcessorHelper
 {
     /**
@@ -20,7 +20,7 @@ class AddressProcessorHelper
         'line3' => 'line3',
         'town' => 'town',
         'postcode' => 'postcode',
-        'country' => 'country'
+        'country' => 'country',
     ];
 
     /**
@@ -32,13 +32,16 @@ class AddressProcessorHelper
         'line3' => 'addressLine3',
         'town' => 'town',
         'postcode' => 'postcode',
-        'country' => 'country'
+        'country' => 'country',
     ];
 
     public function __construct()
     {
     }
 
+    /**
+     * @return Address
+     */
     public function getAddress(array $address): array
     {
         return [
@@ -81,6 +84,7 @@ class AddressProcessorHelper
                         $str .= $line . ", ";
                     }
                 }
+
                 return $str;
             };
             $index = json_encode($arr);
@@ -93,6 +97,7 @@ class AddressProcessorHelper
                 strlen($arrString) - 2
             );
         }
+
         return $stringified;
     }
 }
