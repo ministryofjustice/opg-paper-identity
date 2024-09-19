@@ -143,7 +143,7 @@ class DataWriteHandlerTest extends TestCase
                     $input = $params[0];
                     $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
                     $this->assertArrayHasKey('UpdateExpression', $input);
-                    $this->assertEquals(['#NV' => 'kbvQuestions'], $input['ExpressionAttributeNames']);
+                    $this->assertEquals(['#AT0' => 'kbvQuestions'], $input['ExpressionAttributeNames']);
 
                     return true;
                 })
@@ -156,7 +156,6 @@ class DataWriteHandlerTest extends TestCase
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'kbvQuestions',
-            'S',
             json_encode([
                 'one' => [
                     'question' => 'Who is your electricity provider?',
@@ -175,7 +174,7 @@ class DataWriteHandlerTest extends TestCase
      * @psalm-suppress UndefinedMagicMethod
      * @psalm-suppress PossiblyUndefinedMethod
      */
-    public function testUpdateCaseChildAttribute(): void
+    public function testUpdateCaseDataChildAttribute(): void
     {
         $this->dynamoDbClientMock->expects($this->once())
             ->method('__call')
@@ -187,7 +186,7 @@ class DataWriteHandlerTest extends TestCase
                     $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
                     $this->assertArrayHasKey('UpdateExpression', $input);
                     $this->assertEquals(
-                        ['#CV' => 'counterService','#NV' => 'notificationState'],
+                        ['#AT0' => 'counterService','#AT1' => 'notificationState'],
                         $input['ExpressionAttributeNames']
                     );
                     return true;
@@ -198,10 +197,9 @@ class DataWriteHandlerTest extends TestCase
         $this->loggerMock->expects($this->never())->method('error');
 
         // Call the updateCaseData method with test data
-        $this->sut->updateCaseChildAttribute(
+        $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'counterService.notificationState',
-            'S',
             'complete'
         );
     }
@@ -222,7 +220,7 @@ class DataWriteHandlerTest extends TestCase
                     $input = $params[0];
                     $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
                     $this->assertArrayHasKey('UpdateExpression', $input);
-                    $this->assertEquals(['#NV' => 'idMethod'], $input['ExpressionAttributeNames']);
+                    $this->assertEquals(['#AT0' => 'idMethod'], $input['ExpressionAttributeNames']);
 
                     return true;
                 })
@@ -235,8 +233,7 @@ class DataWriteHandlerTest extends TestCase
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'idMethod',
-            'S',
-            IdMethod::PassportNumber
+            IdMethod::PassportNumber->value
         );
     }
 
@@ -260,7 +257,6 @@ class DataWriteHandlerTest extends TestCase
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'idMethod',
-            'S',
             'an invalid value'
         );
     }

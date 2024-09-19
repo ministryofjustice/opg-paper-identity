@@ -448,10 +448,7 @@ class IdentityControllerTest extends TestCase
             ->with(
                 $uuid,
                 "caseProgress",
-                "M",
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                $data,
             );
 
         $path = sprintf('/cases/%s/save-case-progress', $uuid);
