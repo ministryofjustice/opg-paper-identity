@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace Application\KBV;
 
-/**
- * @psalm-type Question = array{
- *   externalId: string,
- *   question: string,
- *   prompts: string[],
- *   answered: bool,
- * }
- */
+use Application\Model\Entity\KBVQuestion;
+
 interface KBVServiceInterface
 {
     /**
      * Retrieves an array containing questions without answers and formatted questions with answers.
      *
-     * @return Question[]
+     * @return KBVQuestion[]
      */
     public function fetchFormattedQuestions(string $uuid): array;
 

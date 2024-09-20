@@ -6,16 +6,13 @@ namespace Application\Mock\KBV;
 
 use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
+use Application\Model\Entity\KBVQuestion;
 
 class KBVService implements KBVServiceInterface
 {
     /**
      * @psalm-suppress ArgumentTypeCoercion
-     * @return array{
-     *   externalId: string,
-     *   question: string,
-     *   prompts: string[],
-     * }[]
+     * @return KBVQuestion[]
      */
     private function getKBVQuestions(): array
     {
@@ -25,7 +22,12 @@ class KBVService implements KBVServiceInterface
         foreach (array_rand($questionsList, 4) as $key) {
             $question = $questionsList[$key];
             shuffle($question['prompts']);
-            $questionSelection[] = $question;
+            $questionSelection[] = KBVQuestion::fromArray([
+                'externalId' => $question['externalId'],
+                'question' => $question['question'],
+                'prompts' => $question['prompts'],
+                'answered' => false,
+            ]);
         }
 
         return $questionSelection;
@@ -35,10 +37,7 @@ class KBVService implements KBVServiceInterface
     {
         $questions = $this->getKBVQuestions();
 
-        return array_map(fn (array $question) => [
-            ...$question,
-            'answered' => false,
-        ], $questions);
+        return $questions;
     }
 
     public function checkAnswers(array $answers, string $uuid): AnswersOutcome
@@ -46,9 +45,9 @@ class KBVService implements KBVServiceInterface
         $db = $this->getKBVQuestions();
 
         foreach ($answers as $externalId => $answer) {
-            $question = array_filter($db, fn ($q) => $q['externalId'] === $externalId)[0];
+            $question = array_filter($db, fn ($q) => $q->externalId === $externalId)[0];
 
-            if ($question['prompts'][0] !== $answer) {
+            if ($question->prompts[0] !== $answer) {
                 return AnswersOutcome::CompleteFail;
             }
         }
