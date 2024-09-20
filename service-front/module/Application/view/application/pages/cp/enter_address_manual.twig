@@ -1,6 +1,10 @@
 {% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
 {% block content %}
-{% include 'layout/id_check_banner.twig' with details_data %}
 <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
     {% block title %}
         What is the address on the ID document?

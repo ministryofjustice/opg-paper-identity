@@ -1,7 +1,10 @@
 {% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
 {% block content %}
-{% include 'layout/id_check_banner.twig' with details_data %}
-<div class="govuk-width-container govuk-!-padding-top-5">
     <form method="POST" target="">
         <h1 class="govuk-heading-xl">
             {% block title %}
@@ -61,21 +64,21 @@
                 </ul>
             </div>
         </details>
-        <button class="govuk-button" data-module="govuk-button">Continue</button>
-        {% if details_data.personType == 'certificateProvider' %}
-            <a href="./how-will-cp-confirm" role="button" draggable="false"
-               class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
-               data-module="govuk-button">
-                Try a different method
-            </a>
-        {% else %}
-            <a href="./how-will-donor-confirm" role="button" draggable="false"
-               class="govuk-button moj-button-menu__item govuk-button--secondary govuk-!-static-margin-left-2"
-               data-module="govuk-button">
-                Try a different method
-            </a>
-        {% endif %}
+        <div class="govuk-button-group">
+            <button class="govuk-button" data-module="govuk-button">Continue</button>
+            {% if details_data.personType == 'certificateProvider' %}
+                <a href="./how-will-cp-confirm" role="button" draggable="false"
+                class="govuk-button moj-button-menu__item govuk-button--secondary"
+                data-module="govuk-button">
+                    Try a different method
+                </a>
+            {% else %}
+                <a href="./how-will-donor-confirm" role="button" draggable="false"
+                class="govuk-button moj-button-menu__item govuk-button--secondary"
+                data-module="govuk-button">
+                    Try a different method
+                </a>
+            {% endif %}
+        </div>
     </form>
-
-</div>
 {%  endblock %}
