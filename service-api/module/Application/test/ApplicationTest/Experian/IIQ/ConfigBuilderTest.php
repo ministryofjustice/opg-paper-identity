@@ -6,6 +6,7 @@ namespace ApplicationTest\Experian\IIQ;
 
 use Application\Experian\IIQ\ConfigBuilder;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\IIQControl;
 use PHPUnit\Framework\TestCase;
 
 class ConfigBuilderTest extends TestCase
@@ -65,7 +66,10 @@ class ConfigBuilderTest extends TestCase
         $configBuilder = new ConfigBuilder();
 
         $caseData = CaseData::fromArray([
-            'iiqControl' => '{"URN":"test UUID","AuthRefNo":"abc"}',
+            'iiqControl' => IIQControl::fromArray([
+                'urn' => 'test UUID',
+                'authRefNo' => 'abc',
+            ]),
         ]);
 
         $rtqConfig = $configBuilder->buildRTQRequest([
@@ -73,7 +77,7 @@ class ConfigBuilderTest extends TestCase
                 'experianId' => 'QID21',
                 'answer' => 'BASINGSTOKE',
                 'flag' => 1,
-            ]
+            ],
         ], $caseData);
 
         $this->assertEquals([

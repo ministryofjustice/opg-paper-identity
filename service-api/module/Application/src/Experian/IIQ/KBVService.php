@@ -8,12 +8,13 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
+use Application\Model\Entity\IIQControl;
+use Application\Model\Entity\KBVQuestion;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 /**
  * @psalm-import-type Question from IIQService as IIQQuestion
- * @psalm-import-type Question from KBVServiceInterface as AppQuestion
  */
 class KBVService implements KBVServiceInterface
 {
@@ -28,19 +29,19 @@ class KBVService implements KBVServiceInterface
 
     /**
      * @param IIQQuestion[] $iiqQuestions
-     * @return AppQuestion[]
+     * @return KBVQuestion[]
      */
     private function formatQuestions(array $iiqQuestions): array
     {
         $formattedQuestions = [];
 
         foreach ($iiqQuestions as $question) {
-            $formattedQuestions[] = [
+            $formattedQuestions[] = KBVQuestion::fromArray([
                 'externalId' => $question->QuestionID,
                 'question' => $question->Text,
                 'prompts' => $question->AnswerFormat->AnswerList,
                 'answered' => false,
-            ];
+            ]);
         }
 
         return $formattedQuestions;
@@ -48,7 +49,7 @@ class KBVService implements KBVServiceInterface
 
     /**
      * @throws Exception\CannotGetQuestionsException
-     * @return AppQuestion[]
+     * @return KBVQuestion[]
      */
     public function fetchFormattedQuestions(string $uuid): array
     {
@@ -58,8 +59,8 @@ class KBVService implements KBVServiceInterface
             throw new RuntimeException('Case not found');
         }
 
-        if (! is_null($caseData->kbvQuestions)) {
-            return json_decode($caseData->kbvQuestions, true);
+        if (count($caseData->kbvQuestions)) {
+            return $caseData->kbvQuestions;
         }
 
         $saaRequest = $this->configBuilder->buildSAARequest($caseData);
@@ -70,13 +71,16 @@ class KBVService implements KBVServiceInterface
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'kbvQuestions',
-            json_encode($formattedQuestions)
+            $formattedQuestions
         );
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'iiqControl',
-            json_encode($questions['control'])
+            IIQControl::fromArray([
+                'urn' => $questions['control']['URN'],
+                'authRefNo' => $questions['control']['AuthRefNo'],
+            ])
         );
 
         return $formattedQuestions;
@@ -93,22 +97,20 @@ class KBVService implements KBVServiceInterface
             throw new RuntimeException('Case not found');
         }
 
-        if (is_null($caseData->kbvQuestions)) {
+        if (! count($caseData->kbvQuestions)) {
             throw new RuntimeException('KBV questions have not been created yet');
         }
 
-        /** @var AppQuestion[] $questions */
-        $questions = json_decode($caseData->kbvQuestions, true);
         $iiqFormattedAnswers = [];
-        foreach ($questions as &$question) {
-            if (key_exists($question['externalId'], $answers)) {
+        foreach ($caseData->kbvQuestions as &$question) {
+            if (key_exists($question->externalId, $answers)) {
                 $iiqFormattedAnswers[] = [
-                    'experianId' => $question['externalId'],
-                    'answer' => $answers[$question['externalId']],
+                    'experianId' => $question->externalId,
+                    'answer' => $answers[$question->externalId],
                     'flag' => '0',
                 ];
 
-                $question['answered'] = true;
+                $question->answered = true;
             }
         }
 
@@ -119,15 +121,17 @@ class KBVService implements KBVServiceInterface
 
         if (isset($result['questions'])) {
             $questions = [
-                ...$questions,
+                ...$caseData->kbvQuestions,
                 ...$this->formatQuestions($result['questions']),
             ];
+        } else {
+            $questions = $caseData->kbvQuestions;
         }
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'kbvQuestions',
-            json_encode($questions)
+            $questions
         );
 
         if ($nextTransactionId === 'END') {

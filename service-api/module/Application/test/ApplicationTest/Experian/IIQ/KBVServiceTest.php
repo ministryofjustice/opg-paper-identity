@@ -11,6 +11,8 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\AnswersOutcome;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\IIQControl;
+use Application\Model\Entity\KBVQuestion;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -89,7 +91,7 @@ class KBVServiceTest extends TestCase
             ->with($saaRequest)
             ->willReturn($questionsFromIIQ);
 
-        $storedQuestions = json_encode([
+        $storedQuestions = [
             [
                 'externalId' => 'QU18', 'question' => 'Question Eighteen',
                 'prompts' => ['A', 'B', 'C'], 'answered' => false,
@@ -98,7 +100,7 @@ class KBVServiceTest extends TestCase
                 'externalId' => 'QU93', 'question' => 'Question Ninety-Three',
                 'prompts' => ['A', 'B'], 'answered' => false,
             ],
-        ]);
+        ];
 
         $writeHandler = $this->createMock(DataWriteHandler::class);
         $writeHandler->expects($this->exactly(2))
@@ -107,9 +109,13 @@ class KBVServiceTest extends TestCase
                 /** @psalm-suppress MissingClosureParamType */
                 fn (...$params) => match (true) {
                     $params[0] === $uuid && $params[1] === 'kbvQuestions'
-                        && $params[2] === $storedQuestions => null,
+                        && $params[2][0] instanceof KBVQuestion
+                        && $params[2][0]->jsonSerialize() === $storedQuestions[0]
+                        && $params[2][1] instanceof KBVQuestion
+                        && $params[2][1]->jsonSerialize() === $storedQuestions[1] => null,
                     $params[0] === $uuid && $params[1] === 'iiqControl'
-                        && $params[2] === '{"URN":"test UUID","AuthRefNo":"abc"}' => null,
+                        && $params[2] instanceof IIQControl
+                        && $params[2]->urn === 'test UUID' && $params[2]->authRefNo === 'abc' => null,
                     default => self::fail('Did not expect:' . print_r($params, true))
                 }
             );
@@ -119,7 +125,7 @@ class KBVServiceTest extends TestCase
         $sut = new KBVService($iiqService, $configBuilder, $queryHandler, $writeHandler, $logger);
 
         $this->assertEquals([
-            [
+            KBVQuestion::fromArray([
                 'externalId' => 'QU18',
                 'question' => 'Question Eighteen',
                 'prompts' => [
@@ -128,8 +134,8 @@ class KBVServiceTest extends TestCase
                     'C',
                 ],
                 'answered' => false,
-            ],
-            [
+            ]),
+            KBVQuestion::fromArray([
                 'externalId' => 'QU93',
                 'question' => 'Question Ninety-Three',
                 'prompts' => [
@@ -137,7 +143,7 @@ class KBVServiceTest extends TestCase
                     'B',
                 ],
                 'answered' => false,
-            ],
+            ]),
         ], $sut->fetchFormattedQuestions($uuid));
     }
 
@@ -171,7 +177,7 @@ class KBVServiceTest extends TestCase
 
         $caseData = CaseData::fromArray([
             'id' => $uuid,
-            'kbvQuestions' => json_encode($questions),
+            'kbvQuestions' => $questions,
         ]);
 
         $queryHandler->expects($this->once())
@@ -203,24 +209,28 @@ class KBVServiceTest extends TestCase
         ];
 
         $savedQuestions = [
-            [
+            KBVQuestion::fromArray([
                 'externalId' => 'Q101',
+                'question' => '',
+                'prompts' => [],
                 'answered' => true,
-            ],
-            [
+            ]),
+            KBVQuestion::fromArray([
                 'externalId' => 'Q102',
+                'question' => '',
+                'prompts' => [],
                 'answered' => true,
-            ],
+            ]),
         ];
 
         if ($newQuestion !== null) {
             $rtqResponse['questions'] = [$newQuestion];
-            $savedQuestions[] = [
+            $savedQuestions[] = KBVQuestion::fromArray([
                 'externalId' => $newQuestion->QuestionID,
                 'question' => $newQuestion->Text,
                 'prompts' => $newQuestion->AnswerFormat->AnswerList,
                 'answered' => false,
-            ];
+            ]);
         }
 
         $iiqService->expects($this->once())
@@ -233,7 +243,7 @@ class KBVServiceTest extends TestCase
             ->with(
                 $uuid,
                 'kbvQuestions',
-                json_encode($savedQuestions),
+                $savedQuestions,
             );
 
         $sut = new KBVService($iiqService, $configBuilder, $queryHandler, $writeHandler, $logger);

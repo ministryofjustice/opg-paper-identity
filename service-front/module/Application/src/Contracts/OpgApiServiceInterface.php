@@ -35,7 +35,6 @@ namespace Application\Contracts;
  *   searchPostcode?: string,
  *   counterService?: array{
  *     selectedPostOffice: string,
- *     selectedPostOfficeDeadline: string,
  *     notificationState: string,
  *     notificationsAuthToken: string,
  *     state: string,

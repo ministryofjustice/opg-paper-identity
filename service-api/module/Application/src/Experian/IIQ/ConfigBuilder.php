@@ -64,15 +64,14 @@ class ConfigBuilder
      */
     public function buildRTQRequest(array $answersArray, CaseData $case): array
     {
-        /** @var string $json */
-        $json = $case->iiqControl;
-        /** @var Control */
-        $iiqControl = json_decode($json, true);
+        if ($case->iiqControl === null) {
+            throw new RuntimeException('Cannot respond to questions without IIQ control data');
+        }
 
         $rtqConfig = [
             'Control' => [
-                'URN' => $iiqControl['URN'],
-                'AuthRefNo' => $iiqControl['AuthRefNo'],
+                'URN' => $case->iiqControl->urn,
+                'AuthRefNo' => $case->iiqControl->authRefNo,
             ],
             'Responses' => [
                 'Response' => [],
