@@ -156,7 +156,7 @@ class DataWriteHandlerTest extends TestCase
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
             'kbvQuestions',
-            json_encode([
+            [
                 'one' => [
                     'question' => 'Who is your electricity provider?',
                     'prompts' => [
@@ -167,7 +167,7 @@ class DataWriteHandlerTest extends TestCase
                     ],
                     'answered' => false,
                 ],
-            ])
+            ]
         );
     }
     /**

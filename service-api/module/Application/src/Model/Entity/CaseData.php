@@ -31,6 +31,9 @@ class CaseData implements JsonSerializable
     #[Validator(Uuid::class)]
     public string $id;
 
+    /**
+     * @var "donor"|"certificateProvider"
+     */
     #[Validator(NotEmpty::class)]
     public string $personType;
 
@@ -65,9 +68,13 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
     public array $lpas;
 
-    public ?string $kbvQuestions = null;
+    /**
+     * @var KBVQuestion[]
+     */
+    #[Annotation\ComposedObject(KBVQuestion::class, isCollection: true)]
+    public array $kbvQuestions = [];
 
-    public ?string $iiqControl = null;
+    public ?IIQControl $iiqControl = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
@@ -117,6 +124,10 @@ class CaseData implements JsonSerializable
                 $instance->counterService = CounterService::fromArray($value);
             } elseif ($key === 'caseProgress') {
                 $instance->caseProgress = CaseProgress::fromArray($value);
+            } elseif ($key === 'kbvQuestions') {
+                $instance->kbvQuestions = array_map(fn(array $question) => KBVQuestion::fromArray($question), $value);
+            } elseif ($key === 'iiqControl') {
+                $instance->iiqControl = IIQControl::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -128,22 +139,33 @@ class CaseData implements JsonSerializable
     }
 
     /**
-     * @returns array{
+     * @return array{
+     *     id: string,
      *     personType: "donor"|"certificateProvider",
      *     firstName: string,
      *     lastName: string,
-     *     dob: string,
-     *     address: string[],
+     *     dob: ?string,
+     *     address: array{
+     *       line1: string,
+     *       line2?: string,
+     *       line3?: string,
+     *       town?: string,
+     *       postcode: string,
+     *       country?: string,
+     *     },
      *     lpas: string[],
-     *     kbvQuestions?: string,
-     *     iiqControl?: string
+     *     kbvQuestions: KBVQuestion[],
+     *     iiqControl?: IIQControl,
      *     documentComplete: bool,
-     *     alternateAddress?: string[],
-     *     searchPostcode?: string,
-     *     yotiSessionId?: string,
-     *     counterService?: string[],
-     *     idMethod?: string,
-     *     idMethodIncludingNation?: string[],
+     *     alternateAddress: ?string[],
+     *     searchPostcode: ?string,
+     *     yotiSessionId: string,
+     *     counterService?: CounterService,
+     *     idMethod: ?string,
+     *     idMethodIncludingNation: ?array{
+     *       id_method?: string,
+     *       country?: string,
+     *     },
      *     caseProgress?: CaseProgress,
      * }
      */
@@ -163,13 +185,11 @@ class CaseData implements JsonSerializable
             'idMethod' => $this->idMethod,
             'yotiSessionId' => $this->yotiSessionId,
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
+            'kbvQuestions' => $this->kbvQuestions,
         ];
-        if ($this->counterService !== null) {
-            $arr['counterService'] = $this->counterService->toArray();
-        }
 
-        if ($this->kbvQuestions !== null) {
-            $arr['kbvQuestions'] = $this->kbvQuestions;
+        if ($this->counterService !== null) {
+            $arr['counterService'] = $this->counterService;
         }
 
         if ($this->iiqControl !== null) {

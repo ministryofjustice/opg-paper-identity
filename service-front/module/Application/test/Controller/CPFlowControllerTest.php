@@ -61,7 +61,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "documentComplete" => false,
             "alternateAddress" => [
             ],
-            "selectedPostOfficeDeadline" => null,
             "selectedPostOffice" => null,
             "searchPostcode" => null,
             "idMethod" => "nin",

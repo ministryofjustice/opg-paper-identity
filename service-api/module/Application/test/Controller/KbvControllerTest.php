@@ -115,13 +115,12 @@ class KbvControllerTest extends TestCase
             'dob' => '',
             'lpas' => [],
             'address' => [],
-        ]);
-
-        $actual->kbvQuestions = json_encode([
-            'one' => ['answer' => 'VoltWave'],
-            'two' => ['answer' => 'Germanotta'],
-            'tree' => ['answer' => 'July'],
-            'four' => ['answer' => 'Pink'],
+            'kbvQuestions' => [
+                [],
+                [],
+                [],
+                [],
+            ],
         ]);
 
         return [

@@ -210,7 +210,6 @@ class IdentityController extends AbstractActionController
     public function confirmSelectedPostofficeAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
         /** @var CaseData $caseData */
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
@@ -225,7 +224,6 @@ class IdentityController extends AbstractActionController
         if ($caseData->counterService !== null) {
             $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
         }
-        $counterServiceMap["selectedPostOfficeDeadline"] = $data['deadline'];
 
         try {
             $this->dataHandler->updateCaseData(
