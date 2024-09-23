@@ -1,6 +1,6 @@
 services:
   sirius-mock:
-    image: stoplight/prism:5.11.1
+    image: stoplight/prism:5.11.2
     command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
@@ -12,7 +12,7 @@ services:
       - "./docker/sirius/openapi.yml:/tmp/openapi.yml"
 
   experian-crosscore-mock:
-    image: stoplight/prism:5.11.1
+    image: stoplight/prism:5.11.2
     command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
@@ -24,7 +24,7 @@ services:
       - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
 
   experian-crosscore-auth-mock:
-    image: stoplight/prism:5.11.1
+    image: stoplight/prism:5.11.2
     command: mock -h 0.0.0.0 -p 4011 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
