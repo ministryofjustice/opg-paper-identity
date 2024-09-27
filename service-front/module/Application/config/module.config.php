@@ -578,7 +578,7 @@ return [
         'identity_methods' => [
             'nin' => 'National Insurance number',
             'pn' => 'UK Passport (current or expired in the last 18 months)',
-            'dln' => 'UK photocard driving licence (must be current) ',
+            'dln' => 'UK driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
             'po_ukp' => 'UK passport (up to 18 months expired)',
@@ -587,6 +587,7 @@ return [
             'po_ukd' => 'UK Driving licence (must be current)',
             'po_eud' => 'EU Driving licence (must be current)',
             'po_ind' => 'International driving licence (must be current)',
+            'po_brp' => 'UK Biometric Residence Permit',
             'po_n' => 'None of the above',
         ],
         'non_uk_identity_methods' => [
