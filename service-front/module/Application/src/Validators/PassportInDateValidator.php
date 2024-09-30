@@ -11,7 +11,7 @@ class PassportInDateValidator extends AbstractValidator
     public const PASSPORT_DATE = 'passport_date';
     public const PASSPORT_CONFIRM = 'passport_confirm';
     protected array $messageTemplates = [
-        self::PASSPORT_DATE => 'The passport needs to be no more than 5 years out of date. Check the expiry date 
+        self::PASSPORT_DATE => 'The passport needs to be no more than 18 months out of date. Check the expiry date 
         and change to Yes, or try a different method',
         self::PASSPORT_CONFIRM => 'Please choose yes or no',
     ];

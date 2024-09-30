@@ -17,12 +17,12 @@ use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
+use Application\Model\Entity\CaseProgress;
 
 /**
  * DTO for holding data required to make new case entry post
  * @psalm-suppress MissingConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
- * @psalm-suppress UnusedProperty
  */
 class CaseData implements JsonSerializable
 {
@@ -31,6 +31,9 @@ class CaseData implements JsonSerializable
     #[Validator(Uuid::class)]
     public string $id;
 
+    /**
+     * @var "donor"|"certificateProvider"
+     */
     #[Validator(NotEmpty::class)]
     public string $personType;
 
@@ -47,7 +50,14 @@ class CaseData implements JsonSerializable
     public string $lastName;
 
     /**
-     * @var string[]
+     * @var array{
+     *   line1: string,
+     *   line2?: string,
+     *   line3?: string,
+     *   town?: string,
+     *   postcode: string,
+     *   country?: string,
+     * }
      */
     #[Validator(NotEmpty::class)]
     public array $address;
@@ -58,7 +68,13 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
     public array $lpas;
 
-    public ?string $kbvQuestions = null;
+    /**
+     * @var KBVQuestion[]
+     */
+    #[Annotation\ComposedObject(KBVQuestion::class, isCollection: true)]
+    public array $kbvQuestions = [];
+
+    public ?IIQControl $iiqControl = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
@@ -82,14 +98,19 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(Uuid::class)]
     //Due to dynamodb quarks, due to index this always need to have a value
     public string $yotiSessionId = '00000000-0000-0000-0000-000000000000';
+
     #[Annotation\Required(false)]
+    #[Annotation\ComposedObject(CounterService::class)]
     public ?CounterService $counterService = null;
 
+    /**
+     * @var ?array{country?: string, id_method?: string}
+     */
     #[Annotation\Required(false)]
     public ?array $idMethodIncludingNation = [];
 
     #[Annotation\Required(false)]
-    public ?string $progressPage = null;
+    public ?CaseProgress $caseProgress = null;
 
     /**
      * @param array<string, mixed> $data
@@ -101,6 +122,12 @@ class CaseData implements JsonSerializable
         foreach ($data as $key => $value) {
             if ($key === 'counterService') {
                 $instance->counterService = CounterService::fromArray($value);
+            } elseif ($key === 'caseProgress') {
+                $instance->caseProgress = CaseProgress::fromArray($value);
+            } elseif ($key === 'kbvQuestions') {
+                $instance->kbvQuestions = array_map(fn(array $question) => KBVQuestion::fromArray($question), $value);
+            } elseif ($key === 'iiqControl') {
+                $instance->iiqControl = IIQControl::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -112,22 +139,34 @@ class CaseData implements JsonSerializable
     }
 
     /**
-     * @returns array{
+     * @return array{
+     *     id: string,
      *     personType: "donor"|"certificateProvider",
      *     firstName: string,
      *     lastName: string,
-     *     dob: string,
-     *     address: string[],
+     *     dob: ?string,
+     *     address: array{
+     *       line1: string,
+     *       line2?: string,
+     *       line3?: string,
+     *       town?: string,
+     *       postcode: string,
+     *       country?: string,
+     *     },
      *     lpas: string[],
-     *     kbvQuestions?: string,
+     *     kbvQuestions: KBVQuestion[],
+     *     iiqControl?: IIQControl,
      *     documentComplete: bool,
-     *     alternateAddress?: string[],
-     *     searchPostcode?: string,
-     *     yotiSessionId?: string,
-     *     counterService?: string[],
-     *     idMethod?: string,
-     *     idMethodIncludingNation?: string[],
-     *     progressPage?: string,
+     *     alternateAddress: ?string[],
+     *     searchPostcode: ?string,
+     *     yotiSessionId: string,
+     *     counterService?: CounterService,
+     *     idMethod: ?string,
+     *     idMethodIncludingNation: ?array{
+     *       id_method?: string,
+     *       country?: string,
+     *     },
+     *     caseProgress?: CaseProgress,
      * }
      */
     public function toArray(): array
@@ -146,14 +185,19 @@ class CaseData implements JsonSerializable
             'idMethod' => $this->idMethod,
             'yotiSessionId' => $this->yotiSessionId,
             'idMethodIncludingNation' => $this->idMethodIncludingNation,
-            'progressPage' => $this->progressPage,
+            'kbvQuestions' => $this->kbvQuestions,
         ];
+
         if ($this->counterService !== null) {
-            $arr['counterService'] = $this->counterService->toArray();
+            $arr['counterService'] = $this->counterService;
         }
 
-        if ($this->kbvQuestions !== null) {
-            $arr['kbvQuestions'] = $this->kbvQuestions;
+        if ($this->iiqControl !== null) {
+            $arr['iiqControl'] = $this->iiqControl;
+        }
+
+        if ($this->caseProgress !== null) {
+            $arr['caseProgress'] = $this->caseProgress;
         }
 
         return $arr;

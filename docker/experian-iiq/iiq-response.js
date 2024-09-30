@@ -1,9 +1,15 @@
+const iiqStore = stores.open("iiq");
+
 const req = context.request;
 
 const saaEnvelope = `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <soap:Body>
     <SAAResponse xmlns="http://schema.uk.experian.com/Experian/IdentityIQ/Services/WebService">
       <SAAResult>
+        <Control>
+          <URN>{{urn}}</URN>
+          <AuthRefNo>6B3TGRWSKC</AuthRefNo>
+        </Control>
         <Questions>
           {{questions}}
         </Questions>
@@ -91,7 +97,7 @@ const questions = [
   },
   {
     QuestionID: "Q00007",
-    Text: "Who is your electricity supplier?",
+    Text: "Which company provides your car insurance?",
     Tooltip: "",
     AnswerFormat: {
       Identifier: "A00007",
@@ -149,47 +155,119 @@ function shuffle(a) {
 
 if (req.body.includes("SAA")) {
   const myQuestions = shuffle(questions)
-    .slice(0, 4)
+    .slice(0, 2)
     .map((x) => {
       x.AnswerFormat.AnswerList = shuffle(x.AnswerFormat.AnswerList);
       return { Question: x };
     });
 
+  const id = req.body.match(
+    /<([a-z0-9-]+):ApplicantIdentifier>(.*?)<\/\1:ApplicantIdentifier>/
+  )[2];
+  iiqStore.save(
+    id,
+    JSON.stringify({
+      questions: myQuestions.map((x) => ({
+        qid: x.Question.QuestionID,
+        correct: false,
+      })),
+    })
+  );
+
   respond().withContent(
-    saaEnvelope.replace("{{questions}}", myQuestions.map(toxml).join(""))
+    saaEnvelope
+      .replace("{{questions}}", myQuestions.map(toxml).join(""))
+      .replace("{{urn}}", id)
   );
 } else if (req.body.includes("RTQ")) {
   const answers = req.body.matchAll(
     /<([a-z0-9-]+):Response><\1:QuestionID>(.*?)<\/\1:QuestionID><\1:AnswerGiven>(.*?)<\/\1:AnswerGiven>/g
   );
 
-  let correct = 0;
+  const id = req.body.match(/<([a-z0-9-]+):URN>(.*?)<\/\1:URN>/)[2];
+  const iiqCase = JSON.parse(iiqStore.load(id));
+
   for (const [, , questionId, answer] of answers) {
+    const questionIndex = iiqCase.questions.findIndex(
+      (x) => x.qid === questionId
+    );
     const question = questions.find((x) => x.QuestionID === questionId);
-    if (question?.AnswerFormat.AnswerList[0] === answer) correct++;
+
+    iiqCase.questions[questionIndex].correct =
+      question?.AnswerFormat.AnswerList[0] === answer;
   }
 
-  respond()
-    .withContent(`<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <soap:Body>
-    <RTQResponse xmlns="http://schema.uk.experian.com/Experian/IdentityIQ/Services/WebService">
-      <RTQResult>
-        <Results>
-          <Outcome>${correct === 4 ? 'Authentication successful – capture SQ' : 'Authentication Unsuccessful'}</Outcome>
-          <AuthenticationResult>${correct === 4 ? 'Authenticated' : 'Not Authenticated'}</AuthenticationResult>
-          <Questions>
-            <Asked>4</Asked>
-            <Correct>${correct}</Correct>
-            <Incorrect>${4 - correct}</Incorrect>
-          </Questions>
-          <NextTransId>
-            <string>END</string>
-          </NextTransId>
-        </Results>
-      </RTQResult>
-    </RTQResponse>
-  </soap:Body>
-</soap:Envelope>`);
+  const asked = iiqCase.questions.length;
+  const correct = iiqCase.questions.filter((q) => q.correct === true).length;
+
+  if (correct >= 3 || asked - correct >= 2) {
+    iiqStore.save(id, JSON.stringify(iiqCase));
+
+    respond()
+      .withContent(`<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <soap:Body>
+        <RTQResponse xmlns="http://schema.uk.experian.com/Experian/IdentityIQ/Services/WebService">
+          <RTQResult>
+            <Results>
+              <Outcome>${
+                correct >= 3
+                  ? "Authentication successful – capture SQ"
+                  : "Authentication Unsuccessful"
+              }</Outcome>
+              <AuthenticationResult>${
+                correct >= 3 ? "Authenticated" : "Not Authenticated"
+              }</AuthenticationResult>
+              <Questions>
+                <Asked>${asked}</Asked>
+                <Correct>${correct}</Correct>
+                <Incorrect>${asked - correct}</Incorrect>
+              </Questions>
+              <NextTransId>
+                <string>END</string>
+              </NextTransId>
+            </Results>
+          </RTQResult>
+        </RTQResponse>
+      </soap:Body>
+    </soap:Envelope>`);
+  } else {
+    const newQuestions = shuffle(questions)
+      .filter(
+        (q) => iiqCase.questions.findIndex((x) => x.qid === q.QuestionID) === -1
+      )
+      .slice(0, correct >= 2 ? 1 : 2)
+      .map((x) => {
+        x.AnswerFormat.AnswerList = shuffle(x.AnswerFormat.AnswerList);
+        return { Question: x };
+      });
+
+    iiqCase.questions.push(
+      ...newQuestions.map((x) => ({
+        qid: x.Question.QuestionID,
+        correct: false,
+      }))
+    );
+
+    iiqStore.save(id, JSON.stringify(iiqCase));
+
+    respond()
+      .withContent(`<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <soap:Body>
+        <RTQResponse xmlns="http://schema.uk.experian.com/Experian/IdentityIQ/Services/WebService">
+          <RTQResult>
+            <Questions>
+              ${newQuestions.map(toxml).join("")}
+            </Questions>
+            <Results>
+              <NextTransId>
+                <string>RTQ</string>
+              </NextTransId>
+            </Results>
+          </RTQResult>
+        </RTQResponse>
+      </soap:Body>
+    </soap:Envelope>`);
+  }
 } else {
   respond();
 }

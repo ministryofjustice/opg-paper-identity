@@ -56,48 +56,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_id_check');
     }
 
-    public function testAddressVerificationReturnsPageWithData(): void
-    {
-        $mockResponseDataAddressVerificationOptions = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getAddressVerificationData')
-            ->willReturn($mockResponseDataAddressVerificationOptions);
-
-        $mockResponseDataIdDetails = [
-            "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
-            "Address" => "Address line 1, line 2, Country, BN1 4OD",
-            "Role" => "donor",
-            "LPA" => [
-                "PA M-1234-ABCB-XXXX",
-                "PW M-1234-ABCD-AAAA"
-            ]
-        ];
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch("/$this->uuid/address_verification", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/address_verification');
-    }
-
     public function testLpasByDonorReturnsPageWithData(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -293,7 +251,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "documentComplete" => false,
             "alternateAddress" => [
             ],
-            "selectedPostOfficeDeadline" => null,
             "selectedPostOffice" => null,
             "searchPostcode" => null,
             "idMethod" => "nin"

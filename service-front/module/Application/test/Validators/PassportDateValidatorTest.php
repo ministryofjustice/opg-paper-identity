@@ -29,15 +29,15 @@ class PassportDateValidatorTest extends TestCase
     public static function passportData(): array
     {
         $currentDate = new \DateTime();
-        $periodNPass = 4;
-        $periodNFail = 6;
+        $periodNPass = "P16M";
+        $periodNFail = "P18M";
 
         return [
             ['2007-12-12', false],
             ['1999-03-31', false],
             [$currentDate->format('Y-m-d'), true],
-            [$currentDate->sub(new \DateInterval("P{$periodNPass}Y"))->format('Y-m-d'), true],
-            [$currentDate->sub(new \DateInterval("P{$periodNFail}Y"))->format('Y-m-d'), false],
+            [$currentDate->sub(new \DateInterval($periodNPass))->format('Y-m-d'), true],
+            [$currentDate->sub(new \DateInterval($periodNFail))->format('Y-m-d'), false],
         ];
     }
 }

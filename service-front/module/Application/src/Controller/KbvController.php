@@ -6,13 +6,16 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
-use Application\Exceptions\OpgApiException;
-use Application\Forms\IdQuestions;
-use Laminas\Form\Annotation\AttributeBuilder;
+use Laminas\Form\Element;
+use Laminas\Form\Form;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
 
+/**
+ * @psalm-import-type Question from OpgApiServiceInterface
+ */
 class KbvController extends AbstractActionController
 {
     protected $plugins;
@@ -38,40 +41,42 @@ class KbvController extends AbstractActionController
         }
         $view->setVariable('details_data', $detailsData);
 
-        $form = (new AttributeBuilder())->createForm(IdQuestions::class);
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
         if ($questionsData === false) {
             throw new HttpException(500, 'Could not load KBV questions');
         }
 
-        if (is_array($questionsData) && array_key_exists('error', $questionsData)) {
+        if (count($questionsData) === 0) {
             return $this->redirect()->toRoute('root/thin_file_failure', ['uuid' => $uuid]);
+        }
+
+        $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
+
+        $form = new Form();
+        foreach ($questionsData as $question) {
+            $form->add(new Element($question['externalId']));
         }
 
         $view->setVariable('questions_data', $questionsData);
 
-        $view->setVariable('question', 'one');
+        $formData = $this->getRequest()->getPost();
+        $nextQuestion = $this->getNextQuestion($questionsData, $formData);
+        $view->setVariable('question', $nextQuestion);
 
-        if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost();
+        if (count($formData) > 0) {
+            if ($nextQuestion === null) {
+                $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
-            $next = $this->getNextQuestion($formData->toArray());
-
-            if ($next != 'end') {
-                $view->setVariable('question', $next);
-            } else {
-                try {
-                    $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
-
-                    if (! $check) {
-                        return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
-                    }
-
-                    return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
-                } catch (OpgApiException $exception) {
-                    return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
+                if (! $check['complete']) {
+                    return $this->redirect()->refresh();
                 }
+
+                if ($check['passed'] === true) {
+                    return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
+                }
+
+                return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
             }
             $form->setData($formData);
         }
@@ -80,24 +85,19 @@ class KbvController extends AbstractActionController
         return $view->setTemplate('application/pages/identity_check_questions');
     }
 
-    private function getNextQuestion(array $formdata): string
+    /**
+     * @template Question of array
+     * @param Question[] $questions
+     * @return ?Question
+     */
+    private function getNextQuestion(array $questions, Parameters $formData): ?array
     {
-        $question = null;
-        foreach ($formdata as $key => $value) {
-            if (strlen($value) == 0) {
-                continue;
-            } else {
-                $question = $key;
+        foreach ($questions as $question) {
+            if (! $formData[$question['externalId']]) {
+                return $question;
             }
         }
 
-        $sequence = [
-            "one" => "two",
-            "two" => "three",
-            "three" => "four",
-            "four" => "end",
-        ];
-
-        return $sequence[$question] ?? "";
+        return null;
     }
 }

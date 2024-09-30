@@ -434,9 +434,9 @@ class IdentityControllerTest extends TestCase
     }
 
     /**
-     * @dataProvider abandonFlowData
+     * @dataProvider saveCaseProgressData
      */
-    public function testAbandonFlow(
+    public function testSaveCaseProgress(
         string $uuid,
         array $data,
         array $response
@@ -447,14 +447,11 @@ class IdentityControllerTest extends TestCase
             ->method('updateCaseData')
             ->with(
                 $uuid,
-                "progressPage",
-                "M",
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                "caseProgress",
+                $data,
             );
 
-        $path = sprintf('/cases/%s/update-progress', $uuid);
+        $path = sprintf('/cases/%s/save-case-progress', $uuid);
 
         $this->dispatchJSON(
             $path,
@@ -467,18 +464,17 @@ class IdentityControllerTest extends TestCase
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('update_progress/put');
+        $this->assertMatchedRouteName('save_case_progress/put');
     }
 
-    public static function abandonFlowData(): array
+    public static function saveCaseProgressData(): array
     {
         $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
         $data = [
-            "route" => "name-match-check",
-            "reason" => "ot",
-            "notes" => "Caller didn't have all required documents",
+            "last_page" => "name-match-check",
+            "timestamp" => "2024-09-12T13:45:56Z"
         ];
-        $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['route'] . '"}', true);
+        $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['last_page'] . '"}', true);
 
         return [
             [

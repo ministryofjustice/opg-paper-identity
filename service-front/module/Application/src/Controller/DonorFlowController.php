@@ -27,15 +27,8 @@ class DonorFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
+        private readonly string $siriusBaseUrl,
     ) {
-    }
-
-    private function getRoute(): string
-    {
-        /**
-         * @psalm-suppress UndefinedMethod
-         */
-        return $this->getRequest()->getRequestUri();
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -54,7 +47,6 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('route', $this->getRoute());
 
         if (count($this->getRequest()->getPost())) {
             if (count($this->getRequest()->getPost())) {
@@ -98,10 +90,13 @@ class DonorFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
+        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
         $view->setVariables([
             'details_data' => $detailsData,
             'uuid' => $uuid,
             'next_page' => $nextPage,
+            'sirius_edit_url' => $siriusEditUrl
         ]);
 
         return $view->setTemplate('application/pages/donor_details_match_check');
@@ -137,17 +132,18 @@ class DonorFlowController extends AbstractActionController
              * @psalm-suppress ArgumentTypeCoercion
              */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
 
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             * @psalm-suppress PossiblyNullArgument
-             */
-            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            if (! empty($lpasData['opg.poas.lpastore'])) {
+                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            } else {
+                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
+                    $lpasData['opg.poas.sirius']['donor']['surname'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            }
 
             $lpaDetails[$lpa] = [
                 'name' => $name,
@@ -189,20 +185,6 @@ class DonorFlowController extends AbstractActionController
         }
 
         return $view->setTemplate('application/pages/donor_lpa_check');
-    }
-
-    public function addressVerificationAction(): ViewModel
-    {
-        $view = new ViewModel();
-
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $view->setVariable('details_data', $detailsData);
-        $data = $this->opgApiService->getAddressVerificationData();
-
-        $view->setVariable('options_data', $data);
-
-        return $view->setTemplate('application/pages/address_verification');
     }
 
     public function nationalInsuranceNumberAction(): ViewModel

@@ -1,112 +1,113 @@
 {% extends "layout/layout" %}
-{% block content %}
+
+{% block beforeMain %}
     {% include 'layout/id_check_banner.twig' with details_data %}
-    <div class="govuk-width-container govuk-!-padding-top-5">
+{% endblock %}
 
-        <form method="POST">
-            <h1 class="govuk-heading-xl">
-                {% block title %}
-                    Confirm Post Office route
-                {% endblock %}
-            </h1>
-            <p class="govuk-body govuk-!-width-two-thirds">
-                We will send you a letter
-            </p>
-            <div class="govuk-summary-card govuk-!-width-two-thirds">
-                <div class="govuk-summary-card__title-wrapper">
-                    <h2 class="govuk-summary-card__title">
-                        {{ details_data.firstName }} {{ details_data.lastName }}
-                    </h2>
-                </div>
-                <div class="govuk-summary-card__content">
-                    <dl class="govuk-summary-list">
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Address
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                {% for line in details_data.address %}
-                                    {{ line }}<br>
-                                {% endfor %}
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                LPA Number(s)
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                {% for lpa in details_data.lpas %}
-                                    {{ lpa }} <br>
-                                {% endfor %}
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Document to take
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                {{ display_id_method }}
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                <a
-                                    class="govuk-link"
-                                    href="post-office-documents"
-                                    aria-label="Change document"
-                                >
-                                    Change
-                                    <span class="govuk-visually-hidden">Document</span>
-                                </a>
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Post Office
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                {% for line in post_office_address %}
-                                    {{ line }}<br>
-                                {% endfor %}
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                <a
-                                    class="govuk-link"
-                                    href="find-post-office-branch"
-                                    aria-label="Change Post Office"
-                                >
-                                    Change
-                                    <span class="govuk-visually-hidden">Post Office</span>
-                                </a>
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Submission deadline
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                {{ deadline }}
-                                <input type="hidden" name="deadline" value="{{ deadline }}">
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-
-                            </dd>
-                        </div>
-                    </dl>
-                </div>
+{% block content %}
+    <form method="POST">
+        <h1 class="govuk-heading-xl">
+            {% block title %}
+                Confirm Post Office route
+            {% endblock %}
+        </h1>
+        <p class="govuk-body govuk-!-width-two-thirds">
+            We will send you a letter
+        </p>
+        <div class="govuk-summary-card govuk-!-width-two-thirds">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    {{ details_data.firstName }} {{ details_data.lastName }}
+                </h2>
             </div>
-            {% if errors %}
-                <p id="postcode-error" class="govuk-error-message">
-                    {% for error in errors %}
-                        {{ error }}
-                    {% endfor %}
-                </p>
-            {% endif %}
-            <p class="govuk-form-group">
-                <input type="submit" class="govuk-button" value="Continue">
-                <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {% for line in details_data.address %}
+                                {{ line }}<br>
+                            {% endfor %}
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            LPA Number(s)
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {% for lpa in details_data.lpas %}
+                                {{ lpa }} <br>
+                            {% endfor %}
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Document to take
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {{ display_id_method }}
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a
+                                class="govuk-link"
+                                href="post-office-documents"
+                                aria-label="Change document"
+                            >
+                                Change
+                                <span class="govuk-visually-hidden">Document</span>
+                            </a>
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Post Office
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {% for line in post_office_address %}
+                                {{ line }}<br>
+                            {% endfor %}
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a
+                                class="govuk-link"
+                                href="find-post-office-branch"
+                                aria-label="Change Post Office"
+                            >
+                                Change
+                                <span class="govuk-visually-hidden">Post Office</span>
+                            </a>
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Submission deadline
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            {{ deadline }}
+                            <input type="hidden" name="deadline" value="{{ deadline }}">
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+        {% if errors %}
+            <p id="postcode-error" class="govuk-error-message">
+                {% for error in errors %}
+                    {{ error }}
+                {% endfor %}
             </p>
-        </form>
-    </div>
+        {% endif %}
+        <p class="govuk-form-group">
+            <input type="submit" class="govuk-button" value="Continue">
+            <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
+        </p>
+    </form>
 {% endblock %}

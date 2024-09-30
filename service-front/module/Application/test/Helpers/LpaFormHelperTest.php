@@ -429,7 +429,6 @@ class LpaFormHelperTest extends TestCase
             "documentComplete" => false,
             "alternateAddress" => [
             ],
-            "selectedPostOfficeDeadline" => null,
             "selectedPostOffice" => null,
             "searchPostcode" => null,
             "idMethod" => null

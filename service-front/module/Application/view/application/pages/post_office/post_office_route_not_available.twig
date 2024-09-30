@@ -1,16 +1,17 @@
 {% extends "layout/layout" %}
-{% block content %}
+
+{% block beforeMain %}
     {% include 'layout/id_check_banner.twig' with details_data %}
-    <div class="govuk-width-container govuk-!-padding-top-5">
+{% endblock %}
 
-        <h1 class="govuk-heading-xl">
-            {% block title %}
-            Post Office route not available?</h1>
+{% block content %}
+    <h1 class="govuk-heading-xl">
+        {% block title %}
+        Post Office route not available?
         {% endblock %}
-        <p class="govuk-body govuk-!-width-two-thirds">
+    </h1>
+    <p class="govuk-body govuk-!-width-two-thirds">
 
-        </p>
-        <a href="#" class="govuk-button">Continue</a>
-
-    </div>
+    </p>
+    <a href="#" class="govuk-button">Continue</a>
 {% endblock %}

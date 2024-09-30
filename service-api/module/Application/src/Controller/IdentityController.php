@@ -103,35 +103,6 @@ class IdentityController extends AbstractActionController
         return new JsonModel(new Problem('Case not found'));
     }
 
-    public function addressVerificationAction(): JsonModel
-    {
-        $data = [
-            'Passport',
-            'Driving Licence',
-            'National Insurance Number',
-            'Voucher',
-            'Post Office',
-        ];
-
-        return new JsonModel($data);
-    }
-
-    public function listLpasAction(): JsonModel
-    {
-        $data = [
-            [
-                'lpa_ref' => 'PW PA M-XYXY-YAGA-35G3',
-                'donor_name' => 'Mary Anne Chapman',
-            ],
-            [
-                'lpa_ref' => 'PW M-VGAS-OAGA-34G9',
-                'donor_name' => 'Mary Anne Chapman',
-            ],
-        ];
-
-        return new JsonModel($data);
-    }
-
     public function verifyNinoAction(): JsonModel
     {
         $data = json_decode($this->getRequest()->getContent(), true);
@@ -189,39 +160,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethod',
-                'S',
                 $data['idMethod']
-            );
-        } catch (\Exception $exception) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-
-            return new JsonModel(new Problem($exception->getMessage()));
-        }
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $response['result'] = "Updated";
-
-        return new JsonModel($response);
-    }
-
-    public function addSearchPostcodeAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
-        $response = [];
-
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-
-            return new JsonModel(new Problem('Missing UUID'));
-        }
-
-        try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'searchPostcode',
-                'S',
-                $data['selected_postcode']
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -254,10 +193,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $counterServiceMap),
+                $counterServiceMap,
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -274,7 +210,6 @@ class IdentityController extends AbstractActionController
     public function confirmSelectedPostofficeAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
         /** @var CaseData $caseData */
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
         $response = [];
@@ -289,16 +224,12 @@ class IdentityController extends AbstractActionController
         if ($caseData->counterService !== null) {
             $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
         }
-        $counterServiceMap["selectedPostOfficeDeadline"] = $data['deadline'];
 
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'counterService',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $counterServiceMap),
+                $counterServiceMap,
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -330,7 +261,6 @@ class IdentityController extends AbstractActionController
                 $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
-                    'SS',
                     $lpas
                 );
                 $response['result'] = "Updated";
@@ -370,7 +300,6 @@ class IdentityController extends AbstractActionController
                 $this->dataHandler->updateCaseData(
                     $uuid,
                     'lpas',
-                    'SS',
                     $keptLpas
                 );
                 $response['result'] = "Removed";
@@ -408,10 +337,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'alternateAddress',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                $data,
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
@@ -447,7 +373,6 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'documentComplete',
-                'BOOL',
                 true
             );
         } catch (\Exception $exception) {
@@ -495,7 +420,6 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'dob',
-                'S',
                 $dob
             );
         } catch (\Exception $exception) {
@@ -528,10 +452,7 @@ class IdentityController extends AbstractActionController
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethodIncludingNation',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                $data,
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
@@ -546,7 +467,7 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function updateProgressAction(): JsonModel
+    public function saveCaseProgressAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode(
@@ -566,11 +487,8 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'progressPage',
-                'M',
-                array_map(fn (mixed $v) => [
-                    'S' => $v,
-                ], $data),
+                'caseProgress',
+                $data,
             );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
@@ -580,7 +498,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['route'];
+        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['last_page'];
 
         return new JsonModel($response);
     }
