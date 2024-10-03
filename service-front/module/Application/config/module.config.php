@@ -566,9 +566,9 @@ return [
         'identity_documents' => [
             'PASSPORT' => "Passport",
             'DRIVING_LICENCE' => 'Driving licence',
-            'NATIONAL_ID' => 'National Identity',
-            'RESIDENCE_PERMIT' => 'Residence permit',
-            'TRAVEL_DOCUMENT' => 'Travel document',
+//            'NATIONAL_ID' => 'National Identity',
+//            'RESIDENCE_PERMIT' => 'Residence permit',
+//            'TRAVEL_DOCUMENT' => 'Travel document',
             'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
         ],
         'identity_routes' => [
@@ -580,15 +580,15 @@ return [
             'pn' => 'UK Passport (current or expired in the last 18 months)',
             'dln' => 'UK photocard driving licence (must be current) ',
         ],
-//        'post_office_identity_methods' => [
-//            'po_ukp' => 'UK passport (up to 18 months expired)',
-//            'po_eup' => 'EU passport (must be current)',
-//            'po_inp' => 'International passport (must be current)',
-//            'po_ukd' => 'UK Driving licence (must be current)',
-//            'po_eud' => 'EU Driving licence (must be current)',
-//            'po_ind' => 'International driving licence (must be current)',
-//            'po_n' => 'None of the above',
-//        ],
+        'post_office_identity_methods' => [
+            'PASSPORT' => 'UK passport (up to 18 months expired)',
+            'po_eup' => 'EU passport (must be current)',
+            'po_inp' => 'International passport (must be current)',
+            'DRIVING_LICENCE' => 'UK Driving licence (must be current)',
+            'po_eud' => 'EU Driving licence (must be current)',
+            'po_ind' => 'International driving licence (must be current)',
+            'po_n' => 'None of the above',
+        ],
 //        'non_uk_identity_methods' => [
 //            'xpn' => 'Passport',
 //            'xdln' => 'Photocard driving licence',

@@ -6,9 +6,9 @@ namespace Application\Model;
 
 enum IdMethod: string
 {
-    case NationalInsuranceNumber = "nin";
-    case PassportNumber = "pn";
-    case DrivingLicenseNumber = "dln";
+    case NationalInsuranceNumber = "NATIONAL_INSURANCE_NUMBER";
+    case PassportNumber = "PASSPORT";
+    case DrivingLicenseNumber = "DRIVING_LICENCE";
     case OnBehalf = "OnBehalf";
     case PostOffice = "po";
     case CourtOfProtection = "cpr";

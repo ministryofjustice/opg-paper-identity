@@ -661,7 +661,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
+        if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
             throw new \Exception("Country for document list has not been set.");
         }
 
