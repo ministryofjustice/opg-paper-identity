@@ -1,0 +1,11 @@
+---
+plugin: rest
+resources:
+  - method: GET
+    path: /WASPAuthenticator/tokenService.asmx
+    response:
+      file: wasp.wsdl
+  - method: GET
+    path: /IdentityIQWebService/IdentityIQWebService.asmx
+    response:
+      file: iiq.wsdl
