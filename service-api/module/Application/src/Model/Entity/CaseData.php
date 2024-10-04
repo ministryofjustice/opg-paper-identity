@@ -113,10 +113,6 @@ class CaseData implements JsonSerializable
      */
     public static function fromArray(mixed $data): self
     {
-        die(json_encode(
-            $data
-        ));
-
         $instance = new self();
 
         foreach ($data as $key => $value) {

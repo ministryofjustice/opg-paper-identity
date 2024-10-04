@@ -258,20 +258,19 @@ class CPFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $idMethods = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
 
         $routes = [
-            'nin' => 'root/cp_national_insurance_number',
-            'dln' => 'root/cp_driving_licence_number',
-            'pn' => 'root/cp_passport_number',
+            'NATIONAL_INSURANCE_NUMBER' => 'root/cp_national_insurance_number',
+            'DRIVING_LICENCE' => 'root/cp_driving_licence_number',
+            'PASSPORT' => 'root/cp_passport_number',
         ];
 
-        if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
+        if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
             $nextRoute = 'root/cp_find_post_office_branch';
         } else {
-            $nextRoute = $routes[$detailsData['idMethod']];
+            $nextRoute = $routes[$detailsData['idMethodIncludingNation']['id_method']];
         }
 
         $view->setVariables([

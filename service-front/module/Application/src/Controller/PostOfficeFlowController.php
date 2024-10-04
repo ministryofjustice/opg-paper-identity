@@ -44,8 +44,6 @@ class PostOfficeFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(IdMethod::class);
         $view = new ViewModel();
 
-        echo json_encode($this->opgApiService->getDetailsData($uuid));
-
         if (count($this->getRequest()->getPost())) {
             $formObject = $this->getRequest()->getPost()->toArray();
             $formData = $this->getRequest()->getPost()->toArray();
@@ -157,8 +155,6 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $optionsData = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        echo json_encode($detailsData);
 
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
 
@@ -311,8 +307,6 @@ class PostOfficeFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/post_office/choose_country_id'];
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        echo json_encode($detailsData);
 
         if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
             throw new \Exception("Country for document list has not been set.");

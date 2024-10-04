@@ -95,9 +95,7 @@ class DonorFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
-
-        if (! $detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
+        if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
             $nextPage = './post-office-donor-lpa-check';
         } else {
             $nextPage = './donor-lpa-check';
@@ -139,8 +137,6 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         $view = new ViewModel();
-
-        echo json_encode($detailsData);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpas', $detailsData['lpas']);
