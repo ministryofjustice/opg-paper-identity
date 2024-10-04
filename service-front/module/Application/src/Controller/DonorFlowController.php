@@ -74,7 +74,7 @@ class DonorFlowController extends AbstractActionController
                     } else {
                         $data = [
                             'id_route' => 'TELEPHONE',
-                            'id_country' => Country::GBR,
+                            'id_country' => Country::GBR->value,
                             'id_method' => $formData['id_method']
                         ];
                         $this->opgApiService->updateIdMethodWithCountry(
@@ -95,6 +95,9 @@ class DonorFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        /**
+         * @psalm-suppress PossiblyUndefinedArrayOffset
+         */
         if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
             $nextPage = './post-office-donor-lpa-check';
         } else {
@@ -173,6 +176,9 @@ class DonorFlowController extends AbstractActionController
             // not yet implemented
 //          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
 
+            /**
+             * @psalm-suppress PossiblyUndefinedArrayOffset
+             */
             if ($detailsData['idMethodIncludingNation']['id_route'] == 'POST_OFFICE') {
                 $this->redirect()
                     ->toRoute("root/post_office_documents", ['uuid' => $uuid]);

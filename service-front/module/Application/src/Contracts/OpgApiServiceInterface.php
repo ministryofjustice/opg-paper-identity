@@ -27,10 +27,10 @@ namespace Application\Contracts;
  *   dob: string,
  *   address: Address,
  *   alternateAddress?: Address,
- *   idMethod: string,
  *   idMethodIncludingNation?: array{
- *     country?: string,
+ *     id_country?: string,
  *     id_method?: string,
+ *     id_route?: string,
  *   },
  *   searchPostcode?: string,
  *   counterService?: array{
@@ -105,8 +105,9 @@ interface OpgApiServiceInterface
 
     /**
      * @param array{
-     *   country?: string,
+     *   id_country?: string,
      *   id_method?: string,
+     *   id_route?: string,
      * } $data
      */
     public function updateIdMethodWithCountry(string $uuid, array $data): void;

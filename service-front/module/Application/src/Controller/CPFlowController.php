@@ -81,7 +81,7 @@ class CPFlowController extends AbstractActionController
                 } else {
                     $data = [
                         'id_route' => 'TELEPHONE',
-                        'id_country' => \Application\PostOffice\Country::GBR,
+                        'id_country' => \Application\PostOffice\Country::GBR->value,
                         'id_method' => $formData['id_method']
                     ];
                     $this->opgApiService->updateIdMethodWithCountry(
@@ -267,6 +267,9 @@ class CPFlowController extends AbstractActionController
             'PASSPORT' => 'root/cp_passport_number',
         ];
 
+        /**
+         * @psalm-suppress PossiblyUndefinedArrayOffset
+         */
         if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
             $nextRoute = 'root/cp_find_post_office_branch';
         } else {
@@ -622,7 +625,7 @@ class CPFlowController extends AbstractActionController
                     } else {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, [
                             'id_method' => $formData['id_method'],
-                            'id_country' => PostOfficeCountry::GBR,
+                            'id_country' => PostOfficeCountry::GBR->value,
                         ]);
                         return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
                     }

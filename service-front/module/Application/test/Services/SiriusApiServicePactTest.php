@@ -48,10 +48,7 @@ class SiriusApiServicePactTest extends TestCase
     public function testSearchAddressesByPostcode(): void
     {
         $request = new ConsumerRequest();
-        /**
-         * @psalm-suppress InvalidCast
-         * @psalm-suppress InvalidArgument
-         */
+
         $request
             ->setMethod('GET')
             ->setPath('/api/v1/postcode-lookup')
