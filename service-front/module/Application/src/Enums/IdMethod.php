@@ -18,5 +18,6 @@ enum IdMethod: string
     case PostOfficeWithUKDrivingLicence = "po_ukd";
     case PostOfficeWithEUDrivingLicense = "po_eud";
     case PostOfficeWithInternationalDrivingLicence = "po_ind";
+    case PostOfficeWithUKBiometricResidencePermit = "po_brp";
     case PostOfficeWithNoneOfTheAbove = "po_n";
 }
