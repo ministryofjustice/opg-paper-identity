@@ -65,9 +65,10 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethodIncludingNation" => [
-                "country" => "AUT",
+                "id_country" => "AUT",
                 "id_method" => "DRIVING_LICENCE",
-            ],
+                'id_route' => 'POST_OFFICE'
+            ]
         ];
     }
 
@@ -255,8 +256,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/donor_choose_country');
 
-        $this->assertQueryContentContains('[name="country"] > option[value="AUT"]', 'Austria');
-        $this->assertNotQuery('[name="country"] > option[value="GBR"]');
+        $this->assertQueryContentContains('[name="id_country"] > option[value="AUT"]', 'Austria');
+        $this->assertNotQuery('[name="id_country"] > option[value="GBR"]');
     }
 
     public function testPostOfficeCountriesIdPage(): void

@@ -31,6 +31,7 @@ class SessionConfig
             "auth_token" => $authToken,
             "auth_type" => 'BEARER'
         ];
+
         $sessionConfig["requested_checks"] = [
             [
                 "type" => "IBV_VISUAL_REVIEW_CHECK",
@@ -129,8 +130,8 @@ class SessionConfig
     public static function getIDCountry(CaseData $case): string
     {
         $nonUKIDs = $case->idMethodIncludingNation;
-        if (isset($nonUKIDs['country'])) {
-            return $nonUKIDs['country'];
+        if (isset($nonUKIDs->id_country)) {
+            return $nonUKIDs->id_country;
         }
 
         return 'GBR';
@@ -143,16 +144,11 @@ class SessionConfig
     public static function getDocType(CaseData $case): string
     {
         $nonUKIDs = $case->idMethodIncludingNation;
-        if (isset($nonUKIDs['id_method'])) {
-            return $nonUKIDs['id_method'];
-        }
 
-        $drivingLicenceOptions = ["po_ukd", "po_eud"];
-        if (in_array($case->idMethod, $drivingLicenceOptions)) {
-            return "DRIVING_LICENCE";
-        } else {
-            return "PASSPORT";
+        if (isset($nonUKIDs->id_method)) {
+            return $nonUKIDs->id_method;
         }
+        return "PASSPORT";
     }
 
     /**

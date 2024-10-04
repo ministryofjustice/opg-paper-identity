@@ -13,6 +13,7 @@ use PhpPact\Consumer\Model\ConsumerRequest;
 use PhpPact\Consumer\Model\ProviderResponse;
 use PhpPact\Standalone\MockService\MockServerConfigInterface;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -47,10 +48,11 @@ class SiriusApiServicePactTest extends TestCase
     public function testSearchAddressesByPostcode(): void
     {
         $request = new ConsumerRequest();
+
         $request
             ->setMethod('GET')
             ->setPath('/api/v1/postcode-lookup')
-            ->setQuery(['postcode' => 'B1 1TT']);
+            ->setQuery(['postcode' => 'B11TT']);
 
         $matcher = new Matcher();
         $response = new ProviderResponse();
@@ -64,7 +66,6 @@ class SiriusApiServicePactTest extends TestCase
                 'town' => $matcher->like('Forston'),
                 'postcode' => $matcher->regex('FR6 2FJ', '^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$'),
             ]));
-
 
         $this->builder
             ->uponReceiving('A search for addresses by postcode')

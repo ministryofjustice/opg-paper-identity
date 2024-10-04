@@ -62,10 +62,14 @@ class PostOfficeFlowController extends AbstractActionController
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
                 if ($form->isValid()) {
-                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                    if ($formData['id_method'] == 'euid') {
+                    if ($formData['id_method'] == 'NONUKID') {
+                        $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
                         return $this->redirect()->toRoute("root/donor_choose_country", ['uuid' => $uuid]);
                     } else {
+                        $this->opgApiService->updateIdMethodWithCountry($uuid, [
+                            'id_method' => $formData['id_method'],
+                            'id_country' => PostOfficeCountry::GBR->value,
+                        ]);
                         return $this->redirect()->toRoute("root/po_do_details_match", ['uuid' => $uuid]);
                     }
                 }
@@ -149,7 +153,7 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
+        $optionsData = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
@@ -166,10 +170,13 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
 
-        if (array_key_exists($detailsData['idMethod'], $optionsData)) {
-            $idMethodForDisplay = $optionsData[$detailsData['idMethod']];
+        /**
+         * @psalm-suppress PossiblyUndefinedArrayOffset
+         */
+        if (array_key_exists($detailsData['idMethodIncludingNation']['id_method'], $optionsData)) {
+            $idMethodForDisplay = $optionsData[$detailsData['idMethodIncludingNation']['id_method']];
         } else {
-            $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country'] ?? '');
+            $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country'] ?? '');
             $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method'] ?? '');
             $idMethodForDisplay = sprintf('%s (%s)', $idMethod->translate(), $country->translate());
         }
@@ -304,11 +311,11 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (! isset($detailsData['idMethodIncludingNation']['country'])) {
+        if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
             throw new \Exception("Country for document list has not been set.");
         }
 
-        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country']);
+        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country']);
 
         $docs = $this->documentTypeRepository->getByCountry($country);
 
