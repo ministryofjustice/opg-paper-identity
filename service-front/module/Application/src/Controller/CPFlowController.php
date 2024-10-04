@@ -69,16 +69,31 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                if ($formData['id_method'] == 'po') {
+                if ($formData['id_method'] == \Application\Enums\IdMethod::PostOffice->value) {
+                    $data = [
+                        'id_route' => 'POST_OFFICE',
+                    ];
+                    $this->opgApiService->updateIdMethodWithCountry(
+                        $uuid,
+                        $data
+                    );
                     return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
                 } else {
+                    $data = [
+                        'id_route' => 'TELEPHONE',
+                        'id_country' => \Application\PostOffice\Country::GBR,
+                        'id_method' => $formData['id_method']
+                    ];
+                    $this->opgApiService->updateIdMethodWithCountry(
+                        $uuid,
+                        $data
+                    );
                     return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
                 }
             }
         }
 
-        $optionsdata = $this->config['opg_settings']['identity_methods'];
+        $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
 //        echo json_encode($detailsData);
@@ -602,10 +617,14 @@ class CPFlowController extends AbstractActionController
                 $form->setData($this->getRequest()->getPost());
                 $view->setVariable('form', $form);
                 if ($form->isValid()) {
-                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
-                    if ($formData['id_method'] == 'euid') {
+                    if ($formData['id_method'] == 'NONUKID') {
+                        $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
                         return $this->redirect()->toRoute("root/cp_choose_country", ['uuid' => $uuid]);
                     } else {
+                        $this->opgApiService->updateIdMethodWithCountry($uuid, [
+                            'id_method' => $formData['id_method'],
+                            'id_country' => PostOfficeCountry::GBR,
+                        ]);
                         return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
                     }
                 }
@@ -665,7 +684,7 @@ class CPFlowController extends AbstractActionController
             throw new \Exception("Country for document list has not been set.");
         }
 
-        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['country']);
+        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country']);
 
         $docs = $this->documentTypeRepository->getByCountry($country);
 

@@ -40,8 +40,6 @@ class IdMethodIncludingNation extends Entity
         foreach ($data as $key => $value) {
             if (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
-            } else {
-                throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
         }
 

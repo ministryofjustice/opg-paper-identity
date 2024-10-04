@@ -177,7 +177,7 @@ class DonorFlowController extends AbstractActionController
             // not yet implemented
 //          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
 
-            if($detailsData['idMethodIncludingNation']['id_route'] == 'POST_OFFICE') {
+            if ($detailsData['idMethodIncludingNation']['id_route'] == 'POST_OFFICE') {
                 $this->redirect()
                     ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
             } else {

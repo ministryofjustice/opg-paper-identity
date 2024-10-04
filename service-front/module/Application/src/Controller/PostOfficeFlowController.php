@@ -155,10 +155,10 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsData = $this->config['opg_settings']['post_office_identity_methods'];
+        $optionsData = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($optionsData);
+        echo json_encode($detailsData);
 
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
 
@@ -174,8 +174,8 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
 
-        if (array_key_exists($detailsData['idMethod'], $optionsData)) {
-            $idMethodForDisplay = $optionsData[$detailsData['idMethod']];
+        if (array_key_exists($detailsData['idMethodIncludingNation']['idMethod'], $optionsData)) {
+            $idMethodForDisplay = $optionsData[$detailsData['idMethodIncludingNation']['idMethod']];
         } else {
             $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country'] ?? '');
             $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method'] ?? '');

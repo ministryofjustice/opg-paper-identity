@@ -81,10 +81,6 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public bool $documentComplete = false;
 
-    #[Annotation\Required(false)]
-    #[Annotation\Validator(Enum::class, options: ['enum' => IdMethod::class])]
-    public ?string $idMethod = null;
-
     /**
      * @var string[]
      */
@@ -104,10 +100,10 @@ class CaseData implements JsonSerializable
     public ?CounterService $counterService = null;
 
     /**
-     * @var ?array{country?: string, id_method?: string}
+     * @var ?IdMethodIncludingNation
      */
     #[Annotation\Required(false)]
-    public ?array $idMethodIncludingNation = [];
+    public ?IdMethodIncludingNation $idMethodIncludingNation = null;
 
     #[Annotation\Required(false)]
     public ?CaseProgress $caseProgress = null;
@@ -117,6 +113,10 @@ class CaseData implements JsonSerializable
      */
     public static function fromArray(mixed $data): self
     {
+        die(json_encode(
+            $data
+        ));
+
         $instance = new self();
 
         foreach ($data as $key => $value) {
@@ -128,6 +128,8 @@ class CaseData implements JsonSerializable
                 $instance->kbvQuestions = array_map(fn(array $question) => KBVQuestion::fromArray($question), $value);
             } elseif ($key === 'iiqControl') {
                 $instance->iiqControl = IIQControl::fromArray($value);
+            } elseif ($key === 'idMethodIncludingNation') {
+                $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -161,11 +163,7 @@ class CaseData implements JsonSerializable
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
-     *     idMethod: ?string,
-     *     idMethodIncludingNation: ?array{
-     *       id_method?: string,
-     *       country?: string,
-     *     },
+     *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
      * }
      */
@@ -182,11 +180,13 @@ class CaseData implements JsonSerializable
             'documentComplete' => $this->documentComplete,
             'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
-            'idMethod' => $this->idMethod,
             'yotiSessionId' => $this->yotiSessionId,
-            'idMethodIncludingNation' => $this->idMethodIncludingNation,
             'kbvQuestions' => $this->kbvQuestions,
         ];
+
+        if ($this->idMethodIncludingNation !== null) {
+            $arr['idMethodIncludingNation'] = $this->idMethodIncludingNation;
+        }
 
         if ($this->counterService !== null) {
             $arr['counterService'] = $this->counterService;
