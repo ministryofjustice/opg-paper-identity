@@ -325,8 +325,10 @@ class IdentityControllerTest extends TestCase
             "alternateAddress" => [
             ],
             "searchPostcode" => null,
-            "idMethod" => null,
             "idMethodIncludingNation" => [
+                'id_method' => "",
+                'id_country' => "",
+                'id_route' => "",
             ],
         ];
 
@@ -410,8 +412,10 @@ class IdentityControllerTest extends TestCase
             "alternateAddress" => [
             ],
             "searchPostcode" => null,
-            "idMethod" => null,
             "idMethodIncludingNation" => [
+                'id_method' => "",
+                'id_country' => "",
+                'id_route' => "",
             ],
         ];
 
@@ -549,9 +553,11 @@ class IdentityControllerTest extends TestCase
             "alternateAddress" => [
             ],
             "searchPostcode" => null,
-            "idMethod" => null,
             "idMethodIncludingNation" => [
-            ]
+                'id_method' => "",
+                'id_country' => "",
+                'id_route' => "",
+            ],
         ];
 
         $successMockResponseData = [

@@ -26,7 +26,7 @@
                                 value="{{ key }}">
                         <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}
 
-                            {% if key == 'pn' %}
+                            {% if key == 'PASSPORT' %}
 
                                 <details
                                         class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
@@ -135,7 +135,7 @@
             <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
             <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
-                        value="po">
+                        value="POST_OFFICE">
                 <label class="govuk-label govuk-radios__label" for="PostOffice">
                     Post Office
                     <p class="govuk-hint govuk-!-margin-top-0">

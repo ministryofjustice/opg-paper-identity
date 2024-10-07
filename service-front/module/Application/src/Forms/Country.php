@@ -21,5 +21,5 @@ class Country
      */
     #[Annotation\Validator(CountryValidator::class)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public mixed $country;
+    public mixed $id_country;
 }

@@ -57,10 +57,33 @@ class CaseDataTest extends TestCase
             [array_merge($validData, ['documentComplete' => true]), true],
             [array_merge($validData, ['documentComplete' => false]), true],
             [array_merge($validData, ['documentComplete' => 'grergiro']), false],
-            [array_merge($validData, ['idMethod' => IdMethod::PassportNumber]), true],
-            [array_merge($validData, ['idMethod' => IdMethod::PostOfficeWithEUDrivingLicense]), true],
-            [array_merge($validData, ['idMethod' => IdMethod::OnBehalf]), true],
-            [array_merge($validData, ['idMethod' => 'other']), false],
+            [
+                array_merge($validData, [
+                    'idMethodIncludingNation' => [
+                        'id_method' => IdMethod::PassportNumber,
+                        'id_country' => "GBR",
+                        'id_route' => "POST_OFFICE",
+                    ]
+                ]), true
+            ],
+            [
+                array_merge($validData, [
+                    'idMethodIncludingNation' => [
+                        'id_method' => IdMethod::PassportNumber,
+                        'id_country' => "AUT",
+                        'id_route' => "POST_OFFICE",
+                    ]
+                ]), true
+            ],
+            [
+                array_merge($validData, [
+                    'idMethodIncludingNation' => [
+                        'id_method' => IdMethod::OnBehalf,
+                        'id_country' => "GBR",
+                        'id_route' => "POST_OFFICE",
+                    ]
+                ]), true
+            ],
         ];
     }
 }
