@@ -38,12 +38,7 @@ class IndexController extends AbstractActionController
     {
         return new ViewModel();
     }
-
-    public function healthCheckAction(): JsonModel
-    {
-
-    }
-
+    
     public function startAction(): Response
     {
         /** @var string[] $lpasQuery */

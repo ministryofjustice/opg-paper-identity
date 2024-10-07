@@ -5,20 +5,9 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Fixtures\DataWriteHandler;
-use Application\Fixtures\DataQueryHandler;
-use Application\Model\Entity\Problem;
 use Application\Services\SiriusApiService;
-use Application\Yoti\Http\Exception\YotiException;
-use Application\Yoti\SessionConfig;
-use Application\Yoti\SessionStatusService;
-use Application\Yoti\YotiServiceInterface;
-use DateTime;
+use Application\Views\JsonModel;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Http\Response;
-use Application\View\JsonModel;
-use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
