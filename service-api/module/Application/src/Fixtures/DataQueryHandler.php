@@ -6,6 +6,7 @@ namespace Application\Fixtures;
 
 use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 use Aws\DynamoDb\Marshaler;
 use Aws\Result;
 use Aws\Exception\InvalidJsonException;
@@ -16,6 +17,19 @@ class DataQueryHandler
         private readonly DynamoDbClient $dynamoDbClient,
         private readonly string $tableName,
     ) {
+    }
+
+    public function healthCheck(): bool
+    {
+        try {
+            $result = $this->dynamoDbClient->describeTable(array(
+                'TableName' => $this->tableName,
+            ));
+            return true;
+        } catch (DynamoDbException $exception) {
+            //Log exception here?
+            return false;
+        }
     }
 
     public function getCaseByUUID(string $uuid): ?CaseData

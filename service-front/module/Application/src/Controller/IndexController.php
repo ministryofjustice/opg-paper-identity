@@ -10,6 +10,7 @@ use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
+use Application\View\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use DateTime;
 use Laminas\Http\Response;
@@ -36,6 +37,11 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         return new ViewModel();
+    }
+
+    public function healthCheckAction(): JsonModel
+    {
+
     }
 
     public function startAction(): Response
