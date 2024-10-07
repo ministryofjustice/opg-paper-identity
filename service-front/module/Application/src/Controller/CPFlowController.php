@@ -96,8 +96,6 @@ class CPFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-//        echo json_encode($detailsData);
-
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);

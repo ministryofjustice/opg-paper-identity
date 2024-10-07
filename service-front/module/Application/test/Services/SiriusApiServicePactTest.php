@@ -13,7 +13,6 @@ use PhpPact\Consumer\Model\ConsumerRequest;
 use PhpPact\Consumer\Model\ProviderResponse;
 use PhpPact\Standalone\MockService\MockServerConfigInterface;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
-use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -52,7 +51,7 @@ class SiriusApiServicePactTest extends TestCase
         $request
             ->setMethod('GET')
             ->setPath('/api/v1/postcode-lookup')
-            ->setQuery(['postcode' => 'B11TT']);
+            ->setQuery(['postcode' => 'B1 1TT']);
 
         $matcher = new Matcher();
         $response = new ProviderResponse();
