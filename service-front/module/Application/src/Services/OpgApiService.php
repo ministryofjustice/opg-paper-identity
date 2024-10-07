@@ -33,6 +33,20 @@ class OpgApiService implements OpgApiServiceInterface
     {
     }
 
+    public function healthCheck(): bool
+    {
+        try {
+            $this->makeApiRequest(
+                '/health-check',
+                'GET',
+                ['Content-Type' => 'application/json']
+            );
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
+
     private function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
         try {

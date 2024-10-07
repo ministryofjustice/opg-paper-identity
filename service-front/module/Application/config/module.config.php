@@ -17,6 +17,7 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
+use Application\Controller\HealthcheckController;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -44,6 +45,26 @@ return [
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
                                 'action' => 'index',
+                            ],
+                        ],
+                    ],
+                    'health_check' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/health-check',
+                            'defaults' => [
+                                'controller' => Controller\HealthCheckController::class,
+                                'action' => 'healthCheck',
+                            ],
+                        ],
+                    ],
+                    'health_check_service' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/health-check-service',
+                            'defaults' => [
+                                'controller' => Controller\HealthCheckController::class,
+                                'action' => 'healthCheckService',
                             ],
                         ],
                     ],
@@ -518,6 +539,7 @@ return [
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
+            Controller\HealthCheckController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [
