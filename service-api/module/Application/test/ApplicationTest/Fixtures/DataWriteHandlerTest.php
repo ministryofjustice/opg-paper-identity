@@ -220,7 +220,7 @@ class DataWriteHandlerTest extends TestCase
                     $input = $params[0];
                     $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
                     $this->assertArrayHasKey('UpdateExpression', $input);
-                    $this->assertEquals(['#AT0' => 'idMethod'], $input['ExpressionAttributeNames']);
+                    $this->assertEquals(['#AT0' => 'idMethodIncludingNation'], $input['ExpressionAttributeNames']);
 
                     return true;
                 })
@@ -232,7 +232,7 @@ class DataWriteHandlerTest extends TestCase
         // Call the updateCaseData method with test data
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
-            'idMethod',
+            'idMethodIncludingNation',
             IdMethod::PassportNumber->value
         );
     }
@@ -251,12 +251,12 @@ class DataWriteHandlerTest extends TestCase
         $this->loggerMock->expects($this->never())->method('error');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('"an invalid value" is not a valid value for idMethod');
+        $this->expectExceptionMessage('"an invalid value" is not a valid value for documentComplete');
 
         // Call the updateCaseData method with test data
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
-            'idMethod',
+            'documentComplete',
             'an invalid value'
         );
     }

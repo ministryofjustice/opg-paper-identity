@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Yoti;
 
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\IdMethodIncludingNation;
 use Application\Yoti\SessionConfig;
 use DateTime;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,11 @@ class SessionConfigTest extends TestCase
             'lastName' => 'Williams',
             'personType' => 'donor',
             'dob' => '1970-01-01',
-            'idMethod' => 'po_ukp',
+            "idMethodIncludingNation" => [
+                'id_method' => "PASSPORT",
+                'id_country' => "GBR",
+                'id_route' => "POST_OFFICE",
+            ],
             'address' => [
                 'line1' => '123 long street',
                 'line2' => 'Kings Cross',
@@ -49,7 +54,11 @@ class SessionConfigTest extends TestCase
 
     public function testSessionWithForeignId(): void
     {
-        $idIncludingNation = ["country" => "ITA", "id_method" => "DRIVING_LICENCE"];
+        $idIncludingNation = IdMethodIncludingNation::fromArray([
+            "id_country" => "ITA",
+            "id_method" => "DRIVING_LICENCE",
+            "id_route" => 'POST_OFFICE'
+        ]);
         $this->caseMock->idMethodIncludingNation = $idIncludingNation;
 
         $expectedConfig = $this->sessionConfigExpected();
