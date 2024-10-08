@@ -8,6 +8,13 @@ on:
         default: ${{ github.ref }}
         required: false
         type: string
+    secrets:
+      aws_access_key_id:
+        description: 'AWS Access Key for ECR'
+        required: true
+      aws_secret_access_key:
+        description: 'AWS Secret Access Key for ECR'
+        required: true
 
 defaults:
   run:
@@ -48,14 +55,31 @@ jobs:
         id: build_image
         run: |
           docker compose build ${{ matrix.service_name }}
+      - name: Configure AWS Credentials With Assumed Role to Management
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::311462405659:role/paper-identity-ci
+          role-duration-seconds: 900
+          role-session-name: OPGPaperIdentityGithubAction
+      - name: ECR Login
+        id: login_ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1
+        with:
+          registries: 311462405659
       - name: Trivy Image Vulnerability Scanner for ${{ matrix.service_name }}
         id: trivy_scan
         uses: aquasecurity/trivy-action@0.24.0
+        env:
+          TRIVY_DB_REPOSITORY: ${{ steps.login_ecr.outputs.registry }}/trivy-db-public-ecr/aquasecurity/trivy-db:2
         with:
           image-ref: ${{ matrix.ecr_repository }}:latest
           severity: "HIGH,CRITICAL"
           format: "sarif"
           output: "trivy-results-${{ matrix.service_name }}.sarif"
+          vuln-type: 'os,library'
       - name: Upload Trivy scan results to GitHub Security tab for  ${{ matrix.service_name }}
         id: trivy_upload_sarif
         uses: github/codeql-action/upload-sarif@v3
