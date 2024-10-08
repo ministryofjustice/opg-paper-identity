@@ -101,7 +101,14 @@ class SessionStatusService
     private function evaluateFinalResult(array $checks, ?string $mediaId, CaseData $caseData): bool
     {
         //If UK passport ensure document presented was in date range
-        if (is_string($mediaId) && $caseData->idMethod === "po_ukp") {
+        /**
+         * @psalm-suppress PossiblyNullPropertyFetch
+         */
+        if (
+            is_string($mediaId) &&
+            $caseData->idMethodIncludingNation->id_method === "PASSPORT" &&
+            $caseData->idMethodIncludingNation->id_country === "GBR"
+        ) {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
 
             if (is_string($documentScanned["expiration_date"])) {

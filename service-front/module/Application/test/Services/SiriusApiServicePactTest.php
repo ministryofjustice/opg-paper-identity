@@ -47,6 +47,7 @@ class SiriusApiServicePactTest extends TestCase
     public function testSearchAddressesByPostcode(): void
     {
         $request = new ConsumerRequest();
+
         $request
             ->setMethod('GET')
             ->setPath('/api/v1/postcode-lookup')
@@ -64,7 +65,6 @@ class SiriusApiServicePactTest extends TestCase
                 'town' => $matcher->like('Forston'),
                 'postcode' => $matcher->regex('FR6 2FJ', '^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$'),
             ]));
-
 
         $this->builder
             ->uponReceiving('A search for addresses by postcode')

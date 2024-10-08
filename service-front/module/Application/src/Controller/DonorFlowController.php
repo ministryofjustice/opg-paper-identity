@@ -11,6 +11,7 @@ use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
 use Application\Helpers\FormProcessorHelper;
+use Application\PostOffice\Country;
 use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
@@ -38,7 +39,7 @@ class DonorFlowController extends AbstractActionController
         $view = new ViewModel();
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
 
-        $optionsdata = $this->config['opg_settings']['identity_methods'];
+        $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('date_sub_form', $dateSubForm);
@@ -59,10 +60,25 @@ class DonorFlowController extends AbstractActionController
                     );
                     $view->setVariables($formProcessorResponseDto->getVariables());
                 } else {
-                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
                     if ($formData['id_method'] == IdMethod::PostOffice->value) {
+                        $data = [
+                            'id_route' => 'POST_OFFICE',
+                        ];
+                        $this->opgApiService->updateIdMethodWithCountry(
+                            $uuid,
+                            $data
+                        );
                         return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     } else {
+                        $data = [
+                            'id_route' => 'TELEPHONE',
+                            'id_country' => Country::GBR->value,
+                            'id_method' => $formData['id_method']
+                        ];
+                        $this->opgApiService->updateIdMethodWithCountry(
+                            $uuid,
+                            $data
+                        );
                         return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
                     }
                 }
@@ -75,10 +91,12 @@ class DonorFlowController extends AbstractActionController
     public function donorDetailsMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $idMethods = $this->config['opg_settings']['identity_methods'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (! array_key_exists($detailsData['idMethod'], $idMethods)) {
+        /**
+         * @psalm-suppress PossiblyUndefinedArrayOffset
+         */
+        if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
             $nextPage = './post-office-donor-lpa-check';
         } else {
             $nextPage = './donor-lpa-check';
@@ -156,29 +174,32 @@ class DonorFlowController extends AbstractActionController
             // not yet implemented
 //          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
 
-            switch ($detailsData['idMethod']) {
-                case 'pn':
-                    $this->redirect()
-                        ->toRoute("root/passport_number", ['uuid' => $uuid]);
-                    break;
+            /**
+             * @psalm-suppress PossiblyUndefinedArrayOffset
+             */
+            if ($detailsData['idMethodIncludingNation']['id_route'] == 'POST_OFFICE') {
+                $this->redirect()
+                    ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+            } else {
+                switch ($detailsData['idMethodIncludingNation']['id_method']) {
+                    case 'PASSPORT':
+                        $this->redirect()
+                            ->toRoute("root/passport_number", ['uuid' => $uuid]);
+                        break;
 
-                case 'dln':
-                    $this->redirect()
-                        ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
-                    break;
+                    case 'DRIVING_LICENCE':
+                        $this->redirect()
+                            ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
+                        break;
 
-                case 'nin':
-                    $this->redirect()
-                        ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
-                    break;
+                    case 'NATIONAL_INSURANCE_NUMBER':
+                        $this->redirect()
+                            ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
+                        break;
 
-                case 'po':
-                    $this->redirect()
-                        ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
-                    break;
-
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
         }
 
