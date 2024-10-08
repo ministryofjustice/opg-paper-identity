@@ -44,6 +44,8 @@ namespace Application\Contracts;
  */
 interface OpgApiServiceInterface
 {
+    public function healthCheck(): bool;
+
     /**
      * @return CaseData
      */

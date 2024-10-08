@@ -51,6 +51,26 @@ if (! is_string($tableName) || empty($tableName)) {
 return [
     'router' => [
         'routes' => [
+            'health_check' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/health-check',
+                    'defaults' => [
+                        'controller' => Controller\HealthcheckController::class,
+                        'action' => 'healthCheck',
+                    ],
+                ],
+            ],
+            'health_check_service' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/health-check-service',
+                    'defaults' => [
+                        'controller' => Controller\HealthcheckController::class,
+                        'action' => 'healthCheckService',
+                    ],
+                ],
+            ],
             'details' => [
                 'type' => Literal::class,
                 'options' => [
@@ -372,6 +392,7 @@ return [
         'factories' => [
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
             Controller\YotiController::class => LazyControllerAbstractFactory::class,
+            Controller\HealthcheckController::class => LazyControllerAbstractFactory::class,
         ],
     ],
 
