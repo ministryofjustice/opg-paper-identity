@@ -52,6 +52,9 @@ jobs:
   build:
     name: Build and Scan
     uses: ./.github/workflows/build-scan.yml
+    secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   test:
     name: Test
