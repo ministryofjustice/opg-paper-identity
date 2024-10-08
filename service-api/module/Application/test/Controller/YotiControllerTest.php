@@ -160,7 +160,11 @@ class YotiControllerTest extends TestCase
             'dob' => '1980-01-01',
             'address' => ['123 upper road'],
             'personType' => 'donor',
-            'idMethod' => 'po_ukp',
+            "idMethodIncludingNation" => [
+                'id_method' => "PASSPORT",
+                'id_country' => "GBR",
+                'id_route' => "TELEPHONE",
+            ],
             'counterService' => [
                 'selectedPostOffice' => ''
             ]
