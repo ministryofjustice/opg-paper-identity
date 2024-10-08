@@ -64,10 +64,10 @@ return [
             'health_check_service' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/identity/details',
+                    'route' => '/health-check-service',
                     'defaults' => [
                         'controller' => Controller\HealthcheckController::class,
-                        'action' => 'details',
+                        'action' => 'healthCheckService',
                     ],
                 ],
             ],

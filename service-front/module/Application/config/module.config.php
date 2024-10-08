@@ -53,7 +53,7 @@ return [
                         'options' => [
                             'route' => '/health-check',
                             'defaults' => [
-                                'controller' => Controller\HealthCheckController::class,
+                                'controller' => Controller\IndexController::class,
                                 'action' => 'healthCheck',
                             ],
                         ],
@@ -63,7 +63,7 @@ return [
                         'options' => [
                             'route' => '/health-check-service',
                             'defaults' => [
-                                'controller' => Controller\HealthCheckController::class,
+                                'controller' => Controller\IndexController::class,
                                 'action' => 'healthCheckService',
                             ],
                         ],

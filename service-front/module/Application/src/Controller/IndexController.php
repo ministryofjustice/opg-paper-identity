@@ -10,7 +10,7 @@ use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
-use Application\View\JsonModel;
+use Application\Views\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use DateTime;
 use Laminas\Http\Response;
@@ -38,7 +38,7 @@ class IndexController extends AbstractActionController
     {
         return new ViewModel();
     }
-    
+
     public function startAction(): Response
     {
         /** @var string[] $lpasQuery */
@@ -165,5 +165,47 @@ class IndexController extends AbstractActionController
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/abandoned_flow');
+    }
+
+    public function healthCheckAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        $view->setVariable('status', json_encode([
+            'OK' => true
+        ]));
+
+        return $view->setTemplate('application/pages/healthcheck/healthcheck');
+    }
+
+    public function healthCheckServiceAction(): ViewModel
+    {
+        $view = new ViewModel();
+        $ok = true;
+
+        $siriusResponse = $this->siriusApiService->checkAuth($this->getRequest());
+        if ($siriusResponse !== true) {
+            $ok = false;
+        }
+
+        $apiResponse = $this->opgApiService->healthCheck();
+        if ($apiResponse !== true) {
+            $ok = false;
+        }
+
+        $response = [
+            'OK' => $ok,
+            'dependencies' => [
+                'sirius' => [
+                    'ok' => $siriusResponse
+                ],
+                'api' => [
+                    'ok' => $apiResponse
+                ]
+            ]
+        ];
+        $view->setVariable('status', json_encode($response));
+
+        return $view->setTemplate('application/pages/healthcheck/healthcheck');
     }
 }
