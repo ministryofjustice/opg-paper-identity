@@ -22,9 +22,9 @@ class DataQueryHandler
     public function healthCheck(): bool
     {
         try {
-            $result = $this->dynamoDbClient->describeTable(array(
+            $this->dynamoDbClient->describeTable([
                 'TableName' => $this->tableName,
-            ));
+            ]);
             return true;
         } catch (DynamoDbException $exception) {
             //Log exception here?

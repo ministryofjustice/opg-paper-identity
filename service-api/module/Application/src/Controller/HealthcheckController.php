@@ -28,8 +28,7 @@ class HealthcheckController extends AbstractActionController
 {
     public function __construct(
         private readonly DataQueryHandler $dataQuery,
-    )
-    {
+    ) {
     }
 
     public function healthCheckAction(): JsonModel
