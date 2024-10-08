@@ -566,9 +566,6 @@ return [
         'identity_documents' => [
             'PASSPORT' => "Passport",
             'DRIVING_LICENCE' => 'Driving licence',
-//            'NATIONAL_ID' => 'National Identity',
-//            'RESIDENCE_PERMIT' => 'Residence permit',
-//            'TRAVEL_DOCUMENT' => 'Travel document',
             'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
         ],
         'identity_routes' => [

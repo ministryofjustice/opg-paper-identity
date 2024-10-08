@@ -29,7 +29,7 @@ class SessionConfigTest extends TestCase
             "idMethodIncludingNation" => [
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => "POST_OFFICE",
             ],
             'address' => [
                 'line1' => '123 long street',

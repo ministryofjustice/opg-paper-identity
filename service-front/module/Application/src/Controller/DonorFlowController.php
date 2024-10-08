@@ -42,6 +42,8 @@ class DonorFlowController extends AbstractActionController
         $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        echo json_encode($detailsData);
+
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('options_data', $optionsdata);
         $view->setVariable('details_data', $detailsData);
@@ -139,6 +141,8 @@ class DonorFlowController extends AbstractActionController
         $lpaDetails = [];
         $view = new ViewModel();
 
+        echo json_encode($detailsData);
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
@@ -182,17 +186,17 @@ class DonorFlowController extends AbstractActionController
                     ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
             } else {
                 switch ($detailsData['idMethodIncludingNation']['id_method']) {
-                    case 'PASSPORT':
+                    case IdMethod::PassportNumber->value:
                         $this->redirect()
                             ->toRoute("root/passport_number", ['uuid' => $uuid]);
                         break;
 
-                    case 'DRIVING_LICENCE':
+                    case IdMethod::DrivingLicenseNumber->value:
                         $this->redirect()
                             ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
                         break;
 
-                    case 'NATIONAL_INSURANCE_NUMBER':
+                    case IdMethod::NationalInsuranceNumber->value:
                         $this->redirect()
                             ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
                         break;

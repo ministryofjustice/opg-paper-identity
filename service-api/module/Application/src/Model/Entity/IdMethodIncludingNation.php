@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Enums\IdRoute;
 use Exception;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\NotEmpty;
+use Application\Validators\Enum;
+use Application\Enums\IdMethod;
 
 /**
  * DTO for holding ID method data
@@ -18,11 +21,11 @@ use Laminas\Validator\NotEmpty;
 class IdMethodIncludingNation extends Entity
 {
     #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(Enum::class, options: ['enum' => IdMethod::class])]
     public string $id_method;
 
     #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(Enum::class, options: [IdRoute::class])]
     public string $id_route;
 
     #[Annotation\Required(false)]

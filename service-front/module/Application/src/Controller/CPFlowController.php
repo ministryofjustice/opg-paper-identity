@@ -27,6 +27,7 @@ use Application\Helpers\LpaFormHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
+use Application\Enums\IdMethod as IdMethodEnum;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -69,9 +70,9 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                if ($formData['id_method'] == \Application\Enums\IdMethod::PostOffice->value) {
+                if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
                     $data = [
-                        'id_route' => 'POST_OFFICE',
+                        'id_route' => IdMethodEnum::PostOffice->value,
                     ];
                     $this->opgApiService->updateIdMethodWithCountry(
                         $uuid,

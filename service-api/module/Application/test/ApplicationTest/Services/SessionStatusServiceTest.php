@@ -291,7 +291,7 @@ class SessionStatusServiceTest extends TestCase
             "idMethodIncludingNation" => [
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => "POST_OFFICE",
             ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
@@ -350,7 +350,7 @@ class SessionStatusServiceTest extends TestCase
             "idMethodIncludingNation" => [
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => "POST_OFFICE",
             ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
