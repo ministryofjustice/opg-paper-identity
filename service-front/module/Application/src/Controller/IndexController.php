@@ -42,6 +42,7 @@ class IndexController extends AbstractActionController
     {
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
+
         $lpas = [];
         foreach ($lpasQuery as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());

@@ -87,6 +87,7 @@ class YotiController extends AbstractActionController
         $notificationsAuthToken = strval(Uuid::uuid4());
 
         $sessionData = $this->sessionConfig->build($case, $notificationsAuthToken);
+
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();
         $timestamp = $dateTime->getTimestamp();

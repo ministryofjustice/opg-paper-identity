@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
+use Application\Enums\IdMethod;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
@@ -101,7 +102,14 @@ class SessionStatusService
     private function evaluateFinalResult(array $checks, ?string $mediaId, CaseData $caseData): bool
     {
         //If UK passport ensure document presented was in date range
-        if (is_string($mediaId) && $caseData->idMethod === "po_ukp") {
+        /**
+         * @psalm-suppress PossiblyNullPropertyFetch
+         */
+        if (
+            is_string($mediaId) &&
+            $caseData->idMethodIncludingNation->id_method === IdMethod::PassportNumber->value &&
+            $caseData->idMethodIncludingNation->id_country === "GBR"
+        ) {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
 
             if (is_string($documentScanned["expiration_date"])) {

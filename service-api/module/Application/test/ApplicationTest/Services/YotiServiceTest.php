@@ -205,7 +205,11 @@ class YotiServiceTest extends TestCase
             'lastName' => 'Williams',
             'personType' => 'donor',
             'dob' => '1970-01-01',
-            'idMethod' => 'po_ukp',
+            "idMethodIncludingNation" => [
+                'id_method' => "PASSPORT",
+                'id_country' => "GBR",
+                'id_route' => "POST_OFFICE",
+            ],
             'address' => [
                 'line1' => '123 long street',
             ],
