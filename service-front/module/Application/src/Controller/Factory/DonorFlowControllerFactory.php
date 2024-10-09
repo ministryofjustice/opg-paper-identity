@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
+use Application\Helpers\DependencyCheck;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
@@ -29,7 +30,8 @@ class DonorFlowControllerFactory implements FactoryInterface
             $container->get(FormProcessorHelper::class),
             $container->get(SiriusApiService::class),
             $config,
-            $siriusBaseUrl
+            $siriusBaseUrl,
+            $container->get(DependencyCheck::class),
         );
     }
 }

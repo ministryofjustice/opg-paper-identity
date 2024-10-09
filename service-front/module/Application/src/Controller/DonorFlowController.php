@@ -18,6 +18,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\LpaTypes;
+use Application\Helpers\DependencyCheck;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -29,11 +30,14 @@ class DonorFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
         private readonly string $siriusBaseUrl,
+        private readonly DependencyCheck $dependencyCheck,
     ) {
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
     {
+        $this->dependencyCheck->getDependencyStatus();
+
         $templates = ['default' => 'application/pages/how_will_the_donor_confirm'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();

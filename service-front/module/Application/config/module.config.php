@@ -17,6 +17,7 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
+use Application\Enums\IdMethod;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -24,7 +25,7 @@ use Psr\Log\LoggerInterface;
 use Twig\Extension\DebugExtension;
 
 $prefix = getenv("PREFIX");
-if (! is_string($prefix)) {
+if (!is_string($prefix)) {
     $prefix = '';
 }
 
@@ -606,11 +607,13 @@ return [
             'po_ind' => 'International driving licence (must be current)',
             'po_n' => 'None of the above',
         ],
-//        'non_uk_identity_methods' => [
-//            'xpn' => 'Passport',
-//            'xdln' => 'Photocard driving licence',
-//            'xid' => 'National identity card',
-//        ],
+        'active_dependencies' => [
+            'EXPERIAN',
+            IdMethod::NationalInsuranceNumber->value,
+            IdMethod::PassportNumber->value,
+            IdMethod::DrivingLicenseNumber->value,
+            IdMethod::PostOffice->value
+        ],
         'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
     ],
 ];
