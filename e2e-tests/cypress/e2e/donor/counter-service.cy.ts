@@ -21,7 +21,7 @@ describe("Counter service donor journey", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Confirm Post Office route");
-    cy.contains("UK passport");
+    cy.contains("Passport");
     cy.contains("St. Neots");
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Continue").click();
