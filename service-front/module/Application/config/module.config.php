@@ -47,6 +47,26 @@ return [
                             ],
                         ],
                     ],
+                    'health_check' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/health-check',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action' => 'healthCheck',
+                            ],
+                        ],
+                    ],
+                    'health_check_service' => [
+                        'type' => Literal::class,
+                        'options' => [
+                            'route' => '/health-check/service',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action' => 'healthCheckService',
+                            ],
+                        ],
+                    ],
                     'start' => [
                         'type' => Segment::class,
                         'options' => [
