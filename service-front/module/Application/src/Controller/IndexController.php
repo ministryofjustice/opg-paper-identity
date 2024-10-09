@@ -10,7 +10,6 @@ use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
-use Application\Views\JsonModel;
 use Laminas\Form\Annotation\AttributeBuilder;
 use DateTime;
 use Laminas\Http\Response;
@@ -174,6 +173,7 @@ class IndexController extends AbstractActionController
         $view->setVariable('status', json_encode([
             'OK' => true
         ]));
+        $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
 
         return $view->setTemplate('application/pages/healthcheck/healthcheck');
     }
@@ -205,6 +205,7 @@ class IndexController extends AbstractActionController
             ]
         ];
         $view->setVariable('status', json_encode($response));
+        $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
 
         return $view->setTemplate('application/pages/healthcheck/healthcheck');
     }

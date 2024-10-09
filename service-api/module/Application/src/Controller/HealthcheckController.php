@@ -52,7 +52,7 @@ class HealthcheckController extends AbstractActionController
         } else {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_503);
             return new JsonModel([
-                'OK' => true,
+                'OK' => false,
                 'dependencies' => [
                     'dynamodb' => [
                         'ok' => false
