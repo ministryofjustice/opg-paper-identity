@@ -247,7 +247,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
             ->willReturn(true);
 
-        $this->dispatch('/health-check-service', 'GET');
+        $this->dispatch('/health-check/service', 'GET');
         $this->assertResponseStatusCode(200);
     }
 }
