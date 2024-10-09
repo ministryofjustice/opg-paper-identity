@@ -10,9 +10,10 @@ use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{id_method: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class IdMethod
+class IdMethod implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
