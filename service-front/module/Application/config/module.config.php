@@ -60,7 +60,7 @@ return [
                     'health_check_service' => [
                         'type' => Literal::class,
                         'options' => [
-                            'route' => '/health-check-service',
+                            'route' => '/health-check/service',
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
                                 'action' => 'healthCheckService',
