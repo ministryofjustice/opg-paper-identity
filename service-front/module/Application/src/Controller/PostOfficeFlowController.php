@@ -32,7 +32,7 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
-        private readonly string $siriusBaseUrl,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -93,7 +93,7 @@ class PostOfficeFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
-        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+        $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
         $view->setVariable('sirius_edit_url', $siriusEditUrl);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
