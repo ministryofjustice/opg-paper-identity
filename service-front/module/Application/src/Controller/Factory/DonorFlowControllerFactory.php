@@ -29,7 +29,7 @@ class DonorFlowControllerFactory implements FactoryInterface
             $container->get(FormProcessorHelper::class),
             $container->get(SiriusApiService::class),
             $config,
-            $siriusBaseUrl
+            $siriusBaseUrl,
         );
     }
 }

@@ -7,6 +7,7 @@ namespace ApplicationTest\Services;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
+use Application\Enums\IdMethod;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -743,6 +744,73 @@ class OpgApiServiceTest extends TestCase
                 $data,
                 $failClient,
                 true,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider serviceAvailabilityData
+     */
+    public function testServiceAvailability(
+        Client $client,
+        array $expected,
+        bool $exception
+    ): void {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
+
+        $this->opgApiService = new OpgApiService($client);
+
+        $this->assertEquals($expected, $this->opgApiService->getServiceAvailability());
+    }
+
+    public static function serviceAvailabilityData(): array
+    {
+        $successMock = new MockHandler([
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode([
+                    IdMethod::DrivingLicenseNumber->value => true,
+                    IdMethod::PassportNumber->value => true,
+                    IdMethod::NationalInsuranceNumber->value => true,
+                    IdMethod::PostOffice->value => true,
+                    'EXPERIAN' => false
+                ]),
+            ),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $failMock = new MockHandler([
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode([]),
+            ),
+        ]);
+        $failHandlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $failHandlerStack]);
+
+        return [
+            [
+                $successClient,
+                [
+                    IdMethod::DrivingLicenseNumber->value => false,
+                    IdMethod::PassportNumber->value => false,
+                    IdMethod::NationalInsuranceNumber->value => false,
+                    IdMethod::PostOffice->value => true,
+                    'EXPERIAN' => false
+                ],
+                false
+            ],
+            [
+                $failClient,
+                [
+
+                ],
+                true
             ],
         ];
     }

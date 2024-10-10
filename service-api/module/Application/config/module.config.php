@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
+use Application\Aws\SsmClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
@@ -35,6 +37,7 @@ use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\EventBridge\EventBridgeClient;
+use Aws\Ssm\SsmClient;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Method;
@@ -383,6 +386,16 @@ return [
                     ],
                 ],
             ],
+            'service_availability' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/service-availability',
+                    'defaults' => [
+                        'controller' => Controller\HealthcheckController::class,
+                        'action' => 'serviceAvailability',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -392,7 +405,7 @@ return [
         'factories' => [
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
             Controller\YotiController::class => LazyControllerAbstractFactory::class,
-            Controller\HealthcheckController::class => LazyControllerAbstractFactory::class,
+            Controller\HealthcheckController::class => HealthcheckControllerFactory::class,
         ],
     ],
 
@@ -401,6 +414,7 @@ return [
         ],
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
+            SsmClient::class => SsmClientFactory::class,
             EventBridgeClient::class => EventBridgeClientFactory::class,
             DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
