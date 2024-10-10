@@ -17,7 +17,7 @@ enum DocumentType: string
             self::DrivingLicence => 'Driving licence',
             self::NationalId => 'National ID',
             self::Passport => 'Passport',
-            self::ResidencePermit => 'Biometric residence permit',
+            self::ResidencePermit => 'UK biometric residence permit',
         };
     }
 }
