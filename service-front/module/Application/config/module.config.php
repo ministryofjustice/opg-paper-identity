@@ -604,7 +604,7 @@ return [
             'DRIVING_LICENCE' => 'UK Driving licence (must be current)',
             'po_eud' => 'EU Driving licence (must be current)',
             'po_ind' => 'International driving licence (must be current)',
-            'po_brp' => 'UK Biometric Residence Permit',
+            'RESIDENCE_PERMIT' => 'UK Biometric Residence Permit',
             'po_n' => 'None of the above',
         ],
 //        'non_uk_identity_methods' => [
