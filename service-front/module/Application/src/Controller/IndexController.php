@@ -42,6 +42,7 @@ class IndexController extends AbstractActionController
     {
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
+
         $lpas = [];
         foreach ($lpasQuery as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
@@ -164,5 +165,49 @@ class IndexController extends AbstractActionController
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/abandoned_flow');
+    }
+
+    public function healthCheckAction(): ViewModel
+    {
+        $view = new ViewModel();
+
+        $view->setVariable('status', json_encode([
+            'OK' => true
+        ]));
+        $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        return $view->setTemplate('application/pages/healthcheck/healthcheck');
+    }
+
+    public function healthCheckServiceAction(): ViewModel
+    {
+        $view = new ViewModel();
+        $ok = true;
+
+        $siriusResponse = $this->siriusApiService->checkAuth($this->getRequest());
+        if ($siriusResponse !== true) {
+            $ok = false;
+        }
+
+        $apiResponse = $this->opgApiService->healthCheck();
+        if ($apiResponse !== true) {
+            $ok = false;
+        }
+
+        $response = [
+            'OK' => $ok,
+            'dependencies' => [
+                'sirius' => [
+                    'ok' => $siriusResponse
+                ],
+                'api' => [
+                    'ok' => $apiResponse
+                ]
+            ]
+        ];
+        $view->setVariable('status', json_encode($response));
+        $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+
+        return $view->setTemplate('application/pages/healthcheck/healthcheck');
     }
 }
