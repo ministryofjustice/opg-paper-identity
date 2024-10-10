@@ -30,6 +30,8 @@ class HealthcheckController extends AbstractActionController
     public function __construct(
         private readonly DataQueryHandler $dataQuery,
         private readonly SsmClient $ssmClient,
+        private string $ssmServiceAvailability,
+        private array $config = []
     ) {
     }
 
@@ -67,7 +69,7 @@ class HealthcheckController extends AbstractActionController
     public function serviceAvailabilityAction(): JsonModel
     {
         $status = $this->ssmClient->getParameter([
-            'Name' => 'service-availability'
+            'Name' => $this->ssmServiceAvailability
         ])->toArray();
 
         return new JsonModel(json_decode($status['Parameter']['Value'], true));

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
-use Aws\Ssm\SsmClient;
 use Application\Enums\IdMethod;
 
 class DependencyCheck
 {
-    public function __construct(private readonly array $statusData, private array $processedStatus = [])
+    protected array $processedStatus = [];
+
+    public function __construct(private readonly array $statusData)
     {
         $this->processData();
     }

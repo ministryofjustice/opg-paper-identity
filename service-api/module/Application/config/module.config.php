@@ -9,6 +9,7 @@ use Application\Aws\SsmClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
@@ -404,7 +405,7 @@ return [
         'factories' => [
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
             Controller\YotiController::class => LazyControllerAbstractFactory::class,
-            Controller\HealthcheckController::class => LazyControllerAbstractFactory::class,
+            Controller\HealthcheckController::class => HealthcheckControllerFactory::class,
         ],
     ],
 

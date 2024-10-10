@@ -35,8 +35,6 @@ class DonorFlowController extends AbstractActionController
 
     public function howWillDonorConfirmAction(): ViewModel|Response
     {
-//        $this->dependencyCheck->getDependencyStatus();
-
         $templates = ['default' => 'application/pages/how_will_the_donor_confirm'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
