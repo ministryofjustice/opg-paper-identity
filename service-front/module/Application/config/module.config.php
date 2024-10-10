@@ -25,7 +25,7 @@ use Psr\Log\LoggerInterface;
 use Twig\Extension\DebugExtension;
 
 $prefix = getenv("PREFIX");
-if (!is_string($prefix)) {
+if (! is_string($prefix)) {
     $prefix = '';
 }
 

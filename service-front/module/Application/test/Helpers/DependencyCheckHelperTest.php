@@ -10,8 +10,8 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
-use function Aws\flatmap;
 
+use function Aws\flatmap;
 
 class DependencyCheckHelperTest extends TestCase
 {
@@ -26,12 +26,10 @@ class DependencyCheckHelperTest extends TestCase
     public function testFindLpa(
         array $depData,
         array $expected
-    ): void
-    {
+    ): void {
         $dependendcyCheck = new DependencyCheck($depData);
 
         $this->assertEquals($expected, $dependendcyCheck->getProcessedStatus());
-
     }
 
 

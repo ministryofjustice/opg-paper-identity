@@ -128,4 +128,6 @@ interface OpgApiServiceInterface
     public function createYotiSession(string $uuid): array;
 
     public function estimatePostofficeDeadline(string $uuid): string;
+
+    public function getServiceAvailability(): array;
 }

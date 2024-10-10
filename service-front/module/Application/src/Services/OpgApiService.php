@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Helpers\AddressProcessorHelper;
+use Application\Helpers\DependencyCheck;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Laminas\Http\Response;
@@ -349,5 +350,22 @@ class OpgApiService implements OpgApiServiceInterface
         }
 
         return $this->responseData['deadline'];
+    }
+
+    public function getServiceAvailability(): array
+    {
+        $url = "/service-availability";
+
+        try {
+            $this->makeApiRequest($url, 'GET');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+
+        if (empty($this->responseData)) {
+            throw new OpgApiException('Service availability data missing!');
+        }
+
+        return (new DependencyCheck($this->responseData))->getProcessedStatus();
     }
 }
