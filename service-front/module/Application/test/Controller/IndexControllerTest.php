@@ -244,7 +244,6 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $opgApiService->expects($this->once())
             ->method('healthCheck')
-
             ->willReturn(true);
 
         $this->dispatch('/health-check/service', 'GET');
