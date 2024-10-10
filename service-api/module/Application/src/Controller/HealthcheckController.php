@@ -70,8 +70,6 @@ class HealthcheckController extends AbstractActionController
             'Name' => 'service-availability'
         ])->toArray();
 
-//        die(($status['Parameter']['Value']));
-
         return new JsonModel(json_decode($status['Parameter']['Value'], true));
     }
 }

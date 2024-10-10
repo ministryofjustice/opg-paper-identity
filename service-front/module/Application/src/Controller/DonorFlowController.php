@@ -29,14 +29,13 @@ class DonorFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
-        private readonly string $siriusBaseUrl,
-        private readonly DependencyCheck $dependencyCheck,
+        private readonly string $siriusBaseUrl
     ) {
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
     {
-        $this->dependencyCheck->getDependencyStatus();
+//        $this->dependencyCheck->getDependencyStatus();
 
         $templates = ['default' => 'application/pages/how_will_the_donor_confirm'];
         $uuid = $this->params()->fromRoute("uuid");

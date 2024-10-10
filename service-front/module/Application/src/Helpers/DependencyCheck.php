@@ -9,19 +9,9 @@ use Application\Enums\IdMethod;
 
 class DependencyCheck
 {
-    private readonly array $statusData;
-
-    private readonly array $processedStatus;
-
-    public function __construct(array $statusData)
+    public function __construct(private readonly array $statusData,  private array $processedStatus = [])
     {
-        $this->statusData = $statusData;
         $this->processData();
-    }
-
-    public function getDependencyStatus(): array
-    {
-        return $this->statusData;
     }
 
     public function processData(): void
@@ -36,10 +26,17 @@ class DependencyCheck
             foreach ($this->statusData as $key => $value) {
                 $this->processedStatus[$key] = $value;
             }
+            if (
+                $this->processedStatus[IdMethod::DrivingLicenseNumber->value] === false &&
+                $this->processedStatus[IdMethod::PassportNumber->value] === false &&
+                $this->processedStatus[IdMethod::NationalInsuranceNumber->value] === false
+            ) {
+                $this->processedStatus['EXPERIAN'] = false;
+            }
         }
     }
 
-    public function getProcessedStatus(): array
+    public final function getProcessedStatus(): array
     {
         return $this->processedStatus;
     }
