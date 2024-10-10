@@ -28,7 +28,7 @@ class DonorFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
-        private readonly string $siriusBaseUrl,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -106,7 +106,7 @@ class DonorFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
-        $siriusEditUrl = $this->siriusBaseUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+        $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
 
         $view->setVariables([
             'details_data' => $detailsData,

@@ -6,6 +6,7 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Factories\LoggerFactory;
@@ -533,7 +534,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
