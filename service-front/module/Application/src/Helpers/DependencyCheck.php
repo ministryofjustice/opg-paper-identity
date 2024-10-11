@@ -17,24 +17,40 @@ class DependencyCheck
 
     public function processData(): void
     {
+        $message = "";
+        $processedData = [];
+
         if ($this->statusData['EXPERIAN'] !== true) {
-            $this->processedStatus['EXPERIAN'] = false;
-            $this->processedStatus[IdMethod::DrivingLicenseNumber->value] = false;
-            $this->processedStatus[IdMethod::PassportNumber->value] = false;
-            $this->processedStatus[IdMethod::NationalInsuranceNumber->value] = false;
-            $this->processedStatus[IdMethod::PostOffice->value] = $this->statusData[IdMethod::PostOffice->value];
+            $processedData['EXPERIAN'] = false;
+            $processedData[IdMethod::DrivingLicenseNumber->value] = false;
+            $processedData[IdMethod::PassportNumber->value] = false;
+            $processedData[IdMethod::NationalInsuranceNumber->value] = false;
+            $processedData[IdMethod::PostOffice->value] = $this->statusData[IdMethod::PostOffice->value];
         } else {
             foreach ($this->statusData as $key => $value) {
-                $this->processedStatus[$key] = $value;
-            }
-            if (
-                $this->processedStatus[IdMethod::DrivingLicenseNumber->value] === false &&
-                $this->processedStatus[IdMethod::PassportNumber->value] === false &&
-                $this->processedStatus[IdMethod::NationalInsuranceNumber->value] === false
-            ) {
-                $this->processedStatus['EXPERIAN'] = false;
+                $processedData[$key] = $value;
             }
         }
+
+        if (
+            $processedData[IdMethod::DrivingLicenseNumber->value] === false ||
+            $processedData[IdMethod::PassportNumber->value] === false ||
+            $processedData[IdMethod::NationalInsuranceNumber->value] === false
+        ) {
+            $message = "Some identity verification methods are not presently available";
+        }
+
+        if (
+            $processedData[IdMethod::DrivingLicenseNumber->value] === false &&
+            $processedData[IdMethod::PassportNumber->value] === false &&
+            $processedData[IdMethod::NationalInsuranceNumber->value] === false
+        ) {
+            $processedData['EXPERIAN'] = false;
+            $message = "Online identity verification it not presently available";
+        }
+
+        $this->processedStatus['data'] = $processedData;
+        $this->processedStatus['message'] = $message;
     }
 
     final public function getProcessedStatus(): array
