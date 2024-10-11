@@ -11,6 +11,7 @@ use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiServiceInterface;
+use Aws\Ssm\SsmClient;
 use DateTime;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
@@ -28,6 +29,9 @@ class HealthcheckController extends AbstractActionController
 {
     public function __construct(
         private readonly DataQueryHandler $dataQuery,
+        private readonly SsmClient $ssmClient,
+        private string $ssmServiceAvailability,
+        private array $config = []
     ) {
     }
 
@@ -60,5 +64,14 @@ class HealthcheckController extends AbstractActionController
                 ]
             ]);
         }
+    }
+
+    public function serviceAvailabilityAction(): JsonModel
+    {
+        $status = $this->ssmClient->getParameter([
+            'Name' => $this->ssmServiceAvailability
+        ])->toArray();
+
+        return new JsonModel(json_decode($status['Parameter']['Value'], true));
     }
 }

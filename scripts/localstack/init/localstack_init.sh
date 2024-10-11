@@ -62,3 +62,4 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-cross
     --description "Experian Crosscore Tenant ID" \
     --secret-string "empty"
 
+awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
