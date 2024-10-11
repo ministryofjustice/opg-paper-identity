@@ -6,6 +6,7 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Factories\LoggerFactory;
@@ -534,7 +535,7 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\CPFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
@@ -605,6 +606,7 @@ return [
             'DRIVING_LICENCE' => 'UK Driving licence (must be current)',
             'po_eud' => 'EU Driving licence (must be current)',
             'po_ind' => 'International driving licence (must be current)',
+            'RESIDENCE_PERMIT' => 'UK Biometric Residence Permit',
             'po_n' => 'None of the above',
         ],
         'active_dependencies' => [
