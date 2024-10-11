@@ -8,14 +8,16 @@
     <form method="POST" class="govuk-!-width-two-thirds">
         <h1 class="govuk-heading-xl">{% block title %}How will they confirm their identity?{% endblock %}</h1>
 
-        <p class="govuk-body">
-            Confirming their identity over the phone is the quickest and easiest option - they'll need an NI number,
-            passport or driving licence and to answer some identity check questions during the call.
-
-            <br><br>Alternately, they can identify in-person at a Post Office - this will take longer and incurs a
-            cost
-            to OPG.
-        </p>
+         <div class="govuk-form-group">
+            <p class="govuk-body">
+                Confirming their identity over the phone is the quickest and easiest option - they'll need an NI
+                number, passport or driving licence and to answer some identity check questions during the call.
+            </p>
+            <p class="govuk-body">
+                Alternatively, they can take their identity document to a Post Office - this will take
+                longer and incurs an extra cost to OPG.
+            </p>
+        </div>
 
         <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
         <div class="govuk-form-group">
@@ -138,23 +140,21 @@
                         value="POST_OFFICE">
                 <label class="govuk-label govuk-radios__label" for="PostOffice">
                     Post Office
-                    <p class="govuk-hint govuk-!-margin-top-0">
-                        UK passport (up to 18 months expired), current UK photocard driving licence
-                        or current international photo ID.
-                    </p>
 
                     <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0">
                         <summary class="govuk-details__summary">
                                 <span class="govuk-details__summary-text">
-                                    Which international documents are accepted
+                                    Documents accepted at the Post Office
                                 </span>
                         </summary>
                         <div class="govuk-details__text">
                             <ul class="govuk-list govuk-list--bullet govuk-hint">
+                                <li>UK passport (up to 18 months expired)</li>
+                                <li>UK photocard driving licence</li>
+                                <li class="govuk-!-padding-bottom-4">UK biometric residence permit</li>
                                 <li>International passport</li>
                                 <li>EU/EEA photocard driving licence</li>
                                 <li>EU/EEA national identity card</li>
-                                <li>Biometric residence permit</li>
                             </ul>
                         </div>
                     </details>
