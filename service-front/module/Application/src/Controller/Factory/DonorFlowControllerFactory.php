@@ -20,8 +20,8 @@ class DonorFlowControllerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null): DonorFlowController
     {
-        /** @var string $siriusBaseUrl */
-        $siriusBaseUrl = getenv("SIRIUS_BASE_URL");
+        /** @var string $siriusPublicUrl */
+        $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
         $config = $container->get('Config');
 
         return new DonorFlowController(
@@ -29,7 +29,7 @@ class DonorFlowControllerFactory implements FactoryInterface
             $container->get(FormProcessorHelper::class),
             $container->get(SiriusApiService::class),
             $config,
-            $siriusBaseUrl,
+            $siriusPublicUrl,
         );
     }
 }

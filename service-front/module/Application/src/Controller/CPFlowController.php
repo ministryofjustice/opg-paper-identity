@@ -45,6 +45,7 @@ class CPFlowController extends AbstractActionController
         private readonly LpaFormHelper $lpaFormHelper,
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -112,8 +113,13 @@ class CPFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
+        $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $view->setVariables([
+            'options_data' => $optionsdata,
+            'details_data' => $detailsData,
+            'sirius_edit_url' => $siriusEditUrl
+        ]);
 
         return $view->setTemplate('application/pages/cp/cp_id_check');
     }
