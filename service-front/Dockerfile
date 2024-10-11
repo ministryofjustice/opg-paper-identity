@@ -24,6 +24,8 @@ RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DE
     && docker-php-ext-install ffi intl opcache \
     && docker-php-ext-enable sodium
 
+RUN pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
+
 # Patch Vulnerabilities
 RUN apk upgrade --no-cache openssl
 
@@ -41,6 +43,13 @@ ENV PHP_FPM_MAX_START_CHILDREN "4"
 ENV PHP_FPM_MIN_SPARE_SERVERS "2"
 ENV PHP_FPM_MAX_SPARE_SERVERS "4"
 ENV PHP_FPM_MEMORY_LIMIT "256M"
+
+ENV OTEL_PHP_AUTOLOAD_ENABLED=true
+ENV OTEL_SERVICE_NAME=front.lpa-identity-check.local
+ENV OTEL_TRACES_EXPORTER=none
+ENV OTEL_METRICS_EXPORTER=none
+ENV OTEL_LOGS_EXPORTER=none
+ENV OTEL_PROPAGATORS=xray
 
 USER "www-data"
 VOLUME ["/var/www/public"]

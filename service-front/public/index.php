@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Laminas\Mvc\Application;
+use Telemetry\Tracer;
 
 /**
  * This makes our life easier when dealing with paths. Everything is relative
@@ -29,6 +30,8 @@ if (! class_exists(Application::class)) {
         . "- Type `docker-compose run laminas composer install` if you are using Docker.\n"
     );
 }
+
+Tracer::initialise();
 
 $container = require __DIR__ . '/../config/container.php';
 // Run the application!
