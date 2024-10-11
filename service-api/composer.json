@@ -28,6 +28,9 @@
         "laminas/laminas-mvc": "^3.7.0",
         "laminas/laminas-skeleton-installer": "^1.3.0",
         "monolog/monolog": "^3.5",
+        "open-telemetry/contrib-aws": "^1.0@beta",
+        "open-telemetry/exporter-otlp": "^1.0",
+        "open-telemetry/sdk": "^1.0",
         "ramsey/uuid": "^4.7"
     },
     "require-dev": {
@@ -40,7 +43,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Application\\": "module/Application/src/"
+            "Application\\": "module/Application/src/",
+            "Telemetry\\": "module/Telemetry/"
         }
     },
     "autoload-dev": {
@@ -83,9 +87,11 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "laminas/laminas-component-installer": true,
             "laminas/laminas-skeleton-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "php-http/discovery": false,
+            "tbachert/spi": false
         },
         "platform": {
             "ext-apcu": "5.1.10"
