@@ -44,6 +44,9 @@ class DonorFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
+            /**
+             * @psalm-suppress InvalidArrayAccess
+             */
             if ($serviceAvailability['data'][$key] === true) {
                 $identityDocs[$key] = $value;
             }

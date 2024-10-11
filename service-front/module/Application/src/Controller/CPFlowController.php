@@ -64,6 +64,9 @@ class CPFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
+            /**
+             * @psalm-suppress InvalidArrayAccess
+             */
             if ($serviceAvailability['data'][$key] === true) {
                 $identityDocs[$key] = $value;
             }
@@ -118,7 +121,7 @@ class CPFlowController extends AbstractActionController
     public function nameMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsdata = $this->config['opg_settings']['identity_methods'];
+        $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();

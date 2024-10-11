@@ -137,6 +137,20 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    public function returnServiceAvailabilityResponseData(): array
+    {
+        return [
+            "data" => [
+                "EXPERIAN" => true,
+                "NATIONAL_INSURANCE_NUMBER" => true,
+                "DRIVING_LICENCE" => true,
+                "PASSPORT" => true,
+                "POST_OFFICE" => true
+            ],
+            "message" => ""
+        ];
+    }
+
     public function testCPIdCheckReturnsPageWithData(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -147,6 +161,13 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/cp/how-will-cp-confirm", 'GET');
         $this->assertResponseStatusCode(200);

@@ -83,12 +83,12 @@ class HealthcheckController extends AbstractActionController
         }
 
         foreach ($dependencyStatus as $value) {
-            if (!$value) {
+            if (! $value) {
                 $dependencies = false;
             }
         }
 
-        if (!$dbConnection || !$dependencies) {
+        if (! $dbConnection || ! $dependencies) {
             $ok = false;
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_503);
         }

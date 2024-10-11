@@ -23,7 +23,7 @@ class DependencyCheckHelperTest extends TestCase
     /**
      * @dataProvider statusData
      */
-    public function testFindLpa(
+    public function testDependencyStatus(
         array $depData,
         array $expected
     ): void {
@@ -35,6 +35,10 @@ class DependencyCheckHelperTest extends TestCase
 
     public static function statusData(): array
     {
+        $messagePart = "Some identity verification methods are not presently available";
+        $messageAll = "Online identity verification it not presently available";
+
+
         return [
             [
                 [
@@ -45,11 +49,14 @@ class DependencyCheckHelperTest extends TestCase
                     'EXPERIAN' => true
                 ],
                 [
-                    IdMethod::DrivingLicenseNumber->value => true,
-                    IdMethod::PassportNumber->value => true,
-                    IdMethod::NationalInsuranceNumber->value => true,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => true
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => true,
+                        IdMethod::PassportNumber->value => true,
+                        IdMethod::NationalInsuranceNumber->value => true,
+                        IdMethod::PostOffice->value => true,
+                        'EXPERIAN' => true
+                    ],
+                    "message" => ""
                 ],
             ],
             [
@@ -61,11 +68,15 @@ class DependencyCheckHelperTest extends TestCase
                     'EXPERIAN' => false
                 ],
                 [
-                    IdMethod::DrivingLicenseNumber->value => false,
-                    IdMethod::PassportNumber->value => false,
-                    IdMethod::NationalInsuranceNumber->value => false,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false
+
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => false,
+                        IdMethod::PassportNumber->value => false,
+                        IdMethod::NationalInsuranceNumber->value => false,
+                        IdMethod::PostOffice->value => true,
+                        'EXPERIAN' => false
+                    ],
+                    "message" => $messageAll
                 ],
             ],
             [
@@ -77,11 +88,14 @@ class DependencyCheckHelperTest extends TestCase
                     'EXPERIAN' => true
                 ],
                 [
-                    IdMethod::DrivingLicenseNumber->value => false,
-                    IdMethod::PassportNumber->value => false,
-                    IdMethod::NationalInsuranceNumber->value => false,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => false,
+                        IdMethod::PassportNumber->value => false,
+                        IdMethod::NationalInsuranceNumber->value => false,
+                        IdMethod::PostOffice->value => true,
+                        'EXPERIAN' => false
+                    ],
+                    "message" => $messageAll
                 ],
             ],
             [
@@ -93,11 +107,14 @@ class DependencyCheckHelperTest extends TestCase
                     'EXPERIAN' => true
                 ],
                 [
-                    IdMethod::DrivingLicenseNumber->value => true,
-                    IdMethod::PassportNumber->value => false,
-                    IdMethod::NationalInsuranceNumber->value => true,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => true
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => true,
+                        IdMethod::PassportNumber->value => false,
+                        IdMethod::NationalInsuranceNumber->value => true,
+                        IdMethod::PostOffice->value => true,
+                        'EXPERIAN' => true
+                    ],
+                    "message" => $messagePart
                 ],
             ],
             [
@@ -109,11 +126,14 @@ class DependencyCheckHelperTest extends TestCase
                     'EXPERIAN' => true
                 ],
                 [
-                    IdMethod::DrivingLicenseNumber->value => true,
-                    IdMethod::PassportNumber->value => true,
-                    IdMethod::NationalInsuranceNumber->value => true,
-                    IdMethod::PostOffice->value => false,
-                    'EXPERIAN' => true
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => true,
+                        IdMethod::PassportNumber->value => true,
+                        IdMethod::NationalInsuranceNumber->value => true,
+                        IdMethod::PostOffice->value => false,
+                        'EXPERIAN' => true
+                    ],
+                    "message" => ""
                 ],
             ],
             [
@@ -125,11 +145,14 @@ class DependencyCheckHelperTest extends TestCase
                     'EXPERIAN' => false
                 ],
                 [
-                    IdMethod::DrivingLicenseNumber->value => false,
-                    IdMethod::PassportNumber->value => false,
-                    IdMethod::NationalInsuranceNumber->value => false,
-                    IdMethod::PostOffice->value => false,
-                    'EXPERIAN' => false
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => false,
+                        IdMethod::PassportNumber->value => false,
+                        IdMethod::NationalInsuranceNumber->value => false,
+                        IdMethod::PostOffice->value => false,
+                        'EXPERIAN' => false
+                    ],
+                    "message" => $messageAll
                 ],
             ],
         ];

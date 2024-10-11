@@ -18,6 +18,7 @@ class DependencyCheck
     public function processData(): void
     {
         $message = "";
+        $processedData = [];
 
         if ($this->statusData['EXPERIAN'] !== true) {
             $processedData['EXPERIAN'] = false;
@@ -29,16 +30,8 @@ class DependencyCheck
             foreach ($this->statusData as $key => $value) {
                 $processedData[$key] = $value;
             }
-            if (
-                $processedData[IdMethod::DrivingLicenseNumber->value] === false &&
-                $processedData[IdMethod::PassportNumber->value] === false &&
-                $processedData[IdMethod::NationalInsuranceNumber->value] === false
-            ) {
-                $processedData['EXPERIAN'] = false;
-                $message = "Online identity verification it not presently available";
-            }
         }
-        
+
         if (
             $processedData[IdMethod::DrivingLicenseNumber->value] === false ||
             $processedData[IdMethod::PassportNumber->value] === false ||
@@ -47,9 +40,15 @@ class DependencyCheck
             $message = "Some identity verification methods are not presently available";
         }
 
-//        $processedData[IdMethod::NationalInsuranceNumber->value] = false;
-//        $message = "Some identity verification methods are not presently available";
-//        $processedData[IdMethod::PostOffice->value] = false;
+        if (
+            $processedData[IdMethod::DrivingLicenseNumber->value] === false &&
+            $processedData[IdMethod::PassportNumber->value] === false &&
+            $processedData[IdMethod::NationalInsuranceNumber->value] === false
+        ) {
+            $processedData['EXPERIAN'] = false;
+            $message = "Online identity verification it not presently available";
+        }
+
         $this->processedStatus['data'] = $processedData;
         $this->processedStatus['message'] = $message;
     }
