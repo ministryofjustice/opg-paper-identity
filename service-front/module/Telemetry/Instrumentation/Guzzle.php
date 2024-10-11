@@ -30,10 +30,18 @@ class Guzzle
             'https://opentelemetry.io/schemas/1.24.0'
         );
 
+        /** @psalm-suppress UnusedFunctionCall */
         hook(
             ClientInterface::class,
             'transfer',
-            pre: static function (ClientInterface $client, $params, string $class, string $function, ?string $filename, ?int $lineno) use ($instrumentation) {
+            pre: static function (
+                ClientInterface $client,
+                mixed $params,
+                string $class,
+                string $function,
+                ?string $filename,
+                ?int $lineno
+            ) use ($instrumentation) {
                 $request = $params[0];
                 assert($request instanceof RequestInterface);
 
@@ -67,11 +75,16 @@ class Guzzle
 
                 return [$request, $params[1]];
             },
-            post: static function (ClientInterface $client, array $params, PromiseInterface $promise, ?Throwable $exception): void {
+            post: static function (
+                ClientInterface $client,
+                array $params,
+                PromiseInterface $promise,
+                ?Throwable $exception
+            ): void {
                 $scope = Context::storage()->scope();
                 $scope?->detach();
 
-                if (!$scope || $scope->context() === Context::getCurrent()) {
+                if (! $scope || $scope->context() === Context::getCurrent()) {
                     return;
                 }
 
@@ -87,11 +100,22 @@ class Guzzle
                 $promise->then(
                     onFulfilled: function (ResponseInterface $response) use ($span) {
                         $span->setAttribute(TraceAttributes::HTTP_RESPONSE_STATUS_CODE, $response->getStatusCode());
-                        $span->setAttribute(TraceAttributes::HTTP_RESPONSE_BODY_SIZE, $response->getHeaderLine('Content-Length'));
+                        $span->setAttribute(
+                            TraceAttributes::HTTP_RESPONSE_BODY_SIZE,
+                            $response->getHeaderLine('Content-Length')
+                        );
 
-                        foreach ((array) (get_cfg_var('otel.instrumentation.http.response_headers') ?: []) as $header) {
+                        $headers = get_cfg_var('otel.instrumentation.http.response_headers');
+                        if (is_string($headers)) {
+                            $headers = (array) $headers;
+                        }
+
+                        foreach (($headers ?: []) as $header) {
                             if ($response->hasHeader($header)) {
-                                $span->setAttribute(sprintf('http.response.header.%s', strtolower($header)), $response->getHeader($header));
+                                $span->setAttribute(
+                                    sprintf('http.response.header.%s', strtolower($header)),
+                                    $response->getHeader($header)
+                                );
                             }
                         }
 

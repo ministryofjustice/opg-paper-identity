@@ -29,10 +29,11 @@ class Aws
             'https://opentelemetry.io/schemas/1.24.0'
         );
 
+        /** @psalm-suppress UnusedFunctionCall */
         hook(
             AwsClient::class,
             '__call',
-            pre: static function (AwsClient $client, $params) use ($instrumentation) {
+            pre: static function (AwsClient $client, array $params) use ($instrumentation) {
                 $parentContext = Context::getCurrent();
 
                 $clientName = $client->getApi()->getServiceName();
@@ -81,11 +82,11 @@ class Aws
                 $context = $span->storeInContext($parentContext);
                 Context::storage()->attach($context);
             },
-            post: static function (AwsClient $client, array $params, $result, ?Throwable $exception): void {
+            post: static function (AwsClient $client, array $params, mixed $result, ?Throwable $exception): void {
                 $scope = Context::storage()->scope();
                 $scope?->detach();
 
-                if (!$scope) {
+                if (! $scope) {
                     return;
                 }
 
@@ -98,7 +99,10 @@ class Aws
 
                 if ($result instanceof ResultInterface) {
                     if (isset($result['@metadata'])) {
-                        $span->setAttribute(TraceAttributes::HTTP_RESPONSE_STATUS_CODE, $result['@metadata']['statusCode']);
+                        $span->setAttribute(
+                            TraceAttributes::HTTP_RESPONSE_STATUS_CODE,
+                            $result['@metadata']['statusCode']
+                        );
                     }
                 }
 

@@ -14,6 +14,9 @@ use Telemetry\Instrumentation\Aws;
 use Telemetry\Instrumentation\Guzzle;
 use Telemetry\Instrumentation\Laminas;
 
+/**
+ * @psalm-suppress UnusedClass
+ */
 class Tracer
 {
     public static function initialise(): void

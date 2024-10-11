@@ -29,6 +29,7 @@ class Laminas
             'https://opentelemetry.io/schemas/1.24.0'
         );
 
+        /** @psalm-suppress UnusedFunctionCall */
         hook(
             Application::class,
             'run',
@@ -55,11 +56,16 @@ class Laminas
                 $context = $span->storeInContext($parentContext);
                 Context::storage()->attach($context);
             },
-            post: static function ($_application, array $params, $application, ?Throwable $exception): void {
+            post: static function (
+                Application $application,
+                array $params,
+                mixed $return,
+                ?Throwable $exception
+            ): void {
                 $scope = Context::storage()->scope();
                 $scope?->detach();
 
-                if (!$scope) {
+                if (! $scope) {
                     return;
                 }
 
@@ -70,23 +76,24 @@ class Laminas
                     $span->setStatus(StatusCode::STATUS_ERROR, $exception->getMessage());
                 }
 
-                if ($application instanceof Application) {
-                    $response = $application->getResponse();
+                $response = $application->getResponse();
 
-                    $routeName = $application->getMvcEvent()->getRouteMatch()?->getMatchedRouteName();
-                    $span->setAttribute(TraceAttributes::HTTP_ROUTE, $routeName);
+                $routeName = $application->getMvcEvent()->getRouteMatch()?->getMatchedRouteName();
+                $span->setAttribute(TraceAttributes::HTTP_ROUTE, $routeName);
 
-                    if ($response instanceof Response) {
-                        $span->setAttribute(TraceAttributes::HTTP_RESPONSE_STATUS_CODE, $response->getStatusCode());
+                if ($response instanceof Response) {
+                    $span->setAttribute(TraceAttributes::HTTP_RESPONSE_STATUS_CODE, $response->getStatusCode());
 
-                        if ($response->getStatusCode() >= 500) {
-                            $span->setStatus(StatusCode::STATUS_ERROR);
-                        }
+                    if ($response->getStatusCode() >= 500) {
+                        $span->setStatus(StatusCode::STATUS_ERROR);
+                    }
 
-                        $contentLength = $response->getHeaders()->get('Content-Length');
-                        if ($contentLength instanceof HeaderInterface) {
-                            $span->setAttribute(TraceAttributes::HTTP_RESPONSE_BODY_SIZE, $contentLength->getFieldValue());
-                        }
+                    $contentLength = $response->getHeaders()->get('Content-Length');
+                    if ($contentLength instanceof HeaderInterface) {
+                        $span->setAttribute(
+                            TraceAttributes::HTTP_RESPONSE_BODY_SIZE,
+                            $contentLength->getFieldValue()
+                        );
                     }
                 }
 
