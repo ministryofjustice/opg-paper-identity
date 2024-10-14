@@ -641,7 +641,6 @@ class OpgApiServiceTest extends TestCase
     }
 
 
-
     /**
      * @dataProvider setDobData
      * @return void
@@ -693,7 +692,6 @@ class OpgApiServiceTest extends TestCase
             ],
         ];
     }
-
 
 
     /**
@@ -797,11 +795,14 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 [
-                    IdMethod::DrivingLicenseNumber->value => false,
-                    IdMethod::PassportNumber->value => false,
-                    IdMethod::NationalInsuranceNumber->value => false,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false
+                    "data" => [
+                        IdMethod::DrivingLicenseNumber->value => false,
+                        IdMethod::PassportNumber->value => false,
+                        IdMethod::NationalInsuranceNumber->value => false,
+                        IdMethod::PostOffice->value => true,
+                        'EXPERIAN' => false
+                    ],
+                    "message" => "Online identity verification it not presently available"
                 ],
                 false
             ],

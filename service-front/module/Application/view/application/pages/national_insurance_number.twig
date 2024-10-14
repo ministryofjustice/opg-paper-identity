@@ -39,12 +39,23 @@
                 </p>
             {% endif %}
 
-            <input
-                    class="govuk-input govuk-!-width-one-third {% if form.get('nino').messages %}govuk-input--error{% endif %}"
-                    id="nino" name="nino" type="text" autocomplete="nino"
-                    value="{{ form.get('nino').value }}"
-                    aria-describedby="nino-hint {% if form.get('nino').messages %}nino-error{% endif %}"
-            />
+            {% if service_availability.data.NATIONAL_INSURANCE_NUMBER %}
+                <input
+                        class="govuk-input govuk-!-width-one-third {% if form.get('nino').messages %}govuk-input--error{% endif %}"
+                        id="nino" name="nino" type="text" autocomplete="nino"
+                        value="{{ form.get('nino').value }}"
+                        aria-describedby="nino-hint {% if form.get('nino').messages %}nino-error{% endif %}"
+                />
+            {% else %}
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        This identity verification option is not available at present
+                    </strong>
+                </div>
+            {% endif %}
+
         </div>
 
         <details class="govuk-details">
