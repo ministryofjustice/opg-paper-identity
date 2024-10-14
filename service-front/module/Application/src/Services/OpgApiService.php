@@ -352,7 +352,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['deadline'];
     }
 
-    public function getServiceAvailability(): array
+    public function getServiceAvailability(): DependencyCheck
     {
         $url = "/service-availability";
 
@@ -366,6 +366,6 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException('Service availability data missing!');
         }
 
-        return (new DependencyCheck($this->responseData))->getProcessedStatus();
+        return (new DependencyCheck($this->responseData));
     }
 }

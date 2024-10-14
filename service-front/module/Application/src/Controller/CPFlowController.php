@@ -59,6 +59,20 @@ class CPFlowController extends AbstractActionController
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDateCp::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+
+        $identityDocs = [];
+        foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
+            if ($serviceAvailability->getProcessedStatus()[$key] === true) {
+                $identityDocs[$key] = $value;
+            }
+        }
+
+        $optionsData = $identityDocs;
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
+
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             if (array_key_exists('check_button', $formData)) {
@@ -95,10 +109,7 @@ class CPFlowController extends AbstractActionController
             }
         }
 
-        $optionsdata = $this->config['opg_settings']['identity_documents'];
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view->setVariable('options_data', $optionsdata);
+        $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -108,7 +119,7 @@ class CPFlowController extends AbstractActionController
     public function nameMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsdata = $this->config['opg_settings']['identity_methods'];
+        $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
@@ -320,6 +331,8 @@ class CPFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -355,6 +368,8 @@ class CPFlowController extends AbstractActionController
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         $view->setVariable('details_data', $detailsData);
@@ -392,6 +407,8 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);

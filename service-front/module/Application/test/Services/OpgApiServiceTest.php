@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
+use Application\Helpers\DependencyCheck;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
@@ -641,7 +642,6 @@ class OpgApiServiceTest extends TestCase
     }
 
 
-
     /**
      * @dataProvider setDobData
      * @return void
@@ -693,7 +693,6 @@ class OpgApiServiceTest extends TestCase
             ],
         ];
     }
-
 
 
     /**
@@ -753,7 +752,7 @@ class OpgApiServiceTest extends TestCase
      */
     public function testServiceAvailability(
         Client $client,
-        array $expected,
+        DependencyCheck $expected,
         bool $exception
     ): void {
         if ($exception) {
@@ -796,20 +795,20 @@ class OpgApiServiceTest extends TestCase
         return [
             [
                 $successClient,
-                [
-                    IdMethod::DrivingLicenseNumber->value => false,
-                    IdMethod::PassportNumber->value => false,
-                    IdMethod::NationalInsuranceNumber->value => false,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false
-                ],
+                new DependencyCheck([
+                    "EXPERIAN" => false,
+                    "NATIONAL_INSURANCE_NUMBER" => true,
+                    "DRIVING_LICENCE" => true,
+                    "PASSPORT" => true,
+                    "POST_OFFICE" => true
+                ]),
                 false
             ],
             [
                 $failClient,
-                [
+                new DependencyCheck([
 
-                ],
+                ]),
                 true
             ],
         ];

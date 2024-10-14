@@ -74,6 +74,16 @@ return [
                     ],
                 ],
             ],
+            'health_check_dependencies' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/health-check/dependencies',
+                    'defaults' => [
+                        'controller' => Controller\HealthcheckController::class,
+                        'action' => 'healthCheckDependencies',
+                    ],
+                ],
+            ],
             'details' => [
                 'type' => Literal::class,
                 'options' => [
