@@ -65,16 +65,13 @@ class CPFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            /**
-             * @psalm-suppress InvalidArrayAccess
-             */
-            if ($serviceAvailability['data'][$key] === true) {
+            if ($serviceAvailability->getProcessedStatus()[$key] === true) {
                 $identityDocs[$key] = $value;
             }
         }
 
         $optionsData = $identityDocs;
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
@@ -335,7 +332,7 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
@@ -372,7 +369,7 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
         $view->setVariable('details_data', $detailsData);
@@ -411,7 +408,7 @@ class CPFlowController extends AbstractActionController
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);

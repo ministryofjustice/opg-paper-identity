@@ -6,6 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
+use Application\Helpers\DependencyCheck;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -328,17 +329,14 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public function returnServiceAvailabilityResponseData(): array
+    public function returnServiceAvailabilityResponseData(): DependencyCheck
     {
-        return [
-            "data" => [
-                "EXPERIAN" => true,
-                "NATIONAL_INSURANCE_NUMBER" => true,
-                "DRIVING_LICENCE" => true,
-                "PASSPORT" => true,
-                "POST_OFFICE" => true
-            ],
-            "message" => ""
-        ];
+        return new DependencyCheck([
+            "EXPERIAN" => true,
+            "NATIONAL_INSURANCE_NUMBER" => true,
+            "DRIVING_LICENCE" => true,
+            "PASSPORT" => true,
+            "POST_OFFICE" => true
+        ]);
     }
 }

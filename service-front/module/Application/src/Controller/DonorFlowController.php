@@ -44,10 +44,7 @@ class DonorFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            /**
-             * @psalm-suppress InvalidArrayAccess
-             */
-            if ($serviceAvailability['data'][$key] === true) {
+            if ($serviceAvailability->getProcessedStatus()[$key] === true) {
                 $identityDocs[$key] = $value;
             }
         }
@@ -58,7 +55,7 @@ class DonorFlowController extends AbstractActionController
 
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('options_data', $optionsData);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -233,7 +230,7 @@ class DonorFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -267,7 +264,7 @@ class DonorFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -302,7 +299,7 @@ class DonorFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
