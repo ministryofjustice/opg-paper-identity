@@ -7,7 +7,6 @@ namespace Application\Aws;
 use Aws\DynamoDb\DynamoDbClient;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Telemetry\Middleware\Aws as MiddlewareAws;
 
 class DynamoDbClientFactory implements FactoryInterface
 {
