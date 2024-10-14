@@ -136,7 +136,7 @@ class DonorFlowController extends AbstractActionController
     public function donorIdCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $optionsdata = $this->config['opg_settings']['identity_methods'];
+        $optionsdata = $this->config['opg_settings']['identity_labels'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
@@ -319,18 +319,17 @@ class DonorFlowController extends AbstractActionController
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
 
-            if (array_key_exists('check_button', $formData->toArray())) {
+            if (array_key_exists('check_button', $data)) {
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
-                    $this->getRequest()->getPost(),
+                    $formData,
                     $dateSubForm,
                     $templates
                 );
             } else {
-                $view->setVariable('passport_indate', ucwords($data['inDate']));
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
-                    $this->getRequest()->getPost(),
+                    $formData,
                     $form,
                     $templates
                 );

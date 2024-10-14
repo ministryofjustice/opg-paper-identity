@@ -10,6 +10,8 @@ class DependencyCheck
 {
     protected array $processedStatus = [];
 
+    protected string $processedMessage = '';
+
     public function __construct(private readonly array $statusData)
     {
         $this->processData();
@@ -49,12 +51,25 @@ class DependencyCheck
             $message = "Online identity verification it not presently available";
         }
 
-        $this->processedStatus['data'] = $processedData;
-        $this->processedStatus['message'] = $message;
+        $this->processedStatus = $processedData;
+        $this->processedMessage = $message;
     }
 
-    final public function getProcessedStatus(): array
+    public function getProcessedStatus(): array
     {
         return $this->processedStatus;
+    }
+
+    public function getProcessedMessage(): string
+    {
+        return $this->processedMessage;
+    }
+
+    final public function toArray(): array
+    {
+        return [
+            'data' => $this->processedStatus,
+            'message' => $this->processedMessage
+        ];
     }
 }

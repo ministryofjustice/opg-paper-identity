@@ -27,9 +27,11 @@ class DependencyCheckHelperTest extends TestCase
         array $depData,
         array $expected
     ): void {
-        $dependendcyCheck = new DependencyCheck($depData);
+        $dependencyCheck = new DependencyCheck($depData);
 
-        $this->assertEquals($expected, $dependendcyCheck->getProcessedStatus());
+        $this->assertEquals($expected, $dependencyCheck->toArray());
+        $this->assertEquals($expected['message'], $dependencyCheck->getProcessedMessage());
+        $this->assertEquals($expected['data'], $dependencyCheck->getProcessedStatus());
     }
 
 
