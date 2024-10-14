@@ -594,10 +594,10 @@ return [
             'TELEPHONE' => 'Telephone',
             'POST_OFFICE' => 'Post Office',
         ],
-        'identity_methods' => [
-            'nin' => 'National Insurance number',
-            'pn' => 'UK Passport (current or expired in the last 18 months)',
-            'dln' => 'UK driving licence (must be current) ',
+        'identity_labels' => [
+            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
+            'PASSPORT' => 'UK Passport (current or expired in the last 18 months)',
+            'DRIVING_LICENCE' => 'UK photocard driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
             'PASSPORT' => 'UK passport (up to 18 months expired)',

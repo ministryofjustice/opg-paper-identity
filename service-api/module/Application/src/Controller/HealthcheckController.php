@@ -66,6 +66,47 @@ class HealthcheckController extends AbstractActionController
         }
     }
 
+    public function healthCheckDependenciesAction(): JsonModel
+    {
+        $ok = true;
+        $dependencies = true;
+        $dbConnection = $this->dataQuery->healthCheck();
+
+        $ssmValues = $this->ssmClient->getParameter([
+            'Name' => $this->ssmServiceAvailability
+        ])->toArray();
+
+        $dependencyStatus = json_decode($ssmValues['Parameter']['Value'], true);
+
+        if (empty($dependencyStatus)) {
+            $dependencies = false;
+        }
+
+        foreach ($dependencyStatus as $value) {
+            if (! $value) {
+                $dependencies = false;
+            }
+        }
+
+        if (! $dbConnection || ! $dependencies) {
+            $ok = false;
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_503);
+        }
+
+        return new JsonModel([
+            'OK' => $ok,
+            'dependencies' => [
+                'dynamodb' => [
+                    'ok' => true
+                ],
+                'serviceAvailability' => [
+                    'ok' => $dependencies,
+                    'values' => $dependencyStatus
+                ]
+            ]
+        ]);
+    }
+
     public function serviceAvailabilityAction(): JsonModel
     {
         $status = $this->ssmClient->getParameter([

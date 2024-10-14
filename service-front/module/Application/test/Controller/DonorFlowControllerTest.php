@@ -6,6 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
+use Application\Helpers\DependencyCheck;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -35,25 +36,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
-    }
-
-    public function testDonorIdCheckReturnsPageWithData(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this->dispatch("/$this->uuid/donor-id-check", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/donor_id_check');
     }
 
     public function testLpasByDonorReturnsPageWithData(): void
@@ -93,6 +75,13 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
+        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->willReturn($mockServiceResponse);
+
         $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -112,6 +101,13 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
+        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->willReturn($mockServiceResponse);
+
         $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -123,6 +119,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testHowWillDonorConfirmPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
 
         $this
             ->opgApiServiceMock
@@ -130,6 +127,12 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/how-will-donor-confirm", 'GET');
         $this->assertResponseStatusCode(200);
@@ -324,5 +327,16 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "uId" => "M-F4JG-7IHS-STS5"
             ]
         ];
+    }
+
+    public function returnServiceAvailabilityResponseData(): DependencyCheck
+    {
+        return new DependencyCheck([
+            "EXPERIAN" => true,
+            "NATIONAL_INSURANCE_NUMBER" => true,
+            "DRIVING_LICENCE" => true,
+            "PASSPORT" => true,
+            "POST_OFFICE" => true
+        ]);
     }
 }

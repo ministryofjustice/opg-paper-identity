@@ -20,6 +20,17 @@
         </div>
 
         <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
+
+        {% if service_availability.message %}
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    {{ service_availability.message }}
+                </strong>
+            </div>
+        {% endif %}
+
         <div class="govuk-form-group">
             <div class="govuk-radios" data-module="govuk-radios">
                 {% for key, datum in options_data %}
@@ -133,6 +144,7 @@
         </div>
         <div class="govuk-form-group">
             <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
+            {% if service_availability.data.POST_OFFICE %}
             <div class="govuk-radios__item">
                 <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio" value="POST_OFFICE">
                 <label class="govuk-label govuk-radios__label" for="PostOffice">
@@ -157,6 +169,15 @@
                     </details>
                 </label>
             </div>
+            {% else %}
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        Post Office verification is not presently available
+                    </strong>
+                </div>
+            {% endif %}
         </div>
         {#            <details class="govuk-details"> #}
         {#                <summary class="govuk-details__summary"> #}

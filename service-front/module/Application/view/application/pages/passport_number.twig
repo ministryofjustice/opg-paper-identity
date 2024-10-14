@@ -52,12 +52,24 @@
                 </p>
             {% endif %}
 
-            <input
-                    class="govuk-input govuk-!-width-one-third {% if form.get('passport').messages %}govuk-input--error{% endif %}"
-                    id="passport" name="passport" type="text" autocomplete="passport"
-                    value="{{ form.get('passport').value }}"
-                    aria-describedby="passport-hint {% if form.get('passport').messages %}passport-error{% endif %}"
-            />
+            {% if service_availability.data.PASSPORT %}
+                <input
+                        class="govuk-input govuk-!-width-one-third {% if form.get('passport').messages %}govuk-input--error{% endif %}"
+                        id="passport" name="passport" type="text" autocomplete="passport"
+                        value="{{ form.get('passport').value }}"
+                        aria-describedby="passport-hint {% if form.get('passport').messages %}passport-error{% endif %}"
+                />
+            {% else %}
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        This identity verification option is not available at present
+                    </strong>
+                </div>
+            {% endif %}
+
+
         </div>
 
         <div class="govuk-form-group {% if form.get('inDate').messages %}govuk-form-group--error{% endif %}">
