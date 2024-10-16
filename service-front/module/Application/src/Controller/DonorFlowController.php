@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\IdMethod;
+use Application\Forms\IdMethod as IdMethodForm;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
@@ -18,7 +19,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\LpaTypes;
-use Application\Helpers\DependencyCheck;
+
 
 class DonorFlowController extends AbstractActionController
 {
@@ -26,11 +27,12 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHelper,
-        private readonly SiriusApiService $siriusApiService,
-        private readonly array $config,
-        private readonly string $siriusPublicUrl,
-    ) {
+        private readonly FormProcessorHelper    $formProcessorHelper,
+        private readonly SiriusApiService       $siriusApiService,
+        private readonly array                  $config,
+        private readonly string                 $siriusPublicUrl,
+    )
+    {
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -39,6 +41,7 @@ class DonorFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
+        $form = (new AttributeBuilder())->createForm(IdMethodForm::class);
 
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
@@ -54,24 +57,26 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('date_sub_form', $dateSubForm);
+        $view->setVariable('form', $form);
         $view->setVariable('options_data', $optionsData);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
-        if (count($this->getRequest()->getPost())) {
-            if (count($this->getRequest()->getPost())) {
-                $formData = $this->getRequest()->getPost()->toArray();
-                if (array_key_exists('check_button', $formData)) {
-                    $dateSubForm->setData($this->getRequest()->getPost());
-                    $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                        $uuid,
-                        $this->getRequest()->getPost(),
-                        $dateSubForm,
-                        $templates
-                    );
-                    $view->setVariables($formProcessorResponseDto->getVariables());
-                } else {
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost()->toArray();
+            if (array_key_exists('check_button', $formData)) {
+                $dateSubForm->setData($this->getRequest()->getPost());
+                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+                    $uuid,
+                    $this->getRequest()->getPost(),
+                    $dateSubForm,
+                    $templates
+                );
+                $view->setVariables($formProcessorResponseDto->getVariables());
+            } else {
+                $form->setData($formData);
+                if($form->isValid()) {
                     if ($formData['id_method'] == IdMethod::PostOffice->value) {
                         $data = [
                             'id_route' => 'POST_OFFICE',
@@ -161,7 +166,7 @@ class DonorFlowController extends AbstractActionController
              */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
-            if (! empty($lpasData['opg.poas.lpastore'])) {
+            if (!empty($lpasData['opg.poas.lpastore'])) {
                 $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                     $lpasData['opg.poas.lpastore']['donor']['lastName'];
 
