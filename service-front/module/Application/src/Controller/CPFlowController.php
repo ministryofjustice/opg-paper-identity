@@ -57,6 +57,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDateCp::class);
+        $form = (new AttributeBuilder())->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -72,6 +73,7 @@ class CPFlowController extends AbstractActionController
 
         $optionsData = $identityDocs;
         $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
@@ -85,26 +87,29 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
-                    $data = [
-                        'id_route' => IdMethodEnum::PostOffice->value,
-                    ];
-                    $this->opgApiService->updateIdMethodWithCountry(
-                        $uuid,
-                        $data
-                    );
-                    return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
-                } else {
-                    $data = [
-                        'id_route' => 'TELEPHONE',
-                        'id_country' => \Application\PostOffice\Country::GBR->value,
-                        'id_method' => $formData['id_method']
-                    ];
-                    $this->opgApiService->updateIdMethodWithCountry(
-                        $uuid,
-                        $data
-                    );
-                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                $form->setData($formData);
+                if($form->isValid()) {
+                    if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
+                        $data = [
+                            'id_route' => IdMethodEnum::PostOffice->value,
+                        ];
+                        $this->opgApiService->updateIdMethodWithCountry(
+                            $uuid,
+                            $data
+                        );
+                        return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
+                    } else {
+                        $data = [
+                            'id_route' => 'TELEPHONE',
+                            'id_country' => \Application\PostOffice\Country::GBR->value,
+                            'id_method' => $formData['id_method']
+                        ];
+                        $this->opgApiService->updateIdMethodWithCountry(
+                            $uuid,
+                            $data
+                        );
+                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    }
                 }
             }
         }

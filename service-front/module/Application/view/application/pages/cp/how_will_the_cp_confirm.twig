@@ -32,6 +32,14 @@
         {% endif %}
 
         <div class="govuk-form-group">
+
+            {% if form.get('id_method').messages %}
+                <p id="id_method-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('id_method').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            
             <div class="govuk-radios" data-module="govuk-radios">
                 {% for key, datum in options_data %}
                     <div class="govuk-radios__item">
