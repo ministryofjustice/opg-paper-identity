@@ -13,19 +13,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
 class OpgApiServiceTest extends TestCase
 {
-    private OpgApiService|MockObject $opgApiService;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     /**
      * @dataProvider detailsData
      * @param class-string<Throwable>|null $expectedException
@@ -36,9 +28,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectException($expectedException);
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->getDetailsData('uuid');
+        $response = $opgApiService->getDetailsData('uuid');
 
         $this->assertEquals($responseData, $response);
     }
@@ -109,9 +101,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->checkNinoValidity($nino);
+        $response = $opgApiService->checkNinoValidity($nino);
 
         $this->assertEquals($responseData, $response);
     }
@@ -185,9 +177,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->checkDlnValidity($dln);
+        $response = $opgApiService->checkDlnValidity($dln);
 
         $this->assertEquals($responseData, $response);
     }
@@ -260,9 +252,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->checkPassportValidity($passport);
+        $response = $opgApiService->checkPassportValidity($passport);
 
         $this->assertEquals($responseData, $response);
     }
@@ -380,9 +372,9 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->getIdCheckQuestions($uuid);
+        $response = $opgApiService->getIdCheckQuestions($uuid);
 
         $this->assertEquals($mockResponseData, $response);
     }
@@ -398,9 +390,9 @@ class OpgApiServiceTest extends TestCase
         }
         $uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->checkIdCheckAnswers($uuid, $answers);
+        $response = $opgApiService->checkIdCheckAnswers($uuid, $answers);
 
         $this->assertEquals(true, $response['complete']);
         $this->assertEquals($passed, $response['passed']);
@@ -468,9 +460,9 @@ class OpgApiServiceTest extends TestCase
         if ($exception) {
             $this->expectException(OpgApiException::class);
         }
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $response = $this->opgApiService->createCase(
+        $response = $opgApiService->createCase(
             $postData['FirstName'],
             $postData['LastName'],
             $postData['DOB'],
@@ -553,9 +545,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $this->opgApiService->updateIdMethod($data['uuid'], $data['method']);
+        $opgApiService->updateIdMethod($data['uuid'], $data['method']);
     }
 
     public static function updateIdMethodData(): array
@@ -605,9 +597,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $this->opgApiService->updateCaseSetDocumentComplete($data['uuid']);
+        $opgApiService->updateCaseSetDocumentComplete($data['uuid']);
     }
 
     public static function setDocumentCompleteData(): array
@@ -657,9 +649,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $this->opgApiService->updateCaseSetDob($data['uuid'], $data['dob']);
+        $opgApiService->updateCaseSetDob($data['uuid'], $data['dob']);
     }
 
     public static function setDobData(): array
@@ -710,9 +702,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $this->opgApiService->updateCaseProgress($data['uuid'], $data);
+        $opgApiService->updateCaseProgress($data['uuid'], $data);
     }
 
     public static function setAbandonCaseData(): array
@@ -759,9 +751,9 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $this->opgApiService = new OpgApiService($client);
+        $opgApiService = new OpgApiService($client);
 
-        $this->assertEquals($expected, $this->opgApiService->getServiceAvailability());
+        $this->assertEquals($expected, $opgApiService->getServiceAvailability());
     }
 
     public static function serviceAvailabilityData(): array

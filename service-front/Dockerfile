@@ -8,7 +8,7 @@ RUN mkdir -p public
 
 COPY package.json .
 COPY yarn.lock .
-RUN yarn
+RUN yarn --ignore-scripts
 
 COPY web web
 RUN yarn build
@@ -17,17 +17,15 @@ RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/
 
 FROM php:8.3-fpm-alpine AS app
 
-RUN mkdir /app
-WORKDIR /var/www
-
 RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DEPS \
     && docker-php-ext-install ffi intl opcache \
-    && docker-php-ext-enable sodium
-
-RUN pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
+    && docker-php-ext-enable sodium \
+    && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
 # Patch Vulnerabilities
-RUN apk upgrade --no-cache openssl
+RUN apk upgrade --no-cache openssl curl libcurl
+
+WORKDIR /var/www
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini

@@ -55,7 +55,7 @@
             {% if service_availability.data.PASSPORT %}
                 <input
                         class="govuk-input govuk-!-width-one-third {% if form.get('passport').messages %}govuk-input--error{% endif %}"
-                        id="passport" name="passport" type="text" autocomplete="passport"
+                        id="passport" name="passport" type="text" autocomplete="off"
                         value="{{ form.get('passport').value }}"
                         aria-describedby="passport-hint {% if form.get('passport').messages %}passport-error{% endif %}"
                 />

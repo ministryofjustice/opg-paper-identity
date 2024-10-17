@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace ApplicationTest\Helpers;
 
 use Application\Helpers\AddressProcessorHelper;
-use Application\Services\OpgApiService;
-use Application\Services\SiriusApiService;
 use PHPUnit\Framework\TestCase;
 
 class AddressProcessorHelperTest extends TestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     /**
      * @dataProvider addressData
      */
