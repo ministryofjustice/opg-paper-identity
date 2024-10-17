@@ -88,7 +88,7 @@ class CPFlowController extends AbstractActionController
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
                 $form->setData($formData);
-                if($form->isValid()) {
+                if ($form->isValid()) {
                     if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
                         $data = [
                             'id_route' => IdMethodEnum::PostOffice->value,
@@ -282,6 +282,8 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
 
+//        echo json_encode($detailsData);
+
         $routes = [
             'NATIONAL_INSURANCE_NUMBER' => 'root/cp_national_insurance_number',
             'DRIVING_LICENCE' => 'root/cp_driving_licence_number',
@@ -304,11 +306,15 @@ class CPFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
+
+            echo(json_encode($params));
+
+
             $form->setData($params);
             $formArray = $this->getRequest()->getPost()->toArray();
 
             if ($formArray['confirm_alt'] == 'confirmed') {
-                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute($nextRoute, ['uuid' => $uuid]);
             }
 
             if ($form->isValid()) {
@@ -421,7 +427,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_open', false);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
@@ -434,7 +440,12 @@ class CPFlowController extends AbstractActionController
                     $templates
                 );
             } else {
-                $view->setVariable('passport_indate', ucwords($data['inDate']));
+                $view->setVariable(
+                    'passport_indate',
+                    array_key_exists('inDate', $data) ?
+                        ucwords($data['inDate']) :
+                        'no'
+                );
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
                     $this->getRequest()->getPost(),
@@ -590,7 +601,7 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
         $form->setData($detailsData['alternateAddress'] ?? []);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
 
             $form->setData($params);

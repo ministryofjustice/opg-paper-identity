@@ -20,19 +20,17 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\LpaTypes;
 
-
 class DonorFlowController extends AbstractActionController
 {
     protected $plugins;
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper    $formProcessorHelper,
-        private readonly SiriusApiService       $siriusApiService,
-        private readonly array                  $config,
-        private readonly string                 $siriusPublicUrl,
-    )
-    {
+        private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SiriusApiService $siriusApiService,
+        private readonly array $config,
+        private readonly string $siriusPublicUrl,
+    ) {
     }
 
     public function howWillDonorConfirmAction(): ViewModel|Response
@@ -76,7 +74,7 @@ class DonorFlowController extends AbstractActionController
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
                 $form->setData($formData);
-                if($form->isValid()) {
+                if ($form->isValid()) {
                     if ($formData['id_method'] == IdMethod::PostOffice->value) {
                         $data = [
                             'id_route' => 'POST_OFFICE',
@@ -166,7 +164,7 @@ class DonorFlowController extends AbstractActionController
              */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
-            if (!empty($lpasData['opg.poas.lpastore'])) {
+            if (! empty($lpasData['opg.poas.lpastore'])) {
                 $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                     $lpasData['opg.poas.lpastore']['donor']['lastName'];
 

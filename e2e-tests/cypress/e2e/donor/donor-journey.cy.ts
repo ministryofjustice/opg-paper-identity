@@ -50,10 +50,8 @@ describe("Identify a Donor", () => {
     // Check form validation
     cy.contains("How will they confirm their identity?");
     cy.get(".govuk-button").contains("Continue").click();
-    cy.screenshot();
     cy.contains("How will they confirm their identity?");
     cy.contains("Please select an option");
-    cy.screenshot();
 
     // Check passport reveal
     cy.contains("Help with checking if passport is in date");
