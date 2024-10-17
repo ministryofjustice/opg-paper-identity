@@ -20,11 +20,9 @@ class EventSenderFactory implements FactoryInterface
         /** @var array{eventbridge: array{sirius_event_bus_name: string}} $config */
         $config = $container->get('Config');
 
-        $eventBridgeClient = new EventSender(
+        return new EventSender(
             $container->get(EventBridgeClient::class),
             $config['eventbridge']['sirius_event_bus_name'],
         );
-
-        return $eventBridgeClient;
     }
 }

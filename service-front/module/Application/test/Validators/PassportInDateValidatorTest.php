@@ -23,7 +23,7 @@ class PassportInDateValidatorTest extends TestCase
      */
     public function testValidator(mixed $passport, bool $valid): void
     {
-        $this->assertEquals($this->passportDateValidator->isValid($passport), $valid);
+        $this->assertEquals($valid, $this->passportDateValidator->isValid($passport));
     }
 
     public static function passportData(): array

@@ -94,7 +94,7 @@ class FraudApiService
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
         $addressDTO = $experianCrosscoreFraudRequestDTO->address();
 
-        $body = [
+        return [
             'header' => [
                 "tenantId" => $this->config['tenantId'],
                 "requestType" => "FraudScore",
@@ -153,8 +153,6 @@ class FraudApiService
             ],
             'source' => 'WEB'
         ];
-
-        return $body;
     }
 
     private function makePersonId(

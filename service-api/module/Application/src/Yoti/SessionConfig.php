@@ -97,7 +97,6 @@ class SessionConfig
             ]
         ];
 
-        //@TODO client to save the $authToken back to $case
         return $sessionConfig;
     }
 
@@ -160,7 +159,7 @@ class SessionConfig
         if (! $address['line1'] || $address['line1'] == '') {
             throw new YotiException("Address line1 missing");
         }
-        //@TODO determine what address format we are sending, currently no country_iso, assuming all UK for now
+
         $addressFormat["address_format"] = "1";
         $addressFormat["building_number"] = substr($address['line1'], 0, 3);
         $addressFormat["address_line1"] = $address['line1'];
