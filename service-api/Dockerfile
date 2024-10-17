@@ -8,7 +8,7 @@ RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
 # Patch Vulnerabilities
-RUN apk upgrade --no-cache openssl
+RUN apk upgrade --no-cache openssl curl libcurl
 
 WORKDIR /var/www/
 
