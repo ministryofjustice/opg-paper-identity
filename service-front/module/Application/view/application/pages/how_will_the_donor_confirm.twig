@@ -8,7 +8,7 @@
     <form method="POST" class="govuk-!-width-two-thirds">
         <h1 class="govuk-heading-xl">{% block title %}How will they confirm their identity?{% endblock %}</h1>
 
-         <div class="govuk-form-group">
+        <div class="govuk-form-group">
             <p class="govuk-body">
                 Confirming their identity over the phone is the quickest and easiest option - they'll need an NI
                 number, passport or driving licence and to answer some identity check questions during the call.
@@ -31,12 +31,20 @@
             </div>
         {% endif %}
 
-        <div class="govuk-form-group">
+        <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
+
+            {% if form.get('id_method').messages %}
+                <p id="id_method-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('id_method').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+
             <div class="govuk-radios" data-module="govuk-radios">
                 {% for  key, datum in options_data %}
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="{{ key }}" name="id_method" type="radio"
-                                value="{{ key }}">
+                               value="{{ key }}">
                         <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}
 
                             {% if key == 'PASSPORT' %}
@@ -55,40 +63,40 @@
                                             <div class="govuk-date-input__item">
                                                 <div class="govuk-form-group">
                                                     <label class="govuk-label govuk-date-input__label"
-                                                            for="passport-issued-day">
+                                                           for="passport-issued-day">
                                                         Day
                                                     </label>
                                                     <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                                            id="passport-issued-day"
-                                                            name="passport_issued_day" type="text"
-                                                            inputmode="numeric"
-                                                            value="{{ date_sub_form.get('passport_issued_day').value }}">
+                                                           id="passport-issued-day"
+                                                           name="passport_issued_day" type="text"
+                                                           inputmode="numeric"
+                                                           value="{{ date_sub_form.get('passport_issued_day').value }}">
                                                 </div>
                                             </div>
                                             <div class="govuk-date-input__item">
                                                 <div class="govuk-form-group">
                                                     <label class="govuk-label govuk-date-input__label"
-                                                            for="passport-issued-month">
+                                                           for="passport-issued-month">
                                                         Month
                                                     </label>
                                                     <input class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                                            name="passport_issued_month" id="passport-issued-month"
-                                                            type="text"
-                                                            inputmode="numeric"
-                                                            value="{{ date_sub_form.get('passport_issued_month').value }}">
+                                                           name="passport_issued_month" id="passport-issued-month"
+                                                           type="text"
+                                                           inputmode="numeric"
+                                                           value="{{ date_sub_form.get('passport_issued_month').value }}">
                                                 </div>
                                             </div>
                                             <div class="govuk-date-input__item">
                                                 <div class="govuk-form-group">
                                                     <label class="govuk-label govuk-date-input__label"
-                                                            for="passport-issued-year">
+                                                           for="passport-issued-year">
                                                         Year
                                                     </label>
                                                     <input class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                                            name="passport_issued_year" id="passport-issued-year"
-                                                            type="text"
-                                                            inputmode="numeric"
-                                                            value="{{ date_sub_form.get('passport_issued_year').value }}">
+                                                           name="passport_issued_year" id="passport-issued-year"
+                                                           type="text"
+                                                           inputmode="numeric"
+                                                           value="{{ date_sub_form.get('passport_issued_year').value }}">
                                                 </div>
                                             </div>
                                             <div class="govuk-date-input__item">
@@ -102,13 +110,13 @@
                                             {% if invalid_date %}
                                                 <div class="govuk-date-input__item">
                                                     <div class="moj-banner moj-banner--warning moj-banner--date app-moj-banner"
-                                                            role="region"
-                                                            aria-label="Warning">
+                                                         role="region"
+                                                         aria-label="Warning">
                                                         <svg class="moj-banner__icon" fill="currentColor"
-                                                                role="presentation"
-                                                                focusable="false"
-                                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
-                                                                height="25" width="25">
+                                                             role="presentation"
+                                                             focusable="false"
+                                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
+                                                             height="25" width="25">
                                                             <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
                                                         </svg>
                                                         <div class="moj-banner__message">Out of date</div>
@@ -119,13 +127,13 @@
                                             {% if valid_date %}
                                                 <div class="govuk-date-input__item">
                                                     <div class="moj-banner moj-banner--success moj-banner--date app-moj-banner"
-                                                            role="region"
-                                                            aria-label="Success">
+                                                         role="region"
+                                                         aria-label="Success">
                                                         <svg class="moj-banner__icon" fill="currentColor"
-                                                                role="presentation"
-                                                                focusable="false"
-                                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
-                                                                height="25" width="25">
+                                                             role="presentation"
+                                                             focusable="false"
+                                                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25"
+                                                             height="25" width="25">
                                                             <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
                                                         </svg>
                                                         <div class="moj-banner__message">In date</div>
@@ -144,13 +152,13 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="govuk-form-group">
+        <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
             <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
 
             {% if service_availability.data.POST_OFFICE %}
                 <div class="govuk-radios__item">
                     <input class="govuk-radios__input" id="PostOffice" name="id_method" type="radio"
-                            value="POST_OFFICE">
+                           value="POST_OFFICE">
                     <label class="govuk-label govuk-radios__label" for="PostOffice">
                         Post Office
 
@@ -188,22 +196,24 @@
                 Other methods
             </span>
             </summary>
-            <div class="govuk-details__text">
-                <div class="govuk-radios" data-module="govuk-radios">
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
-                                value="OnBehalf">
-                        <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their
-                            identity on donor's behalf</label>
-                    </div>
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
-                                value="cpr">
-                        <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of
-                            protection</label>
+
+                <div class="govuk-details__text">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
+                                   value="OnBehalf">
+                            <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their
+                                identity on donor's behalf</label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
+                                   value="cpr">
+                            <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of
+                                protection</label>
+                        </div>
                     </div>
                 </div>
-            </div>
+
         </details>
 
         <input type="submit" class="govuk-button" value="Continue">

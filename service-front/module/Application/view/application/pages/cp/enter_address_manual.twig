@@ -10,7 +10,7 @@
         What is the address on the ID document?
     {% endblock %}
 </h1>
-<form method="POST" action="./confirm-address">
+<form method="POST" action="">
     <div class="govuk-form-group {% if form.get('line1').messages %}govuk-form-group--error{% endif %}">
         {% if form.get('line1').messages %}
             <p id="line1-error" class="govuk-error-message">
@@ -84,7 +84,6 @@
         </select>
     </div>
 
-
-    <button class="govuk-button" data-module="govuk-button">Continue</button>
+    <input type="submit" class="govuk-button" data-module="govuk-button" value="Continue"/>
 </form>
 {% endblock %}
