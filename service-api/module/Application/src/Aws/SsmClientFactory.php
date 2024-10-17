@@ -7,7 +7,6 @@ namespace Application\Aws;
 use Aws\Ssm\SsmClient;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Telemetry\Middleware\Aws as MiddlewareAws;
 
 class SsmClientFactory implements FactoryInterface
 {
@@ -20,8 +19,6 @@ class SsmClientFactory implements FactoryInterface
         /** @var array{"aws": array<string, string|bool>} $config */
         $config = $container->get('Config');
 
-        $ssmClient = new SsmClient($config['aws']);
-
-        return $ssmClient;
+        return new SsmClient($config['aws']);
     }
 }

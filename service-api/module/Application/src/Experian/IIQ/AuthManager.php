@@ -39,8 +39,8 @@ class AuthManager
 
         $token = $this->getToken();
 
-        $wsseNamespace = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
-        $encType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary';
+        $wsseNamespace = 'https://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
+        $encType = 'https://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary';
 
         return new SoapHeader($wsseNamespace, 'Security', new SoapVar(['
             <wsse:Security xmlns:wsse="' . $wsseNamespace . '">
@@ -48,7 +48,7 @@ class AuthManager
                     EncodingType="' . $encType . '"
                     ValueType="ExperianWASP"
                     wsu:Id="SecurityToken-9e855049-1dc9-477a-ab9a-7f7d164132ca"
-                    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                    xmlns:wsu="https://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
                 >' . $token . '</wsse:BinarySecurityToken>
             </wsse:Security>
         '], XSD_ANYXML));

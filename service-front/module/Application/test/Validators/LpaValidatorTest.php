@@ -23,7 +23,7 @@ class LpaValidatorTest extends TestCase
      */
     public function testValidator(string $lpa, bool $valid): void
     {
-        $this->assertEquals($this->lpaValidator->isValid($lpa), $valid);
+        $this->assertEquals($valid, $this->lpaValidator->isValid($lpa));
     }
 
     public static function lpaData(): array

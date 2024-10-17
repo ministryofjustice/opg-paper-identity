@@ -23,7 +23,7 @@ class DLNValidatorTest extends TestCase
      */
     public function testValidator(string $dln, bool $valid): void
     {
-        $this->assertEquals($this->dlnValidator->isValid($dln), $valid);
+        $this->assertEquals($valid, $this->dlnValidator->isValid($dln));
     }
 
     public static function dlnData(): array

@@ -13,11 +13,6 @@ use Application\Forms\LpaReferenceNumber;
 
 class LpaFormHelperTest extends TestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     /**
      * @dataProvider lpaData
      */
@@ -400,7 +395,7 @@ class LpaFormHelperTest extends TestCase
     {
         $lpaRef = $lpa ?? "M-NC49-MV4M-E7P8";
         return [
-            "type" => "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+            "type" => "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
             "title" => "Not Found",
             "status" => 404,
             "detail" => "Unable to load DigitalLpa with identifier: " . $lpaRef

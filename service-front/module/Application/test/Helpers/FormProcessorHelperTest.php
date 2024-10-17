@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Helpers;
 
 use Application\Forms\DrivingLicenceNumber;
-use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportNumber;
 use Application\Forms\PassportDate;
@@ -18,13 +17,6 @@ use PHPUnit\Framework\TestCase;
 
 class FormProcessorHelperTest extends TestCase
 {
-//    private OpgApiService|MockObject $opgApiService;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     /**
      * @dataProvider dlnData
      */

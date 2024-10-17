@@ -23,7 +23,7 @@ class NinoValidatorTest extends TestCase
      */
     public function testValidator(string $nino, bool $valid): void
     {
-        $this->assertEquals($this->ninoValidator->isValid($nino), $valid);
+        $this->assertEquals($valid, $this->ninoValidator->isValid($nino));
     }
 
     public static function ninoData(): array

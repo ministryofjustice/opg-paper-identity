@@ -161,9 +161,7 @@ class OpgApiService implements OpgApiServiceInterface
     public function checkIdCheckAnswers(string $uuid, array $answers): array
     {
         try {
-            $response = $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
-
-            return $response;
+            return $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
         } catch (OpgApiException $opgApiException) {
             throw $opgApiException;
         }

@@ -35,9 +35,7 @@ class KBVService implements KBVServiceInterface
 
     public function fetchFormattedQuestions(string $uuid): array
     {
-        $questions = $this->getKBVQuestions();
-
-        return $questions;
+        return $this->getKBVQuestions();
     }
 
     public function checkAnswers(array $answers, string $uuid): AnswersOutcome

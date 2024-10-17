@@ -353,10 +353,8 @@ class YotiService implements YotiServiceInterface
         } catch (YotiAuthException $e) {
             throw new YotiException("Request signing issue " . $e->getMessage());
         }
-        $headers = [
+        return [
             'X-Yoti-Auth-Digest' => $requestSignature
         ];
-
-        return $headers;
     }
 }

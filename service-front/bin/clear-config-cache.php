@@ -6,7 +6,7 @@ use Laminas\ModuleManager\Listener\ListenerOptions;
 
 chdir(__DIR__ . '/../');
 
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 $config = include 'config/application.config.php';
 

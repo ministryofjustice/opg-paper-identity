@@ -23,7 +23,7 @@ class DLNDateValidatorTest extends TestCase
      */
     public function testValidator(mixed $dln, bool $valid): void
     {
-        $this->assertEquals($this->dlnDateValidator->isValid($dln), $valid);
+        $this->assertEquals($valid, $this->dlnDateValidator->isValid($dln));
     }
 
     public static function dlnData(): array
