@@ -27,7 +27,7 @@ RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DE
 RUN pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
 # Patch Vulnerabilities
-RUN apk upgrade --no-cache openssl
+RUN apk upgrade --no-cache openssl curl libcurl
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini

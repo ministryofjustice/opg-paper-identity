@@ -8,7 +8,7 @@ RUN pecl install apcu && docker-php-ext-enable apcu
 RUN pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
 # Patch Vulnerabilities
-RUN apk upgrade --no-cache openssl
+RUN apk upgrade --no-cache openssl curl libcurl
 
 WORKDIR /var/www/
 
