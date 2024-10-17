@@ -19,8 +19,6 @@ class DynamoDbClientFactory implements FactoryInterface
         /** @var array{"aws": array<string, string|bool>} $config */
         $config = $container->get('Config');
 
-        $dynamoDbClient = new DynamoDbClient($config['aws']);
-
-        return $dynamoDbClient;
+        return new DynamoDbClient($config['aws']);
     }
 }

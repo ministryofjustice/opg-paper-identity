@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Aws\SecretsManager\SecretsManagerClient;
 
-include '/var/www/vendor/autoload.php';
+include_once '/var/www/vendor/autoload.php';
 
 $prefix = getenv('SECRETS_MANAGER_PREFIX');
 if (!is_string($prefix)) {

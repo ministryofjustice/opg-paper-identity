@@ -6,20 +6,10 @@ namespace ApplicationTest\Helpers;
 
 use Application\Helpers\DependencyCheck;
 use Application\Enums\IdMethod;
-use Laminas\Form\Annotation\AttributeBuilder;
-use Laminas\Form\FormInterface;
-use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
-
-use function Aws\flatmap;
 
 class DependencyCheckHelperTest extends TestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     /**
      * @dataProvider statusData
      */

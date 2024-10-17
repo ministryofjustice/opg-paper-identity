@@ -40,12 +40,12 @@ class ListenerTest extends AbstractHttpControllerTestCase
     {
         $siriusApiMock = $this->createMock(SiriusApiService::class);
 
-        $sut = new Listener($siriusApiMock, "http://login-url");
+        $sut = new Listener($siriusApiMock, "https://login-url");
 
         $event = $this->createMock(MvcEvent::class);
 
         $request = new Request();
-        $request->setUri('http://somehost/my/page?type=somevalue');
+        $request->setUri('https://somehost/my/page?type=somevalue');
         $event->expects($this->once())->method("getRequest")->willReturn($request);
 
         $event->expects($this->once())->method("getResponse")->willReturn(new Response());
@@ -62,7 +62,7 @@ class ListenerTest extends AbstractHttpControllerTestCase
         $location = $response->getHeaders()->get('Location');
         assert($location instanceof Location);
 
-        $expectedUrl = "http://login-url/auth?redirect=%2Fmy%2Fpage%3Ftype%3Dsomevalue";
+        $expectedUrl = "https://login-url/auth?redirect=%2Fmy%2Fpage%3Ftype%3Dsomevalue";
         $this->assertEquals($expectedUrl, $location->getFieldValue());
     }
 }

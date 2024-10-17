@@ -19,8 +19,6 @@ class EventBridgeClientFactory implements FactoryInterface
         /** @var array{"aws": array<string, string|bool>} $config */
         $config = $container->get('Config');
 
-        $eventBridgeClient = new EventBridgeClient($config['aws']);
-
-        return $eventBridgeClient;
+        return new EventBridgeClient($config['aws']);
     }
 }

@@ -6,7 +6,7 @@ RUN apk add --no-cache git
 
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install
+RUN yarn install --ignore-scripts
 
 COPY web web
 RUN yarn build

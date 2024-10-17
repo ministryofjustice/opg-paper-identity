@@ -55,7 +55,7 @@
             {% if service_availability.data.DRIVING_LICENCE %}
                 <input
                         class="govuk-input govuk-!-width-one-third {% if form.get('dln').messages %}govuk-input--error{% endif %}"
-                        id="dln" name="dln" type="text" autocomplete="dln"
+                        id="dln" name="dln" type="text" autocomplete="off"
                         value="{{ form.get('dln').value }}"
                         aria-describedby="dln-hint {% if form.get('dln').messages %}dln-error{% endif %}"
                 />
