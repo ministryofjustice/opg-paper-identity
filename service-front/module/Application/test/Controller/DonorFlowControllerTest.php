@@ -233,6 +233,41 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
+     /**
+     * @dataProvider vouchingOutcomeProvider
+     */
+    public function testWhatIsVouchingPage(string $confirmVouching, string $expectedRedirect): void
+    {
+        $this->dispatch("/$this->uuid/what-is-vouching", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('root/what_is_vouching');
+
+        $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+            'confirm_vouching' => $confirmVouching,
+         ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf($expectedRedirect, $this->uuid));
+
+    }
+
+    public static function vouchingOutcomeProvider(): array
+    {
+        return [
+            [
+                'confirmVouching' => 'yes',
+                'expectedRedirect' => '/%s/what-is-vouching'
+            ],
+            [
+                'confirmVouching' => 'no',
+                'expectedRedirect' => '/%s/how-will-donor-confirm'
+            ],
+        ];
+    }
+
 
     public function returnOpgResponseData(): array
     {

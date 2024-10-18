@@ -529,6 +529,16 @@ return [
                             ],
                         ],
                     ],
+                    'what_is_vouching' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/what-is-vouching',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action' => 'whatIsVouching',
+                            ],
+                        ],
+                    ]
                 ],
             ],
         ],
