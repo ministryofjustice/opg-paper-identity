@@ -146,18 +146,16 @@ class IndexController extends AbstractActionController
         $form = $this->createForm(AbandonFlow::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (count($this->getRequest()->getPost())) {
-            if ($form->isValid()) {
-                $siriusData = [
-                    "reference" => $uuid,
-                    "actorType" => $detailsData['personType'],
-                    "lpaIds" => $detailsData['lpas'],
-                    "time" => (new \DateTime('NOW'))->format('c'),
-                    "outcome" => "exit"
-                ];
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $siriusData = [
+                "reference" => $uuid,
+                "actorType" => $detailsData['personType'],
+                "lpaIds" => $detailsData['lpas'],
+                "time" => (new \DateTime('NOW'))->format('c'),
+                "outcome" => "exit"
+            ];
 
-                $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
-            }
+            $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
         }
 
         $view->setVariable('details_data', $detailsData);

@@ -508,18 +508,16 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(Postcode::class);
         $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
-            if ($form->isValid()) {
-                $postcode = $this->formToArray($form)['postcode'];
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $postcode = $this->formToArray($form)['postcode'];
 
-                return $this->redirect()->toRoute(
-                    'root/cp_select_address',
-                    [
-                        'uuid' => $uuid,
-                        'postcode' => $postcode,
-                    ]
-                );
-            }
+            return $this->redirect()->toRoute(
+                'root/cp_select_address',
+                [
+                    'uuid' => $uuid,
+                    'postcode' => $postcode,
+                ]
+            );
         }
 
         return $view->setTemplate('application/pages/cp/enter_address');
@@ -554,16 +552,14 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('addresses', $addressStrings);
         $view->setVariable('addresses_count', count($addressStrings));
 
-        if ($this->getRequest()->isPost()) {
-            if ($form->isValid()) {
-                $formData = $this->formToArray($form);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
 
-                $structuredAddress = json_decode($formData['address_json'], true);
+            $structuredAddress = json_decode($formData['address_json'], true);
 
-                $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+            $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
-                return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
         }
 
         return $view->setTemplate('application/pages/cp/select_address');
@@ -660,14 +656,12 @@ class CPFlowController extends AbstractActionController
 
         $form = $this->createForm(Country::class);
 
-        if (count($this->getRequest()->getPost())) {
-            if ($form->isValid()) {
-                $formData = $this->formToArray($form);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
 
-                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-                return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
         }
 
         $countriesData = PostOfficeCountry::cases();
@@ -702,14 +696,12 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(CountryDocument::class);
         $view->setVariable('form', $form);
 
-        if ($this->getRequest()->isPost()) {
-            if ($form->isValid()) {
-                $formData = $this->formToArray($form);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
 
-                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
         }
 
         $view->setVariables([

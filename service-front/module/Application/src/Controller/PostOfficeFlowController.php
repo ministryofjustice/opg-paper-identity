@@ -138,8 +138,6 @@ class PostOfficeFlowController extends AbstractActionController
                 );
             }
 
-
-
             if (! is_null($processed->getRedirect())) {
                 return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
             }
@@ -283,14 +281,12 @@ class PostOfficeFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(Country::class);
 
-        if (count($this->getRequest()->getPost())) {
-            if ($form->isValid()) {
-                $formData = $this->formToArray($form);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
 
-                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-                return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
         }
 
         $countriesData = PostOfficeCountry::cases();
@@ -323,13 +319,11 @@ class PostOfficeFlowController extends AbstractActionController
 
         $form = $this->createForm(CountryDocument::class);
 
-        if ($this->getRequest()->isPost()) {
-            if ($form->isValid()) {
-                $formData = $this->formToArray($form);
-                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-                return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
         }
 
         $view = new ViewModel([
