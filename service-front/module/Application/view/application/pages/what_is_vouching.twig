@@ -1,0 +1,55 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
+{% block content %}
+    <form method="POST" class="govuk-!-width-two-thirds">
+        <h1 class="govuk-heading-xl">{% block title %}What is Vouching?{% endblock %}</h1>
+        <div class="govuk-form-group">
+            <p class="govuk-body">
+                Vouching allows someone you know well to confirm your identity.
+            </p>
+            <p class="govuk-body">
+                The person you ask to vouch for you will need to call us to prove their own identity and agree to a declaration that you are who you say you are.
+            </p>
+            <p class="govuk-body">
+                We will send you a letter with the full details of the process and you will need to give the letter to the person you ask to vouch for you.
+            </p>
+
+            <p class="govuk-body">
+                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">The person you choose must:</h3>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>be aged 18 years or over</li>
+                    <li>be able to confirm their own identity</li>
+                    <li>have known you for at least 2 years</li>
+                </ul>
+            </p>
+
+            <p class="govuk-body">
+                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">The person you choose cannot be:</h3>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>someone named on your LPA</li>
+                    <li>in a relationship with you</li>
+                    <li>a member of your family</li>
+                    <li>living at the same address as you</li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="govuk-form-group">
+            <h2 class="govuk-heading-m">Choose someone else to vouch for the donor's identity?</h2>
+            <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="yes" name="confirm_vouching" type="radio" value="yes">
+                <label class="govuk-label govuk-radios__label" for="yes">Yes, send the letter about vouching to the donor</label>
+            </div>
+            <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="no" name="confirm_vouching" type="radio" value="no">
+                <label class="govuk-label govuk-radios__label" for="no">No, choose a different method</label>
+            </div>
+        </div>
+
+        <input type="submit" class="govuk-button" value="Continue">
+    </form>
+{% endblock %}
