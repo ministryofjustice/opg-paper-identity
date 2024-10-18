@@ -10,9 +10,15 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 
 /**
  * @psalm-suppress MissingConstructor
+* @implements FormTemplate<array{
+ *   passport_issued_year: string,
+ *   passport_issued_month: string,
+ *   passport_issued_day: string,
+ *   passport_date?: string
+ * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PassportDateCp
+class PassportDateCp implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty

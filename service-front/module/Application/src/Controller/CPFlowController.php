@@ -195,8 +195,6 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('case_uuid', $uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $formObject = $this->getRequest()->getPost();
-
             if (! $form->isValid()) {
                 $form->setMessages([
                     'lpa' => [
@@ -207,18 +205,18 @@ class CPFlowController extends AbstractActionController
                 return $view->setTemplate('application/pages/cp/add_lpa');
             }
 
-            if ($formObject->get('lpa')) {
+            $formArray = $this->formToArray($form);
+            if ($formArray['lpa']) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
                     /**
                      * @psalm-suppress InvalidMethodCall
                      */
-                    $formObject->get('lpa'),
+                    $formArray['lpa'],
                     $this->getRequest()
                 );
 
                 $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
-                    $this->getRequest()->getPost(),
                     $form,
                     $siriusCheck,
                     $detailsData,
@@ -229,7 +227,7 @@ class CPFlowController extends AbstractActionController
 
                 return $view->setTemplate('application/pages/cp/add_lpa');
             } else {
-                $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
+                $this->opgApiService->updateCaseWithLpa($uuid, $this->getRequest()->getPost()->get('add_lpa_number'));
 
                 return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
             }
