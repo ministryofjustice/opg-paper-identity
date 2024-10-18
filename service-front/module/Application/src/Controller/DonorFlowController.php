@@ -116,13 +116,26 @@ class DonorFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost()->toArray();
             if ($formData['confirm_vouching'] == 'yes') {
-                return $this->redirect()->toRoute("root/what_is_vouching", ['uuid' => $uuid]);
+                return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
             } else {
                 return $this->redirect()->toRoute("root/how_donor_confirms", ['uuid' => $uuid]);
             }
         }
 
         return $view->setTemplate('application/pages/what_is_vouching');
+    }
+
+    public function vouchingWhatHappensNextAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('sirius_edit_url', $siriusEditUrl);
+
+        return $view->setTemplate('application/pages/vouching_what_happens_next');
     }
 
     public function donorDetailsMatchCheckAction(): ViewModel

@@ -1,0 +1,25 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="govuk-heading-xl">{% block title %}What happens next?{% endblock %}</h1>
+
+    <p class="govuk-body govuk-!-width-two-thirds">
+        We will send you a letter with the full deatails of the process and you will need to give the letter to the person you ask to vouch for you.
+    </p>
+
+    <div class="govuk-warning-text">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+        <span class="govuk-visually-hidden">Warning</span>
+        Remind them to return the LPA to OPG
+    </strong>
+    </div>
+
+    <a href="{{ sirius_edit_url }}" class="govuk-button">Continue</a
+
+{% endblock %}

@@ -256,7 +256,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             [
                 'confirmVouching' => 'yes',
-                'expectedRedirect' => '/%s/what-is-vouching'
+                'expectedRedirect' => '/%s/vouching-what-happens-next'
             ],
             [
                 'confirmVouching' => 'no',
@@ -265,6 +265,23 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    public function testVouchingWhatHappensNextPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/vouching-what-happens-next", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('root/vouching_what_happens_next');
+    }
 
     public function returnOpgResponseData(): array
     {
