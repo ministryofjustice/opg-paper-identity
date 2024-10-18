@@ -5,27 +5,27 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Helpers\DTO\LpaFormHelperResponseDto;
-use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
-use Laminas\Stdlib\Parameters;
-use Laminas\Http\Response;
 
 class LpaFormHelper
 {
+    /**
+     * @param FormInterface<array{lpa: string}> $form
+     */
     public function findLpa(
         string $uuid,
-        Parameters $formData,
         FormInterface $form,
         array $siriusCheck,
         array $detailsData,
     ): LpaFormHelperResponseDto {
-        $form->setData($formData);
         $result = [
             'status' => "",
             'message' => ""
         ];
 
         if ($form->isValid()) {
+            $formData = $form->getData(FormInterface::VALUES_AS_ARRAY);
+
             if (
                 ! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
                 empty($siriusCheck['opg.poas.lpastore'])
@@ -52,7 +52,7 @@ class LpaFormHelper
                     'address_match' => $idCheck['address_match'],
                     'error' => $idCheck['error']
                 ];
-            } elseif (! $this->checkLpaNotAdded($form->get('lpa')->getValue(), $detailsData)) {
+            } elseif (! $this->checkLpaNotAdded($formData['lpa'], $detailsData)) {
                 $result['status'] = 'error';
                 $result['message'] = "This LPA has already been added to this identity check.";
             } elseif ($statusCheck['error'] === true) {
@@ -67,7 +67,7 @@ class LpaFormHelper
             }
             $result['data'] = [
                 "case_uuid" => $uuid,
-                "lpa_number" => $form->get('lpa')->getValue(),
+                "lpa_number" => $formData['lpa'],
                 "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                 "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
                 "lpa_status" => $statusCheck['status'],

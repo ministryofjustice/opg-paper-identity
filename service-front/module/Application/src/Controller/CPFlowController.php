@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
 use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
@@ -35,6 +36,8 @@ use Laminas\View\Model\ViewModel;
 
 class CPFlowController extends AbstractActionController
 {
+    use FormBuilder;
+
     protected $plugins;
 
     public function __construct(
@@ -56,8 +59,8 @@ class CPFlowController extends AbstractActionController
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDateCp::class);
-        $form = (new AttributeBuilder())->createForm(IdMethod::class);
+        $dateSubForm = $this->createForm(PassportDateCp::class);
+        $form = $this->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -78,7 +81,6 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             if (array_key_exists('check_button', $formData)) {
-                $dateSubForm->setData($this->getRequest()->getPost());
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
                     $this->getRequest()->getPost(),
@@ -87,7 +89,6 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                $form->setData($formData);
                 if ($form->isValid()) {
                     if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
                         $data = [
@@ -186,7 +187,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
+        $form = $this->createForm(LpaReferenceNumber::class);
 
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
@@ -194,10 +195,6 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('case_uuid', $uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $formObject = $this->getRequest()->getPost();
-
-            $form->setData($formObject);
-
             if (! $form->isValid()) {
                 $form->setMessages([
                     'lpa' => [
@@ -207,21 +204,19 @@ class CPFlowController extends AbstractActionController
 
                 return $view->setTemplate('application/pages/cp/add_lpa');
             }
-            /**
-             * @psalm-suppress InvalidMethodCall
-             */
-            if ($formObject->get('lpa')) {
+
+            $formArray = $this->formToArray($form);
+            if ($formArray['lpa']) {
                 $siriusCheck = $this->siriusApiService->getLpaByUid(
                     /**
                      * @psalm-suppress InvalidMethodCall
                      */
-                    $formObject->get('lpa'),
+                    $formArray['lpa'],
                     $this->getRequest()
                 );
 
                 $processed = $this->lpaFormHelper->findLpa(
                     $uuid,
-                    $this->getRequest()->getPost(),
                     $form,
                     $siriusCheck,
                     $detailsData,
@@ -232,7 +227,7 @@ class CPFlowController extends AbstractActionController
 
                 return $view->setTemplate('application/pages/cp/add_lpa');
             } else {
-                $this->opgApiService->updateCaseWithLpa($uuid, $formObject->get('add_lpa_number'));
+                $this->opgApiService->updateCaseWithLpa($uuid, $this->getRequest()->getPost()->get('add_lpa_number'));
 
                 return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
             }
@@ -248,7 +243,7 @@ class CPFlowController extends AbstractActionController
             'default' => 'application/pages/cp/confirm_dob',
         ];
         $uuid = $this->params()->fromRoute("uuid");
-        $form = (new AttributeBuilder())->createForm(BirthDate::class);
+        $form = $this->createForm(BirthDate::class);
 
 
         if (count($this->getRequest()->getPost())) {
@@ -280,7 +275,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
+        $form = $this->createForm(ConfirmAddress::class);
 
         $routes = [
             'NATIONAL_INSURANCE_NUMBER' => 'root/cp_national_insurance_number',
@@ -305,14 +300,13 @@ class CPFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
 
-            $form->setData($params);
-            $formArray = $this->getRequest()->getPost()->toArray();
-
-            if ($formArray['confirm_alt'] == 'confirmed') {
+            if ($params['confirm_alt'] == 'confirmed') {
                 return $this->redirect()->toRoute($nextRoute, ['uuid' => $uuid]);
             }
 
             if ($form->isValid()) {
+                $formArray = $this->formToArray($form);
+
                 if ($formArray['chosenAddress'] == 'yes') {
                     return $this->redirect()->toRoute($nextRoute, ['uuid' => $uuid]);
                 } elseif ($formArray['chosenAddress'] == 'no') {
@@ -335,7 +329,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
 
-        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
         $view->setVariable('service_availability', $serviceAvailability->toArray());
@@ -347,7 +341,6 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
-                $this->getRequest()->getPost(),
                 $form,
                 $templates
             );
@@ -372,7 +365,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
 
-        $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
+        $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
         $view->setVariable('service_availability', $serviceAvailability->toArray());
@@ -384,7 +377,6 @@ class CPFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
-                $this->getRequest()->getPost(),
                 $form,
                 $templates
             );
@@ -410,8 +402,8 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
 
-        $form = (new AttributeBuilder())->createForm(PassportNumber::class);
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
+        $form = $this->createForm(PassportNumber::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
         $view->setVariable('service_availability', $serviceAvailability->toArray());
@@ -443,7 +435,6 @@ class CPFlowController extends AbstractActionController
                 );
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
-                    $this->getRequest()->getPost(),
                     $form,
                     $templates
                 );
@@ -514,18 +505,13 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
-        $form = (new AttributeBuilder())->createForm(Postcode::class);
+        $form = $this->createForm(Postcode::class);
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $params = $this->getRequest()->getPost();
-            $form->setData($params);
-            /**
-             * @psalm-suppress InvalidMethodCall
-             */
-            $postcode = $params->get('postcode');
-
             if ($form->isValid()) {
+                $postcode = $this->formToArray($form)['postcode'];
+
                 return $this->redirect()->toRoute(
                     'root/cp_select_address',
                     [
@@ -545,7 +531,7 @@ class CPFlowController extends AbstractActionController
         $postcode = $this->params()->fromRoute("postcode");
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = (new AttributeBuilder())->createForm(AddressJson::class);
+        $form = $this->createForm(AddressJson::class);
 
         $view = new ViewModel();
         $view->setVariables([
@@ -569,14 +555,10 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('addresses_count', count($addressStrings));
 
         if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
-            $form->setData($params);
-
             if ($form->isValid()) {
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                $structuredAddress = json_decode($params->get('address_json'), true);
+                $formData = $this->formToArray($form);
+
+                $structuredAddress = json_decode($formData['address_json'], true);
 
                 $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
 
@@ -593,7 +575,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
+        $form = $this->createForm(CpAltAddress::class);
         $form->setData($detailsData['alternateAddress'] ?? []);
 
         if ($this->getRequest()->isPost()) {
@@ -602,10 +584,7 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                /**
-                 * @psalm-suppress InvalidMethodCall
-                 */
-                $this->opgApiService->addSelectedAltAddress($uuid, $params->toArray());
+                $this->opgApiService->addSelectedAltAddress($uuid, $this->formToArray($form));
 
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
@@ -631,15 +610,14 @@ class CPFlowController extends AbstractActionController
     {
         $templates = ['default' => 'application/pages/cp/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDatePo::class);
-        $form = (new AttributeBuilder())->createForm(IdMethod::class);
+        $dateSubForm = $this->createForm(PassportDatePo::class);
+        $form = $this->createForm(IdMethod::class);
         $view = new ViewModel();
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
 
             if (array_key_exists('check_button', $formData)) {
-                $dateSubForm->setData($formData);
                 $view->setVariable('date_sub_form', $dateSubForm);
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
@@ -649,7 +627,6 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                $form->setData($this->getRequest()->getPost());
                 $view->setVariable('form', $form);
                 if ($form->isValid()) {
                     if ($formData['id_method'] == 'NONUKID') {
@@ -681,13 +658,12 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = (new AttributeBuilder())->createForm(Country::class);
+        $form = $this->createForm(Country::class);
 
         if (count($this->getRequest()->getPost())) {
-            $form->setData($this->getRequest()->getPost());
-            $formData = $this->getRequest()->getPost()->toArray();
-
             if ($form->isValid()) {
+                $formData = $this->formToArray($form);
+
                 $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
                 return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
@@ -723,14 +699,13 @@ class CPFlowController extends AbstractActionController
 
         $docs = $this->documentTypeRepository->getByCountry($country);
 
-        $form = (new AttributeBuilder())->createForm(CountryDocument::class);
+        $form = $this->createForm(CountryDocument::class);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
-            $formData = $this->getRequest()->getPost()->toArray();
-
             if ($form->isValid()) {
+                $formData = $this->formToArray($form);
+
                 $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
                 return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
