@@ -57,6 +57,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $dateSubForm = (new AttributeBuilder())->createForm(PassportDateCp::class);
+        $form = (new AttributeBuilder())->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -72,6 +73,7 @@ class CPFlowController extends AbstractActionController
 
         $optionsData = $identityDocs;
         $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
@@ -85,26 +87,29 @@ class CPFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
-                    $data = [
-                        'id_route' => IdMethodEnum::PostOffice->value,
-                    ];
-                    $this->opgApiService->updateIdMethodWithCountry(
-                        $uuid,
-                        $data
-                    );
-                    return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
-                } else {
-                    $data = [
-                        'id_route' => 'TELEPHONE',
-                        'id_country' => \Application\PostOffice\Country::GBR->value,
-                        'id_method' => $formData['id_method']
-                    ];
-                    $this->opgApiService->updateIdMethodWithCountry(
-                        $uuid,
-                        $data
-                    );
-                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                $form->setData($formData);
+                if ($form->isValid()) {
+                    if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
+                        $data = [
+                            'id_route' => IdMethodEnum::PostOffice->value,
+                        ];
+                        $this->opgApiService->updateIdMethodWithCountry(
+                            $uuid,
+                            $data
+                        );
+                        return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
+                    } else {
+                        $data = [
+                            'id_route' => 'TELEPHONE',
+                            'id_country' => \Application\PostOffice\Country::GBR->value,
+                            'id_method' => $formData['id_method']
+                        ];
+                        $this->opgApiService->updateIdMethodWithCountry(
+                            $uuid,
+                            $data
+                        );
+                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    }
                 }
             }
         }
@@ -299,11 +304,12 @@ class CPFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
+            
             $form->setData($params);
             $formArray = $this->getRequest()->getPost()->toArray();
 
             if ($formArray['confirm_alt'] == 'confirmed') {
-                return $this->redirect()->toRoute('root/cp_find_post_office_branch', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute($nextRoute, ['uuid' => $uuid]);
             }
 
             if ($form->isValid()) {
@@ -416,7 +422,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_open', false);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
@@ -429,7 +435,12 @@ class CPFlowController extends AbstractActionController
                     $templates
                 );
             } else {
-                $view->setVariable('passport_indate', ucwords($data['inDate']));
+                $view->setVariable(
+                    'passport_indate',
+                    array_key_exists('inDate', $data) ?
+                        ucwords($data['inDate']) :
+                        'no'
+                );
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
                     $this->getRequest()->getPost(),
@@ -585,7 +596,7 @@ class CPFlowController extends AbstractActionController
         $form = (new AttributeBuilder())->createForm(CpAltAddress::class);
         $form->setData($detailsData['alternateAddress'] ?? []);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
 
             $form->setData($params);
