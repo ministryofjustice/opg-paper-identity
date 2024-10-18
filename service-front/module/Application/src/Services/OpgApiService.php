@@ -366,4 +366,9 @@ class OpgApiService implements OpgApiServiceInterface
 
         return (new DependencyCheck($this->responseData));
     }
+
+    public function requestFraudCheck(): array
+    {
+
+    }
 }

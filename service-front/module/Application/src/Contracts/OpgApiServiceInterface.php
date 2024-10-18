@@ -135,4 +135,6 @@ interface OpgApiServiceInterface
      * @return DependencyCheck
      */
     public function getServiceAvailability(): DependencyCheck;
+
+    public function requestFraudCheck(): array;
 }

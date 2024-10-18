@@ -344,7 +344,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $this->getRequest()->getPost(),
