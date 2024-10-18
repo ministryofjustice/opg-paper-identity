@@ -282,8 +282,6 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = (new AttributeBuilder())->createForm(ConfirmAddress::class);
 
-//        echo json_encode($detailsData);
-
         $routes = [
             'NATIONAL_INSURANCE_NUMBER' => 'root/cp_national_insurance_number',
             'DRIVING_LICENCE' => 'root/cp_driving_licence_number',
@@ -306,10 +304,7 @@ class CPFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-
-            echo(json_encode($params));
-
-
+            
             $form->setData($params);
             $formArray = $this->getRequest()->getPost()->toArray();
 
