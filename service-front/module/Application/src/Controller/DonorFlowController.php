@@ -85,6 +85,8 @@ class DonorFlowController extends AbstractActionController
                             $data
                         );
                         return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+                    } elseif ($formData['id_method'] == IdMethod::OnBehalf->value) {
+                        return $this->redirect()->toRoute("root/what_is_vouching", ['uuid' => $uuid]);
                     } else {
                         $data = [
                             'id_route' => 'TELEPHONE',
@@ -102,6 +104,25 @@ class DonorFlowController extends AbstractActionController
         }
 
         return $view->setTemplate($templates['default']);
+    }
+
+    public function whatIsVouchingAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost()->toArray();
+            if ($formData['confirm_vouching'] == 'yes') {
+                return $this->redirect()->toRoute("root/what_is_vouching", ['uuid' => $uuid]);
+            } else {
+                return $this->redirect()->toRoute("root/how_donor_confirms", ['uuid' => $uuid]);
+            }
+        }
+
+        return $view->setTemplate('application/pages/what_is_vouching');
     }
 
     public function donorDetailsMatchCheckAction(): ViewModel
