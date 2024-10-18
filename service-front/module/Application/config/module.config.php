@@ -538,7 +538,17 @@ return [
                                 'action' => 'whatIsVouching',
                             ],
                         ],
-                    ]
+                    ],
+                    'vouching_what_happens_next' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching-what-happens-next',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action' => 'vouchingWhatHappensNext',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
