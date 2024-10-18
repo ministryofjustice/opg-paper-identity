@@ -304,7 +304,7 @@ class CPFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            
+
             $form->setData($params);
             $formArray = $this->getRequest()->getPost()->toArray();
 
