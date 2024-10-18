@@ -31,6 +31,8 @@ class FormProcessorHelperTest extends TestCase
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
+        $form->setData($formData);
+
         if ($formData['inDate'] == 'yes') {
             $opgApiServiceMock
                 ->expects(self::once())
@@ -38,7 +40,7 @@ class FormProcessorHelperTest extends TestCase
                 ->with($formData->toArray()['dln'])
                 ->willReturn($responseData['status']);
         }
-        $processed = $formProcessorHelper->processDrivingLicenceForm($caseUuid, $formData, $form, $templates);
+        $processed = $formProcessorHelper->processDrivingLicenceForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
     }
@@ -114,6 +116,8 @@ class FormProcessorHelperTest extends TestCase
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
+        $form->setData($formData);
+
         if ($template !== 'default') {
             $opgApiServiceMock
                 ->expects(self::once())
@@ -122,7 +126,7 @@ class FormProcessorHelperTest extends TestCase
                 ->willReturn($responseData['status']);
         }
 
-        $processed = $formProcessorHelper->processNationalInsuranceNumberForm($caseUuid, $formData, $form, $templates);
+        $processed = $formProcessorHelper->processNationalInsuranceNumberForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
     }
@@ -198,6 +202,8 @@ class FormProcessorHelperTest extends TestCase
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
+        $form->setData($formData);
+
         if ($template !== 'default') {
             $opgApiServiceMock
                 ->expects(self::once())
@@ -206,7 +212,7 @@ class FormProcessorHelperTest extends TestCase
                 ->willReturn($responseData['status']);
         }
 
-        $processed = $formProcessorHelper->processPassportForm($caseUuid, $formData, $form, $templates);
+        $processed = $formProcessorHelper->processPassportForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
     }

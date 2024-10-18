@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\Trait\FormBuilder;
 use Application\Enums\IdMethod;
 use Application\Forms\IdMethod as IdMethodForm;
 use Application\Forms\DrivingLicenceNumber;
@@ -22,6 +23,8 @@ use Application\Enums\LpaTypes;
 
 class DonorFlowController extends AbstractActionController
 {
+    use FormBuilder;
+
     protected $plugins;
 
     public function __construct(
@@ -38,8 +41,8 @@ class DonorFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/how_will_the_donor_confirm'];
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
-        $form = (new AttributeBuilder())->createForm(IdMethodForm::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
+        $form = $this->createForm(IdMethodForm::class);
 
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
@@ -64,7 +67,6 @@ class DonorFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost()->toArray();
             if (array_key_exists('check_button', $formData)) {
-                $dateSubForm->setData($this->getRequest()->getPost());
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
                     $this->getRequest()->getPost(),
@@ -73,7 +75,6 @@ class DonorFlowController extends AbstractActionController
                 );
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
-                $form->setData($formData);
                 if ($form->isValid()) {
                     if ($formData['id_method'] == IdMethod::PostOffice->value) {
                         $data = [
@@ -235,7 +236,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
-        $form = (new AttributeBuilder())->createForm(NationalInsuranceNumber::class);
+        $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
@@ -244,7 +245,6 @@ class DonorFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
-                $this->getRequest()->getPost(),
                 $form,
                 $templates
             );
@@ -269,7 +269,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
-        $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
+        $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
@@ -278,7 +278,6 @@ class DonorFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
-                $this->getRequest()->getPost(),
                 $form,
                 $templates
             );
@@ -304,8 +303,8 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
-        $form = (new AttributeBuilder())->createForm(PassportNumber::class);
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDate::class);
+        $form = $this->createForm(PassportNumber::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
@@ -329,7 +328,6 @@ class DonorFlowController extends AbstractActionController
             } else {
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
                     $uuid,
-                    $formData,
                     $form,
                     $templates
                 );

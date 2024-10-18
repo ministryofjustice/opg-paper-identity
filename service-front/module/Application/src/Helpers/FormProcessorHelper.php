@@ -7,10 +7,8 @@ namespace Application\Helpers;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\OpgApiException;
 use Application\Helpers\DTO\FormProcessorResponseDto;
-use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
-use Laminas\View\Model\ViewModel;
 
 class FormProcessorHelper
 {
@@ -19,20 +17,22 @@ class FormProcessorHelper
     ) {
     }
 
+    /**
+     * @param FormInterface<array{dln: string, inDate: ?string}> $form
+     */
     public function processDrivingLicenceForm(
         string $uuid,
-        Parameters $formData,
         FormInterface $form,
         array $templates = []
     ): FormProcessorResponseDto {
-        $form->setData($formData);
         $validFormat = $form->isValid();
         $variables = [];
         $template = $templates['default'];
-        $formArray = $formData->toArray();
 
         if ($validFormat) {
-            $variables['dln_data'] = $formData;
+            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
+
+            $variables['dln_data'] = $formArray;
             $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
             $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
             if ($validDln === 'PASS') {
@@ -47,20 +47,22 @@ class FormProcessorHelper
         );
     }
 
+    /**
+     * @param FormInterface<array{nino: string}> $form
+     */
     public function processNationalInsuranceNumberForm(
         string $uuid,
-        Parameters $formData,
         FormInterface $form,
         array $templates = []
     ): FormProcessorResponseDto {
-        $form->setData($formData);
-        $formArray = $formData->toArray();
         $validFormat = $form->isValid();
         $variables = [];
         $template = $templates['default'];
 
         if ($validFormat) {
-            $variables['nino_data'] = $formData;
+            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
+
+            $variables['nino_data'] = $formArray;
             $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
 
             $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
@@ -76,19 +78,20 @@ class FormProcessorHelper
         );
     }
 
+    /**
+     * @param FormInterface<array{passport: string}> $form
+     */
     public function processPassportForm(
         string $uuid,
-        Parameters $formData,
         FormInterface $form,
         array $templates = []
     ): FormProcessorResponseDto {
         $variables = [];
         $template = $templates['default'];
-        $form->setData($formData);
-        $formArray = $formData->toArray();
 
         if ($form->isValid()) {
-            $variables['passport_data'] = $formData;
+            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
+            $variables['passport_data'] = $formArray;
             $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
             $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
@@ -104,6 +107,14 @@ class FormProcessorHelper
         );
     }
 
+    /**
+     * @param FormInterface<array{
+     *   passport_issued_year: string,
+     *   passport_issued_month: string,
+     *   passport_issued_day: string,
+     *   passport_date?: string
+     * }> $form
+     */
     public function processPassportDateForm(
         string $uuid,
         Parameters $formData,
@@ -148,47 +159,68 @@ class FormProcessorHelper
         return $locationData;
     }
 
+    /**
+     * @param FormInterface<array{location: string}> $form
+     */
     public function processPostOfficeSearchForm(
         string $uuid,
-        Parameters $formData,
         FormInterface $form,
         array $templates = []
     ): FormProcessorResponseDto {
-        $formArray = $formData->toArray();
         $variables = [];
-        $redirect = null;
 
-        if (array_key_exists('location', $formArray)) {
+        if ($form->isValid()) {
+            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
+
             $variables['location'] = $formArray['location'];
-            $form->setData(['location' => $formArray['location']]);
-            if ($form->isValid()) {
-                $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formData['location']);
 
-                $locationData = $this->processPostOfficeSearchResponse($responseData);
-                $variables['post_office_list'] = $locationData;
-            } else {
-                $form->setMessages(['location' => ['Please enter a postcode, town or street name']]);
-            }
-            $variables['location_form'] = $form;
+            $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formArray['location']);
+
+            $locationData = $this->processPostOfficeSearchResponse($responseData);
+            $variables['post_office_list'] = $locationData;
         } else {
-            $form->setData($formData);
-            if ($form->isValid()) {
-                try {
-                    $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
-                    $redirect = 'root/confirm_post_office';
-                } catch (OpgApiException) {
-                    $form->setMessages(['Error saving Post Office to this case.']);
-                }
-            } else {
-                $form->setMessages(['postoffice' => ['Please select an option']]);
-            }
-            $variables['form'] = $form;
+            $form->setMessages(['location' => ['Please enter a postcode, town or street name']]);
         }
+
+        $variables['location_form'] = $form;
+
         return new FormProcessorResponseDto(
             $uuid,
             $form,
             $templates['default'],
             $variables,
+            null
+        );
+    }
+
+    /**
+     * @param FormInterface<array{postoffice: string}> $form
+     */
+    public function processPostOfficeSelectForm(
+        string $uuid,
+        FormInterface $form,
+        array $templates = []
+    ): FormProcessorResponseDto {
+        $redirect = null;
+
+        if ($form->isValid()) {
+            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
+
+            try {
+                $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
+                $redirect = 'root/confirm_post_office';
+            } catch (OpgApiException) {
+                $form->setMessages(['Error saving Post Office to this case.']);
+            }
+        } else {
+            $form->setMessages(['postoffice' => ['Please select an option']]);
+        }
+
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            $templates['default'],
+            ['form' => $form],
             $redirect
         );
     }

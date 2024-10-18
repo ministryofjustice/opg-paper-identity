@@ -10,9 +10,10 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{lpa: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class LpaReferenceNumber
+class LpaReferenceNumber implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty

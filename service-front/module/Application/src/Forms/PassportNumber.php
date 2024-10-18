@@ -11,9 +11,10 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{passport: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PassportNumber
+class PassportNumber implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty

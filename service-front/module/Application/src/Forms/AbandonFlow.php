@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
-use Application\Validators\CountryDocumentValidator;
-use Application\Validators\CountryValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{
+ *   reason: string,
+ *   notes: string,
+ * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class AbandonFlow
+class AbandonFlow implements FormTemplate
 {
-    /**
-     * @psalm-suppress PossiblyUnusedProperty
-     */
-    public string $route;
-
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
