@@ -6,14 +6,23 @@ namespace Application\Forms;
 
 use Application\Validators\PostcodeValidator;
 use Application\Validators\AddressFieldValidator;
+use Application\Validators\CountryValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{
+ *   line1: string,
+ *   line2: string,
+ *   line3: string,
+ *   town: string,
+ *   postcode: string,
+ *   country: string,
+ * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class CpAltAddress
+class CpAltAddress implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
@@ -40,6 +49,7 @@ class CpAltAddress
      */
     #[Annotation\Validator(PostcodeValidator::class)]
     public mixed $postcode;
+
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */

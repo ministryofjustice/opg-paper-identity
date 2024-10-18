@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\Trait\FormBuilder;
 use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Form\Annotation\AttributeBuilder;
 use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -24,6 +24,8 @@ use Laminas\View\Model\ViewModel;
  */
 class IndexController extends AbstractActionController
 {
+    use FormBuilder;
+
     protected $plugins;
 
     public function __construct(
@@ -141,12 +143,10 @@ class IndexController extends AbstractActionController
         $saveProgressData['timestamp'] = date("Y-m-d\TH:i:s\Z", time());
         $this->opgApiService->updateCaseProgress($uuid, $saveProgressData);
 
-        $form = (new AttributeBuilder())->createForm(AbandonFlow::class);
+        $form = $this->createForm(AbandonFlow::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
             if ($form->isValid()) {
                 $siriusData = [
                     "reference" => $uuid,

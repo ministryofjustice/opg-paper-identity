@@ -18,7 +18,6 @@ use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
-use Laminas\Form\FormInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -60,7 +59,6 @@ class PostOfficeFlowController extends AbstractActionController
             } else {
                 if ($form->isValid()) {
                     $formData = $this->formToArray($form);
-                    $this->opgApiService->updateIdMethod($uuid, $formData['id_method']);
 
                     if ($formData['id_method'] == 'NONUKID') {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
@@ -126,16 +124,21 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         if ($this->getRequest()->isPost()) {
-            $processableForm = array_key_exists('location', $this->getRequest()->getPost()->toArray())
-                ? $locationForm
-                : $form;
+            if (array_key_exists('location', $this->getRequest()->getPost()->toArray())) {
+                $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
+                    $uuid,
+                    $locationForm,
+                    $templates
+                );
+            } else {
+                $processed = $this->formProcessorHelper->processPostOfficeSelectForm(
+                    $uuid,
+                    $form,
+                    $templates
+                );
+            }
 
-            $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
-                $uuid,
-                $this->getRequest()->getPost(),
-                $processableForm,
-                $templates
-            );
+
 
             if (! is_null($processed->getRedirect())) {
                 return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
@@ -322,7 +325,7 @@ class PostOfficeFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             if ($form->isValid()) {
-                $formData = $form->getData(FormInterface::VALUES_AS_ARRAY);
+                $formData = $this->formToArray($form);
                 $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
                 return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
