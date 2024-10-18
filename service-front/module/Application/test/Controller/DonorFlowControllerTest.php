@@ -233,6 +233,55 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
+     /**
+     * @dataProvider vouchingOutcomeProvider
+     */
+    public function testWhatIsVouchingPage(string $confirmVouching, string $expectedRedirect): void
+    {
+
+        $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+            'confirm_vouching' => $confirmVouching,
+         ]);
+
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('root/what_is_vouching');
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf($expectedRedirect, $this->uuid));
+    }
+
+    public static function vouchingOutcomeProvider(): array
+    {
+        return [
+            [
+                'confirmVouching' => 'yes',
+                'expectedRedirect' => '/%s/vouching-what-happens-next'
+            ],
+            [
+                'confirmVouching' => 'no',
+                'expectedRedirect' => '/%s/how-will-donor-confirm'
+            ],
+        ];
+    }
+
+    public function testVouchingWhatHappensNextPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/vouching-what-happens-next", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('root/vouching_what_happens_next');
+    }
 
     public function returnOpgResponseData(): array
     {
