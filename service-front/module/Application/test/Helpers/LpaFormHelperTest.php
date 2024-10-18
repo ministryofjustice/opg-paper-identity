@@ -25,10 +25,10 @@ class LpaFormHelperTest extends TestCase
         array $opgCaseResponse,
     ): void {
         $lpaFormHelper = new LpaFormHelper();
+        $form->setData($formData);
 
         $processed = $lpaFormHelper->findLpa(
             $caseUuid,
-            $formData,
             $form,
             $siriusLpaResponse,
             $opgCaseResponse,

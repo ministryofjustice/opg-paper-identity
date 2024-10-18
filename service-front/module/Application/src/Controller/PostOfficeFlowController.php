@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
@@ -17,13 +18,14 @@ use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
-use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 
 class PostOfficeFlowController extends AbstractActionController
 {
+    use FormBuilder;
+
     protected $plugins;
 
     public function __construct(
@@ -40,18 +42,12 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $templates = ['default' => 'application/pages/post_office/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = (new AttributeBuilder())->createForm(PassportDatePo::class);
-        $form = (new AttributeBuilder())->createForm(IdMethod::class);
+        $dateSubForm = $this->createForm(PassportDatePo::class);
+        $form = $this->createForm(IdMethod::class);
         $view = new ViewModel();
 
         if (count($this->getRequest()->getPost())) {
-            $formObject = $this->getRequest()->getPost()->toArray();
-            $formData = $this->getRequest()->getPost()->toArray();
-
-            $form->setData($formObject);
-
             if (array_key_exists('check_button', $this->getRequest()->getPost()->toArray())) {
-                $dateSubForm->setData($formData);
                 $view->setVariable('date_sub_form', $dateSubForm);
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
                     $uuid,
@@ -62,6 +58,8 @@ class PostOfficeFlowController extends AbstractActionController
                 $view->setVariables($formProcessorResponseDto->getVariables());
             } else {
                 if ($form->isValid()) {
+                    $formData = $this->formToArray($form);
+
                     if ($formData['id_method'] == 'NONUKID') {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
                         return $this->redirect()->toRoute("root/donor_choose_country", ['uuid' => $uuid]);
@@ -108,8 +106,8 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = (new AttributeBuilder())->createForm(PostOfficeAddress::class);
-        $locationForm = (new AttributeBuilder())->createForm(PostOfficeSearchLocation::class);
+        $form = $this->createForm(PostOfficeAddress::class);
+        $locationForm = $this->createForm(PostOfficeSearchLocation::class);
 
         if (! isset($detailsData['searchPostcode'])) {
             $searchString = $detailsData['address']['postcode'];
@@ -126,16 +124,19 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         if ($this->getRequest()->isPost()) {
-            $processableForm = array_key_exists('location', $this->getRequest()->getPost()->toArray())
-                ? $locationForm
-                : $form;
-
-            $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
-                $uuid,
-                $this->getRequest()->getPost(),
-                $processableForm,
-                $templates
-            );
+            if (array_key_exists('location', $this->getRequest()->getPost()->toArray())) {
+                $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
+                    $uuid,
+                    $locationForm,
+                    $templates
+                );
+            } else {
+                $processed = $this->formProcessorHelper->processPostOfficeSelectForm(
+                    $uuid,
+                    $form,
+                    $templates
+                );
+            }
 
             if (! is_null($processed->getRedirect())) {
                 return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
@@ -278,17 +279,14 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = (new AttributeBuilder())->createForm(Country::class);
+        $form = $this->createForm(Country::class);
 
-        if (count($this->getRequest()->getPost())) {
-            $form->setData($this->getRequest()->getPost());
-            $formData = $this->getRequest()->getPost()->toArray();
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
 
-            if ($form->isValid()) {
-                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-                return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
         }
 
         $countriesData = PostOfficeCountry::cases();
@@ -319,17 +317,13 @@ class PostOfficeFlowController extends AbstractActionController
 
         $docs = $this->documentTypeRepository->getByCountry($country);
 
-        $form = (new AttributeBuilder())->createForm(CountryDocument::class);
+        $form = $this->createForm(CountryDocument::class);
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
-            $formData = $this->getRequest()->getPost()->toArray();
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-            if ($form->isValid()) {
-                $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-
-                return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
-            }
+            return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
         }
 
         $view = new ViewModel([

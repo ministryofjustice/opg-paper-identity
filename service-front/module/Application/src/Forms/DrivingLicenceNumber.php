@@ -12,9 +12,10 @@ use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{dln: string, inDate: ?string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class DrivingLicenceNumber
+class DrivingLicenceNumber implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
