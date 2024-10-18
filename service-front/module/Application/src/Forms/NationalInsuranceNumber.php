@@ -10,9 +10,10 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{nino: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class NationalInsuranceNumber
+class NationalInsuranceNumber implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty

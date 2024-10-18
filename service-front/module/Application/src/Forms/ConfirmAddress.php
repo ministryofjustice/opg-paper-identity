@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
-use Application\Validators\PostcodeValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
+ * @implements FormTemplate<array{chosenAddress: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class ConfirmAddress
+class ConfirmAddress implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty

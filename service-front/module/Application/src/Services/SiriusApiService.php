@@ -8,6 +8,7 @@ use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
+use Laminas\Http\Header\Exception\RuntimeException;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
 
@@ -136,6 +137,16 @@ class SiriusApiService
         return json_decode(strval($response->getBody()), true);
     }
 
+    /**
+     * @param array{
+     *   reference: string,
+     *   actorType: string,
+     *   lpaIds: string[],
+     *   time: string,
+     *   outcome: string,
+     * } $data
+     * @return array{status: int, error: mixed}
+     */
     public function abandonCase(array $data, Request $request): array
     {
         $response = $this->client->post('/api/v1/identity-check', [
