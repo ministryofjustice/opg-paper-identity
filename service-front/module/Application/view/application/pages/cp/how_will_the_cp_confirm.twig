@@ -31,7 +31,15 @@
             </div>
         {% endif %}
 
-        <div class="govuk-form-group">
+        <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
+
+            {% if form.get('id_method').messages %}
+                <p id="id_method-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('id_method').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+
             <div class="govuk-radios" data-module="govuk-radios">
                 {% for key, datum in options_data %}
                     <div class="govuk-radios__item">
@@ -142,7 +150,7 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="govuk-form-group">
+        <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
             <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
             {% if service_availability.data.POST_OFFICE %}
             <div class="govuk-radios__item">
@@ -179,29 +187,29 @@
                 </div>
             {% endif %}
         </div>
-        {#            <details class="govuk-details"> #}
-        {#                <summary class="govuk-details__summary"> #}
-        {#                <span class="govuk-details__summary-text"> #}
-        {#                  Other methods #}
-        {#                </span> #}
-        {#                </summary> #}
-        {#                <div class="govuk-details__text"> #}
-        {#                    <div class="govuk-radios" data-module="govuk-radios"> #}
-        {#                        <div class="govuk-radios__item"> #}
-        {#                            <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio" #}
-        {#                                   value="OnBehalf"> #}
-        {#                            <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their #}
-        {#                                identity on donor's behalf</label> #}
-        {#                        </div> #}
-        {#                        <div class="govuk-radios__item"> #}
-        {#                            <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio" #}
-        {#                                   value="cpr"> #}
-        {#                            <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of #}
-        {#                                protection</label> #}
-        {#                        </div> #}
-        {#                    </div> #}
-        {#                </div> #}
-        {#            </details> #}
+                    <details class="govuk-details">
+                        <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                          Other methods
+                        </span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
+                                           value="OnBehalf">
+                                    <label class="govuk-label govuk-radios__label" for="OnBehalf">Choose someone to prove their
+                                        identity on donor's behalf</label>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
+                                           value="cpr">
+                                    <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of
+                                        protection</label>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
         <input type="submit" class="govuk-button" value="Continue">
     </form>
 {% endblock %}

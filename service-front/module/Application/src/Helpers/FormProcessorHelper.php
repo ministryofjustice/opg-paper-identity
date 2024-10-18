@@ -85,12 +85,9 @@ class FormProcessorHelper
         $variables = [];
         $template = $templates['default'];
         $form->setData($formData);
-
-        $validFormat = $form->isValid();
         $formArray = $formData->toArray();
 
-
-        if ($validFormat) {
+        if ($form->isValid()) {
             $variables['passport_data'] = $formData;
             $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
