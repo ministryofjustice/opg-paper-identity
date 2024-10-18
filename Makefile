@@ -35,6 +35,9 @@ front-unit-test: ## Run front end unit tests
 	mkdir -m 0777 -p ${PWD}/build/output/pacts
 	docker compose -p front-unit-test run --rm --no-deps --volume ${PWD}/build/output/pacts:/output front-test vendor/bin/phpunit --log-junit=build/phpunit-junit.xml
 
+	@if [ ! "$(PACT_BROKER_PASSWORD)" = "" ]; then make publish-pacts; fi
+
+publish-pacts:
 	docker run --rm \
 		-v ${PWD}/build/output/pacts:/tmp/output \
 		-e PACT_BROKER_PASSWORD \
