@@ -44,9 +44,8 @@ class FraudApiService
      */
     public function getFraudScore(
         RequestDTO $experianCrosscoreFraudRequestDTO
-    ): array {
-        $response = $this->makeRequest($experianCrosscoreFraudRequestDTO);
-        return $response->toArray();
+    ): ResponseDTO {
+        return $this->makeRequest($experianCrosscoreFraudRequestDTO);
     }
 
     /**

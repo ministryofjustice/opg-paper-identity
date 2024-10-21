@@ -68,6 +68,8 @@ class FormProcessorHelper
             $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
             if ($validNino === 'PASS') {
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+                $fr = $this->opgApiService->requestFraudCheck($uuid);
+                die(json_encode($fr));
             }
         }
         return new FormProcessorResponseDto(

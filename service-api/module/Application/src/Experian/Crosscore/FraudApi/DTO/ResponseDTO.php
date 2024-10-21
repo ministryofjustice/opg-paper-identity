@@ -13,11 +13,21 @@ class ResponseDTO
     ) {
     }
 
+    /**
+     * @throws FraudApiException
+     */
     public function toArray(): array
     {
-        return $this->response;
+        return [
+            'decisionText' => $this->decisionText(),
+            'decision' => $this->decision(),
+            'score' => $this->score(),
+        ];
     }
 
+    /**
+     * @throws FraudApiException
+     */
     public function responseHeader(): array
     {
         try {
@@ -27,10 +37,35 @@ class ResponseDTO
         }
     }
 
+    /**
+     * @throws FraudApiException
+     */
     public function decision(): string
     {
         try {
-            return $this->response['responseHeader']['overallResponse']['decision'];
+            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
+                if ($value['decisionSource'] == 'MachineLearning') {
+                    return $value['decision'];
+                }
+            }
+        } catch (\Exception $exception) {
+            throw new FraudApiException($exception->getMessage());
+        }
+    }
+
+    /**
+     * @throws FraudApiException
+     */
+    public function decisionText(): string
+    {
+        die(json_encode($this->response['clientResponsePayload']['orchestrationDecisions']));
+
+        try {
+            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
+                if ($value['decisionSource'] == 'MachineLearning') {
+                    return $value['decisionText'];
+                }
+            }
         } catch (\Exception $exception) {
             throw new FraudApiException($exception->getMessage());
         }
@@ -39,7 +74,11 @@ class ResponseDTO
     public function score(): float
     {
         try {
-            return $this->response['responseHeader']['overallResponse']['score'];
+            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
+                if ($value['decisionSource'] == 'MachineLearning') {
+                    return $value['score'];
+                }
+            }
         } catch (\Exception $exception) {
             throw new FraudApiException($exception->getMessage());
         }
