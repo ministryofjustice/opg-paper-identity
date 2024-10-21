@@ -50,6 +50,14 @@
             </div>
         </div>
 
+        {% if errors %}
+            <p id="api-error" class="govuk-error-message">
+                {% for error in errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+        {% endif %}
+
         <input type="submit" class="govuk-button" value="Continue">
     </form>
 {% endblock %}

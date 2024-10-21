@@ -116,7 +116,13 @@ class DonorFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost()->toArray();
             if ($formData['confirm_vouching'] == 'yes') {
-                return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
+                $pdf = $this->siriusApiService->sendVouchingPDf($detailsData, $this->request);
+                if ($pdf['status'] === 201) {
+                    return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
+                } else {
+                    // what should i do with this error??
+                    $view->setVariable('errors', ['API Error - Could not send letter']);
+                }
             } else {
                 return $this->redirect()->toRoute("root/how_donor_confirms", ['uuid' => $uuid]);
             }
