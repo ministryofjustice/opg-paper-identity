@@ -37,6 +37,7 @@ class FormProcessorHelper
             $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
             if ($validDln === 'PASS') {
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+                $this->opgApiService->requestFraudCheck($uuid);
             }
         }
         return new FormProcessorResponseDto(
@@ -68,8 +69,7 @@ class FormProcessorHelper
             $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
             if ($validNino === 'PASS') {
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-                $fr = $this->opgApiService->requestFraudCheck($uuid);
-                die(json_encode($fr));
+                $this->opgApiService->requestFraudCheck($uuid);
             }
         }
         return new FormProcessorResponseDto(
@@ -99,6 +99,7 @@ class FormProcessorHelper
             $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
             if ($validPassport === 'PASS') {
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+                $this->opgApiService->requestFraudCheck($uuid);
             }
         }
         return new FormProcessorResponseDto(

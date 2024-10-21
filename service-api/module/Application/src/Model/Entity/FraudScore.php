@@ -17,15 +17,17 @@ use Laminas\Validator\NotEmpty;
  */
 class FraudScore extends Entity
 {
-    #[Annotation\Required(false)]
+    #[Annotation\Required(true)]
     #[Annotation\Validator(NotEmpty::class)]
     public string $decision;
 
-    #[Validator(NotEmpty::class)]
+    #[Annotation\Required(true)]
+    #[Annotation\Validator(NotEmpty::class)]
     public string $decisionText;
 
-    #[Validator(NotEmpty::class)]
-    public string $score;
+    #[Annotation\Required(true)]
+    #[Annotation\Validator(NotEmpty::class)]
+    public int $score;
 
     /**
      * @param properties-of<self> $data
@@ -41,7 +43,6 @@ class FraudScore extends Entity
                 throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
         }
-
         return $instance;
     }
 

@@ -166,6 +166,7 @@ class CaseData implements JsonSerializable
      *     counterService?: CounterService,
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
+     *     fraudScore?: FraudScore
      * }
      */
     public function toArray(): array
@@ -199,6 +200,10 @@ class CaseData implements JsonSerializable
 
         if ($this->caseProgress !== null) {
             $arr['caseProgress'] = $this->caseProgress;
+        }
+
+        if ($this->fraudScore !== null) {
+            $arr['fraudScore'] = $this->fraudScore;
         }
 
         return $arr;

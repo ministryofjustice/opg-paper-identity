@@ -42,15 +42,17 @@ class ResponseDTO
      */
     public function decision(): string
     {
+        $decision = "";
         try {
             foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
                 if ($value['decisionSource'] == 'MachineLearning') {
-                    return $value['decision'];
+                    $decision = $value['decision'];
                 }
             }
         } catch (\Exception $exception) {
             throw new FraudApiException($exception->getMessage());
         }
+        return $decision;
     }
 
     /**
@@ -58,29 +60,32 @@ class ResponseDTO
      */
     public function decisionText(): string
     {
-        die(json_encode($this->response['clientResponsePayload']['orchestrationDecisions']));
+        $decisionText = "";
 
         try {
             foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
                 if ($value['decisionSource'] == 'MachineLearning') {
-                    return $value['decisionText'];
+                    $decisionText = $value['decisionText'];
                 }
             }
         } catch (\Exception $exception) {
             throw new FraudApiException($exception->getMessage());
         }
+        return $decisionText;
     }
 
-    public function score(): float
+    public function score(): int
     {
+        $score = 0;
         try {
             foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
                 if ($value['decisionSource'] == 'MachineLearning') {
-                    return $value['score'];
+                    $score = $value['score'];
                 }
             }
         } catch (\Exception $exception) {
             throw new FraudApiException($exception->getMessage());
         }
+        return $score;
     }
 }

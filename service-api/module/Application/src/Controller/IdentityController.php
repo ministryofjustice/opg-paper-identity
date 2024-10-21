@@ -549,6 +549,6 @@ class IdentityController extends AbstractActionController
             $response->toArray(),
         );
 
-        return new JsonModel($response);
+        return new JsonModel($response->toArray());
     }
 }

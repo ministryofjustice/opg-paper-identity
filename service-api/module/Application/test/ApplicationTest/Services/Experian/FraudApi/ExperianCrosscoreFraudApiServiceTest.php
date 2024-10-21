@@ -7,6 +7,7 @@ namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi;
 use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO as AuthRequestDTO;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use GuzzleHttp\Client;
@@ -46,7 +47,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
     public function testGetFraudScore(
         Client $client,
         RequestDTO $mockRequestDto,
-        ?array $responseData,
+        ?ResponseDTO $responseData,
         ?string $expectedException
     ): void {
         if ($expectedException !== null) {
@@ -111,7 +112,26 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
                 "tenantID" => "623c97f7ff2e44528aa3fba116372d",
                 "category" => "COMPLIANCE_INQUIRY"
             ],
+            "clientResponsePayload" => [
+                "orchestrationDecisions" => [
+                    [
+                        "sequenceId" => "2",
+                        "decisionSource" => "MachineLearning",
+                        "decision" => "CONTINUE",
+                        "decisionReasons" => [
+                            "Low Risk Machine Learning score"
+                        ],
+                        "score" => 265,
+                        "decisionText" => "Continue",
+                        "nextAction" => "Continue",
+                        "appReference" => "",
+                        "decisionTime" => "2024-07-25T10:51:47Z"
+                    ]
+                ],
+            ]
         ];
+
+        $successMockResponseDTO = new ResponseDTO($successMockResponseData);
 
         $failUnauthorisedResponse = [
             "errors" => [
@@ -159,7 +179,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             [
                 $successClient,
                 $mockRequestDto,
-                $successMockResponseData,
+                $successMockResponseDTO,
                 null
             ],
             [

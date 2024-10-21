@@ -4023,9 +4023,9 @@ components:
           maxLength: 10
           enum:
             - ACCEPT
-            - NODECISION
-            - REFER
-            - CONTINUE
+#            - NODECISION
+#            - REFER
+#            - CONTINUE
         decisionReasons:
           type: array
           items:
@@ -4033,20 +4033,20 @@ components:
             example: "-- Array of decisionReasons --"
             maxLength: 90
         score:
-          type: number
-          example: 999
+          type: integer
+          example: 500
           maxLength: 10
           minimum: 1
-          maximum: 1000
+          maximum: 939
         decisionText:
           type: string
           example: "-- text defined in strategy --"
           maxLength: 30
           enum:
             - Accept
-            - No Decision
-            - Refer
-            - Continue
+#            - No Decision
+#            - Refer
+#            - Continue
         nextAction:
           type: string
           example: "-- defined in strategy --"
