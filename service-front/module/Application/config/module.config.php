@@ -597,7 +597,7 @@ return [
         'identity_labels' => [
             'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
             'PASSPORT' => 'UK Passport (current or expired in the last 18 months)',
-            'DRIVING_LICENCE' => 'UK photocard driving licence (must be current) ',
+            'DRIVING_LICENCE' => 'UK driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
             'PASSPORT' => 'UK passport (up to 18 months expired)',
