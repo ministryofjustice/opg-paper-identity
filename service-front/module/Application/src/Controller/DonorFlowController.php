@@ -85,6 +85,8 @@ class DonorFlowController extends AbstractActionController
                             $data
                         );
                         return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+                    } elseif ($formData['id_method'] == IdMethod::OnBehalf->value) {
+                        return $this->redirect()->toRoute("root/what_is_vouching", ['uuid' => $uuid]);
                     } else {
                         $data = [
                             'id_route' => 'TELEPHONE',
@@ -102,6 +104,47 @@ class DonorFlowController extends AbstractActionController
         }
 
         return $view->setTemplate($templates['default']);
+    }
+
+    public function whatIsVouchingAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost()->toArray();
+            if ($formData['confirm_vouching'] == 'yes') {
+                /**
+                 * @psalm-suppress ArgumentTypeCoercion
+                 */
+                $pdf = $this->siriusApiService->sendPdf($detailsData, "DLP-VOUCH-INVITE", $this->request);
+                if ($pdf['status'] === 201) {
+                    return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
+                } else {
+                    // what should i do with this error??
+                    $view->setVariable('errors', ['API Error - Could not send letter']);
+                }
+            } else {
+                return $this->redirect()->toRoute("root/how_donor_confirms", ['uuid' => $uuid]);
+            }
+        }
+
+        return $view->setTemplate('application/pages/what_is_vouching');
+    }
+
+    public function vouchingWhatHappensNextAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('sirius_edit_url', $siriusEditUrl);
+
+        return $view->setTemplate('application/pages/vouching_what_happens_next');
     }
 
     public function donorDetailsMatchCheckAction(): ViewModel

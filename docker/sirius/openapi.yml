@@ -285,11 +285,12 @@ components:
             - success
             - exit
       additionalProperties: false
+    # do i just rename this, or create a new schema??
     YotiPdfSuffixRequest:
       type: object
       required:
         - systemType
-        - pdfSuffix
+        # - pdfSuffix
         - correspondentName
       properties:
         type:
