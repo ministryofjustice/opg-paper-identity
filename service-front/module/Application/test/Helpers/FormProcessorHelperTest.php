@@ -494,6 +494,7 @@ class FormProcessorHelperTest extends TestCase
             'success' => 'application/pages/national_insurance_number_success',
             'fail' => 'application/pages/national_insurance_number_fail',
             'thin_file' => 'application/pages/thin_file_failure',
+            'fraud' => 'application/pages/fraud_failure',
         ];
 
         return [
@@ -550,7 +551,7 @@ class FormProcessorHelperTest extends TestCase
                     "decision" => "STOP",
                     "score" => 980
                 ],
-                "application/pages/national_insurance_number_fail"
+                "application/pages/fraud_failure"
             ],
         ];
     }

@@ -254,6 +254,8 @@ class FormProcessorHelper
                 $template = $templates['success'];
             } elseif ($fraudCheck['decision'] === 'NODECISION') {
                 $template = $templates['thin_file'];
+            } elseif ($fraudCheck['decision'] === 'STOP') {
+                $template = $templates['fraud'];
             } else {
                 $template = $templates['fail'];
             }
