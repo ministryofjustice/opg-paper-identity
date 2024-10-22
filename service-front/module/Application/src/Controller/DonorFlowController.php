@@ -20,6 +20,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\LpaTypes;
+use Application\Enums\SiriusDocument;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -117,15 +118,10 @@ class DonorFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost()->toArray();
             if ($formData['confirm_vouching'] == 'yes') {
-                /**
-                 * @psalm-suppress ArgumentTypeCoercion
-                 */
-                $pdf = $this->siriusApiService->sendPdf($detailsData, "DLP-VOUCH-INVITE", $this->request);
+                $pdf = $this->siriusApiService->sendDocumentRequest($detailsData, SiriusDocument::VouchInvitation, $this->getRequest());
+                // if any other status then error will be raised by framework and error page displayed
                 if ($pdf['status'] === 201) {
                     return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
-                } else {
-                    // what should i do with this error??
-                    $view->setVariable('errors', ['API Error - Could not send letter']);
                 }
             } else {
                 return $this->redirect()->toRoute("root/how_donor_confirms", ['uuid' => $uuid]);

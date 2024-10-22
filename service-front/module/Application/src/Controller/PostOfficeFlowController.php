@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
+use Application\Enums\SiriusDocument;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\IdMethod;
@@ -190,10 +191,8 @@ class PostOfficeFlowController extends AbstractActionController
             //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
             $pdfData = $counterService['pdfBase64'];
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
-            $pdf = $this->siriusApiService->sendPdf($detailsData, "DLP-ID-PO-D", $this->request, $pdfData);
+            $pdf = $this->siriusApiService->sendDocumentRequest(
+                $detailsData,SiriusDocument::PostOfficeDocCheck, $this->getRequest(), $pdfData);
 
             if ($pdf['status'] === 201) {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
