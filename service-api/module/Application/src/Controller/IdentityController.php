@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
+use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
@@ -15,6 +16,7 @@ use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\View\JsonModel;
+use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -503,6 +505,10 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    /**
+     * @throws FraudApiException
+     * @throws GuzzleException
+     */
     public function requestFraudCheckAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
@@ -537,6 +543,12 @@ class IdentityController extends AbstractActionController
         );
         $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
 
-        return new JsonModel($response);
+        $this->dataHandler->updateCaseData(
+            $uuid,
+            'fraudScore',
+            $response->toArray(),
+        );
+
+        return new JsonModel($response->toArray());
     }
 }

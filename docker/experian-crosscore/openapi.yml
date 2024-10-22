@@ -232,6 +232,8 @@ components:
       properties:
         orchestrationDecisions:
           type: array
+          minItems: 1
+          maxItems: 1
           items:
             $ref: '#/components/schemas/OrchestrationDecision'
         decisionElements:
@@ -4013,10 +4015,18 @@ components:
           type: string
           example: "-- serviceName of the strategy decision point --"
           maxLength: 20
+          enum:
+           - MachineLearning
         decision:
           type: string
           example: "-- Outcome from strategy for service --"
           maxLength: 10
+          enum:
+#            - ACCEPT
+#            - NODECISION
+#            - REFER
+#            - CONTINUE
+            - STOP
         decisionReasons:
           type: array
           items:
@@ -4024,13 +4034,20 @@ components:
             example: "-- Array of decisionReasons --"
             maxLength: 90
         score:
-          type: number
-          example: 9999
+          type: integer
+          example: 500
           maxLength: 10
+          minimum: 1
+          maximum: 939
         decisionText:
           type: string
           example: "-- text defined in strategy --"
           maxLength: 30
+          enum:
+            - Accept
+#            - No Decision
+#            - Refer
+#            - Continue
         nextAction:
           type: string
           example: "-- defined in strategy --"
