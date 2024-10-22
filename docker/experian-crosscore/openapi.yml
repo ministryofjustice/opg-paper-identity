@@ -4022,11 +4022,11 @@ components:
           example: "-- Outcome from strategy for service --"
           maxLength: 10
           enum:
-            - ACCEPT
+#            - ACCEPT
 #            - NODECISION
 #            - REFER
 #            - CONTINUE
-#            - STOP
+            - STOP
         decisionReasons:
           type: array
           items:

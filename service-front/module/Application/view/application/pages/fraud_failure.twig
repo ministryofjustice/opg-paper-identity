@@ -17,13 +17,19 @@
     <div class="govuk-form-group">
         <p class="govuk-body govuk-!-width-two-thirds">
             Sorry, although the identity details did match, in this case we cannot complete an identity check over the phone.
-
-            The only option to identify is at the Post Office.
+        </p>
+        <p class="govuk-body govuk-!-width-two-thirds">
+            {{ fraud_message }}
         </p>
     </div>
     <div class="govuk-form-group">
-        <a href="./how-will-donor-confirm" role="button" draggable="false"
-            class="govuk-button moj-button-menu__item govuk-button " data-module="govuk-button">
+        <a
+                href="./how-will-donor-confirm"
+                role="button"
+                draggable="false"
+                class="govuk-button moj-button-menu__item govuk-button "
+                data-module="govuk-button"
+        >
             Try a different method
         </a>
     </div>

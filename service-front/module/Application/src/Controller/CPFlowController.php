@@ -320,11 +320,7 @@ class CPFlowController extends AbstractActionController
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/national_insurance_number',
-            'success' => 'application/pages/national_insurance_number_success',
-            'fail' => 'application/pages/national_insurance_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -362,11 +358,7 @@ class CPFlowController extends AbstractActionController
 
     public function drivingLicenceNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_number_success',
-            'fail' => 'application/pages/driving_licence_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -405,11 +397,7 @@ class CPFlowController extends AbstractActionController
 
     public function passportNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/passport_number',
-            'success' => 'application/pages/passport_number_success',
-            'fail' => 'application/pages/passport_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
