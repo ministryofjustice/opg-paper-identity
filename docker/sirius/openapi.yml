@@ -143,16 +143,16 @@ paths:
           schema:
             type: integer
             nullable: false
-      operationId: postPostOfficeLetterSuffix
-      summary: Send Yoti Letter PDF data
-      description: Send base64 encoded PDF data for Post Office letter
+      operationId: postCreateDocumentRequest
+      summary: Send letter data
+      description: Send data to create letter
       tags: [ poa ]
       requestBody:
         description: Sirius LPA document data
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/YotiPdfSuffixRequest"
+              $ref: "#/components/schemas/CreateDocumentRequest"
       responses:
         "201":
           description: PDD data has been processed
@@ -285,12 +285,10 @@ components:
             - success
             - exit
       additionalProperties: false
-    # do i just rename this, or create a new schema??
-    YotiPdfSuffixRequest:
+    CreateDocumentRequest:
       type: object
       required:
         - systemType
-        # - pdfSuffix
         - correspondentName
       properties:
         type:
