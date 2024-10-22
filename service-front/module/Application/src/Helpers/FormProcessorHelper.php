@@ -236,10 +236,9 @@ class FormProcessorHelper
     }
 
     /**
-     * @param string $validDln
+     * @param string $validDocument
      * @param string $uuid
      * @param array $templates
-     * @param mixed $template
      * @return mixed
      */
     public function fraudCheck(string $validDocument, string $uuid, array $templates): mixed

@@ -139,7 +139,6 @@ interface OpgApiServiceInterface
     /**
      * @param string $uuid
      * @return array
-     * @psalm-suppress PossiblyUnusedReturnValue
      */
     public function requestFraudCheck(string $uuid): array;
 }
