@@ -4023,10 +4023,10 @@ components:
           maxLength: 10
           enum:
             - ACCEPT
-            - NODECISION
-            - REFER
-            - CONTINUE
-            - STOP
+#            - NODECISION
+#            - REFER
+#            - CONTINUE
+#            - STOP
         decisionReasons:
           type: array
           items:
