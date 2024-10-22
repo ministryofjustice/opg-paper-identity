@@ -234,6 +234,58 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     }
 
 
+    public function testWhatIsVouchingPageOptNo(): void
+    {
+
+        $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+            'confirm_vouching' => 'No',
+         ]);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('root/what_is_vouching');
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf('/%s/how-will-donor-confirm', $this->uuid));
+    }
+
+    public function testWhatIsVouchingPageOptYes(): void
+    {
+        $sendDocumentRequestResponse = [
+            'status' => 201,
+            'body' => ''
+        ];
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('sendDocumentRequest')
+            ->willReturn($sendDocumentRequestResponse);
+
+            $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+                'confirm_vouching' => 'yes',
+             ]);
+            $this->assertResponseStatusCode(302);
+            $this->assertRedirectTo(sprintf('/%s/vouching-what-happens-next', $this->uuid));
+    }
+
+    public function testVouchingWhatHappensNextPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/vouching-what-happens-next", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(DonorFlowController::class);
+        $this->assertControllerClass('DonorFlowController');
+        $this->assertMatchedRouteName('root/vouching_what_happens_next');
+    }
+
     public function returnOpgResponseData(): array
     {
         return [
