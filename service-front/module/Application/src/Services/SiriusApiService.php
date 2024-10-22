@@ -168,7 +168,7 @@ class SiriusApiService
      * @return array
      * @throws GuzzleException
      */
-    public function SendPdf(array $caseDetails, string $systemType, Request $request, string $base64suffix = null): array
+    public function sendPdf(array $caseDetails, string $systemType, Request $request, string $base64suffix = null): array
     {
         // probs worth adding some error handling around non-existent system-types - or would that just come through in the response body
 
@@ -190,7 +190,7 @@ class SiriusApiService
         ];
         if ($base64suffix !== null) {
             $data["pdfSuffix"] = $base64suffix;
-        };
+        }
         $lpa = $caseDetails['lpas'][0];
 
         $lpaDetails = $this->getLpaByUid($lpa, $request);

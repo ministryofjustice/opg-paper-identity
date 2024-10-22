@@ -193,7 +193,7 @@ class PostOfficeFlowController extends AbstractActionController
             /**
              * @psalm-suppress ArgumentTypeCoercion
              */
-            $pdf = $this->siriusApiService->SendPdf($detailsData, "DLP-ID-PO-D", $this->request, $pdfData);
+            $pdf = $this->siriusApiService->sendPdf($detailsData, "DLP-ID-PO-D", $this->request, $pdfData);
 
             if ($pdf['status'] === 201) {
                 return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);

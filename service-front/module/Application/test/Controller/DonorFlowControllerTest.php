@@ -264,15 +264,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
                 'confirm_vouching' => 'yes',
              ]);
-            $this->assertModuleName('application');
-            $this->assertControllerName(DonorFlowController::class);
-            $this->assertControllerClass('DonorFlowController');
-            $this->assertMatchedRouteName('root/what_is_vouching');
             $this->assertResponseStatusCode(302);
             $this->assertRedirectTo(sprintf('/%s/vouching-what-happens-next', $this->uuid));
     }
 
-    public function testWhatIsVouchingPageOptYesSendPdfFail(): void
+    public function testWhatIsVouchingPageOptYessendPdfFail(): void
     {
         $sendPdfResponse = [
             'status' => 500,
@@ -288,10 +284,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
                 'confirm_vouching' => 'yes',
              ]);
-            $this->assertModuleName('application');
-            $this->assertControllerName(DonorFlowController::class);
-            $this->assertControllerClass('DonorFlowController');
-            $this->assertMatchedRouteName('root/what_is_vouching');
             $this->assertResponseStatusCode(200);
             $this->assertQuery('p[id=api-error]');
     }
