@@ -210,7 +210,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
 %%EOF";
     }
 
-    public function testSendPostOfficePdf(): void
+    public function testSendPdf(): void
     {
         $details = [];
         $details["firstName"] = "Joe";
@@ -276,7 +276,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             }
         };
 
-        $result = $service->sendPostOfficePDf($suffix, $details, new Request());
+        $result = $service->sendPDf($details, "DLP-ID-PO-D", new Request(), $suffix);
         $this->assertEquals(201, $result['status']);
     }
 }
