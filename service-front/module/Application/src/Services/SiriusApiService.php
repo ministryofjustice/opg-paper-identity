@@ -168,10 +168,12 @@ class SiriusApiService
      * @return array
      * @throws GuzzleException
      */
-    public function sendPdf(array $caseDetails, string $systemType, Request $request, string $base64suffix = null): array
+    public function sendPdf(
+        array $caseDetails,
+        string $systemType,
+        Request $request,
+        string $base64suffix = null): array
     {
-        // probs worth adding some error handling around non-existent system-types - or would that just come through in the response body
-
         $address = [
             $caseDetails["address"]["line1"],
             $caseDetails["address"]["line2"],
