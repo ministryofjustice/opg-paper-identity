@@ -338,7 +338,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $form,
@@ -347,8 +347,14 @@ class CPFlowController extends AbstractActionController
             foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
                 $view->setVariable($key, $variable);
             }
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'The only option to identify is at the Post Office.'
+                );
+            }
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
@@ -384,8 +390,14 @@ class CPFlowController extends AbstractActionController
             foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
                 $view->setVariable($key, $variable);
             }
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'The only option to identify is at the Post Office.'
+                );
+            }
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
@@ -443,7 +455,14 @@ class CPFlowController extends AbstractActionController
                 $view->setVariable($key, $variable);
             }
 
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'The only option to identify is at the Post Office.'
+                );
+            }
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
