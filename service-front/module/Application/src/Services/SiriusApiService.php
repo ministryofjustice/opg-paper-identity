@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Services;
 
 use Application\Helpers\AddressProcessorHelper;
+use Application\Enums\SiriusDocument;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
@@ -162,17 +163,18 @@ class SiriusApiService
 
      /**
      * @param array $caseDetails
-     * @param string $systemType
+     * @param SiriusDocument $systemType
      * @param Request $request
-     * @param string $base64suffix
+     * @param string $pdfSuffixBase64 Optional. PDF file in base-64 format, if provided
+     *                                will be added to the generated letter.
      * @return array
      * @throws GuzzleException
      */
-    public function sendPdf(
+    public function sendDocumentRequest(
         array $caseDetails,
-        string $systemType,
+        SiriusDocument $systemType,
         Request $request,
-        string $base64suffix = null
+        string $pdfSuffixBase64 = null
     ): array {
         $address = [
             $caseDetails["address"]["line1"],
@@ -190,8 +192,8 @@ class SiriusApiService
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];
-        if ($base64suffix !== null) {
-            $data["pdfSuffix"] = $base64suffix;
+        if ($pdfSuffixBase64 !== null) {
+            $data["pdfSuffix"] = $pdfSuffixBase64;
         }
         $lpa = $caseDetails['lpas'][0];
 
