@@ -160,15 +160,20 @@ class SiriusApiService
         ];
     }
 
-    /**
-     * @param string $base64suffix
+     /**
      * @param array $caseDetails
+     * @param string $systemType
      * @param Request $request
+     * @param string $base64suffix
      * @return array
      * @throws GuzzleException
      */
-    public function sendPostOfficePDf(string $base64suffix, array $caseDetails, Request $request): array
-    {
+    public function sendPdf(
+        array $caseDetails,
+        string $systemType,
+        Request $request,
+        string $base64suffix = null
+    ): array {
         $address = [
             $caseDetails["address"]["line1"],
             $caseDetails["address"]["line2"],
@@ -180,12 +185,14 @@ class SiriusApiService
 
         $data = [
             "type" => "Save",
-            "systemType" => "DLP-ID-PO-D",
+            "systemType" => $systemType,
             "content" => "",
-            "pdfSuffix" => $base64suffix,
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];
+        if ($base64suffix !== null) {
+            $data["pdfSuffix"] = $base64suffix;
+        }
         $lpa = $caseDetails['lpas'][0];
 
         $lpaDetails = $this->getLpaByUid($lpa, $request);
