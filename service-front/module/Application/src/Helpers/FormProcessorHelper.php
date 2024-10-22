@@ -34,10 +34,8 @@ class FormProcessorHelper
 
             $variables['dln_data'] = $formArray;
             $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
-            $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
-            if ($validDln === 'PASS') {
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-            }
+
+            $template = $this->fraudCheck($validDln, $uuid, $templates);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -65,10 +63,7 @@ class FormProcessorHelper
             $variables['nino_data'] = $formArray;
             $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
 
-            $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
-            if ($validNino === 'PASS') {
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-            }
+            $template = $this->fraudCheck($validNino, $uuid, $templates);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -94,10 +89,7 @@ class FormProcessorHelper
             $variables['passport_data'] = $formArray;
             $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
 
-            $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
-            if ($validPassport === 'PASS') {
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-            }
+            $template = $this->fraudCheck($validPassport, $uuid, $templates);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -241,5 +233,36 @@ class FormProcessorHelper
             $params['dob_month'],
             $params['dob_day'],
         );
+    }
+
+    /**
+     * @param string $validDocument
+     * @param string $uuid
+     * @param array $templates
+     * @return mixed
+     */
+    public function fraudCheck(string $validDocument, string $uuid, array $templates): mixed
+    {
+        if ($validDocument === 'PASS') {
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+
+            if (
+                $fraudCheck['decision'] === 'ACCEPT' ||
+                $fraudCheck['decision'] === 'CONTINUE' ||
+                $fraudCheck['decision'] === 'REFER'
+            ) {
+                $template = $templates['success'];
+            } elseif ($fraudCheck['decision'] === 'NODECISION') {
+                $template = $templates['thin_file'];
+            } elseif ($fraudCheck['decision'] === 'STOP') {
+                $template = $templates['fraud'];
+            } else {
+                $template = $templates['fail'];
+            }
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+        } else {
+            $template = $templates['fail'];
+        }
+        return $template;
     }
 }

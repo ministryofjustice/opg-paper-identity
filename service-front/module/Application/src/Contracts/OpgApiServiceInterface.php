@@ -135,4 +135,10 @@ interface OpgApiServiceInterface
      * @return DependencyCheck
      */
     public function getServiceAvailability(): DependencyCheck;
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function requestFraudCheck(string $uuid): array;
 }

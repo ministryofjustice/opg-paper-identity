@@ -320,11 +320,7 @@ class CPFlowController extends AbstractActionController
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/national_insurance_number',
-            'success' => 'application/pages/national_insurance_number_success',
-            'fail' => 'application/pages/national_insurance_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -338,7 +334,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $form,
@@ -347,8 +343,14 @@ class CPFlowController extends AbstractActionController
             foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
                 $view->setVariable($key, $variable);
             }
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'The only option to identify is at the Post Office.'
+                );
+            }
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
@@ -356,11 +358,7 @@ class CPFlowController extends AbstractActionController
 
     public function drivingLicenceNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_number_success',
-            'fail' => 'application/pages/driving_licence_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -384,8 +382,14 @@ class CPFlowController extends AbstractActionController
             foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
                 $view->setVariable($key, $variable);
             }
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'The only option to identify is at the Post Office.'
+                );
+            }
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
@@ -393,11 +397,7 @@ class CPFlowController extends AbstractActionController
 
     public function passportNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/passport_number',
-            'success' => 'application/pages/passport_number_success',
-            'fail' => 'application/pages/passport_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -443,7 +443,14 @@ class CPFlowController extends AbstractActionController
                 $view->setVariable($key, $variable);
             }
 
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'The only option to identify is at the Post Office.'
+                );
+            }
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);

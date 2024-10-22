@@ -226,11 +226,7 @@ class DonorFlowController extends AbstractActionController
     {
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
-        $templates = [
-            'default' => 'application/pages/national_insurance_number',
-            'success' => 'application/pages/national_insurance_number_success',
-            'fail' => 'application/pages/national_insurance_number_fail'
-        ];
+        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -242,15 +238,21 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $form,
                 $templates
             );
             $view->setVariables($formProcessorResponseDto->getVariables());
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'Recommend the Post Office route. Alternatively, consider the Court of Protection.'
+                );
+            }
+            return $view->setTemplate($template);
         }
         return $view->setTemplate($templates['default']);
     }
@@ -259,11 +261,7 @@ class DonorFlowController extends AbstractActionController
     {
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
-        $templates = [
-            'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_number_success',
-            'fail' => 'application/pages/driving_licence_number_fail'
-        ];
+        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -283,8 +281,14 @@ class DonorFlowController extends AbstractActionController
             );
 
             $view->setVariables($formProcessorResponseDto->getVariables());
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'Recommend the Post Office route. Alternatively, consider the Court of Protection.'
+                );
+            }
+            return $view->setTemplate($template);
         }
         return $view->setTemplate($templates['default']);
     }
@@ -293,11 +297,7 @@ class DonorFlowController extends AbstractActionController
     {
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
-        $templates = [
-            'default' => 'application/pages/passport_number',
-            'success' => 'application/pages/passport_number_success',
-            'fail' => 'application/pages/passport_number_fail'
-        ];
+        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -339,7 +339,14 @@ class DonorFlowController extends AbstractActionController
                 );
             }
             $view->setVariables($formProcessorResponseDto->getVariables());
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $template = $formProcessorResponseDto->getTemplate();
+            if ($template == 'application/pages/fraud_failure') {
+                $view->setVariable(
+                    'fraud_message',
+                    'Recommend the Post Office route. Alternatively, consider the Court of Protection.'
+                );
+            }
+            return $view->setTemplate($template);
         }
         return $view->setTemplate($templates['default']);
     }
