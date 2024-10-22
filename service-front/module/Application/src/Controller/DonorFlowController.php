@@ -84,9 +84,9 @@ class DonorFlowController extends AbstractActionController
                             $uuid,
                             $data
                         );
-                        return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+                        $returnRoute = "root/post_office_documents";
                     } elseif ($formData['id_method'] == IdMethod::OnBehalf->value) {
-                        return $this->redirect()->toRoute("root/what_is_vouching", ['uuid' => $uuid]);
+                        $returnRoute = "root/what_is_vouching";
                     } else {
                         $data = [
                             'id_route' => 'TELEPHONE',
@@ -97,8 +97,9 @@ class DonorFlowController extends AbstractActionController
                             $uuid,
                             $data
                         );
-                        return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
+                        $returnRoute = "root/donor_details_match_check";
                     }
+                    return $this->redirect()->toRoute($returnRoute, ['uuid' => $uuid]);
                 }
             }
         }
