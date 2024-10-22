@@ -229,7 +229,8 @@ class DonorFlowController extends AbstractActionController
         $templates = [
             'default' => 'application/pages/national_insurance_number',
             'success' => 'application/pages/national_insurance_number_success',
-            'fail' => 'application/pages/national_insurance_number_fail'
+            'fail' => 'application/pages/national_insurance_number_fail',
+            'thin_file' => 'application/pages/thin_file_failure',
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");

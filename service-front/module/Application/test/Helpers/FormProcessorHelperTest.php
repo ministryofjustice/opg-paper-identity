@@ -21,13 +21,15 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider dlnData
      */
     public function testProcessDrivingLicenceForm(
-        string $caseUuid,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-    ): void {
+        array         $templates,
+        string        $template,
+        array $fraudData
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -40,6 +42,14 @@ class FormProcessorHelperTest extends TestCase
                 ->with($formData->toArray()['dln'])
                 ->willReturn($responseData['status']);
         }
+
+        if ($responseData['status'] == 'PASS') {
+            $opgApiServiceMock
+                ->expects(self::once())
+                ->method('requestFraudCheck')
+                ->willReturn($fraudData);
+        }
+
         $processed = $formProcessorHelper->processDrivingLicenceForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($templates[$template], $processed->getTemplate());
@@ -66,6 +76,12 @@ class FormProcessorHelperTest extends TestCase
             'fail' => 'application/pages/driving_licence_fail',
         ];
 
+        $fraudData = [
+            "decisionText" => "Accept",
+            "decision" => "ACCEPT",
+            "score" => 95
+        ];
+
         return [
             [
                 $caseUuid,
@@ -73,7 +89,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $shortDln, 'inDate' => 'no']),
                 $form,
                 $templates,
-                'default'
+                'default',
+                $fraudData,
             ],
             [
                 $caseUuid,
@@ -81,7 +98,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $goodDln, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'success'
+                'success',
+                $fraudData,
             ],
             [
                 $caseUuid,
@@ -89,7 +107,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $badDln, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
+                'fail',
+                $fraudData,
             ],
             [
                 $caseUuid,
@@ -97,7 +116,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $insufficientDln, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
+                'fail',
+                $fraudData,
             ],
         ];
     }
@@ -106,13 +126,15 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider ninoData
      */
     public function testProcessNationalInsuranceNumberForm(
-        string $caseUuid,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-    ): void {
+        array         $templates,
+        string        $template,
+        array $fraudData
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -124,6 +146,13 @@ class FormProcessorHelperTest extends TestCase
                 ->method('checkNinoValidity')
                 ->with($formData->toArray()['nino'])
                 ->willReturn($responseData['status']);
+        }
+
+        if ($responseData['status'] == 'PASS') {
+            $opgApiServiceMock
+                ->expects(self::once())
+                ->method('requestFraudCheck')
+                ->willReturn($fraudData);
         }
 
         $processed = $formProcessorHelper->processNationalInsuranceNumberForm($caseUuid, $form, $templates);
@@ -152,6 +181,12 @@ class FormProcessorHelperTest extends TestCase
             'fail' => 'application/pages/national_insurance_fail',
         ];
 
+        $fraudData = [
+            "decisionText" => "Accept",
+            "decision" => "ACCEPT",
+            "score" => 95
+        ];
+
         return [
             [
                 $caseUuid,
@@ -159,7 +194,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $shortNino]),
                 $form,
                 $templates,
-                'default'
+                'default',
+                $fraudData
             ],
             [
                 $caseUuid,
@@ -167,7 +203,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $goodNino]),
                 $form,
                 $templates,
-                'success'
+                'success',
+                $fraudData
             ],
             [
                 $caseUuid,
@@ -175,7 +212,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $badNino]),
                 $form,
                 $templates,
-                'fail'
+                'fail',
+                $fraudData
             ],
             [
                 $caseUuid,
@@ -183,7 +221,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $insufficientNino]),
                 $form,
                 $templates,
-                'fail'
+                'fail',
+                $fraudData
             ],
         ];
     }
@@ -192,13 +231,15 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider passportData
      */
     public function testProcessPassportNumberForm(
-        string $caseUuid,
-        array $responseData,
-        Parameters $formData,
+        string        $caseUuid,
+        array         $responseData,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-    ): void {
+        array         $templates,
+        string        $template,
+        array $fraudData,
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -210,6 +251,13 @@ class FormProcessorHelperTest extends TestCase
                 ->method('checkPassportValidity')
                 ->with($formData->toArray()['passport'])
                 ->willReturn($responseData['status']);
+        }
+
+        if ($responseData['status'] == 'PASS') {
+            $opgApiServiceMock
+                ->expects(self::once())
+                ->method('requestFraudCheck')
+                ->willReturn($fraudData);
         }
 
         $processed = $formProcessorHelper->processPassportForm($caseUuid, $form, $templates);
@@ -238,6 +286,12 @@ class FormProcessorHelperTest extends TestCase
             'fail' => 'application/pages/passport_number_fail',
         ];
 
+        $fraudData = [
+            "decisionText" => "Accept",
+            "decision" => "ACCEPT",
+            "score" => 95
+        ];
+
         return [
             [
                 $caseUuid,
@@ -245,7 +299,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $shortNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'default'
+                'default',
+                $fraudData
             ],
             [
                 $caseUuid,
@@ -253,7 +308,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $goodNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'success'
+                'success',
+                $fraudData
             ],
             [
                 $caseUuid,
@@ -261,7 +317,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $badNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
+                'fail',
+                $fraudData
             ],
             [
                 $caseUuid,
@@ -269,7 +326,8 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $insufficientNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
+                'fail',
+                $fraudData
             ],
         ];
     }
@@ -278,13 +336,14 @@ class FormProcessorHelperTest extends TestCase
      * @dataProvider passportDateData
      */
     public function testProcessPassportDateForm(
-        string $caseUuid,
-        Parameters $formData,
+        string        $caseUuid,
+        Parameters    $formData,
         FormInterface $form,
-        array $templates,
-        string $template,
-        bool $validDate,
-    ): void {
+        array         $templates,
+        string        $template,
+        bool          $validDate,
+    ): void
+    {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
@@ -405,6 +464,98 @@ class FormProcessorHelperTest extends TestCase
                     'dob_day' => "01"
                 ],
                 "1986-04-01"
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider fraudResponseData
+     */
+    public function testFraudCheck(
+        string $docCheck,
+        string $uuid,
+        array  $templates,
+        array  $mockResponseData,
+        string $expected
+    ): void
+    {
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+
+        $opgApiServiceMock
+            ->expects(self::once())
+            ->method('requestFraudCheck')
+            ->willReturn($mockResponseData);
+
+        $actual = $formProcessorHelper->fraudCheck($docCheck, $uuid, $templates);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public static function fraudResponseData(): array
+    {
+        $templates = [
+            'default' => 'application/pages/national_insurance_number',
+            'success' => 'application/pages/national_insurance_number_success',
+            'fail' => 'application/pages/national_insurance_number_fail',
+            'thin_file' => 'application/pages/thin_file_failure',
+        ];
+
+        return [
+            [
+                "PASS",
+                "uuid",
+                $templates,
+                [
+                    "decisionText" => "Accept",
+                    "decision" => "ACCEPT",
+                    "score" => 95
+                ],
+                "application/pages/national_insurance_number_success"
+            ],
+            [
+                "PASS",
+                "uuid",
+                $templates,
+                [
+                    "decisionText" => "Continue",
+                    "decision" => "CONTINUE",
+                    "score" => 95
+                ],
+                "application/pages/national_insurance_number_success"
+            ],
+            [
+                "PASS",
+                "uuid",
+                $templates,
+                [
+                    "decisionText" => "Refer",
+                    "decision" => "REFER",
+                    "score" => 95
+                ],
+                "application/pages/national_insurance_number_success"
+            ],
+            [
+                "PASS",
+                "uuid",
+                $templates,
+                [
+                    "decisionText" => "No Decision",
+                    "decision" => "NODECISION",
+                    "score" => 970
+                ],
+                "application/pages/thin_file_failure"
+            ],
+            [
+                "PASS",
+                "uuid",
+                $templates,
+                [
+                    "decisionText" => "Stop",
+                    "decision" => "STOP",
+                    "score" => 980
+                ],
+                "application/pages/national_insurance_number_fail"
             ],
         ];
     }
