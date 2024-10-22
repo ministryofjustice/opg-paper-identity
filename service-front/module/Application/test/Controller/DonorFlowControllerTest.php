@@ -233,36 +233,67 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
-     /**
-     * @dataProvider vouchingOutcomeProvider
-     */
-    public function testWhatIsVouchingPage(string $confirmVouching, string $expectedRedirect): void
+
+    public function testWhatIsVouchingPageOptNo(): void
     {
 
         $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
-            'confirm_vouching' => $confirmVouching,
+            'confirm_vouching' => 'No',
          ]);
-
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/what_is_vouching');
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf($expectedRedirect, $this->uuid));
+        $this->assertRedirectTo(sprintf('/%s/how-will-donor-confirm', $this->uuid));
     }
 
-    public static function vouchingOutcomeProvider(): array
+    public function testWhatIsVouchingPageOptYes(): void
     {
-        return [
-            [
-                'confirmVouching' => 'yes',
-                'expectedRedirect' => '/%s/vouching-what-happens-next'
-            ],
-            [
-                'confirmVouching' => 'no',
-                'expectedRedirect' => '/%s/how-will-donor-confirm'
-            ],
+        $sendPdfResponse = [
+            'status' => 201,
+            'body' => ''
         ];
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('sendPdf')
+            ->willReturn($sendPdfResponse);
+
+            $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+                'confirm_vouching' => 'yes',
+             ]);
+            $this->assertModuleName('application');
+            $this->assertControllerName(DonorFlowController::class);
+            $this->assertControllerClass('DonorFlowController');
+            $this->assertMatchedRouteName('root/what_is_vouching');
+            $this->assertResponseStatusCode(302);
+            $this->assertRedirectTo(sprintf('/%s/vouching-what-happens-next', $this->uuid));
+    }
+
+    public function testWhatIsVouchingPageOptYesSendPdfFail(): void
+    {
+        $sendPdfResponse = [
+            'status' => 500,
+            'body' => ''
+        ];
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('sendPdf')
+            ->willReturn($sendPdfResponse);
+
+            $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+                'confirm_vouching' => 'yes',
+             ]);
+            $this->assertModuleName('application');
+            $this->assertControllerName(DonorFlowController::class);
+            $this->assertControllerClass('DonorFlowController');
+            $this->assertMatchedRouteName('root/what_is_vouching');
+            $this->assertResponseStatusCode(200);
+            $this->assertQuery('p[id=api-error]');
     }
 
     public function testVouchingWhatHappensNextPage(): void

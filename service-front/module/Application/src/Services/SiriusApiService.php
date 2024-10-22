@@ -160,63 +160,18 @@ class SiriusApiService
         ];
     }
 
-    /**
-     * @param string $base64suffix
-     * @param array $caseDetails
-     * @param Request $request
-     * @return array
-     * @throws GuzzleException
-     */
-    public function sendPostOfficePDf(string $base64suffix, array $caseDetails, Request $request): array
-    {
-        $address = [
-            $caseDetails["address"]["line1"],
-            $caseDetails["address"]["line2"],
-            $caseDetails["address"]["line3"] ?? "N/A",
-            $caseDetails["address"]["town"],
-            $caseDetails["address"]["country"],
-            $caseDetails["address"]["postcode"]
-        ];
-
-        $data = [
-            "type" => "Save",
-            "systemType" => "DLP-ID-PO-D",
-            "content" => "",
-            "pdfSuffix" => $base64suffix,
-            "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
-            "correspondentAddress" => $address
-        ];
-        $lpa = $caseDetails['lpas'][0];
-
-        $lpaDetails = $this->getLpaByUid($lpa, $request);
-        $lpaId = $lpaDetails["opg.poas.sirius"]["id"];
-
-        if (! $lpaId) {
-            return [
-                'status' => 400,
-                'response' => 'LPA Id not found'
-            ];
-        }
-        $response = $this->client->post('/api/v1/lpas/' . $lpaId . '/documents', [
-            'headers' => $this->getAuthHeaders($request),
-            'json' => $data
-        ]);
-
-        return [
-            'status' => $response->getStatusCode(),
-            'response' => json_decode(strval($response->getBody()), true)
-        ];
-    }
-
-    // should i just make a generic function for sending letters???
      /**
      * @param array $caseDetails
+     * @param string $systemType
      * @param Request $request
+     * @param string $base64suffix
      * @return array
      * @throws GuzzleException
      */
-    public function sendVouchingPDf(array $caseDetails, Request $request): array
+    public function SendPdf(array $caseDetails, string $systemType, Request $request, string $base64suffix = null): array
     {
+        // probs worth adding some error handling around non-existent system-types - or would that just come through in the response body
+
         $address = [
             $caseDetails["address"]["line1"],
             $caseDetails["address"]["line2"],
@@ -228,11 +183,14 @@ class SiriusApiService
 
         $data = [
             "type" => "Save",
-            "systemType" => "DLP-VOUCH-INVITE",
+            "systemType" => $systemType,
             "content" => "",
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];
+        if ($base64suffix !== null) {
+            $data["pdfSuffix"] = $base64suffix;
+        };
         $lpa = $caseDetails['lpas'][0];
 
         $lpaDetails = $this->getLpaByUid($lpa, $request);
