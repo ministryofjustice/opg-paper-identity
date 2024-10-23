@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Services;
 
 use Application\Services\SiriusApiService;
+use Application\Enums\SiriusDocument;
 use GuzzleHttp\Client;
 use Laminas\Http\Request;
 use PhpPact\Consumer\InteractionBuilder;
@@ -210,7 +211,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
 %%EOF";
     }
 
-    public function testSendPostOfficePdf(): void
+    public function testsendDocument(): void
     {
         $details = [];
         $details["firstName"] = "Joe";
@@ -234,7 +235,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
         ];
         $body = [
             "type" => "Save",
-            "systemType" => "DLP-ID-PO-D",
+            "systemType" => SiriusDocument::PostOfficeDocCheck,
             "content" => "",
             "pdfSuffix" => $suffix,
             "correspondentName" => "Joe Blogs",
@@ -276,7 +277,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             }
         };
 
-        $result = $service->sendPostOfficePDf($suffix, $details, new Request());
+        $result = $service->sendDocument($details, SiriusDocument::PostOfficeDocCheck, new Request(), $suffix);
         $this->assertEquals(201, $result['status']);
     }
 }
