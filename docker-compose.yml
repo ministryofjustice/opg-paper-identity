@@ -11,7 +11,7 @@ services:
       timeout: 10s
       retries: 3
     volumes:
-      - ./docker/yoti:/opt/imposter/config
+      - ./docker/sirius:/opt/imposter/config
 
   experian-crosscore-mock:
     image: stoplight/prism:5.11.2

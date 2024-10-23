@@ -2,7 +2,7 @@ services:
   # MOCKS
   sirius-mock:
     ports:
-      - 8088:4010
+      - 8088:8080
 
   yoti-mock:
     ports:
