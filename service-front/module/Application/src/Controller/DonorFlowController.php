@@ -284,6 +284,7 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
@@ -317,6 +318,7 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {

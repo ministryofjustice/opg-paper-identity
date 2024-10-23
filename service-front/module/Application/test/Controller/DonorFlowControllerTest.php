@@ -88,6 +88,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/national_insurance_number');
+        $this->assertQueryContentContains('p[id=nino_fullname]', 'Mary Anne Chapman');
+        $this->assertQueryContentContains('p[id=nino_dob]', '01 May 1943');
     }
 
     public function testDrivingLicenceNumberReturnsPageWithData(): void
