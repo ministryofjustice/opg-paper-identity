@@ -6,13 +6,13 @@ resources:
     method: get
     response:
       statusCode: 200
-      scriptFile: useCertificateProviderJsonFile.groovy
+      scriptFile: useJsonFile.groovy
 
   - path: "/idverify/v1/lookup/uk-post-office"
     method: post
     response:
       statusCode: 200
-      scriptFile: useDonorJsonFile.groovy
+      scriptFile: useBranchesFile.groovy
 
   - path: "/idverify/v1/sessions/{sessionId}/configuration"
     method: get
