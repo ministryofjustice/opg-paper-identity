@@ -250,7 +250,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testWhatIsVouchingPageOptYes(): void
     {
-        $sendDocumentRequestResponse = [
+        $sendDocumentResponse = [
             'status' => 201,
             'body' => ''
         ];
@@ -258,8 +258,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->siriusApiService
             ->expects(self::once())
-            ->method('sendDocumentRequest')
-            ->willReturn($sendDocumentRequestResponse);
+            ->method('sendDocument')
+            ->willReturn($sendDocumentResponse);
 
             $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
                 'confirm_vouching' => 'yes',

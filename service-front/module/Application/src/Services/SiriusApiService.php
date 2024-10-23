@@ -170,7 +170,7 @@ class SiriusApiService
      * @return array
      * @throws GuzzleException
      */
-    public function sendDocumentRequest(
+    public function sendDocument(
         array $caseDetails,
         SiriusDocument $systemType,
         Request $request,

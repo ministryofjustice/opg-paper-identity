@@ -211,7 +211,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
 %%EOF";
     }
 
-    public function testsendDocumentRequest(): void
+    public function testsendDocument(): void
     {
         $details = [];
         $details["firstName"] = "Joe";
@@ -277,7 +277,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             }
         };
 
-        $result = $service->sendDocumentRequest($details, SiriusDocument::PostOfficeDocCheck, new Request(), $suffix);
+        $result = $service->sendDocument($details, SiriusDocument::PostOfficeDocCheck, new Request(), $suffix);
         $this->assertEquals(201, $result['status']);
     }
 }

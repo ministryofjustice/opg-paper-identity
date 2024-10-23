@@ -191,7 +191,7 @@ class PostOfficeFlowController extends AbstractActionController
             //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
             $pdfData = $counterService['pdfBase64'];
-            $pdf = $this->siriusApiService->sendDocumentRequest(
+            $pdf = $this->siriusApiService->sendDocument(
                 $detailsData,
                 SiriusDocument::PostOfficeDocCheck,
                 $this->getRequest(),
