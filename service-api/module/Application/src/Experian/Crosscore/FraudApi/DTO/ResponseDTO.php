@@ -8,9 +8,26 @@ use Application\Experian\Crosscore\FraudApi\FraudApiException;
 
 class ResponseDTO
 {
+    private string $decision = "";
+
+    private string $decisionText = "";
+
+    private int $score = 0;
+
     public function __construct(
         private readonly array $response
     ) {
+        try {
+            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
+                if ($value['decisionSource'] == 'MachineLearning') {
+                    $this->decision = $value['decision'];
+                    $this->decisionText = $value['decisionText'];
+                    $this->score = $value['score'];
+                }
+            }
+        } catch (\Exception $exception) {
+            throw new FraudApiException($exception->getMessage());
+        }
     }
 
     /**
@@ -37,55 +54,18 @@ class ResponseDTO
         }
     }
 
-    /**
-     * @throws FraudApiException
-     */
     public function decision(): string
     {
-        $decision = "";
-        try {
-            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
-                if ($value['decisionSource'] == 'MachineLearning') {
-                    $decision = $value['decision'];
-                }
-            }
-        } catch (\Exception $exception) {
-            throw new FraudApiException($exception->getMessage());
-        }
-        return $decision;
+        return $this->decision;
     }
 
-    /**
-     * @throws FraudApiException
-     */
     public function decisionText(): string
     {
-        $decisionText = "";
-
-        try {
-            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
-                if ($value['decisionSource'] == 'MachineLearning') {
-                    $decisionText = $value['decisionText'];
-                }
-            }
-        } catch (\Exception $exception) {
-            throw new FraudApiException($exception->getMessage());
-        }
-        return $decisionText;
+        return $this->decisionText;
     }
 
     public function score(): int
     {
-        $score = 0;
-        try {
-            foreach ($this->response['clientResponsePayload']['orchestrationDecisions'] as $value) {
-                if ($value['decisionSource'] == 'MachineLearning') {
-                    $score = $value['score'];
-                }
-            }
-        } catch (\Exception $exception) {
-            throw new FraudApiException($exception->getMessage());
-        }
-        return $score;
+        return $this->score;
     }
 }

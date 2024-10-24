@@ -289,6 +289,7 @@ class DonorFlowController extends AbstractActionController
                 $templates
             );
             $view->setVariables($formProcessorResponseDto->getVariables());
+
             $template = $formProcessorResponseDto->getTemplate();
             if ($template == 'application/pages/fraud_failure') {
                 $view->setVariable(
@@ -477,5 +478,13 @@ class DonorFlowController extends AbstractActionController
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
         return $this->redirect()->toRoute("root/donor_lpa_check", ['uuid' => $uuid]);
+    }
+
+    public function fraudCheckAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+
+
     }
 }

@@ -549,6 +549,26 @@ return [
                             ],
                         ],
                     ],
+                    'fraud_check' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/fraud-check',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action' => 'fraudCheck',
+                            ],
+                        ],
+                    ],
+                    'cp_fraud_check' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/cp-fraud-check',
+                            'defaults' => [
+                                'controller' => Controller\CPFlowController::class,
+                                'action' => 'fraudCheck',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],

@@ -255,13 +255,13 @@ class FormProcessorHelper
             } elseif ($fraudCheck['decision'] === 'NODECISION') {
                 $template = $templates['thin_file'];
             } elseif ($fraudCheck['decision'] === 'STOP') {
-                $template = $templates['fraud'];
+                throw new OpgApiException('Stop response received from fraud check service.');
             } else {
                 $template = $templates['fail'];
             }
             $this->opgApiService->updateCaseSetDocumentComplete($uuid);
         } else {
-            $template = $templates['fail'];
+            throw new OpgApiException('Unknown response received from fraud check service.');
         }
         return $template;
     }

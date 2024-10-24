@@ -378,7 +378,7 @@ class OpgApiService implements OpgApiServiceInterface
         }
 
         if (empty($this->responseData)) {
-            throw new OpgApiException('Service availability data missing!');
+            throw new OpgApiException('Unknown response received from fraud check service.');
         }
 
         return $this->responseData;
