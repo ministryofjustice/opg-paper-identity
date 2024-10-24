@@ -34,13 +34,13 @@ class FormProcessorHelper
 
             $variables['dln_data'] = $formArray;
             $variables['validity'] = $this->opgApiService->checkDlnValidity($formArray['dln']);
-            return new FormProcessorResponseDto(
-                $uuid,
-                $form,
-                $template,
-                $variables
-            );
         }
+        return new FormProcessorResponseDto(
+            $uuid,
+            $form,
+            $template,
+            $variables
+        );
     }
 
     /**
@@ -51,11 +51,10 @@ class FormProcessorHelper
         FormInterface $form,
         array $templates = []
     ): FormProcessorResponseDto {
-        $validFormat = $form->isValid();
         $variables = [];
         $template = $templates['default'];
 
-        if ($validFormat) {
+        if ($form->isValid()) {
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
             $variables['nino_data'] = $formArray;
             $variables['validity'] = $this->opgApiService->checkNinoValidity($formArray['nino']);

@@ -271,6 +271,7 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
         $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
+        $template = $templates['default'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -291,7 +292,7 @@ class DonorFlowController extends AbstractActionController
 
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            if($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
             }
             $this->opgApiService->updateCaseSetDocumentComplete($uuid);
@@ -306,6 +307,7 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
         $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
+        $template = $templates['default'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -328,7 +330,9 @@ class DonorFlowController extends AbstractActionController
 
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            }
             $this->opgApiService->updateCaseSetDocumentComplete($uuid);
 
             return $view->setTemplate($template);
@@ -341,6 +345,7 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability();
 
         $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
+        $template = $templates['default'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -383,7 +388,9 @@ class DonorFlowController extends AbstractActionController
             }
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            }
             $this->opgApiService->updateCaseSetDocumentComplete($uuid);
 
             return $view->setTemplate($template);
