@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Services\Experian\FraudApi;
 
-use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO as AuthRequestDTO;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
@@ -14,6 +13,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -21,7 +21,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
 {
     private array $config;
 
-    private AuthApiService $experianCrosscoreAuthApiService;
+    private AuthApiService&MockObject $experianCrosscoreAuthApiService;
 
     public function setUp(): void
     {
@@ -31,13 +31,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
         ];
 
         $this->experianCrosscoreAuthApiService = $this->createMock(AuthApiService::class);
-    }
-
-    public function testGetCredentials(): void
-    {
-        $credentials = $this->experianCrosscoreAuthApiService->getCredentials();
-
-        $this->assertInstanceOf(AuthRequestDTO::class, $credentials);
     }
 
     /**
@@ -53,9 +46,6 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         } else {
-            /**
-             * @psalm-suppress UndefinedMethod
-             */
             $this->experianCrosscoreAuthApiService
                 ->expects($this->once())
                 ->method('retrieveCachedTokenResponse');
