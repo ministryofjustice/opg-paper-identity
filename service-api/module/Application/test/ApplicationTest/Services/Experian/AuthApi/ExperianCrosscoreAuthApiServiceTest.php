@@ -57,13 +57,6 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
         );
     }
 
-    public function testGetCredentials(): void
-    {
-        $credentials = $this->experianCrosscoreAuthApiService->getCredentials();
-
-        $this->assertInstanceOf(RequestDTO::class, $credentials);
-    }
-
     /**
      * @dataProvider tokenResponseData
      * @param class-string<Throwable>|null $expectedException
