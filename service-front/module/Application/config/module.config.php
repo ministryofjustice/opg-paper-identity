@@ -636,6 +636,29 @@ return [
             IdMethod::DrivingLicenseNumber->value,
             IdMethod::PostOffice->value
         ],
+        'template_options' => [
+            'NATIONAL_INSURANCE_NUMBER' => [
+                'default' => 'application/pages/national_insurance_number',
+                'success' => 'application/pages/national_insurance_number_success',
+                'fail' => 'application/pages/national_insurance_number_fail',
+                'thin_file' => 'application/pages/thin_file_failure',
+                'fraud' => 'application/pages/fraud_failure'
+            ],
+            'PASSPORT' => [
+                'default' => 'application/pages/passport_number',
+                'success' => 'application/pages/passport_number_success',
+                'fail' => 'application/pages/passport_number_fail',
+                'thin_file' => 'application/pages/thin_file_failure',
+                'fraud' => 'application/pages/fraud_failure'
+            ],
+            'DRIVING_LICENCE' => [
+                'default' => 'application/pages/driving_licence_number',
+                'success' => 'application/pages/driving_licence_number_success',
+                'fail' => 'application/pages/driving_licence_number_fail',
+                'thin_file' => 'application/pages/thin_file_failure',
+                'fraud' => 'application/pages/fraud_failure'
+            ],
+        ],
         'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
     ],
 ];
