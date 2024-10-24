@@ -282,21 +282,20 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $form,
                 $templates
             );
-            $view->setVariables($formProcessorResponseDto->getVariables());
 
-            $template = $formProcessorResponseDto->getTemplate();
-            if ($template == 'application/pages/fraud_failure') {
-                $view->setVariable(
-                    'fraud_message',
-                    'Recommend the Post Office route. Alternatively, consider the Court of Protection.'
-                );
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            if($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
             }
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
             return $view->setTemplate($template);
         }
         return $view->setTemplate($templates['default']);
@@ -318,21 +317,20 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
                 $form,
                 $templates
             );
 
+//            die(json_encode($formProcessorResponseDto->toArray()));
+
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $template = $formProcessorResponseDto->getTemplate();
-            if ($template == 'application/pages/fraud_failure') {
-                $view->setVariable(
-                    'fraud_message',
-                    'Recommend the Post Office route. Alternatively, consider the Court of Protection.'
-                );
-            }
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
             return $view->setTemplate($template);
         }
         return $view->setTemplate($templates['default']);
@@ -358,7 +356,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('details_open', false);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
@@ -384,13 +382,10 @@ class DonorFlowController extends AbstractActionController
                 );
             }
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $template = $formProcessorResponseDto->getTemplate();
-            if ($template == 'application/pages/fraud_failure') {
-                $view->setVariable(
-                    'fraud_message',
-                    'Recommend the Post Office route. Alternatively, consider the Court of Protection.'
-                );
-            }
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
             return $view->setTemplate($template);
         }
         return $view->setTemplate($templates['default']);
@@ -478,13 +473,5 @@ class DonorFlowController extends AbstractActionController
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
         return $this->redirect()->toRoute("root/donor_lpa_check", ['uuid' => $uuid]);
-    }
-
-    public function fraudCheckAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-
-
     }
 }

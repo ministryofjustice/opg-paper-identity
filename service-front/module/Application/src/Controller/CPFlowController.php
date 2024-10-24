@@ -334,22 +334,17 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $form,
                 $templates
             );
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
-            $template = $formProcessorResponseDto->getTemplate();
-            if ($template == 'application/pages/fraud_failure') {
-                $view->setVariable(
-                    'fraud_message',
-                    'The only option to identify is at the Post Office.'
-                );
-            }
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
             return $view->setTemplate($template);
         }
 
@@ -372,23 +367,17 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
                 $form,
                 $templates
             );
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
 
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
-            $template = $formProcessorResponseDto->getTemplate();
-            if ($template == 'application/pages/fraud_failure') {
-                $view->setVariable(
-                    'fraud_message',
-                    'The only option to identify is at the Post Office.'
-                );
-            }
             return $view->setTemplate($template);
         }
 
@@ -414,7 +403,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_open', false);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
@@ -439,17 +428,12 @@ class CPFlowController extends AbstractActionController
                     $templates
                 );
             }
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
 
-            $template = $formProcessorResponseDto->getTemplate();
-            if ($template == 'application/pages/fraud_failure') {
-                $view->setVariable(
-                    'fraud_message',
-                    'The only option to identify is at the Post Office.'
-                );
-            }
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
             return $view->setTemplate($template);
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Helpers;
 
+use Application\Exceptions\OpgApiException;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportNumber;
@@ -71,8 +72,10 @@ class FormProcessorHelperTest extends TestCase
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $templates = [
             'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_success',
-            'fail' => 'application/pages/driving_licence_fail',
+            'success' => 'application/pages/driving_licence_number_success',
+            'fail' => 'application/pages/driving_licence_number_fail',
+            'thin_file' => 'application/pages/thin_file_failure',
+            'fraud' => 'application/pages/fraud_failure'
         ];
 
         $fraudData = [
@@ -465,29 +468,26 @@ class FormProcessorHelperTest extends TestCase
     }
 
     /**
-     * @dataProvider fraudResponseData
+     * @dataProvider processTemplateData
      */
-    public function testFraudCheck(
-        string $docCheck,
-        string $uuid,
+    public function testProcessTemplate(
+        bool $exception,
         array $templates,
-        array $mockResponseData,
+        array $fraudCheck,
         string $expected
     ): void {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
-        $opgApiServiceMock
-            ->expects(self::once())
-            ->method('requestFraudCheck')
-            ->willReturn($mockResponseData);
-
-        $actual = $formProcessorHelper->fraudCheck($docCheck, $uuid, $templates);
+        $actual = $formProcessorHelper->processTemplate($fraudCheck, $templates);
 
         $this->assertEquals($expected, $actual);
     }
 
-    public static function fraudResponseData(): array
+    public static function processTemplateData(): array
     {
         $templates = [
             'default' => 'application/pages/national_insurance_number',
@@ -499,8 +499,7 @@ class FormProcessorHelperTest extends TestCase
 
         return [
             [
-                "PASS",
-                "uuid",
+                false,
                 $templates,
                 [
                     "decisionText" => "Accept",
@@ -510,8 +509,7 @@ class FormProcessorHelperTest extends TestCase
                 "application/pages/national_insurance_number_success"
             ],
             [
-                "PASS",
-                "uuid",
+                false,
                 $templates,
                 [
                     "decisionText" => "Continue",
@@ -521,8 +519,7 @@ class FormProcessorHelperTest extends TestCase
                 "application/pages/national_insurance_number_success"
             ],
             [
-                "PASS",
-                "uuid",
+                false,
                 $templates,
                 [
                     "decisionText" => "Refer",
@@ -532,8 +529,7 @@ class FormProcessorHelperTest extends TestCase
                 "application/pages/national_insurance_number_success"
             ],
             [
-                "PASS",
-                "uuid",
+                false,
                 $templates,
                 [
                     "decisionText" => "No Decision",
@@ -543,8 +539,7 @@ class FormProcessorHelperTest extends TestCase
                 "application/pages/thin_file_failure"
             ],
             [
-                "PASS",
-                "uuid",
+                true,
                 $templates,
                 [
                     "decisionText" => "Stop",
