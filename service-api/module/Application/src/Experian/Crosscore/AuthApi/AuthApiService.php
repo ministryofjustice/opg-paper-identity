@@ -42,7 +42,7 @@ class AuthApiService
      */
     public function authenticate(): ResponseDTO
     {
-        $credentials = $this->getCredentials();
+        $credentials = $this->experianCrosscoreAuthRequestDTO;
 
         $tokenResponse = $this->getToken($credentials);
 
@@ -81,18 +81,6 @@ class AuthApiService
             return $tokenResponse['access_token'];
         } else {
             return $this->authenticate()->accessToken();
-        }
-    }
-
-    /**
-     * @throws AuthApiException
-     */
-    public function getCredentials(): RequestDTO
-    {
-        try {
-            return $this->experianCrosscoreAuthRequestDTO;
-        } catch (\Exception $exception) {
-            throw new AuthApiException($exception->getMessage());
         }
     }
 

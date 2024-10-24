@@ -12,14 +12,15 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
 class ExperianCrosscoreAuthApiServiceTest extends TestCase
 {
-    private Client $client;
+    private Client&MockObject $client;
 
-    private ApcHelper $apcHelper;
+    private ApcHelper&MockObject $apcHelper;
 
     private RequestDTO $experianCrosscoreAuthRequestDto;
 
@@ -55,13 +56,6 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
             $headers['X-Correlation-Id']
         );
-    }
-
-    public function testGetCredentials(): void
-    {
-        $credentials = $this->experianCrosscoreAuthApiService->getCredentials();
-
-        $this->assertInstanceOf(RequestDTO::class, $credentials);
     }
 
     /**
