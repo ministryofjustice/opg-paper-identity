@@ -529,6 +529,26 @@ return [
                             ],
                         ],
                     ],
+                    'what_is_vouching' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/what-is-vouching',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action' => 'whatIsVouching',
+                            ],
+                        ],
+                    ],
+                    'vouching_what_happens_next' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching-what-happens-next',
+                            'defaults' => [
+                                'controller' => Controller\DonorFlowController::class,
+                                'action' => 'vouchingWhatHappensNext',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -597,7 +617,7 @@ return [
         'identity_labels' => [
             'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
             'PASSPORT' => 'UK Passport (current or expired in the last 18 months)',
-            'DRIVING_LICENCE' => 'UK photocard driving licence (must be current) ',
+            'DRIVING_LICENCE' => 'UK driving licence (must be current) ',
         ],
         'post_office_identity_methods' => [
             'PASSPORT' => 'UK passport (up to 18 months expired)',
