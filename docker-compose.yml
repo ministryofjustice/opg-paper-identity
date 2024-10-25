@@ -14,11 +14,13 @@ services:
       - ./docker/sirius:/opt/imposter/config
 
   experian-crosscore-mock:
-    image: stoplight/prism:5.11.2
-    command: mock -h 0.0.0.0 -p 4010 -d /tmp/openapi.yml
+    image: paper-identity/experian-crosscore-mock
+    build:
+      context: docker/experian-crosscore
+      dockerfile: Dockerfile
     restart: unless-stopped
     healthcheck:
-      test: wget -O /dev/null -S 'http://0.0.0.0:4010/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      test: [ "CMD", "imposter", "list", "-x" ]
       interval: 15s
       timeout: 10s
       retries: 3

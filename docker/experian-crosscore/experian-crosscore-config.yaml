@@ -1,0 +1,10 @@
+plugin: openapi
+specFile: openapi.yml
+
+resources:
+  - path: "/3"
+    method: post
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreJsonFile.groovy
+
