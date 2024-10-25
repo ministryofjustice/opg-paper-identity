@@ -171,6 +171,7 @@ class CaseData implements JsonSerializable
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'dob' => $this->dob,
+            'formatted_dob' => date_format(date_create($this->dob), "d F Y"),
             'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
