@@ -8,6 +8,18 @@ resources:
       statusCode: 200
       scriptFile: useDonorJsonFile.groovy
 
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G4"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: useDonorJsonFileNoDecision.groovy
+
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G0"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: useDonorJsonFileStop.groovy
+
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0000"
     method: get
     response:

@@ -4,7 +4,27 @@ specFile: openapi.yml
 resources:
   - path: "/3"
     method: post
+    requestBody:
+      jsonPath: $.payload.contacts[0].person.names[0].surName
+      value: manthrope
     response:
       statusCode: 200
       scriptFile: useFraudScoreJsonFile.groovy
 
+  - path: "/3"
+    method: post
+    requestBody:
+      jsonPath: $.payload.contacts[0].person.names[0].surName
+      value: nohope
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreStopJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    requestBody:
+      jsonPath: $.payload.contacts[0].person.names[0].surName
+      value: nodec
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreNoDecisionJsonFile.groovy
