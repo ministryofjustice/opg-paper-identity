@@ -27,15 +27,6 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): FraudApiService {
-        $authBaseUri = getenv("EXPERIAN_CROSSCORE_AUTH_URL");
-        if (! is_string($authBaseUri) || empty($authBaseUri)) {
-            throw new AuthApiException("EXPERIAN_CROSSCORE_AUTH_URL is empty");
-        }
-
-        $guzzleAuthClient = new Client([
-            'base_uri' => $authBaseUri
-        ]);
-
         $baseUri = getenv("EXPERIAN_CROSSCORE_BASE_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
             throw new FraudApiException("EXPERIAN_CROSSCORE_BASE_URL is empty");
@@ -45,31 +36,12 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
             'base_uri' => $baseUri
         ]);
 
-        $apcHelper = new ApcHelper();
-
-        $username = (new AwsSecret('experian-crosscore/username'))->getValue();
-        $password = (new AwsSecret('experian-crosscore/password'))->getValue();
-        $clientId = (new AwsSecret('experian-crosscore/client-id'))->getValue();
-        $clientSecret = (new AwsSecret('experian-crosscore/client-secret'))->getValue();
         $domain = (new AwsSecret('experian-crosscore/domain'))->getValue();
         $tenantId = (new AwsSecret('experian-crosscore/tenant-id'))->getValue();
 
-        $experianCrosscoreAuthRequestDTO = new RequestDTO(
-            $username,
-            $password,
-            $clientId,
-            $clientSecret
-        );
-
-        $experianCrosscoreAuthApiService = new AuthApiService(
-            $guzzleAuthClient,
-            $apcHelper,
-            $experianCrosscoreAuthRequestDTO
-        );
-
         return new FraudApiService(
             $guzzleClient,
-            $experianCrosscoreAuthApiService,
+            $container->get(AuthApiService::class),
             [
                 'domain' => $domain,
                 'tenantId' => $tenantId

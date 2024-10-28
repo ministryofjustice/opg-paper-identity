@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Services;
 
 use Application\Helpers\AddressProcessorHelper;
+use Application\Enums\SiriusDocument;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
@@ -160,15 +161,21 @@ class SiriusApiService
         ];
     }
 
-    /**
-     * @param string $base64suffix
+     /**
      * @param array $caseDetails
+     * @param SiriusDocument $systemType
      * @param Request $request
+     * @param string $pdfSuffixBase64 Optional. PDF file in base-64 format, if provided
+     *                                will be added to the generated letter.
      * @return array
      * @throws GuzzleException
      */
-    public function sendPostOfficePDf(string $base64suffix, array $caseDetails, Request $request): array
-    {
+    public function sendDocument(
+        array $caseDetails,
+        SiriusDocument $systemType,
+        Request $request,
+        string $pdfSuffixBase64 = null
+    ): array {
         $address = [
             $caseDetails["address"]["line1"],
             $caseDetails["address"]["line2"],
@@ -180,12 +187,14 @@ class SiriusApiService
 
         $data = [
             "type" => "Save",
-            "systemType" => "DLP-ID-PO-D",
+            "systemType" => $systemType,
             "content" => "",
-            "pdfSuffix" => $base64suffix,
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];
+        if ($pdfSuffixBase64 !== null) {
+            $data["pdfSuffix"] = $pdfSuffixBase64;
+        }
         $lpa = $caseDetails['lpas'][0];
 
         $lpaDetails = $this->getLpaByUid($lpa, $request);
