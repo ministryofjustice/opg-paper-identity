@@ -47,7 +47,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             "personType" => "certificateProvider",
             "firstName" => "Mary Anne",
             "lastName" => "Chapman",
-            "dob" => "01 May 1943",
+            "dob" => "1943-05-01",
             "address" => [
                 "1 Court Street",
                 "London",

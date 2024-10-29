@@ -43,6 +43,14 @@ class CaseData implements JsonSerializable
     ]])]
     public ?string $dob;
 
+    private function formattedDOB(): string
+    {
+        if (! isset($this->dob)) {
+            return '';
+        }
+        return date_format(date_create($this->dob), "d F Y");
+    }
+
     #[Validator(NotEmpty::class)]
     public string $firstName;
 
@@ -143,6 +151,7 @@ class CaseData implements JsonSerializable
      *     firstName: string,
      *     lastName: string,
      *     dob: ?string,
+     *     formatted_dob: ?string,
      *     address: array{
      *       line1: string,
      *       line2?: string,
@@ -171,6 +180,7 @@ class CaseData implements JsonSerializable
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'dob' => $this->dob,
+            'formatted_dob' => $this->formattedDOB(),
             'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
