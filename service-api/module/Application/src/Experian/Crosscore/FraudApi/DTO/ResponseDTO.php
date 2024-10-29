@@ -23,13 +23,12 @@ class ResponseDTO
                 if ($value['decisionSource'] == 'MachineLearning') {
                     $this->decision = $value['decision'];
                     $this->decisionText = $value['decisionText'];
-                    $this->decisionText = json_encode($this->response);
                     $this->score = $value['score'];
                     $set = true;
                 }
             }
             if(!$set) {
-                throw new FraudApiException(json_encode($this->response));
+                throw new FraudApiException("Machine learning data not present.");
             }
         } catch (\Exception $exception) {
             throw new FraudApiException($exception->getMessage());
