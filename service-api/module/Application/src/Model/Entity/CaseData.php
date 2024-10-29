@@ -108,6 +108,9 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?CaseProgress $caseProgress = null;
 
+    #[Annotation\Required(false)]
+    public ?FraudScore $fraudScore = null;
+
     /**
      * @param array<string, mixed> $data
      */
@@ -120,6 +123,8 @@ class CaseData implements JsonSerializable
                 $instance->counterService = CounterService::fromArray($value);
             } elseif ($key === 'caseProgress') {
                 $instance->caseProgress = CaseProgress::fromArray($value);
+            } elseif ($key === 'fraudScore') {
+                $instance->fraudScore = FraudScore::fromArray($value);
             } elseif ($key === 'kbvQuestions') {
                 $instance->kbvQuestions = array_map(fn(array $question) => KBVQuestion::fromArray($question), $value);
             } elseif ($key === 'iiqControl') {
@@ -161,6 +166,7 @@ class CaseData implements JsonSerializable
      *     counterService?: CounterService,
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
+     *     fraudScore?: FraudScore
      * }
      */
     public function toArray(): array
@@ -194,6 +200,10 @@ class CaseData implements JsonSerializable
 
         if ($this->caseProgress !== null) {
             $arr['caseProgress'] = $this->caseProgress;
+        }
+
+        if ($this->fraudScore !== null) {
+            $arr['fraudScore'] = $this->fraudScore;
         }
 
         return $arr;

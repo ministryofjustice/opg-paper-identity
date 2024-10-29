@@ -41,6 +41,23 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
                 "responseMessage" => "Workflow Complete.",
                 "tenantID" => "623c97f7ff2e44528aa3fba116372d",
                 "category" => "COMPLIANCE_INQUIRY"
+            ],
+            "clientResponsePayload" => [
+                "orchestrationDecisions" => [
+                    [
+                        "sequenceId" => "2",
+                        "decisionSource" => "MachineLearning",
+                        "decision" => "CONTINUE",
+                        "decisionReasons" => [
+                            "Low Risk Machine Learning score"
+                        ],
+                        "score" => 265,
+                        "decisionText" => "Continue",
+                        "nextAction" => "Continue",
+                        "appReference" => "",
+                        "decisionTime" => "2024-07-25T10:51:47Z"
+                    ]
+                ],
             ]
         ];
 
@@ -52,7 +69,11 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
     public function testArray(): void
     {
         $this->assertEquals(
-            $this->data,
+            [
+                "decisionText" => "Continue",
+                "decision" => "CONTINUE",
+                "score" => 265,
+            ],
             $this->experianCrosscoreFraudResponseDTO->toArray()
         );
     }
@@ -62,6 +83,14 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
         $this->assertEquals(
             $this->data['responseHeader'],
             $this->experianCrosscoreFraudResponseDTO->responseHeader()
+        );
+    }
+
+    public function testDecisionText(): void
+    {
+        $this->assertEquals(
+            'Continue',
+            $this->experianCrosscoreFraudResponseDTO->decisionText()
         );
     }
 
@@ -76,7 +105,7 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
     public function testScore(): void
     {
         $this->assertEquals(
-            34382247.64365953,
+            265,
             $this->experianCrosscoreFraudResponseDTO->score()
         );
     }
