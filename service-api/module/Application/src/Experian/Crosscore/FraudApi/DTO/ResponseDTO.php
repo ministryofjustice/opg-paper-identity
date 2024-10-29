@@ -27,7 +27,7 @@ class ResponseDTO
                     $set = true;
                 }
             }
-            if(!$set) {
+            if (! $set) {
                 throw new FraudApiException("Machine learning data not present.");
             }
         } catch (\Exception $exception) {
