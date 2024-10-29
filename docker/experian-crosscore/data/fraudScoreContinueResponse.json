@@ -5,8 +5,8 @@
     "expRequestId": "RB000000000126",
     "messageTime": "2024-07-25T10:51:46Z",
     "overallResponse": {
-      "decision": "ACCEPT",
-      "decisionText": "Accept",
+      "decision": "CONTINUE",
+      "decisionText": "Continue",
       "decisionReasons": [
         "Processing completed successfully",
         "Low Risk Machine Learning score"
@@ -25,25 +25,25 @@
       {
         "sequenceId": "1",
         "decisionSource": "uk-crp",
-        "decision": "ACCEPT",
+        "decision": "CONTINUE",
         "decisionReasons": [
           "Processing completed successfully"
         ],
         "score": 0,
-        "decisionText": "Accept",
-        "nextAction": "Accept",
+        "decisionText": "Continue",
+        "nextAction": "Continue",
         "decisionTime": "2024-07-25T10:51:47Z"
       },
       {
         "sequenceId": "2",
         "decisionSource": "MachineLearning",
-        "decision": "ACCEPT",
+        "decision": "CONTINUE",
         "decisionReasons": [
           "Low Risk Machine Learning score"
         ],
-        "score": 265,
-        "decisionText": "Accept",
-        "nextAction": "Accept",
+        "score": 700,
+        "decisionText": "Continue",
+        "nextAction": "Continue",
         "appReference": "",
         "decisionTime": "2024-07-25T10:51:47Z"
       }

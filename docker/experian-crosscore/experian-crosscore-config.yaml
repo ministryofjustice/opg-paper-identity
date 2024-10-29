@@ -5,8 +5,8 @@ resources:
   - path: "/3"
     method: post
     requestBody:
-      jsonPath: $.payload.contacts[0].person.names[0].surName
-      value: manthrope
+      operator: Contains
+      value: Manthrope
     response:
       statusCode: 200
       scriptFile: useFraudScoreJsonFile.groovy
@@ -14,8 +14,8 @@ resources:
   - path: "/3"
     method: post
     requestBody:
-      jsonPath: $.payload.contacts[0].person.names[0].surName
-      value: nohope
+      operator: Contains
+      value: Nohope
     response:
       statusCode: 200
       scriptFile: useFraudScoreStopJsonFile.groovy
@@ -23,8 +23,8 @@ resources:
   - path: "/3"
     method: post
     requestBody:
-      jsonPath: $.payload.contacts[0].person.names[0].surName
-      value: nodec
+      operator: Contains
+      value: Nodec
     response:
       statusCode: 200
       scriptFile: useFraudScoreNoDecisionJsonFile.groovy
@@ -33,4 +33,4 @@ resources:
     method: post
     response:
       statusCode: 200
-      scriptFile: useFraudScoreJsonFile.groovy
+      scriptFile: useFraudScoreContinueJsonFile.groovy
