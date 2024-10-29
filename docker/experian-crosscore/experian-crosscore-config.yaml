@@ -28,3 +28,9 @@ resources:
     response:
       statusCode: 200
       scriptFile: useFraudScoreNoDecisionJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreJsonFile.groovy
