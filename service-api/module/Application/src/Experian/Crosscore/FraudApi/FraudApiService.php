@@ -12,7 +12,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
+use Monolog\Logger;
 use Ramsey\Uuid\Uuid;
+use Telemetry\Instrumentation\Laminas;
 
 class FraudApiService
 {
@@ -93,8 +95,9 @@ class FraudApiService
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
         $addressDTO = $experianCrosscoreFraudRequestDTO->address();
 
+
         return [
-            'header' => [
+            "header" => [
                 "tenantId" => $this->config['tenantId'],
                 "requestType" => "FraudScore",
                 "clientReferenceId" => "$requestUuid-FraudScore-continue",
@@ -102,19 +105,22 @@ class FraudApiService
                 "messageTime" => date("Y-m-d\TH:i:s.000\Z"),
                 "options" => []
             ],
-            'payload' => [
-                'contacts' => [
+            "payload" => [
+                "contacts" => [
                     [
                         "id" => $personId,
                         "person" => [
                             "personDetails" => [
                                 "dateOfBirth" => $experianCrosscoreFraudRequestDTO->dob()
                             ],
+                            "personIdentifier" => "",
                             "names" => [
-                                "type" => "CURRENT",
-                                "firstName" => $experianCrosscoreFraudRequestDTO->firstName(),
-                                "surName" => $experianCrosscoreFraudRequestDTO->lastName(),
-                                "id" => "MANAME1"
+                                [
+                                    "type" => "CURRENT",
+                                    "firstName" => $experianCrosscoreFraudRequestDTO->firstName(),
+                                    "surName" => $experianCrosscoreFraudRequestDTO->lastName(),
+                                    "id" => "NAME1"
+                                ]
                             ],
                             "addresses" => [
                                 [
@@ -129,16 +135,16 @@ class FraudApiService
                                     "county" => $addressDTO->country()
                                 ]
                             ]
-                        ]
+                        ],
                     ]
                 ],
-                'control' => [
+                "control" => [
                     [
                         "option" => "ML_MODEL_CODE",
                         "value" => "bfs"
                     ]
                 ],
-                'application' => [
+                "application" => [
                     "applicants" => [
                         [
                             "id" => "MA_APPLICANT1",
@@ -148,9 +154,9 @@ class FraudApiService
                             "consent" => "true"
                         ]
                     ]
-                ]
-            ],
-            'source' => 'WEB'
+                ],
+                "source" => "WEB"
+            ]
         ];
     }
 
