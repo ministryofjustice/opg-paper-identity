@@ -320,11 +320,7 @@ class CPFlowController extends AbstractActionController
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/national_insurance_number',
-            'success' => 'application/pages/national_insurance_number_success',
-            'fail' => 'application/pages/national_insurance_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -338,17 +334,18 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,
                 $form,
                 $templates
             );
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
 
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
@@ -356,11 +353,7 @@ class CPFlowController extends AbstractActionController
 
     public function drivingLicenceNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_number_success',
-            'fail' => 'application/pages/driving_licence_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -374,18 +367,18 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
                 $uuid,
                 $form,
                 $templates
             );
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
 
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
-
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
@@ -393,11 +386,7 @@ class CPFlowController extends AbstractActionController
 
     public function passportNumberAction(): ViewModel
     {
-        $templates = [
-            'default' => 'application/pages/passport_number',
-            'success' => 'application/pages/passport_number_success',
-            'fail' => 'application/pages/passport_number_fail',
-        ];
+        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -414,7 +403,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('details_open', false);
         $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
 
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
             $view->setVariable('passport', $data['passport']);
@@ -439,11 +428,13 @@ class CPFlowController extends AbstractActionController
                     $templates
                 );
             }
-            foreach ($formProcessorResponseDto->getVariables() as $key => $variable) {
-                $view->setVariable($key, $variable);
-            }
 
-            return $view->setTemplate($formProcessorResponseDto->getTemplate());
+            $view->setVariables($formProcessorResponseDto->getVariables());
+            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
+            return $view->setTemplate($template);
         }
 
         return $view->setTemplate($templates['default']);
