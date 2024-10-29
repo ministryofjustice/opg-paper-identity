@@ -366,4 +366,21 @@ class OpgApiService implements OpgApiServiceInterface
 
         return (new DependencyCheck($this->responseData));
     }
+
+    public function requestFraudCheck(string $uuid): array
+    {
+        $url = sprintf("/cases/%s/request-fraud-check", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'GET');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+
+        if (empty($this->responseData)) {
+            throw new OpgApiException('Unknown response received from fraud check service.');
+        }
+
+        return $this->responseData;
+    }
 }
