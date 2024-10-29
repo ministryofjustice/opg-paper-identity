@@ -43,7 +43,7 @@ class CaseData implements JsonSerializable
     ]])]
     public ?string $dob;
 
-    private function formattedDOB(): string
+    private function formattedDob(): string
     {
         if (! isset($this->dob)) {
             return '';
@@ -136,6 +136,7 @@ class CaseData implements JsonSerializable
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
+            } elseif ($key === 'formattedDob') {
             } else {
                 throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
@@ -151,7 +152,7 @@ class CaseData implements JsonSerializable
      *     firstName: string,
      *     lastName: string,
      *     dob: ?string,
-     *     formatted_dob: ?string,
+     *     formattedDob: ?string,
      *     address: array{
      *       line1: string,
      *       line2?: string,
@@ -180,7 +181,7 @@ class CaseData implements JsonSerializable
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'dob' => $this->dob,
-            'formatted_dob' => $this->formattedDOB(),
+            'formattedDob' => $this->formattedDob(),
             'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
