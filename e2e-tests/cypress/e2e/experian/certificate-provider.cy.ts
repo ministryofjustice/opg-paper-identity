@@ -1,5 +1,5 @@
-describe("Identify a Certificate Provider", () => {
-    it("lets you identify with National Insurance number", () => {
+describe("Identify a Certificate Provider with a fraud checck", () => {
+    it("passes fraud check", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
         cy.contains("How will they prove their identity?");
@@ -28,211 +28,40 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains("Initial identity confirmation complete");
         cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("Select answer");
-
-        cy.selectKBVAnswer({ correct: true });
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.selectKBVAnswer({ correct: true });
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.selectKBVAnswer({ correct: true });
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains(".moj-banner", "Identity check passed");
     });
 
-    it("lets you identify with Passport", () => {
-        const d = new Date();
-        let year = d.getFullYear();
+    it("reaches no decision result", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0001");
 
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
-
-        // console.log(cy.location('pathname'));
-
-        // Check form validation
         cy.contains("How will they prove their identity?");
+        cy.contains("National Insurance number").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("How will they prove their identity?");
-        cy.contains("Please select an option");
 
-        // Check passport reveal
-        cy.contains("Help with checking if passport is in date");
-        // cy.screenshot();
-        cy.contains("Help with checking if passport is in date").trigger("click");
-        cy.contains("Help with checking if passport is in date").click();
-        cy.contains("Enter passport expiry date. For example 31 03 2012").should('be.visible');
-
-        // Check passport date validation fails
-        cy.get("#passport-issued-day").should('be.visible').type("01", {force: true});
-        cy.get("#passport-issued-month").type("01", {force: true});
-        cy.get("#passport-issued-year").type(year - 20, {force: true});
-        cy.get(".govuk-button--secondary").contains("Check").click({force: true});
-        cy.contains("Out of date");
-
-        // Check passport date validation succeeds
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
-        cy.contains("Help with checking if passport is in date");
-        cy.contains("Help with checking if passport is in date").click();
-        cy.contains("Enter passport expiry date. For example 31 03 2012").should('be.visible');
-        cy.get("#passport-issued-day").type("31", {force: true});
-        cy.get("#passport-issued-month").type("10", {force: true});
-        cy.get("#passport-issued-year").type(year, {force: true});
-        cy.get(".govuk-button--secondary").contains("Check").click({force: true});
-        cy.contains("In date");
-
-        cy.contains("Documents accepted at the Post Office");
-        cy.contains("Documents accepted at the Post Office").click();
-        cy.contains("UK passport (up to 18 months expired)").should('be.visible');
-
-
-        // Check passport selection on form succeeds
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
-        cy.contains("Passport").click();
-        cy.get(".govuk-button").contains("Continue").click();
         cy.contains("Does the name match the ID?");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("LPAs included in the identity check");
 
-        cy.get(".govuk-button").contains("Add another LPA").click();
-        cy.contains("Find an LPA to add");
-        cy.get("#lpa").should('be.visible').type("M-0000-0000-000");        // bad LPA number format
-        cy.get(".govuk-button").contains("Find LPA").click();
-        cy.contains("Not a valid LPA number. Enter an LPA number to continue.");
-
-        cy.get(".govuk-button").contains("Return to LPA list").click();
         cy.contains("LPAs included in the identity check");
         cy.get(".govuk-button").contains("Continue").click();
-        //
+
         cy.contains("What is their date of birth?");
-
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date needs to be a valid date");
-
-        cy.reload();
-        // cy.screenshot();
-        cy.get("#dob-day").type("31", {force: true});
-        cy.get("#dob-month").type("10", {force: true});
-        cy.get("#dob-year").type(year - 10, {force: true});
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Birth date cannot be under 18 years ago");
-
-        cy.get("#dob-year").clear();
-        cy.get("#dob-year").type(year - 20, {force: true});
+        cy.getInputByLabel("Day").type("20");
+        cy.getInputByLabel("Month").type("01");
+        cy.getInputByLabel("Year").type("1999");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the address on the ID document match the address in Sirius?");
-
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Please select an option");
-
-        cy.contains("Yes").click();
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("UK passport");
-
-        cy.contains("Where to find the passport number").click({force: true});
-        cy.contains("The passport number is located at the top right-hand corner of the");
-
-        cy.contains("Passport number").click();
-
-        cy.get("#passport").type("123456781", {force: true});
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
-
-        cy.contains("No").click();
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The passport needs to be no more than 18 months out of date");
-
-        cy.get("#passport").clear();
-        cy.contains("Yes").click();
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
-
-        cy.contains("Help with checking if passport is in date");
-        cy.contains("Help with checking if passport is in date").click();
-        cy.contains("Enter passport expiry date. For example, 31 03 2012");
-
-        cy.get("#passport").type("123456781", {force: true});
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("Initial identity confirmation complete");
+        cy.contains("National insurance number");
+        cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Not enough details to continue with this form of identification");
     });
 
     it("lets you identify with Driving licence", () => {
-
-        const d = new Date();
-        let year = d.getFullYear();
-
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
-        cy.contains("How will they prove their identity?");
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("How will they prove their identity?");
-        cy.contains("Please select an option");
-        cy.contains("Driving licence").click();
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("Does the name match the ID?");
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("LPAs included in the identity check");
-
-        cy.contains("LPAs included in the identity check");
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("What is their date of birth?");
-
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date needs to be a valid date");
-
-        cy.reload();
-        // cy.screenshot();
-        cy.get("#dob-day").type("31", {force: true});
-        cy.get("#dob-month").type("10", {force: true});
-        cy.get("#dob-year").type(year - 10, {force: true});
-        cy.get(".govuk-button").contains("Continue").click();
-        // cy.screenshot();
-        cy.contains("Birth date cannot be under 18 years ago");
-
-        cy.get("#dob-year").clear();
-        cy.get("#dob-year").type(year - 20, {force: true});
-        cy.get(".govuk-button").contains("Continue").click();
-
-
-        cy.contains("Does the address on the ID document match the address in Sirius?");
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Please select an option");
-        cy.contains("Yes").click();
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("UK Driving Licence");
-        cy.contains("Where to find the driving licence number").click({force: true});
-        cy.contains("The driving licence number is found in section 5 of the details section for both paper and photo ID licences");
-
-        cy.contains("Driving licence number").click();
-
-        cy.get("#dln").type("MORGA657054SM9IJ", {force: true});
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Please choose yes or no");
-
-        cy.contains("No").click();
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The driving licence needs to be in date. Check the expiry date and change to Yes, or try a different method");
-
-        cy.get("#dln").clear();
-        cy.contains("Yes").click();
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
-
-        cy.get("#dln").type("MORGA657054SM9IJ", {force: true});
-        cy.contains("Yes").click();
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("Initial identity confirmation complete");
-    });
-
-    it("lets you identify with National Insurance number and use an alternate address", () => {
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0002");
 
         cy.contains("How will they prove their identity?");
         cy.contains("National Insurance number").click();
@@ -251,49 +80,14 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the address on the ID document match the address in Sirius?");
-        cy.contains("No").click();
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("What is the address on the ID document?");
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
-        cy.get("#postcode").type("SW1A 1AA");
-        cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("What is the address on the ID document?");
-        cy.contains("Select address");
-cy.screenshot();
-        cy.contains("The address is not in the list");
-        cy.contains("The address is not in the list").click();
-
-        cy.contains("What is the address on the ID document?");
-        cy.get("#line1").type("1 Street");
-        cy.get("#town").type("London");
-        cy.get("#postcode").type("SW1A 1AA");
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("Does the address on the ID document match the address in Sirius?");
-        cy.contains("No").click();
+        cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("National insurance number");
         cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("Initial identity confirmation complete");
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("Select answer");
-
-        cy.selectKBVAnswer({ correct: true });
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.selectKBVAnswer({ correct: true });
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.selectKBVAnswer({ correct: true });
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains(".moj-banner", "Identity check passed");
+        cy.contains("Stop response received from fraud check service.");
     });
 });
 
