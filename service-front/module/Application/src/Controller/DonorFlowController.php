@@ -45,7 +45,7 @@ class DonorFlowController extends AbstractActionController
         $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethodForm::class);
 
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
@@ -268,12 +268,12 @@ class DonorFlowController extends AbstractActionController
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $uuid = $this->params()->fromRoute("uuid");
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
         $template = $templates['default'];
         $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
@@ -304,12 +304,12 @@ class DonorFlowController extends AbstractActionController
 
     public function drivingLicenceNumberAction(): ViewModel
     {
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $uuid = $this->params()->fromRoute("uuid");
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
         $template = $templates['default'];
         $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
@@ -326,8 +326,6 @@ class DonorFlowController extends AbstractActionController
                 $templates
             );
 
-//            die(json_encode($formProcessorResponseDto->toArray()));
-
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
@@ -342,12 +340,12 @@ class DonorFlowController extends AbstractActionController
 
     public function passportNumberAction(): ViewModel
     {
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $uuid = $this->params()->fromRoute("uuid");
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
         $template = $templates['default'];
         $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 

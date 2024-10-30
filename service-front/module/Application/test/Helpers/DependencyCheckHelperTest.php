@@ -28,7 +28,7 @@ class DependencyCheckHelperTest extends TestCase
     public static function statusData(): array
     {
         $messagePart = "Some identity verification methods are not presently available";
-        $messageAll = "Online identity verification it not presently available";
+        $messageAll = "Online identity verification is not presently available";
 
 
         return [
