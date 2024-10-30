@@ -40,7 +40,7 @@ class OpgApiServiceTest extends TestCase
         $successMockResponseData = [
             "firstName" => "Mary Ann",
             "lastName" => "Chapman",
-            "dob" => "01 May 1943",
+            "dob" => "1943-05-01",
             "address" => [
                 'line1' => '1 Street',
                 'line2' => '',
