@@ -88,8 +88,6 @@ class PostOfficeFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
-
         $view = new ViewModel();
 
         $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
