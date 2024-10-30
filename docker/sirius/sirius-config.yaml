@@ -26,6 +26,18 @@ resources:
       statusCode: 200
       scriptFile: useCertificateProviderJsonFile.groovy
 
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0001"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: useCertificateProviderJsonFileNoDecision.groovy
+
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0002"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: useCertificateProviderJsonFileStop.groovy
+
   - path: "/api/v1/users/current"
     method: get
     response:
