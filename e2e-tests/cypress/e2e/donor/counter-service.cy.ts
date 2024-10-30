@@ -1,6 +1,6 @@
 describe("Counter service donor journey", () => {
   it("accepts a UK passport", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will they confirm their identity?");
     cy.contains("label", "Post Office").click();
@@ -31,7 +31,7 @@ describe("Counter service donor journey", () => {
   });
 
   it("accepts an international ID", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will they confirm their identity?");
     cy.contains("label", "Post Office").click();
