@@ -162,8 +162,6 @@ class DonorFlowController extends AbstractActionController
             $nextPage = './donor-lpa-check';
         }
 
-        $detailsData['formatted_dob'] = (new \DateTime($detailsData['dob']))->format("d F Y");
-
         $view = new ViewModel();
 
         $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
@@ -352,7 +350,6 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('dob_full', date_format(date_create($detailsData['dob']), "d F Y"));
         $view->setVariable('form', $form);
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('details_open', false);
