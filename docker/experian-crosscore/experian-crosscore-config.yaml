@@ -1,0 +1,36 @@
+plugin: openapi
+specFile: openapi.yml
+
+resources:
+  - path: "/3"
+    method: post
+    requestBody:
+      operator: Contains
+      value: Manthrope
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    requestBody:
+      operator: Contains
+      value: Nohope
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreStopJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    requestBody:
+      operator: Contains
+      value: Nodec
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreNoDecisionJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreContinueJsonFile.groovy

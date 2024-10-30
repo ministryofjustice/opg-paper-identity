@@ -1,6 +1,6 @@
 describe("Identify a Donor", () => {
   it("lets you identify with National Insurance number", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will they confirm their identity?");
     cy.contains("National Insurance number").click();
@@ -45,7 +45,7 @@ describe("Identify a Donor", () => {
     const d = new Date();
     let year = d.getFullYear();
 
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     // Check form validation
     cy.contains("How will they confirm their identity?");
@@ -68,7 +68,7 @@ describe("Identify a Donor", () => {
     cy.contains("Out of date");
 
     // Check passport date validation succeeds
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
     cy.contains("Help with checking if passport is in date");
     cy.contains("Help with checking if passport is in date").click();
     cy.contains("Enter passport expiry date. For example 31 03 2012").should('be.visible');
@@ -79,7 +79,7 @@ describe("Identify a Donor", () => {
     cy.contains("In date");
 
     // Check passport selection on form succeeds
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
     cy.contains("Passport").click();
     cy.get(".govuk-button").contains("Continue").click();
     cy.contains("Do the details match the ID document?");
@@ -119,7 +119,7 @@ describe("Identify a Donor", () => {
 
   it("lets you identify with Driving licence", () => {
 
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
     cy.contains("Driving licence").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -156,7 +156,7 @@ describe("Identify a Donor", () => {
   });
 
   it("fails if you get KBVs wrong", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-1234-1234-1234");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will they confirm their identity?");
     cy.contains("National Insurance number").click();
