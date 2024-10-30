@@ -77,6 +77,8 @@ services:
         condition: service_healthy
       experian-iiq-mock:
         condition: service_healthy
+      experian-crosscore-auth-mock:
+        condition: service_healthy
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: ["php-fpm"]
     env_file: ./service-api/docker-compose.env
