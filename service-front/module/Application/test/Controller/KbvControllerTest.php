@@ -84,7 +84,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
 
         $mockResponseDataIdDetails = [
             "Name" => "Mary Anne Chapman",
-            "DOB" => "01 May 1943",
+            "DOB" => "1943-05-01",
             "Address" => "Address line 1, line 2, Country, BN1 4OD",
             "Role" => "donor",
             "LPA" => [
