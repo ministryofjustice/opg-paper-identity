@@ -296,7 +296,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "firstName" => "Mary Anne",
             "lastName" => "Chapman",
             "dob" => "1943-05-01",
-            "formattedDob" => "01 May 1943",
             "address" => [
                 "1 Court Street",
                 "London",

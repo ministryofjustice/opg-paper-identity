@@ -43,13 +43,7 @@ class CaseData implements JsonSerializable
     ]])]
     public ?string $dob;
 
-    private function formattedDob(): string
-    {
-        if (! isset($this->dob)) {
-            return '';
-        }
-        return date_format(date_create($this->dob), "d F Y");
-    }
+
 
     #[Validator(NotEmpty::class)]
     public string $firstName;
@@ -136,8 +130,6 @@ class CaseData implements JsonSerializable
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
-            } elseif ($key === 'formattedDob') {
-                // we ignore formattedDob as its derived from dob it present
             } else {
                 throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
@@ -153,7 +145,6 @@ class CaseData implements JsonSerializable
      *     firstName: string,
      *     lastName: string,
      *     dob: ?string,
-     *     formattedDob: ?string,
      *     address: array{
      *       line1: string,
      *       line2?: string,
@@ -182,7 +173,6 @@ class CaseData implements JsonSerializable
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'dob' => $this->dob,
-            'formattedDob' => $this->formattedDob(),
             'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
