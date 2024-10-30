@@ -13,6 +13,7 @@ use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\DateProcessorHelper;
 use Application\PostOffice\Country;
 use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -168,6 +169,7 @@ class DonorFlowController extends AbstractActionController
 
         $view->setVariables([
             'details_data' => $detailsData,
+            'formattedDob' => DateProcessorHelper::formatDate($detailsData['dob']),
             'uuid' => $uuid,
             'next_page' => $nextPage,
             'sirius_edit_url' => $siriusEditUrl
@@ -282,6 +284,7 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
@@ -315,6 +318,8 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
+
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
@@ -350,6 +355,7 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('details_open', false);

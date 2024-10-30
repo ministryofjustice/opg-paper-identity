@@ -15,6 +15,7 @@ use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\DateProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -93,6 +94,7 @@ class PostOfficeFlowController extends AbstractActionController
         $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
         $view->setVariable('sirius_edit_url', $siriusEditUrl);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('uuid', $uuid);
 
         return $view->setTemplate('application/pages/post_office/donor_details_match_check');
