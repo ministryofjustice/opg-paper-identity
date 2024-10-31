@@ -268,9 +268,6 @@ class DonorFlowController extends AbstractActionController
 
     public function nationalInsuranceNumberAction(): ViewModel
     {
-        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
-        $template = $templates['default'];
-        $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
@@ -307,9 +304,6 @@ class DonorFlowController extends AbstractActionController
 
     public function drivingLicenceNumberAction(): ViewModel
     {
-        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
-        $template = $templates['default'];
-        $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
@@ -347,6 +341,7 @@ class DonorFlowController extends AbstractActionController
     public function passportNumberAction(): ViewModel
     {
         $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
+        $template = $templates['default'];
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
         $view = new ViewModel();
@@ -397,7 +392,7 @@ class DonorFlowController extends AbstractActionController
 
             return $view->setTemplate($template);
         }
-        return $view->setTemplate($templates['default']);
+        return $view->setTemplate($template);
     }
 
     public function identityCheckPassedAction(): ViewModel
