@@ -30,7 +30,7 @@ describe("Identify a Certificate Provider with a fraud checck", () => {
         cy.get(".govuk-button").contains("Continue").click();
     });
 
-    it("reaches no decision result", () => {
+    it("reaches no decision result on insufficient ID data", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0001");
 
         cy.contains("How will they prove their identity?");
@@ -58,9 +58,12 @@ describe("Identify a Certificate Provider with a fraud checck", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Not enough details to continue with this form of identification");
+
+        cy.get(".govuk-button").contains("Try a different method").click();
+        cy.contains("Which document will they take to the Post Office?");
     });
 
-    it("lets you identify with Driving licence", () => {
+    it("reaches a stop result on high fraud risk", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0002");
 
         cy.contains("How will they prove their identity?");

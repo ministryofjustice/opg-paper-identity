@@ -20,7 +20,7 @@ describe("Identify a Donor with fraud check", () => {
     cy.contains("Initial identity confirmation complete");
   });
 
-  it("reaches no decision result", () => {
+  it("reaches no decision result on insufficient ID data", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G4");
 
     cy.contains("How will they confirm their identity?");
@@ -40,9 +40,12 @@ describe("Identify a Donor with fraud check", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Not enough details to continue with this form of identification");
+
+    cy.get(".govuk-button").contains("Try a different method").click();
+    cy.contains("How will they confirm their identity?");
   });
 
-  it("reaches Stop result", () => {
+  it("reaches a stop result on high fraud risk", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G0");
 
     cy.contains("How will they confirm their identity?");
