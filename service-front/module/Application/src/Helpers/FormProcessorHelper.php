@@ -33,11 +33,7 @@ class FormProcessorHelper
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
 
             $variables['dln_data'] = $formArray;
-            $validDln = $this->opgApiService->checkDlnValidity($formArray['dln']);
-            $template = $validDln === 'PASS' ? $templates['success'] : $templates['fail'];
-            if ($validDln === 'PASS') {
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-            }
+            $variables['validity'] = $this->opgApiService->checkDlnValidity($formArray['dln']);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -55,21 +51,15 @@ class FormProcessorHelper
         FormInterface $form,
         array $templates = []
     ): FormProcessorResponseDto {
-        $validFormat = $form->isValid();
         $variables = [];
         $template = $templates['default'];
 
-        if ($validFormat) {
+        if ($form->isValid()) {
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
-
             $variables['nino_data'] = $formArray;
-            $validNino = $this->opgApiService->checkNinoValidity($formArray['nino']);
-
-            $template = $validNino === 'PASS' ? $templates['success'] : $templates['fail'];
-            if ($validNino === 'PASS') {
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-            }
+            $variables['validity'] = $this->opgApiService->checkNinoValidity($formArray['nino']);
         }
+
         return new FormProcessorResponseDto(
             $uuid,
             $form,
@@ -92,12 +82,7 @@ class FormProcessorHelper
         if ($form->isValid()) {
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
             $variables['passport_data'] = $formArray;
-            $validPassport = $this->opgApiService->checkPassportValidity($formArray['passport']);
-
-            $template = $validPassport === 'PASS' ? $templates['success'] : $templates['fail'];
-            if ($validPassport === 'PASS') {
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid);
-            }
+            $variables['validity'] = $this->opgApiService->checkPassportValidity($formArray['passport']);
         }
         return new FormProcessorResponseDto(
             $uuid,
@@ -241,5 +226,30 @@ class FormProcessorHelper
             $params['dob_month'],
             $params['dob_day'],
         );
+    }
+
+    /**
+     * @param array $fraudCheck
+     * @param array $templates
+     * @return mixed
+     * @throws OpgApiException
+     */
+    public function processTemplate(array $fraudCheck, array $templates): mixed
+    {
+        switch ($fraudCheck['decision']) {
+            case 'CONTINUE':
+            case 'REFER':
+            case 'ACCEPT':
+                $template = $templates['success'];
+                break;
+            case 'NODECISION':
+                $template = $templates['thin_file'];
+                break;
+            case 'STOP':
+                throw new OpgApiException('Stop response received from fraud check service.');
+            default:
+                throw new OpgApiException('Unknown response received from fraud check service.');
+        }
+        return $template;
     }
 }

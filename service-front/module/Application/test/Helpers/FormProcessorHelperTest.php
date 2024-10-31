@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Helpers;
 
+use Application\Exceptions\OpgApiException;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportNumber;
@@ -26,7 +27,6 @@ class FormProcessorHelperTest extends TestCase
         Parameters $formData,
         FormInterface $form,
         array $templates,
-        string $template,
     ): void {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
@@ -40,9 +40,12 @@ class FormProcessorHelperTest extends TestCase
                 ->with($formData->toArray()['dln'])
                 ->willReturn($responseData['status']);
         }
+
         $processed = $formProcessorHelper->processDrivingLicenceForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
-        $this->assertEquals($templates[$template], $processed->getTemplate());
+        if (array_key_exists('validity', $processed->getVariables())) {
+            $this->assertEquals($responseData['status'], $processed->getVariables()['validity']);
+        }
     }
 
 
@@ -62,8 +65,10 @@ class FormProcessorHelperTest extends TestCase
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $templates = [
             'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_success',
-            'fail' => 'application/pages/driving_licence_fail',
+            'success' => 'application/pages/driving_licence_number_success',
+            'fail' => 'application/pages/driving_licence_number_fail',
+            'thin_file' => 'application/pages/thin_file_failure',
+            'fraud' => 'application/pages/fraud_failure'
         ];
 
         return [
@@ -73,7 +78,6 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $shortDln, 'inDate' => 'no']),
                 $form,
                 $templates,
-                'default'
             ],
             [
                 $caseUuid,
@@ -81,7 +85,6 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $goodDln, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'success'
             ],
             [
                 $caseUuid,
@@ -89,7 +92,6 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $badDln, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
             ],
             [
                 $caseUuid,
@@ -97,7 +99,6 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['dln' => $insufficientDln, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
             ],
         ];
     }
@@ -128,7 +129,9 @@ class FormProcessorHelperTest extends TestCase
 
         $processed = $formProcessorHelper->processNationalInsuranceNumberForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
-        $this->assertEquals($templates[$template], $processed->getTemplate());
+        if (array_key_exists('validity', $processed->getVariables())) {
+            $this->assertEquals($responseData['status'], $processed->getVariables()['validity']);
+        }
     }
 
 
@@ -159,7 +162,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $shortNino]),
                 $form,
                 $templates,
-                'default'
+                'default',
             ],
             [
                 $caseUuid,
@@ -167,7 +170,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $goodNino]),
                 $form,
                 $templates,
-                'success'
+                'success',
             ],
             [
                 $caseUuid,
@@ -175,7 +178,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $badNino]),
                 $form,
                 $templates,
-                'fail'
+                'fail',
             ],
             [
                 $caseUuid,
@@ -183,7 +186,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['nino' => $insufficientNino]),
                 $form,
                 $templates,
-                'fail'
+                'fail',
             ],
         ];
     }
@@ -214,7 +217,9 @@ class FormProcessorHelperTest extends TestCase
 
         $processed = $formProcessorHelper->processPassportForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
-        $this->assertEquals($templates[$template], $processed->getTemplate());
+        if (array_key_exists('validity', $processed->getVariables())) {
+            $this->assertEquals($responseData['status'], $processed->getVariables()['validity']);
+        }
     }
 
 
@@ -245,7 +250,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $shortNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'default'
+                'default',
             ],
             [
                 $caseUuid,
@@ -253,7 +258,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $goodNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'success'
+                'success',
             ],
             [
                 $caseUuid,
@@ -261,7 +266,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $badNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
+                'fail',
             ],
             [
                 $caseUuid,
@@ -269,7 +274,7 @@ class FormProcessorHelperTest extends TestCase
                 new Parameters(['passport' => $insufficientNino, 'inDate' => 'yes']),
                 $form,
                 $templates,
-                'fail'
+                'fail',
             ],
         ];
     }
@@ -405,6 +410,90 @@ class FormProcessorHelperTest extends TestCase
                     'dob_day' => "01"
                 ],
                 "1986-04-01"
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider processTemplateData
+     */
+    public function testProcessTemplate(
+        bool $exception,
+        array $templates,
+        array $fraudCheck,
+        string $expected
+    ): void {
+        if ($exception) {
+            $this->expectException(OpgApiException::class);
+        }
+        $opgApiServiceMock = $this->createMock(OpgApiService::class);
+        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+
+        $actual = $formProcessorHelper->processTemplate($fraudCheck, $templates);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public static function processTemplateData(): array
+    {
+        $templates = [
+            'default' => 'application/pages/national_insurance_number',
+            'success' => 'application/pages/national_insurance_number_success',
+            'fail' => 'application/pages/national_insurance_number_fail',
+            'thin_file' => 'application/pages/thin_file_failure',
+            'fraud' => 'application/pages/fraud_failure',
+        ];
+
+        return [
+            [
+                false,
+                $templates,
+                [
+                    "decisionText" => "Accept",
+                    "decision" => "ACCEPT",
+                    "score" => 95
+                ],
+                "application/pages/national_insurance_number_success"
+            ],
+            [
+                false,
+                $templates,
+                [
+                    "decisionText" => "Continue",
+                    "decision" => "CONTINUE",
+                    "score" => 95
+                ],
+                "application/pages/national_insurance_number_success"
+            ],
+            [
+                false,
+                $templates,
+                [
+                    "decisionText" => "Refer",
+                    "decision" => "REFER",
+                    "score" => 95
+                ],
+                "application/pages/national_insurance_number_success"
+            ],
+            [
+                false,
+                $templates,
+                [
+                    "decisionText" => "No Decision",
+                    "decision" => "NODECISION",
+                    "score" => 970
+                ],
+                "application/pages/thin_file_failure"
+            ],
+            [
+                true,
+                $templates,
+                [
+                    "decisionText" => "Stop",
+                    "decision" => "STOP",
+                    "score" => 980
+                ],
+                "application/pages/fraud_failure"
             ],
         ];
     }
