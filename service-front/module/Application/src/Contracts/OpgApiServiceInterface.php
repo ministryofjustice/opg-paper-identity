@@ -134,7 +134,7 @@ interface OpgApiServiceInterface
     /**
      * @return DependencyCheck
      */
-    public function getServiceAvailability(): DependencyCheck;
+    public function getServiceAvailability(string $uuid = null): DependencyCheck;
 
     /**
      * @return array{decision: string}

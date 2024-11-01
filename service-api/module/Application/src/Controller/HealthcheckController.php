@@ -113,6 +113,33 @@ class HealthcheckController extends AbstractActionController
             'Name' => $this->ssmServiceAvailability
         ])->toArray();
 
-        return new JsonModel(json_decode($status['Parameter']['Value'], true));
+        $services = json_decode($status['Parameter']['Value'], true);
+
+        try {
+            $uuid = $this->getRequest()->getQuery('uuid');
+            if (! is_null($uuid)) {
+                /**
+                 * @psalm-suppress PossiblyInvalidCast
+                 */
+                $case = $this->dataQuery->getCaseByUUID($uuid);
+
+                if (
+                    ! is_null($case)
+                ) {
+                    /**
+                     * @psalm-suppress PossiblyNullPropertyFetch
+                     */
+                    if ($case->fraudScore->decision === 'STOP' || $case->fraudScore->decision === 'NODECISION') {
+                        $services['NATIONAL_INSURANCE_NUMBER'] = false;
+                        $services['DRIVING_LICENCE'] = false;
+                        $services['PASSPORT'] = false;
+                        $services['message'] = "Fraud check failure is now restricting ID options.";
+                    }
+                }
+            }
+        } catch (\Exception $exception) {
+            return new JsonModel($services);
+        }
+        return new JsonModel($services);
     }
 }
