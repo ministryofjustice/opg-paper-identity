@@ -105,7 +105,7 @@ interface OpgApiServiceInterface
 
     public function updateCaseSetDocumentComplete(string $uuid): void;
     
-    public function updateCaseSetIdentityCheckPassed(string $uuid): void;
+    // public function updateCaseSetIdentityCheckPassed(string $uuid): void;
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
 

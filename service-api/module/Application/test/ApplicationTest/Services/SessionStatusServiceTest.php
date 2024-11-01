@@ -10,6 +10,7 @@ use Application\Model\Entity\CounterService;
 use Application\Sirius\EventSender;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
+use Application\Helpers\CaseOutcomeCalculator;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +22,7 @@ use Psr\Log\LoggerInterface;
 class SessionStatusServiceTest extends TestCase
 {
     private DataWriteHandler&MockObject $dataHandler;
+    private CaseOutcomeCalculator&MockObject $caseOutcomeCalculator;
     private YotiService&MockObject $yotiService;
     private SessionStatusService $sut;
     private LoggerInterface&MockObject $logger;
@@ -30,11 +32,13 @@ class SessionStatusServiceTest extends TestCase
     {
         $this->dataHandler = $this->createMock(DataWriteHandler::class);
         $this->yotiService = $this->createMock(YotiService::class);
+        $this->caseOutcomeCalculator = $this->createMock(CaseOutcomeCalculator::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->eventSender = $this->createMock(EventSender::class);
 
         $this->sut = new SessionStatusService(
             $this->yotiService,
+            $this->caseOutcomeCalculator,
             $this->dataHandler,
             $this->logger,
             $this->eventSender,
@@ -133,21 +137,26 @@ class SessionStatusServiceTest extends TestCase
             ->withAnyParameters()
             ->willReturn($response);
 
-        $this->dataHandler
-            ->expects(self::exactly(1))
-            ->method('insertUpdateData')
-            ->with($caseData);
-
-        $this->eventSender
+        $this->caseOutcomeCalculator
             ->expects($this->once())
-            ->method('send')
-            ->with('identity-check-resolved', [
-                'reference' => 'opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                'actorType' => 'donor',
-                'lpaIds' => ['M-TIU9-0TJU-84TU'],
-                'time' => '2019-04-18T14:08:18Z',
-                'outcome' => 'success',
-            ]);
+            ->method('updateSendIdentityCheck')
+            ->with($caseData, '2019-04-18T14:08:18Z');
+
+        // $this->dataHandler
+        //     ->expects(self::exactly(1))
+        //     ->method('insertUpdateData')
+        //     ->with($caseData);
+
+        // $this->eventSender
+        //     ->expects($this->once())
+        //     ->method('send')
+        //     ->with('identity-check-resolved', [
+        //         'reference' => 'opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+        //         'actorType' => 'donor',
+        //         'lpaIds' => ['M-TIU9-0TJU-84TU'],
+        //         'time' => '2019-04-18T14:08:18Z',
+        //         'outcome' => 'success',
+        //     ]);
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
@@ -205,21 +214,27 @@ class SessionStatusServiceTest extends TestCase
             ->expects($this->once())->method('retrieveResults')
             ->willReturn($response);
 
-        $this->dataHandler
-            ->expects(self::once())
-            ->method('insertUpdateData')
-            ->with($caseData);
 
-        $this->eventSender
+        $this->caseOutcomeCalculator
             ->expects($this->once())
-            ->method('send')
-            ->with('identity-check-resolved', [
-                'reference' => 'opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                'actorType' => 'donor',
-                'lpaIds' => ['M-TIU9-0TJU-84TU'],
-                'time' => '2019-04-18T14:08:18Z',
-                'outcome' => 'failure',
-            ]);
+            ->method('updateSendIdentityCheck')
+            ->with($caseData, '2019-04-18T14:08:18Z');
+
+        // $this->dataHandler
+        //     ->expects(self::once())
+        //     ->method('insertUpdateData')
+        //     ->with($caseData);
+
+        // $this->eventSender
+        //     ->expects($this->once())
+        //     ->method('send')
+        //     ->with('identity-check-resolved', [
+        //         'reference' => 'opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+        //         'actorType' => 'donor',
+        //         'lpaIds' => ['M-TIU9-0TJU-84TU'],
+        //         'time' => '2019-04-18T14:08:18Z',
+        //         'outcome' => 'failure',
+        //     ]);
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
@@ -263,9 +278,14 @@ class SessionStatusServiceTest extends TestCase
             ->method('retrieveResults')
             ->willReturn($response);
 
-        $this->dataHandler
-            ->method('insertUpdateData')
+        $this->caseOutcomeCalculator
+            ->expects($this->once())
+            ->method('updateSendIdentityCheck')
             ->willThrowException(new InvalidArgumentException('Test Invalid Argument Exception'));
+
+        // $this->dataHandler
+        //     ->method('insertUpdateData')
+        //     ->willThrowException(new InvalidArgumentException('Test Invalid Argument Exception'));
 
         $this->logger->expects($this->once())
             ->method('error')

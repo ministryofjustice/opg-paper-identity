@@ -336,16 +336,16 @@ return [
                     ],
                 ],
             ],
-            'identity_check_passed' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/identity-check-passed',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'setIdentityCheckPassedAction',
-                    ],
-                ],
-            ],
+            // 'identity_check_passed' => [
+            //     'type' => Segment::class,
+            //     'options' => [
+            //         'route' => '/cases/:uuid/identity-check-passed',
+            //         'defaults' => [
+            //             'controller' => Controller\IdentityController::class,
+            //             'action' => 'setIdentityCheckPassed',
+            //         ],
+            //     ],
+            // ],
             'update_dob' => [
                 'type' => Segment::class,
                 'options' => [

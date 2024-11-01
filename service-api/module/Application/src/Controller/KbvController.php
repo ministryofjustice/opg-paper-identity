@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Fixtures\DataQueryHandler;
+use Application\Helpers\CaseOutcomeCalculator;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\Problem;
 use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Datetime;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -21,6 +23,7 @@ class KbvController extends AbstractActionController
 {
     public function __construct(
         private readonly DataQueryHandler $dataQueryHandler,
+        private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
         private readonly KBVServiceInterface $KBVService,
     ) {
     }
@@ -72,6 +75,9 @@ class KbvController extends AbstractActionController
                 'complete' => true,
                 'passed' => $result->isPass(),
             ];
+
+            $case->identityCheckPassed = true;
+            $this->caseOutcomeCalculator->updateSendIdentityCheck($case, (new DateTime())->format('c'));
         } else {
             $response = [
                 'complete' => false,

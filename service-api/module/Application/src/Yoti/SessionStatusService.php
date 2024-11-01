@@ -10,6 +10,7 @@ use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
 use Application\Sirius\EventSender;
 use Application\Yoti\Http\Exception\YotiException;
+use Application\Helpers\CaseOutcomeCalculator;
 use DateTime;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -19,6 +20,7 @@ class SessionStatusService
 {
     public function __construct(
         private readonly YotiServiceInterface $yotiService,
+        private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
         private readonly DataWriteHandler $dataImportHandler,
         private readonly LoggerInterface $logger,
         private readonly EventSender $eventSender,
@@ -60,19 +62,13 @@ class SessionStatusService
 
             $caseData->counterService->state = $state;
             $caseData->counterService->result = $finalResult;
+            $caseData->identityCheckPassed = $finalResult;
 
-            $this->dataImportHandler->insertUpdateData($caseData);
+            $this->caseOutcomeCalculator->updateSendIdentityCheck(
+                $caseData,
+                $response['resources']['id_documents'][0]['created_at'] ?? (new DateTime())->format('c')
+            );
 
-            //add to logs until we can send status updates directly to Sirius
-            $this->logger->info("Update for CaseId " . $caseData->id . "- State: $state, Result: " . $finalResult);
-
-            $this->eventSender->send("identity-check-resolved", [
-                "reference" => "opg:" . $caseData->id,
-                "actorType" => $caseData->personType,
-                "lpaIds" => $caseData->lpas,
-                "time" => $response['resources']['id_documents'][0]['created_at'] ?? (new DateTime())->format('c'),
-                "outcome" => $finalResult ? 'success' : 'failure',
-            ]);
         } catch (YotiException $e) {
             $this->logger->error('Yoti result error: ' . $e->getMessage());
         } catch (InvalidArgumentException $exception) {

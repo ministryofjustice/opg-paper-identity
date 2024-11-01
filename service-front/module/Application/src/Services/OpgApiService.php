@@ -277,16 +277,16 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function updateCaseSetIdentityCheckPassed(string $uuid): void
-    {
-        $url = sprintf("/cases/%s/identity-check-passed", $uuid);
+    // public function updateCaseSetIdentityCheckPassed(string $uuid): void
+    // {
+    //     $url = sprintf("/cases/%s/identity-check-passed", $uuid);
 
-        try {
-            $this->makeApiRequest($url, 'POST');
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
+    //     try {
+    //         $this->makeApiRequest($url, 'POST');
+    //     } catch (\Exception $exception) {
+    //         throw new OpgApiException($exception->getMessage());
+    //     }
+    // }
 
 
     public function updateCaseSetDob(string $uuid, string $dob): void
