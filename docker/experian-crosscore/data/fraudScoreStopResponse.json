@@ -1,0 +1,266 @@
+{
+  "responseHeader": {
+    "requestType": "FraudScore",
+    "clientReferenceId": "-FraudScore-continue",
+    "expRequestId": "RB000000000126",
+    "messageTime": "2024-07-25T10:51:46Z",
+    "overallResponse": {
+      "decision": "STOP",
+      "decisionText": "Stop",
+      "decisionReasons": [
+        "Processing completed successfully",
+        "Low Risk Machine Learning score"
+      ],
+      "recommendedNextActions": [],
+      "spareObjects": []
+    },
+    "responseCode": "R0201",
+    "responseType": "INFO",
+    "responseMessage": "Workflow Complete.",
+    "tenantID": "623c97f7ff2e44528aa3fba116372d",
+    "category": "COMPLIANCE_INQUIRY"
+  },
+  "clientResponsePayload": {
+    "orchestrationDecisions": [
+      {
+        "sequenceId": "1",
+        "decisionSource": "uk-crp",
+        "decision": "STOP",
+        "decisionReasons": [
+          "Processing completed successfully"
+        ],
+        "score": 0,
+        "decisionText": "STOP",
+        "nextAction": "STOP",
+        "decisionTime": "2024-07-25T10:51:47Z"
+      },
+      {
+        "sequenceId": "2",
+        "decisionSource": "MachineLearning",
+        "decision": "STOP",
+        "decisionReasons": [
+          "High Risk Machine Learning score"
+        ],
+        "score": 980,
+        "decisionText": "Stop",
+        "nextAction": "Stop",
+        "appReference": "",
+        "decisionTime": "2024-07-25T10:51:47Z"
+      }
+    ],
+    "decisionElements": [
+      {
+        "serviceName": "uk-crpverify",
+        "applicantId": "MA_APPLICANT1",
+        "appReference": "8GYMT9LX8W",
+        "warningsErrors": [],
+        "otherData": {
+          "response": {
+            "contactId": "MA1",
+            "nameId": "MANAME1",
+            "uuid": "dd6d2775-fb55-4631-bbb4-b5dc241fb4fb"
+          }
+        },
+        "auditLogs": [
+          {
+            "eventType": "BUREAU DATA",
+            "eventDate": "2024-07-25T10:51:47Z",
+            "eventOutcome": "No Match Found"
+          }
+        ]
+      },
+      {
+        "serviceName": "MachineLearning",
+        "normalizedScore": 100,
+        "score": 265,
+        "appReference": "fraud-score-1.0",
+        "otherData": {
+          "probabilities": {
+            "0": 0.7347659938874493,
+            "1": 0.26523400611255066
+          },
+          "probabilityMultiplier": 1000,
+          "modelInputs": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            -1,
+            0,
+            0,
+            0
+          ]
+        },
+        "decisions": [
+          {
+            "element": "Reason 1",
+            "value": "6.7",
+            "reason": "PA04 - Number of previous vehicle financing applications"
+          }
+        ]
+      }
+    ]
+  },
+  "originalRequestData": {
+    "contacts": [
+      {
+        "id": "MA1",
+        "person": {
+          "personDetails": {
+            "maritalStatus": "SIN",
+            "occupancyStatus": "OWE",
+            "dateOfBirth": "1955-06-23"
+          },
+          "personIdentifier": "",
+          "names": [
+            {
+              "type": "CURRENT",
+              "title": "MR",
+              "firstName": "MARK",
+              "surName": "ADOLFSON",
+              "middleNames": "",
+              "id": "MANAME1"
+            }
+          ]
+        },
+        "addresses": [
+          {
+            "id": "MACADDRESS1",
+            "addressType": "CURRENT",
+            "indicator": "RESIDENTIAL",
+            "buildingNumber": "17",
+            "postal": "NE23 7TD",
+            "street": "FOX LEA WALK",
+            "postTown": "CRAMLINGTON",
+            "county": "NORTHUMBERLAND",
+            "timeAtAddress": {
+              "value": "36",
+              "unit": "MONTH"
+            },
+            "residentFrom": {
+              "fullDateFrom": "2010-08-25"
+            },
+            "residentTo": {
+              "fullDateTo": "2020-08-25"
+            }
+          },
+          {
+            "id": "MAPADDRESS1",
+            "indicator": "RESIDENTIAL",
+            "addressType": "PREVIOUS",
+            "buildingNumber": "11",
+            "postal": "SA18 3NJ",
+            "street": "ARGYLL TERRAC",
+            "postTown": "Stockport",
+            "county": "Greater Manchester",
+            "timeAtAddress": {
+              "value": "36",
+              "unit": "MONTH"
+            },
+            "residentFrom": {
+              "fullDateFrom": "2000-08-25"
+            },
+            "residentTo": {
+              "fullDateTo": "2010-08-25"
+            }
+          }
+        ],
+        "telephones": [
+          {
+            "id": "MATELEPHONE1",
+            "number": "0115854258",
+            "phoneIdentifier": "HOME"
+          }
+        ],
+        "emails": [
+          {
+            "id": "MAEMAIL1",
+            "type": "HOME",
+            "email": "TestFraud@hotmail.com"
+          }
+        ],
+        "bankAccount": {
+          "id": "MABANK1",
+          "sortCode": "070116",
+          "clearAccountNumber": "00136076",
+          "timeWithBank": {
+            "value": "3",
+            "unit": "YEAR"
+          }
+        }
+      }
+    ],
+    "control": [
+      {
+        "option": "ML_MODEL_CODE",
+        "value": "bfs"
+      }
+    ],
+    "application": {
+      "originalRequestTime": "2018-03-18T02:20:04Z",
+      "status": "ACCPT",
+      "type": "CREDIT",
+      "productDetails": {
+        "productCode": "DEV_PC",
+        "productAmount": {
+          "amount": "50000"
+        },
+        "depositAmount": {
+          "amount": "5000"
+        },
+        "lendingTerm": {
+          "duration": "36",
+          "unit": "MONTH"
+        }
+      },
+      "applicants": [
+        {
+          "id": "MA_APPLICANT1",
+          "contactId": "MA1",
+          "type": "INDIVIDUAL",
+          "applicantType": "MAIN_APPLICANT",
+          "consent": "true"
+        }
+      ]
+    },
+    "source": ""
+  }
+}

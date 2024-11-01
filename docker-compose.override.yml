@@ -2,12 +2,15 @@ services:
   # MOCKS
   sirius-mock:
     ports:
-      - 8088:4010
+      - 8088:8080
 
   yoti-mock:
     ports:
       - 8334:8080
 
+  experian-crosscore-mock:
+    ports:
+      - 8082:8080
   # API
   api:
     volumes:
