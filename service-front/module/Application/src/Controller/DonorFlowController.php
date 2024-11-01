@@ -420,6 +420,8 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
 
+        $this->opgApiService->updateCaseSetIdentityCheckPassed($uuid);
+
         return $view->setTemplate('application/pages/identity_check_passed');
     }
 
