@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
@@ -496,7 +497,7 @@ class IdentityControllerTest extends TestCase
     public function testRequestFraudCheck(
         string $uuid,
         CaseData $modelResponse,
-        array $response
+        ResponseDTO $response
     ): void {
 
         $this->dataQueryHandlerMock
@@ -521,7 +522,7 @@ class IdentityControllerTest extends TestCase
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
-        $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
+        $this->assertEquals($response->toArray(), json_decode($this->getResponse()->getContent(), true));
         $this->assertModuleName('application');
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
@@ -560,7 +561,7 @@ class IdentityControllerTest extends TestCase
             ],
         ];
 
-        $successMockResponseData = [
+        $successMockResponseData = new ResponseDTO([
             "responseHeader" => [
                 "requestType" => "FraudScore",
                 "clientReferenceId" => "974daa9e-8128-49cb-9728-682c72fa3801-FraudScore-continue",
@@ -586,18 +587,6 @@ class IdentityControllerTest extends TestCase
             ],
             "clientResponsePayload" => [
                 "orchestrationDecisions" => [
-                    [
-                        "sequenceId" => "1",
-                        "decisionSource" => "uk-crp",
-                        "decision" => "CONTINUE",
-                        "decisionReasons" => [
-                            "Processing completed successfully"
-                        ],
-                        "score" => 0,
-                        "decisionText" => "Continue",
-                        "nextAction" => "Continue",
-                        "decisionTime" => "2024-09-03T11:19:08Z"
-                    ],
                     [
                         "sequenceId" => "2",
                         "decisionSource" => "MachineLearning",
@@ -756,7 +745,7 @@ class IdentityControllerTest extends TestCase
                 ],
                 "source" => ""
             ]
-        ];
+        ]);
 
         return [
             [
@@ -764,13 +753,6 @@ class IdentityControllerTest extends TestCase
                 CaseData::fromArray($modelResponse),
                 $successMockResponseData,
             ],
-//            [
-//                $uuid,
-//                $notAddedLpa,
-//                CaseData::fromArray($modelResponse),
-//                true,
-//                "LPA is not added to this case"
-//            ],
         ];
     }
 }
