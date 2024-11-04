@@ -11,7 +11,6 @@ use Application\Model\Entity\Problem;
 use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Datetime;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -76,8 +75,8 @@ class KbvController extends AbstractActionController
                 'passed' => $result->isPass(),
             ];
 
-            $case->identityCheckPassed = true;
-            $this->caseOutcomeCalculator->updateSendIdentityCheck($case, (new DateTime())->format('c'));
+            $case->identityCheckPassed = $result->isPass();
+            $this->caseOutcomeCalculator->updateSendIdentityCheck($case, date_create()->format('c'));
         } else {
             $response = [
                 'complete' => false,
