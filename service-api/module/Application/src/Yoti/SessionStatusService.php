@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Application\Yoti;
 
 use Application\Enums\IdMethod;
-use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
-use Application\Sirius\EventSender;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Helpers\CaseOutcomeCalculator;
 use DateTime;
@@ -21,9 +19,7 @@ class SessionStatusService
     public function __construct(
         private readonly YotiServiceInterface $yotiService,
         private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
-        private readonly DataWriteHandler $dataImportHandler,
         private readonly LoggerInterface $logger,
-        private readonly EventSender $eventSender,
     ) {
     }
 
@@ -66,9 +62,8 @@ class SessionStatusService
 
             $this->caseOutcomeCalculator->updateSendIdentityCheck(
                 $caseData,
-                $response['resources']['id_documents'][0]['created_at'] ?? (new DateTime())->format('c')
+                $response['resources']['id_documents'][0]['created_at'] ?? date_create()->format('c')
             );
-
         } catch (YotiException $e) {
             $this->logger->error('Yoti result error: ' . $e->getMessage());
         } catch (InvalidArgumentException $exception) {
