@@ -151,11 +151,12 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getIdCheckQuestions(string $uuid): array|false
     {
-        try {
+//        try {
+        echo json_encode($this->makeApiRequest("/cases/$uuid/kbv-questions"));
             return $this->makeApiRequest("/cases/$uuid/kbv-questions");
-        } catch (OpgApiException $opgApiException) {
-            return false;
-        }
+//        } catch (OpgApiException $opgApiException) {
+//            return false;
+//        }
     }
 
     public function checkIdCheckAnswers(string $uuid, array $answers): array
