@@ -1,6 +1,6 @@
 describe("Identify a Certificate Provider", () => {
     it("lets you identify with National Insurance number", () => {
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-1234-5678-90AB");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
         cy.contains("How will they prove their identity?");
         cy.contains("National Insurance number").click();
@@ -47,7 +47,7 @@ describe("Identify a Certificate Provider", () => {
         const d = new Date();
         let year = d.getFullYear();
 
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-1234-1234-1234");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
         // console.log(cy.location('pathname'));
 
@@ -72,7 +72,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Out of date");
 
         // Check passport date validation succeeds
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-1234-1234-1234");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("Help with checking if passport is in date");
         cy.contains("Help with checking if passport is in date").click();
         cy.contains("Enter passport expiry date. For example 31 03 2012").should('be.visible');
@@ -88,7 +88,7 @@ describe("Identify a Certificate Provider", () => {
 
 
         // Check passport selection on form succeeds
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-1234-1234-1234");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("Passport").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("Does the name match the ID?");
@@ -165,7 +165,7 @@ describe("Identify a Certificate Provider", () => {
         const d = new Date();
         let year = d.getFullYear();
 
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-1234-1234-1234");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("How will they prove their identity?");
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("How will they prove their identity?");
@@ -232,7 +232,7 @@ describe("Identify a Certificate Provider", () => {
     });
 
     it("lets you identify with National Insurance number and use an alternate address", () => {
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-1234-5678-90AB");
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
         cy.contains("How will they prove their identity?");
         cy.contains("National Insurance number").click();

@@ -30,7 +30,16 @@ For local development we mock several external services. The mock behaviour is e
 
 ### Sirius
 
-When requesting an LPA from Sirius, the mock generates a random record based on Sirius's API response structure. This changes on each request, so using the same LPA UID won't return the same data if you start the ID check again.
+When requesting an LPA from Sirius, only certain LPA numbers are supported by the mock service. This is to ensure that the user data returned is consistent with the other services presently mocked by the system, eg Experian.
+
+The LPAs are as follows: 
+
+M-XYXY-YAGA-35G3 - donor that will pass Experian's Fraudscore
+M-XYXY-YAGA-35G4 - donor that will fail Experian's Fraudscore with a no decision (ie person cannot be identified)
+M-XYXY-YAGA-35G0 - donor that will fail Experian's Fraudscore with a STOP result (ie person has been identified and is high risk)
+M-XYXY-YAGA-0000 - certificate provider that will pass Experian's Fraudscore
+M-XYXY-YAGA-0001 - certificate provider that will fail Experian's Fraudscore with a no decision (ie person cannot be identified)
+M-XYXY-YAGA-0002 - certificate provider that will fail Experian's Fraudscore with a STOP result (ie person has been identified and is high risk)
 
 When sending a completed ID check or document to Sirius, it will always return a 2xx response as long as the request shape matches the API specification.
 
