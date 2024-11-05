@@ -37,27 +37,3 @@ resources:
     response:
       statusCode: 200
       scriptFile: useCertificateProviderJsonFileStop.groovy
-
-  - path: "/api/v1/users/current"
-    method: get
-    response:
-      statusCode: 200
-      scriptFile: useUserJsonFile.groovy
-
-  - path: "/api/v1/identity-check"
-    method: post
-    response:
-      statusCode: 204
-      scriptFile: useIdentityCheckJsonFile.groovy
-
-  - path: "/api/v1/lpas/M-XYXY-YAGA-35G3/documents"
-    method: post
-    response:
-      statusCode: 201
-      scriptFile: usePdfResponseJsonFile.groovy
-
-  - path: "/api/v1/lpas/M-XYXY-YAGA-0000/documents"
-    method: post
-    response:
-      statusCode: 201
-      scriptFile: usePdfResponseJsonFile.groovy
