@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "branchNameStrict": true,
   "branchPrefix": "renovate-",
@@ -15,25 +15,29 @@
     {
       "groupName": "Minor & Patch Updates",
       "groupSlug": "all-minor-patch-updates",
-      "matchPackagePatterns": [
-        "*"
-      ],
       "matchUpdateTypes": [
         "minor",
         "patch"
       ],
-      "stabilityDays": 3,
-      "schedule": ["on sunday"],
-      "commitMessageSuffix": " #patch"
+      "minimumReleaseAge": "3 days",
+      "schedule": [
+        "on sunday"
+      ],
+      "commitMessageSuffix": " #patch",
+      "matchPackageNames": [
+        "*"
+      ]
     }
   ],
   "major": {
-    "schedule": ["on sunday"],
+    "schedule": [
+      "on sunday"
+    ],
     "commitMessageSuffix": " #minor"
   },
   "vulnerabilityAlerts": {
     "groupName": "Security Alerts",
-    "stabilityDays": 0,
+    "minimumReleaseAge": null,
     "rangeStrategy": "update-lockfile",
     "commitMessagePrefix": "[SECURITY]",
     "branchTopic": "{{{datasource}}}-{{{depName}}}-vulnerability",
