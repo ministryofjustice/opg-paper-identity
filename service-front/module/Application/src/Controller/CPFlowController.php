@@ -66,7 +66,7 @@ class CPFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
@@ -328,7 +328,7 @@ class CPFlowController extends AbstractActionController
 
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
@@ -361,7 +361,7 @@ class CPFlowController extends AbstractActionController
 
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
@@ -395,7 +395,7 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $serviceAvailability = $this->opgApiService->getServiceAvailability();
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
 
         $view->setVariable('details_data', $detailsData);
