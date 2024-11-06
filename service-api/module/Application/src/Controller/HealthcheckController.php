@@ -129,7 +129,11 @@ class HealthcheckController extends AbstractActionController
                     /**
                      * @psalm-suppress PossiblyNullPropertyFetch
                      */
-                    if ($case->fraudScore->decision === 'STOP' || $case->fraudScore->decision === 'NODECISION') {
+                    if (
+                        $case->fraudScore->decision === 'STOP' ||
+                        $case->fraudScore->decision === 'NODECISION' ||
+                        $case->kbvResult !== 'PASS'
+                    ) {
                         $services['NATIONAL_INSURANCE_NUMBER'] = false;
                         $services['DRIVING_LICENCE'] = false;
                         $services['PASSPORT'] = false;

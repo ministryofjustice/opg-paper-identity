@@ -111,6 +111,8 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?FraudScore $fraudScore = null;
 
+    public ?string $kbvResult = null;
+
     /**
      * @param array<string, mixed> $data
      */
@@ -206,6 +208,9 @@ class CaseData implements JsonSerializable
             $arr['fraudScore'] = $this->fraudScore;
         }
 
+        if ($this->kbvResult !== null) {
+            $arr['kbvResult'] = $this->kbvResult;
+        }
         return $arr;
     }
 
