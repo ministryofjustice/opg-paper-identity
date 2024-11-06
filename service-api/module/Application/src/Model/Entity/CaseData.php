@@ -168,7 +168,8 @@ class CaseData implements JsonSerializable
      *     counterService?: CounterService,
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
-     *     fraudScore?: FraudScore
+     *     fraudScore?: FraudScore,
+     *     kbvResult?: string,
      * }
      */
     public function toArray(): array

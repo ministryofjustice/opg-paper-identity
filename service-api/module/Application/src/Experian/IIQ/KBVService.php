@@ -142,14 +142,14 @@ class KBVService implements KBVServiceInterface
                 $this->writeHandler->updateCaseData(
                     $caseData->id,
                     'kbvResult',
-                    "PASS"
+                    AnswersOutcome::CompletePass->value
                 );
                 return AnswersOutcome::CompletePass;
             } else {
                 $this->writeHandler->updateCaseData(
                     $caseData->id,
                     'kbvResult',
-                    "FAIL"
+                    AnswersOutcome::CompleteFail->value
                 );
                 return AnswersOutcome::CompleteFail;
             }
