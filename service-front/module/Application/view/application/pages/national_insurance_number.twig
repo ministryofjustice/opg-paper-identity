@@ -12,13 +12,9 @@
             {%  endblock %}
         </h1>
         <h2 class="govuk-heading-m">Name</h2>
-        <p class="govuk-body">
-            {{ details_data.firstName }} {{ details_data.lastName }}
-        </p>
+        <p class="govuk-body" id="nino_fullname">{{ details_data.firstName }} {{ details_data.lastName }}</p>
         <h2 class="govuk-heading-m">Date of birth</h2>
-        <p class="govuk-body">
-            {{ dob_full }}
-        </p>
+        <p class="govuk-body" id="nino_dob">{{ formattedDob }}</p>
 
         <div class="govuk-form-group {% if form.get('nino').messages %}govuk-form-group--error{% endif %}">
             <h2 class="govuk-label-wrapper">
