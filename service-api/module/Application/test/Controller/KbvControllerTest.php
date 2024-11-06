@@ -9,6 +9,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
+use Application\Helpers\CaseOutcomeCalculator;
 use ApplicationTest\TestCase;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
@@ -19,6 +20,7 @@ class KbvControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $KBVServiceMock;
+    private CaseOutcomeCalculator&MockObject $caseOutcomeCalculatorMock;
 
     public function setUp(): void
     {
@@ -35,7 +37,7 @@ class KbvControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
-
+        $this->caseOutcomeCalculatorMock = $this->createMock(CaseOutcomeCalculator::class);
 
         parent::setUp();
 
@@ -43,6 +45,7 @@ class KbvControllerTest extends TestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
+        $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseOutcomeCalculatorMock);
     }
 
     /**
@@ -67,6 +70,15 @@ class KbvControllerTest extends TestCase
                 ->method('checkAnswers')
                 ->with($provided['answers'], $uuid)
                 ->willReturn($result);
+
+            if ($result->isComplete() and $caseData !== null) {
+                if ($result->isPass()) {
+                    $caseData->identityCheckPassed = true;
+                }
+                $this->caseOutcomeCalculatorMock->expects($this->once())
+                    ->method('updateSendIdentityCheck')
+                    ->with($caseData, self::callback(fn(): bool => true));
+            }
         }
 
         $this->dispatchJSON(
@@ -109,6 +121,7 @@ class KbvControllerTest extends TestCase
         $providedIncorrect['answers']['two'] = 'incorrect answer';
 
         $actual = CaseData::fromArray([
+            'id' => $uuid,
             'personType' => 'donor',
             'firstName' => '',
             'lastName' => '',

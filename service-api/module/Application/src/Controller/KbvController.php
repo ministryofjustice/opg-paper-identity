@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Fixtures\DataQueryHandler;
+use Application\Helpers\CaseOutcomeCalculator;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\Problem;
 use Application\View\JsonModel;
+use Lcobucci\Clock\SystemClock;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 
@@ -21,7 +23,9 @@ class KbvController extends AbstractActionController
 {
     public function __construct(
         private readonly DataQueryHandler $dataQueryHandler,
+        private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
         private readonly KBVServiceInterface $KBVService,
+        private readonly SystemClock $clock
     ) {
     }
 
@@ -67,11 +71,16 @@ class KbvController extends AbstractActionController
 
         $result = $this->KBVService->checkAnswers($data['answers'], $uuid);
 
+        var_dump($this->clock);
+
         if ($result->isComplete()) {
             $response = [
                 'complete' => true,
                 'passed' => $result->isPass(),
             ];
+
+            $case->identityCheckPassed = $result->isPass();
+            $this->caseOutcomeCalculator->updateSendIdentityCheck($case, $this->clock-now()->format('c'));
         } else {
             $response = [
                 'complete' => false,
