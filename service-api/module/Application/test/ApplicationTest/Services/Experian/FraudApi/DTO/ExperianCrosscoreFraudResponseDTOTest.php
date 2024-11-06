@@ -70,27 +70,10 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
     {
         $this->assertEquals(
             [
-                "decisionText" => "Continue",
                 "decision" => "CONTINUE",
                 "score" => 265,
             ],
             $this->experianCrosscoreFraudResponseDTO->toArray()
-        );
-    }
-
-    public function testResponseHeader(): void
-    {
-        $this->assertEquals(
-            $this->data['responseHeader'],
-            $this->experianCrosscoreFraudResponseDTO->responseHeader()
-        );
-    }
-
-    public function testDecisionText(): void
-    {
-        $this->assertEquals(
-            'Continue',
-            $this->experianCrosscoreFraudResponseDTO->decisionText()
         );
     }
 
