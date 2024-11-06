@@ -132,12 +132,12 @@ class HealthcheckController extends AbstractActionController
                     if (
                         $case->fraudScore->decision === 'STOP' ||
                         $case->fraudScore->decision === 'NODECISION' ||
-                        $case->kbvResult === 'FAIL'
+                        $case->kbvResult === 'COMPLETE_FAIL'
                     ) {
                         $services['NATIONAL_INSURANCE_NUMBER'] = false;
                         $services['DRIVING_LICENCE'] = false;
                         $services['PASSPORT'] = false;
-                        $services['message'] = "Fraud check failure is now restricting ID options.";
+                        $services['message'] = "Identity check failure is now restricting ID options.";
                     }
                 }
             }
