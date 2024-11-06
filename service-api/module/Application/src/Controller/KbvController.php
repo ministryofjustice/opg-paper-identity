@@ -11,6 +11,7 @@ use Application\Model\Entity\Problem;
 use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Clock\ClockInterface;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -24,6 +25,7 @@ class KbvController extends AbstractActionController
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
         private readonly KBVServiceInterface $KBVService,
+        private readonly ClockInterface $clock
     ) {
     }
 
@@ -70,13 +72,13 @@ class KbvController extends AbstractActionController
         $result = $this->KBVService->checkAnswers($data['answers'], $uuid);
 
         if ($result->isComplete()) {
+            $case->identityCheckPassed = $result->isPass();
+            $this->caseOutcomeCalculator->updateSendIdentityCheck($case, $this->clock->now()->format('c'));
+
             $response = [
                 'complete' => true,
                 'passed' => $result->isPass(),
             ];
-
-            $case->identityCheckPassed = $result->isPass();
-            $this->caseOutcomeCalculator->updateSendIdentityCheck($case, date_create()->format('c'));
         } else {
             $response = [
                 'complete' => false,
