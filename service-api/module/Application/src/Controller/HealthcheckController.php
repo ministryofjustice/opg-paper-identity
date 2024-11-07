@@ -4,20 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
-use Application\Model\Entity\Problem;
-use Application\Yoti\Http\Exception\YotiException;
-use Application\Yoti\SessionConfig;
-use Application\Yoti\SessionStatusService;
-use Application\Yoti\YotiServiceInterface;
 use Aws\Ssm\SsmClient;
-use DateTime;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -31,6 +23,7 @@ class HealthcheckController extends AbstractActionController
         private readonly DataQueryHandler $dataQuery,
         private readonly SsmClient $ssmClient,
         private string $ssmServiceAvailability,
+        private readonly LoggerInterface $logger,
         private array $config = []
     ) {
     }
@@ -117,27 +110,21 @@ class HealthcheckController extends AbstractActionController
 
         try {
             $uuid = $this->getRequest()->getQuery('uuid');
-            if (! is_null($uuid)) {
-                /**
-                 * @psalm-suppress PossiblyInvalidCast
-                 */
+            if (is_string($uuid)) {
                 $case = $this->dataQuery->getCaseByUUID($uuid);
 
                 if (
-                    ! is_null($case)
+                    ! is_null($case) &&
+                    ($case->fraudScore?->decision === 'STOP' || $case->fraudScore?->decision === 'NODECISION')
                 ) {
-                    /**
-                     * @psalm-suppress PossiblyNullPropertyFetch
-                     */
-                    if ($case->fraudScore->decision === 'STOP' || $case->fraudScore->decision === 'NODECISION') {
-                        $services['NATIONAL_INSURANCE_NUMBER'] = false;
-                        $services['DRIVING_LICENCE'] = false;
-                        $services['PASSPORT'] = false;
-                        $services['message'] = "Fraud check failure is now restricting ID options.";
-                    }
+                    $services['NATIONAL_INSURANCE_NUMBER'] = false;
+                    $services['DRIVING_LICENCE'] = false;
+                    $services['PASSPORT'] = false;
+                    $services['message'] = "Fraud check failure is now restricting ID options.";
                 }
             }
         } catch (\Exception $exception) {
+            $this->logger->error('Unable to parse Fraudscore data ' . $exception->getMessage());
             return new JsonModel($services);
         }
         return new JsonModel($services);
