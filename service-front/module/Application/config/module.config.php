@@ -549,6 +549,16 @@ return [
                             ],
                         ],
                     ],
+                    'confirm_vouching' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/confirm-vouching',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'confirmVouching',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -557,6 +567,7 @@ return [
         'factories' => [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
+            Controller\VouchingFlowController::class => LazyControllerAbstractFactory::class,
             Controller\IndexController::class => LazyControllerAbstractFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
