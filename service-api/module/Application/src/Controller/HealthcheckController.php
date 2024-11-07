@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Fixtures\DataQueryHandler;
-use Aws\Ssm\SsmClient;
+use Application\Fixtures\SsmHandler;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Http\Response;
 use Application\View\JsonModel;
@@ -21,7 +21,7 @@ class HealthcheckController extends AbstractActionController
 {
     public function __construct(
         private readonly DataQueryHandler $dataQuery,
-        private readonly SsmClient $ssmClient,
+        private readonly SsmHandler $ssmHandler,
         private string $ssmServiceAvailability,
         private readonly LoggerInterface $logger,
         private array $config = []
@@ -65,11 +65,7 @@ class HealthcheckController extends AbstractActionController
         $dependencies = true;
         $dbConnection = $this->dataQuery->healthCheck();
 
-        $ssmValues = $this->ssmClient->getParameter([
-            'Name' => $this->ssmServiceAvailability
-        ])->toArray();
-
-        $dependencyStatus = json_decode($ssmValues['Parameter']['Value'], true);
+        $dependencyStatus = $this->ssmHandler->getParameter($this->ssmServiceAvailability);
 
         if (empty($dependencyStatus)) {
             $dependencies = false;
@@ -102,11 +98,7 @@ class HealthcheckController extends AbstractActionController
 
     public function serviceAvailabilityAction(): JsonModel
     {
-        $status = $this->ssmClient->getParameter([
-            'Name' => $this->ssmServiceAvailability
-        ])->toArray();
-
-        $services = json_decode($status['Parameter']['Value'], true);
+        $services = $this->ssmHandler->getParameter($this->ssmServiceAvailability);
 
         try {
             $uuid = $this->getRequest()->getQuery('uuid');

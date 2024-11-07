@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
+use Application\Controller\HealthcheckController;
 use Application\Controller\IdentityController;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
@@ -20,17 +21,15 @@ use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Aws\Ssm\SsmClient;
-use Aws\Result;
+use Application\Fixtures\SsmHandler;
 
 class HealthcheckControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
-    private string $ssmServiceAvailability = 'AWS_SSM_SERVICE_AVAILABILITY';
+    private string $ssmServiceAvailability = 'service-availability';
     private LoggerInterface&MockObject $loggerMock;
-
     private FraudApiService $experianCrosscoreFraudApiService;
-    private Result $ssmClient;
+    private SsmHandler $ssmHandler;
 
     public function setUp(): void
     {
@@ -48,7 +47,7 @@ class HealthcheckControllerTest extends TestCase
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
-        $this->ssmClient = $this->createMock(Result::class);
+        $this->ssmHandler = $this->createMock(SsmHandler::class);
 
         parent::setUp();
 
@@ -57,7 +56,7 @@ class HealthcheckControllerTest extends TestCase
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(LoggerInterface::class, $this->loggerMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
-        $serviceManager->setService(Result::class, $this->ssmClient);
+        $serviceManager->setService(SsmHandler::class, $this->ssmHandler);
     }
 
     public function dispatchJSON(string $path, string $method, mixed $data = null): void
@@ -80,7 +79,7 @@ class HealthcheckControllerTest extends TestCase
     public function testServiceAvailabilityAction(
         string $uuid,
         CaseData $case,
-        string $services,
+        array $services,
         array $response
     ): void {
         $this->dataQueryHandlerMock
@@ -88,11 +87,14 @@ class HealthcheckControllerTest extends TestCase
             ->method('getCaseByUUID')
             ->willReturn($case);
 
-        $this->ssmClient->expects($this->once())
+        /**
+         * @psalm-suppress UndefinedMethod
+         */
+        $this->ssmHandler
+            ->expects($this->once())
             ->method('getParameter')
-            ->with([
-                'Name' => $this->ssmServiceAvailability
-            ])->willReturn($services);
+            ->with($this->ssmServiceAvailability)
+            ->willReturn($services);
 
         $this->dispatchJSON(
             sprintf('/service-availability?uuid=%s', $uuid),
@@ -100,11 +102,11 @@ class HealthcheckControllerTest extends TestCase
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
-        $this->assertEquals('{"result":"' . $response . '"}', $this->getResponse()->getContent());
+        $this->assertEquals(json_encode($response), $this->getResponse()->getContent());
         $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IdentityController');
-        $this->assertMatchedRouteName('change_case_lpa/put');
+        $this->assertControllerName(HealthcheckController::class); // as specified in router's controller name alias
+        $this->assertControllerClass('HealthcheckController');
+        $this->assertMatchedRouteName('service_availability');
     }
 
     public static function serviceAvailabilityData(): array
@@ -133,32 +135,73 @@ class HealthcheckControllerTest extends TestCase
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+                'id_method' => "DRIVING_LICENCE",
+                'id_country' => "GBR",
+                'id_route' => "TELEPHONE",
             ],
+            "fraudScore" => [
+                "decision" => "ACCEPT",
+                "decisionText" => "Accept",
+                "score" => 0
+            ]
         ];
 
-        $services = json_encode([
-            'Parameter' => [
-                'Value' => [
-                    "EXPERIAN" => true,
-                    "NATIONAL_INSURANCE_NUMBER" => true,
-                    "DRIVING_LICENCE" => true,
-                    "PASSPORT" => true,
-                    "POST_OFFICE" => true
-                ]
+        $caseNoDec = [
+            "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
+            "personType" => "donor",
+            "firstName" => "Mary Ann",
+            "lastName" => "Chapman",
+            "dob" => "1949-01-01",
+            "address" => [
+                "postcode" => "SW1B 1BB",
+                "country" => "UK",
+                "town" => "town",
+                "line2" => "Road",
+                "line1" => "1 Street",
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+                "M-VGAS-OAGA-34G9",
+            ],
+            "documentComplete" => false,
+            "alternateAddress" => [
+            ],
+            "searchPostcode" => null,
+            "idMethodIncludingNation" => [
+                'id_method' => "DRIVING_LICENCE",
+                'id_country' => "GBR",
+                'id_route' => "TELEPHONE",
+            ],
+            "fraudScore" => [
+                "decision" => "NODECISION",
+                "decisionText" => "No Decision",
+                "score" => 0
             ]
-        ]);
+        ];
+
+        $services = [
+            "EXPERIAN" => true,
+            "NATIONAL_INSURANCE_NUMBER" => true,
+            "DRIVING_LICENCE" => true,
+            "PASSPORT" => true,
+            "POST_OFFICE" => true
+        ];
 
         $response = [
-            [
-                "EXPERIAN" => true,
-                "NATIONAL_INSURANCE_NUMBER" => true,
-                "DRIVING_LICENCE" => true,
-                "PASSPORT" => true,
-                "POST_OFFICE" => true
-            ]
+            "EXPERIAN" => true,
+            "NATIONAL_INSURANCE_NUMBER" => true,
+            "DRIVING_LICENCE" => true,
+            "PASSPORT" => true,
+            "POST_OFFICE" => true
+        ];
+
+        $responseNoDec = [
+            "EXPERIAN" => true,
+            "NATIONAL_INSURANCE_NUMBER" => false,
+            "DRIVING_LICENCE" => false,
+            "PASSPORT" => false,
+            "POST_OFFICE" => true,
+            "message" => "Fraud check failure is now restricting ID options."
         ];
 
         return [
@@ -167,6 +210,12 @@ class HealthcheckControllerTest extends TestCase
                 CaseData::fromArray($case),
                 $services,
                 $response
+            ],
+            [
+                $uuid,
+                CaseData::fromArray($caseNoDec),
+                $services,
+                $responseNoDec
             ]
         ];
     }

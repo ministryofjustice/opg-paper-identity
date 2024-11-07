@@ -24,8 +24,10 @@ use Application\Factories\EventSenderFactory;
 use Application\Factories\ExperianCrosscoreAuthApiServiceFactory;
 use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
+use Application\Factories\SsmHandlerFactory;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Fixtures\SsmHandler;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
@@ -425,6 +427,7 @@ return [
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
             SsmClient::class => SsmClientFactory::class,
+            SsmHandler::class => SsmHandlerFactory::class,
             EventBridgeClient::class => EventBridgeClientFactory::class,
             DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),

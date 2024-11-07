@@ -14,8 +14,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Application\Fixtures\SsmHandler;
 use Application\Fixtures\DataQueryHandler;
-use Aws\Ssm\SsmClient;
 use Psr\Log\LogLevel;
 use Application\Services\Logging\OpgFormatter;
 
@@ -45,7 +45,7 @@ class HealthcheckControllerFactory implements FactoryInterface
          */
         return new HealthcheckController(
             $container->get(DataQueryHandler::class),
-            $container->get(SsmClient::class),
+            $container->get(SsmHandler::class),
             $ssmServiceAvailability,
             $logger,
             $config
