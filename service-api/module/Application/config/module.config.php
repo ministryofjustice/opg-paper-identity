@@ -43,6 +43,8 @@ use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Method;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Lcobucci\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
@@ -448,6 +450,7 @@ return [
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,
             AuthManager::class => AuthManagerFactory::class,
+            ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
         ],
     ],
     'view_manager' => [
