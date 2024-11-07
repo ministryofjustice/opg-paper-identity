@@ -14,7 +14,6 @@ use ApplicationTest\TestCase;
 use DateTimeImmutable;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
-use Lcobucci\Clock\SystemClock;
 use Lcobucci\Clock\FrozenClock;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -52,7 +51,7 @@ class KbvControllerTest extends TestCase
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
         $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseOutcomeCalculatorMock);
-        $serviceManager->setService(SystemClock::class, $this->mockClock);
+        $serviceManager->setService(ClockInterface::class, $this->mockClock);
     }
 
     /**
@@ -84,7 +83,7 @@ class KbvControllerTest extends TestCase
                 }
                 $this->caseOutcomeCalculatorMock->expects($this->once())
                     ->method('updateSendIdentityCheck')
-                    ->with($caseData, '2024-11-06 13:49:30');
+                    ->with($caseData, '2024-11-06T13:49:30+00:00');
             }
         }
 

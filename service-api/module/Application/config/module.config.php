@@ -10,7 +10,6 @@ use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
-use Application\Controller\Factory\KbvControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
@@ -44,6 +43,8 @@ use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Method;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Lcobucci\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
@@ -417,7 +418,6 @@ return [
             Controller\IdentityController::class => LazyControllerAbstractFactory::class,
             Controller\YotiController::class => LazyControllerAbstractFactory::class,
             Controller\HealthcheckController::class => HealthcheckControllerFactory::class,
-            Controller\KbvController::class => KbvControllerFactory::class,
         ],
     ],
 
@@ -450,6 +450,7 @@ return [
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,
             AuthManager::class => AuthManagerFactory::class,
+            ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
         ],
     ],
     'view_manager' => [
