@@ -55,8 +55,12 @@ class IndexController extends AbstractActionController
         $type = $this->params()->fromQuery("personType");
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
-            $personTypeDescription = $type === 'donor' ? "Donors" : " Certificate Providers";
-            throw new HttpException(400, "These LPAs are for different " . $personTypeDescription);
+            $personTypeDescription = [
+                'donor' => "Donors",
+                'certificateProvidor' => "Certificate Providers",
+                'voucher' => "Vouchers"
+            ];
+            throw new HttpException(400, "These LPAs are for different " . $personTypeDescription[$type]);
         }
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
@@ -72,9 +76,13 @@ class IndexController extends AbstractActionController
             $detailsData['address']
         );
 
-        return $type === 'donor' ?
-            $this->redirect()->toRoute('root/how_donor_confirms', ['uuid' => $case['uuid']]) :
-            $this->redirect()->toRoute('root/cp_how_cp_confirms', ['uuid' => $case['uuid']]);
+        $route = [
+            'donor' => 'root/how_donor_confirms',
+            'certificateProvider' => 'root/cp_how_cp_confirms',
+            'voucher' => 'root/confirm_vouching'
+        ];
+
+        return $this->redirect()->toRoute($route[$type], ['uuid' => $case['uuid']]);
     }
 
     /**
@@ -126,6 +134,33 @@ class IndexController extends AbstractActionController
                 'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
                 'last_name' => $data['opg.poas.lpastore']['certificateProvider']['lastName'],
                 'dob' => '1000-01-01', //temp setting should be null in prod
+                'address' => $address,
+            ];
+        } elseif ($type == 'voucher') {
+            // at the moment i'm just returning the donor info...
+            if (! empty($data['opg.poas.lpastore'])) {
+                $address = (new AddressProcessorHelper())->processAddress(
+                    $data['opg.poas.lpastore']['donor']['address'],
+                    'lpaStoreAddressType'
+                );
+
+                return [
+                    'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
+                    'last_name' => $data['opg.poas.lpastore']['donor']['lastName'],
+                    'dob' => (new DateTime($data['opg.poas.lpastore']['donor']['dateOfBirth']))->format("Y-m-d"),
+                    'address' => $address,
+                ];
+            }
+
+            $address = (new AddressProcessorHelper())->processAddress(
+                $data['opg.poas.sirius']['donor'],
+                'siriusAddressType'
+            );
+
+            return [
+                'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
+                'last_name' => $data['opg.poas.sirius']['donor']['surname'],
+                'dob' => DateTime::createFromFormat('d/m/Y', $data['opg.poas.sirius']['donor']['dob'])->format("Y-m-d"),
                 'address' => $address,
             ];
         }
