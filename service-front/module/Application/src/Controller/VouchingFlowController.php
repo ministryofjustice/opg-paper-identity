@@ -34,8 +34,7 @@ class VouchingFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost();
-            if (   $formData['eligibility'] == "eligibility_confirmed"
-                && $formData['declaration'] == "declaration_confirmed") {
+            if (isset($formData['eligibility']) && isset($formData['declaration'])) {
                 // will need to update to route to vouching how-will-you-confirm page
                 return $this->redirect()->toRoute("root/confirm_vouching", ['uuid' => $uuid]);
             }
