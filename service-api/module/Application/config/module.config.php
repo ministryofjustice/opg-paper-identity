@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
-use Application\Aws\SsmClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\Aws\SsmClientFactory;
+use Application\Aws\SsmHandler;
+use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
@@ -427,6 +429,7 @@ return [
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
             SsmClient::class => SsmClientFactory::class,
+            SsmHandler::class => SsmHandlerFactory::class,
             EventBridgeClient::class => EventBridgeClientFactory::class,
             DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),

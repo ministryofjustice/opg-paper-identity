@@ -4,20 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Fixtures\DataWriteHandler;
+use Application\Aws\SsmHandler;
 use Application\Fixtures\DataQueryHandler;
-use Application\Model\Entity\Problem;
-use Application\Yoti\Http\Exception\YotiException;
-use Application\Yoti\SessionConfig;
-use Application\Yoti\SessionStatusService;
-use Application\Yoti\YotiServiceInterface;
-use Aws\Ssm\SsmClient;
-use DateTime;
-use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Http\Response;
 use Application\View\JsonModel;
+use Laminas\Http\Response;
+use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -29,8 +21,9 @@ class HealthcheckController extends AbstractActionController
 {
     public function __construct(
         private readonly DataQueryHandler $dataQuery,
-        private readonly SsmClient $ssmClient,
+        private readonly SsmHandler $ssmHandler,
         private string $ssmServiceAvailability,
+        private readonly LoggerInterface $logger,
         private array $config = []
     ) {
     }
@@ -66,17 +59,16 @@ class HealthcheckController extends AbstractActionController
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public function healthCheckDependenciesAction(): JsonModel
     {
         $ok = true;
         $dependencies = true;
         $dbConnection = $this->dataQuery->healthCheck();
 
-        $ssmValues = $this->ssmClient->getParameter([
-            'Name' => $this->ssmServiceAvailability
-        ])->toArray();
-
-        $dependencyStatus = json_decode($ssmValues['Parameter']['Value'], true);
+        $dependencyStatus = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
 
         if (empty($dependencyStatus)) {
             $dependencies = false;
@@ -107,12 +99,32 @@ class HealthcheckController extends AbstractActionController
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function serviceAvailabilityAction(): JsonModel
     {
-        $status = $this->ssmClient->getParameter([
-            'Name' => $this->ssmServiceAvailability
-        ])->toArray();
+        $services = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
 
-        return new JsonModel(json_decode($status['Parameter']['Value'], true));
+        try {
+            $uuid = $this->getRequest()->getQuery('uuid');
+            if (is_string($uuid)) {
+                $case = $this->dataQuery->getCaseByUUID($uuid);
+
+                if (
+                    ! is_null($case) &&
+                    ($case->fraudScore?->decision === 'STOP' || $case->fraudScore?->decision === 'NODECISION')
+                ) {
+                    $services['NATIONAL_INSURANCE_NUMBER'] = false;
+                    $services['DRIVING_LICENCE'] = false;
+                    $services['PASSPORT'] = false;
+                    $services['message'] = "Fraud check failure is now restricting ID options.";
+                }
+            }
+        } catch (\Exception $exception) {
+            $this->logger->error('Unable to parse Fraudscore data ' . $exception->getMessage());
+            return new JsonModel($services);
+        }
+        return new JsonModel($services);
     }
 }
