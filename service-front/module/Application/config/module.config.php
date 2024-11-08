@@ -552,7 +552,7 @@ return [
                     'confirm_vouching' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/confirm-vouching',
+                            'route' => '/:uuid/vouching/confirm-vouching',
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
                                 'action' => 'confirmVouching',
