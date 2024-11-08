@@ -40,5 +40,6 @@
         <env name="EXPERIAN_BASE_URL" value="EXPERIAN_BASE_URL" />
         <env name="YOTI_BASE_URL" value="http://yoti-mock:8080" />
         <env name="YOTI_SESSION_DEADLINE" value="30" />
+        <env name="AWS_SSM_SERVICE_AVAILABILITY" value="service-availability" />
     </php>
 </phpunit>

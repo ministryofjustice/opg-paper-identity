@@ -11,9 +11,13 @@ use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Application\Fixtures\SsmHandler;
 use Application\Fixtures\DataQueryHandler;
-use Aws\Ssm\SsmClient;
+use Psr\Log\LogLevel;
+use Application\Services\Logging\OpgFormatter;
 
 class HealthcheckControllerFactory implements FactoryInterface
 {
@@ -31,13 +35,19 @@ class HealthcheckControllerFactory implements FactoryInterface
         $ssmServiceAvailability = getenv("AWS_SSM_SERVICE_AVAILABILITY");
         $config = $container->get('Config');
 
+        $streamHandler = new StreamHandler('php://stderr', LogLevel::INFO);
+        $streamHandler->setFormatter(new OpgFormatter());
+
+        $logger = new Logger('opg-paper-identity/api', [$streamHandler]);
+
         /**
          * @psalm-suppress PossiblyFalseArgument
          */
         return new HealthcheckController(
             $container->get(DataQueryHandler::class),
-            $container->get(SsmClient::class),
+            $container->get(SsmHandler::class),
             $ssmServiceAvailability,
+            $logger,
             $config
         );
     }
