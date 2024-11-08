@@ -55,8 +55,12 @@ class IndexController extends AbstractActionController
         $type = $this->params()->fromQuery("personType");
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
-            $personTypeDescription = $type === 'donor' ? "Donors" : " Certificate Providers";
-            throw new HttpException(400, "These LPAs are for different " . $personTypeDescription);
+            $personTypeDescription = [
+                'donor' => "Donors",
+                'certificateProvidor' => "Certificate Providers",
+                'voucher' => "Vouchers"
+            ];
+            throw new HttpException(400, "These LPAs are for different " . $personTypeDescription[$type]);
         }
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
@@ -72,9 +76,13 @@ class IndexController extends AbstractActionController
             $detailsData['address']
         );
 
-        return $type === 'donor' ?
-            $this->redirect()->toRoute('root/how_donor_confirms', ['uuid' => $case['uuid']]) :
-            $this->redirect()->toRoute('root/cp_how_cp_confirms', ['uuid' => $case['uuid']]);
+        $route = [
+            'donor' => 'root/how_donor_confirms',
+            'certificateProvider' => 'root/cp_how_cp_confirms',
+            'voucher' => 'root/confirm_vouching'
+        ];
+
+        return $this->redirect()->toRoute($route[$type], ['uuid' => $case['uuid']]);
     }
 
     /**
@@ -83,7 +91,7 @@ class IndexController extends AbstractActionController
      */
     private function processLpaResponse(string $type, array $data): array
     {
-        if ($type === 'donor') {
+        if (in_array($type, array('donor', 'voucher'))) {
             if (! empty($data['opg.poas.lpastore'])) {
                 $address = (new AddressProcessorHelper())->processAddress(
                     $data['opg.poas.lpastore']['donor']['address'],
@@ -109,7 +117,7 @@ class IndexController extends AbstractActionController
                 'dob' => DateTime::createFromFormat('d/m/Y', $data['opg.poas.sirius']['donor']['dob'])->format("Y-m-d"),
                 'address' => $address,
             ];
-        } elseif ($type === 'certificateProvider') {
+        } else {
             if ($data['opg.poas.lpastore'] === null) {
                 throw new HttpException(
                     400,
