@@ -350,9 +350,9 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['deadline'];
     }
 
-    public function getServiceAvailability(): DependencyCheck
+    public function getServiceAvailability(string $uuid = null): DependencyCheck
     {
-        $url = "/service-availability";
+        $url = is_null($uuid) ? "/service-availability" : "/service-availability?uuid=$uuid";
 
         try {
             $this->makeApiRequest($url, 'GET');
