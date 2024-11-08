@@ -13,7 +13,7 @@
             <div class="moj-identity-bar__actions">
                 <div class="govuk-!-static-margin-top-2">
                     <a
-                        href="/{{ details_data['id'] }}/abandon-flow?last_page={{ path() }}"
+                        href="{{ ('./abandon-flow?last_page=' ~ path()) | basepath }}"
                         role="button"
                         draggable="false"
                         class="govuk-link govuk-!-font-size-16"
