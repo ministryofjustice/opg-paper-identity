@@ -68,7 +68,6 @@ class HealthcheckControllerTest extends TestCase
     }
 
     /**
-     * @test
      * @dataProvider serviceAvailabilityData
      */
     public function testServiceAvailability(
@@ -136,7 +135,6 @@ class HealthcheckControllerTest extends TestCase
             ],
             "fraudScore" => [
                 "decision" => "ACCEPT",
-                "decisionText" => "Accept",
                 "score" => 0
             ]
         ];
@@ -169,7 +167,6 @@ class HealthcheckControllerTest extends TestCase
             ],
             "fraudScore" => [
                 "decision" => "NODECISION",
-                "decisionText" => "No Decision",
                 "score" => 0
             ]
         ];
