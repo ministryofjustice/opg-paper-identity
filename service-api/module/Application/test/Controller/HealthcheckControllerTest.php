@@ -68,9 +68,10 @@ class HealthcheckControllerTest extends TestCase
     }
 
     /**
+     * @test
      * @dataProvider serviceAvailabilityData
      */
-    public function testServiceAvailabilityAction(
+    public function testServiceAvailability(
         string $uuid,
         CaseData $case,
         array $services,
