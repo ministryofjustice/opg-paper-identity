@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Aws\SsmHandler;
 use Application\Fixtures\DataQueryHandler;
-use Application\Fixtures\SsmHandler;
-use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Http\Response;
 use Application\View\JsonModel;
+use Laminas\Http\Response;
+use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -59,13 +59,16 @@ class HealthcheckController extends AbstractActionController
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public function healthCheckDependenciesAction(): JsonModel
     {
         $ok = true;
         $dependencies = true;
         $dbConnection = $this->dataQuery->healthCheck();
 
-        $dependencyStatus = $this->ssmHandler->getParameter($this->ssmServiceAvailability);
+        $dependencyStatus = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
 
         if (empty($dependencyStatus)) {
             $dependencies = false;
@@ -96,9 +99,12 @@ class HealthcheckController extends AbstractActionController
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function serviceAvailabilityAction(): JsonModel
     {
-        $services = $this->ssmHandler->getParameter($this->ssmServiceAvailability);
+        $services = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
 
         try {
             $uuid = $this->getRequest()->getQuery('uuid');

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Application\Factories;
+namespace Application\Aws;
 
-use Application\Fixtures\SsmHandler;
 use Aws\Ssm\SsmClient;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class SsmHandlerFactory implements FactoryInterface
 {
@@ -17,11 +17,11 @@ class SsmHandlerFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): SsmHandler
     {
-        /** @var array{"aws": array<string, string|bool>} $config */
-        $config = $container->get('Config');
+        $logger = $container->get(LoggerInterface::class);
 
-        $ssmClient = new SsmClient($config['aws']);
-
-        return new SsmHandler($ssmClient);
+        return new SsmHandler(
+            $container->get(SsmClient::class),
+            $logger
+        );
     }
 }

@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Controller;
 
+use Application\Aws\SsmHandler;
 use Application\Controller\HealthcheckController;
-use Application\Controller\IdentityController;
-use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
-use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
-use Application\Yoti\SessionConfig;
-use Application\Yoti\YotiService;
-use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
@@ -21,7 +16,6 @@ use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Application\Fixtures\SsmHandler;
 
 class HealthcheckControllerTest extends TestCase
 {
@@ -92,7 +86,7 @@ class HealthcheckControllerTest extends TestCase
          */
         $this->ssmHandler
             ->expects($this->once())
-            ->method('getParameter')
+            ->method('getJsonParameter')
             ->with($this->ssmServiceAvailability)
             ->willReturn($services);
 
