@@ -91,7 +91,7 @@ class IndexController extends AbstractActionController
      */
     private function processLpaResponse(string $type, array $data): array
     {
-        if (in_array($type, array('donor', 'voucher'))) {
+        if (in_array($type, ['donor', 'voucher'])) {
             if (! empty($data['opg.poas.lpastore'])) {
                 $address = (new AddressProcessorHelper())->processAddress(
                     $data['opg.poas.lpastore']['donor']['address'],
