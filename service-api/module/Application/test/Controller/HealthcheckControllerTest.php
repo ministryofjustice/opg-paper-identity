@@ -40,7 +40,7 @@ class HealthcheckControllerTest extends TestCase
         $configOverrides = [];
 
         $this->setApplicationConfig(ArrayUtils::merge(
-            include __DIR__ . '/../../../../config/application.config.php',
+            include_once __DIR__ . '/../../../../config/application.config.php',
             $configOverrides
         ));
 
