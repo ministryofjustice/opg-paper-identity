@@ -23,10 +23,6 @@ class FraudScore extends Entity
 
     #[Annotation\Required(true)]
     #[Annotation\Validator(NotEmpty::class)]
-    public string $decisionText;
-
-    #[Annotation\Required(true)]
-    #[Annotation\Validator(NotEmpty::class)]
     public int $score;
 
     /**

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Aws\DynamoDbClientFactory;
-use Application\Aws\SsmClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\AwsSecretsCacheFactory;
+use Application\Aws\SsmClientFactory;
+use Application\Aws\SsmHandler;
+use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
@@ -43,6 +45,8 @@ use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Method;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Lcobucci\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 
 $tableName = getenv("AWS_DYNAMODB_TABLE_NAME");
@@ -425,6 +429,7 @@ return [
         'factories' => [
             DynamoDbClient::class => DynamoDbClientFactory::class,
             SsmClient::class => SsmClientFactory::class,
+            SsmHandler::class => SsmHandlerFactory::class,
             EventBridgeClient::class => EventBridgeClientFactory::class,
             DataQueryHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataQueryHandler(
                 $serviceLocator->get(DynamoDbClient::class),
@@ -448,6 +453,7 @@ return [
             WaspClient::class => WaspClientFactory::class,
             IIQClient::class => IIQClientFactory::class,
             AuthManager::class => AuthManagerFactory::class,
+            ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
         ],
     ],
     'view_manager' => [

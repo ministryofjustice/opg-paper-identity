@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Application\Controller\Factory;
 
-use Application\Contracts\OpgApiServiceInterface;
+use Application\Aws\SsmHandler;
 use Application\Controller\HealthcheckController;
-use Application\Controller\PostOfficeFlowController;
-use Application\Helpers\FormProcessorHelper;
-use Application\PostOffice\DocumentTypeRepository;
-use Application\Services\SiriusApiService;
-use Laminas\ServiceManager\Factory\FactoryInterface;
-use Psr\Container\ContainerInterface;
 use Application\Fixtures\DataQueryHandler;
-use Aws\Ssm\SsmClient;
+use Application\Services\Logging\OpgFormatter;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class HealthcheckControllerFactory implements FactoryInterface
 {
@@ -30,14 +30,15 @@ class HealthcheckControllerFactory implements FactoryInterface
         /** @var string $siriusBaseUrl */
         $ssmServiceAvailability = getenv("AWS_SSM_SERVICE_AVAILABILITY");
         $config = $container->get('Config');
-
+        $logger = $container->get(LoggerInterface::class);
         /**
          * @psalm-suppress PossiblyFalseArgument
          */
         return new HealthcheckController(
             $container->get(DataQueryHandler::class),
-            $container->get(SsmClient::class),
+            $container->get(SsmHandler::class),
             $ssmServiceAvailability,
+            $logger,
             $config
         );
     }
