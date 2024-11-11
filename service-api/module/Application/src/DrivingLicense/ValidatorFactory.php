@@ -26,7 +26,7 @@ class ValidatorFactory implements FactoryInterface
         if ($useMock) {
             return new MockValidator();
         }
-        //@TODO implement real API service
+
         $baseUri = getenv("DRIVINGLICENSE_API_BASE_URL");
         if (! is_string($baseUri) || empty($baseUri)) {
             throw new RuntimeException("DRIVINGLICENSE_BASE_URL is empty");
