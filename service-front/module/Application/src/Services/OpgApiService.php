@@ -160,11 +160,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkIdCheckAnswers(string $uuid, array $answers): array
     {
-        try {
-            return $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
-        } catch (OpgApiException $opgApiException) {
-            throw $opgApiException;
-        }
+        return $this->makeApiRequest("/cases/$uuid/kbv-answers", 'POST', $answers);
     }
 
     public function createCase(
@@ -364,7 +360,7 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException('Service availability data missing!');
         }
 
-        return (new DependencyCheck($this->responseData));
+        return new DependencyCheck($this->responseData);
     }
 
     public function requestFraudCheck(string $uuid): array

@@ -13,6 +13,7 @@ class AddressProcessorHelper
 {
     /**
      * @psalm-suppress UnusedProperty
+     * Used dynamically in processAddress
      */
     private array $lpaStoreAddressType = [
         'line1' => 'line1',
@@ -25,6 +26,7 @@ class AddressProcessorHelper
 
     /**
      * @psalm-suppress UnusedProperty
+     * Used dynamically in processAddress
      */
     private array $siriusAddressType = [
         'line1' => 'addressLine1',

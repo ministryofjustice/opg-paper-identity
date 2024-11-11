@@ -8,7 +8,6 @@ use Application\Controller\YotiController;
 use Application\Fixtures\DataWriteHandler;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
-use Application\Yoti\Http\Exception\YotiException;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
@@ -16,13 +15,12 @@ use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
-use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class YotiControllerTest extends TestCase
 {
-    private YotiService&MockObject $YotiServiceMock;
+    private YotiService&MockObject $yotiServiceMock;
     private SessionStatusService&MockObject $statusService;
 
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
@@ -44,7 +42,7 @@ class YotiControllerTest extends TestCase
             $configOverrides
         ));
 
-        $this->YotiServiceMock = $this->createMock(YotiService::class);
+        $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->statusService = $this->createMock(SessionStatusService::class);
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->dataHandler = $this->createMock(DataWriteHandler::class);
@@ -55,7 +53,7 @@ class YotiControllerTest extends TestCase
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(YotiServiceInterface::class, $this->YotiServiceMock);
+        $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(SessionStatusService::class, $this->statusService);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
@@ -136,7 +134,7 @@ class YotiControllerTest extends TestCase
             'Neots, Cambridgeshire","post_code":"PE19 1NL"}' .
                     ',"12345675":{"name":"Hampstead","address":"66 High Street, ' .
             'Hampstead Heath, London","post_code":"NW3 6LR"}}';
-        $this->YotiServiceMock
+        $this->yotiServiceMock
             ->expects($this->once())->method('postOfficeBranch')
             ->with('NW1 4PG')
             ->willReturn($this->branchesArray());
@@ -191,17 +189,17 @@ class YotiControllerTest extends TestCase
             ->with($caseData)
             ->willReturn($sessionData);
 
-        $this->YotiServiceMock
+        $this->yotiServiceMock
             ->expects($this->once())->method('createSession')
             ->with($sessionData)
             ->willReturn($response);
 
-        $this->YotiServiceMock
+        $this->yotiServiceMock
             ->expects($this->once())->method('preparePDFLetter')
             ->with($caseData)
             ->willReturn($pdfResponse);
 
-        $this->YotiServiceMock
+        $this->yotiServiceMock
             ->expects($this->once())->method('retrieveLetterPDF')
             ->with($response["data"]["session_id"])
             ->willReturn($pdfLetter);
