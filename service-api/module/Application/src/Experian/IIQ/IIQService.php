@@ -128,7 +128,10 @@ class IIQService
             ]);
 
             if ($request->SAAResult->Results) {
-                if ($request->SAAResult->Results->Outcome !== 'Authentication Questions returned') {
+                if (
+                    $request->SAAResult->Results->Outcome !== 'Authentication Questions returned' &&
+                    $request->SAAResult->Results->Outcome !== 'Insufficient Questions (Unable to Authenticate)'
+                ) {
                     $this->logger->error($request->SAAResult->Results->Outcome);
 
                     throw new CannotGetQuestionsException("Error retrieving questions");
