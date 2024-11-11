@@ -24,7 +24,7 @@ class KbvController extends AbstractActionController
     public function __construct(
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
-        private readonly KBVServiceInterface $KBVService,
+        private readonly KBVServiceInterface $kbvService,
         private readonly ClockInterface $clock
     ) {
     }
@@ -52,7 +52,7 @@ class KbvController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        $questions = $this->KBVService->fetchFormattedQuestions($uuid);
+        $questions = $this->kbvService->fetchFormattedQuestions($uuid);
 
         return new JsonModel($questions);
     }
@@ -69,7 +69,7 @@ class KbvController extends AbstractActionController
             return new JsonModel(new Problem("Missing UUID or unable to find case"));
         }
 
-        $result = $this->KBVService->checkAnswers($data['answers'], $uuid);
+        $result = $this->kbvService->checkAnswers($data['answers'], $uuid);
 
         if ($result->isComplete()) {
             $case->identityCheckPassed = $result->isPass();

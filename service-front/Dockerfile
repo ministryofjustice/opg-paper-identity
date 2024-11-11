@@ -13,7 +13,7 @@ RUN yarn --ignore-scripts
 COPY web web
 RUN yarn build
 
-RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/supported-documents
+ADD https://api.yoti.com/idverify/v1/supported-documents /app/yoti-supported-documents.json
 
 FROM php:8.3-fpm-alpine AS app
 
