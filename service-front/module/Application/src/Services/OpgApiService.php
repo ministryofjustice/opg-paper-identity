@@ -170,16 +170,31 @@ class OpgApiService implements OpgApiServiceInterface
         string $personType,
         array $lpas,
         array $address,
-    ): array {
+     ): array {
 
-        $data = [
-            'firstName' => $firstname,
-            'lastName' => $lastname,
-            'dob' => $dob,
-            'personType' => $personType,
-            'lpas' => $lpas,
-            'address' => $address,
-        ];
+        if ($personType == 'voucher') {
+            $data = [
+                // 'firstName' => 'firstname',
+                // 'lastName' => 'lastname',
+                // 'dob' => '0000-00-00',
+                // 'address' => [],
+                'personType' => $personType,
+                'lpas' => $lpas,
+                'vouchingFor' => [
+                    'firstName' => $firstname,
+                    'lastName' => $lastname,
+                ]
+            ];
+        } else {
+            $data = [
+                'firstName' => $firstname,
+                'lastName' => $lastname,
+                'dob' => $dob,
+                'personType' => $personType,
+                'lpas' => $lpas,
+                'address' => $address,
+            ];
+        }
 
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
