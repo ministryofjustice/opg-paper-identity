@@ -71,10 +71,8 @@ class Aws
                     }
                 }
 
-                if ($client instanceof SqsClient) {
-                    if (isset($args['QueueUrl'])) {
-                        $spanBuilder->setAttribute('aws.queue_url', $args['QueueUrl']);
-                    }
+                if ($client instanceof SqsClient && isset($args['QueueUrl'])) {
+                    $spanBuilder->setAttribute('aws.queue_url', $args['QueueUrl']);
                 }
 
                 $span = $spanBuilder->startSpan();
@@ -97,13 +95,11 @@ class Aws
                     $span->setStatus(StatusCode::STATUS_ERROR, $exception->getMessage());
                 }
 
-                if ($result instanceof ResultInterface) {
-                    if (isset($result['@metadata'])) {
-                        $span->setAttribute(
-                            TraceAttributes::HTTP_RESPONSE_STATUS_CODE,
-                            $result['@metadata']['statusCode']
-                        );
-                    }
+                if ($result instanceof ResultInterface && isset($result['@metadata'])) {
+                    $span->setAttribute(
+                        TraceAttributes::HTTP_RESPONSE_STATUS_CODE,
+                        $result['@metadata']['statusCode']
+                    );
                 }
 
                 $span->end();
