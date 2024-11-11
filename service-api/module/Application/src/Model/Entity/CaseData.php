@@ -41,14 +41,13 @@ class CaseData implements JsonSerializable
     #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
         Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
     ]])]
+    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public ?string $dob = null;
 
-    #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public ?string $firstName = null;
 
-    #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public ?string $lastName = null;
 
     /**
@@ -59,21 +58,19 @@ class CaseData implements JsonSerializable
      *   town?: string,
      *   postcode: string,
      *   country?: string,
-     * }
+     * }|null
      */
     #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?array $address = [];
+    #[Validator(NotEmpty::class)]
+    public ?array $address = null;
 
     /**
      * @var array{
-     *   firstName: string
+     *   firstName: string,
      *   lastName: string,
-     * }
+     * }|null
      */
-    #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?array $vouchingFor = [];
+    public ?array $vouchingFor = null;
 
     /**
      * @var string[]
@@ -163,10 +160,10 @@ class CaseData implements JsonSerializable
      * @return array{
      *     id: string,
      *     personType: "donor"|"certificateProvider",
-     *     firstName: string,
-     *     lastName: string,
+     *     firstName: ?string,
+     *     lastName: ?string,
      *     dob: ?string,
-     *     address: array{
+     *     address: ?array{
      *       line1: string,
      *       line2?: string,
      *       line3?: string,
@@ -174,10 +171,10 @@ class CaseData implements JsonSerializable
      *       postcode: string,
      *       country?: string,
      *     },
-     *     vouchingFor: array{
-     *        firstName: string,
-     *        lastName: string
-     *     }
+     *     vouchingFor: ?array{
+     *       firstName: string,
+     *       lastName: string,
+     *     },
      *     lpas: string[],
      *     kbvQuestions: KBVQuestion[],
      *     iiqControl?: IIQControl,
