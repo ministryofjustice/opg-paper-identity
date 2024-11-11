@@ -81,6 +81,11 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public bool $documentComplete = false;
 
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public bool $identityCheckPassed = false;
+
     /**
      * @var string[]
      */
@@ -160,6 +165,7 @@ class CaseData implements JsonSerializable
      *     kbvQuestions: KBVQuestion[],
      *     iiqControl?: IIQControl,
      *     documentComplete: bool,
+     *     identityCheckPassed: bool,
      *     alternateAddress: ?string[],
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
@@ -180,6 +186,7 @@ class CaseData implements JsonSerializable
             'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
+            'identityCheckPassed' => $this->identityCheckPassed,
             'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
             'yotiSessionId' => $this->yotiSessionId,

@@ -317,6 +317,8 @@ class DonorFlowController extends AbstractActionController
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        echo json_encode($detailsData);
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
 

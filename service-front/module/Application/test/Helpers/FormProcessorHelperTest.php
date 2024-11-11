@@ -449,7 +449,6 @@ class FormProcessorHelperTest extends TestCase
                 false,
                 $templates,
                 [
-                    "decisionText" => "Accept",
                     "decision" => "ACCEPT",
                     "score" => 95
                 ],
@@ -459,7 +458,6 @@ class FormProcessorHelperTest extends TestCase
                 false,
                 $templates,
                 [
-                    "decisionText" => "Continue",
                     "decision" => "CONTINUE",
                     "score" => 95
                 ],
@@ -469,7 +467,6 @@ class FormProcessorHelperTest extends TestCase
                 false,
                 $templates,
                 [
-                    "decisionText" => "Refer",
                     "decision" => "REFER",
                     "score" => 95
                 ],
@@ -479,7 +476,6 @@ class FormProcessorHelperTest extends TestCase
                 false,
                 $templates,
                 [
-                    "decisionText" => "No Decision",
                     "decision" => "NODECISION",
                     "score" => 970
                 ],
@@ -489,7 +485,6 @@ class FormProcessorHelperTest extends TestCase
                 true,
                 $templates,
                 [
-                    "decisionText" => "Stop",
                     "decision" => "STOP",
                     "score" => 980
                 ],
