@@ -26,10 +26,11 @@ class VouchingFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $donor_details = $this->opgApiService->getDetailsData($uuid);
+        $details_data = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(ConfirmVouching::class);
 
-        $view->setVariable('details_data', $donor_details);
+        $view->setVariable('vouching_for', $details_data["vouchingFor"]);
+        $view->setVariable('details_data', $details_data);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
