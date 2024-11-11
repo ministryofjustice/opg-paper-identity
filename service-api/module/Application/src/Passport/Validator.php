@@ -17,7 +17,7 @@ class Validator implements ValidatorInterface
         public readonly Client $client
     ) {
     }
-    //@TODO implement when we have API access
+
     public function validatePassport(int $passportNo): string
     {
         return self::PASS;
