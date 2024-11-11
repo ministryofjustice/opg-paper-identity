@@ -26,11 +26,7 @@ class LpaUidValidator extends AbstractValidator
         if ($lpa === null || $lpa === '') {
             return true;
         }
-            /** @var string $lpa */
-        if (1 === preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa)) {
-                return true;
-        } else {
-                return false;
-        }
+
+        return 1 === preg_match('/M(-([0-9A-Z]){4}){3}/', $lpa);
     }
 }

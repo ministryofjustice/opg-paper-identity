@@ -711,7 +711,6 @@ class OpgApiServiceTest extends TestCase
     {
         $data = [];
         $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
-        $data['dob'] = '1980-01-01';
 
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], ''),
