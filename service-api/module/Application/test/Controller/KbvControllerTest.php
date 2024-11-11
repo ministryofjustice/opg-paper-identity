@@ -22,7 +22,7 @@ use Psr\Clock\ClockInterface;
 class KbvControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
-    private KBVServiceInterface&MockObject $KBVServiceMock;
+    private KBVServiceInterface&MockObject $kbvServiceMock;
     private CaseOutcomeCalculator&MockObject $caseOutcomeCalculatorMock;
     private ClockInterface $mockClock;
 
@@ -40,7 +40,7 @@ class KbvControllerTest extends TestCase
         ));
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
-        $this->KBVServiceMock = $this->createMock(KBVServiceInterface::class);
+        $this->kbvServiceMock = $this->createMock(KBVServiceInterface::class);
         $this->caseOutcomeCalculatorMock = $this->createMock(CaseOutcomeCalculator::class);
         $this->mockClock = new FrozenClock(new DateTimeImmutable('2024-11-06 13:49:30'));
 
@@ -49,7 +49,7 @@ class KbvControllerTest extends TestCase
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
-        $serviceManager->setService(KBVServiceInterface::class, $this->KBVServiceMock);
+        $serviceManager->setService(KBVServiceInterface::class, $this->kbvServiceMock);
         $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseOutcomeCalculatorMock);
         $serviceManager->setService(ClockInterface::class, $this->mockClock);
     }
@@ -72,12 +72,12 @@ class KbvControllerTest extends TestCase
         }
 
         if ($result !== null) {
-            $this->KBVServiceMock->expects($this->once())
+            $this->kbvServiceMock->expects($this->once())
                 ->method('checkAnswers')
                 ->with($provided['answers'], $uuid)
                 ->willReturn($result);
 
-            if ($result->isComplete() and $caseData !== null) {
+            if ($result->isComplete() && $caseData !== null) {
                 if ($result->isPass()) {
                     $caseData->identityCheckPassed = true;
                 }
@@ -186,7 +186,7 @@ class KbvControllerTest extends TestCase
             ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
             ->willReturn($caseData);
 
-        $this->KBVServiceMock
+        $this->kbvServiceMock
             ->expects($this->once())->method('fetchFormattedQuestions')
             ->with('a9bc8ab8-389c-4367-8a9b-762ab3050999')
             ->willReturn($formattedQuestions);
