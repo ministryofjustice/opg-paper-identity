@@ -13,11 +13,11 @@ RUN yarn --ignore-scripts
 COPY web web
 RUN yarn build
 
-RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/supported-documents
+ADD https://api.yoti.com/idverify/v1/supported-documents /app/yoti-supported-documents.json
 
 FROM php:8.3-fpm-alpine AS app
 
-RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DEPS \
+RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers "$PHPIZE_DEPS" \
     && docker-php-ext-install ffi intl opcache \
     && docker-php-ext-enable sodium \
     && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry

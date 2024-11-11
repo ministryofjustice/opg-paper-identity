@@ -12,34 +12,6 @@ use Application\Contracts\OpgApiServiceInterface;
 class AddressProcessorHelper
 {
     /**
-     * @psalm-suppress UnusedProperty
-     */
-    private array $lpaStoreAddressType = [
-        'line1' => 'line1',
-        'line2' => 'line2',
-        'line3' => 'line3',
-        'town' => 'town',
-        'postcode' => 'postcode',
-        'country' => 'country',
-    ];
-
-    /**
-     * @psalm-suppress UnusedProperty
-     */
-    private array $siriusAddressType = [
-        'line1' => 'addressLine1',
-        'line2' => 'addressLine2',
-        'line3' => 'addressLine3',
-        'town' => 'town',
-        'postcode' => 'postcode',
-        'country' => 'country',
-    ];
-
-    public function __construct()
-    {
-    }
-
-    /**
      * @return Address
      */
     public function getAddress(array $address): array
