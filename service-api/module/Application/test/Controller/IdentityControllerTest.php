@@ -26,7 +26,7 @@ class IdentityControllerTest extends TestCase
     private DataWriteHandler&MockObject $dataImportHandler;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
-    private FraudApiService $experianCrosscoreFraudApiService;
+    private FraudApiService&MockObject $experianCrosscoreFraudApiService;
 
     public function setUp(): void
     {
@@ -506,9 +506,6 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn($modelResponse);
 
-        /**
-         * @psalm-suppress UndefinedMethod
-         */
         $this->experianCrosscoreFraudApiService
             ->expects($this->once())
             ->method('getFraudScore')

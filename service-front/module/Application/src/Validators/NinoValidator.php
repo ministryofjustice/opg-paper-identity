@@ -13,7 +13,7 @@ class NinoValidator extends AbstractValidator
     public const NINO_COUNT_NUMBER = 9;
     protected array $messageTemplates = [
         self::NINO_FORMAT => "The National insurance number is not the correct format. Try again.",
-        self::NINO_COUNT => "Enter the full 9 characters of the NI number.  2 letters, 6 numbers 
+        self::NINO_COUNT => "Enter the full 9 characters of the NI number.  2 letters, 6 numbers
         and a final letter, which is always A, B, C, or D",
     ];
 
@@ -40,7 +40,7 @@ class NinoValidator extends AbstractValidator
 
     private function checkPattern(): int
     {
-        return preg_match("/^[A-CEGHJ-PR-TW-Z]{1}[A-CEGHJ-NPR-TW-Z]{1}[0-9]{6}[A-D]{1}$/i", $this->value);
+        return preg_match("/^[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z][0-9]{6}[A-D]$/i", $this->value);
     }
 
     private function checkLength(): bool

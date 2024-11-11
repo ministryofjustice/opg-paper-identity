@@ -357,7 +357,6 @@ class IdentityController extends AbstractActionController
     public function setDocumentCompleteAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
-        //$data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
         $status = Response::STATUS_CODE_200;
 
@@ -394,7 +393,6 @@ class IdentityController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $dob = $this->params()->fromRoute('dob');
-        //$data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
         $status = Response::STATUS_CODE_200;
 
