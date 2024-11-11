@@ -17,7 +17,7 @@ class Validator implements ValidatorInterface
         public readonly Client $client
     ) {
     }
-    //@TODO implement when we have API access
+
     public function validateNINO(string $nino): string
     {
         return self::PASS;
