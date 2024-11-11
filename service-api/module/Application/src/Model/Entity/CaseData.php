@@ -41,13 +41,15 @@ class CaseData implements JsonSerializable
     #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
         Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
     ]])]
-    public ?string $dob;
+    public ?string $dob = null;
 
-    #[Validator(NotEmpty::class)]
-    public string $firstName;
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class)]
+    public ?string $firstName = null;
 
-    #[Validator(NotEmpty::class)]
-    public string $lastName;
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class)]
+    public ?string $lastName = null;
 
     /**
      * @var array{
@@ -59,8 +61,19 @@ class CaseData implements JsonSerializable
      *   country?: string,
      * }
      */
-    #[Validator(NotEmpty::class)]
-    public array $address;
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class)]
+    public ?array $address = [];
+
+    /**
+     * @var array{
+     *   firstName: string
+     *   lastName: string,
+     * }
+     */
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?array $vouchingFor = [];
 
     /**
      * @var string[]
@@ -150,10 +163,10 @@ class CaseData implements JsonSerializable
      * @return array{
      *     id: string,
      *     personType: "donor"|"certificateProvider",
-     *     firstName: string,
-     *     lastName: string,
+     *     firstName: ?string,
+     *     lastName: ?string,
      *     dob: ?string,
-     *     address: array{
+     *     address: ?array{
      *       line1: string,
      *       line2?: string,
      *       line3?: string,
@@ -161,6 +174,10 @@ class CaseData implements JsonSerializable
      *       postcode: string,
      *       country?: string,
      *     },
+     *     vouchingFor: ?array{
+     *        firstName: string,
+     *        lastName: string,
+     *     }
      *     lpas: string[],
      *     kbvQuestions: KBVQuestion[],
      *     iiqControl?: IIQControl,
@@ -184,6 +201,7 @@ class CaseData implements JsonSerializable
             'lastName' => $this->lastName,
             'dob' => $this->dob,
             'address' => $this->address,
+            'vouchingFor' => $this->vouchingFor,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
