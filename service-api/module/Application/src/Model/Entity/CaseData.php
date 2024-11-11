@@ -44,11 +44,11 @@ class CaseData implements JsonSerializable
     public ?string $dob = null;
 
     #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(NotEmpty::class)]
     public ?string $firstName = null;
 
     #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(NotEmpty::class)]
     public ?string $lastName = null;
 
     /**
@@ -62,7 +62,7 @@ class CaseData implements JsonSerializable
      * }
      */
     #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(NotEmpty::class)]
     public ?array $address = [];
 
     /**
@@ -163,10 +163,10 @@ class CaseData implements JsonSerializable
      * @return array{
      *     id: string,
      *     personType: "donor"|"certificateProvider",
-     *     firstName: string,
-     *     lastName: string,
+     *     firstName: ?string,
+     *     lastName: ?string,
      *     dob: ?string,
-     *     address: array{
+     *     address: ?array{
      *       line1: string,
      *       line2?: string,
      *       line3?: string,
@@ -174,9 +174,9 @@ class CaseData implements JsonSerializable
      *       postcode: string,
      *       country?: string,
      *     },
-     *     vouchingFor: array{
+     *     vouchingFor: ?array{
      *        firstName: string,
-     *        lastName: string
+     *        lastName: string,
      *     }
      *     lpas: string[],
      *     kbvQuestions: KBVQuestion[],
