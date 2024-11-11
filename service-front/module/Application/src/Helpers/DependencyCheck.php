@@ -48,7 +48,12 @@ class DependencyCheck
             $processedData[IdMethod::NationalInsuranceNumber->value] === false
         ) {
             $processedData['EXPERIAN'] = false;
-            $message = "Online identity verification it not presently available";
+            $message = "Online identity verification is not presently available";
+        }
+
+        // override message with custom text if it comes back from the api
+        if (array_key_exists('message', $this->statusData)) {
+            $message = $this->statusData['message'];
         }
 
         $this->processedStatus = $processedData;
