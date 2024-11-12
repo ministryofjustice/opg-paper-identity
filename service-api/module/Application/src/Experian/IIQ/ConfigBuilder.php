@@ -48,7 +48,7 @@ class ConfigBuilder
         $saaConfig['LocationDetails'] = [
             'LocationIdentifier' => '1',
             'UKLocation' => [
-                'HouseName' => $case->address["line1"],
+                'HouseName' => $case->address["line1"] ?? '',
                 'Street' => $case->address["line2"] ?? '',
                 'District' => $case->address["line3"] ?? '',
                 'PostTown' => $case->address["town"] ?? '',
