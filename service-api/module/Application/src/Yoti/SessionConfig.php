@@ -153,10 +153,12 @@ class SessionConfig
     /**
      * @throws YotiException
      */
-    public function addressFormatted(array $address): array
+    public function addressFormatted(?array $address): array
     {
         $addressFormat = [];
-        if (! $address['line1'] || $address['line1'] == '') {
+        if (is_null($address)) {
+            throw new YotiException("Address is not set");
+        } elseif (! $address['line1'] || $address['line1'] == '') {
             throw new YotiException("Address line1 missing");
         }
 
