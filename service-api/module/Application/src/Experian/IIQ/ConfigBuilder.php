@@ -48,7 +48,6 @@ class ConfigBuilder
         $saaConfig['LocationDetails'] = [
             'LocationIdentifier' => '1',
             'UKLocation' => [
-                // or de we want to trow an error if address is empty??
                 'HouseName' => $case->address["line1"] ?? '',
                 'Street' => $case->address["line2"] ?? '',
                 'District' => $case->address["line3"] ?? '',
