@@ -73,7 +73,9 @@ class OpgApiService implements OpgApiServiceInterface
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
-            $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
+            if ($response['address']) {
+                $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
+            }
             if (
                 array_key_exists('alternateAddress', $response) &&
                 ! empty($response['alternateAddress'])
@@ -172,14 +174,25 @@ class OpgApiService implements OpgApiServiceInterface
         array $address,
     ): array {
 
-        $data = [
-            'firstName' => $firstname,
-            'lastName' => $lastname,
-            'dob' => $dob,
-            'personType' => $personType,
-            'lpas' => $lpas,
-            'address' => $address,
-        ];
+        if ($personType == 'voucher') {
+            $data = [
+                'personType' => $personType,
+                'lpas' => $lpas,
+                'vouchingFor' => [
+                    'firstName' => $firstname,
+                    'lastName' => $lastname,
+                ]
+            ];
+        } else {
+            $data = [
+                'firstName' => $firstname,
+                'lastName' => $lastname,
+                'dob' => $dob,
+                'personType' => $personType,
+                'lpas' => $lpas,
+                'address' => $address,
+            ];
+        }
 
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
