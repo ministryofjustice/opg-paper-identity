@@ -57,10 +57,10 @@ class IndexController extends AbstractActionController
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
             $personTypeDescription = [
                 'donor' => "Donors",
-                'certificateProvidor' => "Certificate Providers",
+                'certificateProvider' => "Certificate Providers",
                 'voucher' => "Vouchers"
             ];
-            throw new HttpException(400, "These LPAs are for different " . $personTypeDescription[$type]);
+            throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
