@@ -113,7 +113,11 @@ class HealthcheckController extends AbstractActionController
 
                 if (
                     ! is_null($case) &&
-                    ($case->fraudScore?->decision === 'STOP' || $case->fraudScore?->decision === 'NODECISION')
+                    (
+                        $case->fraudScore?->decision === 'STOP' ||
+                        $case->fraudScore?->decision === 'NODECISION' ||
+                        $case?->kbvResult === 'COMPLETE_FAIL'
+                    )
                 ) {
                     $services['NATIONAL_INSURANCE_NUMBER'] = false;
                     $services['DRIVING_LICENCE'] = false;

@@ -151,6 +151,9 @@ class KBVService implements KBVServiceInterface
                     'kbvResult',
                     AnswersOutcome::CompleteFail->value
                 );
+                $this->logger->error(AnswersOutcome::CompleteFail->value, [
+                    'case' => $caseData->id,
+                ]);
                 return AnswersOutcome::CompleteFail;
             }
         } elseif ($nextTransactionId === 'RTQ') {
