@@ -29,14 +29,24 @@ class VouchingFlowController extends AbstractActionController
         $details_data = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(ConfirmVouching::class);
 
-        $view->setVariable('vouching_for', $details_data["vouchingFor"]);
         $view->setVariable('details_data', $details_data);
+        /**
+         * @psalm-suppress InvalidArrayOffset
+         */
+        $view->setVariable('vouching_for', $details_data["vouchingFor"]);
         $view->setVariable('form', $form);
 
-        if ($this->getRequest()->isPost() && $form->isValid()) {
+        if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
-            if (isset($formData['eligibility']) && isset($formData['declaration'])) {
-                // will need to update to route to vouching how-will-you-confirm page
+
+            if (isset($formData['try_different'])) {
+                return $this->redirect()->toUrl(
+                    "/start?personType=donor&lpas[]=" . implode("lpas[]=", $details_data['lpas'])
+                );
+            }
+
+            if ($form->isValid()) {
+                // will need to update to route for vouching how-will-you-confirm page once built
                 return $this->redirect()->toRoute("root/confirm_vouching", ['uuid' => $uuid]);
             }
         }
