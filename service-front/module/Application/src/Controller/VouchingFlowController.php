@@ -40,8 +40,9 @@ class VouchingFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
 
             if (isset($formData['tryDifferent'])) {
+                // start the donor journey instead
                 return $this->redirect()->toUrl(
-                    "/start?personType=donor&lpas[]=" . implode("lpas[]=", $details_data['lpas'])
+                    "/start?personType=donor&lpas[]=" . implode("&lpas[]=", $details_data['lpas'])
                 );
             }
 
