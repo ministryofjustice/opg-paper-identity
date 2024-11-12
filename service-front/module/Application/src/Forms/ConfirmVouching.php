@@ -37,4 +37,14 @@ class ConfirmVouching implements FormTemplate
         ]
     ])]
     public mixed $declaration = null;
+
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    public mixed $continue = null;
+
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    public mixed $tryDifferent = null;
 }
