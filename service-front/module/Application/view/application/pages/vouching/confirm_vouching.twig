@@ -78,9 +78,8 @@
         </div>
         <br>
         <div class="govuk-button-group">
-            <input type="submit" class="govuk-button" value="Continue with vouching">
-            <! –– might need to move this to the action method as this is meant to be take them to the appropriate "how-will-you-confirm" page based on previous actions ––>
-            <a href="#" type="submit" class="govuk-button govuk-button--secondary">Try a different method</a>
+            <input type="submit" class="govuk-button" value="Continue with vouching" name="continue">
+            <input type="submit" class="govuk-button govuk-button--secondary" value="Try a different method" name="try_different">
         </div>
     </form>
 {% endblock %}

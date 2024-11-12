@@ -172,7 +172,7 @@ class OpgApiService implements OpgApiServiceInterface
         string $personType,
         array $lpas,
         array $address,
-     ): array {
+    ): array {
 
         if ($personType == 'voucher') {
             $data = [
