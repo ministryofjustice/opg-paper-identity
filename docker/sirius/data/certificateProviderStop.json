@@ -32,7 +32,7 @@
         "country": "GB"
       },
       "channel": "paper",
-      "email": "lee.nohope@yahoo.com",
+      "email": "lee.nohope@example.com",
       "firstNames": "Lee",
       "lastName": "Nohope",
       "phone": "07777 666 555",
@@ -50,7 +50,7 @@
         "postcode": "HG9 4KN"
       },
       "dateOfBirth": "1900-10-03",
-      "email": "Otilia58@hotmail.com",
+      "email": "Otilia58@example.com",
       "firstNames": "Emmitt",
       "identityCheck": {
         "checkedAt": "1945-06-15T08:18:03.0Z",

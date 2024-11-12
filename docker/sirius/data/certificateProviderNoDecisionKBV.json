@@ -32,7 +32,7 @@
         "country": "GB"
       },
       "channel": "paper",
-      "email": "lee.thinfile@yahoo.com",
+      "email": "lee.thinfile@example.com",
       "firstNames": "Lee",
       "lastName": "Thinfile",
       "phone": "07777 666 555",
@@ -50,7 +50,7 @@
         "postcode": "HG9 4KN"
       },
       "dateOfBirth": "1900-10-03",
-      "email": "Otilia58@hotmail.com",
+      "email": "Otilia58@example.com",
       "firstNames": "Emmitt",
       "identityCheck": {
         "checkedAt": "1945-06-15T08:18:03.0Z",
