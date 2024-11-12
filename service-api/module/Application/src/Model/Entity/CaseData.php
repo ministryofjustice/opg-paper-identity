@@ -217,9 +217,9 @@ class CaseData implements JsonSerializable
             $arr['fraudScore'] = $this->fraudScore;
         }
 
-//        if ($this->kbvResult !== null) {
+        if ($this->kbvResult !== null) {
             $arr['kbvResult'] = $this->kbvResult;
-//        }
+        }
         return $arr;
     }
 

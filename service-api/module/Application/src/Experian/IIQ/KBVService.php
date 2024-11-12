@@ -48,8 +48,8 @@ class KBVService implements KBVServiceInterface
     }
 
     /**
-     * @throws Exception\CannotGetQuestionsException
      * @return KBVQuestion[]
+     * @throws Exception\CannotGetQuestionsException
      */
     public function fetchFormattedQuestions(string $uuid): array
     {
@@ -151,7 +151,7 @@ class KBVService implements KBVServiceInterface
                     'kbvResult',
                     AnswersOutcome::CompleteFail->value
                 );
-                $this->logger->error(AnswersOutcome::CompleteFail->value, [
+                $this->logger->info(AnswersOutcome::CompleteFail->value, [
                     'case' => $caseData->id,
                 ]);
                 return AnswersOutcome::CompleteFail;
