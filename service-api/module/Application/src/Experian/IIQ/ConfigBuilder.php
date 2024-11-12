@@ -45,6 +45,10 @@ class ConfigBuilder
         $saaConfig['ApplicationData'] = [
             'SearchConsent' => 'Y',
         ];
+
+        if (! isset($case->address)) {
+            throw new RuntimeException('Address has not been set');
+        }
         $saaConfig['LocationDetails'] = [
             'LocationIdentifier' => '1',
             'UKLocation' => [
