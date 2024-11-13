@@ -246,7 +246,7 @@ class FormProcessorHelper
                 $template = $templates['thin_file'];
                 break;
             case 'STOP':
-                $template = $templates['thin_file'];
+                $template = $templates['fraud'];
 //                throw new OpgApiException('Stop response received from fraud check service.');
                 break;
             default:

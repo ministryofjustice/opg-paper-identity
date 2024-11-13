@@ -180,24 +180,35 @@ class HealthcheckControllerTest extends TestCase
         ];
 
         $response = [
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => true,
-            "DRIVING_LICENCE" => true,
-            "PASSPORT" => true,
-            "POST_OFFICE" => true,
-            'VOUCHING' => true,
-            'COURT_OF_PROTECTION' => true
+            'data' => [
+                'PASSPORT' => true,
+                'DRIVING_LICENCE' => true,
+                'NATIONAL_INSURANCE_NUMBER' => true,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => true,
+            ],
+            'messages' => [
+                ''
+            ]
         ];
 
         $responseNoDec = [
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => false,
-            "DRIVING_LICENCE" => false,
-            "PASSPORT" => false,
-            "POST_OFFICE" => true,
-//            "message" => "Identity check failure is now restricting ID options."
-            'VOUCHING' => true,
-            'COURT_OF_PROTECTION' => true
+
+            'data' => [
+                "EXPERIAN" => true,
+                "NATIONAL_INSURANCE_NUMBER" => false,
+                "DRIVING_LICENCE" => false,
+                "PASSPORT" => false,
+                "POST_OFFICE" => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true
+            ],
+            'messages' => [
+                '',
+                "Identity check failure is now restricting ID options."
+            ]
         ];
 
         return [

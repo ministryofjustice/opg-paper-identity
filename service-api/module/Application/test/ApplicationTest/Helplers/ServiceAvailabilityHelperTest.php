@@ -53,22 +53,43 @@ class ServiceAvailabilityHelperTest extends TestCase
             'POST_OFFICE' => true
         ];
 
-//        $servicesPostOfficeDown = [
-//            'EXPERIAN' => true,
-//            'PASSPORT' => true,
-//            'DRIVING_LICENCE' => true,
-//            'NATIONAL_INSURANCE_NUMBER' => true,
-//            'POST_OFFICE' => false
-//        ];
-
-        $expected = [
+        $servicesPostOfficeDown = [
+            'EXPERIAN' => true,
             'PASSPORT' => true,
             'DRIVING_LICENCE' => true,
             'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => true,
-            'VOUCHING' => true,
-            'COURT_OF_PROTECTION' => true,
+            'POST_OFFICE' => false
+        ];
+
+        $servicesExperianDown = [
+            'EXPERIAN' => false,
+            'PASSPORT' => true,
+            'DRIVING_LICENCE' => true,
+            'NATIONAL_INSURANCE_NUMBER' => true,
+            'POST_OFFICE' => false
+        ];
+
+        $servicesPassportDown = [
             'EXPERIAN' => true,
+            'PASSPORT' => false,
+            'DRIVING_LICENCE' => true,
+            'NATIONAL_INSURANCE_NUMBER' => true,
+            'POST_OFFICE' => false
+        ];
+
+        $expected = [
+            'data' => [
+                'PASSPORT' => true,
+                'DRIVING_LICENCE' => true,
+                'NATIONAL_INSURANCE_NUMBER' => true,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => true,
+            ],
+            'messages' => [
+                ''
+            ]
         ];
 
         $case = [

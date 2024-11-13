@@ -50,15 +50,15 @@ class DonorFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability->getProcessedStatus()[$key] === true) {
+            if ($serviceAvailability[$key] === true) {
                 $identityDocs[$key] = $value;
             }
         }
 
         $methods = [];
         foreach ($this->config['opg_settings']['identity_methods'] as $key => $value) {
-            if (array_key_exists($key, $serviceAvailability->getProcessedStatus())) {
-                $methods[$key] = $serviceAvailability->getProcessedStatus()[$key];
+            if (array_key_exists($key, $serviceAvailability)) {
+                $methods[$key] = $serviceAvailability[$key];
             } else {
                 $methods[$key] = true;
             }
@@ -68,13 +68,13 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
+//        echo json_encode($detailsData);
 
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $optionsData);
         $view->setVariable('methods_data', $methods);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -363,7 +363,9 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
+
+        echo json_encode($serviceAvailability);
 
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);

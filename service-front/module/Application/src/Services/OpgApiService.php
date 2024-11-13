@@ -8,7 +8,6 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Helpers\AddressProcessorHelper;
-use Application\Helpers\DependencyCheck;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Laminas\Http\Response;
@@ -346,7 +345,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['deadline'];
     }
 
-    public function getServiceAvailability(string $uuid = null): DependencyCheck
+    public function getServiceAvailability(string $uuid = null): array
     {
         $url = is_null($uuid) ? "/service-availability" : "/service-availability?uuid=$uuid";
 
@@ -360,7 +359,7 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException('Service availability data missing!');
         }
 
-        return new DependencyCheck($this->responseData);
+        return $this->responseData;
     }
 
     public function requestFraudCheck(string $uuid): array
