@@ -200,17 +200,21 @@
 
                 <div class="govuk-details__text">
                     <div class="govuk-radios" data-module="govuk-radios">
+                        {% if methods_data.VOUCHING %}
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="OnBehalf" name="id_method" type="radio"
                                    value="OnBehalf">
                             <label class="govuk-label govuk-radios__label" for="OnBehalf">Have someone vouch for the identity of the donor</label>
                         </div>
+                        {% endif %}
+                        {% if methods_data.COURT_OF_PROTECTION %}
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" id="CourtOfProtection" name="id_method" type="radio"
                                    value="cpr">
                             <label class="govuk-label govuk-radios__label" for="CourtOfProtection">Court of
                                 protection</label>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 

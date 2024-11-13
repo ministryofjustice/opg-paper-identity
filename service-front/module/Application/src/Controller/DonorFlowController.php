@@ -55,6 +55,15 @@ class DonorFlowController extends AbstractActionController
             }
         }
 
+        $methods = [];
+        foreach ($this->config['opg_settings']['identity_methods'] as $key => $value) {
+            if (array_key_exists($key, $serviceAvailability->getProcessedStatus())) {
+                $methods[$key] = $serviceAvailability->getProcessedStatus()[$key];
+            } else {
+                $methods[$key] = true;
+            }
+        }
+
         $optionsData = $identityDocs;
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -64,6 +73,7 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $optionsData);
+        $view->setVariable('methods_data', $methods);
         $view->setVariable('service_availability', $serviceAvailability->toArray());
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);

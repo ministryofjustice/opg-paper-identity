@@ -84,7 +84,7 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public bool $identityCheckPassed = false;
+    public ?bool $identityCheckPassed = null;
 
     /**
      * @var string[]
@@ -115,9 +115,6 @@ class CaseData implements JsonSerializable
 
     #[Annotation\Required(false)]
     public ?FraudScore $fraudScore = null;
-
-    #[Annotation\Required(false)]
-    public ?string $kbvResult = null;
 
     /**
      * @param array<string, mixed> $data
@@ -168,7 +165,7 @@ class CaseData implements JsonSerializable
      *     kbvQuestions: KBVQuestion[],
      *     iiqControl?: IIQControl,
      *     documentComplete: bool,
-     *     identityCheckPassed: bool,
+     *     identityCheckPassed: ?bool,
      *     alternateAddress: ?string[],
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
@@ -176,7 +173,6 @@ class CaseData implements JsonSerializable
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
      *     fraudScore?: FraudScore,
-     *     kbvResult?: string,
      * }
      */
     public function toArray(): array
@@ -215,10 +211,6 @@ class CaseData implements JsonSerializable
 
         if ($this->fraudScore !== null) {
             $arr['fraudScore'] = $this->fraudScore;
-        }
-
-        if ($this->kbvResult !== null) {
-            $arr['kbvResult'] = $this->kbvResult;
         }
         return $arr;
     }

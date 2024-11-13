@@ -139,21 +139,8 @@ class KBVService implements KBVServiceInterface
                 isset($result['result']['AuthenticationResult']) &&
                 $result['result']['AuthenticationResult'] === 'Authenticated'
             ) {
-                $this->writeHandler->updateCaseData(
-                    $caseData->id,
-                    'kbvResult',
-                    AnswersOutcome::CompletePass->value
-                );
                 return AnswersOutcome::CompletePass;
             } else {
-                $this->writeHandler->updateCaseData(
-                    $caseData->id,
-                    'kbvResult',
-                    AnswersOutcome::CompleteFail->value
-                );
-                $this->logger->info(AnswersOutcome::CompleteFail->value, [
-                    'case' => $caseData->id,
-                ]);
                 return AnswersOutcome::CompleteFail;
             }
         } elseif ($nextTransactionId === 'RTQ') {

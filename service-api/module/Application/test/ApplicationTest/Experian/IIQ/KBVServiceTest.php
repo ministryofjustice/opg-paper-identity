@@ -240,7 +240,7 @@ class KBVServiceTest extends TestCase
 
         if ($nextTransactionId === 'END') {
             $writeHandler->expects($this->exactly(
-                2
+                1
             ))
                 ->method('updateCaseData')
                 ->willReturnOnConsecutiveCalls(
@@ -248,11 +248,6 @@ class KBVServiceTest extends TestCase
                         $uuid,
                         'kbvQuestions',
                         $savedQuestions
-                    ],
-                    [
-                        $uuid,
-                        'kbvResult',
-                        $expectedOutcome->value
                     ]
                 );
         } else {

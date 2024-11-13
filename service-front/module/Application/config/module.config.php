@@ -610,6 +610,11 @@ return [
             'DRIVING_LICENCE' => 'Driving licence',
             'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
         ],
+        'identity_methods' => [
+            'POST_OFFICE' => 'Post Office',
+            'VOUCHING' => 'Have someone vouch for the identity of the donor',
+            'COURT_OF_PROTECTION' => 'Court of protection',
+        ],
         'identity_routes' => [
             'TELEPHONE' => 'Telephone',
             'POST_OFFICE' => 'Post Office',
@@ -619,7 +624,7 @@ return [
             'PASSPORT' => 'UK Passport (current or expired in the last 18 months)',
             'DRIVING_LICENCE' => 'UK driving licence (must be current) ',
         ],
-        'post_office_identity_methods' => [
+        'post_office_identity_documents' => [
             'PASSPORT' => 'UK passport (up to 18 months expired)',
             'po_eup' => 'EU passport (must be current)',
             'po_inp' => 'International passport (must be current)',
