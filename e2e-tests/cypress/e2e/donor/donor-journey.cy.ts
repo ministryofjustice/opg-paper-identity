@@ -3,7 +3,7 @@ describe("Identify a Donor", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will they confirm their identity?");
-    cy.contains("National Insurance number").click();
+    cy.get("label").contains("National Insurance number").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");
@@ -159,7 +159,7 @@ describe("Identify a Donor", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will they confirm their identity?");
-    cy.contains("National Insurance number").click();
+    cy.get("label").contains("National Insurance number").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");
