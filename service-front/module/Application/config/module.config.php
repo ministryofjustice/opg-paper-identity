@@ -617,9 +617,9 @@ return [
     ],
     'opg_settings' => [
         'identity_documents' => [
-            'PASSPORT' => "Passport",
-            'DRIVING_LICENCE' => 'Driving licence',
             'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
+            'PASSPORT' => "UK Passport (current or expired in the last 18 months)",
+            'DRIVING_LICENCE' => 'UK driving licence (must be current)',
         ],
         'identity_routes' => [
             'TELEPHONE' => 'Telephone',
