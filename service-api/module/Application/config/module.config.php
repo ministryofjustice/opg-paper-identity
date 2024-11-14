@@ -480,5 +480,22 @@ return [
         'identity_services' => [
             'EXPERIAN' => 'Experian',
         ],
+        'banner_messages' => [
+            'donor' => [
+                'NODECISION' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly on a previous occasion.',
+                'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions correctly ' .
+                    'on a previous occasion.'
+            ],
+            'certificateProvider' => [
+                'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions ' .
+                    'correctly on a previous occasion.',
+                'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security ' .
+                    'questions correctly on a previous occasion.',
+            ]
+        ],
     ]
 ];

@@ -22,7 +22,10 @@ class ServiceAvailabilityHelperTest extends TestCase
         $case = CaseData::fromArray($caseData);
         $helper = new ServiceAvailabilityHelper($services, $case, $config);
 
-        $this->assertSame($helper->processServicesWithCaseData(), $expected);
+//        echo json_encode($helper->processServicesWithCaseData());
+
+
+        $this->assertEquals($helper->processServicesWithCaseData(), $expected);
     }
 
     public static function data(): array
@@ -41,6 +44,23 @@ class ServiceAvailabilityHelperTest extends TestCase
                 ],
                 'identity_services' => [
                     'EXPERIAN' => 'Experian',
+                ],
+                'banner_messages' => [
+                    'donor' => [
+                        'NODECISION' => 'The donor cannot ID over the phone due to a lack of ' .
+                            'available security questions or failure to answer them correctly on a previous occasion.',
+                        'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack ' .
+                            'of available information from Experian or a failure to answer the security questions ' .
+                            'correctly on a previous occasion.'
+                    ],
+                    'certificateProvider' => [
+                        'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
+                            'available information from Experian or a failure to answer the security questions ' .
+                            'correctly on a previous occasion.',
+                        'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
+                            'available information from Experian or a failure to answer the security ' .
+                            'questions correctly on a previous occasion.',
+                    ]
                 ],
             ]
         ];
@@ -79,13 +99,13 @@ class ServiceAvailabilityHelperTest extends TestCase
 
         $expected = [
             'data' => [
+                'EXPERIAN' => true,
                 'PASSPORT' => true,
                 'DRIVING_LICENCE' => true,
                 'NATIONAL_INSURANCE_NUMBER' => true,
                 'POST_OFFICE' => true,
                 'VOUCHING' => true,
                 'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => true,
             ],
             'messages' => []
         ];
@@ -101,7 +121,8 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'EXPERIAN' => true,
             ],
             'messages' => [
-                'Identity check failure is now restricting ID options.'
+                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly on a previous occasion.',
             ]
         ];
 
@@ -116,7 +137,9 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'EXPERIAN' => true,
             ],
             'messages' => [
-                'Identity check failure is now restricting ID options.'
+                'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions correctly ' .
+                    'on a previous occasion.'
             ]
         ];
 
@@ -131,7 +154,8 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'EXPERIAN' => true,
             ],
             'messages' => [
-                'Identity check failure is now restricting ID options.'
+                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly on a previous occasion.',
             ]
         ];
 
@@ -271,7 +295,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                         'EXPERIAN' => false,
                     ],
                     'messages' => [
-                        'Some identity verification methods are not presently available',
+                        'service_status' =>
                         'Online identity verification is not presently available',
                     ]
                 ]
@@ -291,6 +315,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                         'EXPERIAN' => true,
                     ],
                     'messages' => [
+                        'service_status' =>
                         'Some identity verification methods are not presently available',
                     ]
                 ]

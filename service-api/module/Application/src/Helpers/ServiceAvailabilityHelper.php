@@ -24,7 +24,7 @@ class ServiceAvailabilityHelper
         protected array $config
     ) {
         $this->processGlobalServicesSettings();
-        $this->mergeServices($config);
+        $this->mergeServices($this->config);
     }
 
     private function processGlobalServicesSettings(): void
@@ -48,7 +48,8 @@ class ServiceAvailabilityHelper
             $processedGlobalServices['PASSPORT'] === false ||
             $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
         ) {
-            $this->processedMessages[] = "Some identity verification methods are not presently available";
+            $this->processedMessages['service_status'] = "Some identity verification methods are not presently" .
+                " available";
         }
 
         if (
@@ -57,7 +58,7 @@ class ServiceAvailabilityHelper
             $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
         ) {
             $processedGlobalServices['EXPERIAN'] = false;
-            $this->processedMessages[] = "Online identity verification is not presently available";
+            $this->processedMessages['service_status'] = "Online identity verification is not presently available";
         }
 
         if (array_key_exists('message', $this->services)) {
@@ -69,7 +70,7 @@ class ServiceAvailabilityHelper
 
     public function getProcessGlobalServicesSettings(): array
     {
-        return $this->services;
+        return $this->availableServices;
     }
 
     public function getProcessedMessage(): array
@@ -81,7 +82,7 @@ class ServiceAvailabilityHelper
     {
         return [
             'data' => $this->getProcessGlobalServicesSettings(),
-            'message' => $this->getProcessedMessage()
+            'messages' => $this->getProcessedMessage()
         ];
     }
 
@@ -118,14 +119,14 @@ class ServiceAvailabilityHelper
 
             if ($this->case->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;
+                $this->processedMessages['banner'] =
+                    $this->config['opg_settings']['banner_messages'][$this->case->personType]['STOP'];
+            } else {
+                $this->processedMessages['banner'] =
+                    $this->config['opg_settings']['banner_messages'][$this->case->personType]['NODECISION'];
             }
-
-            $this->processedMessages[] = 'Identity check failure is now restricting ID options.';
         }
 
-        return [
-            'data' => $this->availableServices,
-            'messages' => $this->processedMessages
-        ];
+        return $this->toArray();
     }
 }

@@ -385,11 +385,16 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function returnServiceAvailabilityResponseData(): array
     {
         return [
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => true,
-            "DRIVING_LICENCE" => true,
-            "PASSPORT" => true,
-            "POST_OFFICE" => true
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => false,
+            ],
+            'messages' => []
         ];
     }
 }

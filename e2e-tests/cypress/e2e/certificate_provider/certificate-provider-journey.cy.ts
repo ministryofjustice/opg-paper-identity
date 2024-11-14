@@ -2,8 +2,8 @@ describe("Identify a Certificate Provider", () => {
     it("lets you identify with National Insurance number", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-        cy.contains("How will they prove their identity?");
-        cy.contains("National Insurance number").click();
+        cy.contains("How will you prove your identity?");
+        cy.contains("National insurance number").click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the name match the ID?");
@@ -52,9 +52,9 @@ describe("Identify a Certificate Provider", () => {
         // console.log(cy.location('pathname'));
 
         // Check form validation
-        cy.contains("How will they prove their identity?");
+        cy.contains("How will you prove your identity?");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("How will they prove their identity?");
+        cy.contains("How will you prove your identity?");
         cy.contains("Please select an option");
 
         // Check passport reveal
@@ -166,11 +166,11 @@ describe("Identify a Certificate Provider", () => {
         let year = d.getFullYear();
 
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
-        cy.contains("How will they prove their identity?");
+        cy.contains("How will you prove your identity?");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("How will they prove their identity?");
+        cy.contains("How will you prove your identity?");
         cy.contains("Please select an option");
-        cy.contains("Driving licence").click();
+        cy.contains("Uk driving licence (must be current)").click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the name match the ID?");
@@ -234,8 +234,8 @@ describe("Identify a Certificate Provider", () => {
     it("lets you identify with National Insurance number and use an alternate address", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-        cy.contains("How will they prove their identity?");
-        cy.contains("National Insurance number").click();
+        cy.contains("How will you prove your identity?");
+        cy.contains("National insurance number").click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the name match the ID?");

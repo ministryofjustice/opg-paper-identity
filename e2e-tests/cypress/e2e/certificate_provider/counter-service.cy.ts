@@ -2,7 +2,7 @@ describe("Counter service certificateProvider journey", () => {
   it("accepts a UK passport", () => {
     cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-    cy.contains("How will they prove their identity?");
+    cy.contains("How will you prove your identity?");
     cy.contains("label", "Post Office").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -43,7 +43,7 @@ describe("Counter service certificateProvider journey", () => {
   it("accepts an international ID", () => {
     cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-    cy.contains("How will they prove their identity?");
+    cy.contains("How will you prove your identity?");
     cy.contains("label", "Post Office").click();
     cy.get(".govuk-button").contains("Continue").click();
 

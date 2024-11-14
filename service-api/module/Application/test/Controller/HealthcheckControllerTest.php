@@ -203,7 +203,8 @@ class HealthcheckControllerTest extends TestCase
                 'COURT_OF_PROTECTION' => true
             ],
             'messages' => [
-                "Identity check failure is now restricting ID options."
+                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly on a previous occasion.',
             ]
         ];
 
