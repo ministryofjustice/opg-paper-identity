@@ -66,7 +66,7 @@ class ServiceAvailabilityHelperTest extends TestCase
             'PASSPORT' => true,
             'DRIVING_LICENCE' => true,
             'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => false
+            'POST_OFFICE' => true
         ];
 
         $servicesPassportDown = [
@@ -74,7 +74,7 @@ class ServiceAvailabilityHelperTest extends TestCase
             'PASSPORT' => false,
             'DRIVING_LICENCE' => true,
             'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => false
+            'POST_OFFICE' => true
         ];
 
         $expected = [
@@ -88,6 +88,51 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'EXPERIAN' => true,
             ],
             'messages' => []
+        ];
+
+        $expectedNoDec = [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => true,
+            ],
+            'messages' => [
+                'Identity check failure is now restricting ID options.'
+            ]
+        ];
+
+        $expectedStop = [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => false,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => true,
+            ],
+            'messages' => [
+                'Identity check failure is now restricting ID options.'
+            ]
+        ];
+
+        $expectedKbvFail = [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => true,
+            ],
+            'messages' => [
+                'Identity check failure is now restricting ID options.'
+            ]
         ];
 
         $case = [
@@ -151,24 +196,24 @@ class ServiceAvailabilityHelperTest extends TestCase
                 "score" => 265
             ]
         ];
-//
-//        $caseNoDecision = array_merge($case, [
-//            'fraudScore' => [
-//                "decision" => "NODECISION",
-//                "score" => 0
-//            ]
-//        ]);
-//
-//        $caseStop = array_merge($case, [
-//            'fraudScore' => [
-//                "decision" => "STOP",
-//                "score" => 999
-//            ]
-//        ]);
-//
-//        $caseKbvFail = array_merge($case, [
-//            "identityCheckPassed" => false
-//        ]);
+
+        $caseNoDecision = array_merge($case, [
+            'fraudScore' => [
+                "decision" => "NODECISION",
+                "score" => 0
+            ]
+        ]);
+
+        $caseStop = array_merge($case, [
+            'fraudScore' => [
+                "decision" => "STOP",
+                "score" => 999
+            ]
+        ]);
+
+        $caseKbvFail = array_merge($case, [
+            "identityCheckPassed" => false
+        ]);
 
         return [
             [
@@ -176,6 +221,79 @@ class ServiceAvailabilityHelperTest extends TestCase
                 $case,
                 $services,
                 $expected
+            ],
+            [
+                $config,
+                $caseNoDecision,
+                $services,
+                $expectedNoDec
+            ],
+            [
+                $config,
+                $caseStop,
+                $services,
+                $expectedStop
+            ],
+            [
+                $config,
+                $caseKbvFail,
+                $services,
+                $expectedKbvFail
+            ],
+            [
+                $config,
+                $case,
+                $servicesPostOfficeDown,
+                array_merge($expected, [
+                    'data' => [
+                        'PASSPORT' => true,
+                        'DRIVING_LICENCE' => true,
+                        'NATIONAL_INSURANCE_NUMBER' => true,
+                        'POST_OFFICE' => false,
+                        'VOUCHING' => true,
+                        'COURT_OF_PROTECTION' => true,
+                        'EXPERIAN' => true,
+                    ]
+                ])
+            ],
+            [
+                $config,
+                $case,
+                $servicesExperianDown,
+                [
+                    'data' => [
+                        'PASSPORT' => false,
+                        'DRIVING_LICENCE' => false,
+                        'NATIONAL_INSURANCE_NUMBER' => false,
+                        'POST_OFFICE' => true,
+                        'VOUCHING' => true,
+                        'COURT_OF_PROTECTION' => true,
+                        'EXPERIAN' => false,
+                    ],
+                    'messages' => [
+                        'Some identity verification methods are not presently available',
+                        'Online identity verification is not presently available',
+                    ]
+                ]
+            ],
+            [
+                $config,
+                $case,
+                $servicesPassportDown,
+                [
+                    'data' => [
+                        'PASSPORT' => false,
+                        'DRIVING_LICENCE' => true,
+                        'NATIONAL_INSURANCE_NUMBER' => true,
+                        'POST_OFFICE' => true,
+                        'VOUCHING' => true,
+                        'COURT_OF_PROTECTION' => true,
+                        'EXPERIAN' => true,
+                    ],
+                    'messages' => [
+                        'Some identity verification methods are not presently available',
+                    ]
+                ]
             ]
         ];
     }

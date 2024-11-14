@@ -193,7 +193,6 @@ class HealthcheckControllerTest extends TestCase
         ];
 
         $responseNoDec = [
-
             'data' => [
                 "EXPERIAN" => true,
                 "NATIONAL_INSURANCE_NUMBER" => false,

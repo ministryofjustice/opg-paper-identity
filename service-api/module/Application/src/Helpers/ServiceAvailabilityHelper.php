@@ -24,10 +24,10 @@ class ServiceAvailabilityHelper
         protected array $config
     ) {
         $this->processGlobalServicesSettings();
-        $this->mergeServices($services, $config);
+        $this->mergeServices($config);
     }
 
-    public function processGlobalServicesSettings(): void
+    private function processGlobalServicesSettings(): void
     {
         $processedGlobalServices = [];
 
@@ -86,7 +86,6 @@ class ServiceAvailabilityHelper
     }
 
     private function mergeServices(
-        array $services,
         array $config
     ): void {
         $configServices = array_merge(
@@ -98,8 +97,8 @@ class ServiceAvailabilityHelper
         $keys = array_keys($configServices);
 
         foreach ($keys as $key) {
-            if (array_key_exists($key, $services)) {
-                $this->availableServices[$key] = $services[$key];
+            if (array_key_exists($key, $this->services)) {
+                $this->availableServices[$key] = $this->services[$key];
             } else {
                 $this->availableServices[$key] = true;
             }
