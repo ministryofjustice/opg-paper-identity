@@ -18,6 +18,7 @@ use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
 use Application\Model\Entity\CaseProgress;
+use Application\Model\Entity\VouchingFor;
 
 /**
  * DTO for holding data required to make new case entry post
@@ -64,13 +65,12 @@ class CaseData implements JsonSerializable
     #[Validator(NotEmpty::class)]
     public ?array $address = null;
 
+
     /**
-     * @var array{
-     *   firstName: string,
-     *   lastName: string,
-     * }|null
+     * @var ?VouchingFor
      */
-    public ?array $vouchingFor = null;
+    #[Annotation\Required(false)]
+    public ?VouchingFor $vouchingFor = null;
 
     /**
      * @var string[]
@@ -146,6 +146,8 @@ class CaseData implements JsonSerializable
                 $instance->iiqControl = IIQControl::fromArray($value);
             } elseif ($key === 'idMethodIncludingNation') {
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
+            } elseif ($key === 'vouchingFor') {
+                $instance->vouchingFor = VouchingFor::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -171,10 +173,7 @@ class CaseData implements JsonSerializable
      *       postcode: string,
      *       country?: string,
      *     },
-     *     vouchingFor: ?array{
-     *       firstName: string,
-     *       lastName: string,
-     *     },
+     *     vouchingFor?: VouchingFor,
      *     lpas: string[],
      *     kbvQuestions: KBVQuestion[],
      *     iiqControl?: IIQControl,
@@ -198,7 +197,6 @@ class CaseData implements JsonSerializable
             'lastName' => $this->lastName,
             'dob' => $this->dob,
             'address' => $this->address,
-            'vouchingFor' => $this->vouchingFor,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
@@ -226,6 +224,10 @@ class CaseData implements JsonSerializable
 
         if ($this->fraudScore !== null) {
             $arr['fraudScore'] = $this->fraudScore;
+        }
+
+        if ($this->vouchingFor !== null) {
+            $arr['vouchingFor'] = $this->vouchingFor;
         }
 
         return $arr;
