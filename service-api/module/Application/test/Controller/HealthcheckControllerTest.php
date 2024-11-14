@@ -189,9 +189,7 @@ class HealthcheckControllerTest extends TestCase
                 'COURT_OF_PROTECTION' => true,
                 'EXPERIAN' => true,
             ],
-            'messages' => [
-                ''
-            ]
+            'messages' => []
         ];
 
         $responseNoDec = [
@@ -206,7 +204,6 @@ class HealthcheckControllerTest extends TestCase
                 'COURT_OF_PROTECTION' => true
             ],
             'messages' => [
-                '',
                 "Identity check failure is now restricting ID options."
             ]
         ];

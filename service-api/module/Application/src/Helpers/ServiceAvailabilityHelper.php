@@ -29,7 +29,6 @@ class ServiceAvailabilityHelper
 
     public function processGlobalServicesSettings(): void
     {
-        $message = "";
         $processedGlobalServices = [];
 
         if ($this->services['EXPERIAN'] !== true) {
@@ -49,7 +48,7 @@ class ServiceAvailabilityHelper
             $processedGlobalServices['PASSPORT'] === false ||
             $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
         ) {
-            $message = "Some identity verification methods are not presently available";
+            $this->processedMessages[] = "Some identity verification methods are not presently available";
         }
 
         if (
@@ -58,15 +57,14 @@ class ServiceAvailabilityHelper
             $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
         ) {
             $processedGlobalServices['EXPERIAN'] = false;
-            $message = "Online identity verification is not presently available";
+            $this->processedMessages[] = "Online identity verification is not presently available";
         }
 
         if (array_key_exists('message', $this->services)) {
-            $message = $this->services['message'];
+            $this->processedMessages[] = $this->services['message'];
         }
 
         $this->services = $processedGlobalServices;
-        $this->processedMessages[] = $message;
     }
 
     public function getProcessGlobalServicesSettings(): array
@@ -82,8 +80,8 @@ class ServiceAvailabilityHelper
     final public function toArray(): array
     {
         return [
-            'data' => $this->availableServices,
-            'message' => $this->processedMessages
+            'data' => $this->getProcessGlobalServicesSettings(),
+            'message' => $this->getProcessedMessage()
         ];
     }
 

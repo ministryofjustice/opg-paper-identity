@@ -87,9 +87,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'COURT_OF_PROTECTION' => true,
                 'EXPERIAN' => true,
             ],
-            'messages' => [
-                ''
-            ]
+            'messages' => []
         ];
 
         $case = [
