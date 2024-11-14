@@ -214,7 +214,7 @@
           {
             "id": "MAEMAIL1",
             "type": "HOME",
-            "email": "TestFraud@hotmail.com"
+            "email": "TestFraud@example.com"
           }
         ],
         "bankAccount": {

@@ -106,16 +106,16 @@ class KBVServiceTest extends TestCase
         $writeHandler->expects($this->exactly(2))
             ->method('updateCaseData')
             ->willReturnCallback(
-                /** @psalm-suppress MissingClosureParamType */
-                fn (...$params) => match (true) {
+            /** @psalm-suppress MissingClosureParamType */
+                fn(...$params) => match (true) {
                     $params[0] === $uuid && $params[1] === 'kbvQuestions'
-                        && $params[2][0] instanceof KBVQuestion
-                        && $params[2][0]->jsonSerialize() === $storedQuestions[0]
-                        && $params[2][1] instanceof KBVQuestion
-                        && $params[2][1]->jsonSerialize() === $storedQuestions[1] => null,
+                    && $params[2][0] instanceof KBVQuestion
+                    && $params[2][0]->jsonSerialize() === $storedQuestions[0]
+                    && $params[2][1] instanceof KBVQuestion
+                    && $params[2][1]->jsonSerialize() === $storedQuestions[1] => null,
                     $params[0] === $uuid && $params[1] === 'iiqControl'
-                        && $params[2] instanceof IIQControl
-                        && $params[2]->urn === 'test UUID' && $params[2]->authRefNo === 'abc' => null,
+                    && $params[2] instanceof IIQControl
+                    && $params[2]->urn === 'test UUID' && $params[2]->authRefNo === 'abc' => null,
                     default => self::fail('Did not expect:' . print_r($params, true))
                 }
             );
@@ -238,13 +238,27 @@ class KBVServiceTest extends TestCase
             ->with(['rtqConfig'])
             ->willReturn($rtqResponse);
 
-        $writeHandler->expects($this->once())
-            ->method('updateCaseData')
-            ->with(
-                $uuid,
-                'kbvQuestions',
-                $savedQuestions,
-            );
+        if ($nextTransactionId === 'END') {
+            $writeHandler->expects($this->exactly(
+                1
+            ))
+                ->method('updateCaseData')
+                ->willReturnOnConsecutiveCalls(
+                    [
+                        $uuid,
+                        'kbvQuestions',
+                        $savedQuestions
+                    ]
+                );
+        } else {
+            $writeHandler->expects($this->once())
+                ->method('updateCaseData')
+                ->with(
+                    $uuid,
+                    'kbvQuestions',
+                    $savedQuestions,
+                );
+        }
 
         $sut = new KBVService($iiqService, $configBuilder, $queryHandler, $writeHandler, $logger);
 
