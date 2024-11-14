@@ -18,6 +18,7 @@ use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
 use Application\Model\Entity\CaseProgress;
+use Application\Model\Entity\VouchingFor;
 
 /**
  * DTO for holding data required to make new case entry post
@@ -64,13 +65,12 @@ class CaseData implements JsonSerializable
     #[Validator(NotEmpty::class)]
     public ?array $address = null;
 
+
     /**
-     * @var array{
-     *   firstName: string,
-     *   lastName: string,
-     * }|null
+     * @var ?VouchingFor
      */
-    public ?array $vouchingFor = null;
+    #[Annotation\Required(false)]
+    public ?VouchingFor $vouchingFor = null;
 
     /**
      * @var string[]
@@ -146,6 +146,8 @@ class CaseData implements JsonSerializable
                 $instance->iiqControl = IIQControl::fromArray($value);
             } elseif ($key === 'idMethodIncludingNation') {
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
+            } elseif ($key === 'vouchingFor') {
+                $instance->vouchingFor = VouchingFor::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
