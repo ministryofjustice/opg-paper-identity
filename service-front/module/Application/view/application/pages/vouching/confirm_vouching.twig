@@ -1,0 +1,85 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    <! –– key/values in vouching_for overwrite details_data ––>
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-!-width-two-thirds">
+        <h1 class="govuk-heading-xl">{% block title %}Vouching for  {{ vouching_for.firstName }} {{ vouching_for.lastName}}{% endblock %}</h1>
+        <p class="govuk-body govuk-!-margin-bottom-6">
+            To vouch for the donor, the person vouching must have been asked by the donor to vouch. They will need to complete an identity check over the phone,
+            or alternatively at the Post Office. They should have details of what is required in the letter passed to them by the donor.
+        </p>
+    </div>
+    <form method="POST">
+        <div class="govuk-!-width-two-thirds">
+            <fieldset class="govuk-fieldset" aria-describedby="eligibility">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h2 class="govuk-fieldset__heading">
+                    Eligibility
+                </h2>
+                </legend>
+                <p class="govuk-body">Have them confirm the following:</p>
+
+                <div class="govuk-form-group {% if form.get('eligibility').messages %}govuk-form-group--error{% endif %}">
+
+                    {% if form.get('eligibility').messages %}
+                        <p id="eligibility-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {{ form.get('eligibility').messages | join(', ', ' and ') }}
+                        </p>
+                    {% endif %}
+
+                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="eligibility_confirmed" name="eligibility" type="checkbox" value="eligibility_confirmed"
+                        {% if form.get('eligibility').value == "eligibility_confirmed" %}checked{% endif %}>
+                        <label class="govuk-label govuk-checkboxes__label" for="eligibility">
+                        They are not:
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>under the age of 18</li>
+                            <li>named on the LPA</li>
+                            <li>in a relationship with the donor</li>
+                            <li>a member of the donor's familiy</li>
+                            <li>living at the same address as the donor</li>
+                        </ul>
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="govuk-fieldset" aria-describedby="declaration">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h2 class="govuk-fieldset__heading">
+                    Declaration
+                </h2>
+                </legend>
+                <p class="govuk-body">Have them confirm the following:</p>
+
+                <div class="govuk-form-group {% if form.get('declaration').messages %}govuk-form-group--error{% endif %}">
+                    {% if form.get('declaration').messages %}
+                        <p id="declaration-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            {{ form.get('declaration').messages | join(', ', ' and ') }}
+                        </p>
+                    {% endif %}
+                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="declaration_confirmed" name="declaration" type="checkbox" value="declaration_confirmed"
+                        {% if form.get('declaration').value == "declaration_confirmed" %}checked{% endif %}>
+                        <label class="govuk-label govuk-checkboxes__label" for="declaration">
+                        To the best of your knowledge, the person who asked you to vouch for them is {{ vouching_for.firstName }} {{ vouching_for.lastName }}
+                        and you have known them for at least 2 years.
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <br>
+        <div class="govuk-button-group">
+            <input type="submit" class="govuk-button" value="Continue with vouching" name="continue">
+            <input type="submit" class="govuk-button govuk-button--secondary" value="Donor will ID another way" name="tryDifferent">
+        </div>
+    </form>
+{% endblock %}
