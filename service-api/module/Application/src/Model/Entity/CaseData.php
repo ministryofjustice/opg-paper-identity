@@ -18,6 +18,7 @@ use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
 use Application\Model\Entity\CaseProgress;
+use Application\Model\Entity\VouchingFor;
 
 /**
  * DTO for holding data required to make new case entry post
@@ -41,13 +42,14 @@ class CaseData implements JsonSerializable
     #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
         Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
     ]])]
-    public ?string $dob;
+    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
+    public ?string $dob = null;
 
-    #[Validator(NotEmpty::class)]
-    public string $firstName;
+    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
+    public ?string $firstName = null;
 
-    #[Validator(NotEmpty::class)]
-    public string $lastName;
+    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
+    public ?string $lastName = null;
 
     /**
      * @var array{
@@ -57,10 +59,18 @@ class CaseData implements JsonSerializable
      *   town?: string,
      *   postcode: string,
      *   country?: string,
-     * }
+     * }|null
      */
+    #[Annotation\Required(false)]
     #[Validator(NotEmpty::class)]
-    public array $address;
+    public ?array $address = null;
+
+
+    /**
+     * @var ?VouchingFor
+     */
+    #[Annotation\Required(false)]
+    public ?VouchingFor $vouchingFor = null;
 
     /**
      * @var string[]
@@ -136,6 +146,8 @@ class CaseData implements JsonSerializable
                 $instance->iiqControl = IIQControl::fromArray($value);
             } elseif ($key === 'idMethodIncludingNation') {
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
+            } elseif ($key === 'vouchingFor') {
+                $instance->vouchingFor = VouchingFor::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -150,16 +162,20 @@ class CaseData implements JsonSerializable
      * @return array{
      *     id: string,
      *     personType: "donor"|"certificateProvider",
-     *     firstName: string,
-     *     lastName: string,
+     *     firstName: ?string,
+     *     lastName: ?string,
      *     dob: ?string,
-     *     address: array{
+     *     address: ?array{
      *       line1: string,
      *       line2?: string,
      *       line3?: string,
      *       town?: string,
      *       postcode: string,
      *       country?: string,
+     *     },
+     *     vouchingFor: ?array{
+     *       firstName: string,
+     *       lastName: string,
      *     },
      *     lpas: string[],
      *     kbvQuestions: KBVQuestion[],
@@ -184,6 +200,7 @@ class CaseData implements JsonSerializable
             'lastName' => $this->lastName,
             'dob' => $this->dob,
             'address' => $this->address,
+            'vouchingFor' => $this->vouchingFor,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
