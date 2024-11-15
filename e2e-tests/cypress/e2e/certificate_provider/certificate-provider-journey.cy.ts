@@ -49,8 +49,6 @@ describe("Identify a Certificate Provider", () => {
 
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-        // console.log(cy.location('pathname'));
-
         // Check form validation
         cy.contains("How will you confirm your identity?");
         cy.get(".govuk-button").contains("Continue").click();
