@@ -26,7 +26,7 @@ describe("Identify a Certificate Provider", () => {
         cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("Initial identity confirmation complete");
+        cy.contains("Identity document verified");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Select answer");
@@ -157,7 +157,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("Initial identity confirmation complete");
+        cy.contains("Identity document verified");
     });
 
     it("lets you identify with Driving licence", () => {
@@ -228,7 +228,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("Initial identity confirmation complete");
+        cy.contains("Identity document verified");
     });
 
     it("lets you identify with National Insurance number and use an alternate address", () => {
@@ -279,7 +279,7 @@ cy.screenshot();
         cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("Initial identity confirmation complete");
+        cy.contains("Identity document verified");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Select answer");
