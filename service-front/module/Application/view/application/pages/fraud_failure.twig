@@ -23,14 +23,24 @@
         </p>
     </div>
     <div class="govuk-button-group">
-        <a
-                href="./how-will-donor-confirm"
-                role="button"
-                draggable="false"
-                class="govuk-button"
-                data-module="govuk-button"
-        >
-            Try a different method
-        </a>
+        {% if details_data.personType == 'certificateProvider' %}
+            <a
+                    href="./post-office-documents"
+                    draggable="false"
+                    class="govuk-button moj-button-menu__item govuk-button"
+                    data-module="govuk-button"
+            >
+                Try a different method
+            </a>
+        {% else %}
+            <a
+                    href="./how-will-donor-confirm"
+                    draggable="false"
+                    class="govuk-button moj-button-menu__item govuk-button"
+                    data-module="govuk-button"
+            >
+                Try a different method
+            </a>
+        {% endif %}
     </div>
 {% endblock %}
