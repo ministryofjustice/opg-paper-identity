@@ -22,9 +22,6 @@ class ServiceAvailabilityHelperTest extends TestCase
         $case = CaseData::fromArray($caseData);
         $helper = new ServiceAvailabilityHelper($services, $case, $config);
 
-//        echo json_encode($helper->processServicesWithCaseData());
-
-
         $this->assertEquals($helper->processServicesWithCaseData(), $expected);
     }
 

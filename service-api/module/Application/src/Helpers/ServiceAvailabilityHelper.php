@@ -48,8 +48,8 @@ class ServiceAvailabilityHelper
             $processedGlobalServices['PASSPORT'] === false ||
             $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
         ) {
-            $this->processedMessages['service_status'] = "Some identity verification methods are not presently" .
-                " available";
+            $this->processedMessages['service_status'] =
+                "Some identity verification methods are not presently available";
         }
 
         if (

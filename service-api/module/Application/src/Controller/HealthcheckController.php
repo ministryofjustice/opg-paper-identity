@@ -119,7 +119,6 @@ class HealthcheckController extends AbstractActionController
                         $this->config
                     );
                     return new JsonModel($helper->processServicesWithCaseData());
-//                    return new JsonModel($services);
                 }
             }
         } catch (\Exception $exception) {
