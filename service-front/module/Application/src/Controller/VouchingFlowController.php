@@ -53,4 +53,16 @@ class VouchingFlowController extends AbstractActionController
         }
         return $view->setTemplate('application/pages/vouching/confirm_vouching');
     }
+
+    public function identityCheckPassedAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/vouching/identity_check_passed');
+    }
 }
