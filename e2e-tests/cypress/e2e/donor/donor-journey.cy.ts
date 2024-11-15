@@ -120,7 +120,7 @@ describe("Identify a Donor", () => {
   it("lets you identify with Driving licence", () => {
 
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
-    cy.contains("Uk driving licence (must be current)").click();
+    cy.contains("UK driving licence (must be current)").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");
