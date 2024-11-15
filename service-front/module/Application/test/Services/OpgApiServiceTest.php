@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
-use Application\Helpers\DependencyCheck;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
@@ -743,7 +742,7 @@ class OpgApiServiceTest extends TestCase
      */
     public function testServiceAvailability(
         Client $client,
-        DependencyCheck $expected,
+        array $expected,
         bool $exception
     ): void {
         if ($exception) {
@@ -786,20 +785,18 @@ class OpgApiServiceTest extends TestCase
         return [
             [
                 $successClient,
-                new DependencyCheck([
+                [
                     "EXPERIAN" => false,
                     "NATIONAL_INSURANCE_NUMBER" => true,
                     "DRIVING_LICENCE" => true,
                     "PASSPORT" => true,
                     "POST_OFFICE" => true
-                ]),
+                ],
                 false
             ],
             [
                 $failClient,
-                new DependencyCheck([
-
-                ]),
+                [],
                 true
             ],
         ];
