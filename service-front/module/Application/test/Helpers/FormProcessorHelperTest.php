@@ -482,7 +482,7 @@ class FormProcessorHelperTest extends TestCase
                 "application/pages/thin_file_failure"
             ],
             [
-                true,
+                false,
                 $templates,
                 [
                     "decision" => "STOP",

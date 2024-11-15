@@ -34,3 +34,12 @@ resources:
     response:
       statusCode: 200
       scriptFile: useFraudScoreContinueJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    requestBody:
+      operator: Contains
+      value: Thinfile
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreJsonFile.groovy

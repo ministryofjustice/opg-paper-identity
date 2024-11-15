@@ -24,6 +24,28 @@ const saaEnvelope = `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-e
   </soap:Body>
 </soap:Envelope>`;
 
+const saaEnvelopeNoKbv = `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <SAAResponse xmlns="http://schema.uk.experian.com/Experian/IdentityIQ/Services/WebService">
+      <SAAResult>
+        <Control>
+          <URN>{{urn}}</URN>
+          <AuthRefNo>6B3TGRWSKC</AuthRefNo>
+        </Control>
+        <Questions>
+          {{questions}}
+        </Questions>
+        <Results>
+          <Outcome>Insufficient Questions (Unable to Authenticate)</Outcome>
+          <NextTransId>
+            <string>RTQ</string>
+          </NextTransId>
+        </Results>
+      </SAAResult>
+    </SAAResponse>
+  </soap:Body>
+</soap:Envelope>`;
+
 const questions = [
   {
     QuestionID: "Q00001",
@@ -154,31 +176,38 @@ function shuffle(a) {
 }
 
 if (req.body.includes("SAA")) {
-  const myQuestions = shuffle(questions)
-    .slice(0, 2)
-    .map((x) => {
-      x.AnswerFormat.AnswerList = shuffle(x.AnswerFormat.AnswerList);
-      return { Question: x };
-    });
+  if (req.body.includes("Thinfile")) {
+    respond().withContent(
+        saaEnvelopeNoKbv
+            .replace("{{questions}}", [])
+    );
+  } else {
+    const myQuestions = shuffle(questions)
+        .slice(0, 2)
+        .map((x) => {
+          x.AnswerFormat.AnswerList = shuffle(x.AnswerFormat.AnswerList);
+          return { Question: x };
+        });
 
-  const id = req.body.match(
-    /<([a-z0-9-]+):ApplicantIdentifier>(.*?)<\/\1:ApplicantIdentifier>/
-  )[2];
-  iiqStore.save(
-    id,
-    JSON.stringify({
-      questions: myQuestions.map((x) => ({
-        qid: x.Question.QuestionID,
-        correct: false,
-      })),
-    })
-  );
+    const id = req.body.match(
+        /<([a-z0-9-]+):ApplicantIdentifier>(.*?)<\/\1:ApplicantIdentifier>/
+    )[2];
+    iiqStore.save(
+        id,
+        JSON.stringify({
+          questions: myQuestions.map((x) => ({
+            qid: x.Question.QuestionID,
+            correct: false,
+          })),
+        })
+    );
 
-  respond().withContent(
-    saaEnvelope
-      .replace("{{questions}}", myQuestions.map(toxml).join(""))
-      .replace("{{urn}}", id)
-  );
+    respond().withContent(
+        saaEnvelope
+            .replace("{{questions}}", myQuestions.map(toxml).join(""))
+            .replace("{{urn}}", id)
+    );
+  }
 } else if (req.body.includes("RTQ")) {
   const answers = req.body.matchAll(
     /<([a-z0-9-]+):Response><\1:QuestionID>(.*?)<\/\1:QuestionID><\1:AnswerGiven>(.*?)<\/\1:AnswerGiven>/g

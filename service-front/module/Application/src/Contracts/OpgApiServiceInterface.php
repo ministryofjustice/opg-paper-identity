@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Contracts;
 
-use Application\Helpers\DependencyCheck;
-
 /**
  * @psalm-type Question = array{
  *   externalId: string,
@@ -131,10 +129,7 @@ interface OpgApiServiceInterface
 
     public function estimatePostofficeDeadline(string $uuid): string;
 
-    /**
-     * @return DependencyCheck
-     */
-    public function getServiceAvailability(string $uuid = null): DependencyCheck;
+    public function getServiceAvailability(string $uuid = null): array;
 
     /**
      * @return array{decision: string}

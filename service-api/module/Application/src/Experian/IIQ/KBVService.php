@@ -48,8 +48,8 @@ class KBVService implements KBVServiceInterface
     }
 
     /**
-     * @throws Exception\CannotGetQuestionsException
      * @return KBVQuestion[]
+     * @throws Exception\CannotGetQuestionsException
      */
     public function fetchFormattedQuestions(string $uuid): array
     {

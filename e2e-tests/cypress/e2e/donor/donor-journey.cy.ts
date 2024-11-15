@@ -2,8 +2,8 @@ describe("Identify a Donor", () => {
   it("lets you identify with National Insurance number", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
-    cy.contains("How will they confirm their identity?");
-    cy.get("label").contains("National Insurance number").click();
+    cy.contains("How will you confirm your identity?");
+    cy.get("label").contains("National insurance number").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");
@@ -48,9 +48,9 @@ describe("Identify a Donor", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     // Check form validation
-    cy.contains("How will they confirm their identity?");
+    cy.contains("How will you confirm your identity?");
     cy.get(".govuk-button").contains("Continue").click();
-    cy.contains("How will they confirm their identity?");
+    cy.contains("How will you confirm your identity?");
     cy.contains("Please select an option");
 
     // Check passport reveal
@@ -120,7 +120,7 @@ describe("Identify a Donor", () => {
   it("lets you identify with Driving licence", () => {
 
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
-    cy.contains("Driving licence").click();
+    cy.contains("Uk driving licence (must be current)").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");
@@ -158,8 +158,8 @@ describe("Identify a Donor", () => {
   it("fails if you get KBVs wrong", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
-    cy.contains("How will they confirm their identity?");
-    cy.get("label").contains("National Insurance number").click();
+    cy.contains("How will you confirm your identity?");
+    cy.get("label").contains("National insurance number").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");

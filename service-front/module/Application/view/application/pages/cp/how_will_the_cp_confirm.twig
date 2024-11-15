@@ -8,6 +8,23 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+
+            {% if service_availability.messages.banner %}
+                <div class="govuk-notification-banner" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__content">
+                        <p class="govuk-notification-banner__heading">
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                {#                        <span class="govuk-visually-hidden">Warning</span>#}
+                                {{ service_availability.messages.banner }}
+                            </strong>
+                        </div>
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
             <h1 class="govuk-heading-xl">{% block title %}How will you confirm your identity?{% endblock %}</h1>
         </div>
     </div>
@@ -64,12 +81,20 @@
                     {% endif %}
 
                     <div class="govuk-radios" data-module="govuk-radios">
-                        {% for key, datum in options_data %}
+                        {% if service_availability.data.NATIONAL_INSURANCE_NUMBER %}
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="{{ key }}" name="id_method" type="radio"
-                                       value="{{ key }}">
-                                <label class="govuk-label govuk-radios__label" for="{{ key }}">{{ datum }}
-                                    {% if key == 'PASSPORT' %}
+                                <input class="govuk-radios__input" id="NATIONAL_INSURANCE_NUMBER" name="id_method" type="radio"
+                                       value="NATIONAL_INSURANCE_NUMBER">
+                                <label class="govuk-label govuk-radios__label" for="NATIONAL_INSURANCE_NUMBER">National
+                            insurance number</label>
+                    </div>
+                {% endif %}
+                                    {% if service_availability.data.PASSPORT %}
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="PASSPORT" name="id_method" type="radio"
+                               value="PASSPORT">
+                        <label class="govuk-label govuk-radios__label" for="PASSPORT">
+                            UK Passport (current or expired in the last 18months)
 
                                         <details
                                                 class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
@@ -166,11 +191,18 @@
                                                 </div>
                                             </div>
                                         </details>
-
+</label>
+                    </div>
                                     {% endif %}
-                                </label>
+        {% if service_availability.data.DRIVING_LICENCE %}
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="DRIVING_LICENCE" name="id_method"
+                               type="radio"
+                               value="DRIVING_LICENCE">
+                        <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">
+                            Uk driving licence (must be current)                        </label>
                             </div>
-                        {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">

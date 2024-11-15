@@ -70,13 +70,13 @@ class CPFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability->getProcessedStatus()[$key] === true) {
+            if ($serviceAvailability['data'][$key] === true) {
                 $identityDocs[$key] = $value;
             }
         }
 
         $optionsData = $identityDocs;
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
@@ -329,7 +329,7 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
@@ -362,7 +362,7 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
@@ -396,7 +396,7 @@ class CPFlowController extends AbstractActionController
         $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));

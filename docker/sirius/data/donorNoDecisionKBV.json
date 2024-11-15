@@ -47,13 +47,13 @@
       },
       "contactLanguagePreference": "cy",
       "dateOfBirth": "1986-09-03",
-      "email": "lee.nodec@example.com",
+      "email": "lee.thinfile@example.com",
       "firstNames": "Lee",
       "identityCheck": {
         "checkedAt": "1913-11-28T02:04:34.0Z",
         "type": "one-login"
       },
-      "lastName": "Nodec",
+      "lastName": "Thinfile",
       "uid": "20cd4c3b-76e2-6582-27c4-428eb9ca1f9c"
     },
     "howReplacementAttorneysMakeDecisions": "jointly-for-some-severally-for-others",
@@ -118,7 +118,7 @@
       "addressLine3": "",
       "dob": "03/09/1986",
       "firstname": "Lee",
-      "surname": "Nodec",
+      "surname": "Thinfile",
       "town": "Southampton"
     },
     "id": 31944000,

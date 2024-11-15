@@ -10,6 +10,7 @@ use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
+use Application\Helpers\ServiceAvailabilityHelper;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -111,14 +112,13 @@ class HealthcheckController extends AbstractActionController
             if (is_string($uuid)) {
                 $case = $this->dataQuery->getCaseByUUID($uuid);
 
-                if (
-                    ! is_null($case) &&
-                    ($case->fraudScore?->decision === 'STOP' || $case->fraudScore?->decision === 'NODECISION')
-                ) {
-                    $services['NATIONAL_INSURANCE_NUMBER'] = false;
-                    $services['DRIVING_LICENCE'] = false;
-                    $services['PASSPORT'] = false;
-                    $services['message'] = "Fraud check failure is now restricting ID options.";
+                if (! is_null($case)) {
+                    $helper = new ServiceAvailabilityHelper(
+                        $services,
+                        $case,
+                        $this->config
+                    );
+                    return new JsonModel($helper->processServicesWithCaseData());
                 }
             }
         } catch (\Exception $exception) {

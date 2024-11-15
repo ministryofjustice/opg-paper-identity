@@ -8,7 +8,6 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Helpers\AddressProcessorHelper;
-use Application\Helpers\DependencyCheck;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Laminas\Http\Response;
@@ -73,7 +72,9 @@ class OpgApiService implements OpgApiServiceInterface
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
-            $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
+            if ($response['address']) {
+                $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
+            }
             if (
                 array_key_exists('alternateAddress', $response) &&
                 ! empty($response['alternateAddress'])
@@ -172,14 +173,25 @@ class OpgApiService implements OpgApiServiceInterface
         array $address,
     ): array {
 
-        $data = [
-            'firstName' => $firstname,
-            'lastName' => $lastname,
-            'dob' => $dob,
-            'personType' => $personType,
-            'lpas' => $lpas,
-            'address' => $address,
-        ];
+        if ($personType == 'voucher') {
+            $data = [
+                'personType' => $personType,
+                'lpas' => $lpas,
+                'vouchingFor' => [
+                    'firstName' => $firstname,
+                    'lastName' => $lastname,
+                ]
+            ];
+        } else {
+            $data = [
+                'firstName' => $firstname,
+                'lastName' => $lastname,
+                'dob' => $dob,
+                'personType' => $personType,
+                'lpas' => $lpas,
+                'address' => $address,
+            ];
+        }
 
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
@@ -346,7 +358,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['deadline'];
     }
 
-    public function getServiceAvailability(string $uuid = null): DependencyCheck
+    public function getServiceAvailability(string $uuid = null): array
     {
         $url = is_null($uuid) ? "/service-availability" : "/service-availability?uuid=$uuid";
 
@@ -360,7 +372,7 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException('Service availability data missing!');
         }
 
-        return new DependencyCheck($this->responseData);
+        return $this->responseData;
     }
 
     public function requestFraudCheck(string $uuid): array
