@@ -6,7 +6,6 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
-use Application\Helpers\DependencyCheck;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
 use Application\PostOffice\DocumentType;
@@ -137,15 +136,20 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public function returnServiceAvailabilityResponseData(): DependencyCheck
+    public function returnServiceAvailabilityResponseData(): array
     {
-        return new DependencyCheck([
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => true,
-            "DRIVING_LICENCE" => true,
-            "PASSPORT" => true,
-            "POST_OFFICE" => true
-        ]);
+        return [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => false,
+            ],
+            'messages' => []
+        ];
     }
 
     public function testCPIdCheckReturnsPageWithData(): void

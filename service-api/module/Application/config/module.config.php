@@ -466,4 +466,36 @@ return [
             'ViewJsonStrategy',
         ],
     ],
+    'opg_settings' => [
+        'identity_documents' => [
+            'PASSPORT' => "Passport",
+            'DRIVING_LICENCE' => 'Driving licence',
+            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
+        ],
+        'identity_methods' => [
+            'POST_OFFICE' => 'Post Office',
+            'VOUCHING' => 'Have someone vouch for the identity of the donor',
+            'COURT_OF_PROTECTION' => 'Court of protection',
+        ],
+        'identity_services' => [
+            'EXPERIAN' => 'Experian',
+        ],
+        'banner_messages' => [
+            'donor' => [
+                'NODECISION' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly on a previous occasion.',
+                'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions correctly ' .
+                    'on a previous occasion.'
+            ],
+            'certificateProvider' => [
+                'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions ' .
+                    'correctly on a previous occasion.',
+                'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security ' .
+                    'questions correctly on a previous occasion.',
+            ]
+        ],
+    ]
 ];

@@ -1,19 +1,29 @@
-describe("Counter service donor journey", () => {
+describe("Counter service certificateProvider journey", () => {
   it("accepts a UK passport", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+    cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-    cy.contains("How will they confirm their identity?");
+    cy.contains("How will you prove your identity?");
     cy.contains("label", "Post Office").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Which document will they take to the Post Office?");
-    cy.contains("UK passport").click();
+    cy.contains("UK passport (up to 18 months expired)").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Do the details match the ID document?");
+    cy.contains("Does the name match the ID?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in the identity check");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("What is their date of birth?");
+    cy.getInputByLabel("Day").type("20");
+    cy.getInputByLabel("Month").type("01");
+    cy.getInputByLabel("Year").type("1999");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Does the address on the ID document match the address in Sirius?");
+    cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Find a Post Office");
@@ -31,9 +41,9 @@ describe("Counter service donor journey", () => {
   });
 
   it("accepts an international ID", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+    cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
-    cy.contains("How will they confirm their identity?");
+    cy.contains("How will you prove your identity?");
     cy.contains("label", "Post Office").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -50,10 +60,20 @@ describe("Counter service donor journey", () => {
     cy.contains("National ID").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Do the details match the ID document?");
+    cy.contains("Does the name match the ID?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in the identity check");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("What is their date of birth?");
+    cy.getInputByLabel("Day").type("20");
+    cy.getInputByLabel("Month").type("01");
+    cy.getInputByLabel("Year").type("1999");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Does the address on the ID document match the address in Sirius?");
+    cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Find a Post Office");
