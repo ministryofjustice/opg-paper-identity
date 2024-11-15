@@ -11,10 +11,10 @@ use Psr\Log\LoggerInterface;
 
 class ServiceAvailabilityHelper
 {
-    /**
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
-    protected array $availableServices;
+    public const DECISION_STOP = 'STOP';
+    public const DECISION_NODECISION = 'NODECISION';
+
+    protected array $availableServices = [];
 
     protected array $processedMessages = [];
 
@@ -31,7 +31,7 @@ class ServiceAvailabilityHelper
     {
         $processedGlobalServices = [];
 
-        if ($this->services['EXPERIAN'] !== true) {
+        if (($this->services['EXPERIAN'] ?? false) !== true) {
             $processedGlobalServices['EXPERIAN'] = false;
             $processedGlobalServices['DRIVING_LICENCE'] = false;
             $processedGlobalServices['PASSPORT'] = false;
@@ -67,12 +67,17 @@ class ServiceAvailabilityHelper
 
         $this->services = $processedGlobalServices;
     }
-
+    /**
+     * @return array<string, string>
+     */
     public function getProcessGlobalServicesSettings(): array
     {
         return $this->availableServices;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getProcessedMessage(): array
     {
         return $this->processedMessages;
@@ -90,9 +95,9 @@ class ServiceAvailabilityHelper
         array $config
     ): void {
         $configServices = array_merge(
-            $config['opg_settings']['identity_documents'],
-            $config['opg_settings']['identity_methods'],
-            $config['opg_settings']['identity_services'],
+            $config['opg_settings']['identity_documents'] ?? [],
+            $config['opg_settings']['identity_methods'] ?? [],
+            $config['opg_settings']['identity_services'] ?? [],
         );
 
         $keys = array_keys($configServices);
@@ -109,8 +114,8 @@ class ServiceAvailabilityHelper
     public function processServicesWithCaseData(): array
     {
         if (
-            $this->case->fraudScore?->decision === 'STOP' ||
-            $this->case->fraudScore?->decision === 'NODECISION' ||
+            $this->case->fraudScore?->decision === self::DECISION_STOP ||
+            $this->case->fraudScore?->decision === self::DECISION_NODECISION ||
             $this->case->identityCheckPassed === false
         ) {
             $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = false;
@@ -120,10 +125,13 @@ class ServiceAvailabilityHelper
             if ($this->case->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;
                 $this->processedMessages['banner'] =
-                    $this->config['opg_settings']['banner_messages'][$this->case->personType]['STOP'];
+                    $this->config['opg_settings']['banner_messages'][$this->case->personType][self::DECISION_STOP];
             } else {
                 $this->processedMessages['banner'] =
-                    $this->config['opg_settings']['banner_messages'][$this->case->personType]['NODECISION'];
+                    $this->config['opg_settings']
+                        ['banner_messages']
+                        [$this->case->personType]
+                        [self::DECISION_NODECISION];
             }
         }
 
