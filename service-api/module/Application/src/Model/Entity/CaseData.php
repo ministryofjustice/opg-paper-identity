@@ -94,7 +94,7 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public bool $identityCheckPassed = false;
+    public ?bool $identityCheckPassed = null;
 
     /**
      * @var string[]
@@ -178,14 +178,14 @@ class CaseData implements JsonSerializable
      *     kbvQuestions: KBVQuestion[],
      *     iiqControl?: IIQControl,
      *     documentComplete: bool,
-     *     identityCheckPassed: bool,
+     *     identityCheckPassed: ?bool,
      *     alternateAddress: ?string[],
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
-     *     fraudScore?: FraudScore
+     *     fraudScore?: FraudScore,
      * }
      */
     public function toArray(): array
