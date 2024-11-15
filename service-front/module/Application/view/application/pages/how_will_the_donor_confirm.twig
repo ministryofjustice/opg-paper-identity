@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST" class="govuk-!-width-two-thirds">
+    <form method="POST">
         {% if service_availability.messages.banner %}
             <div class="govuk-notification-banner" data-module="govuk-notification-banner">
                 <div class="govuk-notification-banner__content">
@@ -31,7 +31,6 @@
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-
 
                 <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
 
@@ -94,7 +93,7 @@
                                 <input class="govuk-radios__input" id="PASSPORT" name="id_method" type="radio"
                                        value="PASSPORT">
                                 <label class="govuk-label govuk-radios__label" for="PASSPORT">
-                                    UK Passport (current or expired in the last 18months)
+                                    UK Passport (current or expired in the last 18 months)
 
                                     <details
                                             class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
@@ -201,7 +200,7 @@
                                        type="radio"
                                        value="DRIVING_LICENCE">
                                 <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">
-                                    Uk driving licence (must be current)
+                                    UK driving licence (must be current)
                                 </label>
                             </div>
                         {% endif %}
