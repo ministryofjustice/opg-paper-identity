@@ -34,11 +34,7 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(ConfirmVouching::class);
 
-
         $view->setVariable('details_data', $detailsData);
-        /**
-         * @psalm-suppress InvalidArrayOffset
-         */
         $view->setVariable('vouching_for', $detailsData["vouchingFor"]);
         $view->setVariable('form', $form);
 
@@ -75,27 +71,30 @@ class VouchingFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
 
             if ($form->isValid()) {
-
+                $matches = [];
                 foreach ($detailsData['lpas'] as $lpa) {
-                    /**
-                     * @psalm-suppress ArgumentTypeCoercion
-                     */
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $match = $this->voucherMatchLpaActorHelper->checkNameMatch($formData["firstName"], $formData["lastName"], $lpasData);
-                    var_dump($lpasData);
+                    $lpa_matches = $this->voucherMatchLpaActorHelper->checkNameMatch(
+                        $formData["firstName"],
+                        $formData["lastName"],
+                        $lpasData
+                    );
+                    foreach ($lpa_matches as $type => $match) {
+                        if ($match) {
+                            $matches[] = $type;
+                        }
+                    }
                 }
-
-                if ($match) {
-                    $view->setVariable('error_message', $match);
+                // this does mean that if they change from one matching name to another they would still get through.
+                if ($matches && ! isset($formData["continue-after-warning"])) {
+                    $view->setVariable('matches', $matches);
+                    $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
                 } else {
                     // will need to update to route to next page once built
                     return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
                 }
-
             }
         }
-
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
-
     }
 }
