@@ -96,7 +96,7 @@ class HealthcheckControllerTest extends TestCase
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
-        $this->assertEquals(json_encode($response), $this->getResponse()->getContent());
+        $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
         $this->assertModuleName('application');
         $this->assertControllerName(HealthcheckController::class); // as specified in router's controller name alias
         $this->assertControllerClass('HealthcheckController');
@@ -176,24 +176,36 @@ class HealthcheckControllerTest extends TestCase
             "NATIONAL_INSURANCE_NUMBER" => true,
             "DRIVING_LICENCE" => true,
             "PASSPORT" => true,
-            "POST_OFFICE" => true
+            "POST_OFFICE" => true,
         ];
 
         $response = [
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => true,
-            "DRIVING_LICENCE" => true,
-            "PASSPORT" => true,
-            "POST_OFFICE" => true
+            'data' => [
+                'PASSPORT' => true,
+                'DRIVING_LICENCE' => true,
+                'NATIONAL_INSURANCE_NUMBER' => true,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => true,
+            ],
+            'messages' => []
         ];
 
         $responseNoDec = [
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => false,
-            "DRIVING_LICENCE" => false,
-            "PASSPORT" => false,
-            "POST_OFFICE" => true,
-            "message" => "Fraud check failure is now restricting ID options."
+            'data' => [
+                "EXPERIAN" => true,
+                "NATIONAL_INSURANCE_NUMBER" => false,
+                "DRIVING_LICENCE" => false,
+                "PASSPORT" => false,
+                "POST_OFFICE" => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true
+            ],
+            'messages' => [
+                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly on a previous occasion.',
+            ]
         ];
 
         return [

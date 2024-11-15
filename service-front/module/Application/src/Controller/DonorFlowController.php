@@ -50,19 +50,33 @@ class DonorFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability->getProcessedStatus()[$key] === true) {
+            if ($serviceAvailability['data'][$key] === true) {
                 $identityDocs[$key] = $value;
             }
         }
 
-        $optionsData = $identityDocs;
+        $methods = [];
+        foreach (array_keys($this->config['opg_settings']['identity_methods']) as $key) {
+            if (array_key_exists($key, $serviceAvailability['data'])) {
+                /**
+                 * @psalm-suppress InvalidArrayOffset
+                 */
+                $methods[$key] = $serviceAvailability['data'][$key];
+            } else {
+                /**
+                 * @psalm-suppress InvalidArrayOffset
+                 */
+                $methods[$key] = true;
+            }
+        }
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
-        $view->setVariable('options_data', $optionsData);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('options_data', $identityDocs);
+        $view->setVariable('methods_data', $methods);
+        $view->setVariable('service_availability', $serviceAvailability);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -275,7 +289,7 @@ class DonorFlowController extends AbstractActionController
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
 
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -312,7 +326,7 @@ class DonorFlowController extends AbstractActionController
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
 
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -349,7 +363,7 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability->toArray());
+        $view->setVariable('service_availability', $serviceAvailability);
 
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);
