@@ -2,18 +2,21 @@
     <div class="moj-identity-bar">
         <div class="moj-identity-bar__container">
             <div class="moj-identity-bar__details">
-                <span class="moj-identity-bar__title">Identity Check: <b>{{ details_data.firstName }} {{ details_data.lastName }}</b>
+                <span class="moj-identity-bar__title">Identity Check: <b>{{ firstName }} {{ lastName }}</b>
                     {% if details_data.personType == 'certificateProvider' %}
                         (certificate provider)
                     {% else %}
                         (donor)
+                        {% if details_data.personType == 'voucher'%}
+                            <strong class="govuk-tag govuk-!-margin-left-2">vouching route</strong>
+                        {% endif %}
                     {% endif %}
                 </span>
             </div>
             <div class="moj-identity-bar__actions">
                 <div class="govuk-!-static-margin-top-2">
                     <a
-                        href="/{{ details_data['id'] }}/abandon-flow?last_page={{ path() }}"
+                        href="{{ ('/' ~ details_data['id'] ~ '/abandon-flow?last_page=' ~ path()) | basepath }}"
                         role="button"
                         draggable="false"
                         class="govuk-link govuk-!-font-size-16"

@@ -16,8 +16,8 @@ use SoapFault;
  *     ApplicantIdentifier: string,
  *     Name: array{
  *       Title: string,
- *       Forename: string,
- *       Surname: string,
+ *       Forename: string|null,
+ *       Surname: string|null,
  *     },
  *     DateOfBirth: array{
  *       CCYY: string,

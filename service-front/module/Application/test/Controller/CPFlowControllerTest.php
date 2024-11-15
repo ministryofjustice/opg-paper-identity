@@ -146,16 +146,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "PASSPORT" => true,
             "POST_OFFICE" => true
         ]);
-//        return [
-//            "data" => [
-//                "EXPERIAN" => true,
-//                "NATIONAL_INSURANCE_NUMBER" => true,
-//                "DRIVING_LICENCE" => true,
-//                "PASSPORT" => true,
-//                "POST_OFFICE" => true
-//            ],
-//            "message" => ""
-//        ];
     }
 
     public function testCPIdCheckReturnsPageWithData(): void

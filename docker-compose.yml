@@ -54,7 +54,7 @@ services:
       - ./docker/yoti:/opt/imposter/config
 
   experian-iiq-mock:
-    image: outofcoffee/imposter
+    image: outofcoffee/imposter:4.2.1
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "imposter", "list", "-x" ]
