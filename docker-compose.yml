@@ -28,7 +28,7 @@ services:
       - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
 
   experian-crosscore-auth-mock:
-    image: stoplight/prism:5.11.2
+    image: stoplight/prism:5.12.1
     command: mock -h 0.0.0.0 -p 4011 -d /tmp/openapi.yml
     restart: unless-stopped
     healthcheck:
