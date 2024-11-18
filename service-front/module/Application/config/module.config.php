@@ -559,6 +559,16 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_name' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/voucher-name',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'voucherName',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
