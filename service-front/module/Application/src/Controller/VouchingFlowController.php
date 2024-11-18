@@ -126,12 +126,14 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-
-            $response = $this->handleFormSubmission($dateSubForm, $form, $templates);
-            if ($response instanceof Response) {
-                return $response;
+            $formData = $this->getRequest()->getPost()->toArray();
+            if (array_key_exists('check_button', $formData)) {
+                $variables = $this->handlePassportDateCheckFormSubmission();
+                $view->setVariables($variables);
+            } else {
+                $response = $this->handleIdMethodFormSubmission($form, $formData);
+                if ($response) return $response;
             }
-            $view->setVariables($response);
         }
 
         $view->setVariable('options_data', $optionsData);
@@ -141,43 +143,44 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate($templates['default']);
     }
 
-    private function handleFormSubmission(FormInterface $dateSubForm, FormInterface $idMethodForm, array $templates): array|Response
+    private function handleIdMethodFormSubmission(FormInterface $idMethodForm, $formData): Response|null
     {
-        $formData = $this->getRequest()->getPost()->toArray();
-
-        if (array_key_exists('check_button', $formData)) {
-            $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                $this->uuid,
-                $this->getRequest()->getPost(),
-                $dateSubForm,
-                $templates
-            );
-            return $formProcessorResponseDto->getVariables();
-        } else {
-            if ($idMethodForm->isValid()) {
-                if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
-                    $data = [
-                        'id_route' => IdMethodEnum::PostOffice->value,
-                    ];
-                    $this->opgApiService->updateIdMethodWithCountry(
-                        $this->uuid,
-                        $data
-                    );
-                    return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $this->uuid]);
-                } else {
-                    $data = [
-                        'id_route' => 'TELEPHONE',
-                        'id_country' => \Application\PostOffice\Country::GBR->value,
-                        'id_method' => $formData['id_method']
-                    ];
-                    $this->opgApiService->updateIdMethodWithCountry(
-                        $this->uuid,
-                        $data
-                    );
-                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
-                }
-            }
-            return [];
+        if (!$idMethodForm->isValid()) {
+            return null;
         }
+
+        if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
+            $data = [
+                'id_route' => IdMethodEnum::PostOffice->value,
+            ];
+            $this->opgApiService->updateIdMethodWithCountry(
+                $this->uuid,
+                $data
+            );
+            return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $this->uuid]);
+        }
+
+        $data = [
+            'id_route' => 'TELEPHONE',
+            'id_country' => \Application\PostOffice\Country::GBR->value,
+            'id_method' => $formData['id_method']
+        ];
+        $this->opgApiService->updateIdMethodWithCountry(
+            $this->uuid,
+            $data
+        );
+
+        return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
+    }
+
+    private function handlePassportDateCheckFormSubmission(FormInterface $dateSubForm, array $templates): array
+    {
+        $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+            $this->uuid,
+            $this->getRequest()->getPost(),
+            $dateSubForm,
+            $templates
+        );
+        return $formProcessorResponseDto->getVariables();
     }
 }
