@@ -35,7 +35,7 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(ConfirmVouching::class);
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"]);
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
@@ -64,7 +64,7 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(VoucherName::class);
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"]);
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
