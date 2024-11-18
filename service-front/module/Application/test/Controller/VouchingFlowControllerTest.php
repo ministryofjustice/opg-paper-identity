@@ -6,16 +6,12 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
-use Application\Helpers\DependencyCheck;
-use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
-use Application\PostOffice\Country;
-use Application\PostOffice\DocumentType;
-use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Application\Enums\LpaActorTypes;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Application\Enums\IdMethod as IdMethodEnum;
 
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 {
@@ -72,6 +68,19 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 "id_method" => "DRIVING_LICENCE",
                 'id_route' => 'POST_OFFICE'
             ]
+        ];
+    }
+
+    public function returnServiceAvailability(): array
+    {
+        return [
+            'data' => [
+                'PASSPORT' => true,
+                'DRIVING_LICENCE' => true,
+                'NATIONAL_INSURANCE_NUMBER' => true,
+                'POST_OFFICE' => true
+            ],
+            'messages' => []
         ];
     }
 
@@ -133,7 +142,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'declaration' => "declaration_confirmed"
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf('/%s/vouching/confirm-vouching', $this->uuid));
+        $this->assertRedirectTo(sprintf('/%s/vouching/how-will-you-confirm', $this->uuid));
     }
 
     public function testConfirmVouchingTryDifferentRoute(): void
@@ -152,6 +161,132 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/start?personType=donor&lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678");
+    }
+
+    public function testHowWillYouConfirmRendersTemplateWithDefaults(): void
+    {
+        $mockResponseData = $this->returnOpgResponseData();
+        $mockServiceAvailability = $this->returnServiceAvailability();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->with($this->uuid)
+            ->willReturn($mockServiceAvailability);
+
+        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'GET');
+
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/vouching_how_will_you_confirm');
+
+        $response = $this->getResponse()->getContent();
+        $this->assertStringContainsString('How will you confirm your identity?', $response);
+        $this->assertStringContainsString('National insurance number', $response);
+        $this->assertStringContainsString('UK Passport', $response);
+        $this->assertStringContainsString('UK driving licence', $response);
+        $this->assertStringContainsString('Post Office', $response);
+    }
+
+    public function testHowWillYouConfirmHandlesPostOfficeMethod(): void
+    {
+        $mockResponseData = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateIdMethodWithCountry')
+            ->with(
+                $this->uuid,
+                [
+                    'id_route' => IdMethodEnum::PostOffice->value,
+                ]
+            );
+
+        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'POST', [
+            'id_method' => IdMethodEnum::PostOffice->value,
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/post-office-documents");
+    }
+
+    public function testHowWillYouConfirmHandlesTelephoneMethod(): void
+    {
+        $mockResponseData = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateIdMethodWithCountry')
+            ->with(
+                $this->uuid,
+                [
+                    'id_route' => 'TELEPHONE',
+                    'id_country' => 'GBR',
+                    'id_method' => 'TELEPHONE',
+                ]
+            );
+
+        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'POST', [
+            'id_method' => 'TELEPHONE',
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/vouching/voucher-name");
+    }
+
+    public function testHowWillYouConfirmNoOptionSelected(): void
+    {
+        $mockResponseData = $this->returnOpgResponseData();
+        $mockServiceAvailability = $this->returnServiceAvailability();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->with($this->uuid)
+            ->willReturn($mockServiceAvailability);
+
+        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'POST', [
+            'id_method' => null
+        ]);
+
+        $this->assertResponseStatusCode(200);
+        $response = $this->getResponse()->getContent();
+        $this->assertStringContainsString('How will you confirm your identity?', $response);
+        $this->assertStringContainsString('Please select an option', $response);
     }
 
     public function testVoucherNamePage(): void
