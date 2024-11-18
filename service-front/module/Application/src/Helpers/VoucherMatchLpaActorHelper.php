@@ -27,50 +27,58 @@ class VoucherMatchLpaActorHelper
 
     public function checkNameMatch(?string $firstName, ?string $lastName, array $lpasData): array
     {
-        $matches = [];
+        $matches = [
+            LpaActorTypes::DONOR->value => false,
+            LpaActorTypes::CP->value => false,
+            LpaActorTypes::ATTORNEY->value => false,
+            LpaActorTypes::R_ATTORNEY->value => false
+        ];
 
         if (key_exists("opg.poas.lpastore", $lpasData)) {
-            $matches[] = $this->compareName(
+            $matches[LpaActorTypes::DONOR->value] = $this->compareName(
                 $firstName,
                 $lastName,
                 $lpasData["opg.poas.lpastore"]["donor"]["firstNames"] ?? null,
                 $lpasData["opg.poas.lpastore"]["donor"]["lastName"] ?? null,
-            ) ? LpaActorTypes::DONOR->value : null;
+            );
 
-            $matches[] = $this->compareName(
+            $matches[LpaActorTypes::CP->value] = $this->compareName(
                 $firstName,
                 $lastName,
                 $lpasData["opg.poas.lpastore"]["certificateProvider"]["firstNames"] ?? null,
                 $lpasData["opg.poas.lpastore"]["certificateProvider"]["lastName"] ?? null,
-            ) ? LpaActorTypes::CP->value : null;
+            );
 
             foreach ($lpasData["opg.poas.lpastore"]["attorneys"] ?? [] as $attorney) {
-                if (in_array($attorney["status"], ["active", "removed"])) {
-                    $matches[] = $this->compareName(
+                if (
+                    in_array($attorney["status"], ["active", "removed"]) &&
+                    ! $matches[LpaActorTypes::ATTORNEY->value]
+                ) {
+                    $matches[LpaActorTypes::ATTORNEY->value] = $this->compareName(
                         $firstName,
                         $lastName,
                         $attorney["firstNames"] ?? null,
                         $attorney["lastName"] ?? null,
-                    ) ? LpaActorTypes::ATTORNEY->value : null;
+                    );
                 }
-                if ($attorney["status"] === "replacement") {
-                    $matches[] = $this->compareName(
+                if ($attorney["status"] === "replacement" && ! $matches[LpaActorTypes::R_ATTORNEY->value]) {
+                    $matches[LpaActorTypes::R_ATTORNEY->value] = $this->compareName(
                         $firstName,
                         $lastName,
                         $attorney["firstNames"] ?? null,
                         $attorney["lastName"] ?? null,
-                    ) ? LpaActorTypes::R_ATTORNEY->value : null;
+                    );
                 }
             }
         } elseif (key_exists("opg.poas.sirius", $lpasData)) {
-            $matches[] = $this->compareName(
+            $matches[LpaActorTypes::DONOR->value] = $this->compareName(
                 $firstName,
                 $lastName,
                 $lpasData["opg.poas.sirius"]["donor"]["firstname"] ?? null,
                 $lpasData["opg.poas.sirius"]["donor"]["surname"] ?? null,
-            ) ? LpaActorTypes::DONOR->value : null;
+            );
         }
 
-        return array_values(array_filter($matches));
+        return array_keys($matches, true);
     }
 }
