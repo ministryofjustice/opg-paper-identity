@@ -559,6 +559,16 @@ return [
                             ],
                         ],
                     ],
+                    'vouching_how_will_you_confirm' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/how-will-you-confirm',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'howWillYouConfirm',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
