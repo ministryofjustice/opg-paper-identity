@@ -8,10 +8,12 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
+use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
 use Application\Forms\PassportDateCp;
+use Laminas\Form\FormInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -22,9 +24,11 @@ class VouchingFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
+    private $uuid;
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
+        private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly array $config
@@ -62,8 +66,8 @@ class VouchingFlowController extends AbstractActionController
     public function voucherNameAction(): ViewModel|Response
     {
         $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $this->uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($this->uuid);
         $form = $this->createForm(VoucherName::class);
 
         $view->setVariable('details_data', $detailsData);
@@ -89,7 +93,7 @@ class VouchingFlowController extends AbstractActionController
                     $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
                 } else {
                     // will need to update to route to next page once built
-                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
                 }
             }
         }
@@ -100,14 +104,14 @@ class VouchingFlowController extends AbstractActionController
     {
         $templates = ['default' => 'application/pages/vouching/how_will_you_confirm'];
         $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
+        $this->uuid = $this->params()->fromRoute("uuid");
         $dateSubForm = $this->createForm(PassportDateCp::class);
         $form = $this->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($this->uuid);
 
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
+        $serviceAvailability = $this->opgApiService->getServiceAvailability($this->uuid);
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
@@ -122,47 +126,58 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost()->toArray();
-            if (array_key_exists('check_button', $formData)) {
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $dateSubForm,
-                    $templates
-                );
-                $view->setVariables($formProcessorResponseDto->getVariables());
-            } else {
-                if ($form->isValid()) {
-                    if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
-                        $data = [
-                            'id_route' => IdMethodEnum::PostOffice->value,
-                        ];
-                        $this->opgApiService->updateIdMethodWithCountry(
-                            $uuid,
-                            $data
-                        );
-                        // TODO: This will need to be changed to the actual voucher version of post office documents
-                        return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
-                    } else {
-                        $data = [
-                            'id_route' => 'TELEPHONE',
-                            'id_country' => \Application\PostOffice\Country::GBR->value,
-                            'id_method' => $formData['id_method']
-                        ];
-                        $this->opgApiService->updateIdMethodWithCountry(
-                            $uuid,
-                            $data
-                        );
-                        return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
-                    }
-                }
+
+            $response = $this->handleFormSubmission($dateSubForm, $form, $templates);
+            if ($response instanceof Response) {
+                return $response;
             }
+            $view->setVariables($response);
         }
 
         $view->setVariable('options_data', $optionsData);
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
+        $view->setVariable('uuid', $this->uuid);
 
         return $view->setTemplate($templates['default']);
+    }
+
+    private function handleFormSubmission(FormInterface $dateSubForm, FormInterface $idMethodForm, array $templates): array|Response
+    {
+        $formData = $this->getRequest()->getPost()->toArray();
+
+        if (array_key_exists('check_button', $formData)) {
+            $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
+                $this->uuid,
+                $this->getRequest()->getPost(),
+                $dateSubForm,
+                $templates
+            );
+            return $formProcessorResponseDto->getVariables();
+        } else {
+            if ($idMethodForm->isValid()) {
+                if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
+                    $data = [
+                        'id_route' => IdMethodEnum::PostOffice->value,
+                    ];
+                    $this->opgApiService->updateIdMethodWithCountry(
+                        $this->uuid,
+                        $data
+                    );
+                    return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $this->uuid]);
+                } else {
+                    $data = [
+                        'id_route' => 'TELEPHONE',
+                        'id_country' => \Application\PostOffice\Country::GBR->value,
+                        'id_method' => $formData['id_method']
+                    ];
+                    $this->opgApiService->updateIdMethodWithCountry(
+                        $this->uuid,
+                        $data
+                    );
+                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
+                }
+            }
+            return [];
+        }
     }
 }
