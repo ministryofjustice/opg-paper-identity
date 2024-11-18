@@ -132,7 +132,9 @@ class VouchingFlowController extends AbstractActionController
                 $view->setVariables($variables);
             } else {
                 $response = $this->handleIdMethodFormSubmission($form, $formData);
-                if ($response) return $response;
+                if ($response) {
+                    return $response;
+                }
             }
         }
 
