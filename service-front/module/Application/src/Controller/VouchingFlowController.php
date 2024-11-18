@@ -87,14 +87,17 @@ class VouchingFlowController extends AbstractActionController
                 }
                 // this does mean that if they change from one matching name to another they would still get through.
                 if ($matches && ! isset($formData["continue-after-warning"])) {
+                    echo "setting the things!";
                     $view->setVariable('matches', $matches);
                     $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
                 } else {
                     // will need to update to route to next page once built
+                    echo "redirecting!";
                     return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
                 }
             }
         }
+        echo "setTemplate";
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 }
