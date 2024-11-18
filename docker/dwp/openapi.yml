@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: CrossCore Auth API
+  version: '1.0.0'
+paths:
+  /api/v1/healthcheck:
+    get:
+      summary: Healthcheck
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "401":
+          description: Error
+  /oauth2/token:
+    post:
+      parameters:
+        - in: header
+          name: "content-type"
+          schema:
+            type: string
+            example: "application/json"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user"
+                password:
+                  type: string
+                  example: "password"
+                client_id:
+                  type: string
+                  example: "client-id"
+                client_secret:
+                  type: string
+                  example: "client-secret"
+      responses:
+        200:
+          description: "HTTP Status 200"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  issued_at:
+                    type: string
+                    pattern: "1724403176"
+                  expires_in:
+                    type: string
+                    pattern: "1800"
+                  token_type:
+                    type: string
+                    pattern: "Bearer"
+                  access_token:
+                    type: string
+                    pattern: 'ey[A-Za-z0-9]{700}'
+                  refresh_token:
+                    type: string
+                    pattern: '[0-9A-Za-z-]{30}'
+        401:
+          description: "HTTP Status 200"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                  success:
+                    type: string
+                    example: false
+components:
+  schemas:
+    GenericResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+    Error:
+      type: object
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: url
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        validation_errors:
+          type: object
+      additionalProperties: false

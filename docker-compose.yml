@@ -39,6 +39,21 @@ services:
     volumes:
       - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
 
+  dwp-mock:
+    image: stoplight/prism:5.11.2
+    command: mock -h 0.0.0.0 -p 4009 -d /tmp/openapi.yml
+    restart: unless-stopped
+    healthcheck:
+      test: wget -O /dev/null -S 'http://0.0.0.0:4009/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - "./docker/dwp/openapi.yml:/tmp/openapi.yml"
+    ports:
+      - 8089:4009
+
+
   yoti-mock:
     image: paper-identity/yoti-mock
     build:
