@@ -8,16 +8,21 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
 use Application\Helpers\DependencyCheck;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\PostOffice\Country;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
+use Application\Enums\LpaActorTypes;
+use Laminas\Http\Request as HttpRequest;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
+    private SiriusApiService&MockObject $siriusApiService;
+    private VoucherMatchLpaActorHelper&MockObject $voucherMatchMock;
     private string $uuid;
 
     public function setUp(): void
@@ -27,12 +32,16 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+        $this->siriusApiService = $this->createMock(SiriusApiService::class);
+        $this->voucherMatchMock = $this->createMock(VoucherMatchLpaActorHelper::class);
 
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
+        $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
+        $serviceManager->setService(VoucherMatchLpaActorHelper::class, $this->voucherMatchMock);
     }
 
     public function returnOpgResponseData(): array
@@ -50,6 +59,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
+                "M-AAAA-1234-5678",
             ],
             "documentComplete" => false,
             "alternateAddress" => [
@@ -142,6 +152,158 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'tryDifferent' => "Try a different method",
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/start?personType=donor&lpas%5B%5D=M-XYXY-YAGA-35G3");
+        $this->assertRedirectTo("/start?personType=donor&lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678");
+    }
+
+    public function testVoucherNamePage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-name", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/voucher_name');
+    }
+
+    public function testVoucherNameRedirect(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $noMatches = [
+            LpaActorTypes::DONOR->value => false,
+            LpaActorTypes::CP->value => false,
+            LpaActorTypes::ATTORNEY->value => false,
+            LpaActorTypes::R_ATTORNEY->value => false
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa, HttpRequest $request) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkNameMatch")
+            ->willReturnMap([
+                ["firstName", "lastName", ["lpaData" => "one"], $noMatches],
+                ["firstName", "lastName", ["lpaData" => "two"], $noMatches]
+            ]);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-name', $this->uuid));
+    }
+
+    public function testVoucherNameMatchWarning(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $donorMatch = [
+            LpaActorTypes::DONOR->value => true,
+            LpaActorTypes::CP->value => false,
+            LpaActorTypes::ATTORNEY->value => false,
+            LpaActorTypes::R_ATTORNEY->value => false
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa, HttpRequest $request) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkNameMatch")
+            ->willReturnMap([
+                ["firstName", "lastName", ["lpaData" => "one"], $donorMatch],
+                ["firstName", "lastName", ["lpaData" => "two"], $donorMatch]
+            ]);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains('h2[name=donor_warning]', 'The donor is also called firstName lastName. Confirm that these are two different people with the same name.');
+    }
+
+    public function testVoucherNameMatchContinueAfterWarning(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $donorMatch = [
+            LpaActorTypes::DONOR->value => true,
+            LpaActorTypes::CP->value => false,
+            LpaActorTypes::ATTORNEY->value => false,
+            LpaActorTypes::R_ATTORNEY->value => false
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa, HttpRequest $request) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkNameMatch")
+            ->willReturnMap([
+                ["firstName", "lastName", ["lpaData" => "one"], $donorMatch],
+                ["firstName", "lastName", ["lpaData" => "two"], $donorMatch]
+            ]);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+            "continue-after-warning" => "continue"
+        ]);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-name', $this->uuid));
     }
 }
