@@ -15,6 +15,7 @@ use Application\PostOffice\Country;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Application\Enums\IdMethod as IdMethodEnum;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -103,7 +104,8 @@ class VouchingFlowController extends AbstractActionController
                             $uuid,
                             $data
                         );
-                        return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
+                        // TODO: This will need to be changed to the actual voucher version of post office documents
+                        return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     } else {
                         $data = [
                             'id_route' => 'TELEPHONE',
@@ -114,7 +116,7 @@ class VouchingFlowController extends AbstractActionController
                             $uuid,
                             $data
                         );
-                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute("root/voucher-name", ['uuid' => $uuid]);
                     }
                 }
             }
