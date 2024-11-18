@@ -32,12 +32,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                 "lastName" => "lastname",
                 "lpasData" => [
                 ],
-                "expected_result" => [
-                    LpaActorTypes::DONOR->value => false,
-                    LpaActorTypes::CP->value => false,
-                    LpaActorTypes::ATTORNEY->value => false,
-                    LpaActorTypes::R_ATTORNEY->value => false
-                ]
+                "expected_result" => []
             ],
             [
                 "firstName" => "firstname",
@@ -55,10 +50,8 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     ]
                 ],
                 "expected_result" => [
-                    LpaActorTypes::DONOR->value => true,
-                    LpaActorTypes::CP->value => true,
-                    LpaActorTypes::ATTORNEY->value => false,
-                    LpaActorTypes::R_ATTORNEY->value => false
+                    LpaActorTypes::DONOR->value,
+                    LpaActorTypes::CP->value,
                 ]
             ],
             [
@@ -91,10 +84,8 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     ],
                 ],
                 "expected_result" => [
-                    LpaActorTypes::DONOR->value => false,
-                    LpaActorTypes::CP->value => false,
-                    LpaActorTypes::ATTORNEY->value => true,
-                    LpaActorTypes::R_ATTORNEY->value => true,
+                    LpaActorTypes::ATTORNEY->value,
+                    LpaActorTypes::R_ATTORNEY->value,
                 ],
             ],
             [
@@ -109,10 +100,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     ],
                 ],
                 "expected_result" => [
-                    LpaActorTypes::DONOR->value => true,
-                    LpaActorTypes::CP->value => false,
-                    LpaActorTypes::ATTORNEY->value => false,
-                    LpaActorTypes::R_ATTORNEY->value => false
+                    LpaActorTypes::DONOR->value,
                 ]
             ],
         ];

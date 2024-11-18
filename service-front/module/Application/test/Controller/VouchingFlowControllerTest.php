@@ -177,13 +177,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
-        $noMatches = [
-            LpaActorTypes::DONOR->value => false,
-            LpaActorTypes::CP->value => false,
-            LpaActorTypes::ATTORNEY->value => false,
-            LpaActorTypes::R_ATTORNEY->value => false
-        ];
-
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -205,8 +198,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects($this->exactly(2))
             ->method("checkNameMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], $noMatches],
-                ["firstName", "lastName", ["lpaData" => "two"], $noMatches]
+                ["firstName", "lastName", ["lpaData" => "one"], []],
+                ["firstName", "lastName", ["lpaData" => "two"], []]
             ]);
 
         $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
@@ -221,13 +214,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
-        $donorMatch = [
-            LpaActorTypes::DONOR->value => true,
-            LpaActorTypes::CP->value => false,
-            LpaActorTypes::ATTORNEY->value => false,
-            LpaActorTypes::R_ATTORNEY->value => false
-        ];
-
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -249,8 +235,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects($this->exactly(2))
             ->method("checkNameMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], $donorMatch],
-                ["firstName", "lastName", ["lpaData" => "two"], $donorMatch]
+                ["firstName", "lastName", ["lpaData" => "one"], [LpaActorTypes::DONOR->value]],
+                ["firstName", "lastName", ["lpaData" => "two"], []]
             ]);
 
         $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
@@ -269,12 +255,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
-        $donorMatch = [
-            LpaActorTypes::DONOR->value => true,
-            LpaActorTypes::CP->value => false,
-            LpaActorTypes::ATTORNEY->value => false,
-            LpaActorTypes::R_ATTORNEY->value => false
-        ];
 
         $this
             ->opgApiServiceMock
@@ -297,8 +277,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects($this->exactly(2))
             ->method("checkNameMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], $donorMatch],
-                ["firstName", "lastName", ["lpaData" => "two"], $donorMatch]
+                ["firstName", "lastName", ["lpaData" => "one"], [LpaActorTypes::DONOR->value]],
+                ["firstName", "lastName", ["lpaData" => "two"], []]
             ]);
 
         $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
