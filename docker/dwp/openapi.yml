@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: CrossCore Auth API
+  title: DWP API
   version: '1.0.0'
 paths:
   /api/v1/healthcheck:
@@ -66,7 +66,7 @@ paths:
                     type: string
                     pattern: '[0-9A-Za-z-]{30}'
         401:
-          description: "HTTP Status 200"
+          description: "HTTP Status 401"
           content:
             application/json:
               schema:
@@ -76,7 +76,7 @@ paths:
                     type: object
                   success:
                     type: string
-                    example: false
+                    enum: false
 components:
   schemas:
     GenericResponse:
@@ -84,6 +84,7 @@ components:
       properties:
         id:
           type: integer
+          example: 100
     Error:
       type: object
       required:

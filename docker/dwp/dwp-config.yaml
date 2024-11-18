@@ -4,6 +4,15 @@ specFile: openapi.yml
 resources:
   - path: "/oauth2/token"
     method: post
+    requestBody:
+      operator: Contains
+      value: xxxxxx
     response:
       statusCode: 200
       scriptFile: useTokenFile.groovy
+
+  - path: "/oauth2/token"
+    method: post
+    response:
+      statusCode: 401
+      scriptFile: useTokenFile401.groovy
