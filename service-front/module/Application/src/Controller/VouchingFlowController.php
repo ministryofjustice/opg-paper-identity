@@ -11,10 +11,7 @@ use Application\Forms\VoucherName;
 use Application\Services\SiriusApiService;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
-use Application\Forms\IdMethod as IdMethodForm;
-use Application\Forms\PassportDate;
 use Application\Forms\PassportDateCp;
-use Application\PostOffice\Country;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -114,7 +111,8 @@ class VouchingFlowController extends AbstractActionController
 
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability['data'][$key] === true) {
+            $data = $serviceAvailability['data'] ?? [];
+            if (isset($data[$key]) && $data[$key] === true) {
                 $identityDocs[$key] = $value;
             }
         }
@@ -155,7 +153,7 @@ class VouchingFlowController extends AbstractActionController
                             $uuid,
                             $data
                         );
-                        return $this->redirect()->toRoute("root/voucher-name", ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
                     }
                 }
             }
