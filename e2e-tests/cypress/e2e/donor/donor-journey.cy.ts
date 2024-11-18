@@ -24,7 +24,7 @@ describe("Identify a Donor", () => {
     cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Initial identity confirmation complete");
+    cy.contains("Identity document verified");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Select answer");
@@ -114,7 +114,7 @@ describe("Identify a Donor", () => {
     cy.contains("Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Initial identity confirmation complete");
+    cy.contains("Identity document verified");
   });
 
   it("lets you identify with Driving licence", () => {
@@ -152,7 +152,7 @@ describe("Identify a Donor", () => {
     cy.contains("Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Initial identity confirmation complete");
+    cy.contains("Identity document verified");
   });
 
   it("fails if you get KBVs wrong", () => {
@@ -172,7 +172,7 @@ describe("Identify a Donor", () => {
     cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Initial identity confirmation complete");
+    cy.contains("Identity document verified");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Select answer");

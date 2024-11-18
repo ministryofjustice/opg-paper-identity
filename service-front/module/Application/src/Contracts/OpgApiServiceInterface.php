@@ -40,6 +40,9 @@ namespace Application\Contracts;
  *     state: string,
  *     result: bool,
  *   },
+ *   vouchingFor?: array{
+ *     firstName: string,
+ *     lastName: string},
  * }
  */
 interface OpgApiServiceInterface
