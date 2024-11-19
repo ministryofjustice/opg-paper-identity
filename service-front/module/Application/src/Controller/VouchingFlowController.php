@@ -24,7 +24,7 @@ class VouchingFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
-    private $uuid;
+    private string $uuid;
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
@@ -145,9 +145,14 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate($templates['default']);
     }
 
-    private function handleIdMethodFormSubmission(FormInterface $idMethodForm, $formData): Response|null
+    /**
+     * @param FormInterface $idMethodForm
+     * @param array<string, mixed> $formData
+     * @return Response|null
+     */
+    private function handleIdMethodFormSubmission(FormInterface $idMethodForm, array $formData): Response|null
     {
-        if (!$idMethodForm->isValid()) {
+        if (! $idMethodForm->isValid()) {
             return null;
         }
 
