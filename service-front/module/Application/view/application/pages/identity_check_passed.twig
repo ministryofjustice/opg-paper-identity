@@ -5,73 +5,80 @@
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-!-width-two-thirds">
-        <div class="moj-banner moj-banner--success" role="region" aria-label="Success">
-            <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
-                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
-            </svg>
-            <div class="moj-banner__message">
-                {% block title %}
-                    Identity check passed.
-                {% endblock %}
+    <form method="post">
+        <div class="govuk-!-width-two-thirds">
+            <div class="moj-banner moj-banner--success" role="region" aria-label="Success">
+                <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
+                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                    <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
+                </svg>
+                <div class="moj-banner__message">
+                    {% block title %}
+                        Identity check passed.
+                    {% endblock %}
+                </div>
             </div>
-        </div>
 
-        <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset">
-                <div class="govuk-form-group">
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h1 class="govuk-fieldset__heading">
-                                Did the
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-fieldset__heading">
+                                    Did the
 
-                                {% if details_data.personType == 'certificateProvider' %}
-                                    certificate provider
-                                {% else %}
-                                    donor
+                                    {% if details_data.personType == 'certificateProvider' %}
+                                        certificate provider
+                                    {% else %}
+                                        donor
+                                    {% endif %}
+
+                                    have assistance from a friend or family member on this call?
+                                </h1>
+                            </legend>
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                {% if form.get('assistance').messages %}
+                                    <p id="dln-error" class="govuk-error-message">
+                                        <span class="govuk-visually-hidden">Error:</span>
+                                        {{ form.get('assistance').messages | join(', ', ' and ') }}
+                                    </p>
                                 {% endif %}
-
-                                have assistance from a friend or family member on this call?
-                            </h1>
-                        </legend>
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            <div class="govuk-radios__item">
-                                <input
-                                        class="govuk-radios__input"
-                                        id="conditional-assistance-1"
-                                        name="assistance"
-                                        type="radio"
-                                        value="no"
+                                <div class="govuk-radios__item">
+                                    <input
+                                            class="govuk-radios__input"
+                                            id="conditional-assistance-1"
+                                            name="assistance"
+                                            type="radio"
+                                            value="no"
+                                    >
+                                    <label
+                                            class="govuk-label govuk-radios__label"
+                                            for="conditional-assistance-1"
+                                    >
+                                        No
+                                    </label>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    <input
+                                            class="govuk-radios__input"
+                                            id="conditional-assistance-2"
+                                            name="assistance"
+                                            type="radio"
+                                            value="yes"
+                                            data-aria-controls="conditional-assistance"
+                                    />
+                                    <label
+                                            class="govuk-label govuk-radios__label"
+                                            for="conditional-assistance-2"
+                                    >
+                                        Yes, give details
+                                    </label>
+                                </div>
+                                <div
+                                        class="govuk-radios__conditional govuk-radios__conditional--hidden"
+                                        id="conditional-assistance"
                                 >
-                                <label
-                                        class="govuk-label govuk-radios__label"
-                                        for="conditional-assistance-1"
-                                >
-                                    No
-                                </label>
-                            </div>
-                            <div class="govuk-radios__item">
-                                <input
-                                        class="govuk-radios__input"
-                                        id="conditional-assistance-2"
-                                        name="assistance"
-                                        type="radio"
-                                        value="yes"
-                                        data-aria-controls="conditional-assistance"
-                                />
-                                <label
-                                        class="govuk-label govuk-radios__label"
-                                        for="conditional-assistance-2"
-                                >
-                                    Yes, give details
-                                </label>
-                            </div>
-                            <div
-                                    class="govuk-radios__conditional govuk-radios__conditional--hidden"
-                                    id="conditional-assistance"
-                            >
-                                <div class="govuk-form-group">
+                                    <div class="govuk-form-group">
                                     <textarea
                                             class="govuk-textarea"
                                             rows="2"
@@ -80,25 +87,25 @@
                                             spellcheck="false"
                                             aria-label="Details of the assistance provided"
                                     ></textarea>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </fieldset>
-                </div>
-            </fieldset>
-        </div>
+                        </fieldset>
+                    </div>
+                </fieldset>
+            </div>
 
-        <p class="govuk-body">
+            <p class="govuk-body">
             <h2 class="govuk-heading-l">
                 What happens next?
             </h2>
-        </p>
-        <p class="govuk-body">
-            The next step is we will check your LPA and be in touch with you if we have any further questions. After
-            this, we will be in contact with the certificate provider for the next steps.
-        </p>
+            </p>
+            <p class="govuk-body">
+                The next step is we will check your LPA and be in touch with you if we have any further questions. After
+                this, we will be in contact with the certificate provider for the next steps.
+            </p>
 
-        <p class="govuk-body">
+            <p class="govuk-body">
 
             <div class="govuk-warning-text">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -107,8 +114,9 @@
                     If they haven’t already, they must return their paper LPA by post to OPG.
                 </strong>
             </div>
-        </p>
+            </p>
 
-        <button class="govuk-button">Finish and return to Sirius</button>
-    </div>
+            <button class="govuk-button">Finish and return to Sirius</button>
+        </div>
+    </form>
 {% endblock %}
