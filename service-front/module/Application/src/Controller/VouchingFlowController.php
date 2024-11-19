@@ -6,10 +6,12 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
+use Application\Forms\BirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
+use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
 use Application\Forms\PassportDateCp;
@@ -30,6 +32,7 @@ class VouchingFlowController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
+        private readonly FormProcessorHelper $formProcessorHelper,
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly array $config
     ) {
@@ -61,43 +64,6 @@ class VouchingFlowController extends AbstractActionController
             }
         }
         return $view->setTemplate('application/pages/vouching/confirm_vouching');
-    }
-
-    public function voucherNameAction(): ViewModel|Response
-    {
-        $view = new ViewModel();
-        $this->uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($this->uuid);
-        $form = $this->createForm(VoucherName::class);
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
-        $view->setVariable('form', $form);
-
-        if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-
-            if ($form->isValid()) {
-                $matches = [];
-                foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $matches = array_merge($matches, $this->voucherMatchLpaActorHelper->checkNameMatch(
-                        $formData["firstName"],
-                        $formData["lastName"],
-                        $lpasData
-                    ));
-                }
-                // this does mean that if they change from one matching name to another they would still get through.
-                if ($matches && ! isset($formData["continue-after-warning"])) {
-                    $view->setVariable('matches', $matches);
-                    $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
-                } else {
-                    // will need to update to route to next page once built
-                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
-                }
-            }
-        }
-        return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 
     public function howWillYouConfirmAction(): ViewModel|Response
@@ -195,5 +161,76 @@ class VouchingFlowController extends AbstractActionController
             $templates
         );
         return $formProcessorResponseDto->getVariables();
+    }
+
+    public function voucherNameAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($this->uuid);
+        $form = $this->createForm(VoucherName::class);
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
+        $view->setVariable('form', $form);
+
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost();
+
+            if ($form->isValid()) {
+                $matches = [];
+                foreach ($detailsData['lpas'] as $lpa) {
+                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                    $matches = array_merge($matches, $this->voucherMatchLpaActorHelper->checkNameMatch(
+                        $formData["firstName"],
+                        $formData["lastName"],
+                        $lpasData
+                    ));
+                }
+                // this does mean that if they change from one matching name to another they would still get through.
+                if ($matches && ! isset($formData["continue-after-warning"])) {
+                    $view->setVariable('matches', $matches);
+                    $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
+                } else {
+                    try {
+                        $this->opgApiService->updateCaseSetName($uuid, $formData["firstName"], $formData["lastName"]);
+                        return $this->redirect()->toRoute("root/voucher_dob", ['uuid' => $uuid]);
+                    } catch (\Exception $exception) {
+                        $form->setMessages(["There was an error saving the data"]);
+                    }
+
+                }
+            }
+        }
+        return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
+    }
+
+    public function voucherDobAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = $this->createForm(BirthDate::class);
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
+
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost();
+            $dateOfBirth = $this->formProcessorHelper->processDataForm($formData->toArray());
+            $formData->set('date', $dateOfBirth);
+            $form->setData($formData);
+
+            if ($form->isValid()) {
+                try {
+                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                    return $this->redirect()->toRoute('root/voucher_dob', ['uuid' => $uuid]);
+                } catch (\Exception $exception) {
+                    $form->setMessages(["There was an error saving the data"]);
+                }
+            }
+            $view->setVariable('form', $form);
+        }
+        return $view->setTemplate('application/pages/vouching/what_is_the_voucher_dob');
     }
 }

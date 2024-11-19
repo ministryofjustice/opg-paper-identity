@@ -296,6 +296,17 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
+    public function updateCaseSetName(string $uuid, string $firstName, string $lastName): void
+    {
+        $url = sprintf("/cases/%s/update-name?firstName=%s&lastName=%s", $uuid, $firstName, $lastName);
+
+        try {
+            $this->makeApiRequest($url, 'PUT');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
+
     /**
      * @throws OpgApiException
      */

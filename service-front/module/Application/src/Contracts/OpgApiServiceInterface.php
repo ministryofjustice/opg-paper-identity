@@ -108,6 +108,8 @@ interface OpgApiServiceInterface
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
 
+    public function updateCaseSetName(string $uuid, string $firstName, string $lastName): void;
+
     /**
      * @param array{
      *   id_country?: string,
