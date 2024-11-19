@@ -55,7 +55,7 @@ const questions = [
       Identifier: "A00001",
       FieldType: "G",
       AnswerList: [
-        "VoltWave",
+        "VoltWave (✔)",
         "Glow Electric",
         "Powergrid Utilities",
         "Bright Bristol Power",
@@ -69,7 +69,7 @@ const questions = [
     AnswerFormat: {
       Identifier: "A00002",
       FieldType: "G",
-      AnswerList: ["£5.99", "£11", "£16.84", "£1.25"],
+      AnswerList: ["£5.99 (✔)", "£11", "£16.84", "£1.25"],
     },
   },
   {
@@ -79,7 +79,7 @@ const questions = [
     AnswerFormat: {
       Identifier: "A00003",
       FieldType: "G",
-      AnswerList: ["Germanotta", "Gumm", "Micklewhite", "Blythe"],
+      AnswerList: ["Germanotta (✔)", "Gumm", "Micklewhite", "Blythe"],
     },
   },
   {
@@ -89,7 +89,7 @@ const questions = [
     AnswerFormat: {
       Identifier: "A00004",
       FieldType: "G",
-      AnswerList: ["IF", "SJ", "WP", "PG"],
+      AnswerList: ["IF (✔)", "SJ", "WP", "PG"],
     },
   },
   {
@@ -100,7 +100,7 @@ const questions = [
       Identifier: "A00005",
       FieldType: "G",
       AnswerList: [
-        "Liberty Trust Bank",
+        "Liberty Trust Bank (✔)",
         "Heritage Horizon Bank",
         "Prosperity Peak Financial",
         "Summit State Saving",
@@ -114,7 +114,7 @@ const questions = [
     AnswerFormat: {
       Identifier: "A00006",
       FieldType: "G",
-      AnswerList: ["July", "September", "March", "April"],
+      AnswerList: ["July (✔)", "September", "March", "April"],
     },
   },
   {
@@ -125,7 +125,7 @@ const questions = [
       Identifier: "A00007",
       FieldType: "G",
       AnswerList: [
-        "SafeDrive Insurance",
+        "SafeDrive Insurance (✔)",
         "Guardian Drive Assurance",
         "ShieldSafe",
         "Swift Cover Protection",
@@ -139,7 +139,7 @@ const questions = [
     AnswerFormat: {
       Identifier: "A00008",
       FieldType: "G",
-      AnswerList: ["Pink", "Green", "Black", "Yellow"],
+      AnswerList: ["Pink (✔)", "Green", "Black", "Yellow"],
     },
   },
 ];
