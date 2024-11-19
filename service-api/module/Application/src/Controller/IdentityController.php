@@ -11,6 +11,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
@@ -20,6 +21,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -38,7 +40,9 @@ class IdentityController extends AbstractActionController
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
-        private readonly FraudApiService $experianCrosscoreFraudApiService
+        private readonly FraudApiService $experianCrosscoreFraudApiService,
+        private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
+        private readonly ClockInterface $clock
     ) {
     }
 
@@ -578,6 +582,8 @@ class IdentityController extends AbstractActionController
                 'caseAssistance',
                 $data,
             );
+            $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+            $this->caseOutcomeCalculator->updateFinaliseIdentityCheck($case, $this->clock->now()->format('c'));
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);

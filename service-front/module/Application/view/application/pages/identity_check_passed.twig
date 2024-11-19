@@ -7,30 +7,6 @@
 {% block content %}
     <form method="post">
         <div class="govuk-!-width-two-thirds">
-
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-
-                    {% if form.get('sirius').messages %}
-                        <div class="govuk-notification-banner" data-module="govuk-notification-banner">
-                            <div class="govuk-notification-banner__content">
-                                <p class="govuk-notification-banner__heading">
-                                <div class="govuk-warning-text">
-                            <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
-                                  aria-hidden="true">!</span>
-                                    <strong class="govuk-warning-text__text">
-                                        {{ form.get('sirius').messages | join(', ', ' and ') }}
-                                    </strong>
-                                </div>
-                                </p>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <h1 class="govuk-heading-xl">{% block title %}How will you confirm your identity?{% endblock %}</h1>
-                </div>
-            </div>
-
             <div class="moj-banner moj-banner--success" role="region" aria-label="Success">
                 <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">

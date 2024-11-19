@@ -73,6 +73,8 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        echo json_encode($detailsData);
+
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $identityDocs);
@@ -422,12 +424,8 @@ class DonorFlowController extends AbstractActionController
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost()->toArray();
 
-            try {
-                $this->opgApiService->updateCaseAssistance($uuid, $formData['assistance'], $formData['details']);
-                $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
-            } catch (\Exception $exception) {
-                $form->setMessages(['sirius' =>'There was a problem updating Sirius']);
-            }
+            $this->opgApiService->updateCaseAssistance($uuid, $formData['assistance'], $formData['details']);
+            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
         }
 
         $view = new ViewModel();

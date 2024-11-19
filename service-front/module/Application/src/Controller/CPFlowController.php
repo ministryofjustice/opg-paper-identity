@@ -14,6 +14,7 @@ use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
@@ -445,11 +446,13 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
-
+        $view->setVariable(
+            'sirius_url',
+            $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]
+        );
         return $view->setTemplate('application/pages/cp/identity_check_passed');
     }
 

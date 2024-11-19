@@ -141,9 +141,9 @@ interface OpgApiServiceInterface
 
     /**
      * @param string $uuid
-     * @param string $answer
+     * @param string $assistance
      * @param string|null $details
      * @return void
      */
-    public function updateCaseAssistance(string $uuid, string $answer, string $details = null): void;
+    public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
 }
