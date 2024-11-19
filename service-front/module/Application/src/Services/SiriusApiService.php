@@ -23,6 +23,12 @@ use Laminas\Stdlib\RequestInterface;
  *  country: string,
  * }
  *
+ * @psalm-type Attorney = array{
+ *   firstNames: string,
+ *   lastNameL: string,
+ *   dateOfBirth: string,
+ * }
+ *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
  *    id: int,
@@ -52,6 +58,7 @@ use Laminas\Stdlib\RequestInterface;
  *      lastName: string,
  *      address: Address,
  *    },
+ *    attorneys: Attorney[],
  *  },
  * }
  */
