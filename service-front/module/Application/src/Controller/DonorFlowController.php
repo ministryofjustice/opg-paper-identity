@@ -420,14 +420,15 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->getRequest()->getPost()->toArray();
 
             try {
-
-
+                $this->opgApiService->updateCaseAssistance($uuid, $formData['assistance'], $formData['details']);
+                $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
             } catch (\Exception $exception) {
-                $this->lo
+                $form->setMessages(['sirius' =>'There was a problem updating Sirius']);
             }
-            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);        }
+        }
 
         $view = new ViewModel();
         $view->setVariable('form', $form);
