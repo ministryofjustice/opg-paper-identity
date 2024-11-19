@@ -122,6 +122,7 @@ class VouchingFlowController extends AbstractActionController
         }
 
         $optionsData = $identityDocs;
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('service_availability', $serviceAvailability);
         $view->setVariable('form', $form);
 
