@@ -128,7 +128,7 @@ class VouchingFlowController extends AbstractActionController
         if (count($this->getRequest()->getPost())) {
             $formData = $this->getRequest()->getPost()->toArray();
             if (array_key_exists('check_button', $formData)) {
-                $variables = $this->handlePassportDateCheckFormSubmission();
+                $variables = $this->handlePassportDateCheckFormSubmission($dateSubForm, $templates);
                 $view->setVariables($variables);
             } else {
                 $response = $this->handleIdMethodFormSubmission($form, $formData);
@@ -180,6 +180,11 @@ class VouchingFlowController extends AbstractActionController
         return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
     }
 
+    /**
+     * @param FormInterface $dateSubForm
+     * @param array<string, mixed> $templates
+     * @return array<string, mixed>
+     */
     private function handlePassportDateCheckFormSubmission(FormInterface $dateSubForm, array $templates): array
     {
         $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
