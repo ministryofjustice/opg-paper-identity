@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\IdMethod;
+use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod as IdMethodForm;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\NationalInsuranceNumber;
@@ -415,23 +416,21 @@ class DonorFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
+        $form = $this->createForm(FinishIDCheck::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
-        }
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+
+            try {
+
+
+            } catch (\Exception $exception) {
+                $this->lo
+            }
+            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);        }
 
         $view = new ViewModel();
-
-        $view->setVariable('lpas_data', $lpaDetails);
+        $view->setVariable('form', $form);
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_passed');

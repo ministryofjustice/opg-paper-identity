@@ -138,4 +138,12 @@ interface OpgApiServiceInterface
      * @return array{decision: string}
      */
     public function requestFraudCheck(string $uuid): array;
+
+    /**
+     * @param string $uuid
+     * @param string $answer
+     * @param string|null $details
+     * @return void
+     */
+    public function updateCaseAssistance(string $uuid, string $answer, string $details = null): void;
 }
