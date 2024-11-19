@@ -420,9 +420,14 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            echo json_encode($form->getData());
-            $this->redirect()->toUrl('#');
-        }
+
+            try {
+
+
+            } catch (\Exception $exception) {
+                $this->lo
+            }
+            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);        }
 
         $view = new ViewModel();
         $view->setVariable('form', $form);
