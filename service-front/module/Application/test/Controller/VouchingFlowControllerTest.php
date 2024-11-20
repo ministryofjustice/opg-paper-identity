@@ -331,10 +331,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->voucherMatchMock
             ->expects($this->exactly(2))
-            ->method("checkNameMatch")
+            ->method("checkMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], []],
-                ["firstName", "lastName", ["lpaData" => "two"], []]
+                [["lpaData" => "one"], "firstName", "lastName", null, []],
+                [["lpaData" => "two"], "firstName", "lastName", null, []]
             ]);
 
         $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
@@ -342,7 +342,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "lastName" => "lastName",
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-name', $this->uuid));
+        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-dob', $this->uuid));
     }
 
     public function testVoucherNameMatchWarning(): void
@@ -368,10 +368,17 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->voucherMatchMock
             ->expects($this->exactly(2))
-            ->method("checkNameMatch")
+            ->method("checkMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], [LpaActorTypes::DONOR->value]],
-                ["firstName", "lastName", ["lpaData" => "two"], []]
+                [["lpaData" => "one"], "firstName", "lastName", null, [
+                    [
+                        "firstName" => "firstName",
+                        "lastName" => "lastName",
+                        "dob" => "dob",
+                        "type" => LpaActorTypes::DONOR->value
+                    ]
+                ]],
+                [["lpaData" => "two"], "firstName", "lastName", null, []]
             ]);
 
         $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
@@ -389,7 +396,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     public function testVoucherNameMatchContinueAfterWarning(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
 
         $this
             ->opgApiServiceMock
@@ -410,18 +416,151 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->voucherMatchMock
             ->expects($this->exactly(2))
-            ->method("checkNameMatch")
+            ->method("checkMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], [LpaActorTypes::DONOR->value]],
-                ["firstName", "lastName", ["lpaData" => "two"], []]
+                [["lpaData" => "one"], "firstName", "lastName", null, []],
+                [["lpaData" => "two"], "firstName", "lastName", null, []]
             ]);
 
         $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
             "firstName" => "firstName",
             "lastName" => "lastName",
-            "continue-after-warning" => "continue"
         ]);
+
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-name', $this->uuid));
+        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-dob', $this->uuid));
+    }
+
+    public function testVoucherDobPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-dob", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/voucher_dob');
+    }
+
+    public function testVoucherDobRedirect(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["firstName"] = "firstName";
+        $mockResponseDataIdDetails["lastName"] = "lastName";
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkMatch")
+            ->willReturnMap([
+                [["lpaData" => "one"], "firstName", "lastName", "1980-01-01", []],
+                [["lpaData" => "two"], "firstName", "lastName", "1980-01-01", []]
+            ]);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-dob", 'POST', [
+            "dob_day" => "1",
+            "dob_month" => "1",
+            "dob_year" => "1980"
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-dob', $this->uuid));
+    }
+
+    public function testVoucherDobMatchError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["firstName"] = "firstName";
+        $mockResponseDataIdDetails["lastName"] = "lastName";
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkMatch")
+            ->willReturnMap([
+                [["lpaData" => "one"], "firstName", "lastName", '1980-01-01', [
+                    [
+                        "firstName" => "firstName",
+                        "lastName" => "lastName",
+                        "dob" => "1980-01-01",
+                        "type" => LpaActorTypes::DONOR->value
+                    ]
+                ]],
+                [["lpaData" => "two"], "firstName", "lastName", '1980-01-01', []]
+            ]);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-dob", 'POST', [
+            "dob_day" => "1",
+            "dob_month" => "1",
+            "dob_year" => "1980"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains(
+            'div[name=donor_warning]',
+            'The person vouching cannot have the same name and date of birth as the donor.'
+        );
+    }
+
+    public function testVoucherDobUnderageError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/vouching/voucher-dob", 'POST', [
+            "dob_day" => "20",
+            "dob_month" => "11",
+            "dob_year" => "2024"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains(
+            'div[name=dob_warning]',
+            'The person vouching must be 18 years or older.'
+        );
     }
 }

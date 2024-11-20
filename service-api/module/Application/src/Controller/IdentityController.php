@@ -435,6 +435,66 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function updateNameAction(): JsonModel
+    {
+        $firstName = $this->params()->fromQuery("firstName");
+        $lastName = $this->params()->fromQuery("lastName");
+        $uuid = $this->params()->fromRoute('uuid');
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing UUID",
+            ];
+
+            return new JsonModel($response);
+        }
+        if (! $firstName) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing First Name",
+            ];
+
+            return new JsonModel($response);
+        }
+        if (! $lastName) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing Last Name",
+            ];
+
+            return new JsonModel($response);
+        }
+
+        try {
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'firstName',
+                $firstName
+            );
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'lastName',
+                $lastName
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+
+            return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
     public function updateCpPoIdAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
