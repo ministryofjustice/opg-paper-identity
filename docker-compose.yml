@@ -12,6 +12,8 @@ services:
       retries: 3
     volumes:
       - ./docker/sirius:/opt/imposter/config
+    ports:
+      - 8081:8080
 
   experian-crosscore-mock:
     image: paper-identity/experian-crosscore-mock
@@ -25,7 +27,7 @@ services:
       timeout: 10s
       retries: 3
     volumes:
-      - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
+      - ./docker/experian-crosscore:/opt/imposter/config
 
   experian-crosscore-auth-mock:
     image: stoplight/prism:5.12.1
