@@ -11,6 +11,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
@@ -20,6 +21,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -553,5 +555,41 @@ class IdentityController extends AbstractActionController
         );
 
         return new JsonModel($response->toArray());
+    }
+
+    public function saveCaseAssistanceAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode(
+            $this->getRequest()->getContent(),
+            true
+        );
+
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
+            return new JsonModel(new Problem("Missing UUID"));
+        }
+
+        try {
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'caseAssistance',
+                $data,
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['last_page'];
+
+        return new JsonModel($response);
     }
 }
