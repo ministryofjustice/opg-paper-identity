@@ -19,7 +19,7 @@ class CaseAssistance extends Entity
 {
     #[Annotation\Required(true)]
     #[Annotation\Validator(NotEmpty::class)]
-    public string $assistance;
+    public bool $assistance;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]

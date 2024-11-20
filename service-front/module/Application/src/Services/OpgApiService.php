@@ -397,7 +397,7 @@ class OpgApiService implements OpgApiServiceInterface
         $url = sprintf("/cases/%s/save-case-assistance", $uuid);
 
         $data = [
-            'assistance' => $assistance,
+            'assistance' => $assistance === 'yes' ? true : false,
             'details' => $details
         ];
 
