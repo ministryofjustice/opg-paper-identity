@@ -33,21 +33,4 @@ class CaseOutcomeCalculator
             "outcome" => $caseData->identityCheckPassed ? 'success' : 'failure',
         ]);
     }
-
-    public function updateFinaliseIdentityCheck(CaseData $caseData, string $time): void
-    {
-        // add to logs
-        $this->logger->info("Update for CaseId " .
-            $caseData->id . "- Result: " . json_encode($caseData->caseAssistance));
-
-        $caseData->caseAssistance &&
-        $this->eventSender->send("identity-check-assistance", [
-            "reference" => "opg:" . $caseData->id,
-            "actorType" => $caseData->personType,
-            "lpaIds" => $caseData->lpas,
-            "time" => $time,
-            "assistance" => $caseData->caseAssistance->assistance,
-            "assistance_details" => $caseData->caseAssistance->details
-        ]);
-    }
 }

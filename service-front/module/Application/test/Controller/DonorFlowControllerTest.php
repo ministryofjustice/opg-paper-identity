@@ -146,7 +146,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testIdentityCheckPassedPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-//        $siriusResponse = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock

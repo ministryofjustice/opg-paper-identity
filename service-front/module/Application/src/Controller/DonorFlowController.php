@@ -73,8 +73,6 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
-
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
         $view->setVariable('options_data', $identityDocs);

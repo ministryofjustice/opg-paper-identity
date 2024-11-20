@@ -40,9 +40,7 @@ class IdentityController extends AbstractActionController
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
-        private readonly FraudApiService $experianCrosscoreFraudApiService,
-        private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
-        private readonly ClockInterface $clock
+        private readonly FraudApiService $experianCrosscoreFraudApiService
     ) {
     }
 
@@ -582,8 +580,6 @@ class IdentityController extends AbstractActionController
                 'caseAssistance',
                 $data,
             );
-            $case = $this->dataQueryHandler->getCaseByUUID($uuid);
-            $this->caseOutcomeCalculator->updateFinaliseIdentityCheck($case, $this->clock->now()->format('c'));
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
