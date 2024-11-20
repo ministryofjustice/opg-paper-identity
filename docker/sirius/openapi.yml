@@ -73,24 +73,24 @@ paths:
                   properties:
                     addressLine1:
                       type: string
-                      x-faker: address.streetAddress
+#                      x-faker: address.streetAddress
                     addressLine2:
                       type: string
-                      x-faker: address.streetName
+#                      x-faker: address.streetName
                     addressLine3:
                       type: string
-                      x-faker: address.cityName
+#                      x-faker: address.cityName
                     town:
                       type: string
-                      x-faker: address.cityName
+#                      x-faker: address.cityName
                     postcode:
                       type: string
                       x-faker:
-                        helpers.replaceSymbols: "??# #??"
+#                        helpers.replaceSymbols: "??# #??"
                     description:
                       type: string
                       x-faker:
-                        fake: "A concatenation of the address lines"
+#                        fake: "A concatenation of the address lines"
 
   /api/v1/lpa-lookup:
     parameters:
