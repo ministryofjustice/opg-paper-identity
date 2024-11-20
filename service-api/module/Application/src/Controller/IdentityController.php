@@ -449,48 +449,40 @@ class IdentityController extends AbstractActionController
             $response = [
                 "error" => "Missing UUID",
             ];
-
-            return new JsonModel($response);
-        }
-        if (! $firstName) {
+        } elseif (! $firstName) {
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
                 "error" => "Missing First Name",
             ];
-
-            return new JsonModel($response);
-        }
-        if (! $lastName) {
+        } elseif (! $lastName) {
             $status = Response::STATUS_CODE_400;
             $this->getResponse()->setStatusCode($status);
             $response = [
                 "error" => "Missing Last Name",
             ];
-
-            return new JsonModel($response);
         }
 
-        try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'firstName',
-                $firstName
-            );
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'lastName',
-                $lastName
-            );
-        } catch (\Exception $exception) {
-            $response['result'] = "Not Updated";
-            $response['error'] = $exception->getMessage();
+        if (! $response) {
+            try {
+                $this->dataHandler->updateCaseData(
+                    $uuid,
+                    'firstName',
+                    $firstName
+                );
+                $this->dataHandler->updateCaseData(
+                    $uuid,
+                    'lastName',
+                    $lastName
+                );
+            } catch (\Exception $exception) {
+                $response['result'] = "Not Updated";
+                $response['error'] = $exception->getMessage();
+                }
 
-            return new JsonModel($response);
+            $this->getResponse()->setStatusCode($status);
+            $response['result'] = "Updated";
         }
-
-        $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Updated";
 
         return new JsonModel($response);
     }

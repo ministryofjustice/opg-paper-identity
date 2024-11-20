@@ -18,9 +18,7 @@ class VoucherMatchLpaActorHelper
     private function getLpaActors(array $lpasData): array
     {
         $actors = [];
-
         if (key_exists("opg.poas.lpastore", $lpasData)) {
-
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.lpastore"]["donor"]["firstNames"],
                 "lastName" => $lpasData["opg.poas.lpastore"]["donor"]["lastName"],
@@ -95,13 +93,13 @@ class VoucherMatchLpaActorHelper
     {
         $actors = $this->getLpaActors($lpasData);
 
-        $matches = array_filter($actors, function($a) use ($firstName, $lastName) {
+        $matches = array_filter($actors, function ($a) use ($firstName, $lastName) {
             return $this->compareName($firstName, $lastName, $a);
         });
 
         // if dob is not given we only check against name
         if ($dob) {
-            $matches = array_filter($matches, function($a) use ($dob) {
+            $matches = array_filter($matches, function ($a) use ($dob) {
                 return $this->compareDob($dob, $a);
             });
         }

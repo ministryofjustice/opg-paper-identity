@@ -21,7 +21,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
         array $expected_result
     ): void {
         $matchLpaActor = new VoucherMatchLpaActorHelper();
-        $result = $matchLpaActor->checkMatch( $lpasData, $firstName, $lastName, $dob);
+        $result = $matchLpaActor->checkMatch($lpasData, $firstName, $lastName, $dob);
         $this->assertEqualsCanonicalizing($expected_result, $result);
     }
 
