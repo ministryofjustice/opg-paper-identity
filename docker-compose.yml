@@ -19,25 +19,15 @@ services:
       context: docker/experian-crosscore
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - "./docker/experian-crosscore/openapi.yml:/tmp/openapi.yml"
 
   experian-crosscore-auth-mock:
-    image: stoplight/prism:5.12.1
-    command: mock -h 0.0.0.0 -p 4011 -d /tmp/openapi.yml
+    image: paper-identity/experian-crosscore-auth-mock
+    build:
+      context: docker/experian-crosscore-auth
+      dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: wget -O /dev/null -S 'http://0.0.0.0:4011/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
-      - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
+      - "./docker/experian-crosscore-auth/openapi.yml:/usr/src/prism/openapi.yml"
 
   yoti-mock:
     image: paper-identity/yoti-mock
@@ -45,22 +35,15 @@ services:
       context: docker/yoti
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
       - ./docker/yoti:/opt/imposter/config
 
   experian-iiq-mock:
-    image: outofcoffee/imposter:4.2.1
+    image: paper-identity/experian-iiq-mock
+    build:
+      context: docker/experian-iiq
+      dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
       - ./docker/experian-iiq:/opt/imposter/config
     ports:
