@@ -12,8 +12,6 @@ services:
       retries: 3
     volumes:
       - ./docker/sirius:/opt/imposter/config
-    ports:
-      - 8081:8080
 
   experian-crosscore-mock:
     image: paper-identity/experian-crosscore-mock
