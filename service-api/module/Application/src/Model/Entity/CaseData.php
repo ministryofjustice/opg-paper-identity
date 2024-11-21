@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Model\Entity\CaseProgress;
 use Application\Model\IdMethod;
 use Application\Model\Entity\CounterService;
 use Application\Validators\Enum;
@@ -17,7 +18,6 @@ use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
-use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\VouchingFor;
 
 /**
@@ -126,6 +126,8 @@ class CaseData implements JsonSerializable
     #[Annotation\Required(false)]
     public ?FraudScore $fraudScore = null;
 
+    #[Annotation\Required(false)]
+    public ?CaseAssistance $caseAssistance = null;
     /**
      * @param array<string, mixed> $data
      */
@@ -148,6 +150,8 @@ class CaseData implements JsonSerializable
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
             } elseif ($key === 'vouchingFor') {
                 $instance->vouchingFor = VouchingFor::fromArray($value);
+            } elseif ($key === 'caseAssistance') {
+                $instance->caseAssistance = CaseAssistance::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -186,6 +190,7 @@ class CaseData implements JsonSerializable
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
      *     fraudScore?: FraudScore,
+     *     caseAssistance?: CaseAssistance,
      * }
      */
     public function toArray(): array
@@ -228,6 +233,10 @@ class CaseData implements JsonSerializable
 
         if ($this->vouchingFor !== null) {
             $arr['vouchingFor'] = $this->vouchingFor;
+        }
+
+        if ($this->caseAssistance !== null) {
+            $arr['caseAssistance'] = $this->caseAssistance;
         }
 
         return $arr;
