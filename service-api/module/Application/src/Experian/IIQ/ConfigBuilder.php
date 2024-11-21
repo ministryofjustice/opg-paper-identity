@@ -52,6 +52,7 @@ class ConfigBuilder
         ) {
                 $saaConfig['ApplicationData'] = [
                     'SearchConsent' => 'Y',
+                    'Product' => '4 out of 4',
                 ];
         } elseif (
             $case->fraudScore->decision === 'CONTINUE' ||
@@ -59,7 +60,7 @@ class ConfigBuilder
         ) {
                 $saaConfig['ApplicationData'] = [
                     'SearchConsent' => 'Y',
-                    'Product' => '4 out of 4',
+                    'Product' => '3 out of 4',
                 ];
         } else {
             throw new RuntimeException('Fraudscore result is not recognised');
