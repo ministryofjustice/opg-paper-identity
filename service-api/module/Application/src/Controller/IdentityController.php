@@ -480,7 +480,7 @@ class IdentityController extends AbstractActionController
             } catch (\Exception $exception) {
                 $response['result'] = "Not Updated";
                 $response['error'] = $exception->getMessage();
-                }
+            }
 
             $this->getResponse()->setStatusCode($status);
             $response['result'] = "Updated";
