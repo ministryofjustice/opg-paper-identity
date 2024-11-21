@@ -70,10 +70,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
             ],
             'certificateProvider' => [
-                'firstNames' => 'x', 'lastName' => 'x',
+                'firstNames' => 'x', 'lastName' => 'x', 'dateOfBirth' => '1980-01-01',
                 'address' => ['line1' => '16a Avenida Lucana', 'line2' => 'Cordón', 'country' => 'ES'],
             ],
             'lpaType' => 'personal-welfare',
+            'attorneys' => [],
         ];
 
         return [

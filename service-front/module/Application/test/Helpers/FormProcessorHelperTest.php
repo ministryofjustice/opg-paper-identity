@@ -366,12 +366,12 @@ class FormProcessorHelperTest extends TestCase
     /**
      * @dataProvider dateData
      */
-    public function testProcessDataForm(array $params, string $expected): void
+    public function testprocessDateForm(array $params, string $expected): void
     {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
         $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
 
-        $actual = $formProcessorHelper->processDataForm($params);
+        $actual = $formProcessorHelper->processDateForm($params);
 
         $this->assertEquals($expected, $actual);
     }

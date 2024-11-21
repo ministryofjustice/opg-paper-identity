@@ -23,6 +23,12 @@ use Laminas\Stdlib\RequestInterface;
  *  country: string,
  * }
  *
+ * @psalm-type Attorney = array{
+ *   firstNames: string,
+ *   lastName: string,
+ *   dateOfBirth: string,
+ * }
+ *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
  *    id: int,
@@ -50,8 +56,10 @@ use Laminas\Stdlib\RequestInterface;
  *    certificateProvider: array{
  *      firstNames: string,
  *      lastName: string,
+ *      dateOfBirth: string,
  *      address: Address,
  *    },
+ *    attorneys: Attorney[],
  *  },
  * }
  */
@@ -161,7 +169,7 @@ class SiriusApiService
         ];
     }
 
-     /**
+    /**
      * @param array $caseDetails
      * @param SiriusDocument $systemType
      * @param Request $request

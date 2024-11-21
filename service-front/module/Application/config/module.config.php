@@ -559,6 +559,16 @@ return [
                             ],
                         ],
                     ],
+                    'vouching_how_will_you_confirm' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/how-will-you-confirm',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'howWillYouConfirm',
+                            ],
+                        ],
+                    ],
                     'voucher_name' => [
                         'type' => Segment::class,
                         'options' => [
@@ -569,13 +579,13 @@ return [
                             ],
                         ],
                     ],
-                    'vouching_how_will_you_confirm' => [
+                    'voucher_dob' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/vouching/how-will-you-confirm',
+                            'route' => '/:uuid/vouching/voucher-dob',
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'howWillYouConfirm',
+                                'action' => 'voucherDob',
                             ],
                         ],
                     ],
