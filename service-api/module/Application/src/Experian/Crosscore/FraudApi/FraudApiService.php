@@ -13,6 +13,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Telemetry\Instrumentation\Laminas;
 
@@ -21,6 +22,7 @@ class FraudApiService
     public function __construct(
         private readonly Client $client,
         private readonly AuthApiService $experianCrosscoreAuthApiService,
+        private readonly LoggerInterface $logger,
         private readonly array $config
     ) {
     }
@@ -81,6 +83,9 @@ class FraudApiService
                 $this->experianCrosscoreAuthApiService->authenticate();
                 $this->makeRequest($experianCrosscoreFraudRequestDTO);
             } else {
+                $response = $clientException->getResponse();
+                $responseBodyAsString = $response->getBody()->getContents();
+                $this->logger->error('GuzzleFraudApiException: ' . $responseBodyAsString);
                 throw $clientException;
             }
         } catch (\Exception $exception) {
@@ -94,7 +99,6 @@ class FraudApiService
         $requestUuid = Uuid::uuid4()->toString();
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
         $addressDTO = $experianCrosscoreFraudRequestDTO->address();
-
 
         return [
             "header" => [
