@@ -42,13 +42,13 @@
             </svg>
 
             <div class="moj-banner__message">
-                {% if 'donor' in matches  %}
+                {% if matches['type'] == 'donor' %}
                     <h2 class="govuk-heading-m" name="donor_warning">The donor is also called {{ matched_name }}. Confirm that these are two different people with the same name.</h2>
-                {% elseif 'certificate-provider' in matches %}
+                {% elseif matches['type'] == 'certificate-provider' %}
                     <h2 class="govuk-heading-m" name="cp_warning">There is a certificate provider called {{ matched_name }} named on this LPA. A certificate provider vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
-                {% elseif 'attorney' in matches %}
+                {% elseif matches['type'] == 'attorney' %}
                     <h2 class="govuk-heading-m" name="attorney_warning">There is an attorney called {{ matched_name }} named on this LPA. An attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
-                {% elseif 'replacement-attorney' in matches %}
+                {% elseif matches['type'] == 'replacement-attorney' %}
                     <h2 class="govuk-heading-m",name="ra_warning">There is a replacement attorney called {{ matched_name }} named on this LPA. A replacement attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
                 {% endif %}
             </div>
