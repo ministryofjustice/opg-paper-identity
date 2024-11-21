@@ -51,8 +51,9 @@ class VouchingFlowController extends AbstractActionController
 
             if (isset($formData['tryDifferent'])) {
                 // start the donor journey instead
+                $baseStartUrl = $this->url()->fromRoute('root/start');
                 return $this->redirect()->toUrl(
-                    "/start?personType=donor&lpas[]=" . implode("&lpas[]=", $detailsData['lpas'])
+                    $baseStartUrl . "?personType=donor&lpas[]=" . implode("&lpas[]=", $detailsData['lpas'])
                 );
             }
 
@@ -195,5 +196,17 @@ class VouchingFlowController extends AbstractActionController
             $templates
         );
         return $formProcessorResponseDto->getVariables();
+    }
+
+    public function identityCheckPassedAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/vouching/identity_check_passed');
     }
 }

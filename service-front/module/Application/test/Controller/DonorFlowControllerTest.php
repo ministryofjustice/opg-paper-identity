@@ -146,7 +146,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testIdentityCheckPassedPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $siriusResponse = $this->returnSiriusLpaResponse();
 
         $this
             ->opgApiServiceMock
@@ -154,12 +153,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
-
-        $this
-            ->siriusApiService
-            ->expects(self::once())
-            ->method('getLpaByUid')
-            ->willReturn($siriusResponse);
 
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
