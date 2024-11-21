@@ -82,7 +82,7 @@ class VoucherMatchLpaActorHelper
             return false;
         }
 
-        return strtolower(trim($dob)) === strtolower(trim($actor["dob"]));
+        return date_parse($dob) === date_parse($actor["dob"]);
     }
 
     /**
