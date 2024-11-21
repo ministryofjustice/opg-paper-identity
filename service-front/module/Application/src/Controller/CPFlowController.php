@@ -42,7 +42,7 @@ class CPFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
-    private const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
+    public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,

@@ -138,7 +138,7 @@ class SiriusApiService
             ]);
         } catch (ClientException $e) {
             if ($e->getResponse()->getStatusCode() === 400) {
-                throw new PostcodeInvalidException(`Bad Request error returned from postcode lookup: ${e->getMessage()}`);
+                throw new PostcodeInvalidException(sprintf('Bad Request error returned from postcode lookup: %s', $e->getMessage()));
             }
 
             throw $e;
