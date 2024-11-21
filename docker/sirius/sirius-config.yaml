@@ -14,46 +14,46 @@ resources:
     method: get
     response:
       statusCode: 200
-      scriptFile: useDonorJsonFile.groovy
+      file: data/donor.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G4"
     method: get
     response:
       statusCode: 200
-      scriptFile: useDonorJsonFileNoDecision.groovy
+      file: data/donorNoDecision.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G5"
     method: get
     response:
       statusCode: 200
-      scriptFile: useDonorJsonFileNoDecisionKBV.groovy
+      file: data/donorNoDecisionKBV.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G0"
     method: get
     response:
       statusCode: 200
-      scriptFile: useDonorJsonFileStop.groovy
+      file: data/donorStop.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0000"
     method: get
     response:
       statusCode: 200
-      scriptFile: useCertificateProviderJsonFile.groovy
+      file: data/certificateProvider.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0001"
     method: get
     response:
       statusCode: 200
-      scriptFile: useCertificateProviderJsonFileNoDecision.groovy
+      file: data/certificateProviderNoDecision.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0010"
     method: get
     response:
       statusCode: 200
-      scriptFile: useCertificateProviderJsonFileNoDecisionKBV.groovy
+      file: data/certificateProviderNoDecisionKBV.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0002"
     method: get
     response:
       statusCode: 200
-      scriptFile: useCertificateProviderJsonFileStop.groovy
+      file: data/certificateProviderStop.json
