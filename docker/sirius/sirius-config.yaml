@@ -2,6 +2,14 @@ plugin: openapi
 specFile: openapi.yml
 
 resources:
+  - path: "/api/v1/postcode-lookup"
+    method: get
+    queryParams:
+      postcode: SW1A1AA
+    response:
+      statusCode: 200
+      file: data/addressResponse.json
+
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G3"
     method: get
     response:

@@ -1,0 +1,29 @@
+[
+  {
+    "addressLine1": "1 New Street",
+    "addressLine2": "",
+    "addressLine3": "",
+    "town": "London",
+    "postcode": "SW1A 1AA",
+    "country": "UK",
+    "description": "1 New Street, London, SW1A 1AA"
+  },
+  {
+    "addressLine1": "2 Old Street",
+    "addressLine2": "",
+    "addressLine3": "",
+    "town": "London",
+    "postcode": "SW1A 1AA",
+    "country": "UK",
+    "description": "2 Old Street, London, SW1A 1AA"
+  },
+  {
+    "addressLine1": "3 Next Street",
+    "addressLine2": "",
+    "addressLine3": "",
+    "town": "London",
+    "postcode": "SW1A 1AA",
+    "country": "UK",
+    "description": "3 Next Street, London, SW1A 1AA"
+  }
+]
