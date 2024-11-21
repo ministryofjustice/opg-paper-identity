@@ -136,7 +136,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
             [
                 "firstName" => "attorneyfirstname",
                 "lastName" => "attorneylastname",
-                "dob" => "1990-01-01",
+                "dob" => "1990-1-1",
                 "lpasData" => [
                     "opg.poas.sirius" => $lpaDataSirius,
                     "opg.poas.lpastore" => $lpaDataLpaStore,

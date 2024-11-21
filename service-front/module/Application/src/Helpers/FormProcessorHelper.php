@@ -221,7 +221,7 @@ class FormProcessorHelper
         }
 
         return sprintf(
-            "%s-%02d-%02d",
+            "%s-%s-%s",
             $year,
             $params['dob_month'],
             $params['dob_day'],
