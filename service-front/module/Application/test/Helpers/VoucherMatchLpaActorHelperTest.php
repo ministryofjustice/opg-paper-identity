@@ -27,7 +27,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
 
     public static function nameLpaData(): array
     {
-        $lpaDataLpaStore = ["opg.poas.lpastore" => [
+        $lpaDataLpaStore = [
             "donor" => [
                 "firstNames" => "donorfirstname",
                 "lastName" => "donorlastname",
@@ -64,27 +64,33 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "dateOfBirth" => "1990-01-01",
                 ],
             ],
-        ]];
+        ];
 
-        $lpaDataSirius = ["opg.poas.sirius" => [
-            "firstname" => "firstname",
-            "surname" => "lastname",
-            "dob" => "1980-01-01",
-        ]];
+        $lpaDataSirius = ["donor" => [
+                "firstname" => "firstname",
+                "surname" => "lastname",
+                "dob" => "1980-01-01",
+            ]
+        ];
 
         return [
             [
                 "firstName" => "firstname",
                 "lastName" => "lastname",
                 "dob" => null,
-                "lpasData" => [],
+                "lpasData" => [
+                    "opg.poas.sirius" => [],
+                ],
                 "expected_result" => []
             ],
             [
                 "firstName" => "donorfirstname",
                 "lastName" => "donorlastname",
                 "dob" => null,
-                "lpasData" => $lpaDataLpaStore,
+                "lpasData" => [
+                    "opg.poas.sirius" => $lpaDataSirius,
+                    "opg.poas.lpastore" => $lpaDataLpaStore,
+                ],
                 "expected_result" => [
                     [
                         "firstName" => "donorfirstname",
@@ -98,14 +104,20 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                 "firstName" => "donorfirstname",
                 "lastName" => "donorlastname",
                 "dob" => "1990-01-01",
-                "lpasData" => $lpaDataLpaStore,
+                "lpasData" => [
+                    "opg.poas.sirius" => $lpaDataSirius,
+                    "opg.poas.lpastore" => $lpaDataLpaStore,
+                ],
                 "expected_result" => []
             ],
             [
                 "firstName" => "attorneyfirstname",
                 "lastName" => "attorneylastname",
                 "dob" => null,
-                "lpasData" => $lpaDataLpaStore,
+                "lpasData" => [
+                    "opg.poas.sirius" => $lpaDataSirius,
+                    "opg.poas.lpastore" => $lpaDataLpaStore,
+                ],
                 "expected_result" => [
                     [
                         "firstName" => "attorneyfirstname",
@@ -125,7 +137,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                 "firstName" => "attorneyfirstname",
                 "lastName" => "attorneylastname",
                 "dob" => "1990-01-01",
-                "lpasData" => $lpaDataLpaStore,
+                "lpasData" => [
+                    "opg.poas.sirius" => $lpaDataSirius,
+                    "opg.poas.lpastore" => $lpaDataLpaStore,
+                ],
                 "expected_result" => [
                     [
                         "firstName" => "attorneyfirstname",
@@ -139,7 +154,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                 "firstName" => "replacementAttorneyfirstname",
                 "lastName" => "replacementAttorneylastname",
                 "dob" => null,
-                "lpasData" => $lpaDataLpaStore,
+                "lpasData" => [
+                    "opg.poas.sirius" => $lpaDataSirius,
+                    "opg.poas.lpastore" => $lpaDataLpaStore,
+                ],
                 "expected_result" => [
                     [
                         "firstName" => "replacementAttorneyfirstname",
@@ -153,11 +171,13 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                 "firstName" => "firstname",
                 "lastName" => "lastname",
                 "dob" => null,
-                "lpasData" => $lpaDataSirius,
+                "lpasData" => [
+                    "opg.poas.sirius" => $lpaDataSirius,
+                ],
                 "expected_result" => [
                     [
                         "firstName" => "firstname",
-                        "surname" => "lastname",
+                        "lastName" => "lastname",
                         "dob" => "1980-01-01",
                         "type" => LpaActorTypes::DONOR->value,
                     ],

@@ -25,7 +25,7 @@ use Laminas\Stdlib\RequestInterface;
  *
  * @psalm-type Attorney = array{
  *   firstNames: string,
- *   lastNameL: string,
+ *   lastName: string,
  *   dateOfBirth: string,
  * }
  *
@@ -56,6 +56,7 @@ use Laminas\Stdlib\RequestInterface;
  *    certificateProvider: array{
  *      firstNames: string,
  *      lastName: string,
+ *      dateOfBirth: string,
  *      address: Address,
  *    },
  *    attorneys: Attorney[],
@@ -168,7 +169,7 @@ class SiriusApiService
         ];
     }
 
-     /**
+    /**
      * @param array $caseDetails
      * @param SiriusDocument $systemType
      * @param Request $request

@@ -230,7 +230,7 @@ class VouchingFlowController extends AbstractActionController
                         $dateOfBirth,
                     ));
                 }
-                if ($matches && ! isset($formData["continue-after-warning"])) {
+                if ($matches) {
                     // if there are multiple matches we will only warn about the first
                     $view->setVariable('match', reset($matches));
                 } else {

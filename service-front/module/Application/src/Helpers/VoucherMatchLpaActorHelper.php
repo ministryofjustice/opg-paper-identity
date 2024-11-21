@@ -5,20 +5,24 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Enums\LpaActorTypes;
-use Laminas\Http\Header\RetryAfter;
+use Application\Services\SiriusApiService;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
+ *
+ * @psalm-type Actor = array{
+ *   "firstName": string,
+ *   "lastName": string,
+ *   "dob": string,
+ *   "type": string,
+ * }
  */
 class VoucherMatchLpaActorHelper
 {
-    /**
-     * @param Lpa $lpasData
-    */
     private function getLpaActors(array $lpasData): array
     {
         $actors = [];
-        if (key_exists("opg.poas.lpastore", $lpasData)) {
+        if (! empty($lpasData["opg.poas.lpastore"])) {
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.lpastore"]["donor"]["firstNames"],
                 "lastName" => $lpasData["opg.poas.lpastore"]["donor"]["lastName"],
@@ -31,7 +35,6 @@ class VoucherMatchLpaActorHelper
                 "dob" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["dateOfBirth"],
                 "type" => LpaActorTypes::CP->value,
             ];
-
             foreach ($lpasData["opg.poas.lpastore"]["attorneys"] as $attorney) {
                 if (in_array($attorney["status"], ["active", "removed"])) {
                     $actors[] = [
@@ -49,12 +52,11 @@ class VoucherMatchLpaActorHelper
                     ];
                 }
             }
-        }
-        if (key_exists("opg.poas.sirius", $lpasData)) {
+        } elseif (! empty($lpasData["opg.poas.sirius"])) {
             $actors[] = [
-                "firstName" => $lpasData["opg.poas.sirius"]["firstname"],
-                "lastName" => $lpasData["opg.poas.sirius"]["surname"],
-                "dob" => $lpasData["opg.poas.sirius"]["dob"],
+                "firstName" => $lpasData["opg.poas.sirius"]["donor"]["firstname"],
+                "lastName" => $lpasData["opg.poas.sirius"]["donor"]["surname"],
+                "dob" => $lpasData["opg.poas.sirius"]["donor"]["dob"],
                 "type" => LpaActorTypes::DONOR->value,
             ];
         }
@@ -64,7 +66,7 @@ class VoucherMatchLpaActorHelper
 
     private function compareName(string $firstName, string $lastName, array $actor): bool
     {
-        if (is_null($firstName) || is_null($lastName) || is_null($actor["firstName"]) || is_null($actor["lastName"])) {
+        if (is_null($actor["firstName"]) || is_null($actor["lastName"])) {
             return false;
         }
 
@@ -74,9 +76,9 @@ class VoucherMatchLpaActorHelper
         return $firstNameMatch && $lastNameMatch;
     }
 
-    private function compareDob(?string $dob, array $actor): bool
+    private function compareDob(string $dob, array $actor): bool
     {
-        if (is_null($dob) || is_null($actor["dob"])) {
+        if (is_null($actor["dob"])) {
             return false;
         }
 
@@ -88,8 +90,9 @@ class VoucherMatchLpaActorHelper
      * @param string $firstName
      * @param string $lastName
      * @param string $dob
+     * @return Actor[]
     */
-    public function checkMatch(array $lpasData, ?string $firstName, ?string $lastName, ?string $dob = null): array
+    public function checkMatch(array $lpasData, string $firstName, string $lastName, string $dob = null): array
     {
         $actors = $this->getLpaActors($lpasData);
 
@@ -98,7 +101,7 @@ class VoucherMatchLpaActorHelper
         });
 
         // if dob is not given we only check against name
-        if ($dob) {
+        if (! is_null($dob)) {
             $matches = array_filter($matches, function ($a) use ($dob) {
                 return $this->compareDob($dob, $a);
             });
