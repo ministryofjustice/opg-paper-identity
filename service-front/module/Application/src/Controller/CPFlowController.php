@@ -14,6 +14,7 @@ use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
@@ -445,25 +446,14 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
-        }
-
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/identity_check_passed');
+        $view->setVariable(
+            'sirius_url',
+            $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]
+        );
+        return $view->setTemplate('application/pages/cp/identity_check_passed');
     }
 
     public function identityCheckFailedAction(): ViewModel

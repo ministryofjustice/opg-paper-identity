@@ -402,4 +402,20 @@ class OpgApiService implements OpgApiServiceInterface
 
         return $this->responseData;
     }
+
+    public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void
+    {
+        $url = sprintf("/cases/%s/save-case-assistance", $uuid);
+
+        $data = [
+            'assistance' => $assistance === 'yes' ? true : false,
+            'details' => $details
+        ];
+
+        try {
+            $this->makeApiRequest($url, 'PUT', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }

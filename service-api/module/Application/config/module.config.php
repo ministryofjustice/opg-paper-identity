@@ -420,6 +420,26 @@ return [
                     ],
                 ],
             ],
+            'save_case_assistance' => [
+                'type' => Segment::class,
+                'verb' => 'put',
+                'options' => [
+                    'route' => '/cases/:uuid/save-case-assistance',
+                ],
+                'child_routes' => [
+                    'put' => [
+                        'type' => Method::class,
+                        'options' => [
+                            'verb' => 'put',
+                            'defaults' => [
+                                'controller' => Controller\IdentityController::class,
+                                'action' => 'saveCaseAssistance',
+                            ],
+                        ],
+                        'may_terminate' => true,
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
