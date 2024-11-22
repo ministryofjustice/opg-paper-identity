@@ -5,11 +5,6 @@ services:
       context: docker/sirius
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
       - ./docker/sirius:/opt/imposter/config
 
@@ -19,25 +14,15 @@ services:
       context: docker/experian-crosscore
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - ./docker/experian-crosscore:/opt/imposter/config
 
   experian-crosscore-auth-mock:
-    image: stoplight/prism:5.12.1
-    command: mock -h 0.0.0.0 -p 4011 -d /tmp/openapi.yml
+    image: paper-identity/experian-crosscore-auth-mock
+    build:
+      context: docker/experian-crosscore-auth
+      dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: wget -O /dev/null -S 'http://0.0.0.0:4011/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
-      - "./docker/experian-crosscore-auth/openapi.yml:/tmp/openapi.yml"
+      - "./docker/experian-crosscore-auth/openapi.yml:/usr/src/prism/openapi.yml"
 
   yoti-mock:
     image: paper-identity/yoti-mock
@@ -45,22 +30,15 @@ services:
       context: docker/yoti
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
       - ./docker/yoti:/opt/imposter/config
 
   experian-iiq-mock:
-    image: outofcoffee/imposter:4.2.1
+    image: paper-identity/experian-iiq-mock
+    build:
+      context: docker/experian-iiq
+      dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
       - ./docker/experian-iiq:/opt/imposter/config
     ports:
@@ -84,11 +62,6 @@ services:
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: [ "php-fpm" ]
     env_file: ./service-api/docker-compose.env
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
 
   api-test:
     image: paper-identity/api-test
@@ -104,12 +77,6 @@ services:
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: [ "php-fpm" ]
     env_file: ./service-api/docker-compose.env
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - ./service-api/build:/var/www/build
 
@@ -124,12 +91,6 @@ services:
       sirius-mock:
         condition: service_healthy
     env_file: ./service-front/docker-compose.env
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - static-content:/var/www/public
 
@@ -139,12 +100,6 @@ services:
       context: service-front
       dockerfile: Dockerfile
       target: development
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - ./service-front/build:/var/www/build
 
@@ -160,12 +115,6 @@ services:
       APP_NAME: api
       APP_PORT: 9000
       NGINX_LOG_LEVEL: info
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
 
   front-web:
     build: nginx
@@ -179,12 +128,6 @@ services:
       NGINX_LOG_LEVEL: info
     ports:
       - 8080:80
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - static-content:/var/www/public
 
