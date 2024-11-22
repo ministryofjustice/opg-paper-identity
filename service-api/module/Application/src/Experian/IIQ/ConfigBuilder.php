@@ -60,7 +60,6 @@ class ConfigBuilder
         ) {
                 $saaConfig['ApplicationData'] = [
                     'SearchConsent' => 'Y',
-                    'Product' => '3 out of 4',
                 ];
         } else {
             throw new RuntimeException('Fraudscore result is not recognised');
