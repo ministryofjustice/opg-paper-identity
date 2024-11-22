@@ -6,25 +6,22 @@
 
 {% block content %}
     <form method="POST">
-        {% if service_availability.messages.banner %}
-            <div class="govuk-notification-banner" data-module="govuk-notification-banner">
-                <div class="govuk-notification-banner__content">
-                    <p class="govuk-notification-banner__heading">
-                    <div class="govuk-warning-text">
-                        <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
-                              aria-hidden="true">!</span>
-                        <strong class="govuk-warning-text__text">
-                            {#                        <span class="govuk-visually-hidden">Warning</span> #}
-                            {{ service_availability.messages.banner }}
-                        </strong>
-                    </div>
-                    </p>
-                </div>
-            </div>
-        {% endif %}
-
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
+                {% if service_availability.messages.banner %}
+                    <div class="govuk-notification-banner" data-module="govuk-notification-banner">
+                        <div class="govuk-notification-banner__content">
+                            <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
+                              aria-hidden="true">!</span>
+                                <strong class="govuk-warning-text__text">
+                                    {#                        <span class="govuk-visually-hidden">Warning</span> #}
+                                    {{ service_availability.messages.banner }}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <h1 class="govuk-heading-xl">{% block title %}How will you confirm your identity?{% endblock %}</h1>
             </div>
         </div>
