@@ -29,6 +29,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
 
+                {% if service_availability.data.EXPERIAN %}
                 <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
 
                 <div class="govuk-form-group">
@@ -63,6 +64,7 @@
                         </p>
                     </div>
                 </div>
+                {% endif %}
 
                 <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
 
@@ -75,18 +77,20 @@
 
                     <div class="govuk-radios" data-module="govuk-radios">
 
-                        {% if service_availability.data.NATIONAL_INSURANCE_NUMBER %}
-                            <div class="govuk-radios__item">
+
+                            <div class="govuk-radios__item
+                                    {% if not service_availability.data.NATIONAL_INSURANCE_NUMBER %} moj-hidden{% endif %}
+                                ">
                                 <input class="govuk-radios__input" id="NATIONAL_INSURANCE_NUMBER" name="id_method"
                                        type="radio"
                                        value="NATIONAL_INSURANCE_NUMBER">
                                 <label class="govuk-label govuk-radios__label" for="NATIONAL_INSURANCE_NUMBER">National
                                     insurance number</label>
                             </div>
-                        {% endif %}
 
-                        {% if service_availability.data.PASSPORT %}
-                            <div class="govuk-radios__item">
+                            <div class="govuk-radios__item
+                                    {% if not service_availability.data.PASSPORT %} moj-hidden{% endif %}
+                                ">
                                 <input class="govuk-radios__input" id="PASSPORT" name="id_method" type="radio"
                                        value="PASSPORT">
                                 <label class="govuk-label govuk-radios__label" for="PASSPORT">
@@ -189,10 +193,10 @@
                                     </details>
                                 </label>
                             </div>
-                        {% endif %}
 
-                        {% if service_availability.data.DRIVING_LICENCE %}
-                            <div class="govuk-radios__item">
+                            <div class="govuk-radios__item
+                                    {% if not service_availability.data.DRIVING_LICENCE %} moj-hidden{% endif %}
+                                ">
                                 <input class="govuk-radios__input" id="DRIVING_LICENCE" name="id_method"
                                        type="radio"
                                        value="DRIVING_LICENCE">
@@ -200,11 +204,15 @@
                                     UK driving licence (must be current)
                                 </label>
                             </div>
-                        {% endif %}
                     </div>
                 </div>
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
-                    <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
+                    <h2 class="govuk-heading-m">
+                        {% if service_availability.data.EXPERIAN %}
+                            If unable to ID over the phone:
+                        {% endif %}
+                        ID in person at the Post Office
+                    </h2>
 
                     <p class="govuk-body">
                         Alternatively, you can take one of the identity documents listed below to a Post Office - this
@@ -248,7 +256,7 @@
                     {% endif %}
                 </div>
 
-                <div class="govuk-form-group">
+                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
 
                     <h2 class="govuk-heading-m">Other methods</h2>
 
