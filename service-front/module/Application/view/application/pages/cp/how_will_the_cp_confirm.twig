@@ -90,8 +90,9 @@
                     {% endif %}
 
                     <div class="govuk-radios" data-module="govuk-radios">
-                        {% if service_availability.data.NATIONAL_INSURANCE_NUMBER %}
-                            <div class="govuk-radios__item">
+                            <div class="govuk-radios__item
+                                    {% if not service_availability.data.NATIONAL_INSURANCE_NUMBER %} moj-hidden{% endif %}
+                                ">
                                 <input class="govuk-radios__input" id="NATIONAL_INSURANCE_NUMBER" name="id_method"
                                        type="radio"
                                        value="NATIONAL_INSURANCE_NUMBER">
@@ -99,14 +100,14 @@
                                     National insurance number
                                 </label>
                             </div>
-                        {% endif %}
-                        {% if service_availability.data.PASSPORT %}
-                            <div class="govuk-radios__item">
+
+                            <div class="govuk-radios__item
+                                {% if not service_availability.data.PASSPORT %} moj-hidden{% endif %}
+                            ">
                                 <input class="govuk-radios__input" id="PASSPORT" name="id_method" type="radio"
                                        value="PASSPORT">
                                 <label class="govuk-label govuk-radios__label" for="PASSPORT">
                                     UK Passport (current or expired in the last 18 months)
-
                                     <details
                                             class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
                                         <summary class="govuk-details__summary">
@@ -204,16 +205,16 @@
                                     </details>
                                 </label>
                             </div>
-                        {% endif %}
-                        {% if service_availability.data.DRIVING_LICENCE %}
-                            <div class="govuk-radios__item">
+                        
+                            <div class="govuk-radios__item
+                                {% if not service_availability.data.DRIVING_LICENCE %} moj-hidden{% endif %}
+                            ">
                                 <input class="govuk-radios__input" id="DRIVING_LICENCE" name="id_method"
                                        type="radio"
                                        value="DRIVING_LICENCE">
                                 <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">
                                     UK driving licence (must be current) </label>
                             </div>
-                        {% endif %}
                     </div>
                 </div>
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
