@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Enums\LpaActorTypes;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Services\SiriusApiService;
 
 /**
@@ -107,5 +108,27 @@ class VoucherMatchLpaActorHelper
             });
         }
         return $matches;
+    }
+
+    public function checkAddressDonorMatch(array $lpasData, array $address): bool
+    {
+        if (! empty($lpasData["opg.poas.lpastore"]["donor"])) {
+            $donor_address = AddressProcessorHelper::processAddress(
+                $lpasData["opg.poas.lpastore"]["donor"]["address"],
+                'lpaStoreAddressType'
+            );
+        } elseif (! empty($lpasData["opg.poas.sirius"])) {
+            $donor_address = AddressProcessorHelper::processAddress(
+                $lpasData["opg.poas.sirius"]["donor"]["address"],
+                'siriusAddressType'
+            );
+        }
+
+        if (! isset($donor_address)) {
+            return false;
+        }
+
+        // can i get this to at least trim and ignore case..
+        return $donor_address === $address;
     }
 }

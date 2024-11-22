@@ -31,6 +31,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "howConfirm" => "vouching/how-will-you-confirm",
             "name" => "vouching/voucher-name",
             "dob" => "vouching/voucher-dob",
+            "postcode" => "vouching/voucher-postcode"
         ];
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
@@ -503,7 +504,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
 
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/$this->uuid/{$this->routes['dob']}");
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['postcode']}");
     }
 
     public function testVoucherDobMatchError(): void

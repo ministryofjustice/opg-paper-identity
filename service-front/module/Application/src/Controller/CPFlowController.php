@@ -12,7 +12,7 @@ use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
-use Application\Forms\CpAltAddress;
+use Application\Forms\AddressInput;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
@@ -553,7 +553,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = $this->createForm(CpAltAddress::class);
+        $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['alternateAddress'] ?? []);
 
         if ($this->getRequest()->isPost()) {

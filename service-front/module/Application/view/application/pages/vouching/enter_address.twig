@@ -1,0 +1,36 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
+        {% block title %}
+            What is their home address?
+        {% endblock %}
+    </h1>
+    <form method="POST" target="">
+        <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
+            {% if form.get('postcode').messages %}
+                <p id="postcode-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('postcode').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            <label for="postcode" class="govuk-label">Enter postcode</label>
+            <input
+                    class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
+                    id="postcode" name="postcode" type="text"
+                    value="{{ form.get('postcode').value }}"
+                    aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
+            />
+            <p id="different-method-link" class="govuk-hint govuk-!-width-two-thirds">
+                <a href="/{{ details_data['id'] }}/voucher/enter-address-manual" class="govuk-link">
+                    Enter address manually or an address outside the UK
+                </a>
+            </p>
+        </div>
+        <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+{% endblock %}
