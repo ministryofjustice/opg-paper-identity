@@ -27,6 +27,7 @@ use SoapFault;
  *   },
  *   ApplicationData: array{
  *     SearchConsent: "Y",
+ *     Product?: string
  *   },
  *   LocationDetails: array{
  *     LocationIdentifier: string,
