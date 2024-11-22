@@ -33,7 +33,7 @@
         <div class="govuk-grid-column-two-thirds">
             <form method="POST">
 
-                <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
+
 
                 {% if service_availability.message %}
                     <div class="govuk-warning-text">
@@ -45,6 +45,8 @@
                     </div>
                 {% endif %}
 
+                {% if service_availability.data.EXPERIAN %}
+                <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
                 <div class="govuk-form-group">
                     <p class="govuk-body">
                         Confirming your identity over the phone is the quickest and easiest option - you will need an
@@ -77,6 +79,8 @@
                         </p>
                     </div>
                 </div>
+
+                {% endif %}
 
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
 
@@ -215,7 +219,12 @@
                     </div>
                 </div>
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
-                    <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
+                    <h2 class="govuk-heading-m">
+                        {% if service_availability.data.EXPERIAN %}
+                            If unable to ID over the phone:
+                        {% endif %}
+                        ID in person at the Post Office
+                    </h2>
 
                     <p class="govuk-body">
                         Alternatively, you can take one of the identity documents listed below to a Post Office - this
