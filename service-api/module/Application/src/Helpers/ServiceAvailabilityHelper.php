@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Model\Entity\CaseData;
-use Application\Fixtures\DataWriteHandler;
-use Application\Sirius\EventSender;
-use Psr\Log\LoggerInterface;
 
 class ServiceAvailabilityHelper
 {

@@ -14,6 +14,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 {
@@ -38,10 +39,12 @@ class ExperianCrosscoreFraudApiServiceFactory implements FactoryInterface
 
         $domain = (new AwsSecret('experian-crosscore/domain'))->getValue();
         $tenantId = (new AwsSecret('experian-crosscore/tenant-id'))->getValue();
+        $logger = $container->get(LoggerInterface::class);
 
         return new FraudApiService(
             $guzzleClient,
             $container->get(AuthApiService::class),
+            $logger,
             [
                 'domain' => $domain,
                 'tenantId' => $tenantId

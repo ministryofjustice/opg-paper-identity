@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
+use Application\Exceptions\PostcodeInvalidException;
 use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
@@ -14,6 +15,7 @@ use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\CpAltAddress;
 use Application\Forms\DrivingLicenceNumber;
+use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
@@ -40,6 +42,7 @@ class CPFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
+    public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
@@ -445,25 +448,14 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
-        }
-
         $view = new ViewModel();
 
-        $view->setVariable('lpas_data', $lpaDetails);
         $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/identity_check_passed');
+        $view->setVariable(
+            'sirius_url',
+            $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]
+        );
+        return $view->setTemplate('application/pages/cp/identity_check_passed');
     }
 
     public function identityCheckFailedAction(): ViewModel
@@ -503,13 +495,27 @@ class CPFlowController extends AbstractActionController
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $postcode = $this->formToArray($form)['postcode'];
 
-            return $this->redirect()->toRoute(
-                'root/cp_select_address',
-                [
-                    'uuid' => $uuid,
-                    'postcode' => $postcode,
-                ]
-            );
+            try {
+                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $this->getRequest());
+
+                if (empty($response)) {
+                    $form->setMessages([
+                        'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                    ]);
+                } else {
+                    return $this->redirect()->toRoute(
+                        'root/cp_select_address',
+                        [
+                            'uuid' => $uuid,
+                            'postcode' => $postcode,
+                        ]
+                    );
+                }
+            } catch (PostcodeInvalidException $e) {
+                $form->setMessages([
+                    'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                ]);
+            }
         }
 
         return $view->setTemplate('application/pages/cp/enter_address');

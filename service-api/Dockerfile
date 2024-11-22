@@ -22,8 +22,6 @@ COPY docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
 COPY docker/scripts /usr/local/bin/scripts
 
 RUN chmod +x /usr/local/bin/opg-paper-identity-entrypoint
-ENTRYPOINT ["/usr/local/bin/opg-paper-identity-entrypoint"]
-CMD ["php-fpm"]
 
 RUN mkdir /tmp/cache &&\
   chown -R www-data /tmp/cache &&\
@@ -58,6 +56,12 @@ COPY public public
 COPY config config
 COPY module module
 STOPSIGNAL SIGQUIT
+
+HEALTHCHECK --interval=15s --timeout=10s --start-period=10s --retries=3 \
+  CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
+
+ENTRYPOINT ["/usr/local/bin/opg-paper-identity-entrypoint"]
+CMD ["php-fpm"]
 
 FROM app AS development
 USER "root"

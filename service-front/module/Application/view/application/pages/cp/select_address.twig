@@ -10,7 +10,7 @@
             What is the address on the ID document?
         {% endblock %}
     </h1>
-    <form method="POST" action="./select-address">
+    <form method="POST">
         <div class="govuk-form-group {% if form.get('address_json').messages %}govuk-form-group--error{% endif %}">
 
             {% if form.get('address_json').messages %}
