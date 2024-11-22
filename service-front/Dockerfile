@@ -67,6 +67,9 @@ COPY module module
 
 COPY --from=asset-env /app/yoti-supported-documents.json module/Application/config/yoti-supported-documents.json
 
+HEALTHCHECK --interval=15s --timeout=10s --start-period=30s --retries=3 \
+    CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
+
 STOPSIGNAL SIGQUIT
 
 FROM app AS development
