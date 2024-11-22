@@ -589,6 +589,36 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_enter_postcode' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/enter-postcode',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'enterPostcode',
+                            ],
+                        ],
+                    ],
+                    'voucher_select_address' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/select-address/:postcode',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'selectAddress',
+                            ],
+                        ],
+                    ],
+                    'voucher_enter_address_manual' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/enter-address-manual',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'enterAddressManual',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
