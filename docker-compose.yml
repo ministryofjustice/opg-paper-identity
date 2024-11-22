@@ -5,11 +5,6 @@ services:
       context: docker/sirius
       dockerfile: Dockerfile
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "imposter", "list", "-x" ]
-      interval: 15s
-      timeout: 10s
-      retries: 3
     volumes:
       - ./docker/sirius:/opt/imposter/config
 
@@ -67,11 +62,6 @@ services:
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: [ "php-fpm" ]
     env_file: ./service-api/docker-compose.env
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
 
   api-test:
     image: paper-identity/api-test
@@ -87,12 +77,6 @@ services:
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: [ "php-fpm" ]
     env_file: ./service-api/docker-compose.env
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - ./service-api/build:/var/www/build
 
@@ -107,12 +91,6 @@ services:
       sirius-mock:
         condition: service_healthy
     env_file: ./service-front/docker-compose.env
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - static-content:/var/www/public
 
@@ -122,12 +100,6 @@ services:
       context: service-front
       dockerfile: Dockerfile
       target: development
-    healthcheck:
-      test: SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - ./service-front/build:/var/www/build
 
@@ -143,12 +115,6 @@ services:
       APP_NAME: api
       APP_PORT: 9000
       NGINX_LOG_LEVEL: info
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
 
   front-web:
     build: nginx
@@ -162,12 +128,6 @@ services:
       NGINX_LOG_LEVEL: info
     ports:
       - 8080:80
-    healthcheck:
-      test: curl -f http://localhost/nginx-health || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
     volumes:
       - static-content:/var/www/public
 
