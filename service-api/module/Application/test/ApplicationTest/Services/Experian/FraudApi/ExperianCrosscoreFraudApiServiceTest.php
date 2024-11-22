@@ -15,6 +15,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 class ExperianCrosscoreFraudApiServiceTest extends TestCase
@@ -22,6 +23,9 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
     private array $config;
 
     private AuthApiService&MockObject $experianCrosscoreAuthApiService;
+
+
+    private LoggerInterface&MockObject $logger;
 
     public function setUp(): void
     {
@@ -31,6 +35,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
         ];
 
         $this->experianCrosscoreAuthApiService = $this->createMock(AuthApiService::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -54,6 +59,7 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
         $experianCrosscoreFraudApiService = new FraudApiService(
             $client,
             $this->experianCrosscoreAuthApiService,
+            $this->logger,
             $this->config
         );
 
