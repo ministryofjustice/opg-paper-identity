@@ -132,13 +132,14 @@ class SiriusApiService
      */
     public function searchAddressesByPostcode(string $postcode, Request $request): array
     {
-        try{
+        try {
             $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
                 'headers' => $this->getAuthHeaders($request)
             ]);
         } catch (ClientException $e) {
             if ($e->getResponse()->getStatusCode() === 400) {
-                throw new PostcodeInvalidException(sprintf('Bad Request error returned from postcode lookup: %s', $e->getMessage()));
+                $errorMessage = sprintf('Bad Request error returned from postcode lookup: %s', $e->getMessage());
+                throw new PostcodeInvalidException($errorMessage);
             }
 
             throw $e;
