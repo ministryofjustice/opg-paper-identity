@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class VoucherMatchLpaActorHelperTest extends TestCase
 {
     /**
-     * @dataProvider nameLpaData
+     * @dataProvider nameDobLpaData
      */
     public function testCheckMatch(
         string $firstName,
@@ -25,7 +25,18 @@ class VoucherMatchLpaActorHelperTest extends TestCase
         $this->assertEqualsCanonicalizing($expected_result, $result);
     }
 
-    public static function nameLpaData(): array
+    /**
+     * @dataProvider addressLpaData
+     */
+    public function checkAddressMatch(array $address, array $lpasData, $expected_result): void
+    {
+        $matchLpaActor = new VoucherMatchLpaActorHelper();
+        $result = $matchLpaActor->checkAddressDonorMatch($lpasData, $address);
+        $this->assertEquals($expected_result, $result);
+
+    }
+
+    public static function nameDobLpaData(): array
     {
         $lpaDataLpaStore = [
             "donor" => [
@@ -182,6 +193,72 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                         "type" => LpaActorTypes::DONOR->value,
                     ],
                 ],
+            ],
+        ];
+    }
+
+    public static function addressLpaData(): array
+    {
+
+        $addressOne = [
+            'line1' => '123 Fake Street',
+            'line2' => '',
+            'line3' => '',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'UK',
+        ];
+
+        $addressOneSirius = [
+            'addressLine1' => '123 FAKE STREET  ',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'UK',
+        ];
+
+        $addressTwo = [
+            'line1' => ' 456 Pretend Road',
+            'line2' => 'Notrealshire',
+            'town' => 'Faketown',
+            'postcode' => 'FA9 3KE',
+        ];
+
+        $addressTwoSirius = [
+            'addressLine1' => '456 Pretend Road',
+            'addressLine2' => 'Notrealshire',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'UK',
+        ];
+
+        return [
+            [
+                "lpasData" => [
+                ],
+                "address" => $addressOne,
+                "expected_result" => false
+            ],
+            [
+                "lpasData" => [
+                    ["opg.poas.lpastore"]["donor"]["address"] => $addressOne,
+                    ["opg.poas.sirius"]["donor"]["address"] => $addressTwoSirius
+                ],
+                "address" => $addressOne,
+                "expected_result" => true
+            ],
+            [
+                "lpasData" => [
+                    ["opg.poas.sirius"]["donor"]["address"] => $addressOneSirius
+                ],
+                "address" => $addressOne,
+                "expected_result" => true
+            ],
+            [
+                "lpasData" => [
+                    ["opg.poas.lpastore"]["donor"]["address"] => $addressOne
+                ],
+                "address" => $addressTwo,
+                "expected_result" => false
             ],
         ];
     }
