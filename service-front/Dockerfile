@@ -15,7 +15,7 @@ RUN yarn build
 
 RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/supported-documents
 
-FROM php:8.3-fpm-alpine AS app
+FROM php:8.4-fpm-alpine AS app
 
 RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DEPS \
     && docker-php-ext-install ffi intl opcache \
