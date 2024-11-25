@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Enums\SiriusDocument;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
-use Laminas\Http\Header\Exception\RuntimeException;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * @psalm-type Address = array{
@@ -139,9 +140,18 @@ class SiriusApiService
      */
     public function searchAddressesByPostcode(string $postcode, Request $request): array
     {
-        $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
-            'headers' => $this->getAuthHeaders($request),
-        ]);
+        try {
+            $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
+                'headers' => $this->getAuthHeaders($request)
+            ]);
+        } catch (ClientException $e) {
+            if ($e->getResponse()->getStatusCode() === 400) {
+                $errorMessage = sprintf('Bad Request error returned from postcode lookup: %s', $e->getMessage());
+                throw new PostcodeInvalidException($errorMessage);
+            }
+
+            throw $e;
+        }
 
         return json_decode(strval($response->getBody()), true);
     }

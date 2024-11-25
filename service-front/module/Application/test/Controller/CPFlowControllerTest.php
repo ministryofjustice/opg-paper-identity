@@ -6,6 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
+use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
 use Application\PostOffice\DocumentType;
@@ -414,5 +415,39 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
         $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_choose_country_id');
+    }
+
+    public function testEnterPostcodeAddsValidationMessageWhenPostcodeInvalidExceptionThrown(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('searchAddressesByPostcode')
+            ->with('SW1A1AA', $this->isInstanceOf(\Laminas\Http\Request::class))
+            ->willThrowException(new PostcodeInvalidException());
+
+        $this->dispatch(
+            sprintf('/%s/cp/enter-postcode', $this->uuid),
+            'POST',
+            ['postcode' => 'SW1A1AA']
+        );
+
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(CPFlowController::class);
+        $this->assertControllerClass('CPFlowController');
+        $this->assertMatchedRouteName('root/cp_enter_postcode');
+
+        $response = $this->getResponse()->getContent();
+        $this->assertStringContainsString(CPFlowController::ERROR_POSTCODE_NOT_FOUND, $response);
     }
 }

@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
+use Application\Exceptions\PostcodeInvalidException;
 use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
@@ -41,6 +42,7 @@ class CPFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
+    public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
@@ -493,13 +495,27 @@ class CPFlowController extends AbstractActionController
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $postcode = $this->formToArray($form)['postcode'];
 
-            return $this->redirect()->toRoute(
-                'root/cp_select_address',
-                [
-                    'uuid' => $uuid,
-                    'postcode' => $postcode,
-                ]
-            );
+            try {
+                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $this->getRequest());
+
+                if (empty($response)) {
+                    $form->setMessages([
+                        'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                    ]);
+                } else {
+                    return $this->redirect()->toRoute(
+                        'root/cp_select_address',
+                        [
+                            'uuid' => $uuid,
+                            'postcode' => $postcode,
+                        ]
+                    );
+                }
+            } catch (PostcodeInvalidException $e) {
+                $form->setMessages([
+                    'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                ]);
+            }
         }
 
         return $view->setTemplate('application/pages/cp/enter_address');

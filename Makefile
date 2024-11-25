@@ -5,7 +5,7 @@ help:
 	@grep --no-filename -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build containers
-	docker compose build --parallel api front api-test yoti-mock
+	docker compose build --parallel
 
 up: ## Start application
 	docker compose up -d front-web
