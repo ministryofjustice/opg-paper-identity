@@ -210,7 +210,7 @@ class FormProcessorHelper
         );
     }
 
-    public function processDataForm(array $params): string
+    public function processDateForm(array $params): string
     {
         if (strlen($params['dob_year']) == 2) {
             $year = (int)$params['dob_year'] < 6 ?
