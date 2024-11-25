@@ -24,6 +24,8 @@ namespace Application\Contracts;
  * @psalm-type CaseData = array{
  *   lpas: string[],
  *   personType: "donor"|"certificateProvider",
+ *   firstName: string,
+ *   lastName: string,
  *   dob: string,
  *   address: Address,
  *   alternateAddress?: Address,
@@ -107,6 +109,8 @@ interface OpgApiServiceInterface
     public function updateCaseSetDocumentComplete(string $uuid): void;
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
+
+    public function updateCaseSetName(string $uuid, string $firstName, string $lastName): void;
 
     /**
      * @param array{
