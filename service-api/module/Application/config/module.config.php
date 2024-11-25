@@ -350,6 +350,16 @@ return [
                     ],
                 ],
             ],
+            'update_name' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/update-name',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'updateName',
+                    ],
+                ],
+            ],
             'update_cp_po_id' => [
                 'type' => Segment::class,
                 'verb' => 'put',
