@@ -16,3 +16,12 @@ resources:
     response:
       statusCode: 401
       scriptFile: useTokenFile401.groovy
+
+  - path: "/v2/citizens/match"
+    method: post
+    requestBody:
+      operator: Contains
+      value: NC112233C
+    response:
+      statusCode: 200
+      file: data/foundResponse.json
