@@ -210,14 +210,14 @@ class VoucherMatchLpaActorHelperTest extends TestCase
         ];
 
         $addressOneSirius = [
-            'addressLine1' => '123 Fake Street',
+            'addressLine1' => '123 FAKE STREET  ',
             'town' => 'Faketown',
             'postcode' => 'FA2 3KE',
             'country' => 'UK',
         ];
 
         $addressTwo = [
-            'line1' => '456 Pretend Road',
+            'line1' => ' 456 Pretend Road',
             'line2' => 'Notrealshire',
             'town' => 'Faketown',
             'postcode' => 'FA9 3KE',

@@ -113,22 +113,23 @@ class VoucherMatchLpaActorHelper
     public function checkAddressDonorMatch(array $lpasData, array $address): bool
     {
         if (! empty($lpasData["opg.poas.lpastore"]["donor"])) {
-            $donor_address = AddressProcessorHelper::processAddress(
+            $donorAddress = AddressProcessorHelper::processAddress(
                 $lpasData["opg.poas.lpastore"]["donor"]["address"],
                 'lpaStoreAddressType'
             );
         } elseif (! empty($lpasData["opg.poas.sirius"])) {
-            $donor_address = AddressProcessorHelper::processAddress(
+            $donorAddress = AddressProcessorHelper::processAddress(
                 $lpasData["opg.poas.sirius"]["donor"]["address"],
                 'siriusAddressType'
             );
         }
 
-        if (! isset($donor_address)) {
+        if (! isset($donorAddress)) {
             return false;
         }
 
-        // can i get this to at least trim and ignore case..
-        return $donor_address === $address;
+        $addressesAsStrings =array_values(AddressProcessorHelper::stringifyAddresses([$donorAddress, $address]));
+
+        return strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1]);
     }
 }

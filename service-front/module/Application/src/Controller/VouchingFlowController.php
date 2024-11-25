@@ -343,13 +343,10 @@ class VouchingFlowController extends AbstractActionController
                         $this->formToArray($form)
                     );
                 }
-                var_dump($lpasData["opg.poas.lpastore"]["donor"]["address"]);
-                var_dump($this->formToArray($form));
-                var_dump($addressMatch);
                 if ($addressMatch) {
                     $view->setVariable('address_match', true);
-                // } else {
-                //     return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
+                } else {
+                    return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
                 }
             }
         }

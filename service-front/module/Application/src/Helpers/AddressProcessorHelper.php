@@ -68,7 +68,7 @@ class AddressProcessorHelper
         return $processedAddress;
     }
 
-    public function stringifyAddresses(array $addresses): array
+    public static function stringifyAddresses(array $addresses): array
     {
         $stringified = [];
 
@@ -80,7 +80,7 @@ class AddressProcessorHelper
                 $str = '';
                 foreach ($arr as $line) {
                     if (strlen($line) > 0) {
-                        $str .= $line . ", ";
+                        $str .= trim($line) . ", ";
                     }
                 }
 
