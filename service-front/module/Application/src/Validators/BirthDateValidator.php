@@ -16,16 +16,16 @@ class BirthDateValidator extends AbstractValidator
     public const EIGHTEEN_YEARS = '-18 year';
 
     protected array $messageTemplates = [
-        self::DATE_FORMAT => 'The date needs to be a valid date',
-        self::DATE_EMPTY => 'The date cannot be empty',
-        self::DATE_18 => 'Birth date cannot be under 18 years ago',
+        self::DATE_FORMAT => 'The date needs to be a valid date.',
+        self::DATE_EMPTY => 'The date cannot be empty.',
+        self::DATE_18 => 'Birth date cannot be under 18 years ago.',
     ];
 
     public function isValid($value): bool
     {
         $this->setValue($value);
 
-        if (empty($this->value) || $this->value === '') {
+        if (empty($this->value) || $this->value === '' || $this->value === '--') {
             $this->error(self::DATE_EMPTY);
             return false;
         }

@@ -19,6 +19,7 @@ class VoucherBirthDate
      */
     #[Annotation\Validator(BirthDateValidator::class, options: [
         "messages" => [
+            BirthDateValidator::DATE_EMPTY => "Enter a date to continue.",
             BirthDateValidator::DATE_18  => "The person vouching must be 18 years or older."
         ]
     ])]
