@@ -24,6 +24,8 @@ namespace Application\Contracts;
  * @psalm-type CaseData = array{
  *   lpas: string[],
  *   personType: "donor"|"certificateProvider",
+ *   firstName: string,
+ *   lastName: string,
  *   dob: string,
  *   address: Address,
  *   alternateAddress?: Address,
@@ -102,11 +104,18 @@ interface OpgApiServiceInterface
     /**
      * @param Address $data
      */
+    public function addSelectedAddress(string $uuid, array $data): void;
+
+    /**
+     * @param Address $data
+     */
     public function addSelectedAltAddress(string $uuid, array $data): void;
 
     public function updateCaseSetDocumentComplete(string $uuid): void;
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
+
+    public function updateCaseSetName(string $uuid, string $firstName, string $lastName): void;
 
     /**
      * @param array{

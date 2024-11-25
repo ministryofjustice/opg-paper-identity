@@ -19,12 +19,20 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     private SiriusApiService&MockObject $siriusApiService;
     private VoucherMatchLpaActorHelper&MockObject $voucherMatchMock;
     private string $uuid;
+    private array $routes;
 
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../config/application.config.php');
 
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
+        $this->routes = [
+            "confirm" => "vouching/confirm-vouching",
+            "howConfirm" => "vouching/how-will-you-confirm",
+            "name" => "vouching/voucher-name",
+            "dob" => "vouching/voucher-dob",
+            "postcode" => "vouching/voucher-postcode"
+        ];
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
@@ -95,7 +103,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/vouching/confirm-vouching", 'GET');
+        $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(VouchingFlowController::class);
@@ -114,7 +122,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/vouching/confirm-vouching", 'POST', []);
+        $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'POST', []);
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(VouchingFlowController::class);
@@ -137,12 +145,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/vouching/confirm-vouching", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'POST', [
             'eligibility' => "eligibility_confirmed",
             'declaration' => "declaration_confirmed"
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf('/%s/vouching/how-will-you-confirm', $this->uuid));
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['howConfirm']}");
     }
 
     public function testConfirmVouchingTryDifferentRoute(): void
@@ -156,7 +164,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/vouching/confirm-vouching", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'POST', [
             'tryDifferent' => "Try a different method",
         ]);
         $this->assertResponseStatusCode(302);
@@ -182,7 +190,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockServiceAvailability);
 
-        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'GET');
+        $this->dispatch("/$this->uuid/{$this->routes['howConfirm']}", 'GET');
 
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -220,7 +228,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 ]
             );
 
-        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['howConfirm']}", 'POST', [
             'id_method' => IdMethodEnum::PostOffice->value,
         ]);
 
@@ -252,12 +260,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 ]
             );
 
-        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['howConfirm']}", 'POST', [
             'id_method' => 'TELEPHONE',
         ]);
 
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/$this->uuid/vouching/voucher-name");
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['name']}");
     }
 
     public function testHowWillYouConfirmNoOptionSelected(): void
@@ -279,7 +287,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockServiceAvailability);
 
-        $this->dispatch("/$this->uuid/vouching/how-will-you-confirm", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['howConfirm']}", 'POST', [
             'id_method' => null
         ]);
 
@@ -300,7 +308,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/vouching/voucher-name", 'GET');
+        $this->dispatch("/$this->uuid/{$this->routes['name']}", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(VouchingFlowController::class);
@@ -331,18 +339,18 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->voucherMatchMock
             ->expects($this->exactly(2))
-            ->method("checkNameMatch")
+            ->method("checkMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], []],
-                ["firstName", "lastName", ["lpaData" => "two"], []]
+                [["lpaData" => "one"], "firstName", "lastName", null, []],
+                [["lpaData" => "two"], "firstName", "lastName", null, []]
             ]);
 
-        $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['name']}", 'POST', [
             "firstName" => "firstName",
             "lastName" => "lastName",
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-name', $this->uuid));
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['dob']}");
     }
 
     public function testVoucherNameMatchWarning(): void
@@ -368,15 +376,22 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->voucherMatchMock
             ->expects($this->exactly(2))
-            ->method("checkNameMatch")
+            ->method("checkMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], [LpaActorTypes::DONOR->value]],
-                ["firstName", "lastName", ["lpaData" => "two"], []]
+                [["lpaData" => "one"], "firstName", "lastName", null, [
+                    [
+                        "firstName" => "firstName",
+                        "lastName" => "lastName",
+                        "dob" => "dob",
+                        "type" => LpaActorTypes::DONOR->value
+                    ]
+                ]],
+                [["lpaData" => "two"], "firstName", "lastName", null, []]
             ]);
 
-        $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['name']}", 'POST', [
             "firstName" => "firstName",
-            "lastName" => "lastName",
+            "lastName" => "lastName"
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains(
@@ -389,7 +404,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     public function testVoucherNameMatchContinueAfterWarning(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
 
         $this
             ->opgApiServiceMock
@@ -410,18 +424,159 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->voucherMatchMock
             ->expects($this->exactly(2))
-            ->method("checkNameMatch")
+            ->method("checkMatch")
             ->willReturnMap([
-                ["firstName", "lastName", ["lpaData" => "one"], [LpaActorTypes::DONOR->value]],
-                ["firstName", "lastName", ["lpaData" => "two"], []]
+                [["lpaData" => "one"], "firstName", "lastName", null, [
+                    [
+                        "firstName" => "firstName",
+                        "lastName" => "lastName",
+                        "dob" => "dob",
+                        "type" => LpaActorTypes::DONOR->value
+                    ]
+                ]],
+                [["lpaData" => "two"], "firstName", "lastName", null, []]
             ]);
 
-        $this->dispatch("/$this->uuid/vouching/voucher-name", 'POST', [
+        $this->dispatch("/$this->uuid/{$this->routes['name']}", 'POST', [
             "firstName" => "firstName",
             "lastName" => "lastName",
             "continue-after-warning" => "continue"
         ]);
+
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo(sprintf('/%s/vouching/voucher-name', $this->uuid));
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['dob']}");
+    }
+
+    public function testVoucherDobPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/voucher_dob');
+    }
+
+    public function testVoucherDobRedirect(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["firstName"] = "firstName";
+        $mockResponseDataIdDetails["lastName"] = "lastName";
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkMatch")
+            ->willReturnMap([
+                [["lpaData" => "one"], "firstName", "lastName", "1980-1-1", []],
+                [["lpaData" => "two"], "firstName", "lastName", "1980-1-1", []]
+            ]);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
+            "dob_day" => "1",
+            "dob_month" => "1",
+            "dob_year" => "1980"
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['postcode']}");
+    }
+
+    public function testVoucherDobMatchError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["firstName"] = "firstName";
+        $mockResponseDataIdDetails["lastName"] = "lastName";
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiService
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnCallback(fn (string $lpa) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkMatch")
+            ->willReturnMap([
+                [["lpaData" => "one"], "firstName", "lastName", '1980-01-01', [
+                    [
+                        "firstName" => "firstName",
+                        "lastName" => "lastName",
+                        "dob" => "1980-01-01",
+                        "type" => LpaActorTypes::DONOR->value
+                    ]
+                ]],
+                [["lpaData" => "two"], "firstName", "lastName", '1980-01-01', []]
+            ]);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
+            "dob_day" => "01",
+            "dob_month" => "01",
+            "dob_year" => "1980"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains(
+            'div[name=donor_warning]',
+            'The person vouching cannot have the same name and date of birth as the donor.'
+        );
+    }
+
+    public function testVoucherDobUnderageError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
+            "dob_day" => "20",
+            "dob_month" => "11",
+            "dob_year" => "2024"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains(
+            'div[name=dob_warning]',
+            'The person vouching must be 18 years or older.'
+        );
     }
 }

@@ -13,7 +13,7 @@ use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
-use Application\Forms\CpAltAddress;
+use Application\Forms\AddressInput;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
@@ -42,7 +42,6 @@ class CPFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
-    public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
@@ -252,7 +251,7 @@ class CPFlowController extends AbstractActionController
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
-            $dateOfBirth = $this->formProcessorHelper->processDataForm($params->toArray());
+            $dateOfBirth = $this->formProcessorHelper->processDateForm($params->toArray());
             $params->set('date', $dateOfBirth);
             $form->setData($params);
 
@@ -500,7 +499,7 @@ class CPFlowController extends AbstractActionController
 
                 if (empty($response)) {
                     $form->setMessages([
-                        'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                        'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                     ]);
                 } else {
                     return $this->redirect()->toRoute(
@@ -513,7 +512,7 @@ class CPFlowController extends AbstractActionController
                 }
             } catch (PostcodeInvalidException $e) {
                 $form->setMessages([
-                    'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                    'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                 ]);
             }
         }
@@ -569,7 +568,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = $this->createForm(CpAltAddress::class);
+        $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['alternateAddress'] ?? []);
 
         if ($this->getRequest()->isPost()) {
