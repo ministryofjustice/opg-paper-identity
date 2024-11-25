@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
+use Application\Exceptions\PostcodeInvalidException;
 use Application\Forms\AddressInput;
 use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
@@ -265,13 +266,27 @@ class VouchingFlowController extends AbstractActionController
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $postcode = $this->formToArray($form)['postcode'];
 
-            return $this->redirect()->toRoute(
-                'root/voucher_select_address',
-                [
-                    'uuid' => $uuid,
-                    'postcode' => $postcode,
-                ]
-            );
+            try {
+                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $this->getRequest());
+
+                if (empty($response)) {
+                    $form->setMessages([
+                        'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
+                    ]);
+                } else {
+                    return $this->redirect()->toRoute(
+                        'root/voucher_select_address',
+                        [
+                            'uuid' => $uuid,
+                            'postcode' => $postcode,
+                        ]
+                    );
+                }
+            } catch (PostcodeInvalidException $e) {
+                $form->setMessages([
+                    'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
+                ]);
+            }
         }
 
         return $view->setTemplate('application/pages/vouching/enter_address');
@@ -327,6 +342,7 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = $this->createForm(AddressInput::class);
+        $form->setData($detailsData['address'] ?? []);
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();

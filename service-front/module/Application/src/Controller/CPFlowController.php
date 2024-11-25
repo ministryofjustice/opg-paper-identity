@@ -42,7 +42,6 @@ class CPFlowController extends AbstractActionController
     use FormBuilder;
 
     protected $plugins;
-    public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
@@ -500,7 +499,7 @@ class CPFlowController extends AbstractActionController
 
                 if (empty($response)) {
                     $form->setMessages([
-                        'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                        'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                     ]);
                 } else {
                     return $this->redirect()->toRoute(
@@ -513,7 +512,7 @@ class CPFlowController extends AbstractActionController
                 }
             } catch (PostcodeInvalidException $e) {
                 $form->setMessages([
-                    'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                    'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                 ]);
             }
         }
