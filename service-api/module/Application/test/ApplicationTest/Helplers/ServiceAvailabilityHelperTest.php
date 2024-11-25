@@ -115,7 +115,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'POST_OFFICE' => true,
                 'VOUCHING' => true,
                 'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => true,
+                'EXPERIAN' => false,
             ],
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .
@@ -131,7 +131,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'POST_OFFICE' => true,
                 'VOUCHING' => false,
                 'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => true,
+                'EXPERIAN' => false,
             ],
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
@@ -148,7 +148,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'POST_OFFICE' => true,
                 'VOUCHING' => true,
                 'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => true,
+                'EXPERIAN' => false,
             ],
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .

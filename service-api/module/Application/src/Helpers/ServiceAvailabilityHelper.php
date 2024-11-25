@@ -118,6 +118,7 @@ class ServiceAvailabilityHelper
             $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = false;
             $this->availableServices['DRIVING_LICENCE'] = false;
             $this->availableServices['PASSPORT'] = false;
+            $this->availableServices['EXPERIAN'] = false;
 
             if ($this->case->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;
