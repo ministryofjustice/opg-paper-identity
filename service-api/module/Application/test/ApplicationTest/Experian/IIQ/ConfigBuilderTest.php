@@ -65,6 +65,116 @@ class ConfigBuilderTest extends TestCase
         ], $saaConfig);
     }
 
+    public function testSAAFormatStop(): void
+    {
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'firstName' => 'Maria',
+            'lastName' => 'Williams',
+            'personType' => 'donor',
+            'dob' => '1960-01-01',
+            'address' => [
+                'line1' => '123 long street',
+                'line2' => 'Kings Cross',
+                'town' => 'London',
+                'postcode' => 'NW1 1SP',
+            ],
+            'fraudScore' => [
+                "decision" => "STOP",
+                "score" => 990
+            ]
+        ]);
+
+        $configBuilder = new ConfigBuilder();
+
+        $saaConfig = $configBuilder->buildSAARequest($caseData);
+
+        $this->assertEquals([
+            'Applicant' => [
+                'ApplicantIdentifier' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'Name' => [
+                    'Title' => '',
+                    'Forename' => 'Maria',
+                    'Surname' => 'Williams',
+                ],
+                'DateOfBirth' => [
+                    'CCYY' => '1960',
+                    'MM' => '01',
+                    'DD' => '01',
+                ],
+            ],
+            'ApplicationData' => [
+                'SearchConsent' => 'Y',
+                'Product' => '4 out of 4',
+            ],
+            'LocationDetails' => [
+                'LocationIdentifier' => '1',
+                'UKLocation' => [
+                    'HouseName' => '123 long street',
+                    'Street' => 'Kings Cross',
+                    'District' => '',
+                    'PostTown' => 'London',
+                    'Postcode' => 'NW1 1SP',
+                ],
+            ],
+        ], $saaConfig);
+    }
+
+    public function testSAAFormatRefer(): void
+    {
+        $caseData = CaseData::fromArray([
+            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+            'firstName' => 'Maria',
+            'lastName' => 'Williams',
+            'personType' => 'donor',
+            'dob' => '1960-01-01',
+            'address' => [
+                'line1' => '123 long street',
+                'line2' => 'Kings Cross',
+                'town' => 'London',
+                'postcode' => 'NW1 1SP',
+            ],
+            'fraudScore' => [
+                "decision" => "REFER",
+                "score" => 950
+            ]
+        ]);
+
+        $configBuilder = new ConfigBuilder();
+
+        $saaConfig = $configBuilder->buildSAARequest($caseData);
+
+        $this->assertEquals([
+            'Applicant' => [
+                'ApplicantIdentifier' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
+                'Name' => [
+                    'Title' => '',
+                    'Forename' => 'Maria',
+                    'Surname' => 'Williams',
+                ],
+                'DateOfBirth' => [
+                    'CCYY' => '1960',
+                    'MM' => '01',
+                    'DD' => '01',
+                ],
+            ],
+            'ApplicationData' => [
+                'SearchConsent' => 'Y',
+                'Product' => '4 out of 4',
+            ],
+            'LocationDetails' => [
+                'LocationIdentifier' => '1',
+                'UKLocation' => [
+                    'HouseName' => '123 long street',
+                    'Street' => 'Kings Cross',
+                    'District' => '',
+                    'PostTown' => 'London',
+                    'Postcode' => 'NW1 1SP',
+                ],
+            ],
+        ], $saaConfig);
+    }
+
     public function testRTQFormat(): void
     {
         $configBuilder = new ConfigBuilder();
