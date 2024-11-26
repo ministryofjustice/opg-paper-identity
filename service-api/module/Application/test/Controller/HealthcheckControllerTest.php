@@ -194,7 +194,7 @@ class HealthcheckControllerTest extends TestCase
 
         $responseNoDec = [
             'data' => [
-                "EXPERIAN" => true,
+                "EXPERIAN" => false,
                 "NATIONAL_INSURANCE_NUMBER" => false,
                 "DRIVING_LICENCE" => false,
                 "PASSPORT" => false,
