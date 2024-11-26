@@ -345,6 +345,9 @@ class VouchingFlowController extends AbstractActionController
         $form->setData($detailsData['address'] ?? []);
 
         if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+
             if ($form->isValid()) {
                 $addressMatch = false;
                 foreach ($detailsData['lpas'] as $lpa) {
