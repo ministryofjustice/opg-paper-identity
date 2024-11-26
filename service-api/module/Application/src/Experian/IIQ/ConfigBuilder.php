@@ -46,23 +46,21 @@ class ConfigBuilder
             throw new RuntimeException('Fraudscore has not been set');
         }
 
-        if (
-            $case->fraudScore->decision === 'STOP' ||
-            $case->fraudScore->decision === 'REFER'
-        ) {
-                $saaConfig['ApplicationData'] = [
-                    'SearchConsent' => 'Y',
-                    'Product' => '4 out of 4',
-                ];
-        } elseif (
-            $case->fraudScore->decision === 'CONTINUE' ||
-            $case->fraudScore->decision === 'ACCEPT'
-        ) {
-                $saaConfig['ApplicationData'] = [
-                    'SearchConsent' => 'Y',
-                ];
-        } else {
-            throw new RuntimeException('Fraudscore result is not recognised');
+        $decision = $case->fraudScore->decision;
+
+        $saaConfig['ApplicationData'] = match ($decision) {
+            'STOP', 'REFER' => [
+                'SearchConsent' => 'Y',
+                'Product' => '4 out of 4',
+            ],
+            'CONTINUE', 'ACCEPT' => [
+                'SearchConsent' => 'Y',
+            ],
+            default =>  null
+        };
+
+        if (is_null($saaConfig['ApplicationData'])) {
+            throw new RuntimeException('Fraudscore result is not recognised: ' . $case->fraudScore->decision);
         }
 
         if (! isset($case->address)) {
