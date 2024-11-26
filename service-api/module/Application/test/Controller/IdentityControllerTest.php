@@ -152,7 +152,9 @@ class IdentityControllerTest extends TestCase
                 'lastName' => 'lastName',
                 'dob' => '1980-10-10',
                 'address' => [
-                    'address 1, address 2',
+                    'line1' => 'address 1',
+                    'line2' => 'address 2',
+                    'postcode' => 'GH67 7HJ'
                 ]
             ],
             'lpas' => [
@@ -164,8 +166,8 @@ class IdentityControllerTest extends TestCase
 
         return [
             [$validData, Response::STATUS_CODE_200],
-            [array_merge($validData, ['lastName' => '']), Response::STATUS_CODE_400],
-            [array_merge($validData, ['dob' => '11-11-2020']), Response::STATUS_CODE_400],
+            [array_replace_recursive($validData, ['claimedIdentity' => ['lastName' => '']]), Response::STATUS_CODE_400],
+            [array_replace_recursive($validData, ['claimedIdentity' => ['dob' => '11-11-2020']]), Response::STATUS_CODE_400],
             [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],
         ];
     }
@@ -312,15 +314,17 @@ class IdentityControllerTest extends TestCase
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -399,15 +403,17 @@ class IdentityControllerTest extends TestCase
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -537,15 +543,17 @@ class IdentityControllerTest extends TestCase
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street"
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street"
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",

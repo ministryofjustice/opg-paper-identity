@@ -14,7 +14,10 @@ use Laminas\Form\Annotation;
  */
 class ClaimedIdentity extends Entity
 {
-    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
+    #[Annotation\Required(false)]
+    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
+        Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
+    ]])]
     public ?string $dob = null;
 
     #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]

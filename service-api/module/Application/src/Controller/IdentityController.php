@@ -524,7 +524,7 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem('Case does not exist'));
         }
 
-        if (! $case->address) {
+        if (! $case->claimedIdentity->address) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Case does not have an associated address'));
         }

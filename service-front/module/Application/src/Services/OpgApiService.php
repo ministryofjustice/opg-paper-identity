@@ -184,12 +184,14 @@ class OpgApiService implements OpgApiServiceInterface
             ];
         } else {
             $data = [
-                'firstName' => $firstname,
-                'lastName' => $lastname,
-                'dob' => $dob,
+                'claimedIdentity' => [
+                    'firstName' => $firstname,
+                    'lastName' => $lastname,
+                    'dob' => $dob,
+                    'address' => $address,
+                ],
                 'personType' => $personType,
-                'lpas' => $lpas,
-                'address' => $address,
+                'lpas' => $lpas
             ];
         }
 
