@@ -41,8 +41,10 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams'
+            ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
@@ -75,8 +77,10 @@ class SessionStatusServiceTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'lpas' => ['M-TIU9-0TJU-84TU'],
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams'
+            ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
@@ -98,8 +102,10 @@ class SessionStatusServiceTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'lpas' => ['M-TIU9-0TJU-84TU'],
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams',
+            ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
@@ -145,8 +151,10 @@ class SessionStatusServiceTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'lpas' => ['M-TIU9-0TJU-84TU'],
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams',
+            ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
@@ -209,8 +217,10 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams',
+            ],
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [

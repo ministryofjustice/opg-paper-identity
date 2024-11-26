@@ -88,12 +88,13 @@ class SessionConfig
                 ]
             ]
         ];
+
         $sessionConfig["resources"] = [
             "applicant_profile" => [
-                "given_names" => $case->firstName,
-                "family_name" => $case->lastName,
-                "date_of_birth" => $case->dob,
-                "structured_postal_address" => $this->addressFormatted($case->address),
+                "given_names" => $case->claimedIdentity->firstName,
+                "family_name" => $case->claimedIdentity->lastName,
+                "date_of_birth" => $case->claimedIdentity->dob,
+                "structured_postal_address" => $this->addressFormatted($case->claimedIdentity->address),
             ]
         ];
 

@@ -159,16 +159,18 @@ class ServiceAvailabilityHelperTest extends TestCase
         $case = [
             "id" => "b6aa3ee6-cd06-42b0-82c3-77051a4a4e34",
             "personType" => "donor",
-            "firstName" => "Lee",
-            "lastName" => "Manthrope",
-            "dob" => "1986-09-03",
-            "address" => [
-                "line1" => "18 BOURNE COURT",
-                "line2" => "",
-                "line3" => "",
-                "town" => "Southamption",
-                "postcode" => "SO15 3AA",
-                "country" => "GB"
+            "claimedIdentity" => [
+                "firstName" => "Lee",
+                "lastName" => "Manthrope",
+                "dob" => "1986-09-03",
+                "address" => [
+                    "line1" => "18 BOURNE COURT",
+                    "line2" => "",
+                    "line3" => "",
+                    "town" => "Southamption",
+                    "postcode" => "SO15 3AA",
+                    "country" => "GB"
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3"
