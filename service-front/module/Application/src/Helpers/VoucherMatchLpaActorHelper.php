@@ -131,9 +131,10 @@ class VoucherMatchLpaActorHelper
         $addressesAsStrings = array_values(AddressProcessorHelper::stringifyAddresses([$donorAddress, $address]));
 
         //if the addresses are identical, including case, than `stringifyAddresses` will return only one value
-        $identical = count($addressesAsStrings) === 1;
         //else we check for a match ignoring case
-        $ignoreCaseIdentical = strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1]);
-        return ( $identical || $ignoreCaseIdentical);
+        return (
+            count($addressesAsStrings) === 1 ||
+            strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1])
+        );
     }
 }
