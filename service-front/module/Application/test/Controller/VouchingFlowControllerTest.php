@@ -752,10 +752,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
         $mockResponseDataIdDetails["address"] = $this->fakeAddress;
 
-        $address = $this->fakeAddress;
-        $address["line2"] = null;
-        $address["line3"] = null;
-
         $this
             ->opgApiServiceMock
             ->expects(self::once())

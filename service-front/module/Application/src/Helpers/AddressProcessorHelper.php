@@ -11,10 +11,6 @@ use Application\Contracts\OpgApiServiceInterface;
  */
 class AddressProcessorHelper
 {
-    /**
-     * @psalm-suppress UnusedProperty
-     * Used dynamically in processAddress
-     */
     public static array $addressTypes = [
         'lpaStoreAddressType' => [
             'line1' => 'line1',
