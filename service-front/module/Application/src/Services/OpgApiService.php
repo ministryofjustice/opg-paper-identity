@@ -72,6 +72,14 @@ class OpgApiService implements OpgApiServiceInterface
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+
+            $response['firstName'] = $response['claimedIdentity']['firstName'];
+            $response['lastName'] = $response['claimedIdentity']['lastName'];
+            $response['address'] = $response['claimedIdentity']['address'];
+            $response['dob'] = $response['claimedIdentity']['dob'];
+
+            unset($response['claimedIdentity']);
+
             if ($response['address']) {
                 $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
             }

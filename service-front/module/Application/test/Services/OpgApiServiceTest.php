@@ -37,6 +37,27 @@ class OpgApiServiceTest extends TestCase
     public static function detailsData(): array
     {
         $successMockResponseData = [
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1943-05-01",
+                "address" => [
+                    'line1' => '1 Street',
+                    'line2' => '',
+                    'line3' => '',
+                    'town' => 'Middleton',
+                    'postcode' => 'LA1 2XN',
+                    'country' => 'DD',
+                ]
+            ],
+            "personType" => "donor",
+            "lpas" => [
+                "PA M-XYXY-YAGA-35G3",
+                "PW M-VGAS-OAGA-34G9",
+            ],
+        ];
+
+        $expectedReturnData = [
             "firstName" => "Mary Ann",
             "lastName" => "Chapman",
             "dob" => "1943-05-01",
@@ -54,6 +75,7 @@ class OpgApiServiceTest extends TestCase
                 "PW M-VGAS-OAGA-34G9",
             ],
         ];
+
         $successMock = new MockHandler([
             new Response(200, [], json_encode($successMockResponseData)),
         ]);
@@ -75,7 +97,7 @@ class OpgApiServiceTest extends TestCase
         return [
             [
                 $successClient,
-                $successMockResponseData,
+                $expectedReturnData,
                 null,
             ],
             [
