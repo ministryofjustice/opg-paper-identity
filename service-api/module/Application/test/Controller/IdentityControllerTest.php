@@ -85,11 +85,13 @@ class IdentityControllerTest extends TestCase
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'personType' => 'donor',
-                'firstName' => '',
-                'lastName' => '',
-                'dob' => '',
+                'claimedIdentity' => [
+                    'firstName' => '',
+                    'lastName' => '',
+                    'dob' => '',
+                    'address' => [],
+                ],
                 'lpas' => [],
-                'address' => [],
             ]));
 
         $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
@@ -145,17 +147,19 @@ class IdentityControllerTest extends TestCase
     public static function caseData(): array
     {
         $validData = [
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'personType' => 'donor',
-            'dob' => '1980-10-10',
+            'claimedIdentity' => [
+                'firstName' => 'firstName',
+                'lastName' => 'lastName',
+                'dob' => '1980-10-10',
+                'address' => [
+                    'address 1, address 2',
+                ]
+            ],
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
                 'M-VGAS-OAGA-34G9',
             ],
-            'address' => [
-                'address 1, address 2',
-            ],
+            'personType' => 'donor',
         ];
 
         return [

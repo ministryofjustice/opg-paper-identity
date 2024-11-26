@@ -532,20 +532,21 @@ class IdentityController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         $addressDto = new AddressDTO(
-            $case->address['line1'],
-            $case->address['line2'] ?? "",
-            $case->address['line3'] ?? "",
-            $case->address['town'] ?? "",
-            $case->address['postcode'],
-            $case->address['country'] ?? "",
+            $case->claimedIdentity->address['line1'],
+            $case->claimedIdentity->address['line2'] ?? "",
+            $case->claimedIdentity->address['line3'] ?? "",
+            $case->claimedIdentity->address['town'] ?? "",
+            $case->claimedIdentity->address['postcode'],
+            $case->claimedIdentity->address['country'] ?? "",
         );
 
         $dto = new RequestDTO(
-            $case->firstName,
-            $case->lastName,
-            $case->dob,
+            $case->claimedIdentity->firstName,
+            $case->claimedIdentity->lastName,
+            $case->claimedIdentity->dob,
             $addressDto
         );
+
         $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
 
         $this->dataHandler->updateCaseData(

@@ -435,11 +435,12 @@ class YotiControllerTest extends TestCase
                 ]
             ]
         ];
+
         $sessionConfig["resources"] = [
             "applicant_profile" => [
-                "given_names" => $case->firstName,
-                "family_name" => $case->lastName,
-                "date_of_birth" => $case->dob,
+                "given_names" => $case->claimedIdentity->firstName,
+                "family_name" => $case->claimedIdentity->lastName,
+                "date_of_birth" => $case->claimedIdentity->dob,
                 "structured_postal_address" => [],
             ]
         ];
