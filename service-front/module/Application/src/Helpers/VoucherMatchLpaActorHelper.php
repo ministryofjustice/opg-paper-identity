@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Enums\LpaActorTypes;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Services\SiriusApiService;
 
 /**
@@ -107,5 +108,30 @@ class VoucherMatchLpaActorHelper
             });
         }
         return $matches;
+    }
+
+    public function checkAddressDonorMatch(array $lpasData, array $address): bool
+    {
+        if (! empty($lpasData["opg.poas.lpastore"]["donor"])) {
+            $donorAddress = AddressProcessorHelper::processAddress(
+                $lpasData["opg.poas.lpastore"]["donor"]["address"],
+                'lpaStoreAddressType'
+            );
+        } elseif (! empty($lpasData["opg.poas.sirius"])) {
+            $donorAddress = AddressProcessorHelper::processAddress(
+                $lpasData["opg.poas.sirius"]["donor"]["address"],
+                'siriusAddressType'
+            );
+        }
+
+        if (! isset($donorAddress)) {
+            return false;
+        }
+
+        $addressesAsStrings = array_values(AddressProcessorHelper::stringifyAddresses([$donorAddress, $address]));
+
+        //if the addresses are identical, including case, than `stringifyAddresses` will return only one value
+        //else we check for a match ignoring case
+        return count($addressesAsStrings) === 1 || strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1]);
     }
 }
