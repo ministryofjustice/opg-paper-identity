@@ -1,0 +1,42 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+
+{% block content %}
+    <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
+        {% block title %}
+            What is their home address?
+        {% endblock %}
+    </h1>
+    <form method="POST" action="./select-address">
+        <div class="govuk-form-group {% if form.get('address_json').messages %}govuk-form-group--error{% endif %}">
+
+            {% if form.get('address_json').messages %}
+                <p id="postcode-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('address_json').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            <div class="govuk-form-group">
+                <label for="addresses" class="govuk-label">Select address</label>
+                <select class="govuk-select" id="addresses" name="address_json">
+                    <option value="" selected>{{ addresses_count }} addresses found</option>
+
+                    {% for index, address in addresses %}
+                        <option value="{{ index }}">{{ address }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <p id="different-method-link">
+                <a href="/{{ details_data['id'] }}/vouching/enter-address-manual" class="govuk-link">
+                    The address is not in the list
+                </a>
+            </p>
+            <input type="hidden" name="address_search_response" value="{{ address_search_response }}">
+        </div>
+        <input class="govuk-button" data-module="govuk-button" type="submit" value="Continue"/>
+    </form>
+{% endblock %}

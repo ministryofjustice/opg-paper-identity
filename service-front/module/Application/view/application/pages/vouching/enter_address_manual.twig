@@ -1,0 +1,98 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+{% block content %}
+{% if address_match %}
+    <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+        <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+            <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z" />
+        </svg>
+        <span class="govuk-visually-hidden">Error:</span>
+        <div class="moj-banner__message" name="address_warning" id="address_warning">The person vouching cannot live at the same address the donor.</div>
+    </div>
+{% endif %}
+<h1 class="govuk-heading-xl govuk-!-width-two-thirds">
+    {% block title %}
+        What is their home address?
+    {% endblock %}
+</h1>
+<form method="POST" action="">
+    <div class="govuk-form-group {% if form.get('line1').messages %}govuk-form-group--error{% endif %}">
+        {% if form.get('line1').messages %}
+            <p id="line1-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ form.get('line1').messages | join(', ', ' and ') }}
+            </p>
+        {% endif %}
+        <label for="line1" class="govuk-label">Address line 1</label>
+        <input
+                class="govuk-input govuk-!-width-one-third {% if form.get('line1').messages %}govuk-input--error{% endif %}"
+                id="line1" name="line1" type="text"
+                value="{{ form.get('line1').value }}"
+        />
+    </div>
+
+    <div class="govuk-form-group">
+        <label for="line2" class="govuk-label">Address line 2 (optional)</label>
+        <input
+                class="govuk-input govuk-!-width-one-third"
+                id="line2" name="line2" type="text"
+                value="{{ form.get('line2').value }}"
+        />
+    </div>
+
+    <div class="govuk-form-group">
+        <label for="line3" class="govuk-label">Address line 3 (optional)</label>
+        <input
+                class="govuk-input govuk-!-width-one-third"
+                id="line3" name="line3" type="text"
+                value="{{ form.get('line3').value }}"
+        />
+    </div>
+
+    <div class="govuk-form-group {% if form.get('town').messages %}govuk-form-group--error{% endif %}">
+        {% if form.get('town').messages %}
+            <p id="town-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ form.get('town').messages | join(', ', ' and ') }}
+            </p>
+        {% endif %}
+        <label for="town" class="govuk-label">Town or City</label>
+        <input
+                class="govuk-input govuk-!-width-one-third {% if form.get('town').messages %}govuk-input--error{% endif %}"
+                id="town" name="town" type="text"
+                value="{{ form.get('town').value }}"
+        />
+    </div>
+
+    <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
+        {% if form.get('postcode').messages %}
+            <p id="postcode-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ form.get('postcode').messages | join(', ', ' and ') }}
+            </p>
+        {% endif %}
+        <label for="postcode" class="govuk-label">Postcode</label>
+        <input
+                class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
+                id="postcode" name="postcode" type="text"
+                value="{{ form.get('postcode').value }}"
+        />
+    </div>
+
+    <div class="govuk-form-group">
+        <label for="country" class="govuk-label">Country</label>
+        <select class="govuk-select" id="country" name="country">
+            <option value="uk" {% if form.get('country').value == "uk" %}selected{% endif %}>United Kingdom</option>
+            <option value="GB" {% if form.get('country').value == "GB" %}selected{% endif %}>GB</option>
+            <option value="france" {% if form.get('country').value == "france" %}selected{% endif %}>France</option>
+            <option value="spain" {% if form.get('country').value == "spain" %}selected{% endif %}>Spain</option>
+            <option value="ireland" {% if form.get('country').value == "ireland" %}selected{% endif %}>Ireland</option>
+        </select>
+    </div>
+
+    <input type="submit" class="govuk-button" data-module="govuk-button" value="Continue"/>
+</form>
+{% endblock %}

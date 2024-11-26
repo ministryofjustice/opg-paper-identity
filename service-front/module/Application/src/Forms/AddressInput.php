@@ -22,12 +22,16 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
  * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class CpAltAddress implements FormTemplate
+class AddressInput implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(AddressFieldValidator::class)]
+    #[Annotation\Validator(AddressFieldValidator::class, options: [
+        "messages" => [
+            AddressFieldValidator::EMPTY  => "Enter an address"
+        ]
+    ])]
     public mixed $line1;
     /**
      * @psalm-suppress PossiblyUnusedProperty
@@ -41,7 +45,11 @@ class CpAltAddress implements FormTemplate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(AddressFieldValidator::class)]
+    #[Annotation\Validator(AddressFieldValidator::class, options: [
+        "messages" => [
+            AddressFieldValidator::EMPTY  => "Enter a town or city."
+        ]
+    ])]
     public mixed $town;
 
     /**
