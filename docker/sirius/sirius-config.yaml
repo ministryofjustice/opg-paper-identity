@@ -34,6 +34,12 @@ resources:
       statusCode: 200
       file: data/donorStop.json
 
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35F0"
+    method: get
+    response:
+      statusCode: 200
+      file: data/donorRefer.json
+
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0000"
     method: get
     response:
