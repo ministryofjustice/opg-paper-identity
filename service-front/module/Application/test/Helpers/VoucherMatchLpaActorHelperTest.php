@@ -28,12 +28,11 @@ class VoucherMatchLpaActorHelperTest extends TestCase
     /**
      * @dataProvider addressLpaData
      */
-    public function checkAddressMatch(array $address, array $lpasData, $expected_result): void
+    public function testCheckAddressDonorMatch(array $lpasData, array $address, bool $expected_result): void
     {
         $matchLpaActor = new VoucherMatchLpaActorHelper();
         $result = $matchLpaActor->checkAddressDonorMatch($lpasData, $address);
         $this->assertEquals($expected_result, $result);
-
     }
 
     public static function nameDobLpaData(): array
@@ -240,22 +239,38 @@ class VoucherMatchLpaActorHelperTest extends TestCase
             ],
             [
                 "lpasData" => [
-                    ["opg.poas.lpastore"]["donor"]["address"] => $addressOne,
-                    ["opg.poas.sirius"]["donor"]["address"] => $addressTwoSirius
+                    "opg.poas.lpastore" => [
+                        "donor" => [
+                            "address" => $addressOne,
+                        ]
+                    ],
+                    "opg.poas.sirius" => [
+                        "donor" => [
+                            "address" => $addressTwoSirius
+                        ],
+                    ],
                 ],
                 "address" => $addressOne,
                 "expected_result" => true
             ],
             [
                 "lpasData" => [
-                    ["opg.poas.sirius"]["donor"]["address"] => $addressOneSirius
+                    "opg.poas.sirius" => [
+                        "donor" => [
+                            "address" => $addressOneSirius
+                        ],
+                    ],
                 ],
                 "address" => $addressOne,
                 "expected_result" => true
             ],
             [
                 "lpasData" => [
-                    ["opg.poas.lpastore"]["donor"]["address"] => $addressOne
+                    "opg.poas.lpastore" => [
+                        "donor" => [
+                            "address" => $addressOne,
+                        ]
+                    ],
                 ],
                 "address" => $addressTwo,
                 "expected_result" => false
