@@ -42,9 +42,26 @@ class ConfigBuilder
             'DD' => $dob->format('d'),
         ];
 
-        $saaConfig['ApplicationData'] = [
-            'SearchConsent' => 'Y',
-        ];
+        if (! isset($case->fraudScore)) {
+            throw new RuntimeException('Fraudscore has not been set');
+        }
+
+        $decision = $case->fraudScore->decision;
+
+        $saaConfig['ApplicationData'] = match ($decision) {
+            'STOP', 'REFER' => [
+                'SearchConsent' => 'Y',
+                'Product' => '4 out of 4',
+            ],
+            'CONTINUE', 'ACCEPT' => [
+                'SearchConsent' => 'Y',
+            ],
+            default =>  null
+        };
+
+        if (is_null($saaConfig['ApplicationData'])) {
+            throw new RuntimeException('Fraudscore result is not recognised: ' . $case->fraudScore->decision);
+        }
 
         if (! isset($case->address)) {
             throw new RuntimeException('Address has not been set');
