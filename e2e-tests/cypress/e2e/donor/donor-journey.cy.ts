@@ -185,4 +185,69 @@ describe("Identify a Donor", () => {
 
     cy.contains(".moj-banner", "Identity check failed");
   });
+
+  it("passes on STOP or REFER if you get four out of four KBVs right", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+
+    cy.contains("How will you confirm your identity?");
+    cy.get("label").contains("National insurance number").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Do the details match the ID document?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Which LPAs should this identity check apply to?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("National insurance number");
+    cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Identity document verified");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Select answer");
+
+    cy.selectKBVAnswer({ correct: true });
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.selectKBVAnswer({ correct: true });
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.selectKBVAnswer({ correct: true });
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains(".moj-banner", "Identity check passed");
+  });
+
+  it("fails on STOP or REFER if you get any KBV wrong", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35F0");
+
+    cy.contains("How will you confirm your identity?");
+    cy.get("label").contains("National insurance number").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Do the details match the ID document?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Which LPAs should this identity check apply to?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("National insurance number");
+    cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Identity document verified");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Select answer");
+
+    cy.selectKBVAnswer({ correct: false });
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.selectKBVAnswer({ correct: true });
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains(".moj-banner", "Identity check failed");
+  });
 });

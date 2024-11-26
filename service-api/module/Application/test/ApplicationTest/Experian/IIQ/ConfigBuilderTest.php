@@ -25,6 +25,10 @@ class ConfigBuilderTest extends TestCase
                 'town' => 'London',
                 'postcode' => 'NW1 1SP',
             ],
+            'fraudScore' => [
+                "decision" => "ACCEPT",
+                "score" => 265
+            ]
         ]);
 
         $configBuilder = new ConfigBuilder();
@@ -70,6 +74,10 @@ class ConfigBuilderTest extends TestCase
                 'urn' => 'test UUID',
                 'authRefNo' => 'abc',
             ]),
+            'fraudScore' => [
+                "decision" => "ACCEPT",
+                "score" => 265
+            ]
         ]);
 
         $rtqConfig = $configBuilder->buildRTQRequest([
