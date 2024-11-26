@@ -42,14 +42,16 @@ class DataWriteHandlerTest extends TestCase
     {
         $case = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'firstName' => 'Maria',
-            'lastName' => 'Neldon',
             'personType' => 'donor',
-            'dob' => '1980-01-01',
-            'address' => [
-                '1 Street',
-                'Town',
-                'Postcode'
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Neldon',
+                'dob' => '1980-01-01',
+                'address' => [
+                    '1 Street',
+                    'Town',
+                    'Postcode'
+                ]
             ],
             'lpas' => []
         ]);
@@ -64,8 +66,8 @@ class DataWriteHandlerTest extends TestCase
                     $input = $params[0];
                     $this->assertEquals('cases', $input['TableName']);
                     $this->assertArrayHasKey('Item', $input);
-                    $this->assertEquals(['S' => 'Maria'], $input['Item']['firstName']);
-                    $this->assertEquals(['S' => 'Neldon'], $input['Item']['lastName']);
+                    $this->assertEquals(['S' => 'Maria'], $input['Item']['claimedIdentity']['M']['firstName']);
+                    $this->assertEquals(['S' => 'Neldon'], $input['Item']['claimedIdentity']['M']['lastName']);
                     return true;
                 })
             );
@@ -87,15 +89,17 @@ class DataWriteHandlerTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'firstName' => 'Maria',
-            'lastName' => 'Neldon',
-            'personType' => 'donor',
-            'dob' => '1980-01-01',
-            'address' => [
-                '1 Street',
-                'Town',
-                'Postcode'
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Neldon',
+                'dob' => '1980-01-01',
+                'address' => [
+                    '1 Street',
+                    'Town',
+                    'Postcode'
+                ]
             ],
+            'personType' => 'donor',
             'lpas' => []
         ]);
 

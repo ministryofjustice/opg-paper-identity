@@ -83,10 +83,12 @@ class YotiControllerTest extends TestCase
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'personType' => 'donor',
-            'firstName' => '',
-            'lastName' => '',
+            'claimedIdentity' => [
+                'firstName' => '',
+                'lastName' => '',
+                'address' => []
+            ],
             'yotiSessionId' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1dd',
-            'address' => [],
             'counterService' => [
                 'notificationsAuthToken' => ''
             ]
@@ -153,10 +155,14 @@ class YotiControllerTest extends TestCase
         $uuid = 'test-uuid';
         $caseData = CaseData::fromArray([
             'id' => 'test-uuid',
-            'firstName' => 'test',
-            'lastName' => 'opg',
-            'dob' => '1980-01-01',
-            'address' => ['123 upper road'],
+            'claimedIdentity' => [
+                'firstName' => 'test',
+                'lastName' => 'opg',
+                'dob' => '1980-01-01',
+                'address' => [
+                    'line1' => '123 upper road'
+                ],
+            ],
             'personType' => 'donor',
             "idMethodIncludingNation" => [
                 'id_method' => "PASSPORT",
@@ -226,11 +232,13 @@ class YotiControllerTest extends TestCase
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'personType' => 'donor',
-                'firstName' => '',
-                'lastName' => '',
-                'dob' => '',
+                'claimedIdentity' => [
+                    'firstName' => '',
+                    'lastName' => '',
+                    'dob' => '',
+                    'address' => [],
+                ],
                 'lpas' => [],
-                'address' => [],
                 'counterService' => [
                     'notificationsAuthToken' => $bearerToken
                 ]
@@ -267,11 +275,13 @@ class YotiControllerTest extends TestCase
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'personType' => 'donor',
-                'firstName' => '',
-                'lastName' => '',
-                'dob' => '',
+                'claimedIdentity' => [
+                    'firstName' => '',
+                    'lastName' => '',
+                    'dob' => '',
+                    'address' => [],
+                ],
                 'lpas' => [],
-                'address' => [],
                 'counterService' => [
                     'notificationsAuthToken' => $bearerToken
                 ]
@@ -435,11 +445,12 @@ class YotiControllerTest extends TestCase
                 ]
             ]
         ];
+
         $sessionConfig["resources"] = [
             "applicant_profile" => [
-                "given_names" => $case->firstName,
-                "family_name" => $case->lastName,
-                "date_of_birth" => $case->dob,
+                "given_names" => $case->claimedIdentity->firstName,
+                "family_name" => $case->claimedIdentity->lastName,
+                "date_of_birth" => $case->claimedIdentity->dob,
                 "structured_postal_address" => [],
             ]
         ];

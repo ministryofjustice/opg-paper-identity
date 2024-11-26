@@ -110,15 +110,17 @@ class HealthcheckControllerTest extends TestCase
         $case = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -142,15 +144,17 @@ class HealthcheckControllerTest extends TestCase
         $caseNoDec = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
