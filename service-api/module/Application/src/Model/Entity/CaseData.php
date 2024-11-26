@@ -12,7 +12,6 @@ use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
-use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
 
 /**
@@ -37,6 +36,7 @@ class CaseData implements JsonSerializable
      * @var ?ClaimedIdentity
      */
     #[Annotation\Required(false)]
+    #[Annotation\ComposedObject(ClaimedIdentity::class)]
     public ?ClaimedIdentity $claimedIdentity = null;
 
     /**

@@ -8,6 +8,7 @@ use Exception;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\NotEmpty;
 use Laminas\Form\Annotation;
+use Laminas\Validator\Regex;
 
 /**
  * DTO for holding claimed identity data

@@ -33,6 +33,16 @@ class CaseDataTest extends TestCase
     public static function isValidDataProvider(): array
     {
         $validData = [
+            'claimedIdentity' => [
+                'firstName' => 'first',
+                'lastName' => 'last',
+                'dob'   => '1966-10-10',
+                'address' => [
+                    'address line 1',
+                    'country',
+                    'post code'
+                ]
+            ],
             'lpas' => [
                 'M-AGAS-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
