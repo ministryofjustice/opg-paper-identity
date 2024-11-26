@@ -344,22 +344,20 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address'] ?? []);
 
-        if ($this->getRequest()->isPost()) {
-            if ($form->isValid()) {
-                $addressMatch = false;
-                foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $addressMatch = $addressMatch || $this->voucherMatchLpaActorHelper->checkAddressDonorMatch(
-                        $lpasData,
-                        $this->formToArray($form)
-                    );
-                }
-                if ($addressMatch) {
-                    $view->setVariable('address_match', true);
-                } else {
-                    $this->opgApiService->addSelectedAddress($uuid, $this->formToArray($form));
-                    return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
-                }
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $addressMatch = false;
+            foreach ($detailsData['lpas'] as $lpa) {
+                $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                $addressMatch = $addressMatch || $this->voucherMatchLpaActorHelper->checkAddressDonorMatch(
+                    $lpasData,
+                    $this->formToArray($form)
+                );
+            }
+            if ($addressMatch) {
+                $view->setVariable('address_match', true);
+            } else {
+                $this->opgApiService->addSelectedAddress($uuid, $this->formToArray($form));
+                return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
             }
         }
 

@@ -16,7 +16,7 @@ class AddressFieldValidator extends AbstractValidator
 
     public function isValid($value): bool
     {
-        if (empty($value)) {
+        if (empty($value) || $value === '') {
             $this->error(self::EMPTY);
             return false;
         }
