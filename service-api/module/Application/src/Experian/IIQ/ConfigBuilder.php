@@ -26,16 +26,16 @@ class ConfigBuilder
             'ApplicantIdentifier' => $case->id,
             'Name' => [
                 'Title' => '',
-                'Forename' => $case->firstName,
-                'Surname' => $case->lastName,
+                'Forename' => $case->claimedIdentity?->firstName,
+                'Surname' => $case->claimedIdentity?->lastName,
             ],
         ];
 
-        if (! isset($case->dob)) {
+        if (! isset($case->claimedIdentity) || ! isset($case->claimedIdentity->dob)) {
             throw new RuntimeException('Cannot generate KBVs with date of birth');
         }
 
-        $dob = DateTime::createFromFormat('Y-m-d', $case->dob);
+        $dob = DateTime::createFromFormat('Y-m-d', $case->claimedIdentity->dob);
         $saaConfig['Applicant']['DateOfBirth'] = [
             'CCYY' => $dob->format('Y'),
             'MM' => $dob->format('m'),
@@ -63,17 +63,17 @@ class ConfigBuilder
             throw new RuntimeException('Fraudscore result is not recognised: ' . $case->fraudScore->decision);
         }
 
-        if (! isset($case->address)) {
+        if (! isset($case->claimedIdentity->address)) {
             throw new RuntimeException('Address has not been set');
         }
         $saaConfig['LocationDetails'] = [
             'LocationIdentifier' => '1',
             'UKLocation' => [
-                'HouseName' => $case->address["line1"] ?? '',
-                'Street' => $case->address["line2"] ?? '',
-                'District' => $case->address["line3"] ?? '',
-                'PostTown' => $case->address["town"] ?? '',
-                'Postcode' => $case->address["postcode"] ?? '',
+                'HouseName' => $case->claimedIdentity->address["line1"] ?? '',
+                'Street' => $case->claimedIdentity->address["line2"] ?? '',
+                'District' => $case->claimedIdentity->address["line3"] ?? '',
+                'PostTown' => $case->claimedIdentity->address["town"] ?? '',
+                'Postcode' => $case->claimedIdentity->address["postcode"] ?? '',
             ],
         ];
 
