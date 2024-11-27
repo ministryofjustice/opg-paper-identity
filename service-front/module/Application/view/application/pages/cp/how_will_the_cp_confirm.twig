@@ -12,7 +12,6 @@
             {% if service_availability.messages.banner %}
                 <div class="govuk-notification-banner" data-module="govuk-notification-banner">
                     <div class="govuk-notification-banner__content">
-                        <p class="govuk-notification-banner__heading">
                         <div class="govuk-warning-text">
                             <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
                                   aria-hidden="true">!</span>
@@ -20,7 +19,6 @@
                                 {{ service_availability.messages.banner }}
                             </strong>
                         </div>
-                        </p>
                     </div>
                 </div>
             {% endif %}
@@ -33,7 +31,7 @@
         <div class="govuk-grid-column-two-thirds">
             <form method="POST">
 
-                <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
+
 
                 {% if service_availability.message %}
                     <div class="govuk-warning-text">
@@ -45,6 +43,8 @@
                     </div>
                 {% endif %}
 
+                {% if service_availability.data.EXPERIAN %}
+                <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
                 <div class="govuk-form-group">
                     <p class="govuk-body">
                         Confirming your identity over the phone is the quickest and easiest option - you will need an
@@ -78,6 +78,8 @@
                     </div>
                 </div>
 
+                {% endif %}
+
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
 
                     {% if form.get('id_method').messages %}
@@ -88,8 +90,9 @@
                     {% endif %}
 
                     <div class="govuk-radios" data-module="govuk-radios">
-                        {% if service_availability.data.NATIONAL_INSURANCE_NUMBER %}
-                            <div class="govuk-radios__item">
+                            <div class="govuk-radios__item
+                                    {% if not service_availability.data.NATIONAL_INSURANCE_NUMBER %} moj-hidden{% endif %}
+                                ">
                                 <input class="govuk-radios__input" id="NATIONAL_INSURANCE_NUMBER" name="id_method"
                                        type="radio"
                                        value="NATIONAL_INSURANCE_NUMBER">
@@ -97,14 +100,14 @@
                                     National insurance number
                                 </label>
                             </div>
-                        {% endif %}
-                        {% if service_availability.data.PASSPORT %}
-                            <div class="govuk-radios__item">
+
+                            <div class="govuk-radios__item
+                                {% if not service_availability.data.PASSPORT %} moj-hidden{% endif %}
+                            ">
                                 <input class="govuk-radios__input" id="PASSPORT" name="id_method" type="radio"
                                        value="PASSPORT">
                                 <label class="govuk-label govuk-radios__label" for="PASSPORT">
                                     UK Passport (current or expired in the last 18 months)
-
                                     <details
                                             class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
                                         <summary class="govuk-details__summary">
@@ -202,20 +205,25 @@
                                     </details>
                                 </label>
                             </div>
-                        {% endif %}
-                        {% if service_availability.data.DRIVING_LICENCE %}
-                            <div class="govuk-radios__item">
+
+                            <div class="govuk-radios__item
+                                {% if not service_availability.data.DRIVING_LICENCE %} moj-hidden{% endif %}
+                            ">
                                 <input class="govuk-radios__input" id="DRIVING_LICENCE" name="id_method"
                                        type="radio"
                                        value="DRIVING_LICENCE">
                                 <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">
                                     UK driving licence (must be current) </label>
                             </div>
-                        {% endif %}
                     </div>
                 </div>
                 <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
-                    <h2 class="govuk-heading-m">If unable to ID over the phone: ID in person at the Post Office</h2>
+                    <h2 class="govuk-heading-m">
+                        {% if service_availability.data.EXPERIAN %}
+                            If unable to ID over the phone:
+                        {% endif %}
+                        ID in person at the Post Office
+                    </h2>
 
                     <p class="govuk-body">
                         Alternatively, you can take one of the identity documents listed below to a Post Office - this

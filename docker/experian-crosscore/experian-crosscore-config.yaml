@@ -43,3 +43,12 @@ resources:
     response:
       statusCode: 200
       scriptFile: useFraudScoreJsonFile.groovy
+
+  - path: "/3"
+    method: post
+    requestBody:
+      operator: Contains
+      value: Refer
+    response:
+      statusCode: 200
+      file: data/fraudScoreReferResponse.json

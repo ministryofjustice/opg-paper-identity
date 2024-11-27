@@ -192,6 +192,15 @@ if (req.body.includes("SAA")) {
     const id = req.body.match(
         /<([a-z0-9-]+):ApplicantIdentifier>(.*?)<\/\1:ApplicantIdentifier>/
     )[2];
+
+    let product = ''
+    try {
+      product = req.body.match(
+          /<([a-z0-9-]+):Product>(.*?)<\/\1:Product>/
+      )[2];
+    } catch (e) {
+    }
+
     iiqStore.save(
         id,
         JSON.stringify({
@@ -199,9 +208,9 @@ if (req.body.includes("SAA")) {
             qid: x.Question.QuestionID,
             correct: false,
           })),
+          expectedCorrect : product === '4 out of 4' ? 4: 3
         })
     );
-
     respond().withContent(
         saaEnvelope
             .replace("{{questions}}", myQuestions.map(toxml).join(""))
@@ -229,7 +238,11 @@ if (req.body.includes("SAA")) {
   const asked = iiqCase.questions.length;
   const correct = iiqCase.questions.filter((q) => q.correct === true).length;
 
-  if (correct >= 3 || asked - correct >= 2) {
+  if (
+      correct >= iiqCase.expectedCorrect ||
+      asked - correct >= 2 ||
+      (iiqCase.expectedCorrect === 4 && (asked - correct) >= 1))
+  {
     iiqStore.save(id, JSON.stringify(iiqCase));
 
     respond()
@@ -239,12 +252,12 @@ if (req.body.includes("SAA")) {
           <RTQResult>
             <Results>
               <Outcome>${
-                correct >= 3
+                correct >= iiqCase.expectedCorrect
                   ? "Authentication successful – capture SQ"
                   : "Authentication Unsuccessful"
               }</Outcome>
               <AuthenticationResult>${
-                correct >= 3 ? "Authenticated" : "Not Authenticated"
+                correct >= iiqCase.expectedCorrect ? "Authenticated" : "Not Authenticated"
               }</AuthenticationResult>
               <Questions>
                 <Asked>${asked}</Asked>
