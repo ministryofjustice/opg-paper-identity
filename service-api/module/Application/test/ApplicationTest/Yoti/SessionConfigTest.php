@@ -155,7 +155,6 @@ class SessionConfigTest extends TestCase
             ]
         ];
 
-        // TODO: Change to ClaimedIdentity
         $sessionConfig["resources"] = [
             "applicant_profile" => [
                 "given_names" => $this->caseMock->claimedIdentity->firstName,
