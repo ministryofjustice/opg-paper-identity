@@ -85,11 +85,13 @@ class IdentityControllerTest extends TestCase
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
                 'personType' => 'donor',
-                'firstName' => '',
-                'lastName' => '',
-                'dob' => '',
+                'claimedIdentity' => [
+                    'firstName' => '',
+                    'lastName' => '',
+                    'dob' => '',
+                    'address' => [],
+                ],
                 'lpas' => [],
-                'address' => [],
             ]));
 
         $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
@@ -145,23 +147,28 @@ class IdentityControllerTest extends TestCase
     public static function caseData(): array
     {
         $validData = [
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'personType' => 'donor',
-            'dob' => '1980-10-10',
+            'claimedIdentity' => [
+                'firstName' => 'firstName',
+                'lastName' => 'lastName',
+                'dob' => '1980-10-10',
+                'address' => [
+                    'line1' => 'address 1',
+                    'line2' => 'address 2',
+                    'postcode' => 'GH67 7HJ'
+                ]
+            ],
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
                 'M-VGAS-OAGA-34G9',
             ],
-            'address' => [
-                'address 1, address 2',
-            ],
+            'personType' => 'donor',
         ];
 
         return [
             [$validData, Response::STATUS_CODE_200],
-            [array_merge($validData, ['lastName' => '']), Response::STATUS_CODE_400],
-            [array_merge($validData, ['dob' => '11-11-2020']), Response::STATUS_CODE_400],
+            [array_replace_recursive($validData, ['claimedIdentity' => ['lastName' => '']]), Response::STATUS_CODE_400],
+            [array_replace_recursive($validData, ['claimedIdentity' => ['dob' => '11-11-2020']]),
+                Response::STATUS_CODE_400],
             [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],
         ];
     }
@@ -308,15 +315,17 @@ class IdentityControllerTest extends TestCase
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -395,15 +404,17 @@ class IdentityControllerTest extends TestCase
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -533,15 +544,17 @@ class IdentityControllerTest extends TestCase
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
             "personType" => "donor",
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
-            "address" => [
-                "postcode" => "SW1B 1BB",
-                "country" => "UK",
-                "town" => "town",
-                "line2" => "Road",
-                "line1" => "1 Street"
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street"
+                ]
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
