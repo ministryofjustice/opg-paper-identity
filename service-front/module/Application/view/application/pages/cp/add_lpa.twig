@@ -122,7 +122,15 @@
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" {% if lpa_response['status'] == 'no match' %} {% else %}class="govuk-table__header" {% endif %}>
+                        <th scope="row"
+                                {% if lpa_response['status'] == 'no match' %}
+                                    class="govuk-table__header app-table__cell--no-border"
+                                {% else %}
+                                    class="govuk-table__header"
+                                {% endif %}
+                        >
+                            CP address
+                        </th>
                         <td class="govuk-table__cell {% if lpa_response['status'] == 'no match' %}app-table__cell--no-border{% endif %}">
                             {% for line in lpa_response['data']['cp_address'] %}
                                 {% if line %}
