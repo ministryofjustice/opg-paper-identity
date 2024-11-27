@@ -21,12 +21,12 @@ class VoucherName implements FormTemplate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter a first name'])]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their first name(s)'])]
     public mixed $firstName = null;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter a last name'])]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their last name'])]
     public mixed $lastName = null;
 }

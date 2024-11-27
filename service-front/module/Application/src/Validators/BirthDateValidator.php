@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Validators;
 
+use DateTime;
 use Laminas\Validator\AbstractValidator;
 
 class BirthDateValidator extends AbstractValidator
