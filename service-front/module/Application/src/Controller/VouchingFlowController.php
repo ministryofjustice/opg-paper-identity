@@ -216,7 +216,6 @@ class VouchingFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $dateOfBirth = $this->formProcessorHelper->processDateForm($formData->toArray());
-            var_dump($dateOfBirth);
             $formData->set('date', $dateOfBirth);
             $form->setData($formData);
             $view->setVariable('form', $form);
@@ -246,8 +245,10 @@ class VouchingFlowController extends AbstractActionController
                 }
             }
         }
+        /**
+        * @psalm-suppress TooManyArguments
+        */
         $messages = $form->getMessages("date");
-        var_dump($messages);
         if (isset($messages["date_under_18"])) {
             $view->setVariable("date_error", $messages["date_under_18"]);
         } elseif (! empty($messages)) {

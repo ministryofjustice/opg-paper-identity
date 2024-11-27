@@ -15,7 +15,7 @@
             <div class="moj-banner__message">
                 <span class="govuk-visually-hidden">Error:</span>
                 {% if date_error %}
-                    {{ date_error }}
+                    <div class="moj-banner__message" name="donor_underage_warning">{{ date_error }}</div>
                 {% elseif match['type'] == 'donor' %}
                     <div class="moj-banner__message" name="donor_warning">The person vouching cannot have the same name and date of birth as the donor.</div>
                 {% elseif match['type'] == 'certificate-provider' %}
@@ -29,7 +29,7 @@
         {% else %}
             <h2 class="govuk-heading-m">There is a problem</h2>
             {% for problem in date_problem %}
-                <div class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span><u>{{ problem }}</u></div>
+                <div class="govuk-error-message" name="date_problem"><span class="govuk-visually-hidden">Error:</span><u>{{ problem }}</u></div>
             {% endfor %}
         {% endif %}
     </div>
