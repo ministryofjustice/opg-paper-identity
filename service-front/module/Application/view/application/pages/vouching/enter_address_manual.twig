@@ -21,10 +21,7 @@
 <form method="POST" action="">
     <div class="govuk-form-group {% if form.get('line1').messages %}govuk-form-group--error{% endif %}">
         {% if form.get('line1').messages %}
-            <p id="line1-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('line1').messages | join(', ', ' and ') }}
-            </p>
+            <p id="line1-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ form.get('line1').messages | join(', ', ' and ') }}</p>
         {% endif %}
         <label for="line1" class="govuk-label">Address line 1</label>
         <input
@@ -54,10 +51,7 @@
 
     <div class="govuk-form-group {% if form.get('town').messages %}govuk-form-group--error{% endif %}">
         {% if form.get('town').messages %}
-            <p id="town-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('town').messages | join(', ', ' and ') }}
-            </p>
+            <p id="town-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ form.get('town').messages | join(', ', ' and ') }}</p>
         {% endif %}
         <label for="town" class="govuk-label">Town or City</label>
         <input
@@ -69,10 +63,7 @@
 
     <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
         {% if form.get('postcode').messages %}
-            <p id="postcode-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('postcode').messages | join(', ', ' and ') }}
-            </p>
+            <p id="postcode-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span>{{ form.get('postcode').messages | join(', ', ' and ') }}</p>
         {% endif %}
         <label for="postcode" class="govuk-label">Postcode</label>
         <input
