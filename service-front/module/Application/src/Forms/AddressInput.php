@@ -9,6 +9,7 @@ use Application\Validators\AddressFieldValidator;
 use Application\Validators\CountryValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
@@ -22,12 +23,17 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
  * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class CpAltAddress implements FormTemplate
+class AddressInput implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(AddressFieldValidator::class)]
+    #[Annotation\Validator(NotEmpty::class, options: [
+        'type' => NotEmpty::ALL,
+        "messages" => [
+            NotEmpty::IS_EMPTY  => "Enter an address"
+        ]
+    ])]
     public mixed $line1;
     /**
      * @psalm-suppress PossiblyUnusedProperty
@@ -41,13 +47,22 @@ class CpAltAddress implements FormTemplate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(AddressFieldValidator::class)]
+    #[Annotation\Validator(NotEmpty::class, options: [
+        'type' => NotEmpty::ALL,
+        "messages" => [
+            NotEmpty::IS_EMPTY  => "Enter a town or city"
+        ]
+    ])]
     public mixed $town;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(PostcodeValidator::class)]
+    // empty values are handled in the PostcodeValidator
+    #[Annotation\Validator(NotEmpty::class, options: [
+        'type' => NotEmpty::ALL & ~NotEmpty::STRING
+    ])]
     public mixed $postcode;
 
     /**
