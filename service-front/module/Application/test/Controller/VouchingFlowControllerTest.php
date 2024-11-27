@@ -777,6 +777,28 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertQuery("div[name='address_warning']");
     }
 
+    public function testEnterAddressManualEmptyError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', [
+            "line1" => "",
+            "town" => "",
+            "postcode" => "NOTAPOSTCODE"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains("p[id='line1-error']", "Error:Enter an address");
+        $this->assertQueryContentContains("p[id='town-error']", "Error:Enter a town or city");
+        $this->assertQueryContentContains("p[id='postcode-error']", "Error:Enter a valid postcode");
+    }
+
     public function testEnterAddressManualRedirect(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();

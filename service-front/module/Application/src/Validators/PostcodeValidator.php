@@ -13,7 +13,7 @@ class PostcodeValidator extends AbstractValidator
 
     protected array $messageTemplates = [
         self::EMPTY => "Enter a postcode",
-        self::POSTCODE_FORMAT => "Enter a valid postcode.",
+        self::POSTCODE_FORMAT => "Enter a valid postcode",
     ];
 
     public function isValid($value): bool
