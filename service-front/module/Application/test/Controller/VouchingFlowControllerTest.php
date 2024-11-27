@@ -6,6 +6,7 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Application\Enums\LpaActorTypes;
@@ -16,10 +17,11 @@ use Application\Enums\IdMethod as IdMethodEnum;
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
-    private SiriusApiService&MockObject $siriusApiService;
+    private SiriusApiService&MockObject $siriusApiServiceMock;
     private VoucherMatchLpaActorHelper&MockObject $voucherMatchMock;
     private string $uuid;
     private array $routes;
+    private array $fakeAddress;
 
     public function setUp(): void
     {
@@ -31,10 +33,19 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "howConfirm" => "vouching/how-will-you-confirm",
             "name" => "vouching/voucher-name",
             "dob" => "vouching/voucher-dob",
+            "postcode" => "vouching/enter-postcode",
+            "selectAddress" => "vouching/select-address",
+            "manualAddress" => "vouching/enter-address-manual",
+        ];
+        $this->fakeAddress = [
+            'line1' => '456 Pretend Road',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'UK',
         ];
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
-        $this->siriusApiService = $this->createMock(SiriusApiService::class);
+        $this->siriusApiServiceMock = $this->createMock(SiriusApiService::class);
         $this->voucherMatchMock = $this->createMock(VoucherMatchLpaActorHelper::class);
 
         parent::setUp();
@@ -42,7 +53,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
-        $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
+        $serviceManager->setService(SiriusApiService::class, $this->siriusApiServiceMock);
         $serviceManager->setService(VoucherMatchLpaActorHelper::class, $this->voucherMatchMock);
     }
 
@@ -327,7 +338,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this
-            ->siriusApiService
+            ->siriusApiServiceMock
             ->expects($this->exactly(2))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
@@ -364,7 +375,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this
-            ->siriusApiService
+            ->siriusApiServiceMock
             ->expects($this->exactly(2))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
@@ -412,7 +423,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this
-            ->siriusApiService
+            ->siriusApiServiceMock
             ->expects($this->exactly(2))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
@@ -479,7 +490,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this
-            ->siriusApiService
+            ->siriusApiServiceMock
             ->expects($this->exactly(2))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
@@ -503,7 +514,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
 
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/$this->uuid/{$this->routes['dob']}");
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['postcode']}");
     }
 
     public function testVoucherDobMatchError(): void
@@ -520,7 +531,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this
-            ->siriusApiService
+            ->siriusApiServiceMock
             ->expects($this->exactly(2))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
@@ -577,5 +588,260 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'div[name=dob_warning]',
             'The person vouching must be 18 years or older.'
         );
+    }
+
+    public function testEnterPostcodePage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/voucher_enter_postcode');
+    }
+
+    public function testEnterPostcodeError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('searchAddressesByPostcode')
+            ->willReturn([]);
+
+        $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'POST', [
+            "postcode" => "A12 3BC"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQuery('p[id=postcode-error]');
+    }
+
+    public function testEnterPostcodeRedirect(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('searchAddressesByPostcode')
+            ->willReturn(["response" => true]);
+
+        $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'POST', [
+            "postcode" => "FA2 3KE"
+        ]);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE");
+    }
+
+    public function testSelectAddressPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('searchAddressesByPostcode')
+            ->willReturn([]);
+
+        $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/voucher_select_address');
+
+        //i cant figure out how to assert that the options are populated correctly..
+    }
+
+    public function testSelectAddressRedirect(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseSearchAddress = [
+            [
+                'addressLine1' => $this->fakeAddress["line1"],
+                'town' => $this->fakeAddress["town"],
+                'postcode' => $this->fakeAddress["postcode"],
+                'country' => $this->fakeAddress["line1"],
+            ],
+        ];
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('searchAddressesByPostcode')
+            ->willReturn($mockResponseSearchAddress);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('addSelectedAddress')
+            ->with(
+                $this->uuid,
+                $this->fakeAddress
+            );
+
+        $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'POST', [
+            "address_json" =>
+                "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\",\"postcode\":\"FA2 3KE\",\"country\":\"UK\"}"
+        ]);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['manualAddress']}");
+    }
+
+    public function testEnterAddressManualPage(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["address"] = $this->fakeAddress;
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(VouchingFlowController::class);
+        $this->assertControllerClass('VouchingFlowController');
+        $this->assertMatchedRouteName('root/voucher_enter_address_manual');
+        //check imputs are pre-populated if address was already selected
+        $this->assertQuery("input[value='456 Pretend Road']");
+    }
+
+    public function testEnterAddressManualMatchError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["address"] = $this->fakeAddress;
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            ->willReturnOnConsecutiveCalls(["lpaData" => "one"], ["lpaData" => "two"]);
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkAddressDonorMatch")
+            ->willReturnOnConsecutiveCalls(false, true);
+
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', $this->fakeAddress);
+        $this->assertResponseStatusCode(200);
+        $this->assertQuery("div[name='address_warning']");
+    }
+
+    public function testEnterAddressManualEmptyError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', [
+            "line1" => "",
+            "town" => "",
+            "postcode" => "NOTAPOSTCODE"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains("p[id='line1-error']", "Error:Enter an address");
+        $this->assertQueryContentContains("p[id='town-error']", "Error:Enter a town or city");
+        $this->assertQueryContentContains("p[id='postcode-error']", "Error:Enter a valid postcode");
+    }
+
+    public function testEnterAddressManualRedirect(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails["address"] = $this->fakeAddress;
+
+        $address_w_nulls = $this->fakeAddress;
+        $address_w_nulls["line2"] = '';
+        $address_w_nulls["line3"] = '';
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects($this->exactly(2))
+            ->method("getLpaByUid")
+            // ->willReturn(["lpaData" => "data"]);
+            ->willReturnCallback(fn (string $lpa) => match (true) {
+                $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
+                $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+            });
+
+        $this
+            ->voucherMatchMock
+            ->expects($this->exactly(2))
+            ->method("checkAddressDonorMatch")
+            ->willReturnOnConsecutiveCalls(false, false);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('addSelectedAddress')
+            ->with(
+                $this->uuid,
+                $address_w_nulls
+            );
+
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', $this->fakeAddress);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['manualAddress']}");
     }
 }
