@@ -30,12 +30,15 @@
                         <table class="govuk-table govuk-!-width-one-half">
                             <tr class="govuk-table__row">
                                 <th scope="row" class="govuk-table__header">Name</th>
-                                <td class="govuk-table__cell">{{ lpa_response['additionalData']['name'] }}</td>
+                                <td class="govuk-table__cell">
+                                    {{ details_data['firstName'] }}
+                                    {{ details_data['lastName'] }}
+                                </td>
                             </tr>
                             <tr class="govuk-table__row">
                                 <th scope="row" class="govuk-table__header">Address</th>
                                 <td class="govuk-table__cell">
-                                    {% for line in lpa_response['additionalData']['address'] %}
+                                    {% for line in details_data['address'] %}
                                         {% if line %}
                                             {{ line }}<br>
                                         {% endif %}
@@ -102,13 +105,13 @@
                         <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">CP Name</th>
+                        <th scope="row" class="govuk-table__header">CP name</th>
                         <td class="govuk-table__cell">{{ lpa_response['data']['cp_name'] }}</td>
                         <td class="govuk-table__cell">
                             {% if lpa_response['status'] == 'no match' %}
                                 {% if lpa_response['additionalData']['name_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">
-                                        Does Not Match
+                                        Does not match
                                     </strong>
                                 {% else %}
                                     <strong class="govuk-tag govuk-tag--green">
@@ -119,7 +122,15 @@
                         </td>
                     </tr>
                     <tr class="govuk-table__row">
-                        <th scope="row" {% if lpa_response['status'] == 'no match' %} {% else %}class="govuk-table__header" {% endif %}>
+                        <th scope="row"
+                                {% if lpa_response['status'] == 'no match' %}
+                                    class="govuk-table__header app-table__cell--no-border"
+                                {% else %}
+                                    class="govuk-table__header"
+                                {% endif %}
+                        >
+                            CP address
+                        </th>
                         <td class="govuk-table__cell {% if lpa_response['status'] == 'no match' %}app-table__cell--no-border{% endif %}">
                             {% for line in lpa_response['data']['cp_address'] %}
                                 {% if line %}
@@ -131,7 +142,7 @@
                             {% if lpa_response['status'] == 'no match' %}
                                 {% if lpa_response['additionalData']['address_match'] == false %}
                                     <strong class="govuk-tag govuk-tag--red">
-                                        Does Not Match
+                                        Does not match
                                     </strong>
                                 {% else %}
                                     <strong class="govuk-tag govuk-tag--green">
