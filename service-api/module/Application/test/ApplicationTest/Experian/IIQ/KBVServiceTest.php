@@ -56,12 +56,14 @@ class KBVServiceTest extends TestCase
 
         $caseData = CaseData::fromArray([
             'id' => $uuid,
-            'firstName' => 'Albert',
-            'lastName' => 'Arkil',
-            'dob' => '1951-02-18',
-            'address' => [
-                'line1' => '123 long street',
-            ],
+            'claimedIdentity' => [
+                'firstName' => 'Albert',
+                'lastName' => 'Arkil',
+                'dob' => '1951-02-18',
+                'address' => [
+                    'line1' => '123 long street',
+                ]
+            ]
         ]);
 
         $saaRequest = [

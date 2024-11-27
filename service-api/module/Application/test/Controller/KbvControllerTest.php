@@ -129,11 +129,13 @@ class KbvControllerTest extends TestCase
         $actual = CaseData::fromArray([
             'id' => $uuid,
             'personType' => 'donor',
-            'firstName' => '',
-            'lastName' => '',
-            'dob' => '',
+            'claimedIdentity' => [
+                'firstName' => '',
+                'lastName' => '',
+                'dob' => '',
+                'address' => []
+            ],
             'lpas' => [],
-            'address' => [],
             'kbvQuestions' => [
                 [],
                 [],
@@ -170,11 +172,13 @@ class KbvControllerTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'personType' => '',
-            'firstName' => 'test',
-            'lastName' => 'name',
-            'dob' => '',
+            'claimedIdentity' => [
+                'firstName' => 'test',
+                'lastName' => 'name',
+                'address' => [],
+                'dob' => ''
+            ],
             'lpas' => [],
-            'address' => [],
         ]);
 
         $caseData->documentComplete = true;
@@ -208,11 +212,13 @@ class KbvControllerTest extends TestCase
         $response = '{"error":"Document checks incomplete or unable to locate case"}';
         $caseData = CaseData::fromArray([
             'personType' => '',
-            'firstName' => 'test',
-            'lastName' => 'name',
-            'dob' => '',
+            'claimedIdentity' => [
+                'firstName' => 'test',
+                'lastName' => 'name',
+                'dob' => '',
+                'address' => [],
+            ],
             'lpas' => [],
-            'address' => [],
         ]);
 
         $this->dataQueryHandlerMock->expects($this->once())->method('getCaseByUUID')

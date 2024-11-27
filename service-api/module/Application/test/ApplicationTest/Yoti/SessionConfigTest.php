@@ -22,21 +22,23 @@ class SessionConfigTest extends TestCase
 
         $this->caseMock = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
             'personType' => 'donor',
-            'dob' => '1970-01-01',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams',
+                'dob' => '1970-01-01',
+                'address' => [
+                    'line1' => '123 long street',
+                    'line2' => 'Kings Cross',
+                    'line3' => 'London',
+                    'postcode' => 'NW1 1SP',
+                    'country' => 'England'
+                ]
+            ],
             "idMethodIncludingNation" => [
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
                 'id_route' => "POST_OFFICE",
-            ],
-            'address' => [
-                'line1' => '123 long street',
-                'line2' => 'Kings Cross',
-                'line3' => 'London',
-                'postcode' => 'NW1 1SP',
-                'country' => 'England'
             ],
             'lpas' => []
         ]);
@@ -152,11 +154,12 @@ class SessionConfigTest extends TestCase
                 ]
             ]
         ];
+
         $sessionConfig["resources"] = [
             "applicant_profile" => [
-                "given_names" => $this->caseMock->firstName,
-                "family_name" => $this->caseMock->lastName,
-                "date_of_birth" => $this->caseMock->dob,
+                "given_names" => $this->caseMock->claimedIdentity->firstName,
+                "family_name" => $this->caseMock->claimedIdentity->lastName,
+                "date_of_birth" => $this->caseMock->claimedIdentity->dob,
                 "structured_postal_address" => [
                     "address_format" => "1",
                     "building_number" => "123",

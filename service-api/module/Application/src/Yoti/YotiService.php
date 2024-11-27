@@ -303,8 +303,8 @@ class YotiService implements YotiServiceInterface
         $payload = [];
 
         $payload["contact_profile"] = [
-            "first_name" => $caseData->firstName,
-            "last_name" => $caseData->lastName,
+            "first_name" => $caseData->claimedIdentity->firstName,
+            "last_name" => $caseData->claimedIdentity->lastName,
             "email" => $this->notificationEmail
         ];
         $payload["documents"] = [

@@ -201,17 +201,19 @@ class YotiServiceTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'firstName' => 'Maria',
-            'lastName' => 'Williams',
+            'claimedIdentity' => [
+                'firstName' => 'Maria',
+                'lastName' => 'Williams',
+                'dob' => '1970-01-01',
+                'address' => [
+                    'line1' => '123 long street',
+                ]
+            ],
             'personType' => 'donor',
-            'dob' => '1970-01-01',
             "idMethodIncludingNation" => [
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
                 'id_route' => "POST_OFFICE",
-            ],
-            'address' => [
-                'line1' => '123 long street',
             ],
             'counterService' => [
                 'selectedPostOffice' => json_encode(['fad' => '29348729'])
