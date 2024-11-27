@@ -105,7 +105,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
 
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date needs to be a valid date");
+        cy.contains("The date cannot be empty.");
 
         cy.reload();
         // cy.screenshot();
@@ -180,7 +180,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
 
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date needs to be a valid date");
+        cy.contains("The date cannot be empty.");
 
         cy.reload();
         // cy.screenshot();
