@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
-use Exception;
+use Application\Exceptions\PropertyMatchException;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\NotEmpty;
 use Laminas\Form\Annotation;
@@ -51,7 +51,7 @@ class ClaimedIdentity extends Entity
             if (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
-                throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
+                throw new PropertyMatchException(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
         }
 
