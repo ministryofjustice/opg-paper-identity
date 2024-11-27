@@ -155,7 +155,7 @@ class CaseData implements JsonSerializable
      *     caseProgress?: CaseProgress,
      *     fraudScore?: FraudScore,
      *     caseAssistance?: CaseAssistance,
-     *     claimedIdentity? ClaimedIdentity
+     *     claimedIdentity?: ClaimedIdentity
      * }
      */
     public function toArray(): array

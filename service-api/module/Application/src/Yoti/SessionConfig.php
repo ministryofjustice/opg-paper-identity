@@ -89,14 +89,16 @@ class SessionConfig
             ]
         ];
 
-        $sessionConfig["resources"] = [
-            "applicant_profile" => [
-                "given_names" => $case->claimedIdentity->firstName,
-                "family_name" => $case->claimedIdentity->lastName,
-                "date_of_birth" => $case->claimedIdentity->dob,
-                "structured_postal_address" => $this->addressFormatted($case->claimedIdentity->address),
-            ]
-        ];
+        if ($case->claimedIdentity) {
+            $sessionConfig["resources"] = [
+                "applicant_profile" => [
+                    "given_names" => $case->claimedIdentity->firstName,
+                    "family_name" => $case->claimedIdentity->lastName,
+                    "date_of_birth" => $case->claimedIdentity->dob,
+                    "structured_postal_address" => $this->addressFormatted($case->claimedIdentity->address),
+                ]
+            ];
+        }
 
         return $sessionConfig;
     }

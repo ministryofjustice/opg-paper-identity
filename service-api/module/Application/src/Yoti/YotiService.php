@@ -302,11 +302,14 @@ class YotiService implements YotiServiceInterface
     {
         $payload = [];
 
-        $payload["contact_profile"] = [
-            "first_name" => $caseData->claimedIdentity->firstName,
-            "last_name" => $caseData->claimedIdentity->lastName,
-            "email" => $this->notificationEmail
-        ];
+        if ($caseData->claimedIdentity) {
+            $payload["contact_profile"] = [
+                "first_name" => $caseData->claimedIdentity->firstName,
+                "last_name" => $caseData->claimedIdentity->lastName,
+                "email" => $this->notificationEmail
+            ];
+        }
+
         $payload["documents"] = [
             [
                 "requirement_id" => $requirementId,

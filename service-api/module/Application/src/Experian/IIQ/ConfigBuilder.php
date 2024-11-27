@@ -26,12 +26,12 @@ class ConfigBuilder
             'ApplicantIdentifier' => $case->id,
             'Name' => [
                 'Title' => '',
-                'Forename' => $case->claimedIdentity->firstName,
-                'Surname' => $case->claimedIdentity->lastName,
+                'Forename' => $case->claimedIdentity?->firstName,
+                'Surname' => $case->claimedIdentity?->lastName,
             ],
         ];
 
-        if (! isset($case->claimedIdentity->dob)) {
+        if (! isset($case->claimedIdentity) || ! isset($case->claimedIdentity->dob)) {
             throw new RuntimeException('Cannot generate KBVs with date of birth');
         }
 

@@ -157,9 +157,9 @@ class SessionConfigTest extends TestCase
 
         $sessionConfig["resources"] = [
             "applicant_profile" => [
-                "given_names" => $this->caseMock->claimedIdentity->firstName,
-                "family_name" => $this->caseMock->claimedIdentity->lastName,
-                "date_of_birth" => $this->caseMock->claimedIdentity->dob,
+                "given_names" => $this->caseMock->claimedIdentity?->firstName,
+                "family_name" => $this->caseMock->claimedIdentity?->lastName,
+                "date_of_birth" => $this->caseMock->claimedIdentity?->dob,
                 "structured_postal_address" => [
                     "address_format" => "1",
                     "building_number" => "123",
