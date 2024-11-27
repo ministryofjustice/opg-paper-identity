@@ -35,39 +35,51 @@
     </div>
 {% endif %}
 <form method="POST">
-    <fieldset class="govuk-fieldset govuk-!-width-two-thirds">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-heading-xl">{% block title %}What is their date of birth?{% endblock %}</h1>
-        </legend>
-        <div id="dod-hint" class="govuk-hint">
-            For example, 31 3 1980
-        </div>
-        <div class="govuk-date-input" id="voucher-dob">
-        <div class="govuk-date-input__item">
-            <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label" for="voucher-dob-day">
-                    Day
-                </label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="voucher-dob-day" name="dob_day" type="text" inputmode="numeric" value="{{ form.get('dob_day').value }}">
+    <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint passport-issued-error">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-heading-xl">
+                    {% block title %}What is their date of birth?{% endblock %}
+                </h1>
+            </legend>
+            <div {% if date_problem %}class="govuk-form-group--error"{% endif %}>
+                <div id="dod-hint" class="govuk-hint">
+                    For example, 31 3 1980
+                </div>
+                {% if date_problem %}
+                    <p id="dob-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>{{ date_problem|join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+                <div class="govuk-date-input" id="voucher-dob">
+                    <div class="govuk-date-input__item">
+                        <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="voucher-dob-day">
+                            Day
+                        </label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if date_problem %}govuk-input--error{% endif %}" id="voucher-dob-day" name="dob_day" type="text" inputmode="numeric" value="{{ form.get('dob_day').value }}">
+                        </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                        <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="voucher-dob-month">
+                            Month
+                        </label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if date_problem %}govuk-input--error{% endif %}" id="voucher-dob-month" name="dob_month" type="text" inputmode="numeric" value="{{ form.get('dob_month').value }}">
+                        </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                        <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="voucher-dob-year">
+                            Year
+                        </label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-4 {% if date_problem %}govuk-input--error{% endif %}" id="voucher-dob-month" name="dob_year" type="text" inputmode="numeric" value="{{ form.get('dob_year').value }}">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="govuk-date-input__item">
-            <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label" for="voucher-dob-month">
-                    Month
-                </label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="voucher-dob-month" name="dob_month" type="text" inputmode="numeric" value="{{ form.get('dob_month').value }}">
-            </div>
-        </div>
-        <div class="govuk-date-input__item">
-            <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label" for="voucher-dob-year">
-                    Year
-                </label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="voucher-dob-year" name="dob_year" type="text" inputmode="numeric" value="{{ form.get('dob_year').value }}">
-            </div>
-        </div>
-    </fieldset>
+        </fieldset>
+    </div>
     <div class="govuk-button-group">
         <input type="submit" class="govuk-button" value="Continue">
     </div>
