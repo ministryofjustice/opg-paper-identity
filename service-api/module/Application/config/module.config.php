@@ -320,6 +320,16 @@ return [
                     ],
                 ],
             ],
+            'save_address_to_case' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/save-address-to-case',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'saveAddressToCase',
+                    ],
+                ],
+            ],
             'save_alternate_address_to_case' => [
                 'type' => Segment::class,
                 'options' => [
