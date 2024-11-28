@@ -6,13 +6,18 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
+use Application\Exceptions\PostcodeInvalidException;
+use Application\Forms\AddressInput;
 use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Services\SiriusApiService;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
+use Application\Forms\Postcode;
+use Application\Forms\AddressJson;
 use Application\Forms\PassportDateCp;
 use Laminas\Form\FormInterface;
 use Laminas\Http\Response;
@@ -32,6 +37,7 @@ class VouchingFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
+        private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly array $config
     ) {
     }
@@ -237,8 +243,7 @@ class VouchingFlowController extends AbstractActionController
                 } else {
                     try {
                         $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                        // will need to update to route to next page once built
-                        return $this->redirect()->toRoute("root/voucher_dob", ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
                     } catch (\Exception $exception) {
                         $form->setMessages(["There was an error saving the data"]);
                     }
@@ -255,6 +260,126 @@ class VouchingFlowController extends AbstractActionController
             $view->setVariable("date_problem", $messages);
         }
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_dob');
+    }
+
+    public function enterPostcodeAction(): ViewModel|Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view = new ViewModel();
+        $form = $this->createForm(Postcode::class);
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $postcode = $this->formToArray($form)['postcode'];
+
+            try {
+                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $this->getRequest());
+
+                if (empty($response)) {
+                    $form->setMessages([
+                        'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
+                    ]);
+                } else {
+                    return $this->redirect()->toRoute(
+                        'root/voucher_select_address',
+                        [
+                            'uuid' => $uuid,
+                            'postcode' => $postcode,
+                        ]
+                    );
+                }
+            } catch (PostcodeInvalidException $e) {
+                $form->setMessages([
+                    'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
+                ]);
+            }
+        }
+
+        return $view->setTemplate('application/pages/vouching/enter_postcode');
+    }
+
+    public function selectAddressAction(): ViewModel|Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $postcode = $this->params()->fromRoute("postcode");
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = $this->createForm(AddressJson::class);
+
+        $view = new ViewModel();
+        $view->setVariables([
+            'details_data' => $detailsData,
+            'form' => $form,
+            'vouching_for' => $detailsData["vouchingFor"] ?? null,
+        ]);
+
+        $response = $this->siriusApiService->searchAddressesByPostcode(
+            $postcode,
+            $this->getRequest()
+        );
+        $processedAddresses = [];
+        foreach ($response as $foundAddress) {
+            $processedAddresses[] = $this->addressProcessorHelper->processAddress(
+                $foundAddress,
+                'siriusAddressType'
+            );
+        }
+        $addressStrings = $this->addressProcessorHelper->stringifyAddresses($processedAddresses);
+        $view->setVariable('addresses', $addressStrings);
+        $view->setVariable('addresses_count', count($addressStrings));
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
+
+            $structuredAddress = json_decode($formData['address_json'], true);
+
+            $this->opgApiService->addSelectedAddress($uuid, $structuredAddress);
+
+            return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
+        }
+
+        return $view->setTemplate('application/pages/vouching/select_address');
+    }
+
+    public function enterAddressManualAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $form = $this->createForm(AddressInput::class);
+        $form->setData($detailsData['address'] ?? []);
+
+        if ($this->getRequest()->isPost()) {
+            $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
+
+            if ($form->isValid()) {
+                $addressMatch = false;
+                foreach ($detailsData['lpas'] as $lpa) {
+                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                    $addressMatch = $addressMatch || $this->voucherMatchLpaActorHelper->checkAddressDonorMatch(
+                        $lpasData,
+                        $this->formToArray($form)
+                    );
+                }
+                if ($addressMatch) {
+                    $view->setVariable('address_match', true);
+                } else {
+                    $this->opgApiService->addSelectedAddress($uuid, $this->formToArray($form));
+                    return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
+                }
+            }
+        }
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
+        $view->setVariable('form', $form);
+
+        return $view->setTemplate('application/pages/vouching/enter_address_manual');
     }
 
     public function identityCheckPassedAction(): ViewModel
