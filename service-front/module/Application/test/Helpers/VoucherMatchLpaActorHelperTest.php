@@ -220,58 +220,39 @@ class VoucherMatchLpaActorHelperTest extends TestCase
             'line2' => 'Notrealshire',
             'town' => 'Faketown',
             'postcode' => 'FA9 3KE',
+            'country' => 'UK'
         ];
 
         $addressTwoSirius = [
             'addressLine1' => '456 Pretend Road',
             'addressLine2' => 'Notrealshire',
             'town' => 'Faketown',
-            'postcode' => 'FA2 3KE',
+            'postcode' => 'FA9 3KE',
             'country' => 'UK',
         ];
 
         return [
             [
-                "lpasData" => [
-                ],
+                "lpasData" => [],
                 "address" => $addressOne,
                 "expected_result" => false
             ],
             [
                 "lpasData" => [
-                    "opg.poas.lpastore" => [
-                        "donor" => [
-                            "address" => $addressOne,
-                        ]
-                    ],
-                    "opg.poas.sirius" => [
-                        "donor" => [
-                            "address" => $addressTwoSirius
-                        ],
-                    ],
+                    "opg.poas.lpastore" => ["donor" => ["address" => $addressOne]],
+                    "opg.poas.sirius" => ["donor" => ["address" => $addressTwoSirius]],
                 ],
                 "address" => $addressOne,
                 "expected_result" => true
             ],
             [
                 "lpasData" => [
-                    "opg.poas.sirius" => [
-                        "donor" => [
-                            "address" => $addressOneSirius
-                        ],
-                    ],
-                ],
+                    "opg.poas.sirius" => ["donor" => ["address" => $addressOneSirius]]],
                 "address" => $addressOne,
                 "expected_result" => true
             ],
             [
-                "lpasData" => [
-                    "opg.poas.lpastore" => [
-                        "donor" => [
-                            "address" => $addressOne,
-                        ]
-                    ],
-                ],
+                "lpasData" => ["opg.poas.lpastore" => ["donor" => ["address" => $addressOne]]],
                 "address" => $addressTwo,
                 "expected_result" => false
             ],
