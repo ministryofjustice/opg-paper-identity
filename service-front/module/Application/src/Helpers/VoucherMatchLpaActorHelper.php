@@ -132,9 +132,8 @@ class VoucherMatchLpaActorHelper
 
         //if the addresses are identical, including case, than `stringifyAddresses` will return only one value
         //else we check for a match ignoring case
-        return (
+        return
             count($addressesAsStrings) === 1 ||
-            strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1])
-        );
+            strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1]);
     }
 }
