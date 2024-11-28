@@ -18,15 +18,15 @@ use Laminas\Validator\NotEmpty;
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class VoucherName implements FormTemplate
 {
-     /**
+    /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their first name(s)'])]
     public mixed $firstName = null;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their last name'])]
     public mixed $lastName = null;
 }
