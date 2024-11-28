@@ -11,31 +11,26 @@ use Application\Contracts\OpgApiServiceInterface;
  */
 class AddressProcessorHelper
 {
-    /**
-     * @psalm-suppress UnusedProperty
-     * Used dynamically in processAddress
-     */
-    private array $lpaStoreAddressType = [
-        'line1' => 'line1',
-        'line2' => 'line2',
-        'line3' => 'line3',
-        'town' => 'town',
-        'postcode' => 'postcode',
-        'country' => 'country',
+    public static array $addressTypes = [
+        'lpaStoreAddressType' => [
+            'line1' => 'line1',
+            'line2' => 'line2',
+            'line3' => 'line3',
+            'town' => 'town',
+            'postcode' => 'postcode',
+            'country' => 'country',
+        ],
+        'siriusAddressType' => [
+            'line1' => 'addressLine1',
+            'line2' => 'addressLine2',
+            'line3' => 'addressLine3',
+            'town' => 'town',
+            'postcode' => 'postcode',
+            'country' => 'country',
+        ]
     ];
 
-    /**
-     * @psalm-suppress UnusedProperty
-     * Used dynamically in processAddress
-     */
-    private array $siriusAddressType = [
-        'line1' => 'addressLine1',
-        'line2' => 'addressLine2',
-        'line3' => 'addressLine3',
-        'town' => 'town',
-        'postcode' => 'postcode',
-        'country' => 'country',
-    ];
+    public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
 
     public function __construct()
     {
@@ -60,18 +55,18 @@ class AddressProcessorHelper
      * @param mixed $address
      * @return string[]
      */
-    public function processAddress(array $address, string $addressType): array
+    public static function processAddress(array $address, string $addressType): array
     {
         $processedAddress = [];
 
-        foreach ($this->$addressType as $key => $value) {
+        foreach (self::$addressTypes[$addressType] as $key => $value) {
             $processedAddress[$key] = array_key_exists($value, $address) ? $address[$value] : '';
         }
 
         return $processedAddress;
     }
 
-    public function stringifyAddresses(array $addresses): array
+    public static function stringifyAddresses(array $addresses): array
     {
         $stringified = [];
 
@@ -83,7 +78,7 @@ class AddressProcessorHelper
                 $str = '';
                 foreach ($arr as $line) {
                     if (strlen($line) > 0) {
-                        $str .= $line . ", ";
+                        $str .= trim($line) . ", ";
                     }
                 }
 
