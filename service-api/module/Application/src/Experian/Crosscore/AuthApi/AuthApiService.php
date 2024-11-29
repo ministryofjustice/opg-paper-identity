@@ -9,6 +9,7 @@ use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
 use Application\Experian\Crosscore\AuthApi\DTO\ResponseDTO;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class AuthApiService
@@ -18,6 +19,7 @@ class AuthApiService
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
+        private readonly LoggerInterface $logger,
         private readonly RequestDTO $experianCrosscoreAuthRequestDTO
     ) {
     }
@@ -113,6 +115,8 @@ class AuthApiService
                 $responseArray['token_type']
             );
         } catch (\Exception $exception) {
+            $responseBodyAsString = $response->getBody()->getContents();
+            $this->logger->error('GuzzleFraudApiException: ' . $responseBodyAsString);
             throw new AuthApiException($exception->getMessage());
         }
     }
