@@ -2,25 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Application\Experian\Crosscore\AuthApi;
+namespace Application\DWP\AuthApi;
 
 use Application\Cache\ApcHelper;
-use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
-use Application\Experian\Crosscore\AuthApi\DTO\ResponseDTO;
+use Application\DWP\AuthApi\DTO\RequestDTO;
+use Application\DWP\AuthApi\DTO\ResponseDTO;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Application\Aws\SsmHandler;
+use GuzzleHttp\Exception\ClientException;
 
 class AuthApiService
 {
-    private const EXPIRY = 1800; // 30 minutes
-
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
         private readonly SsmHandler $ssmHandler,
-        private readonly RequestDTO $experianCrosscoreAuthRequestDTO
+        private readonly LoggerInterface $logger,
+        private readonly RequestDTO $dwpAuthRequestDTO
     ) {
     }
 
@@ -34,7 +35,6 @@ class AuthApiService
         return [
             'Content-Type' => 'application/json',
             'X-Correlation-Id' => $this->generateXCorrelationId(),
-            'X-User-Domain' => getenv('EXPERIAN_DOMAIN')
         ];
     }
 
@@ -44,7 +44,7 @@ class AuthApiService
      */
     public function authenticate(): ResponseDTO
     {
-        $credentials = $this->experianCrosscoreAuthRequestDTO;
+        $credentials = $this->dwpAuthRequestDTO;
 
         $tokenResponse = $this->getToken($credentials);
 
@@ -94,13 +94,11 @@ class AuthApiService
         RequestDTO $experianCrosscoreAuthRequestDTO
     ): ResponseDTO {
         try {
-            $headers = array_merge($this->makeHeaders(), ['X-User-Domain' => 'publicguardian.com']);
-
             $response = $this->client->request(
                 'POST',
                 '/oauth2/experianone/v1/token',
                 [
-                    'headers' => $headers,
+                    'headers' => $this->makeHeaders(),
                     'json' => $experianCrosscoreAuthRequestDTO->toArray()
                 ]
             );
@@ -114,7 +112,13 @@ class AuthApiService
                 $responseArray['expires_in'],
                 $responseArray['token_type']
             );
+        } catch (ClientException $clientException) {
+            $response = $clientException->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            $this->logger->error('GuzzleDwpAuthApiException: ' . $responseBodyAsString);
+            throw new AuthApiException($clientException->getMessage());
         } catch (\Exception $exception) {
+            $this->logger->error('GuzzleDwpAuthApiException: ' . $exception->getMessage());
             throw new AuthApiException($exception->getMessage());
         }
     }
