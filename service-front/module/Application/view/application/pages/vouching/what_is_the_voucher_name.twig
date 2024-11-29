@@ -9,25 +9,25 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-heading-xl">{% block title %}What is the name on their ID document?{% endblock %}</h1>
         </legend>
-        {% if form.get('firstName').messages %}
-            <p id="first-name-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('firstName').messages | join(', ', ' and ') }}
-            </p>
-        {% endif %}
-        <div class="govuk-form-group">
+        <div class="govuk-form-group {% if form.get('firstName').messages %}govuk-form-group--error{% endif %}">
+            {% if form.get('firstName').messages %}
+                <p id="first-name-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('firstName').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
             <label class="govuk-label" for="voucher-first-name">
             First names, including any middle names
             </label>
             <input class="govuk-input" id="voucher-first-name" name="firstName" type="text", value= {{ form.get('firstName').value }}>
         </div>
-        {% if form.get('lastName').messages %}
-            <p id="last-name-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ form.get('lastName').messages | join(', ', ' and ') }}
-            </p>
-        {% endif %}
-        <div class="govuk-form-group">
+        <div class="govuk-form-group {% if form.get('lastName').messages %}govuk-form-group--error{% endif %}">
+            {% if form.get('lastName').messages %}
+                <p id="last-name-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ form.get('lastName').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
             <label class="govuk-label" for="voucher-last-name">
             Last name
             </label>
