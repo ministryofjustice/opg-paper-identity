@@ -177,7 +177,7 @@ class ServiceAvailabilityHelperTest extends TestCase
             ],
             "documentComplete" => true,
             "identityCheckPassed" => true,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",

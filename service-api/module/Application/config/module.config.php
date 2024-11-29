@@ -326,7 +326,7 @@ return [
                     'route' => '/cases/:uuid/save-alternate-address-to-case',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'saveAlternateAddressToCase',
+                        'action' => 'saveProfessionalAddressToCase',
                     ],
                 ],
             ],

@@ -332,7 +332,7 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
@@ -421,7 +421,7 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
@@ -561,7 +561,7 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [

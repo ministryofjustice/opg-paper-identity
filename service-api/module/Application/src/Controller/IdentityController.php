@@ -320,7 +320,7 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function saveAlternateAddressToCaseAction(): JsonModel
+    public function saveProfessionalAddressToCaseAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
@@ -340,7 +340,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'alternateAddress',
+                'professionalAddress',
                 $data,
             );
         } catch (\Exception $exception) {

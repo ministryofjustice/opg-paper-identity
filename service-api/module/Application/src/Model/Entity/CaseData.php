@@ -73,7 +73,7 @@ class CaseData implements JsonSerializable
      * @var string[]
      */
     #[Annotation\Required(false)]
-    public ?array $alternateAddress = [];
+    public ?array $professionalAddress = [];
 
     #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
@@ -147,7 +147,7 @@ class CaseData implements JsonSerializable
      *     iiqControl?: IIQControl,
      *     documentComplete: bool,
      *     identityCheckPassed: ?bool,
-     *     alternateAddress: ?string[],
+     *     professionalAddress: ?string[],
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
@@ -166,7 +166,7 @@ class CaseData implements JsonSerializable
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
-            'alternateAddress' => $this->alternateAddress,
+            'professionalAddress' => $this->professionalAddress,
             'searchPostcode' => $this->searchPostcode,
             'yotiSessionId' => $this->yotiSessionId,
             'kbvQuestions' => $this->kbvQuestions,
