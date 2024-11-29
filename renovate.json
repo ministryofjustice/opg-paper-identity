@@ -13,6 +13,19 @@
   "branchConcurrentLimit": 0,
   "packageRules": [
     {
+      "description": [
+        "PHP Exclusion",
+        "Don't try to upgrade php to v8.4, since it isn't yet supported by many of our libraries"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchDepNames": [
+        "php"
+      ],
+      "enabled": false
+    },
+    {
       "groupName": "Minor & Patch Updates",
       "groupSlug": "all-minor-patch-updates",
       "matchUpdateTypes": [

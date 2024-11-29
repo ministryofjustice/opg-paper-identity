@@ -245,6 +245,15 @@ class VouchingFlowController extends AbstractActionController
                 }
             }
         }
+        /**
+        * @psalm-suppress TooManyArguments
+        */
+        $messages = $form->getMessages("date");
+        if (isset($messages["date_under_18"])) {
+            $view->setVariable("date_error", $messages["date_under_18"]);
+        } elseif (! empty($messages)) {
+            $view->setVariable("date_problem", $messages);
+        }
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_dob');
     }
 

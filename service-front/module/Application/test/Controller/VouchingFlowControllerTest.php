@@ -574,8 +574,54 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains(
-            'div[name=dob_warning]',
+            'div[name=donor_underage_warning]',
             'The person vouching must be 18 years or older.'
+        );
+    }
+
+    public function testVoucherDobEmptyError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
+            "dob_day" => "",
+            "dob_month" => "",
+            "dob_year" => ""
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains(
+            'div[name=date_problem]',
+            'Error:Enter their date of birth'
+        );
+    }
+
+    public function testVoucherDobInvalidError(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
+            "dob_day" => "999",
+            "dob_month" => "999",
+            "dob_year" => "thing"
+        ]);
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains(
+            'div[name=date_problem]',
+            'Error:Date of birth must be a valid date'
         );
     }
 }
