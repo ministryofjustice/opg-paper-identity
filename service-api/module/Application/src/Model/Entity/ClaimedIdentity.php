@@ -59,6 +59,22 @@ class ClaimedIdentity extends Entity
     }
 
     /**
+     * @param properties-of<self> $data
+     */
+    public function update(mixed $data): self
+    {
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            } else {
+                throw new PropertyMatchException(sprintf('%s does not have property "%s"', $this::class, $key));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return properties-of<self>
      */
     public function jsonSerialize(): array

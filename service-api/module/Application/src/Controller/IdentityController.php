@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiException;
@@ -74,6 +75,43 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
             return new JsonModel(['uuid' => $caseData->id]);
+        }
+
+        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
+        return new JsonModel(new Problem(
+            'Invalid data',
+            extra: ['errors' => $validator->getMessages()],
+        ));
+    }
+
+    public function updateAction(): JsonModel
+    {
+        $data = json_decode($this->getRequest()->getContent(), true);
+
+        $uuid = $this->params()->fromRoute('uuid');
+
+        $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+
+        try {
+            $case->update($data);
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
+
+        $validator = (new AttributeBuilder())
+            ->createForm($case)
+            ->setData(get_object_vars($case));
+
+        if ($validator->isValid()) {
+
+            $this->dataHandler->insertUpdateData($case);
+
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+
+            return new JsonModel(['case' => $case]);
         }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);

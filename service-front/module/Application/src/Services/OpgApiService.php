@@ -212,6 +212,15 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
+    public function updateCaseAddress($uuid, $address) : void
+    {
+        $this->makeApiRequest("/cases/update/$uuid", 'PATCH', [
+            'claimedIdentity' => [
+                'address' => $address
+            ]
+        ]);
+    }
+
     public function updateIdMethod(string $uuid, string $method): void
     {
         $data = [
