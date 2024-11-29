@@ -12,6 +12,7 @@ use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
 {
@@ -34,6 +35,8 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
             'base_uri' => $baseUri
         ]);
 
+        $logger = $container->get(LoggerInterface::class);
+
         $apcHelper = new ApcHelper();
 
         $username = (new AwsSecret('experian-crosscore/username'))->getValue();
@@ -51,6 +54,7 @@ class ExperianCrosscoreAuthApiServiceFactory implements FactoryInterface
         return new AuthApiService(
             $guzzleClient,
             $apcHelper,
+            $logger,
             $experianCrosscoreAuthRequestDTO
         );
     }
