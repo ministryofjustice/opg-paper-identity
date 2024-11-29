@@ -31,6 +31,7 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
 
     public function setUp(): void
     {
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->client = $this->createMock(Client::class);
         $this->apcHelper = $this->createMock(ApcHelper::class);
         $this->experianCrosscoreAuthRequestDto = new RequestDTO(
@@ -43,10 +44,9 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
         $this->experianCrosscoreAuthApiService = new AuthApiService(
             $this->client,
             $this->apcHelper,
+            $this->logger,
             $this->experianCrosscoreAuthRequestDto
         );
-
-        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     public function testGetHeaders(): void
