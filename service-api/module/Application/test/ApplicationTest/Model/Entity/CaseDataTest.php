@@ -33,26 +33,28 @@ class CaseDataTest extends TestCase
     public static function isValidDataProvider(): array
     {
         $validData = [
-            'firstName' => 'first',
-            'lastName' => 'last',
-            'personType' => 'donor',
-            'dob'   => '1966-10-10',
+            'claimedIdentity' => [
+                'firstName' => 'first',
+                'lastName' => 'last',
+                'dob'   => '1966-10-10',
+                'address' => [
+                    'address line 1',
+                    'country',
+                    'post code'
+                ]
+            ],
             'lpas' => [
                 'M-AGAS-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
             ],
-            'address' => [
-                'address line 1',
-                'country',
-                'post code'
-            ]
+            'personType' => 'donor'
         ];
 
         return [
             [$validData, true],
             [array_merge($validData, ['lpas' => ['M-AGGA-XX']]), false],
-            [array_merge($validData, ['lastName' => '']), false],
-            [array_merge($validData, ['dob' => '11-11-2020']), false],
+            [array_replace_recursive($validData, ['claimedIdentity' => ['lastName' => '']]), false],
+            [array_replace_recursive($validData, ['claimedIdentity' => ['dob' => '11-11-2020']]), false],
             [array_replace_recursive($validData, ['lpas' => ['xx']]), false],
             [array_merge($validData, ['documentComplete' => true]), true],
             [array_merge($validData, ['documentComplete' => false]), true],
