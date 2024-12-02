@@ -340,7 +340,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'address',
+                'claimedIdentity.address',
                 $data,
             );
         } catch (\Exception $exception) {
@@ -457,7 +457,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'dob',
+                'claimedIdentity.dob',
                 $dob
             );
         } catch (\Exception $exception) {
@@ -505,12 +505,12 @@ class IdentityController extends AbstractActionController
             try {
                 $this->dataHandler->updateCaseData(
                     $uuid,
-                    'firstName',
+                    'claimedIdentity.firstName',
                     $firstName
                 );
                 $this->dataHandler->updateCaseData(
                     $uuid,
-                    'lastName',
+                    'claimedIdentity.lastName',
                     $lastName
                 );
             } catch (\Exception $exception) {
