@@ -111,7 +111,7 @@ class IdentityController extends AbstractActionController
 
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-            return new JsonModel(['case' => $case]);
+            return new JsonModel(['case' => $case->toArray()]);
         }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
