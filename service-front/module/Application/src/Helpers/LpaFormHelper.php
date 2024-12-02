@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\LpaTypes;
 use Application\Helpers\DTO\LpaFormHelperResponseDto;
 use Laminas\Form\FormInterface;
 
@@ -236,5 +237,40 @@ class LpaFormHelper
             }
         }
         return true;
+    }
+
+    private function getDonorDobFromSiriusResponse(array $siriusCheck): string
+    {
+        return $siriusCheck['opg.poas.sirius']['donor']['dob'];
+    }
+
+    private function getDonorAddressFromSiriusResponse(array $siriusCheck): string
+    {
+        return implode('\n', [
+            $siriusCheck['opg.poas.sirius']['donor']['addressLine1'],
+            $siriusCheck['opg.poas.sirius']['donor']['addressLine2'],
+            $siriusCheck['opg.poas.sirius']['donor']['addressLine3'],
+            $siriusCheck['opg.poas.sirius']['donor']['town'],
+            $siriusCheck['opg.poas.sirius']['donor']['postcode'],
+            $siriusCheck['opg.poas.sirius']['donor']['country'],
+        ]);
+    }
+
+    public function processLpas($lpasData) {
+
+        $lpas = [];
+        foreach ($lpasData as $lpa) {
+            $lpas[] = [
+                "uId" => $lpa["uId"],
+                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
+            ];
+        }
+        return [
+            "lpasCount" => count($lpasData),
+            "lpas" => $lpas,
+            "donorName" => $this->getDonorNameFromSiriusResponse(current($lpasData)),
+            "donorDob" => $this->getDonorDobFromSiriusResponse(current($lpasData)),
+            "donorAddress" => $this->getDonorAddressFromSiriusResponse(current($lpasData)),
+        ];
     }
 }

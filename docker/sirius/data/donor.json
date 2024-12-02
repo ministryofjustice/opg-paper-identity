@@ -1,4 +1,5 @@
 {
+  "uId": "M-XYXY-YAGA-35G3",
   "opg.poas.lpastore": {
     "attorneys": [
       {
@@ -122,6 +123,20 @@
       "town": "Southampton"
     },
     "id": 31944000,
-    "uId": "M-XYXY-YAGA-35G3"
+    "uId": "M-XYXY-YAGA-35G3",
+    "linkedDigitalLpas": [
+      {
+          "uId": "M-XYXY-YAGA-35G4",
+          "caseSubtype": "personal-welfare",
+          "createdDate": "",
+          "status": ""
+      },
+      {
+          "uId": "M-XYXY-YAGA-35G0",
+          "caseSubtype": "personal-welfare",
+          "createdDate": "",
+          "status": ""
+      }
+    ]
   }
 }
