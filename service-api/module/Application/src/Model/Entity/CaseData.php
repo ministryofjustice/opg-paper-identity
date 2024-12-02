@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
-use Application\Model\Entity\CaseProgress;
-use Application\Model\IdMethod;
-use Application\Model\Entity\CounterService;
-use Application\Validators\Enum;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
 use Exception;
@@ -16,9 +12,7 @@ use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\Explode;
 use Laminas\Validator\NotEmpty;
-use Laminas\Validator\Regex;
 use Laminas\Validator\Uuid;
-use Application\Model\Entity\VouchingFor;
 
 /**
  * DTO for holding data required to make new case entry post
@@ -38,33 +32,12 @@ class CaseData implements JsonSerializable
     #[Validator(NotEmpty::class)]
     public string $personType;
 
-    #[Annotation\Required(false)]
-    #[Validator(Regex::class, options: ["pattern" => "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", "messages" => [
-        Regex::NOT_MATCH => 'Please enter a valid date of birth in the format YYYY-MM-DD'
-    ]])]
-    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
-    public ?string $dob = null;
-
-    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
-    public ?string $firstName = null;
-
-    #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
-    public ?string $lastName = null;
-
     /**
-     * @var array{
-     *   line1: string,
-     *   line2?: string,
-     *   line3?: string,
-     *   town?: string,
-     *   postcode: string,
-     *   country?: string,
-     * }|null
+     * @var ?ClaimedIdentity
      */
     #[Annotation\Required(false)]
-    #[Validator(NotEmpty::class)]
-    public ?array $address = null;
-
+    #[Annotation\ComposedObject(ClaimedIdentity::class)]
+    public ?ClaimedIdentity $claimedIdentity = null;
 
     /**
      * @var ?VouchingFor
@@ -150,6 +123,8 @@ class CaseData implements JsonSerializable
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
             } elseif ($key === 'vouchingFor') {
                 $instance->vouchingFor = VouchingFor::fromArray($value);
+            } elseif ($key === 'claimedIdentity') {
+                $instance->claimedIdentity = ClaimedIdentity::fromArray($value);
             } elseif ($key === 'caseAssistance') {
                 $instance->caseAssistance = CaseAssistance::fromArray($value);
             } elseif (property_exists($instance, $key)) {
@@ -166,17 +141,6 @@ class CaseData implements JsonSerializable
      * @return array{
      *     id: string,
      *     personType: "donor"|"certificateProvider",
-     *     firstName: ?string,
-     *     lastName: ?string,
-     *     dob: ?string,
-     *     address: ?array{
-     *       line1: string,
-     *       line2?: string,
-     *       line3?: string,
-     *       town?: string,
-     *       postcode: string,
-     *       country?: string,
-     *     },
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],
      *     kbvQuestions: KBVQuestion[],
@@ -191,6 +155,7 @@ class CaseData implements JsonSerializable
      *     caseProgress?: CaseProgress,
      *     fraudScore?: FraudScore,
      *     caseAssistance?: CaseAssistance,
+     *     claimedIdentity?: ClaimedIdentity
      * }
      */
     public function toArray(): array
@@ -198,10 +163,6 @@ class CaseData implements JsonSerializable
         $arr = [
             'id' => $this->id,
             'personType' => $this->personType,
-            'firstName' => $this->firstName,
-            'lastName' => $this->lastName,
-            'dob' => $this->dob,
-            'address' => $this->address,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
@@ -233,6 +194,10 @@ class CaseData implements JsonSerializable
 
         if ($this->vouchingFor !== null) {
             $arr['vouchingFor'] = $this->vouchingFor;
+        }
+
+        if ($this->claimedIdentity !== null) {
+            $arr['claimedIdentity'] = $this->claimedIdentity;
         }
 
         if ($this->caseAssistance !== null) {

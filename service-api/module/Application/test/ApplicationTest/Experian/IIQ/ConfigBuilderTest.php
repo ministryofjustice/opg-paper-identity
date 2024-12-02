@@ -31,16 +31,18 @@ class ConfigBuilderTest extends TestCase
             [
                 [
                     'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                    'firstName' => 'Maria',
-                    'lastName' => 'Williams',
-                    'personType' => 'donor',
-                    'dob' => '1960-01-01',
-                    'address' => [
-                        'line1' => '123 long street',
-                        'line2' => 'Kings Cross',
-                        'town' => 'London',
-                        'postcode' => 'NW1 1SP',
+                    'claimedIdentity' => [
+                        'firstName' => 'Maria',
+                        'lastName' => 'Williams',
+                        'dob' => '1960-01-01',
+                        'address' => [
+                            'line1' => '123 long street',
+                            'line2' => 'Kings Cross',
+                            'town' => 'London',
+                            'postcode' => 'NW1 1SP',
+                        ]
                     ],
+                    'personType' => 'donor',
                     'fraudScore' => [
                         "decision" => "ACCEPT",
                         "score" => 265
@@ -78,16 +80,18 @@ class ConfigBuilderTest extends TestCase
             [
                 [
                     'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                    'firstName' => 'Maria',
-                    'lastName' => 'Williams',
-                    'personType' => 'donor',
-                    'dob' => '1960-01-01',
-                    'address' => [
-                        'line1' => '123 long street',
-                        'line2' => 'Kings Cross',
-                        'town' => 'London',
-                        'postcode' => 'NW1 1SP',
+                    'claimedIdentity' => [
+                        'firstName' => 'Maria',
+                        'lastName' => 'Williams',
+                        'dob' => '1960-01-01',
+                        'address' => [
+                            'line1' => '123 long street',
+                            'line2' => 'Kings Cross',
+                            'town' => 'London',
+                            'postcode' => 'NW1 1SP',
+                        ]
                     ],
+                    'personType' => 'donor',
                     'fraudScore' => [
                         "decision" => "STOP",
                         "score" => 990
@@ -126,16 +130,18 @@ class ConfigBuilderTest extends TestCase
             [
                 [
                     'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                    'firstName' => 'Maria',
-                    'lastName' => 'Williams',
-                    'personType' => 'donor',
-                    'dob' => '1960-01-01',
-                    'address' => [
-                        'line1' => '123 long street',
-                        'line2' => 'Kings Cross',
-                        'town' => 'London',
-                        'postcode' => 'NW1 1SP',
+                    'claimedIdentity' => [
+                        'firstName' => 'Maria',
+                        'lastName' => 'Williams',
+                        'dob' => '1960-01-01',
+                        'address' => [
+                            'line1' => '123 long street',
+                            'line2' => 'Kings Cross',
+                            'town' => 'London',
+                            'postcode' => 'NW1 1SP',
+                        ]
                     ],
+                    'personType' => 'donor',
                     'fraudScore' => [
                         "decision" => "REFER",
                         "score" => 950
