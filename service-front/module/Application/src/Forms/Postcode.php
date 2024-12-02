@@ -7,6 +7,7 @@ namespace Application\Forms;
 use Application\Validators\PostcodeValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
@@ -19,5 +20,8 @@ class Postcode implements FormTemplate
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(PostcodeValidator::class)]
-    public mixed $postcode;
+    // empty values are handled in the PostcodeValidator
+    #[Annotation\Validator(NotEmpty::class, options: [
+        'type' => NotEmpty::ALL & ~NotEmpty::STRING
+    ])]    public mixed $postcode;
 }
