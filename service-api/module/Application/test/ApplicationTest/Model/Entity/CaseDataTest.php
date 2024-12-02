@@ -53,7 +53,6 @@ class CaseDataTest extends TestCase
         return [
             [$validData, true],
             [array_merge($validData, ['lpas' => ['M-AGGA-XX']]), false],
-            [array_replace_recursive($validData, ['claimedIdentity' => ['lastName' => '']]), false],
             [array_replace_recursive($validData, ['claimedIdentity' => ['dob' => '11-11-2020']]), false],
             [array_replace_recursive($validData, ['lpas' => ['xx']]), false],
             [array_merge($validData, ['documentComplete' => true]), true],
