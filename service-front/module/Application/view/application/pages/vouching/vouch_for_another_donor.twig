@@ -1,0 +1,86 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+
+{% block content %}
+    {% if form.get('lpa').messages %}
+        <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+            <h2 class="govuk-heading-m">There is a problem</h2>
+            <p class="govuk-body">{{ form.get('lpa').messages | join(', ', ' and ') }}</p>
+        </div>
+    {% endif %}
+
+    <h1 class="govuk-heading-xl">{% block title %}Vouch or another donor{% endblock %}</h1>
+
+
+
+    <form method="POST">
+        <div class="govuk-form-group govuk-!-width-two-thirds {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="event-name">
+                What is the LPA number?
+                </label>
+            </h1>
+            <div id="lpa-number-hint" class="govuk-hint">
+                LPA reference numbers are 12 numbers long.
+                <br>
+                For example: M-0000-0000-0000
+            </div>
+            {% if form.get('lpa').messages %}
+                <p id="lpa-number-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>{{ form.get('lpa').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            <div>
+                <input
+                class="govuk-input moj-search__input govuk-!-width-two-thirds {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
+                id="lpa"
+                name="lpa"
+                value="{{ form.get('lpa').value }}"
+                type="search"
+                autocomplete="off"
+                aria-describedby="lpa-hint {% if form.get('lpa').messages %}lpa-error{% endif %}"
+                >
+                <input type="submit" class="govuk-button moj-search__button" value="Find LPA">
+            </div>
+        </div>
+    </form>
+    {% if lpa_response %}
+        <div>
+            <table class="govuk-table govuk-!-width-two-thirds">
+                <caption class="govuk-table__caption govuk-table__caption--m">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} LPAs found</strong></caption>
+                <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">LPA reference number(s)</th>
+                    <td class="govuk-table__cell">
+                    {% for lpa in lpa_response['lpas'] %}
+                        <span class="app-type-text-colour--{{ lpa['type'] }}">{{ lpa['type'] }}</span>
+                        {{ lpa['uId'] }}{% if loop.last == false %}<br>{% endif %}
+                    {% endfor %}
+                    </td>
+                    <td class="govuk-table__cell"></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Donor name</th>
+                    <td class="govuk-table__cell">{{ lpa_response['donorName'] }}</td>
+                    <td class="govuk-table__cell"></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Donor date of birth</th>
+                    <td class="govuk-table__cell">{{ lpa_response['donorDob'] }}</td>
+                    <td class="govuk-table__cell"></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Donor address</th>
+                    <td class="govuk-table__cell">{{ lpa_response['donorAddress'] }}</td>
+                    <td class="govuk-table__cell"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
