@@ -54,13 +54,13 @@ class AuthApiService
     }
 
     private function cacheTokenResponse(
-        ResponseDTO $experianCrosscoreAuthResponseDTO,
+        ResponseDTO $dwpAuthResponseDTO,
     ): void {
         $this->apcHelper->setValue(
-            'experian_crosscore_access_token',
+            'dwp_access_token',
             json_encode([
-                'access_token' => $experianCrosscoreAuthResponseDTO->accessToken(),
-                'time' => $experianCrosscoreAuthResponseDTO->issuedAt()
+                'access_token' => $dwpAuthResponseDTO->accessToken(),
+                'time' => $dwpAuthResponseDTO->issuedAt()
             ])
         );
     }
@@ -71,7 +71,7 @@ class AuthApiService
      */
     public function retrieveCachedTokenResponse(): string
     {
-        $cachedToken = $this->apcHelper->getValue('experian_crosscore_access_token');
+        $cachedToken = $this->apcHelper->getValue('dwp_access_token');
 
         if (! $cachedToken) {
             return $this->authenticate()->accessToken();
@@ -91,7 +91,7 @@ class AuthApiService
      * @throws AuthApiException
      */
     private function getToken(
-        RequestDTO $experianCrosscoreAuthRequestDTO
+        RequestDTO $dwpAuthRequestDTO
     ): ResponseDTO {
         try {
             $response = $this->client->request(
@@ -99,7 +99,7 @@ class AuthApiService
                 '/oauth2/experianone/v1/token',
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => $experianCrosscoreAuthRequestDTO->toArray()
+                    'json' => $dwpAuthRequestDTO->toArray()
                 ]
             );
 

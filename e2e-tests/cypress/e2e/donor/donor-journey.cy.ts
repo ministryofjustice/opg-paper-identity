@@ -186,7 +186,7 @@ describe("Identify a Donor", () => {
     cy.contains(".moj-banner", "Identity check failed");
   });
 
-  it("passes on STOP or REFER if you get four out of four KBVs right", () => {
+  it("passes on STOP or REFER if low fraud risk identity gets four out of four KBVs right", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
     cy.contains("How will you confirm your identity?");
@@ -220,7 +220,7 @@ describe("Identify a Donor", () => {
     cy.contains(".moj-banner", "Identity check passed");
   });
 
-  it("fails on STOP or REFER if you get any KBV wrong", () => {
+  it("fails on STOP or REFER if high fraud risk identity gets any KBV wrong", () => {
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35F0");
 
     cy.contains("How will you confirm your identity?");
