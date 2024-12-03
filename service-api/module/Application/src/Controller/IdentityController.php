@@ -93,6 +93,12 @@ class IdentityController extends AbstractActionController
 
         $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
+        if (!$case) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+
+            return new JsonModel(new Problem('Case not found'));
+        }
+
         try {
             $case->update($data);
         } catch (\Exception $exception) {

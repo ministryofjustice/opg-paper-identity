@@ -227,7 +227,7 @@ class CaseData implements JsonSerializable
             } elseif ($key === 'vouchingFor') {
                 throw new NotImplementedException('vouchingFor update function not yet implemented');
             } elseif ($key === 'claimedIdentity') {
-                $this->claimedIdentity->update($value);
+                $this->claimedIdentity?->update($value);
             } elseif ($key === 'caseAssistance') {
                 throw new NotImplementedException('caseAssistance update function not yet implemented');
             } elseif (property_exists($this, $key)) {
