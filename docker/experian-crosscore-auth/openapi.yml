@@ -41,6 +41,11 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - username
+                - password
+                - client_id
+                - client_secret
               properties:
                 username:
                   type: string

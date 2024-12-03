@@ -37,7 +37,10 @@ class FraudApiService
     {
         return [
             'Content-Type' => 'application/json',
-            'Authorization' => $this->experianCrosscoreAuthApiService->retrieveCachedTokenResponse(),
+            'Authorization' => sprintf(
+                'Bearer %s',
+                $this->experianCrosscoreAuthApiService->retrieveCachedTokenResponse()
+            ),
             'X-User-Domain' => $this->config['domain']
         ];
     }
@@ -66,7 +69,7 @@ class FraudApiService
 
             $response = $this->client->request(
                 'POST',
-                '/3',
+                '3',
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => json_encode($postBody)
