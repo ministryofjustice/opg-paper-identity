@@ -577,7 +577,6 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-
                 $this->opgApiService->updateCaseAddress($uuid, $this->formToArray($form));
 
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
