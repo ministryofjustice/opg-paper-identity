@@ -185,6 +185,7 @@ class OpgApiService implements OpgApiServiceInterface
             $data = [
                 'personType' => $personType,
                 'lpas' => $lpas,
+                'claimedIdentity' => [],
                 'vouchingFor' => [
                     'firstName' => $firstname,
                     'lastName' => $lastname,
