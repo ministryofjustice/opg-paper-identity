@@ -37,10 +37,10 @@ class RequestDTO
     public function toArray(): array
     {
         return [
-            'userName' => $this->userName,
+            'username' => $this->userName,
             'password' => $this->password,
-            'clientId' => $this->clientId,
-            'clientSecret' => $this->clientSecret,
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
         ];
     }
 }
