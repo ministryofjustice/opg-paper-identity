@@ -10,6 +10,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\ClaimedIdentity;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
@@ -172,6 +173,93 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
+
+    public static function updateActionData(): array
+    {
+        return [
+            'valid_update' => [
+                'uuid' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+                'inputData' => [
+                    'claimedIdentity' => [
+                        'firstName' => 'Bob',
+                        'lastName' => 'Johnson',
+                    ],
+                ],
+                'returnsMockCase' => true, // Pass the mock case object
+                'expectedStatus' => Response::STATUS_CODE_200
+            ],
+            'invalid_update_data' => [
+                'uuid' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+                'inputData' => [
+                    'claimedIdentity' => [
+                        'firstName' => '',
+                        'lastName' => 'Smith'
+                    ]
+                ],
+                'returnsMockCase' => true,
+                'expectedStatus' => Response::STATUS_CODE_400
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider updateActionData
+     */
+    public function testUpdateAction(
+        string $uuid,
+        array $inputData,
+        bool $returnsMockCase,
+        int $expectedStatus
+    ): void {
+        $mockCase = $this->createMock(CaseData::class);
+
+        $mockCase->claimedIdentity = ClaimedIdentity::fromArray([
+            'firstName' => $inputData['claimedIdentity']['firstName'],
+            'lastName' => $inputData['claimedIdentity']['lastName'],
+            'dob' => '1980-10-10',
+            'address' => [
+                'line1' => 'address 1',
+                'line2' => 'address 2',
+                'postcode' => 'GH67 7HJ'
+            ]
+        ]);
+
+        $mockCase->lpas = [
+            'M-XYXY-YAGA-35G3',
+            'M-VGAS-OAGA-34G9',
+        ];
+
+        $mockCase->personType = 'donor';
+
+        if ($returnsMockCase) {
+            $mockCase->expects($this->once())
+                ->method('update')
+                ->with($inputData);
+
+            if ($expectedStatus === Response::STATUS_CODE_200) {
+                $this->dataImportHandler
+                    ->expects($this->once())
+                    ->method('insertUpdateData')
+                    ->with($mockCase);
+            }
+        }
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($mockCase);
+
+        try {
+            $this->dispatchJSON('/cases/update/' . $uuid, 'PATCH', $inputData);
+        } catch (\Exception $e) {
+            $this->fail('Unexpected exception: ' . $e->getMessage());
+        }
+
+        $this->assertResponseStatusCode($expectedStatus);
+        $this->assertMatchedRouteName('update_case');
+    }
+
     /**
      * @dataProvider ninoData
      */
@@ -331,7 +419,7 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
@@ -420,7 +508,7 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
@@ -560,7 +648,7 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
