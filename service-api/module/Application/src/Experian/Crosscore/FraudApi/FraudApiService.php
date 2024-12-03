@@ -66,7 +66,7 @@ class FraudApiService
 
             $response = $this->client->request(
                 'POST',
-                '/3',
+                '3',
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => json_encode($postBody)
