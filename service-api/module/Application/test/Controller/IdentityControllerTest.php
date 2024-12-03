@@ -186,7 +186,7 @@ class IdentityControllerTest extends TestCase
                         'dob' => '1980-10-10'
                     ],
                 ],
-                'returnsMockCase' => true, // Pass the mock case object
+                'returnsMockCase' => true,
                 'expectedStatus' => Response::STATUS_CODE_200
             ],
             'invalid_update_data' => [
