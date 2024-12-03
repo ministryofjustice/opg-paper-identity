@@ -84,12 +84,12 @@ class OpgApiService implements OpgApiServiceInterface
                 $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
             }
             if (
-                array_key_exists('alternateAddress', $response) &&
-                ! empty($response['alternateAddress'])
+                array_key_exists('professionalAddress', $response) &&
+                ! empty($response['professionalAddress'])
             ) {
-                $response['alternateAddress'] = (
+                $response['professionalAddress'] = (
                     new AddressProcessorHelper()
-                )->getAddress($response['alternateAddress']);
+                )->getAddress($response['professionalAddress']);
             }
 
             /** @var CaseData $response */
@@ -203,7 +203,22 @@ class OpgApiService implements OpgApiServiceInterface
             ];
         }
 
+        // Store the certificate provider's address in professional address as we may be overwriting the
+        // main address with a different one
+        if ($personType === 'certificateProvider') {
+            $data['professionalAddress'] = $address;
+        }
+
         return $this->makeApiRequest("/cases/create", 'POST', $data);
+    }
+
+    public function updateCaseAddress($uuid, $address) : void
+    {
+        $this->makeApiRequest("/cases/update/$uuid", 'PATCH', [
+            'claimedIdentity' => [
+                'address' => $address
+            ]
+        ]);
     }
 
     public function updateIdMethod(string $uuid, string $method): void
