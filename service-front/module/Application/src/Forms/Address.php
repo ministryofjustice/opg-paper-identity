@@ -22,7 +22,7 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
  * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class CpAltAddress implements FormTemplate
+class Address implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
