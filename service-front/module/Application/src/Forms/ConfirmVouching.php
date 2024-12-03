@@ -18,7 +18,7 @@ use Laminas\Validator\NotEmpty;
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class ConfirmVouching implements FormTemplate
 {
-     /**
+    /**
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Validator(NotEmpty::class, options: [
