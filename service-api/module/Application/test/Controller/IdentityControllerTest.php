@@ -183,6 +183,7 @@ class IdentityControllerTest extends TestCase
                     'claimedIdentity' => [
                         'firstName' => 'Bob',
                         'lastName' => 'Johnson',
+                        'dob' => '1980-10-10'
                     ],
                 ],
                 'returnsMockCase' => true, // Pass the mock case object
@@ -192,8 +193,9 @@ class IdentityControllerTest extends TestCase
                 'uuid' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
                 'inputData' => [
                     'claimedIdentity' => [
-                        'firstName' => '',
-                        'lastName' => 'Smith'
+                        'firstName' => 'Bob',
+                        'lastName' => 'Smith',
+                        'dob' => '10-10-1980'
                     ]
                 ],
                 'returnsMockCase' => true,
@@ -216,7 +218,7 @@ class IdentityControllerTest extends TestCase
         $mockCase->claimedIdentity = ClaimedIdentity::fromArray([
             'firstName' => $inputData['claimedIdentity']['firstName'],
             'lastName' => $inputData['claimedIdentity']['lastName'],
-            'dob' => '1980-10-10',
+            'dob' => $inputData['claimedIdentity']['dob'],
             'address' => [
                 'line1' => 'address 1',
                 'line2' => 'address 2',
