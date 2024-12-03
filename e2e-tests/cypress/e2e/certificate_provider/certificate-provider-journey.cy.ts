@@ -253,7 +253,7 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains("What is the address on the ID document?");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Enter a postcode");
         cy.get("#postcode").type("SW1A 1AA");
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("What is the address on the ID document?");
