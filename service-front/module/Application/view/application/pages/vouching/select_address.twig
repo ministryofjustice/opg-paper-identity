@@ -10,7 +10,7 @@
             What is their home address?
         {% endblock %}
     </h1>
-    <form method="POST" action="./select-address">
+    <form method="POST">
         <div class="govuk-form-group {% if form.get('address_json').messages %}govuk-form-group--error{% endif %}">
 
             {% if form.get('address_json').messages %}
@@ -31,9 +31,7 @@
             </div>
 
             <p id="different-method-link">
-                <a href="/{{ details_data['id'] }}/vouching/enter-address-manual" class="govuk-link">
-                    The address is not in the list
-                </a>
+                <a href="./../enter-address-manual" class="govuk-link">The address is not in the list</a>
             </p>
             <input type="hidden" name="address_search_response" value="{{ address_search_response }}">
         </div>
