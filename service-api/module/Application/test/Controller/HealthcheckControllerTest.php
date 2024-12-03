@@ -127,7 +127,7 @@ class HealthcheckControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
@@ -161,7 +161,7 @@ class HealthcheckControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "alternateAddress" => [
+            "professionalAddress" => [
             ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
