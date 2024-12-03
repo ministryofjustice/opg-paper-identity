@@ -167,7 +167,6 @@ class IdentityControllerTest extends TestCase
 
         return [
             [$validData, Response::STATUS_CODE_200],
-            [array_replace_recursive($validData, ['claimedIdentity' => ['lastName' => '']]), Response::STATUS_CODE_400],
             [array_replace_recursive($validData, ['claimedIdentity' => ['dob' => '11-11-2020']]),
                 Response::STATUS_CODE_400],
             [array_replace_recursive($validData, ['lpas' => ['NAHF-AHDA-NNN']]), Response::STATUS_CODE_400],

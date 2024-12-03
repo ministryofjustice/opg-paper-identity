@@ -21,9 +21,11 @@ class ClaimedIdentity extends Entity
     ]])]
     public ?string $dob = null;
 
+    #[Annotation\Required(false)]
     #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public ?string $firstName = null;
 
+    #[Annotation\Required(false)]
     #[Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public ?string $lastName = null;
 
