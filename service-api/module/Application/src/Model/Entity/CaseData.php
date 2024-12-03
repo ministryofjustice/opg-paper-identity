@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Model\Entity;
 
 use Application\Exceptions\NotImplementedException;
+use Application\Exceptions\PropertyMatchException;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
 use Exception;
@@ -232,7 +233,7 @@ class CaseData implements JsonSerializable
             } elseif (property_exists($this, $key)) {
                 $this->{$key} = $value;
             } else {
-                throw new Exception(sprintf('%s does not have property "%s"', $this::class, $key));
+                throw new PropertyMatchException(sprintf('%s does not have property "%s"', $this::class, $key));
             }
         }
     }
