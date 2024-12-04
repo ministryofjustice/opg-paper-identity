@@ -488,7 +488,7 @@ class FormProcessorHelperTest extends TestCase
                     "decision" => "STOP",
                     "score" => 980
                 ],
-                "application/pages/fraud_failure"
+                "application/pages/national_insurance_number_success"
             ],
         ];
     }
