@@ -12,10 +12,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
-use Telemetry\Instrumentation\Laminas;
 
 class FraudApiService
 {
@@ -76,7 +74,11 @@ class FraudApiService
                 ]
             );
 
-            $responseArray = json_decode($response->getBody()->getContents(), true);
+            $body = $response->getBody()->getContents();
+
+            $this->logger->info(sprintf('FraudScore response: ', $body));
+
+            $responseArray = json_decode($body, true);
 
             return new ResponseDTO(
                 $responseArray
