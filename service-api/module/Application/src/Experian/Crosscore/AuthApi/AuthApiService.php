@@ -8,7 +8,10 @@ use Application\Cache\ApcHelper;
 use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
 use Application\Experian\Crosscore\AuthApi\DTO\ResponseDTO;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use Laminas\Http\Response;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class AuthApiService
@@ -18,6 +21,7 @@ class AuthApiService
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
+        private readonly LoggerInterface $logger,
         private readonly RequestDTO $experianCrosscoreAuthRequestDTO
     ) {
     }
@@ -112,7 +116,13 @@ class AuthApiService
                 $responseArray['expires_in'],
                 $responseArray['token_type']
             );
+        } catch (ClientException $clientException) {
+            $response = $clientException->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            $this->logger->error('GuzzleAuthApiException: ' . $responseBodyAsString);
+            throw new AuthApiException($clientException->getMessage());
         } catch (\Exception $exception) {
+            $this->logger->error('GuzzleAuthApiException: ' . json_encode($exception->getTrace()));
             throw new AuthApiException($exception->getMessage());
         }
     }

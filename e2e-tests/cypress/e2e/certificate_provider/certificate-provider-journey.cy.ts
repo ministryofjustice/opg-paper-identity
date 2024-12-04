@@ -23,6 +23,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("National insurance number");
+        cy.contains("20 January 1999");
         cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
         cy.get(".govuk-button").contains("Continue").click();
 

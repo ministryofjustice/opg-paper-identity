@@ -465,7 +465,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'dob',
+                'claimedIdentity.dob',
                 $dob
             );
         } catch (\Exception $exception) {
