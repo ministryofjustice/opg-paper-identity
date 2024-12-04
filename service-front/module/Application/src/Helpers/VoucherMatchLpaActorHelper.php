@@ -57,7 +57,8 @@ class VoucherMatchLpaActorHelper
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.sirius"]["donor"]["firstname"],
                 "lastName" => $lpasData["opg.poas.sirius"]["donor"]["surname"],
-                "dob" => $lpasData["opg.poas.sirius"]["donor"]["dob"],
+                // we replace
+                "dob" => implode("-", array_reverse(explode("/", $lpasData["opg.poas.sirius"]["donor"]["dob"]))),
                 "type" => LpaActorTypes::DONOR->value,
             ];
         }
