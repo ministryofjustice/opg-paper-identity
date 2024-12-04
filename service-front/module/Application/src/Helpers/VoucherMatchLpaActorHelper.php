@@ -129,12 +129,12 @@ class VoucherMatchLpaActorHelper
             return false;
         }
 
-        $addressesAsStrings = array_values(AddressProcessorHelper::stringifyAddresses([$donorAddress, $address]));
-
-        //if the addresses are identical, including case, than `stringifyAddresses` will return only one value
-        //else we check for a match ignoring case
-        return
-            count($addressesAsStrings) === 1 ||
-            strtolower($addressesAsStrings[0]) === strtolower($addressesAsStrings[1]);
+        // we check address match on line1 and postcode only, ignoring case (and whitespace in postcode)
+        /**
+        * @psalm-suppress PossiblyInvalidArgument
+        */
+        return strtolower(trim($donorAddress["line1"])) === strtolower(trim($address["line1"])) &&
+                strtolower(preg_replace("/\s+/", "", $donorAddress["postcode"])) ===
+                strtolower(preg_replace("/\s+/", "", $address["postcode"]));
     }
 }
