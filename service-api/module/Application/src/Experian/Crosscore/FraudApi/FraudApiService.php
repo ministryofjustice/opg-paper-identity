@@ -109,9 +109,9 @@ class FraudApiService
             "header" => [
                 "tenantId" => $this->config['tenantId'],
                 "requestType" => "FraudScore",
-                "clientReferenceId" => "$requestUuid-FraudScore-continue",
-                "expRequestId" => $requestUuid,
-                "messageTime" => date("Y-m-d\TH:i:s.000\Z"),
+                "clientReferenceId" => "$requestUuid-FraudScore",
+                "expRequestId" => null,
+                "messageTime" => date("Y-m-d\TH:i:s\Z"),
                 "options" => []
             ],
             "payload" => [
@@ -122,7 +122,7 @@ class FraudApiService
                             "personDetails" => [
                                 "dateOfBirth" => $experianCrosscoreFraudRequestDTO->dob()
                             ],
-                            "personIdentifier" => "",
+                            "personIdentifier" => "PERSON1",
                             "names" => [
                                 [
                                     "type" => "CURRENT",
@@ -131,20 +131,19 @@ class FraudApiService
                                     "id" => "NAME1"
                                 ]
                             ],
-                            "addresses" => [
-                                [
-                                    "id" => "MACADDRESS1",
-                                    "addressType" => "CURRENT",
-                                    "indicator" => "RESIDENTIAL",
-                                    "buildingName" => $addressDTO->line1(),
-                                    "street" => $addressDTO->line2(),
-                                    "street2" => $addressDTO->line3(),
-                                    "postal" => $addressDTO->postcode(),
-                                    "postTown" => $addressDTO->town(),
-                                    "county" => $addressDTO->country()
-                                ]
-                            ]
                         ],
+                        "addresses" => [
+                            [
+                                "id" => "MACADDRESS1",
+                                "addressType" => "CURRENT",
+                                "indicator" => "RESIDENTIAL",
+                                "buildingName" => $addressDTO->line1(),
+                                "street" => $addressDTO->line2(),
+                                "street2" => $addressDTO->line3(),
+                                "postal" => $addressDTO->postcode(),
+                                "postTown" => $addressDTO->town()
+                            ]
+                        ]
                     ]
                 ],
                 "control" => [
