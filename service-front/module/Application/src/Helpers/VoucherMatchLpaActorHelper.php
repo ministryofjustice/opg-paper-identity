@@ -119,7 +119,7 @@ class VoucherMatchLpaActorHelper
             );
         } elseif (! empty($lpasData["opg.poas.sirius"])) {
             $donorAddress = AddressProcessorHelper::processAddress(
-                $lpasData["opg.poas.sirius"]["donor"]["address"],
+                $lpasData["opg.poas.sirius"]["donor"],
                 'siriusAddressType'
             );
         }

@@ -240,14 +240,14 @@ class VoucherMatchLpaActorHelperTest extends TestCase
             [
                 "lpasData" => [
                     "opg.poas.lpastore" => ["donor" => ["address" => $addressOne]],
-                    "opg.poas.sirius" => ["donor" => ["address" => $addressTwoSirius]],
+                    "opg.poas.sirius" => ["donor" => $addressTwoSirius],
                 ],
                 "address" => $addressOne,
                 "expected_result" => true
             ],
             [
                 "lpasData" => [
-                    "opg.poas.sirius" => ["donor" => ["address" => $addressOneSirius]]],
+                    "opg.poas.sirius" => ["donor" => $addressOneSirius]],
                 "address" => $addressOne,
                 "expected_result" => true
             ],
