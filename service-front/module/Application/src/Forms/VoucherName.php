@@ -21,7 +21,7 @@ class VoucherName implements FormTemplate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their first name(s)'])]
+    #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their first names'])]
     public mixed $firstName = null;
 
     /**
