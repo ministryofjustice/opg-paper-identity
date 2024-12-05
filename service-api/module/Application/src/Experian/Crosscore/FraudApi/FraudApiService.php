@@ -12,10 +12,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
-use Telemetry\Instrumentation\Laminas;
 
 class FraudApiService
 {
@@ -67,16 +65,22 @@ class FraudApiService
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
 
+            $this->logger->info(sprintf('FraudScore request: %s', json_encode($postBody)));
+
             $response = $this->client->request(
                 'POST',
                 '3',
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => json_encode($postBody)
+                    'json' => $postBody,
                 ]
             );
 
-            $responseArray = json_decode($response->getBody()->getContents(), true);
+            $body = $response->getBody()->getContents();
+
+            $this->logger->info(sprintf('FraudScore response: %s', $body));
+
+            $responseArray = json_decode($body, true);
 
             return new ResponseDTO(
                 $responseArray
@@ -107,9 +111,9 @@ class FraudApiService
             "header" => [
                 "tenantId" => $this->config['tenantId'],
                 "requestType" => "FraudScore",
-                "clientReferenceId" => "$requestUuid-FraudScore-continue",
-                "expRequestId" => $requestUuid,
-                "messageTime" => date("Y-m-d\TH:i:s.000\Z"),
+                "clientReferenceId" => "$requestUuid-FraudScore",
+                "expRequestId" => null,
+                "messageTime" => date("Y-m-d\TH:i:s\Z"),
                 "options" => []
             ],
             "payload" => [
@@ -120,7 +124,7 @@ class FraudApiService
                             "personDetails" => [
                                 "dateOfBirth" => $experianCrosscoreFraudRequestDTO->dob()
                             ],
-                            "personIdentifier" => "",
+                            "personIdentifier" => "PERSON1",
                             "names" => [
                                 [
                                     "type" => "CURRENT",
@@ -129,20 +133,19 @@ class FraudApiService
                                     "id" => "NAME1"
                                 ]
                             ],
-                            "addresses" => [
-                                [
-                                    "id" => "MACADDRESS1",
-                                    "addressType" => "CURRENT",
-                                    "indicator" => "RESIDENTIAL",
-                                    "buildingName" => $addressDTO->line1(),
-                                    "street" => $addressDTO->line2(),
-                                    "street2" => $addressDTO->line3(),
-                                    "postal" => $addressDTO->postcode(),
-                                    "postTown" => $addressDTO->town(),
-                                    "county" => $addressDTO->country()
-                                ]
-                            ]
                         ],
+                        "addresses" => [
+                            [
+                                "id" => "MACADDRESS1",
+                                "addressType" => "CURRENT",
+                                "indicator" => "RESIDENTIAL",
+                                "buildingName" => $addressDTO->line1(),
+                                "street" => $addressDTO->line2(),
+                                "street2" => $addressDTO->line3(),
+                                "postal" => $addressDTO->postcode(),
+                                "postTown" => $addressDTO->town()
+                            ]
+                        ]
                     ]
                 ],
                 "control" => [
