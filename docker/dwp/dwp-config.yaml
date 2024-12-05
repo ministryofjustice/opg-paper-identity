@@ -2,26 +2,26 @@ plugin: openapi
 specFile: openapi.yml
 
 resources:
-  - path: "/oauth2/token"
+  - path: "/citizen-information/oauth2/token"
     method: post
     requestBody:
       operator: Contains
       value: xxxxxx
     response:
       statusCode: 200
-      scriptFile: useTokenFile.groovy
+      file: data/tokenResponse.json
 
-  - path: "/oauth2/token"
+  - path: "/citizen-information/oauth2/token"
     method: post
     response:
       statusCode: 401
-      scriptFile: useTokenFile401.groovy
+      file: data/tokenResponse401.json
 
   - path: "/v2/citizens/match"
     method: post
     requestBody:
       operator: Contains
-      value: NC112233C
+      value: 233C
     response:
       statusCode: 200
       file: data/foundResponse.json
