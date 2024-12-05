@@ -120,6 +120,8 @@ class HealthcheckControllerTest extends TestCase
                     "town" => "town",
                     "line2" => "Road",
                     "line1" => "1 Street",
+                ],
+                "professionalAddress" => [
                 ]
             ],
             "lpas" => [
@@ -127,8 +129,6 @@ class HealthcheckControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "professionalAddress" => [
-            ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "DRIVING_LICENCE",
@@ -154,6 +154,8 @@ class HealthcheckControllerTest extends TestCase
                     "town" => "town",
                     "line2" => "Road",
                     "line1" => "1 Street",
+                ],
+                "professionalAddress" => [
                 ]
             ],
             "lpas" => [
@@ -161,8 +163,6 @@ class HealthcheckControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "professionalAddress" => [
-            ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "DRIVING_LICENCE",

@@ -414,15 +414,15 @@ class IdentityControllerTest extends TestCase
                     "town" => "town",
                     "line2" => "Road",
                     "line1" => "1 Street",
-                ]
+                ],
+                "professionalAddress" => [
+                ],
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "professionalAddress" => [
-            ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
@@ -503,6 +503,8 @@ class IdentityControllerTest extends TestCase
                     "town" => "town",
                     "line2" => "Road",
                     "line1" => "1 Street",
+                ],
+                "professionalAddress" => [
                 ]
             ],
             "lpas" => [
@@ -510,8 +512,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "professionalAddress" => [
-            ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
@@ -643,6 +643,8 @@ class IdentityControllerTest extends TestCase
                     "town" => "town",
                     "line2" => "Road",
                     "line1" => "1 Street"
+                ],
+                "professionalAddress" => [
                 ]
             ],
             "lpas" => [
@@ -650,8 +652,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "professionalAddress" => [
-            ],
             "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",

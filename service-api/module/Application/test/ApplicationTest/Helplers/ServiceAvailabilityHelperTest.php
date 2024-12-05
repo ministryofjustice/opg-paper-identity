@@ -170,15 +170,14 @@ class ServiceAvailabilityHelperTest extends TestCase
                     "town" => "Southamption",
                     "postcode" => "SO15 3AA",
                     "country" => "GB"
-                ]
+                ],
+                "professionalAddress" => []
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3"
             ],
             "documentComplete" => true,
             "identityCheckPassed" => true,
-            "professionalAddress" => [
-            ],
             "searchPostcode" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "kbvQuestions" => [
