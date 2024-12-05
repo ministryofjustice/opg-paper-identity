@@ -22,11 +22,7 @@ use Laminas\Validator\NotEmpty;
  * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-<<<<<<<< HEAD:service-front/module/Application/src/Forms/Address.php
-class Address implements FormTemplate
-========
 class AddressInput implements FormTemplate
->>>>>>>> main:service-front/module/Application/src/Forms/AddressInput.php
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
