@@ -43,10 +43,17 @@ class ClaimedIdentity extends Entity
     public ?array $address = null;
 
     /**
-     * @var string[]
+     * @var array{
+     *   line1: string,
+     *   line2?: string,
+     *   line3?: string,
+     *   town?: string,
+     *   postcode: string,
+     *   country?: string,
+     * }|null
      */
     #[Annotation\Required(false)]
-    public ?array $professionalAddress = [];
+    public ?array $professionalAddress = null;
 
     /**
      * @param properties-of<self> $data
