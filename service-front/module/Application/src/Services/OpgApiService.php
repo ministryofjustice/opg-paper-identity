@@ -76,6 +76,7 @@ class OpgApiService implements OpgApiServiceInterface
             $response['firstName'] = $response['claimedIdentity']['firstName'];
             $response['lastName'] = $response['claimedIdentity']['lastName'];
             $response['address'] = $response['claimedIdentity']['address'];
+            $response['professionalAddress'] = $response['claimedIdentity']['professionalAddress'] ?? null;
             $response['dob'] = $response['claimedIdentity']['dob'];
 
             unset($response['claimedIdentity']);
@@ -84,12 +85,12 @@ class OpgApiService implements OpgApiServiceInterface
                 $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
             }
             if (
-                array_key_exists('alternateAddress', $response) &&
-                ! empty($response['alternateAddress'])
+                array_key_exists('professionalAddress', $response) &&
+                ! empty($response['professionalAddress'])
             ) {
-                $response['alternateAddress'] = (
+                $response['professionalAddress'] = (
                     new AddressProcessorHelper()
-                )->getAddress($response['alternateAddress']);
+                )->getAddress($response['professionalAddress']);
             }
 
             /** @var CaseData $response */
@@ -207,6 +208,15 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
+    public function updateCaseAddress(string $uuid, array $address): void
+    {
+        $this->makeApiRequest("/cases/update/$uuid", 'PATCH', [
+            'claimedIdentity' => [
+                'address' => $address
+            ]
+        ]);
+    }
+
     public function updateIdMethod(string $uuid, string $method): void
     {
         $data = [
@@ -285,9 +295,9 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function addSelectedAltAddress(string $uuid, array $data): void
+    public function updateCaseProfessionalAddress(string $uuid, array $data): void
     {
-        $url = sprintf("/cases/%s/save-alternate-address-to-case", $uuid);
+        $url = sprintf("/cases/%s/update-professional-address", $uuid);
 
         try {
             $this->makeApiRequest($url, 'POST', $data);
