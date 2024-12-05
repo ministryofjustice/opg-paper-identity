@@ -72,6 +72,14 @@ class OpgApiService implements OpgApiServiceInterface
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+
+            $response['firstName'] = $response['claimedIdentity']['firstName'];
+            $response['lastName'] = $response['claimedIdentity']['lastName'];
+            $response['address'] = $response['claimedIdentity']['address'];
+            $response['dob'] = $response['claimedIdentity']['dob'];
+
+            unset($response['claimedIdentity']);
+
             if ($response['address']) {
                 $response['address'] = (new AddressProcessorHelper())->getAddress($response['address']);
             }
@@ -177,6 +185,7 @@ class OpgApiService implements OpgApiServiceInterface
             $data = [
                 'personType' => $personType,
                 'lpas' => $lpas,
+                'claimedIdentity' => [],
                 'vouchingFor' => [
                     'firstName' => $firstname,
                     'lastName' => $lastname,
@@ -184,12 +193,14 @@ class OpgApiService implements OpgApiServiceInterface
             ];
         } else {
             $data = [
-                'firstName' => $firstname,
-                'lastName' => $lastname,
-                'dob' => $dob,
+                'claimedIdentity' => [
+                    'firstName' => $firstname,
+                    'lastName' => $lastname,
+                    'dob' => $dob,
+                    'address' => $address,
+                ],
                 'personType' => $personType,
-                'lpas' => $lpas,
-                'address' => $address,
+                'lpas' => $lpas
             ];
         }
 
@@ -258,6 +269,17 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
+
+    public function addSelectedAddress(string $uuid, array $data): void
+    {
+        $url = sprintf("/cases/%s/save-address-to-case", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

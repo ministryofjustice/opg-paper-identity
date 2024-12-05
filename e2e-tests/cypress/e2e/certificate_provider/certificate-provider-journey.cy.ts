@@ -23,6 +23,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("National insurance number");
+        cy.contains("20 January 1999");
         cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
         cy.get(".govuk-button").contains("Continue").click();
 
@@ -105,7 +106,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
 
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date needs to be a valid date");
+        cy.contains("The date cannot be empty.");
 
         cy.reload();
         // cy.screenshot();
@@ -180,7 +181,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
 
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date needs to be a valid date");
+        cy.contains("The date cannot be empty.");
 
         cy.reload();
         // cy.screenshot();
@@ -253,7 +254,7 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains("What is the address on the ID document?");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Enter a postcode");
         cy.get("#postcode").type("SW1A 1AA");
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("What is the address on the ID document?");

@@ -240,13 +240,11 @@ class FormProcessorHelper
             case 'CONTINUE':
             case 'REFER':
             case 'ACCEPT':
+            case 'STOP':
                 $template = $templates['success'];
                 break;
             case 'NODECISION':
                 $template = $templates['thin_file'];
-                break;
-            case 'STOP':
-                $template = $templates['fraud'];
                 break;
             default:
                 throw new OpgApiException('Unknown response received from fraud check service.');

@@ -320,6 +320,42 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function saveAddressToCaseAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing UUID",
+            ];
+
+            return new JsonModel($response);
+        }
+
+        try {
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'claimedIdentity.address',
+                $data,
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+
+            return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
     public function saveAlternateAddressToCaseAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
@@ -421,7 +457,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'dob',
+                'claimedIdentity.dob',
                 $dob
             );
         } catch (\Exception $exception) {
@@ -469,12 +505,12 @@ class IdentityController extends AbstractActionController
             try {
                 $this->dataHandler->updateCaseData(
                     $uuid,
-                    'firstName',
+                    'claimedIdentity.firstName',
                     $firstName
                 );
                 $this->dataHandler->updateCaseData(
                     $uuid,
-                    'lastName',
+                    'claimedIdentity.lastName',
                     $lastName
                 );
             } catch (\Exception $exception) {
@@ -576,7 +612,12 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem('Case does not exist'));
         }
 
-        if (! $case->address) {
+        if (! $case->claimedIdentity) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Case does not have claimed identity'));
+        }
+
+        if (! $case->claimedIdentity->address) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             return new JsonModel(new Problem('Case does not have an associated address'));
         }
@@ -584,20 +625,21 @@ class IdentityController extends AbstractActionController
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
         $addressDto = new AddressDTO(
-            $case->address['line1'],
-            $case->address['line2'] ?? "",
-            $case->address['line3'] ?? "",
-            $case->address['town'] ?? "",
-            $case->address['postcode'],
-            $case->address['country'] ?? "",
+            $case->claimedIdentity->address['line1'],
+            $case->claimedIdentity->address['line2'] ?? "",
+            $case->claimedIdentity->address['line3'] ?? "",
+            $case->claimedIdentity->address['town'] ?? "",
+            $case->claimedIdentity->address['postcode'],
+            $case->claimedIdentity->address['country'] ?? "",
         );
 
         $dto = new RequestDTO(
-            $case->firstName,
-            $case->lastName,
-            $case->dob,
+            $case->claimedIdentity->firstName,
+            $case->claimedIdentity->lastName,
+            $case->claimedIdentity->dob,
             $addressDto
         );
+
         $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
 
         $this->dataHandler->updateCaseData(

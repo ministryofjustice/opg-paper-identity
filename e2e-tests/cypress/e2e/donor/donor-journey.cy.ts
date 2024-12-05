@@ -187,7 +187,7 @@ describe("Identify a Donor", () => {
   });
 
   it("passes on STOP or REFER if you get four out of four KBVs right", () => {
-    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G0");
 
     cy.contains("How will you confirm your identity?");
     cy.get("label").contains("National insurance number").click();
@@ -207,6 +207,9 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Select answer");
+
+    cy.selectKBVAnswer({ correct: true });
+    cy.get(".govuk-button").contains("Continue").click();
 
     cy.selectKBVAnswer({ correct: true });
     cy.get(".govuk-button").contains("Continue").click();
