@@ -43,6 +43,7 @@ class ClaimedIdentity extends Entity
     public ?array $address = null;
 
     /**
+     * @psalm-suppress PossiblyUnusedProperty
      * @var array{
      *   line1: string,
      *   line2?: string,
