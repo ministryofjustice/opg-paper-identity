@@ -384,7 +384,7 @@ class IdentityController extends AbstractActionController
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'professionalAddress',
+                'claimedIdentity.professionalAddress',
                 $data,
             );
         } catch (\Exception $exception) {

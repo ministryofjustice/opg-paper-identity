@@ -71,12 +71,6 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?bool $identityCheckPassed = null;
 
-    /**
-     * @var string[]
-     */
-    #[Annotation\Required(false)]
-    public ?array $professionalAddress = [];
-
     #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
 
@@ -149,7 +143,6 @@ class CaseData implements JsonSerializable
      *     iiqControl?: IIQControl,
      *     documentComplete: bool,
      *     identityCheckPassed: ?bool,
-     *     professionalAddress: ?string[],
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
@@ -168,7 +161,6 @@ class CaseData implements JsonSerializable
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
-            'professionalAddress' => $this->professionalAddress,
             'searchPostcode' => $this->searchPostcode,
             'yotiSessionId' => $this->yotiSessionId,
             'kbvQuestions' => $this->kbvQuestions,

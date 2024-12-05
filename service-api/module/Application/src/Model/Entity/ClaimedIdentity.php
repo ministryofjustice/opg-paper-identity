@@ -43,6 +43,12 @@ class ClaimedIdentity extends Entity
     public ?array $address = null;
 
     /**
+     * @var string[]
+     */
+    #[Annotation\Required(false)]
+    public ?array $professionalAddress = [];
+
+    /**
      * @param properties-of<self> $data
      */
     public static function fromArray(mixed $data): self

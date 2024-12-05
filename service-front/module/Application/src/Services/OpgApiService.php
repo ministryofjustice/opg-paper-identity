@@ -203,12 +203,6 @@ class OpgApiService implements OpgApiServiceInterface
             ];
         }
 
-        // Store the certificate provider's address in professional address as we may be overwriting the
-        // main address with a different one
-        if ($personType === 'certificateProvider') {
-            $data['professionalAddress'] = $address;
-        }
-
         return $this->makeApiRequest("/cases/create", 'POST', $data);
     }
 
