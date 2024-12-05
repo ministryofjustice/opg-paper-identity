@@ -76,6 +76,7 @@ class OpgApiService implements OpgApiServiceInterface
             $response['firstName'] = $response['claimedIdentity']['firstName'];
             $response['lastName'] = $response['claimedIdentity']['lastName'];
             $response['address'] = $response['claimedIdentity']['address'];
+            $response['professionalAddress'] = $response['claimedIdentity']['professionalAddress'];
             $response['dob'] = $response['claimedIdentity']['dob'];
 
             unset($response['claimedIdentity']);

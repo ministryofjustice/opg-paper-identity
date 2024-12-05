@@ -558,7 +558,7 @@ class CPFlowController extends AbstractActionController
 
             $this->opgApiService->updateCaseAddress($uuid, $structuredAddress);
 
-            if (! empty($existingAddress)) {
+            if (! isset($detailsData['professionalAddress'])) {
                 $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
             }
 
@@ -587,7 +587,7 @@ class CPFlowController extends AbstractActionController
 
                 $existingAddress = $detailsData['address'];
 
-                if (! empty($existingAddress)) {
+                if (! isset($detailsData['professionalAddress'])) {
                     $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
                 }
 
