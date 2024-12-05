@@ -106,7 +106,7 @@ interface OpgApiServiceInterface
     /**
      * @param Address $data
      */
-    public function addSelectedAltAddress(string $uuid, array $data): void;
+    public function updateCaseProfessionalAddress(string $uuid, array $data): void;
 
     public function updateCaseSetDocumentComplete(string $uuid): void;
 

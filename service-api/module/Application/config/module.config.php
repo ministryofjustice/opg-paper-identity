@@ -331,10 +331,10 @@ return [
                     ],
                 ],
             ],
-            'save_alternate_address_to_case' => [
+            'update-professional-address' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/save-alternate-address-to-case',
+                    'route' => '/cases/:uuid/update-professional-address',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'saveProfessionalAddressToCase',

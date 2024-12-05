@@ -282,9 +282,9 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function addSelectedAltAddress(string $uuid, array $data): void
+    public function updateCaseProfessionalAddress(string $uuid, array $data): void
     {
-        $url = sprintf("/cases/%s/save-alternate-address-to-case", $uuid);
+        $url = sprintf("/cases/%s/update-professional-address", $uuid);
 
         try {
             $this->makeApiRequest($url, 'POST', $data);
