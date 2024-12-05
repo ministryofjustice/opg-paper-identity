@@ -554,8 +554,13 @@ class CPFlowController extends AbstractActionController
             $formData = $this->formToArray($form);
 
             $structuredAddress = json_decode($formData['address_json'], true);
+            $existingAddress = $detailsData['address'];
 
-            $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+            $this->opgApiService->updateCaseAddress($uuid, $structuredAddress);
+
+            if (! empty($existingAddress)) {
+                $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
+            }
 
             return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
         }
@@ -570,7 +575,7 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $form = $this->createForm(AddressInput::class);
-        $form->setData($detailsData['alternateAddress'] ?? []);
+        $form->setData($detailsData['address']);
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
@@ -578,7 +583,13 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                $this->opgApiService->addSelectedAltAddress($uuid, $this->formToArray($form));
+                $this->opgApiService->updateCaseAddress($uuid, $this->formToArray($form));
+
+                $existingAddress = $detailsData['address'];
+
+                if (! empty($existingAddress)) {
+                    $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
+                }
 
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }
