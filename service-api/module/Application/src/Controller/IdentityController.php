@@ -112,7 +112,6 @@ class IdentityController extends AbstractActionController
             ->setData(get_object_vars($case));
 
         if ($validator->isValid()) {
-
             $this->dataHandler->insertUpdateData($case);
 
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);

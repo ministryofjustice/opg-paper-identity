@@ -28,7 +28,7 @@ namespace Application\Contracts;
  *   lastName: string,
  *   dob: string,
  *   address: Address,
- *   alternateAddress?: Address,
+ *   professionalAddress?: Address,
  *   idMethodIncludingNation?: array{
  *     id_country?: string,
  *     id_method?: string,

@@ -86,7 +86,7 @@ class OpgApiService implements OpgApiServiceInterface
             }
             if (
                 array_key_exists('professionalAddress', $response) &&
-                ! empty($response['professionalAddress'])
+                isset($response['professionalAddress'])
             ) {
                 $response['professionalAddress'] = (
                     new AddressProcessorHelper()
