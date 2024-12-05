@@ -185,6 +185,7 @@ class OpgApiService implements OpgApiServiceInterface
             $data = [
                 'personType' => $personType,
                 'lpas' => $lpas,
+                'claimedIdentity' => [],
                 'vouchingFor' => [
                     'firstName' => $firstname,
                     'lastName' => $lastname,
@@ -277,6 +278,17 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
+
+    public function addSelectedAddress(string $uuid, array $data): void
+    {
+        $url = sprintf("/cases/%s/save-address-to-case", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

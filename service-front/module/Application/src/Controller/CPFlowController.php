@@ -13,7 +13,7 @@ use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
-use Application\Forms\Address;
+use Application\Forms\AddressInput;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
@@ -500,7 +500,7 @@ class CPFlowController extends AbstractActionController
 
                 if (empty($response)) {
                     $form->setMessages([
-                        'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                        'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                     ]);
                 } else {
                     return $this->redirect()->toRoute(
@@ -513,7 +513,7 @@ class CPFlowController extends AbstractActionController
                 }
             } catch (PostcodeInvalidException $e) {
                 $form->setMessages([
-                    'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                    'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                 ]);
             }
         }
@@ -574,7 +574,7 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = $this->createForm(Address::class);
+        $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address']);
 
         if ($this->getRequest()->isPost()) {

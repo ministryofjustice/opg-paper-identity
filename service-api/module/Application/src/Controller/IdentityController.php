@@ -364,6 +364,42 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
+    public function saveAddressToCaseAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $response = [];
+        $status = Response::STATUS_CODE_200;
+
+        if (! $uuid) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing UUID",
+            ];
+
+            return new JsonModel($response);
+        }
+
+        try {
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'claimedIdentity.address',
+                $data,
+            );
+        } catch (\Exception $exception) {
+            $response['result'] = "Not Updated";
+            $response['error'] = $exception->getMessage();
+
+            return new JsonModel($response);
+        }
+
+        $this->getResponse()->setStatusCode($status);
+        $response['result'] = "Updated";
+
+        return new JsonModel($response);
+    }
+
     public function saveProfessionalAddressToCaseAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
@@ -513,12 +549,12 @@ class IdentityController extends AbstractActionController
             try {
                 $this->dataHandler->updateCaseData(
                     $uuid,
-                    'firstName',
+                    'claimedIdentity.firstName',
                     $firstName
                 );
                 $this->dataHandler->updateCaseData(
                     $uuid,
-                    'lastName',
+                    'claimedIdentity.lastName',
                     $lastName
                 );
             } catch (\Exception $exception) {
