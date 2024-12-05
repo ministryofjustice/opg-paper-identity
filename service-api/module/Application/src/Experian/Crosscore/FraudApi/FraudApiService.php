@@ -65,12 +65,14 @@ class FraudApiService
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
 
+            $this->logger->info(sprintf('FraudScore request: %s', json_encode($postBody)));
+
             $response = $this->client->request(
                 'POST',
                 '3',
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => json_encode($postBody)
+                    'json' => $postBody,
                 ]
             );
 
