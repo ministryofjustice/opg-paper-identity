@@ -84,7 +84,7 @@ interface OpgApiServiceInterface
         array $address,
     ): array;
 
-    public function updateCaseAddress($uuid, $address): void;
+    public function updateCaseAddress(string $uuid, array $address): void;
 
     public function updateIdMethod(string $uuid, string $method): void;
 

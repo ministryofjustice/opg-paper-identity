@@ -559,7 +559,7 @@ class CPFlowController extends AbstractActionController
             $this->opgApiService->updateCaseAddress($uuid, $structuredAddress);
 
             if (! empty($existingAddress)) {
-                $this->opgApiService->updateCaseProfessionalAddress($uuid, $structuredAddress);
+                $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
             }
 
             return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
@@ -587,10 +587,8 @@ class CPFlowController extends AbstractActionController
 
                 $existingAddress = $detailsData['address'];
 
-                $formData = $this->formToArray($form);
-
                 if (! empty($existingAddress)) {
-                    $this->opgApiService->updateCaseProfessionalAddress($uuid, $formData);
+                    $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
                 }
 
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
