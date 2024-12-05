@@ -135,7 +135,7 @@ class FraudApiService
                             ],
                         ],
                         "addresses" => [
-                            [
+                            array_filter([
                                 "id" => "MACADDRESS1",
                                 "addressType" => "CURRENT",
                                 "indicator" => "RESIDENTIAL",
@@ -144,7 +144,7 @@ class FraudApiService
                                 "street2" => $addressDTO->line3(),
                                 "postal" => $addressDTO->postcode(),
                                 "postTown" => $addressDTO->town()
-                            ]
+                            ], fn (?string $line) => $line !== '')
                         ]
                     ]
                 ],
