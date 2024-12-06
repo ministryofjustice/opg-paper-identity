@@ -67,7 +67,7 @@ class FraudApiService
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
 
-            $this->logger->info(json_encode($postBody));
+            $this->logger->info('POSTBODY: ' . json_encode($postBody));
 
             $response = $this->client->request(
                 'POST',
@@ -79,6 +79,9 @@ class FraudApiService
             );
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
+
+
+            $this->logger->info('RESPONSEBODY: ' . json_encode($responseArray));
 
             return new ResponseDTO(
                 $responseArray
