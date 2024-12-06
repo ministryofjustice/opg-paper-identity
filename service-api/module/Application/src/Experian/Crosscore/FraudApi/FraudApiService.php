@@ -112,7 +112,7 @@ class FraudApiService
                 "clientReferenceId" => "$requestUuid-FraudScore-continue",
                 "expRequestId" => null,
                 "messageTime" => date("Y-m-d\TH:i:s\Z"),
-                "options" => json_decode('{}')
+                "options" => new \stdClass()
             ],
             "payload" => [
                 "contacts" => [
