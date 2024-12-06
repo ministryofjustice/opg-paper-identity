@@ -69,6 +69,7 @@ class OpgApiServiceTest extends TestCase
                 'postcode' => 'LA1 2XN',
                 'country' => 'DD',
             ],
+            "professionalAddress" => null,
             "personType" => "donor",
             "lpas" => [
                 "PA M-XYXY-YAGA-35G3",
