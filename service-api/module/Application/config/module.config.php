@@ -341,7 +341,7 @@ return [
                     ],
                 ],
             ],
-            'update-professional-address' => [
+            'update_professional_address' => [
                 'type' => Segment::class,
                 'options' => [
                     'route' => '/cases/:uuid/update-professional-address',
