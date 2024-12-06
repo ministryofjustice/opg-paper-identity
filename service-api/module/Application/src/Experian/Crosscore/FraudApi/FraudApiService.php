@@ -67,6 +67,8 @@ class FraudApiService
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
 
+            $this->logger->info(json_encode($postBody));
+
             $response = $this->client->request(
                 'POST',
                 '3',
@@ -108,8 +110,8 @@ class FraudApiService
                 "tenantId" => $this->config['tenantId'],
                 "requestType" => "FraudScore",
                 "clientReferenceId" => "$requestUuid-FraudScore-continue",
-                "expRequestId" => $requestUuid,
-                "messageTime" => date("Y-m-d\TH:i:s.000\Z"),
+                "expRequestId" => null,
+                "messageTime" => date("Y-m-d\TH:i:s\Z"),
                 "options" => json_decode('{}')
             ],
             "payload" => [
