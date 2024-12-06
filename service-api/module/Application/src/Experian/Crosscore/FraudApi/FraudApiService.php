@@ -130,21 +130,21 @@ class FraudApiService
                                     "surName" => $experianCrosscoreFraudRequestDTO->lastName(),
                                     "id" => "NAME1"
                                 ]
-                            ],
-                            "addresses" => [
-                                [
-                                    "id" => "MACADDRESS1",
-                                    "addressType" => "CURRENT",
-                                    "indicator" => "RESIDENTIAL",
-                                    "buildingName" => $addressDTO->line1(),
-                                    "street" => $addressDTO->line2(),
-                                    "street2" => $addressDTO->line3(),
-                                    "postal" => $addressDTO->postcode(),
-                                    "postTown" => $addressDTO->town(),
-                                    "county" => $addressDTO->country()
-                                ]
                             ]
                         ],
+                        "addresses" => [
+                            [
+                                "id" => "MACADDRESS1",
+                                "addressType" => "CURRENT",
+                                "indicator" => "RESIDENTIAL",
+                                "buildingName" => $addressDTO->line1(),
+//                                "street" => $addressDTO->line2(),
+//                                "street2" => $addressDTO->line3(),
+                                "postal" => $addressDTO->postcode(),
+//                                "postTown" => $addressDTO->town(),
+                                "country" => $addressDTO->country()
+                            ]
+                        ]
                     ]
                 ],
                 "control" => [
@@ -173,12 +173,11 @@ class FraudApiService
         RequestDTO $experianCrosscoreFraudRequestDTO
     ): string {
 
-        $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));
-        $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 1));
+//        $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));
+        $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 2));
 
         return sprintf(
-            '%s%s1',
-            $fInitial,
+            '%s1',
             $lInitial
         );
     }
