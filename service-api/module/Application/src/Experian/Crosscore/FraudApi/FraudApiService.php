@@ -74,7 +74,7 @@ class FraudApiService
                 '3',
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => json_encode($postBody)
+                    'json' => $postBody
                 ]
             );
 
