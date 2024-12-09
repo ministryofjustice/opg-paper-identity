@@ -106,6 +106,7 @@ class FraudApiService
     ): array {
         $requestUuid = Uuid::uuid4()->toString();
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
+        $nameId = $this->makePersonId($experianCrosscoreFraudRequestDTO, true);
         $addressDTO = $experianCrosscoreFraudRequestDTO->address();
 
         return [
@@ -131,7 +132,7 @@ class FraudApiService
                                     "type" => "CURRENT",
                                     "firstName" => $experianCrosscoreFraudRequestDTO->firstName(),
                                     "surName" => $experianCrosscoreFraudRequestDTO->lastName(),
-                                    "id" => "NAME1"
+                                    "id" => $nameId
                                 ]
                             ]
                         ],
@@ -145,7 +146,7 @@ class FraudApiService
 //                                "street2" => $addressDTO->line3(),
                                 "postal" => $addressDTO->postcode(),
 //                                "postTown" => $addressDTO->town(),
-                                "country" => $addressDTO->country()
+                                "county" => ""
                             ]
                         ]
                     ]
@@ -173,11 +174,19 @@ class FraudApiService
     }
 
     private function makePersonId(
-        RequestDTO $experianCrosscoreFraudRequestDTO
+        RequestDTO $experianCrosscoreFraudRequestDTO,
+        bool $name = false
     ): string {
 
 //        $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));
         $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 2));
+
+        if ($name) {
+            return sprintf(
+                '%sNAME1',
+                $lInitial
+            );
+        }
 
         return sprintf(
             '%s1',
