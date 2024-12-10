@@ -72,11 +72,13 @@ class FraudApiService
                 '3',
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => json_encode($postBody)
+                    'json' => $postBody
                 ]
             );
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
+
+            $this->logger->info('RESPONSEBODY: ' . json_encode($responseArray));
 
             return new ResponseDTO(
                 $responseArray
@@ -101,6 +103,7 @@ class FraudApiService
     ): array {
         $requestUuid = Uuid::uuid4()->toString();
         $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
+        $nameId = $this->makePersonId($experianCrosscoreFraudRequestDTO, true);
         $addressDTO = $experianCrosscoreFraudRequestDTO->address();
 
         return [
@@ -108,9 +111,9 @@ class FraudApiService
                 "tenantId" => $this->config['tenantId'],
                 "requestType" => "FraudScore",
                 "clientReferenceId" => "$requestUuid-FraudScore-continue",
-                "expRequestId" => $requestUuid,
-                "messageTime" => date("Y-m-d\TH:i:s.000\Z"),
-                "options" => []
+                "expRequestId" => null,
+                "messageTime" => date("Y-m-d\TH:i:s\Z"),
+                "options" => new \stdClass()
             ],
             "payload" => [
                 "contacts" => [
@@ -126,23 +129,20 @@ class FraudApiService
                                     "type" => "CURRENT",
                                     "firstName" => $experianCrosscoreFraudRequestDTO->firstName(),
                                     "surName" => $experianCrosscoreFraudRequestDTO->lastName(),
-                                    "id" => "NAME1"
-                                ]
-                            ],
-                            "addresses" => [
-                                [
-                                    "id" => "MACADDRESS1",
-                                    "addressType" => "CURRENT",
-                                    "indicator" => "RESIDENTIAL",
-                                    "buildingName" => $addressDTO->line1(),
-                                    "street" => $addressDTO->line2(),
-                                    "street2" => $addressDTO->line3(),
-                                    "postal" => $addressDTO->postcode(),
-                                    "postTown" => $addressDTO->town(),
-                                    "county" => $addressDTO->country()
+                                    "id" => $nameId
                                 ]
                             ]
                         ],
+                        "addresses" => [
+                            [
+                                "id" => "MACADDRESS1",
+                                "addressType" => "CURRENT",
+                                "indicator" => "RESIDENTIAL",
+                                "buildingName" => $addressDTO->line1(),
+                                "postal" => $addressDTO->postcode(),
+                                "county" => ""
+                            ]
+                        ]
                     ]
                 ],
                 "control" => [
@@ -168,15 +168,20 @@ class FraudApiService
     }
 
     private function makePersonId(
-        RequestDTO $experianCrosscoreFraudRequestDTO
+        RequestDTO $experianCrosscoreFraudRequestDTO,
+        bool $name = false
     ): string {
+        $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 2));
 
-        $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));
-        $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 1));
+        if ($name) {
+            return sprintf(
+                '%sNAME1',
+                $lInitial
+            );
+        }
 
         return sprintf(
-            '%s%s1',
-            $fInitial,
+            '%s1',
             $lInitial
         );
     }
