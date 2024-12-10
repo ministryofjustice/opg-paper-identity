@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Fixtures;
 
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\CaseProgress;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
@@ -53,8 +54,30 @@ class DataWriteHandler
             ->createForm(CaseData::class)
             ->getInputFilter();
 
+        ini_set("xdebug.var_display_max_children", '-1');
+        ini_set("xdebug.var_display_max_data", '-1');
+        ini_set("xdebug.var_display_max_depth", '-1');
+
+//        var_dump('$attributeChain[0]', $attributeChain[0]);
+
         $input = $inputFilter->get($attributeChain[0]);
+
+//        var_dump('$input', $input);
+
         foreach (array_slice($attributeChain, 1) as $subAttr) {
+
+//            var_dump('$input', $input->getName());
+//            var_dump('$subAttr', $subAttr);
+//            $this->logger->info($input);
+//            $this->logger->info($subAttr);
+
+            if ($input instanceof InputInterface) {
+
+//                var_dump('YES ---- $input', $input->getName());
+
+                continue;
+            }
+
             if ($input instanceof InputFilterInterface) {
                 $input = $input->get($subAttr);
             } else {
