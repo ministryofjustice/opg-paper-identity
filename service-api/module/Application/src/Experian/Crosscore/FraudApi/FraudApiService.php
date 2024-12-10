@@ -66,7 +66,7 @@ class FraudApiService
         $this->authCount++;
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
-            
+
             $response = $this->client->request(
                 'POST',
                 '3',
