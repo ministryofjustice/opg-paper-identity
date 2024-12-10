@@ -67,6 +67,9 @@ FROM app AS development
 USER "root"
 RUN pecl install pcov && docker-php-ext-enable pcov;
 
+#RUN pecl install xdebug
+#COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
 USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
   composer dumpautoload -o

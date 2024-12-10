@@ -22,6 +22,11 @@ RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DE
     && docker-php-ext-enable sodium \
     && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
+RUN pecl install xdebug;
+RUN docker-php-ext-enable xdebug;
+
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
 # Patch Vulnerabilities
 RUN apk upgrade --no-cache openssl curl libcurl
 
