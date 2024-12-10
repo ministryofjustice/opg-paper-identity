@@ -66,9 +66,7 @@ class FraudApiService
         $this->authCount++;
         try {
             $postBody = $this->constructRequestBody($experianCrosscoreFraudRequestDTO);
-
-            $this->logger->info('POSTBODY: ' . json_encode($postBody));
-
+            
             $response = $this->client->request(
                 'POST',
                 '3',
@@ -79,7 +77,6 @@ class FraudApiService
             );
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
-
 
             $this->logger->info('RESPONSEBODY: ' . json_encode($responseArray));
 
@@ -142,10 +139,7 @@ class FraudApiService
                                 "addressType" => "CURRENT",
                                 "indicator" => "RESIDENTIAL",
                                 "buildingName" => $addressDTO->line1(),
-//                                "street" => $addressDTO->line2(),
-//                                "street2" => $addressDTO->line3(),
                                 "postal" => $addressDTO->postcode(),
-//                                "postTown" => $addressDTO->town(),
                                 "county" => ""
                             ]
                         ]
@@ -177,8 +171,6 @@ class FraudApiService
         RequestDTO $experianCrosscoreFraudRequestDTO,
         bool $name = false
     ): string {
-
-//        $fInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->firstName(), 0, 1));
         $lInitial = strtoupper(substr($experianCrosscoreFraudRequestDTO->lastName(), 0, 2));
 
         if ($name) {
