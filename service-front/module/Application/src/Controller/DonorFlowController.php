@@ -295,6 +295,8 @@ class DonorFlowController extends AbstractActionController
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        var_dump('$detailsData', $detailsData);
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
@@ -418,6 +420,10 @@ class DonorFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $form = $this->createForm(FinishIDCheck::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+//        echo '<pre>';
+//        var_dump('$detailsData', $detailsData);
+//        echo '</pre>';
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost()->toArray();

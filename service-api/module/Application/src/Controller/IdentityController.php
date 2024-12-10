@@ -687,7 +687,7 @@ class IdentityController extends AbstractActionController
 
         $this->dataHandler->updateCaseData(
             $uuid,
-            'fraudScore',
+            'caseProgress.fraudScore',
             $response->toArray(),
         );
 
