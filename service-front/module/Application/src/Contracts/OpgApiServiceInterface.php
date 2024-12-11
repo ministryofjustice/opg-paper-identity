@@ -28,7 +28,7 @@ namespace Application\Contracts;
  *   lastName: string,
  *   dob: string,
  *   address: Address,
- *   alternateAddress?: Address,
+ *   professionalAddress?: Address,
  *   idMethodIncludingNation?: array{
  *     id_country?: string,
  *     id_method?: string,
@@ -84,6 +84,8 @@ interface OpgApiServiceInterface
         array $address,
     ): array;
 
+    public function updateCaseAddress(string $uuid, array $address): void;
+
     public function updateIdMethod(string $uuid, string $method): void;
 
     /**
@@ -109,7 +111,7 @@ interface OpgApiServiceInterface
     /**
      * @param Address $data
      */
-    public function addSelectedAltAddress(string $uuid, array $data): void;
+    public function updateCaseProfessionalAddress(string $uuid, array $data): void;
 
     public function updateCaseSetDocumentComplete(string $uuid): void;
 

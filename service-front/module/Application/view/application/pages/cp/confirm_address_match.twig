@@ -23,26 +23,24 @@
             We need to either confirm the Sirius record is their home address or capture it on the next page.
         </p>
 
-        <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
-            <h2 class="govuk-heading-m">Sirius record</h2>
-            <h3 class="govuk-heading-s">Address</h3>
+        {% if details_data.professionalAddress %}
+            <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
+                <h2 class="govuk-heading-m">Sirius record</h2>
+                <h3 class="govuk-heading-s">Address</h3>
 
-            <p class="govuk-body">
-                {% for line in details_data.address %}
-                    {% if line > 0 %}
-                        {{ line }}<br>
-                    {% endif %}
-                {% endfor %}
-            </p>
-        </div>
-
-        {% if details_data.alternateAddress %}
-
+                <p class="govuk-body">
+                    {% for line in details_data.professionalAddress %}
+                        {% if line > 0 %}
+                            {{ line }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
             <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
                 <h2 class="govuk-heading-m">Address for identity check</h2>
 
                 <p class="govuk-body">
-                    {% for line in details_data.alternateAddress %}
+                    {% for line in details_data.address %}
                         {% if line  %}
                             {{ line }}<br>
                         {% endif %}
@@ -54,6 +52,18 @@
                 <input type="hidden" name="confirm_alt" value="confirmed">
             </div>
         {% else %}
+            <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
+                <h2 class="govuk-heading-m">Sirius record</h2>
+                <h3 class="govuk-heading-s">Address</h3>
+
+                <p class="govuk-body">
+                    {% for line in details_data.address %}
+                        {% if line > 0 %}
+                            {{ line }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
             <div class="govuk-form-group govuk-!-width-two-thirds">
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
