@@ -12,11 +12,13 @@ use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 
 class ExperianCrosscoreFraudApiServiceTest extends TestCase
 {
@@ -192,4 +194,124 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
             ]
         ];
     }
+
+
+    /**
+     * @dataProvider schemaTestData
+     */
+    public function testRequestSchema(
+        Client $client,
+        RequestDTO $mockRequestDto,
+        ?ResponseDTO $responseData,
+        ?string $expectedException
+    ): void
+    {
+        $yamlFile = '/var/www/module/Application/test/openapi.yml';
+
+        $validator = (new ValidatorBuilder())->fromYamlFile($yamlFile);
+
+        $experianCrosscoreFraudApiService = new FraudApiService(
+            $client,
+            $this->experianCrosscoreAuthApiService,
+            $this->logger,
+            $this->config
+        );
+
+        $postBody = $experianCrosscoreFraudApiService->constructRequestBody($mockRequestDto);
+
+        $request = new Request(
+            'POST',
+            'http://experian-crosscore-mock:8080/decisionanalytics/crosscore/cc_mock_route/3',
+            [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer xxx',
+                'X-User-Domain' => 'domain'
+            ],
+            $postBody
+        );
+
+        $result = $validator->getRequestValidator()->validate($request);
+
+        die($result);
+
+//        $this->assertTrue(true);
+    }
+
+    public static function schemaTestData(): array
+    {
+        $mockRequestDto = new RequestDTO(
+            "MARK",
+            "ADOLFSON",
+            "1955-06-23",
+            new \Application\Experian\Crosscore\FraudApi\DTO\AddressDTO(
+                "17  FOX LEA WALK",
+                "",
+                "",
+                "CRAMLINGTON",
+                "NE23 7TD",
+                "UK"
+            )
+        );
+
+        $successMockResponseData = [
+            "responseHeader" => [
+                "requestType" => "FraudScore",
+                "clientReferenceId" => "974daa9e-8128-49cb-9728-682c72fa3801-FraudScore-continue",
+                "expRequestId" => "RB000001416866",
+                "messageTime" => "2024-09-03T11:19:07Z",
+                "overallResponse" => [
+                    "decision" => "CONTINUE",
+                    "decisionText" => "Continue",
+                    "decisionReasons" => [
+                        "Processing completed successfully",
+                        "Low Risk Machine Learning score"
+                    ],
+                    "recommendedNextActions" => [
+                    ],
+                    "spareObjects" => [
+                    ]
+                ],
+                "responseCode" => "R0201",
+                "responseType" => "INFO",
+                "responseMessage" => "Workflow Complete.",
+                "tenantID" => "623c97f7ff2e44528aa3fba116372d",
+                "category" => "COMPLIANCE_INQUIRY"
+            ],
+            "clientResponsePayload" => [
+                "orchestrationDecisions" => [
+                    [
+                        "sequenceId" => "2",
+                        "decisionSource" => "MachineLearning",
+                        "decision" => "CONTINUE",
+                        "decisionReasons" => [
+                            "Low Risk Machine Learning score"
+                        ],
+                        "score" => 265,
+                        "decisionText" => "Continue",
+                        "nextAction" => "Continue",
+                        "appReference" => "",
+                        "decisionTime" => "2024-07-25T10:51:47Z"
+                    ]
+                ],
+            ]
+        ];
+
+        $successMockResponseDTO = new ResponseDTO($successMockResponseData);
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        return [
+            [
+                $successClient,
+                $mockRequestDto,
+                $successMockResponseDTO,
+                null
+            ],
+        ];
+    }
 }
+

@@ -12,10 +12,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
-use Telemetry\Instrumentation\Laminas;
 
 class FraudApiService
 {
