@@ -42,6 +42,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
+        $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
 
     public function returnOpgDetailsData(): array
@@ -208,11 +209,11 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-
         $this
             ->siriusDataProcessorHelperMock
             ->expects(self::once())
-            ->method('updatePaperIdCaseFromSirius');
+            ->method('updatePaperIdCaseFromSirius')
+            ->willReturn(null);
 
         $this->dispatch("/$this->uuid/post-office-do-details-match", 'GET');
         $this->assertResponseStatusCode(200);
