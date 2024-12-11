@@ -24,6 +24,22 @@ services:
     volumes:
       - "./docker/experian-crosscore-auth/openapi.yml:/usr/src/prism/openapi.yml"
 
+  dwp-mock:
+    image: paper-identity/dwp-mock
+    build:
+      context: docker/dwp
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "imposter", "list", "-x" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./docker/dwp:/opt/imposter/config
+    ports:
+      - 8089:8080
+
   yoti-mock:
     image: paper-identity/yoti-mock
     build:
