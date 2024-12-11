@@ -62,6 +62,18 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-cross
     --description "Experian Crosscore Tenant ID" \
     --secret-string "empty"
 
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-token-endpoint \
+    --description "DWP authentication API" \
+        --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-match-endpoint \
+    --description "DWP match api" \
+        --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local//paper-identity/dwp/citizen-endpoint \
+    --description "DWP citizen details api" \
+        --secret-string "empty"
+
 awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-endpoint \

@@ -1,0 +1,965 @@
+openapi: 3.0.0
+info:
+  title: NINO API
+  version: '1.0.0'
+paths:
+  /api/v1/healthcheck:
+    get:
+      summary: Healthcheck
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericResponse"
+        "401":
+          description: Error
+  /citizen-information/oauth2/token:
+    post:
+      parameters:
+        - in: header
+          name: "content-type"
+          schema:
+            type: string
+            example: "application/json"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user"
+                password:
+                  type: string
+                  example: "password"
+                client_id:
+                  type: string
+                  example: "client-id"
+                client_secret:
+                  type: string
+                  example: "client-secret"
+      responses:
+        200:
+          description: "HTTP Status 200"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expires_in:
+                    type: string
+                    pattern: "1800"
+                  token_type:
+                    type: string
+                    pattern: "Bearer"
+                  access_token:
+                    type: string
+                    pattern: 'ey[A-Za-z0-9]{700}'
+        401:
+          description: "HTTP Status 401"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                  success:
+                    type: string
+                    enum: false
+  /v2/citizens/match:
+    post:
+      tags:
+        - Person API
+      description: POST `v2/citizens/match` returns GUID if the person can be matched.
+
+      operationId: matchMDS
+      parameters:
+        - name: instigating-user-id
+          in: header
+          description: The id of the logged in user. 
+          required: true
+          deprecated: true
+          schema:
+            type: string
+            maxLength: 40
+            pattern: '^[a-zA-Z]([._-](?![._-])|@(?!@)|[a-zA-Z0-9]){1,38}[a-zA-Z0-9]$'
+        - name: policy-id
+          in: header
+          description: The policy id as given to the consumer. 
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: The Oauth2 token
+          required: true
+          schema:
+            type: string
+        - name: correlation-id
+          in: header
+          description: Session ID of the user's session.  Can be used for correlation
+            of log entries if required.
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}'
+        - name: context
+          in: header
+          description: Used to specify in which business context (application/process)
+            the call is being made
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-zA-Z]+[a-zA-Z0-9]*-+(\s?\-?[a-zA-Z0-9]+)+$'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestJSON'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                required:
+                  - data
+                type: object
+                properties:
+                  jsonapi:
+                    $ref: '#/components/schemas/VersionObject'
+                  data:
+                    $ref: '#/components/schemas/UuidJSON'
+        400:
+          description: Bad Request.  The request is malformed or the body cannot be
+            parsed/understood.  Please check request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+        401:
+          description: Unauthorized - invalid JWT token supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorData'
+  /v2/citizens/match/{guid}:
+    get:
+      tags:
+        - Person Details API
+      description: POST `v2/citizens/match/{guid}` returns details of the person can be matched.
+      operationId: detailsMDS
+      parameters:
+        - name: guid
+          in: path
+          description: Global User ID - a unique identifier for a Citizen obtained from a separate call to the `/v2/citizens/match` endpoint.
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: The Oauth2 token
+          required: true
+          schema:
+            type: string
+        - name: instigating-user-id
+          in: header
+          description: The id of the logged in user. This is required for auditing purposes.The value in this field should match the format specified.
+            Note that this field is marked as deprecated from v2.3.0 onwards. The API will not validate this header and discard any values sent on this header in the request. In the next major version release, this field will be changed from mandatory to optional.
+          required: true
+          deprecated: true
+          schema:
+            type: string
+            maxLength: 40
+            pattern: '^[a-zA-Z]([._-](?![._-])|@(?!@)|[a-zA-Z0-9]){1,38}[a-zA-Z0-9]$'
+        - name: access-level
+          in: header
+          description: Identifies the designated access level of the signed in user.  1 = Standard, 4 = Elevated
+          required: true
+          schema:
+            type: integer
+            default: 1
+            enum:
+              - 1
+              - 4
+        - name: correlation-id
+          in: header
+          description: Session ID of the user's session.  Can be used for correlation
+            of log entries if required.
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}'
+        - name: context
+          in: header
+          description: Used to specify in which business context (application/process)
+            the call is being made - valid values will have been supplied to caller
+            as part of provisioning access to the APIs.
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-zA-Z]+[a-zA-Z0-9]*-+(\s?\-?[a-zA-Z0-9]+)+$'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                required:
+                  - data
+                type: object
+                properties:
+                  jsonapi:
+                    $ref: '#/components/schemas/VersionObject'
+                  links:
+                    $ref: '#/components/schemas/Links'
+                  data:
+                    $ref: '#/components/schemas/Citizen'
+        400:
+          description: Bad Request.  The request is malformed or the body cannot be
+            parsed/understood.  Please check request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+        401:
+          description: Unauthorized - no access to this API or invalid JWT token supplied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDetails'
+
+components:
+  schemas:
+    GenericResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 100
+    Error:
+      type: object
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: url
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        validation_errors:
+          type: object
+      additionalProperties: false
+    ErrorData:
+      description: a set of error codes and details received when trying to complete the required request.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/JSONAPIErrorData'
+    JSONAPIErrorData:
+      description: Error details object complying to the JSON-API specification - see https://jsonapi.org/format/#error-objects
+      type: object
+      properties:
+        id:
+          type: string
+        links:
+          $ref: '#/components/schemas/JSONAPIErrorLinks'
+        status:
+          type: string
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+        source:
+          $ref: '#/components/schemas/Source'
+    JSONAPIErrorLinks:
+      description: "A links object containing the following members: - about: a link that leads to further details about this particular occurrence of the problem."
+      type: object
+      properties:
+        about:
+          type: string
+    Source:
+      description: "an object containing references to the source of the error, optionally including any of the following members:
+                        pointer: a JSON Pointer [RFC6901] to the associated entity in the request document
+                        parameter: a string indicating which URI query parameter caused the error."
+      type: object
+      properties:
+        pointer:
+          type: string
+        parameter:
+          type: string
+    VersionObject:
+      description: Optional - Holds the JSON-API version used (currently only "1.0" is supported )
+      type: object
+      properties:
+        version:
+          type: string
+    RequestJSON:
+      type: object
+      properties:
+        jsonapi:
+          $ref: '#/components/schemas/VersionObject'
+        data:
+          $ref: '#/components/schemas/MatchJSONData'
+    MatchJSONData:
+      required:
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          default: Match
+          example: Match
+        attributes:
+          required:
+            - firstName
+            - lastName
+            - dateOfBirth
+            - ninoFragment
+          type: object
+          properties:
+            dateOfBirth:
+              description: The date of birth of the Person to be matched in 'yyyy-mm-dd' format
+              type: string
+              format: date
+            ninoFragment:
+              description: The last 4 characters of Person's National Insurance Number (not including the suffix)
+              type: string
+              maxLength: 4
+              example: 4021
+            firstName:
+              description: The formal given name of the Person to be matched.
+              type: string
+              maxLength: 70
+              example: Michael
+            firstNameHistory:
+              description: The historic given name(s) of the Person to be matched.
+              type: array
+              example: [ 'Michale', 'Alfred' ]
+              items:
+                type: string
+            alternateName:
+              description: The alternate name of the Person to be matched.
+              type: string
+              maxLength: 70
+              example: John
+            alternateNameHistory:
+              description: The historic alternate name(s) of the Person to be matched.
+              type: array
+              example: [ 'Johny', 'Alfredo' ]
+              items:
+                type: string
+            lastName:
+              description: The last of family name of the Person to be matched.
+              type: string
+              maxLength: 35
+              example: Clarke
+            lastNameHistory:
+              description: The historic last of family name(s) of the Person to be matched.
+              type: array
+              example: [ 'Pinto' ]
+              items:
+                type: string
+            postcode:
+              description: The current postcode of the Person as known to the department.
+              type: string
+              maxLength: 8
+              example: NE6 1EA
+            postcodeHistory:
+              description: The historic postcode of the Person as last known to the department (may not be same as current address if
+                recently moved)
+              type: array
+              example: [ 'NE1 1SE', 'NE7 7DP' ]
+              items:
+                type: string
+            contactDetails:
+              description: List of the contact Details of the Person to be matched. The contact details can be any phone number (business/home/personal) as known to the department or any email address as known to the department.
+              type: array
+              example: [ '07786557896', '03038975678', 'michael.clarke@example.com' ]
+              items:
+                type: string
+    UuidJSON:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          description: The GUID returned for the Person.
+          type: string
+          maxLength: 64
+        type:
+          description: JSON-API type value will always be "MatchResult"
+          type: string
+          default: MatchResult
+          example: MatchResult
+        attributes:
+          $ref: '#/components/schemas/MatchingAttributes'
+    
+    MatchingAttributes:
+      description: additional matching attribute data.
+      type: object
+      properties:
+        matchingScenario:
+          description: The scenario applied that resulted in the successful match. This is only present for a successful single match.
+          type: string
+
+    CitizenAttributes:
+      description: The core attributes describing a Citizen.
+      required:
+        - dateOfBirth
+        - name
+        - statusIndicator
+      type: object
+      properties:
+        guid:
+          description: A unique identifier for the citizen. External/3rd party consumers are expected to use this 'guid' for subsequent API call and the not the one passed in the original request.
+            This field will 'always' be populated in the response for all requests coming from external/3rd party consumers of the API. Where the API returns a list of 'data' object, the same "guid" will be returned in each data object.
+          type: string
+        nino:
+          type: string
+          maxLength: 9
+        identityVerificationStatus:
+          type: string
+          description: A string value indicating the verification type.
+            not_verified - Children under 15yrs 9mths are not verified.  Occasionally adults are not verified for a period of time.
+            qualified - Only a limited set of details have been verified.
+            verified - Identity has been verified
+          enum:
+            - not_verified
+            - qualified
+            - verified
+          example: verified
+        sex:
+          type: string
+          maxLength: 1
+        statusIndicator:
+          type: boolean
+          description: A boolean value indicating the status of the Citizen - 'true' indicates an elevated access Level is required to access the Citizen's data.
+        name:
+          $ref: '#/components/schemas/Name'
+        alternateName:
+          $ref: '#/components/schemas/Name'
+        requestedName:
+          $ref: '#/components/schemas/RequestedName'
+        dateOfDeath:
+          $ref: '#/components/schemas/DateOfDeath'
+        dateOfBirth:
+          $ref: '#/components/schemas/DateOfBirth'
+        accessibilityNeeds:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessibilityNeeds'
+        safeguarding:
+          $ref: '#/components/schemas/Safeguarding'
+        nationality:
+          $ref: '#/components/schemas/Nationality'
+        contactDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactDetails'
+        warningDetails:
+          $ref: '#/components/schemas/WarningDetails'
+    Metadata:
+      description: Optional meta-data about an item, such as level of verification and method and the dates at which it was created/notified or ceased to be used. (endDate)
+      type: object
+      properties:
+        verificationType:
+          description: An enum describing how much verification has been applied to the associated data item.
+          type: string
+          enum:
+            - derived
+            - evidenced
+            - self_asserted
+            - authoritative
+          example: self_asserted
+        startDate:
+          description: Date on which the associated data item came into effect.
+          type: string
+          format: date
+        endDate:
+          description: Date on which the associated data item ceased to be effective.
+          type: string
+          format: date
+    Citizen:
+      description: The root object describing a Citizen's data - returned in JSON-API schema format.
+      required:
+        - id
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          default: Citizen
+          example: Citizen
+        attributes:
+          $ref: '#/components/schemas/CitizenAttributes'
+        relationships:
+          $ref: '#/components/schemas/RelationshipLinks'
+    ErrorDetails:
+      description: a set of error codes and details received when trying to complete the required request.
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/JSONAPIErrorDetails'
+    Name:
+      description: The Citizen's formal name as known to the Department.
+      required:
+        - firstName
+        - lastName
+      type: object
+      properties:
+        title:
+          description: Optional title ("Mr,"Mrs", "Lord", "Lady" etc.) - read-only field
+          type: string
+          maxLength: 35
+        firstName:
+          description: This field is optional on a GET.
+          type: string
+          maxLength: 70
+        middleNames:
+          description: One or more middle names separated by a single space.
+          type: string
+          maxLength: 70
+        lastName:
+          type: string
+          maxLength: 35
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    ContactDetails:
+      description: Contains the primary contact details (telephone / email) for a Citizen if available.
+      type: object
+      required:
+        - contactType
+        - value
+      properties:
+        contactType:
+          type: string
+          enum:
+            - home_telephone_number
+            - business_telephone_number
+            - personal_mobile_telephone_number
+            - home_e-mail_address
+            - business_mobile_telephone_number
+            - business_e-mail_address
+          example: home_telephone_number
+        value:
+          description: the value for the contact Type. It can be a phone number or email address.
+          type: string
+          example: 07745690909
+        preferredContactIndicator:
+          type: boolean
+          default: false
+          example: false
+          description: If set to true, the preferred Contact method will be set to the chosen contact type.
+            preferredContactIndicator can be set to true for only one contact Type at a given point in time.
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    DateOfDeath:
+      description: If the Citizen is deceased, this will return the date of death and the level of verificaiton of that date.
+      required:
+        - date
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    LinksObject:
+      description: An object to hold optional HATEOAS links - see https://jsonapi.org/format/#document-links
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+    RelationshipLinks:
+      description: a set of HATEOAS links pointing to related resources for a Citizen.
+      type: object
+      properties:
+        current-residential-address:
+          $ref: '#/components/schemas/LinksObject'
+        current-correspondence-address:
+          $ref: '#/components/schemas/LinksObject'
+        addresses:
+          $ref: '#/components/schemas/LinksObject'
+        relationships:
+          $ref: '#/components/schemas/LinksObject'
+        claims:
+          $ref: '#/components/schemas/LinksObject'
+    Nationality:
+      description: The nationality of a citizen.  In some cases this is actually their citizenship.
+      type: object
+      required:
+        - nationality
+      properties:
+        nationality:
+          $ref: '#/components/schemas/NationalityTypeEnum'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    AccessibilityNeeds:
+      description: Used to indicate whether a Citizen has any accessibility needs
+      required:
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - braille
+            - large_print
+            - audio_forms
+            - relay_uk_typetalk_textphone
+            - sign_language
+            - induction_loop
+            - ramp
+            - lift
+            - wide_doorway
+            - minicom_difficulties
+            - sign_language_hearing
+            - email_as_a_reasonable_adjustment
+            - communications_support
+            - paper
+            - web_accessible_pdf
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    Safeguarding:
+      description: Unacceptable Customer Behaviour values
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - potentially_violent
+            - partner_potentially_violent
+            - customer_and_partner_potentially_violent
+            - other_member_of_household_potentially_violent
+            - customer_and_other_member_of_household_potentially_violent
+            - partner_and_other_member_of_household_potentially_violent
+            - customer_partner_and_other_member_of_household_potentially_violent
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+
+    Links:
+      description: An optional array of HATEOAS links.  See https://jsonapi.org/format/#document-links
+      type: object
+      properties:
+        self:
+          type: string
+    DateOfBirth:
+      description: Holds the Citizen's date of birth and metadata indicating the level of verification
+      required:
+        - date
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    RequestedName:
+      description: The preferred first name of the Citizen - for example someone with firstName "William" may be preferred to be known as "Billy"
+      type: object
+      required:
+        - requestedName
+      properties:
+        requestedName:
+          type: string
+          maxLength: 70
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    JSONAPIErrorDetails:
+      description: Error details object complying to the JSON-API specification - see https://jsonapi.org/format/#error-objects
+      type: object
+      properties:
+        id:
+          type: string
+        links:
+          $ref: '#/components/schemas/JSONAPIErrorLinks'
+        status:
+          type: string
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+        source:
+          $ref: '#/components/schemas/Source'
+    NationalityTypeEnum:
+      type: string
+      maxLength: 70
+      example: british
+      description: The nationality of a citizen.  In some cases this is actually their citizenship.
+      enum:
+        - afghan
+        - albanian
+        - algerian
+        - american
+        - american_samoan
+        - american_virgin_islander
+        - andorran
+        - angolan
+        - anguillan
+        - antiguan
+        - argentinean
+        - armenian
+        - aruban
+        - ascension
+        - australian
+        - austrian
+        - azerbaijani
+        - bahamian
+        - bahraini
+        - bangladeshi
+        - barbadian
+        - barbudan
+        - belarussian
+        - belgian
+        - belize
+        - beninese
+        - bermudan
+        - bhutanese
+        - bolivian
+        - bosnian
+        - botswanan
+        - brazilian
+        - british
+        - british_virgin_islander
+        - british_west_indian
+        - brunei
+        - bulgarian
+        - burkinau
+        - burmese
+        - burundi
+        - cameroonian
+        - canadian
+        - cape_verdean
+        - cayman_islander
+        - central_african
+        - chadian
+        - chilean
+        - chinese
+        - christmas_islander
+        - citizen_of_uk
+        - citizen_of_united_arab_emirates
+        - cocos_malese_people
+        - colombian
+        - comoran
+        - congolese
+        - costa_rican
+        - cote_d_ivoire
+        - croatian
+        - cuban
+        - cypriot
+        - czech
+        - czechoslovakian
+        - danish
+        - department_of_guadeloupe
+        - djiboutian
+        - dominican
+        - dutch
+        - dutch_antillean
+        - dutch_french_dual_nationality
+        - ecuadorian
+        - egyptian
+        - equatorial_guinean
+        - eritrean
+        - estonian
+        - ethiopian
+        - faeroese
+        - falkland_islander
+        - fijian
+        - filipino
+        - finnish
+        - french
+        - french_guianan
+        - gabonese
+        - gambian
+        - georgian
+        - german
+        - ghanaian
+        - greek
+        - greenlander
+        - grenadian
+        - guamian
+        - guatemalan
+        - guinea_bissau
+        - guinean
+        - guyanese
+        - haitian
+        - honduran
+        - hungarian
+        - i_kiribatians
+        - icelandic
+        - ilois
+        - indian
+        - indonesian
+        - iranian
+        - iraqi
+        - irish
+        - israeli
+        - italian
+        - jamaican
+        - japanese
+        - jordanian
+        - kampuchean
+        - kazakh
+        - kenyan
+        - kiribati
+        - kittitian
+        - kuwaiti
+        - kyrgyz
+        - laotian
+        - latvian
+        - lebanese
+        - lesotho
+        - liberian
+        - libyan
+        - liechtenstein
+        - lithuanian
+        - luxembourger
+        - macedonian
+        - mahorais
+        - malagasy
+        - malawian
+        - malaysian
+        - maldivian
+        - malian
+        - maltese
+        - marianans
+        - marshalese
+        - martiniquais
+        - mauritanian
+        - mauritian
+        - mexican
+        - micronesian
+        - moldovan
+        - monegasque
+        - mongolian
+        - montserratian
+        - moroccan
+        - mozambican
+        - namibian
+        - nauruan
+        - nepalese
+        - nevisian
+        - new_caledonian
+        - new_zealander
+        - nicaraguan
+        - nigerian
+        - nigerien
+        - niueans
+        - norfolk_islander
+        - north_korean
+        - norwegian
+        - not_known
+        - omani
+        - pakistani
+        - palauan
+        - panamanian
+        - papua_new_guinean
+        - paraguayan
+        - peruvian
+        - pitcairn_islander
+        - polish
+        - polynesian
+        - portuguese
+        - puerto_rican
+        - qatari
+        - reunion
+        - romanian
+        - russian
+        - rwandan
+        - sabah
+        - sahwi
+        - salvadoran
+        - samoan
+        - san_marino
+        - sao_tome
+        - sarawak
+        - saudi_arabian
+        - senegalese
+        - seychellois
+        - sharjah
+        - sierra_leonean
+        - singaporean
+        - slovak
+        - slovenian
+        - solomon_islander
+        - somali
+        - south_african
+        - south_korean
+        - spanish
+        - sri_lankan
+        - st_helenian
+        - st_lucian
+        - stateless_person
+        - sudanese
+        - surinamese
+        - swazi
+        - swedish
+        - swiss
+        - syrian
+        - tahitian
+        - taiwanese
+        - tajik
+        - tanzanian
+        - thai
+        - timorese
+        - togolese
+        - tokelauans
+        - tongan
+        - trinidanian_tobagan
+        - tristan_da_cunha
+        - tunisian
+        - turkish
+        - turkmen
+        - turks_caicos_islander
+        - tuvaluan
+        - ugandan
+        - ukrainian
+        - uruguayan
+        - uzbek
+        - vanuatu
+        - vatican
+        - vencentian
+        - venezuelan
+        - vietnamese
+        - wallis_and_futuna_islander
+        - west_indian
+        - yemeni
+        - yugoslav
+        - yugoslavian
+        - zairean
+        - zambian
+        - zimbabwean
+    WarningDetails:
+      description: A set of warning codes and details received when trying to complete the required request.  These are not deemed severe enough to cause the request to fail but are returned for information
+      type: object
+      properties:
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/JSONAPIErrorDetails'
