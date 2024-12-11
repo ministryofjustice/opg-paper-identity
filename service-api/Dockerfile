@@ -7,16 +7,26 @@ RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && pecl install apcu && docker-php-ext-enable apcu \
   && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
+ARG ENABLE_XDEBUG="false"
+# We don't enable xdebug by default
+RUN if [ "$ENABLE_XDEBUG" = "true" ] ; then \
+  apk add --update linux-headers && \
+  pecl install xdebug && \
+  docker-php-ext-enable xdebug && \
+  apk del linux-headers; \
+  fi
+
 # Patch Vulnerabilities
 RUN apk upgrade --no-cache openssl curl libcurl
 
 WORKDIR /var/www/
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
 COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
 COPY docker/scripts /usr/local/bin/scripts
@@ -66,9 +76,6 @@ CMD ["php-fpm"]
 FROM app AS development
 USER "root"
 RUN pecl install pcov && docker-php-ext-enable pcov;
-
-#RUN pecl install xdebug
-#COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
