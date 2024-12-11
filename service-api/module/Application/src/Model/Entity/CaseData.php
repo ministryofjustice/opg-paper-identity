@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Exceptions\NotImplementedException;
+use Application\Exceptions\PropertyMatchException;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
 use Exception;
@@ -68,12 +70,6 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?bool $identityCheckPassed = null;
-
-    /**
-     * @var string[]
-     */
-    #[Annotation\Required(false)]
-    public ?array $alternateAddress = [];
 
     #[Annotation\Required(false)]
     public ?string $searchPostcode = null;
@@ -147,7 +143,6 @@ class CaseData implements JsonSerializable
      *     iiqControl?: IIQControl,
      *     documentComplete: bool,
      *     identityCheckPassed: ?bool,
-     *     alternateAddress: ?string[],
      *     searchPostcode: ?string,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
@@ -166,7 +161,6 @@ class CaseData implements JsonSerializable
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
-            'alternateAddress' => $this->alternateAddress,
             'searchPostcode' => $this->searchPostcode,
             'yotiSessionId' => $this->yotiSessionId,
             'kbvQuestions' => $this->kbvQuestions,
@@ -205,6 +199,35 @@ class CaseData implements JsonSerializable
         }
 
         return $arr;
+    }
+
+    public function update(mixed $data): void
+    {
+        foreach ($data as $key => $value) {
+            if ($key === 'counterService') {
+                throw new NotImplementedException('counterService update function not yet implemented');
+            } elseif ($key === 'caseProgress') {
+                throw new NotImplementedException('caseProgress update function not yet implemented');
+            } elseif ($key === 'fraudScore') {
+                throw new NotImplementedException('fraudScore update function not yet implemented');
+            } elseif ($key === 'kbvQuestions') {
+                throw new NotImplementedException('kbvQuestions update function not yet implemented');
+            } elseif ($key === 'iiqControl') {
+                throw new NotImplementedException('iiqControl update function not yet implemented');
+            } elseif ($key === 'idMethodIncludingNation') {
+                throw new NotImplementedException('idMethodIncludingNation update function not yet implemented');
+            } elseif ($key === 'vouchingFor') {
+                throw new NotImplementedException('vouchingFor update function not yet implemented');
+            } elseif ($key === 'claimedIdentity') {
+                $this->claimedIdentity?->update($value);
+            } elseif ($key === 'caseAssistance') {
+                throw new NotImplementedException('caseAssistance update function not yet implemented');
+            } elseif (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            } else {
+                throw new PropertyMatchException(sprintf('%s does not have property "%s"', $this::class, $key));
+            }
+        }
     }
 
     public function jsonSerialize(): array

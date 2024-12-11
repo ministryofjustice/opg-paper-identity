@@ -7,6 +7,7 @@ namespace ApplicationTest\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
 use Application\Exceptions\PostcodeInvalidException;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
 use Application\PostOffice\DocumentType;
@@ -448,6 +449,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/cp_enter_postcode');
 
         $response = $this->getResponse()->getContent();
-        $this->assertStringContainsString(CPFlowController::ERROR_POSTCODE_NOT_FOUND, $response);
+        $this->assertStringContainsString(AddressProcessorHelper::ERROR_POSTCODE_NOT_FOUND, $response);
     }
 }

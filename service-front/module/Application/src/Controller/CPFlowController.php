@@ -13,7 +13,7 @@ use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
-use Application\Forms\CpAltAddress;
+use Application\Forms\AddressInput;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
@@ -500,7 +500,7 @@ class CPFlowController extends AbstractActionController
 
                 if (empty($response)) {
                     $form->setMessages([
-                        'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                        'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                     ]);
                 } else {
                     return $this->redirect()->toRoute(
@@ -513,7 +513,7 @@ class CPFlowController extends AbstractActionController
                 }
             } catch (PostcodeInvalidException $e) {
                 $form->setMessages([
-                    'postcode' => [self::ERROR_POSTCODE_NOT_FOUND],
+                    'postcode' => [$this->addressProcessorHelper::ERROR_POSTCODE_NOT_FOUND],
                 ]);
             }
         }
@@ -554,8 +554,13 @@ class CPFlowController extends AbstractActionController
             $formData = $this->formToArray($form);
 
             $structuredAddress = json_decode($formData['address_json'], true);
+            $existingAddress = $detailsData['address'];
 
-            $this->opgApiService->addSelectedAltAddress($uuid, $structuredAddress);
+            $this->opgApiService->updateCaseAddress($uuid, $structuredAddress);
+
+            if (! isset($detailsData['professionalAddress'])) {
+                $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
+            }
 
             return $this->redirect()->toRoute('root/cp_enter_address_manual', ['uuid' => $uuid]);
         }
@@ -569,8 +574,8 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $form = $this->createForm(CpAltAddress::class);
-        $form->setData($detailsData['alternateAddress'] ?? []);
+        $form = $this->createForm(AddressInput::class);
+        $form->setData($detailsData['address']);
 
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
@@ -578,7 +583,13 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                $this->opgApiService->addSelectedAltAddress($uuid, $this->formToArray($form));
+                $this->opgApiService->updateCaseAddress($uuid, $this->formToArray($form));
+
+                $existingAddress = $detailsData['address'];
+
+                if (! isset($detailsData['professionalAddress'])) {
+                    $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
+                }
 
                 return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
             }

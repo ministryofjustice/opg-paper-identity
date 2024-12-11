@@ -198,6 +198,17 @@ return [
                     ],
                 ],
             ],
+            'update_case' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/update/:uuid',
+                    'verb' => 'patch',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'update',
+                    ],
+                ],
+            ],
             'update_case_method' => [
                 'type' => Segment::class,
                 'options' => [
@@ -320,13 +331,23 @@ return [
                     ],
                 ],
             ],
-            'save_alternate_address_to_case' => [
+            'save_address_to_case' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/save-alternate-address-to-case',
+                    'route' => '/cases/:uuid/save-address-to-case',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'saveAlternateAddressToCase',
+                        'action' => 'saveAddressToCase',
+                    ],
+                ],
+            ],
+            'update_professional_address' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/update-professional-address',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'saveProfessionalAddressToCase',
                     ],
                 ],
             ],

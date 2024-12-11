@@ -43,6 +43,20 @@ class ClaimedIdentity extends Entity
     public ?array $address = null;
 
     /**
+     * @psalm-suppress PossiblyUnusedProperty
+     * @var array{
+     *   line1: string,
+     *   line2?: string,
+     *   line3?: string,
+     *   town?: string,
+     *   postcode: string,
+     *   country?: string,
+     * }|null
+     */
+    #[Annotation\Required(false)]
+    public ?array $professionalAddress = null;
+
+    /**
      * @param properties-of<self> $data
      */
     public static function fromArray(mixed $data): self
@@ -58,6 +72,22 @@ class ClaimedIdentity extends Entity
         }
 
         return $instance;
+    }
+
+    /**
+     * @param properties-of<self> $data
+     */
+    public function update(mixed $data): self
+    {
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            } else {
+                throw new PropertyMatchException(sprintf('%s does not have property "%s"', $this::class, $key));
+            }
+        }
+
+        return $this;
     }
 
     /**

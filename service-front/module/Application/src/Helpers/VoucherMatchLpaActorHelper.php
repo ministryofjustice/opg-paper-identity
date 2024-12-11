@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Enums\LpaActorTypes;
+use Application\Helpers\AddressProcessorHelper;
 use Application\Services\SiriusApiService;
 
 /**
@@ -56,7 +57,8 @@ class VoucherMatchLpaActorHelper
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.sirius"]["donor"]["firstname"],
                 "lastName" => $lpasData["opg.poas.sirius"]["donor"]["surname"],
-                "dob" => $lpasData["opg.poas.sirius"]["donor"]["dob"],
+                // we replace
+                "dob" => implode("-", array_reverse(explode("/", $lpasData["opg.poas.sirius"]["donor"]["dob"]))),
                 "type" => LpaActorTypes::DONOR->value,
             ];
         }
@@ -107,5 +109,32 @@ class VoucherMatchLpaActorHelper
             });
         }
         return $matches;
+    }
+
+    public function checkAddressDonorMatch(array $lpasData, array $address): bool
+    {
+        if (! empty($lpasData["opg.poas.lpastore"]["donor"])) {
+            $donorAddress = AddressProcessorHelper::processAddress(
+                $lpasData["opg.poas.lpastore"]["donor"]["address"],
+                'lpaStoreAddressType'
+            );
+        } elseif (! empty($lpasData["opg.poas.sirius"])) {
+            $donorAddress = AddressProcessorHelper::processAddress(
+                $lpasData["opg.poas.sirius"]["donor"],
+                'siriusAddressType'
+            );
+        }
+
+        if (! isset($donorAddress)) {
+            return false;
+        }
+
+        // we check address match on line1 and postcode only, ignoring case (and whitespace in postcode)
+        /**
+        * @psalm-suppress PossiblyInvalidArgument
+        */
+        return strtolower(trim($donorAddress["line1"])) === strtolower(trim($address["line1"])) &&
+                strtolower(preg_replace("/\s+/", "", $donorAddress["postcode"])) ===
+                strtolower(preg_replace("/\s+/", "", $address["postcode"]));
     }
 }
