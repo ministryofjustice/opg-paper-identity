@@ -91,12 +91,11 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
 
-        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
-//        try {
-//
-//        } catch (\Exception $e) {
-//            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
-//        }
+        try {
+            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
+        } catch (\Exception $e) {
+            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
+        }
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 

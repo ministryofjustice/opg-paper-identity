@@ -7,9 +7,11 @@ namespace Application\Controller\Factory;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class DonorFlowControllerFactory implements FactoryInterface
 {
@@ -30,6 +32,8 @@ class DonorFlowControllerFactory implements FactoryInterface
             $container->get(SiriusApiService::class),
             $config,
             $siriusPublicUrl,
+            $container->get(SiriusDataProcessorHelper::class),
+            $container->get(LoggerInterface::class)
         );
     }
 }
