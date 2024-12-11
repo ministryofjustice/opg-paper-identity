@@ -7,6 +7,7 @@ namespace ApplicationTest\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -19,6 +20,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
     private FormProcessorHelper&MockObject $formProcessorService;
+    private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
 
     public function setUp(): void
@@ -30,6 +32,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
         $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
+        $this->siriusDataProcessorHelperMock = $this->createMock(SiriusDataProcessorHelper::class);
+
 
         parent::setUp();
 
@@ -203,6 +207,12 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+
+        $this
+            ->siriusDataProcessorHelperMock
+            ->expects(self::once())
+            ->method('updatePaperIdCaseFromSirius');
 
         $this->dispatch("/$this->uuid/post-office-do-details-match", 'GET');
         $this->assertResponseStatusCode(200);

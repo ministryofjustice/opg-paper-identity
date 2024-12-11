@@ -166,6 +166,8 @@ class DonorFlowController extends AbstractActionController
 
     public function donorDetailsMatchCheckAction(): ViewModel
     {
+        // TODO: Grab data from sirius
+
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
