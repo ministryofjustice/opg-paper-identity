@@ -28,6 +28,7 @@ use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\LpaFormHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
@@ -36,6 +37,7 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 class CPFlowController extends AbstractActionController
 {
@@ -53,6 +55,8 @@ class CPFlowController extends AbstractActionController
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
         private readonly string $siriusPublicUrl,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -129,6 +133,13 @@ class CPFlowController extends AbstractActionController
     public function nameMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
+
+        try {
+            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
+        } catch (\Exception $e) {
+            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
+        }
+
         $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
