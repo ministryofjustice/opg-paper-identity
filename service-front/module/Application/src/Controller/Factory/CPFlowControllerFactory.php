@@ -9,10 +9,12 @@ use Application\Controller\CPFlowController;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class CPFlowControllerFactory implements FactoryInterface
 {
@@ -35,7 +37,9 @@ class CPFlowControllerFactory implements FactoryInterface
             $container->get(LpaFormHelper::class),
             $container->get(DocumentTypeRepository::class),
             $config,
-            $siriusPublicUrl
+            $siriusPublicUrl,
+            $container->get(SiriusDataProcessorHelper::class),
+            $container->get(LoggerInterface::class)
         );
     }
 }
