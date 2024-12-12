@@ -103,8 +103,11 @@ class SiriusDataProcessorHelper
         $lpaData = $this->siriusApiService->getLpaByUid($lpaUid, $request);
         $processedData = $this->processLpaResponse($detailsData['personType'], $lpaData);
 
-        $this->opgApiService->updateCaseSetName($uuid, $processedData['first_name'],
-            $processedData['last_name']);
+        $this->opgApiService->updateCaseSetName(
+            $uuid,
+            $processedData['first_name'],
+            $processedData['last_name']
+        );
         $this->opgApiService->updateCaseSetDob($uuid, $processedData['dob']);
         $this->opgApiService->updateCaseAddress($uuid, $processedData['address']);
     }
