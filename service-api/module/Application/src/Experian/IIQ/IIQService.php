@@ -100,13 +100,15 @@ class IIQService
             if ($e->getMessage() === 'Unauthorized') {
                 $this->logger->info('IIQ API replied unauthorised, retrying with new token');
 
-                $this->logger->info(
-                    'SOAP_AUTH: ' . json_encode($this->authManager->buildSecurityHeader())
-                );
+                $securityHeader = $this->authManager->buildSecurityHeader(true);
 
                 $this->client->__setSoapHeaders([
-                    $this->authManager->buildSecurityHeader(true),
+                    $securityHeader
                 ]);
+
+                $this->logger->info(
+                    'SOAP_AUTH: ' . json_encode($securityHeader)
+                );
 
                 return $callback();
             } else {
