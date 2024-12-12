@@ -223,12 +223,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this
-            ->siriusDataProcessorHelperMock
-            ->expects(self::once())
-            ->method('updatePaperIdCaseFromSirius')
-            ->willReturn(null);
-
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
