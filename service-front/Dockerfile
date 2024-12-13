@@ -22,14 +22,14 @@ RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DE
     && docker-php-ext-enable sodium \
     && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
-#ARG ENABLE_XDEBUG="false"
-## We don't enable xdebug by default
-#RUN if [ "$ENABLE_XDEBUG" = "true" ] ; then \
-#  apk add --update linux-headers && \
-#  pecl install xdebug && \
-#  docker-php-ext-enable xdebug && \
-#  apk del linux-headers; \
-#  fi
+ARG ENABLE_FRONT_XDEBUG="false"
+# We don't enable xdebug by default
+RUN if [ "$ENABLE_FRONT_XDEBUG" = "true" ] ; then \
+  apk add --update linux-headers && \
+  pecl install xdebug && \
+  docker-php-ext-enable xdebug && \
+  apk del linux-headers; \
+  fi
 
 # Patch Vulnerabilities
 RUN apk upgrade --no-cache openssl curl libcurl
