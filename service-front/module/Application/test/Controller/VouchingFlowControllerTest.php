@@ -41,7 +41,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'line1' => '456 Pretend Road',
             'town' => 'Faketown',
             'postcode' => 'FA2 3KE',
-            'country' => 'UK',
+            'country' => 'United Kingdom',
         ];
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
@@ -766,7 +766,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'POST', [
             "address_json" =>
-                "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\",\"postcode\":\"FA2 3KE\",\"country\":\"UK\"}"
+                "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\",\"postcode\":\"FA2 3KE\",\"country\":\"United Kingdom\"}"
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/{$this->routes['manualAddress']}");
@@ -774,8 +774,11 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testEnterAddressManualPage(): void
     {
+        $fakeAddress = $this->fakeAddress;
+        unset($fakeAddress["country"]);
+
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails["address"] = $this->fakeAddress;
+        $mockResponseDataIdDetails["address"] = $fakeAddress;
 
         $this
             ->opgApiServiceMock
@@ -783,6 +786,15 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('getCountryList')
+            ->willReturn([
+                ["handle" => "GB", "label" => "United Kingdom"],
+                ["handle" => "SC", "label" => "Some Country"],
+            ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'GET');
         $this->assertResponseStatusCode(200);
@@ -792,6 +804,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/voucher_enter_address_manual');
         //check imputs are pre-populated if address was already selected
         $this->assertQuery("input[value='456 Pretend Road']");
+        $this->assertQuery("option[value='United Kingdom'][selected]");
     }
 
     public function testEnterAddressManualMatchError(): void
