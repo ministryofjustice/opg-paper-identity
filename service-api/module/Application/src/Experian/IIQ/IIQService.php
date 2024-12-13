@@ -110,6 +110,7 @@ class IIQService
                     'SOAP_AUTH: ' . json_encode($securityHeader)
                 );
 
+
                 return $callback();
             } else {
                 $this->logger->info(
