@@ -353,6 +353,9 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address'] ?? []);
 
+        $countryList = $this->siriusApiService->getCountryList($this->getRequest());
+        $view->setVariable('country_list', $countryList);
+
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $form->setData($formData);

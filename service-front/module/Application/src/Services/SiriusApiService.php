@@ -234,4 +234,17 @@ class SiriusApiService
             'response' => json_decode(strval($response->getBody()), true)
         ];
     }
+
+    /**
+    * @return array{handle: string, label: string}
+    */
+    public function getCountryList(Request $request): array
+    {
+        $response = $this->client->get(
+            '/api/v1/reference-data/country',
+            ['headers' => $this->getAuthHeaders($request)]
+        );
+
+        return json_decode(strval($response->getBody()), true);
+    }
 }
