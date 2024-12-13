@@ -132,14 +132,14 @@ class IIQService
      */
     public function startAuthenticationAttempt(array $saaRequest): array
     {
+        $this->logger->info(
+            'SAA_REQUEST: ' . json_encode($saaRequest)
+        );
+
         $questions = $this->withAuthentication(function () use ($saaRequest) {
             $request = $this->client->SAA([
                 'sAARequest' => $saaRequest,
             ]);
-
-            $this->logger->info(
-                'SAA_REQUEST: ' . json_encode($request)
-            );
 
             $this->logger->info(
                 'SAA_OUTCOME: ' . $request->SAAResult->Results->Outcome
