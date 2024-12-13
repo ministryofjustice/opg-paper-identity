@@ -7,9 +7,9 @@ RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && pecl install apcu && docker-php-ext-enable apcu \
   && pecl install opentelemetry-1.0.3 && docker-php-ext-enable opentelemetry
 
-ARG ENABLE_XDEBUG="false"
+ARG ENABLE_API_XDEBUG="false"
 # We don't enable xdebug by default
-RUN if [ "$ENABLE_XDEBUG" = "true" ] ; then \
+RUN if [ "$ENABLE_API_XDEBUG" = "true" ] ; then \
   apk add --update linux-headers && \
   pecl install xdebug && \
   docker-php-ext-enable xdebug && \

@@ -7,8 +7,11 @@ help:
 build: ## Build containers
 	docker compose build --parallel
 
-build-debug:
-	docker compose build --parallel --build-arg ENABLE_XDEBUG="true"
+build-front-debug:
+	docker compose build --parallel --build-arg ENABLE_FRONT_XDEBUG="true"
+
+build-api-debug:
+	docker compose build --parallel --build-arg ENABLE_API_XDEBUG="true"
 
 up: ## Start application
 	docker compose up -d front-web
