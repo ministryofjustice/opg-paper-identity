@@ -100,12 +100,21 @@ class IIQService
             if ($e->getMessage() === 'Unauthorized') {
                 $this->logger->info('IIQ API replied unauthorised, retrying with new token');
 
+                $securityHeader = $this->authManager->buildSecurityHeader(true);
+
                 $this->client->__setSoapHeaders([
-                    $this->authManager->buildSecurityHeader(true),
+                    $securityHeader
                 ]);
+
+                $this->logger->info(
+                    'SOAP_AUTH: ' . json_encode($securityHeader)
+                );
 
                 return $callback();
             } else {
+                $this->logger->info(
+                    'SOAP_ERROR: ' . $e->getMessage()
+                );
                 throw $e;
             }
         }
@@ -123,6 +132,10 @@ class IIQService
      */
     public function startAuthenticationAttempt(array $saaRequest): array
     {
+        $this->logger->info(
+            'SAA_REQUEST: ' . json_encode($saaRequest)
+        );
+
         return $this->withAuthentication(function () use ($saaRequest) {
             $request = $this->client->SAA([
                 'sAARequest' => $saaRequest,
@@ -134,12 +147,16 @@ class IIQService
                     $request->SAAResult->Results->Outcome !== 'Insufficient Questions (Unable to Authenticate)'
                 ) {
                     $this->logger->error($request->SAAResult->Results->Outcome);
-
+                    $this->logger->info(
+                        'SAA_ERROR: ' . $request->SAAResult->Results->Outcome
+                    );
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
                 if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
                     $this->logger->error($request->SAAResult->Results->NextTransId->string);
-
+                    $this->logger->info(
+                        'SAA_ERROR: ' . $request->SAAResult->Results->NextTransId->string
+                    );
                     throw new CannotGetQuestionsException("Error retrieving questions");
                 }
             }
