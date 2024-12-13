@@ -766,7 +766,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'POST', [
             "address_json" =>
-                "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\",\"postcode\":\"FA2 3KE\",\"country\":\"United Kingdom\"}"
+                "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\"," .
+                "\"postcode\":\"FA2 3KE\",\"country\":\"United Kingdom\"}"
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/{$this->routes['manualAddress']}");

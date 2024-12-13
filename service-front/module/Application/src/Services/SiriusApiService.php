@@ -240,7 +240,10 @@ class SiriusApiService
     */
     public function getCountryList(Request $request): array
     {
-        $response = $this->client->get('/api/v1/reference-data/country', ['headers' => $this->getAuthHeaders($request)]);
+        $response = $this->client->get(
+            '/api/v1/reference-data/country',
+            ['headers' => $this->getAuthHeaders($request)]
+        );
 
         return json_decode(strval($response->getBody()), true);
     }
