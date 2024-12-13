@@ -9,6 +9,7 @@ use Application\Controller\CPFlowController;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -21,6 +22,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
     private FormProcessorHelper&MockObject $formProcessorService;
+    private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
 
     public function setUp(): void
@@ -32,6 +34,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
         $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
+        $this->siriusDataProcessorHelperMock = $this->createMock(SiriusDataProcessorHelper::class);
 
         parent::setUp();
 
@@ -40,6 +43,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
+        $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
 
     public function returnOpgResponseData(): array
@@ -190,6 +194,12 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusDataProcessorHelperMock
+            ->expects(self::once())
+            ->method('updatePaperIdCaseFromSirius')
+            ->willReturn(null);
 
         $this->dispatch("/$this->uuid/cp/name-match-check", 'GET');
         $this->assertResponseStatusCode(200);

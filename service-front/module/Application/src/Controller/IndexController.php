@@ -10,6 +10,7 @@ use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use DateTime;
 use Laminas\Http\Response;
@@ -31,7 +32,8 @@ class IndexController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
-        private readonly LpaFormHelper $lpaFormHelper
+        private readonly LpaFormHelper $lpaFormHelper,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
     ) {
     }
 
@@ -51,6 +53,11 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
+        if (count($lpas) < 1) {
+            $lpsString = implode(", ", $lpasQuery);
+            throw new HttpException(404, "LPAs not found for {$lpsString}");
+        }
+
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 
@@ -62,19 +69,8 @@ class IndexController extends AbstractActionController
             ];
             throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
-        /**
-         * @psalm-suppress PossiblyUndefinedArrayOffset
-         */
-        $detailsData = $this->processLpaResponse($type, $lpas[0]);
 
-        $case = $this->opgApiService->createCase(
-            $detailsData['first_name'],
-            $detailsData['last_name'],
-            $detailsData['dob'],
-            $type,
-            $lpasQuery,
-            $detailsData['address']
-        );
+        $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
         $route = [
             'donor' => 'root/how_donor_confirms',
