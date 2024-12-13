@@ -10,6 +10,12 @@ resources:
       statusCode: 200
       file: data/addressResponse.json
 
+  - path: "/api/v1/reference-data/country"
+    method: get
+    response:
+      statusCode: 200
+      file: data/countryListResponse.json
+
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G3"
     method: get
     response:
