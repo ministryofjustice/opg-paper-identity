@@ -27,7 +27,7 @@ use Laminas\Http\Request;
  * }
  *
  * @psalm-type Lpa = array{
- *  "opg.poas.sirius": array{
+ *  "opg.poas.sirius": ?array{
  *    id: int,
  *    caseSubtype: string,
  *    donor: array{
@@ -118,7 +118,7 @@ class SiriusDataProcessorHelper
      * @return array{
      *   first_name: string,
      *   last_name: string,
-     *   dob: DateTime,
+     *   dob: string,
      *   address: array{
      *     line1: string,
      *     line2: string,

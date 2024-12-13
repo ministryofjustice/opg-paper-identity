@@ -53,6 +53,11 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
+        if (count($lpas) < 1) {
+            $lpsString = implode(", ", $lpasQuery);
+            throw new HttpException(404, "LPAs not found for {$lpsString}");
+        }
+
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 

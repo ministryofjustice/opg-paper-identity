@@ -10,13 +10,14 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Services\SiriusApiService;
 use Application\Exceptions\HttpException;
 use Laminas\Http\Request;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SiriusDataProcessorHelperTest extends TestCase
 {
-    private OpgApiServiceInterface $opgApiServiceMock;
-    private SiriusApiService $siriusApiServiceMock;
-    private SiriusDataProcessorHelper $helper;
+    private OpgApiServiceInterface&MockObject $opgApiServiceMock;
+    private SiriusApiService&MockObject $siriusApiServiceMock;
+    private SiriusDataProcessorHelper&MockObject $helper;
 
     protected function setUp(): void
     {
