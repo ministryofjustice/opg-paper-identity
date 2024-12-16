@@ -16,6 +16,7 @@ use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\DateProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -23,6 +24,7 @@ use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -37,6 +39,8 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
         private readonly string $siriusPublicUrl,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -86,6 +90,12 @@ class PostOfficeFlowController extends AbstractActionController
     public function doDetailsMatchAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
+
+        try {
+            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
+        } catch (\Exception $e) {
+            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
+        }
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
