@@ -57,7 +57,8 @@ class VoucherMatchLpaActorHelper
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.sirius"]["donor"]["firstname"],
                 "lastName" => $lpasData["opg.poas.sirius"]["donor"]["surname"],
-                // we replace
+                // we replace the `/` with `-` and reverse the array to create a YYYY-MM-DD format
+                // this is needed as PHP parses dates with mm/dd/yyyy by default
                 "dob" => implode("-", array_reverse(explode("/", $lpasData["opg.poas.sirius"]["donor"]["dob"]))),
                 "type" => LpaActorTypes::DONOR->value,
             ];
@@ -66,7 +67,7 @@ class VoucherMatchLpaActorHelper
         return $actors;
     }
 
-    private function compareName(string $firstName, string $lastName, array $actor): bool
+    public function compareName(string $firstName, string $lastName, array $actor): bool
     {
         if (is_null($actor["firstName"]) || is_null($actor["lastName"])) {
             return false;
@@ -78,7 +79,7 @@ class VoucherMatchLpaActorHelper
         return $firstNameMatch && $lastNameMatch;
     }
 
-    private function compareDob(string $dob, array $actor): bool
+    public function compareDob(string $dob, array $actor): bool
     {
         if (is_null($actor["dob"])) {
             return false;
