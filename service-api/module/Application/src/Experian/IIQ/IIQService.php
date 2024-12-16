@@ -136,7 +136,7 @@ class IIQService
         $this->logger->info(
             'SAA_REQUEST: ' . json_encode($saaRequest)
         );
-        
+
         $questions = $this->withAuthentication(function () use ($saaRequest) {
 
             try {
