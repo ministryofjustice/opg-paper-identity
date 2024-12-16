@@ -132,6 +132,9 @@ class IIQService
      */
     public function startAuthenticationAttempt(array $saaRequest): array
     {
+        $saaRequest['Applicant']['DateOfBirth']['CCYY'] = "1981";
+        $saaRequest['Applicant']['DateOfBirth']['MM'] = "05";
+        $saaRequest['Applicant']['DateOfBirth']['DD'] = "25";
         $this->logger->info(
             'SAA_REQUEST: ' . json_encode($saaRequest)
         );
