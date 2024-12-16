@@ -77,7 +77,7 @@
         <label for="country" class="govuk-label">Country</label>
         <select class="govuk-select" id="country" name="country">
             {% for country in country_list %}
-                <option value="{{ country['label'] }}" {% if form.get('country').value == country['label'] %}selected{% elseif country['handle'] == "GB" %}selected{% endif %}>
+                <option value="{{ country['label'] }}" {% if not form.get('country').value and country['handle'] == "GB" %}selected{% elseif form.get('country').value == country['label'] %}selected{% endif %}>
                     {{ country['label'] }}
                 </option>
             {% endfor %}
