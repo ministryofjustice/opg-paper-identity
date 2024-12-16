@@ -5,7 +5,6 @@
     "addressLine3": "",
     "town": "London",
     "postcode": "SW1A 1AA",
-    "country": "UK",
     "description": "1 New Street, London, SW1A 1AA"
   },
   {
@@ -14,7 +13,6 @@
     "addressLine3": "",
     "town": "London",
     "postcode": "SW1A 1AA",
-    "country": "UK",
     "description": "2 Old Street, London, SW1A 1AA"
   },
   {
@@ -23,7 +21,6 @@
     "addressLine3": "",
     "town": "London",
     "postcode": "SW1A 1AA",
-    "country": "UK",
     "description": "3 Next Street, London, SW1A 1AA"
   }
 ]
