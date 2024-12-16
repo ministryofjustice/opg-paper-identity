@@ -72,6 +72,7 @@ use SoapFault;
 class IIQService
 {
     private bool $isAuthenticated = false;
+
     public function __construct(
         private readonly AuthManager $authManager,
         private readonly IIQClient $client,
@@ -100,63 +101,93 @@ class IIQService
             if ($e->getMessage() === 'Unauthorized') {
                 $this->logger->info('IIQ API replied unauthorised, retrying with new token');
 
+                $securityHeader = $this->authManager->buildSecurityHeader(true);
+
                 $this->client->__setSoapHeaders([
-                    $this->authManager->buildSecurityHeader(true),
+                    $securityHeader
                 ]);
+
+                $this->logger->info(
+                    'SOAP_AUTH: ' . json_encode($securityHeader)
+                );
 
                 return $callback();
             } else {
+                $this->logger->info(
+                    'SOAP_ERROR: ' . $e->getMessage()
+                );
                 throw $e;
             }
         }
     }
 
     /**
-     * @throws CannotGetQuestionsException
-     * @throws SoapFault
-     * @psalm-suppress MixedReturnTypeCoercion
-     * @psalm-param SAARequest $saaRequest
      * @return array{
      *   questions: Question[],
      *   control: Control
      * }
+     * @throws SoapFault
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-param SAARequest $saaRequest
+     * @throws CannotGetQuestionsException
      */
     public function startAuthenticationAttempt(array $saaRequest): array
     {
-        return $this->withAuthentication(function () use ($saaRequest) {
-            $request = $this->client->SAA([
-                'sAARequest' => $saaRequest,
-            ]);
+        $this->logger->info(
+            'SAA_REQUEST: ' . json_encode($saaRequest)
+        );
+        
+        $questions = $this->withAuthentication(function () use ($saaRequest) {
 
-            if ($request->SAAResult->Results) {
-                if (
-                    $request->SAAResult->Results->Outcome !== 'Authentication Questions returned' &&
-                    $request->SAAResult->Results->Outcome !== 'Insufficient Questions (Unable to Authenticate)'
-                ) {
-                    $this->logger->error($request->SAAResult->Results->Outcome);
+            try {
+                $request = $this->client->SAA([
+                    'sAARequest' => $saaRequest,
+                ]);
+                $this->logger->info(
+                    'SAA_OUTCOME: ' . $request->SAAResult->Results->Outcome
+                );
 
-                    throw new CannotGetQuestionsException("Error retrieving questions");
+                if ($request->SAAResult->Results) {
+                    if (
+                        $request->SAAResult->Results->Outcome !== 'Authentication Questions returned' &&
+                        $request->SAAResult->Results->Outcome !== 'Insufficient Questions (Unable to Authenticate)'
+                    ) {
+                        $this->logger->error($request->SAAResult->Results->Outcome);
+                        $this->logger->info(
+                            'SAA_ERROR: ' . $request->SAAResult->Results->Outcome
+                        );
+                        throw new CannotGetQuestionsException("Error retrieving questions");
+                    }
+                    if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
+                        $this->logger->error($request->SAAResult->Results->NextTransId->string);
+                        $this->logger->info(
+                            'SAA_ERROR: ' . $request->SAAResult->Results->NextTransId->string
+                        );
+                        throw new CannotGetQuestionsException("Error retrieving questions");
+                    }
                 }
-                if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
-                    $this->logger->error($request->SAAResult->Results->NextTransId->string);
 
-                    throw new CannotGetQuestionsException("Error retrieving questions");
-                }
+                //need to pass these control structure for RTQ transaction
+                $control = [];
+                $control['URN'] = $request->SAAResult->Control->URN;
+                $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
+
+                return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+            } catch (\Exception $exception) {
+                $this->logger->info(
+                    'SAA_EXCEPTOIN: ' . $exception->getMessage()
+                );
             }
-
-            //need to pass these control structure for RTQ transaction
-            $control = [];
-            $control['URN'] = $request->SAAResult->Control->URN;
-            $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
-
-            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
         });
+
+        $this->logger->info(
+            'SAA_QUESTIONS: ' . json_encode($questions)
+        );
+
+        return $questions;
     }
 
     /**
-     * @throws SoapFault
-     * @psalm-suppress MixedReturnTypeCoercion
-     * @psalm-param RTQRequest $rtqRequest
      * @return array{
      *   questions?: Question[],
      *   result: array{
@@ -164,6 +195,9 @@ class IIQService
      *     NextTransId: object{string: "RTQ"|"END"|string}
      *   }
      * }
+     * @throws SoapFault
+     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-param RTQRequest $rtqRequest
      */
     public function responseToQuestions(array $rtqRequest): array
     {
