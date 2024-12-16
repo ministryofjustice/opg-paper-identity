@@ -639,6 +639,16 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_remove_lpa' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'removeLpa',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
