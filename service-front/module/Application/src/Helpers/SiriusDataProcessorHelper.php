@@ -30,7 +30,7 @@ use Laminas\Http\Request;
  *  "opg.poas.sirius": ?array{
  *    id: int,
  *    caseSubtype: string,
- *    donor: array{
+ *    donor: ?array{
  *      firstname: string,
  *      surname: string,
  *      dob: string,
@@ -44,19 +44,19 @@ use Laminas\Http\Request;
  *  },
  *  "opg.poas.lpastore": ?array{
  *    lpaType: string,
- *    donor: array{
+ *    donor: ?array{
+ *      firstNames: string,
+ *      lastName: string,
+ *      dateOfBirth: string,
+ *      address: Address,
+ *    }|null,
+ *    certificateProvider: ?array{
  *      firstNames: string,
  *      lastName: string,
  *      dateOfBirth: string,
  *      address: Address,
  *    },
- *    certificateProvider: array{
- *      firstNames: string,
- *      lastName: string,
- *      dateOfBirth: string,
- *      address: Address,
- *    },
- *    attorneys: Attorney[],
+ *    attorneys: ?Attorney[]|null,
  *  },
  * }
  */

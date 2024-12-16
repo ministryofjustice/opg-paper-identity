@@ -17,7 +17,7 @@ class SiriusDataProcessorHelperTest extends TestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiServiceMock;
-    private SiriusDataProcessorHelper&MockObject $helper;
+    private SiriusDataProcessorHelper $helper;
 
     protected function setUp(): void
     {
@@ -44,11 +44,46 @@ class SiriusDataProcessorHelperTest extends TestCase
                         'line1' => '123 Main St',
                         'town' => 'Test town',
                         'postcode' => 'AB12 3CD',
-                        'country' => 'UK'
-                    ]
-                ]
-            ]
+                        'country' => 'UK',
+                    ],
+                ],
+                'attorneys' => [
+                    [
+                        'firstNames' => 'Apollo',
+                        'lastName' => 'Creed',
+                        'dateOfBirth' => '1975-05-05',
+                    ],
+                ],
+                'certificateProvider' => [
+                    'firstNames' => 'Mickey',
+                    'lastName' => 'Goldmill',
+                    'dateOfBirth' => '1940-02-15',
+                    'address' => [
+                        'line1' => '456 Boxing St',
+                        'town' => 'Philadelphia',
+                        'postcode' => 'CD45 6EF',
+                        'country' => 'USA',
+                    ],
+                ],
+                'lpaType' => 'property-and-financial',
+            ],
+            'opg.poas.sirius' => [
+                'caseSubtype' => 'some-subtype',
+                'donor' => [
+                    'addressLine1' => '123 Main St',
+                    'addressLine2' => 'Suite 10',
+                    'addressLine3' => '',
+                    'country' => 'UK',
+                    'dob' => '1980-01-01',
+                    'firstname' => 'Rocky',
+                    'postcode' => 'AB12 3CD',
+                    'surname' => 'Balboa',
+                    'town' => 'Test town',
+                ],
+                'id' => 123,
+            ],
         ];
+
 
         $processedData = [
             'first_name' => 'Rocky',
