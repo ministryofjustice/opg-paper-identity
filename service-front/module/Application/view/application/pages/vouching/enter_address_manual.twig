@@ -76,11 +76,11 @@
     <div class="govuk-form-group">
         <label for="country" class="govuk-label">Country</label>
         <select class="govuk-select" id="country" name="country">
-            <option value="uk" {% if form.get('country').value == "uk" %}selected{% endif %}>United Kingdom</option>
-            <option value="GB" {% if form.get('country').value == "GB" %}selected{% endif %}>GB</option>
-            <option value="france" {% if form.get('country').value == "france" %}selected{% endif %}>France</option>
-            <option value="spain" {% if form.get('country').value == "spain" %}selected{% endif %}>Spain</option>
-            <option value="ireland" {% if form.get('country').value == "ireland" %}selected{% endif %}>Ireland</option>
+            {% for country in country_list %}
+                <option value="{{ country['label'] }}" {% if form.get('country').value == country['label'] %}selected{% elseif not form.get('country') and country['handle'] == "GB" %}selected{% endif %}>
+                    {{ country['label'] }}
+                </option>
+            {% endfor %}
         </select>
     </div>
 
