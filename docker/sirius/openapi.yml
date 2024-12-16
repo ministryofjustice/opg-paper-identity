@@ -163,6 +163,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /api/v1/reference-data/country:
+    get:
+      summary: Lookup countries for address dropdown
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - handle
+                    - label
+                  properties:
+                    handle:
+                      type: string
+                      x-faker: address.countryCode
+                    label:
+                      type: string
+                      x-faker: address.country
+
 components:
   schemas:
     User:
