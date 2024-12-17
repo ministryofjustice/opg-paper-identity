@@ -49,7 +49,7 @@ class ConfigBuilder
         $decision = $case->fraudScore->decision;
 
         $saaConfig['ApplicationData'] = match ($decision) {
-            'STOP', 'REFER' => [
+            'STOP', 'REFER-HIGH', 'REFER-MEDIUM' => [
                 'SearchConsent' => 'Y',
                 'Product' => '4 out of 4',
             ],
