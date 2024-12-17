@@ -577,6 +577,9 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address']);
 
+        $countryList = $this->siriusApiService->getCountryList($this->getRequest());
+        $view->setVariable('country_list', $countryList);
+
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
 

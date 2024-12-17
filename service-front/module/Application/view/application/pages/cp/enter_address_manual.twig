@@ -77,10 +77,11 @@
     <div class="govuk-form-group">
         <label for="country" class="govuk-label">Country</label>
         <select class="govuk-select" id="country" name="country">
-            <option value="uk" selected>United Kingdom</option>
-            <option value="france">France</option>
-            <option value="spain">Spain</option>
-            <option value="ireland">Ireland</option>
+            {% for country in country_list %}
+                <option value="{{ country['label'] }}" {% if form.get('country').value == country['label'] %}selected{% elseif country['handle'] == "GB" %}selected{% endif %}>
+                    {{ country['label'] }}
+                </option>
+            {% endfor %}
         </select>
     </div>
 
