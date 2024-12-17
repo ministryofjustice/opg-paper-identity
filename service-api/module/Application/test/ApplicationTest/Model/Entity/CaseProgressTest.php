@@ -31,7 +31,7 @@ class CaseProgressTest extends TestCase
         $this->assertEquals($isValid, $form->isValid());
     }
 
-    public static function invalidDataProvider()
+    public static function invalidDataProvider(): array
     {
         return [
             'valid' => [self::getData(), true],
