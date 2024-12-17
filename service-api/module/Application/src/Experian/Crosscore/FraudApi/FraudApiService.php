@@ -77,7 +77,7 @@ class FraudApiService
             );
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
-
+            $this->logger->info('FRAUD_RESPONSE: ', $responseArray);
             return new ResponseDTO(
                 $responseArray
             );
