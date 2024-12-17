@@ -35,22 +35,24 @@ class Soap
 
                 $reflect = new ReflectionClass($client);
                 $name = sprintf("%s::%s", $reflect->getShortName(), $params[0]);
-                $config = $params[2];
 
                 $spanBuilder = $instrumentation->tracer()
                     ->spanBuilder($name)
                     ->setParent($parentContext)
                     ->setSpanKind(SpanKind::KIND_CLIENT);
 
-                if (isset($config['location'])) {
-                    $url = parse_url($config['location']);
+                if (isset($params[2])) {
+                    $config = $params[2];
+                    if (isset($config['location'])) {
+                        $url = parse_url($config['location']);
 
-                    $spanBuilder->setAttributes([
-                        TraceAttributes::URL_FULL => $config['location'] ?? '',
-                        TraceAttributes::SERVER_ADDRESS => $url['host'] ?? '',
-                        TraceAttributes::SERVER_PORT => $url['port'] ?? '',
-                        TraceAttributes::URL_PATH => $url['path'] ?? '',
-                    ]);
+                        $spanBuilder->setAttributes([
+                            TraceAttributes::URL_FULL => $config['location'] ?? '',
+                            TraceAttributes::SERVER_ADDRESS => $url['host'] ?? '',
+                            TraceAttributes::SERVER_PORT => $url['port'] ?? '',
+                            TraceAttributes::URL_PATH => $url['path'] ?? '',
+                        ]);
+                    }
                 }
 
                 $span = $spanBuilder->startSpan();
