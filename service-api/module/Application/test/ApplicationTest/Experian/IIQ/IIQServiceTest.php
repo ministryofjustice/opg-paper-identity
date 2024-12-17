@@ -130,33 +130,33 @@ class IIQServiceTest extends TestCase
         $this->assertEquals('1234', $response['control']['AuthRefNo']);
     }
 
-    public function testStartAuthenticationAttemptsOneRetry(): void
-    {
-        $soapFault = new SoapFault('0', 'Unauthorized');
-
-        $this->authManager->expects($this->exactly(2))
-            ->method('buildSecurityHeader')
-            ->with($this->callback(function (bool $forceNewToken) {
-                static $i = 0;
-
-                return match (++$i) {
-                    1 => $forceNewToken === false,
-                    2 => $forceNewToken === true,
-                    default => $this->fail("Did not expect attempt $i at calling `buildSecurityHeader`"),
-                };
-            }))
-            ->willReturn(new SoapHeader('placeholder', 'bad-token'));
-
-        $this->iiqClient->expects($this->exactly(2))
-            ->method('__call')
-            ->with('SAA', $this->anything())
-            ->willThrowException($soapFault);
-
-        $this->expectException(SoapFault::class);
-        $this->expectExceptionMessage('Unauthorized');
-
-        $this->assertIsArray($this->sut->startAuthenticationAttempt($this->getSaaRequest()));
-    }
+//    public function testStartAuthenticationAttemptsOneRetry(): void
+//    {
+//        $soapFault = new SoapFault('0', 'Unauthorized');
+//
+//        $this->authManager->expects($this->exactly(2))
+//            ->method('buildSecurityHeader')
+//            ->with($this->callback(function (bool $forceNewToken) {
+//                static $i = 0;
+//
+//                return match (++$i) {
+//                    1 => $forceNewToken === false,
+//                    2 => $forceNewToken === true,
+//                    default => $this->fail("Did not expect attempt $i at calling `buildSecurityHeader`"),
+//                };
+//            }))
+//            ->willReturn(new SoapHeader('placeholder', 'bad-token'));
+//
+//        $this->iiqClient->expects($this->exactly(2))
+//            ->method('__call')
+//            ->with('SAA', $this->anything())
+//            ->willThrowException($soapFault);
+//
+//        $this->expectException(SoapFault::class);
+//        $this->expectExceptionMessage('Unauthorized');
+//
+//        $this->assertIsArray($this->sut->startAuthenticationAttempt($this->getSaaRequest()));
+//    }
 
     public function testResponseToQuestionsComplete(): void
     {

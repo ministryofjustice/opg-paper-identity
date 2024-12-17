@@ -239,6 +239,8 @@ class FormProcessorHelper
         switch ($fraudCheck['decision']) {
             case 'CONTINUE':
             case 'REFER':
+            case 'REFER-HIGH':
+            case 'REFER-MEDIUM':
             case 'ACCEPT':
             case 'STOP':
                 $template = $templates['success'];
