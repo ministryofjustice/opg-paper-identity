@@ -7,6 +7,7 @@ namespace ApplicationTest\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,6 +17,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
     private FormProcessorHelper&MockObject $formProcessorService;
+    private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
 
     public function setUp(): void
@@ -27,6 +29,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
         $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
+        $this->siriusDataProcessorHelperMock = $this->createMock(SiriusDataProcessorHelper::class);
 
         parent::setUp();
 
@@ -35,6 +38,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
+        $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
 
     public function testLpasByDonorReturnsPageWithData(): void
@@ -218,6 +222,12 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->siriusDataProcessorHelperMock
+            ->expects(self::once())
+            ->method('updatePaperIdCaseFromSirius')
+            ->willReturn(null);
 
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
