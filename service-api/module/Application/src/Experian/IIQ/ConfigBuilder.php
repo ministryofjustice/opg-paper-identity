@@ -42,11 +42,11 @@ class ConfigBuilder
             'DD' => $dob->format('d'),
         ];
 
-        if (! isset($case->fraudScore)) {
+        if (! isset($case->caseProgress?->fraudScore)) {
             throw new RuntimeException('Fraudscore has not been set');
         }
 
-        $decision = $case->fraudScore->decision;
+        $decision = $case->caseProgress?->fraudScore?->decision;
 
         $saaConfig['ApplicationData'] = match ($decision) {
             'STOP', 'REFER' => [
@@ -60,7 +60,7 @@ class ConfigBuilder
         };
 
         if (is_null($saaConfig['ApplicationData'])) {
-            throw new RuntimeException('Fraudscore result is not recognised: ' . $case->fraudScore->decision);
+            throw new RuntimeException('Fraudscore result is not recognised: ' . $case->caseProgress?->fraudScore?->decision);
         }
 
         if (! isset($case->claimedIdentity->address)) {

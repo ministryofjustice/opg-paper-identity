@@ -135,9 +135,11 @@ class HealthcheckControllerTest extends TestCase
                 'id_country' => "GBR",
                 'id_route' => "TELEPHONE",
             ],
-            "fraudScore" => [
-                "decision" => "ACCEPT",
-                "score" => 0
+            "caseProgress" => [
+                "fraudScore" => [
+                    "decision" => "ACCEPT",
+                    "score" => 0
+                ]
             ]
         ];
 
@@ -169,9 +171,11 @@ class HealthcheckControllerTest extends TestCase
                 'id_country' => "GBR",
                 'id_route' => "TELEPHONE",
             ],
-            "fraudScore" => [
-                "decision" => "NODECISION",
-                "score" => 0
+            "caseProgress" => [
+                "fraudScore" => [
+                    "decision" => "NODECISION",
+                    "score" => 0
+                ]
             ]
         ];
 

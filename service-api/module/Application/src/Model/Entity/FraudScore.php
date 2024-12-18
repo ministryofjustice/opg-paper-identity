@@ -8,6 +8,7 @@ use Exception;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\NotEmpty;
+use Psr\Log\LoggerInterface;
 
 /**
  * DTO for holding case progress data

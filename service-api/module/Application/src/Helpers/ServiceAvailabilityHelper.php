@@ -111,16 +111,19 @@ class ServiceAvailabilityHelper
     public function processServicesWithCaseData(): array
     {
         if (
-            $this->case->fraudScore?->decision === self::DECISION_STOP ||
-            $this->case->fraudScore?->decision === self::DECISION_NODECISION ||
-            $this->case->identityCheckPassed === false
+            isset($this->case->caseProgress?->fraudScore?->decision) &&
+            (
+                $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
+                $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION ||
+                $this->case->identityCheckPassed === false
+            )
         ) {
             $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = false;
             $this->availableServices['DRIVING_LICENCE'] = false;
             $this->availableServices['PASSPORT'] = false;
             $this->availableServices['EXPERIAN'] = false;
 
-            if ($this->case->fraudScore?->decision === 'STOP') {
+            if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;
                 $this->processedMessages['banner'] =
                     $this->config['opg_settings']['banner_messages'][$this->case->personType][self::DECISION_STOP];

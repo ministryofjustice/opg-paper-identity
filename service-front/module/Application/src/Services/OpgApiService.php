@@ -201,7 +201,7 @@ class OpgApiService implements OpgApiServiceInterface
                     'address' => $address,
                 ],
                 'personType' => $personType,
-                'lpas' => $lpas
+                'lpas' => $lpas,
             ];
         }
 

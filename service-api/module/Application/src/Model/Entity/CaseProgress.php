@@ -24,6 +24,10 @@ class CaseProgress extends Entity
     #[Validator(NotEmpty::class)]
     public string $timestamp;
 
+    #[Annotation\Required(false)]
+    #[Annotation\ComposedObject(FraudScore::class)]
+    public ?FraudScore $fraudScore = null;
+
     /**
      * @param properties-of<self> $data
      */
@@ -31,12 +35,27 @@ class CaseProgress extends Entity
     {
         $instance = new self();
 
+//        foreach ($data as $key => $value) {
+//            if (property_exists($instance, $key)) {
+//                $instance->{$key} = $value;
+//            } else {
+//                throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
+//            }
+//        }
+
         foreach ($data as $key => $value) {
-            if (property_exists($instance, $key)) {
+            if ($key === 'fraudScore') {
+                $instance->fraudScore = FraudScore::fromArray($value);
+            } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
                 throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
             }
+        }
+
+        // Ensure fraudScore is initialized
+        if ($instance->fraudScore === null) {
+            $instance->fraudScore = FraudScore::fromArray([]); // Replace with default initialization
         }
 
         return $instance;
