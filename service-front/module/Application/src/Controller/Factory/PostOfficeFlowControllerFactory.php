@@ -8,10 +8,12 @@ use Application\Config\Config;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class PostOfficeFlowControllerFactory implements FactoryInterface
 {
@@ -35,7 +37,9 @@ class PostOfficeFlowControllerFactory implements FactoryInterface
             $container->get(SiriusApiService::class),
             $container->get(DocumentTypeRepository::class),
             $config,
-            $siriusPublicUrl
+            $siriusPublicUrl,
+            $container->get(SiriusDataProcessorHelper::class),
+            $container->get(LoggerInterface::class)
         );
     }
 }

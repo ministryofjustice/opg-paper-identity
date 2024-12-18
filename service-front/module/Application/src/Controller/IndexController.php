@@ -10,6 +10,7 @@ use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use DateTime;
 use Laminas\Http\Response;
@@ -31,7 +32,8 @@ class IndexController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
-        private readonly LpaFormHelper $lpaFormHelper
+        private readonly LpaFormHelper $lpaFormHelper,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
     ) {
     }
 
@@ -51,6 +53,11 @@ class IndexController extends AbstractActionController
             $lpas[] = $data;
         }
 
+        if (empty($lpas)) {
+            $lpsString = implode(", ", $lpasQuery);
+            throw new HttpException(404, "LPAs not found for {$lpsString}");
+        }
+
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 
@@ -62,19 +69,8 @@ class IndexController extends AbstractActionController
             ];
             throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
-        /**
-         * @psalm-suppress PossiblyUndefinedArrayOffset
-         */
-        $detailsData = $this->processLpaResponse($type, $lpas[0]);
 
-        $case = $this->opgApiService->createCase(
-            $detailsData['first_name'],
-            $detailsData['last_name'],
-            $detailsData['dob'],
-            $type,
-            $lpasQuery,
-            $detailsData['address']
-        );
+        $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
         $route = [
             'donor' => 'root/how_donor_confirms',
@@ -83,62 +79,6 @@ class IndexController extends AbstractActionController
         ];
 
         return $this->redirect()->toRoute($route[$type], ['uuid' => $case['uuid']]);
-    }
-
-    /**
-     * @param Lpa $data
-     * @return Identity
-     */
-    private function processLpaResponse(string $type, array $data): array
-    {
-        if (in_array($type, ['donor', 'voucher'])) {
-            if (! empty($data['opg.poas.lpastore'])) {
-                $address = (new AddressProcessorHelper())->processAddress(
-                    $data['opg.poas.lpastore']['donor']['address'],
-                    'lpaStoreAddressType'
-                );
-
-                return [
-                    'first_name' => $data['opg.poas.lpastore']['donor']['firstNames'],
-                    'last_name' => $data['opg.poas.lpastore']['donor']['lastName'],
-                    'dob' => (new DateTime($data['opg.poas.lpastore']['donor']['dateOfBirth']))->format("Y-m-d"),
-                    'address' => $address,
-                ];
-            }
-
-            $address = (new AddressProcessorHelper())->processAddress(
-                $data['opg.poas.sirius']['donor'],
-                'siriusAddressType'
-            );
-
-            return [
-                'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
-                'last_name' => $data['opg.poas.sirius']['donor']['surname'],
-                'dob' => DateTime::createFromFormat('d/m/Y', $data['opg.poas.sirius']['donor']['dob'])->format("Y-m-d"),
-                'address' => $address,
-            ];
-        } elseif ($type === 'certificateProvider') {
-            if ($data['opg.poas.lpastore'] === null) {
-                throw new HttpException(
-                    400,
-                    'Cannot ID check this certificate provider as the LPA has not yet been submitted',
-                );
-            }
-
-            $address = (new AddressProcessorHelper())->processAddress(
-                $data['opg.poas.lpastore']['certificateProvider']['address'],
-                'lpaStoreAddressType'
-            );
-
-            return [
-                'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
-                'last_name' => $data['opg.poas.lpastore']['certificateProvider']['lastName'],
-                'dob' => '1000-01-01', //temp setting should be null in prod
-                'address' => $address,
-            ];
-        }
-
-        throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
     public function abandonFlowAction(): ViewModel
