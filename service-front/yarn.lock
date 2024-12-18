@@ -123,9 +123,9 @@
   integrity sha512-7IAFPrjSQIJrGsK6flwg7NFmwBoSTyF3rl7If0hNUFQU4ilTsEPL6GuMuU9BfIWVVGuRnuIidkSMC+c0Otu8IA==
 
 "@ministryofjustice/frontend@^3.0.0":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.0.3.tgz#553a9539480806d85752c89fd9c6364f3f878149"
-  integrity sha512-E1fOweiM/KGR1uct7trvoWQDkZSmSK2uTyL0g+x5q6tFapy/hNMOgzsqwjhhdxSQUjDB3rSKXDub3b+QozEkCA==
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.2.2.tgz#f1a9fd8a14d59adcb464b99cbc5b37c49e3bfdf4"
+  integrity sha512-7UdFk6QOqT6mUIoortB8Bb9JaLs7SujWyyGxWezPm6AJeuwMIVdwMsP2ldFFZ+54ajuw9akeA/Jvp/Hf6lt8ww==
   dependencies:
     govuk-frontend "^5.0.0"
     moment "^2.27.0"
@@ -232,9 +232,9 @@ braces@^3.0.3:
     fill-range "^7.1.1"
 
 chokidar@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-4.0.1.tgz#4a6dff66798fb0f72a94f616abbd7e1a19f31d41"
-  integrity sha512-n8enUVCED/KVRQlab1hr3MVpcVMvxtZjmEa956u+4YijlmQED223XMSYj2tLuKvr4jcCTzNNMpQDUer72MMmzA==
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-4.0.2.tgz#97b9562c9f59de559177f069eadf5dcc67d24798"
+  integrity sha512-/b57FK+bblSU+dfewfFe0rT1YjVDfOmeLQwCAuC+vwvgLkXboATqqmy+Ipux6JrF6L5joe5CBnFOw+gLWH6yKg==
   dependencies:
     readdirp "^4.0.1"
 
@@ -286,9 +286,9 @@ govuk-frontend@^5.0.0:
   integrity sha512-jF1cq5rn57kxZmJRprUZhTQ31zaBBK4b5AyeJaPX3Yhg22lk90Mx/dQLvOk/ycV3wM7e0y+s4IPvb2fFaPlCGg==
 
 immutable@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-5.0.2.tgz#bb8a987349a73efbe6b3b292a9cbaf1b530d296b"
-  integrity sha512-1NU7hWZDkV7hJ4PJ9dur9gTNQ4ePNPN4k9/0YhwjzykTi/+3Q5pF93YU5QoVj8BuOnhLgaY8gs0U2pj4kSYVcw==
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-5.0.3.tgz#aa037e2313ea7b5d400cd9298fa14e404c933db1"
+  integrity sha512-P8IdPQHq3lA1xVeBRi5VPqUm5HDgKnx0Ru51wZz5mjxHr5n3RWhjIpOFU7ybkUxfB+5IToy+OLaHYDBIWsv+uw==
 
 is-extglob@^2.1.1:
   version "2.1.1"
@@ -331,9 +331,9 @@ picomatch@^2.3.1:
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
 prettier@^3.0.0:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.4.1.tgz#e211d451d6452db0a291672ca9154bc8c2579f7b"
-  integrity sha512-G+YdqtITVZmOJje6QkXQWzl3fSfMxFwm1tjTyo9exhkmWSqC4Yhd1+lug++IlR2mvRVAxEDDWYkQdeSztajqgg==
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.4.2.tgz#a5ce1fb522a588bf2b78ca44c6e6fe5aa5a2b13f"
+  integrity sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ==
 
 readdirp@^4.0.1:
   version "4.0.2"
@@ -341,9 +341,9 @@ readdirp@^4.0.1:
   integrity sha512-yDMz9g+VaZkqBYS/ozoBJwaBhTbZo3UNYQHNRw1D3UFQB8oHB4uS/tAODO+ZLjGWmUbKnIlOWO+aaIiAxrUWHA==
 
 sass@^1.26.11:
-  version "1.81.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.81.0.tgz#a9010c0599867909dfdbad057e4a6fbdd5eec941"
-  integrity sha512-Q4fOxRfhmv3sqCLoGfvrC9pRV8btc0UtqL9mN6Yrv6Qi9ScL55CVH1vlPP863ISLEEMNLLuu9P+enCeGHlnzhA==
+  version "1.83.0"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.83.0.tgz#e36842c0b88a94ed336fd16249b878a0541d536f"
+  integrity sha512-qsSxlayzoOjdvXMVLkzF84DJFc2HZEL/rFyGIKbbilYtAvlCxyuzUeff9LawTn4btVnLKg75Z8MMr1lxU1lfGw==
   dependencies:
     chokidar "^4.0.0"
     immutable "^5.0.2"
