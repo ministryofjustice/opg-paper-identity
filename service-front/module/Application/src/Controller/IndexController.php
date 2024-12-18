@@ -86,13 +86,17 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
-        $saveProgressData = [];
-        $saveProgressData['last_page'] = $this->getRequest()->getQuery('last_page');
-        $saveProgressData['timestamp'] = date("Y-m-d\TH:i:s\Z", time());
-        $this->opgApiService->updateCaseProgress($uuid, $saveProgressData);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $caseProgressData = $detailsData['caseProgress'] ?? [];
+
+        $caseProgressData['abandonedFlow'] = [
+            'last_page' => $this->getRequest()->getQuery('last_page'),
+            'timestamp' => date("Y-m-d\TH:i:s\Z", time()),
+        ];
+
+        $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
 
         $form = $this->createForm(AbandonFlow::class);
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $siriusData = [
@@ -107,8 +111,12 @@ class IndexController extends AbstractActionController
         }
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('last_page', $saveProgressData['last_page']);
+        $view->setVariable('last_page', $caseProgressData['abandonedFlow']['last_page']);
         $view->setVariable('form', $form);
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        var_dump($detailsData);
 
         return $view->setTemplate('application/pages/abandoned_flow');
     }
