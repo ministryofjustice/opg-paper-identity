@@ -85,31 +85,26 @@
                     <td class="govuk-table__cell">{{ lpa_response['donorName'] }}</td>
                     <td class="govuk-table__cell">
                     {% if lpa_response['warning'] == 'donor-match' %}
-                        <strong class="govuk-tag govuk-tag--red">Warning</strong>
+                        <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
                     {% endif %}
                     </td>
                 </tr>
-
-                {# this is the block which i could work on to get rid of the if/else #}
-
-                {% if lpa_response["warning"] in ["certificate-provider-match", "attorney-match", "replacement-attorney-match"] %}
+                {% for row in lpa_response["additionalRows"] %}
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{{ lpa_response['additionalRow']['type'] }}</th>
-                        <td class="govuk-table__cell">{{ lpa_response['additionalRow']['value'] }}</td>
+                        <th scope="row" class="govuk-table__header">{{ row['type'] }}</th>
+                        <td class="govuk-table__cell">{{ row['value'] }}</td>
                         <td class="govuk-table__cell">
-                        <strong class="govuk-tag govuk-tag--blue">Warning</strong>
+                        <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
                         </td>
                     </tr>
-                {% endif %}
-
-                {# this is the block which i could work on to get rid of the if/else #}
+                {% endfor %}
 
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">Donor date of birth</th>
                     <td class="govuk-table__cell">{{ lpa_response['donorDob'] }}</td>
                     <td class="govuk-table__cell">
                         {% if lpa_response['warning'] == 'donor-match' %}
-                            <strong class="govuk-tag govuk-tag--red">Warning</strong>
+                            <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
                         {% endif %}
                     </td>
                 </tr>
@@ -123,7 +118,7 @@
                         {% endfor %}
                     </td>
                     <td class="govuk-table__cell">
-                        {% if lpa_response['warning'] == 'donor-address-match' %}
+                        {% if lpa_response['warning'] == 'address-match' %}
                             <strong class="govuk-tag govuk-tag--red">Warning</strong>
                         {% endif %}
                     </td>
