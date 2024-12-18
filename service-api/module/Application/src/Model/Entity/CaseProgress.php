@@ -17,8 +17,7 @@ use Laminas\Validator\NotEmpty;
  */
 class CaseProgress extends Entity
 {
-    #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public string $last_page;
 
     #[Validator(NotEmpty::class)]
