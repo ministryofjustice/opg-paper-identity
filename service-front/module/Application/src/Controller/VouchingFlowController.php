@@ -397,11 +397,10 @@ class VouchingFlowController extends AbstractActionController
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
 
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            $donorName = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
+            $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
-            $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
+            $type = LpaTypes::fromName($lpaData['opg.poas.lpastore']['lpaType']);
 
             $lpaDetails[$lpa] = [
                 'name' => $donorName,
@@ -459,6 +458,7 @@ class VouchingFlowController extends AbstractActionController
                 );
 
                 $processed = $this->addDonorFormHelper->processLpas($lpas, $detailsData);
+                // var_dump($lpas);
                 $view->setVariable('lpa_response', $processed);
             }
         }

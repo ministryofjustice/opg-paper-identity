@@ -59,7 +59,7 @@ class AddDonorFormHelper
         return true;
     }
 
-    private function getDonorNameFromSiriusResponse(array $lpaData): string
+    public static function getDonorNameFromSiriusResponse(array $lpaData): string
     {
         return implode(' ', [
             $lpaData['opg.poas.sirius']['donor']['firstname'] ?? '',
@@ -67,109 +67,136 @@ class AddDonorFormHelper
         ]);
     }
 
-    private function getDonorDobFromSiriusResponse(array $lpaData): string
+    public static function getDonorDobFromSiriusResponse(array $lpaData): string
     {
         // this is needed as PHP parses dates with mm/dd/yyyy by default
         $dob = implode("-", array_reverse(explode("/", $lpaData["opg.poas.sirius"]["donor"]["dob"])));
         return DateTime::createFromFormat('Y-m-d', $dob)->format('d M Y');
     }
 
-    private function getDonorAddressFromSiriusResponse(array $lpaData): array
+    public static function getDonorAddressFromSiriusResponse(array $lpaData): array
     {
         return AddressProcessorHelper::processAddress($lpaData['opg.poas.sirius']['donor'], 'siriusAddressType');
     }
 
+
+    private function checkLpa($lpa, $detailsData) {
+
+        $error = false;
+        $warning = null;
+        $message = null;
+        $additionalRows = [];
+
+        $matchHelper = new VoucherMatchLpaActorHelper();
+
+        $matches = $matchHelper->checkMatch(
+            $lpa,
+            $detailsData["firstName"],
+            $detailsData["lastName"],
+            $detailsData["dob"],
+        );
+        // we need this to not filter out everything if the dob on the LPA is null...
+
+        echo(json_encode($lpa));
+        echo(json_encode($matches));
+
+        foreach ($matches as $match) {
+            $matchName = implode(" ", [$match["firstName"], $match["lastName"]]);
+
+            // if there is a dob in the match then we stop this LPA being added
+            if (! is_null($match["dob"])) {
+                $error = true;
+                $message = "The person vouching cannot have the same name and date of birth as the {$match['type']}.";
+
+                if ($match["type"] != LpaActorTypes::DONOR->value) {
+                    $warning = 'actor-match';
+                    $additionalRows = [
+                        [
+                            "type" => ucfirst($match['type']) . " name",
+                            "value" => $matchName
+                        ],
+                        [
+                            "type" => ucfirst($match['type']) . "date of birth",
+                            "value" => DateTime::createFromFormat('Y-m-d', $match["dob"])->format('d M Y')
+                        ]
+                    ];
+                } else {
+                    $warning = 'donor-match';
+                }
+                break;
+            } else {
+                if ($match["type"] == LpaActorTypes::DONOR->value) {
+                    $warning = 'donor-match';
+                }
+                $warning = 'actor-match';
+                if ($match["type"] == LpaActorTypes::ATTORNEY->value) {
+                    $messageArticle = "an";
+                    $messageArticleU = "An";
+                } else {
+                    $messageArticle = "a";
+                    $messageArticleU = "A";
+                }
+                $message = "There is {$messageArticle} {$match['type']} called {$matchName} named on this LPA. {$messageArticleU} {$match['type']} cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
+            }
+        }
+
+        if (! $error) {
+            $addressMatch = $matchHelper->checkAddressDonorMatch($lpa, $detailsData["address"]);
+
+            if ($addressMatch) {
+                $error = true;
+                $warning = "address-match";
+                $message = "The person vouching cannot live at the same address as the donor.";
+            }
+        }
+
+        return [
+            "error" => $error,
+            "warning" => $warning,
+            "message" => $message,
+            "additionalRows" => $additionalRows,
+        ];
+    }
+
+
     public function processLpas($lpasData, $detailsData) {
 
         $response = [
-            "lpasCount" => count($lpasData),
+            "lpasCount" => 0,
             "error" => false,
             "warning" => null,
-            "message" => null
+            "message" => null,
+            "additionalRow" => null,
         ];
-
-        $matchHelper = new VoucherMatchLpaActorHelper();
-        $name_dob_matches = [];
-        $name_matches = [];
-        $addressMatch = false;
-        foreach ($lpasData as $lpa) {
-            $name_dob_matches = array_merge($name_matches, $matchHelper->checkMatch(
-                $lpa,
-                $detailsData["firstName"],
-                $detailsData["lastName"],
-                $detailsData["dob"],
-            ));
-            $name_matches = array_merge($name_matches, $matchHelper->checkMatch(
-                $lpa,
-                $detailsData["firstName"],
-                $detailsData["lastName"],
-            ));
-            $addressMatch = $addressMatch || $matchHelper->checkAddressDonorMatch(
-                $lpa,
-                $detailsData["address"],
-            );
-        }
-
-        foreach ($name_dob_matches as $match) {
-            if ($match["type"] === LpaActorTypes::DONOR->value) {
-                $response["error"] = true;
-                $response["warning"] = 'donor-match';
-                $matchName = implode(" ", [$match["firstName"], $match["lastName"]]);
-                $response["message"] = "The person vouching cannot have the same name and date of birth as the donor.";
-            }
-        }
-        if ($addressMatch and ! $response["error"]) {
-            $response["error"] = true;
-            $response["warning"] = "donor-address-match";
-            $response["message"]= 'The person vouching cannot have the same address as the donor.';
-        }
-        if (! isset($response["warning"])) {
-            foreach ($name_matches as $match) {
-                if ($match["type"] == LpaActorTypes::CP->value) {
-
-                    $matchName = implode(" ", [$match["firstName"], $match["lastName"]]);
-
-                    $response["warning"] = $match["type"] . '-match';
-                    $response["matchName"] = $matchName;
-                    $response["message"] = "There is a certificate provider called " . $matchName . " named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
-                    $response["additionalRow"] = [
-                        "type" => "Certificate provider name",
-                        "value" => $matchName
-                    ];
-                } elseif ($match["type"] == LpaActorTypes::ATTORNEY->value) {
-
-                    $matchName = implode(" ", [$match["firstName"], $match["lastName"]]);
-
-                    $response["warning"] = $match["type"] . '-match';
-                    $response["matchName"] = $matchName;
-                    $response["message"] = "There is an attorney called " . $matchName . " named on this LPA. An attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
-                    $response["additionalRow"] = [
-                        "type" => "Attorney name",
-                        "value" => $matchName
-                    ];
-                } elseif ($match["type"] == LpaActorTypes::R_ATTORNEY->value) {
-
-                    $matchName = implode(" ", [$match["firstName"], $match["lastName"]]);
-
-                    $response["warning"] = $match["type"] . '-match';
-                    $response["matchName"] = $matchName;
-                    $response["message"] = "There is a replacement attorney called " . $matchName . " named on this LPA. A replacement attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
-                    $response["additionalRow"] = [
-                        "type" => "Replacement attorney name",
-                        "value" => $matchName
-                    ];
-                }
-            }
-        }
 
         $lpas = [];
         foreach ($lpasData as $lpa) {
-            $lpas[] = [
+            $lpas[] = array_merge($this->checkLpa($lpa, $detailsData), [
                 "uId" => $lpa["uId"],
                 "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
-            ];
+            ]);
         }
 
+        echo(json_encode($lpas));
+
+        if (count($lpas) === 1) {
+            $lpa = current($lpas);
+            $response["error"] = $lpa["error"];
+            $response["warning"] = $lpa["warning"];
+            $response["message"] = $lpa["message"];
+            $response["additionalRows"] = $lpa["additionalRows"];
+        } else {
+            $lpas = array_filter($lpas, function ($a) {
+                return ! $a["error"];
+            });
+        }
+
+        if (count($lpas) === 0 ) {
+            // can we add a message to the form itself???
+            // or could have a different kind of error (problem...??)
+        }
+
+        $response["lpasCount"] = count($lpas);
         $response["lpas"] = $lpas;
         $response["donorName"] = $this->getDonorNameFromSiriusResponse(current($lpasData));
         $response["donorDob"] = $this->getDonorDobFromSiriusResponse(current($lpasData));
