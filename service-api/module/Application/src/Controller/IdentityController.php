@@ -14,6 +14,8 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\CaseProgress;
+use Application\Model\Entity\DocCheck;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
@@ -438,6 +440,7 @@ class IdentityController extends AbstractActionController
     public function setDocumentCompleteAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
         $status = Response::STATUS_CODE_200;
 
@@ -451,11 +454,30 @@ class IdentityController extends AbstractActionController
             return new JsonModel($response);
         }
 
+        if (! $data['idDocument']) {
+            $status = Response::STATUS_CODE_400;
+            $this->getResponse()->setStatusCode($status);
+            $response = [
+                "error" => "Missing idDocument",
+            ];
+
+            return new JsonModel($response);
+        }
+
+        /** @var CaseData $caseData */
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $caseProgress = $caseData->caseProgress ?? new CaseProgress();
+
+        $caseProgress->docCheck = DocCheck::fromArray([
+            'idDocument' => $data['idDocument'],
+            'state' => true
+        ]);
+
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'documentComplete',
-                true
+                'caseProgress',
+                $caseProgress
             );
         } catch (\Exception $exception) {
             $response['result'] = "Not Updated";
