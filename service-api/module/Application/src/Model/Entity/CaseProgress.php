@@ -19,19 +19,19 @@ class CaseProgress extends Entity
 {
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?AbandonedFlow $abandonedFlow;
+    public ?AbandonedFlow $abandonedFlow = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?DocCheck $docCheck;
+    public ?DocCheck $docCheck = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?Kbvs $kbvs;
+    public ?Kbvs $kbvs = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?FraudScore $fraudScore;
+    public ?FraudScore $fraudScore = null;
 
     public static function fromArray(mixed $data): self
     {
