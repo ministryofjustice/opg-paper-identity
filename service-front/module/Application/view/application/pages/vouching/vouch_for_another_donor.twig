@@ -11,6 +11,12 @@
             <p class="govuk-body">{{ form.get('lpa').messages | join(', ', ' and ') }}</p>
         </div>
     {% endif %}
+    {% if lpa_response['problem'] %}
+        <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+            <h2 class="govuk-heading-m">There is a problem</h2>
+            <p class="govuk-body">{{ lpa_response['message'] }}</p>
+        </div>
+    {% endif %}
 
 
     {% if lpa_response['warning'] %}
@@ -65,7 +71,7 @@
             </div>
         </div>
     </form>
-    {% if lpa_response %}
+    {% if lpa_response and not lpa_response['problem'] %}
         <div>
             <table class="govuk-table govuk-!-width-two-thirds">
                 <caption class="govuk-table__caption govuk-table__caption--m">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} LPAs found</strong></caption>
