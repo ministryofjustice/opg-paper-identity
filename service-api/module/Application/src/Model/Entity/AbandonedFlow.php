@@ -19,7 +19,7 @@ class AbandonedFlow extends Entity
 {
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public string $last_page;
+    public ?string $last_page;
 
     #[Validator(NotEmpty::class)]
     public string $timestamp;
