@@ -7,55 +7,45 @@ namespace Application\Helpers;
 use Application\Enums\LpaTypes;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddressProcessorHelper;
+// TODO: actually create and make use of
 use Application\Helpers\DTO\AddDonorFormHelperResponseDto;
 use Application\Helpers\VoucherMatchLpaActorHelper;
+use AWS\CRT\HTTP\Response;
 use Laminas\Form\FormInterface;
 use DateTime;
 
 class AddDonorFormHelper
 {
 
-    private function checkStatus(array $lpaData): array
+    public function checkStatus(array $lpaData): array
     {
         // TODO: clarify which statuses are ok to be vouched for
         // and all the potential errors which could be shown
-        $problem = false;
-        $status = "";
-        $message = "";
-        if (
-            array_key_exists('opg.poas.lpastore', $lpaData) &&
-            array_key_exists('status', $lpaData['opg.poas.lpastore'])
-        ) {
-            $status = $lpaData['opg.poas.lpastore']['status'];
-            if ( in_array($status, ['complete', 'registered', 'in progress'])) {
-                $problem = true;
-                $message = "This LPA cannot be added as an ID" .
-                    " check has already been completed for this LPA.";
-            }
-            if ($status == 'draft') {
-                $problem = true;
-                $message = "This LPA cannot be added as it’s status is set to Draft.
-                    LPAs need to be in the In Progress status to be added to this ID check.";
-            }
-        } else {
-            $problem = true;
-            $message = "No LPA Found.";
-        }
-        return [
-            "problem" => $problem,
-            "status" => $status,
-            "message" => $message,
+        $response = [
+            "problem" => false,
+            "status" => "",
+            "message" => ""
         ];
-    }
-
-    private function checkLpaNotAdded(string $lpa, array $detailsData): bool
-    {
-        foreach ($detailsData['lpas'] as $existingLpa) {
-            if ($lpa == $existingLpa) {
-                return false;
-            }
-        }
-        return true;
+        // if (
+        //     array_key_exists('opg.poas.lpastore', $lpaData) &&
+        //     array_key_exists('status', $lpaData['opg.poas.lpastore'])
+        // ) {
+        //     $status = $lpaData['opg.poas.lpastore']['status'];
+        //     if ( in_array($status, ['complete', 'registered', 'in progress'])) {
+        //         $response["problem"] = true;
+        //         $response["message"] = "This LPA cannot be added as an ID" .
+        //             " check has already been completed for this LPA.";
+        //     }
+        //     if ($response["status"] == 'draft') {
+        //         $response["problem"] = true;
+        //         $response["message"] = "This LPA cannot be added as it’s status is set to Draft.
+        //             LPAs need to be in the In Progress status to be added to this ID check.";
+        //     }
+        // } else {
+        //     $response["problem"] = true;
+        //     $response["message"] = "No LPA Found.";
+        // }
+        return $response;
     }
 
     public static function getDonorNameFromSiriusResponse(array $lpaData): string
@@ -78,14 +68,15 @@ class AddDonorFormHelper
         return AddressProcessorHelper::processAddress($lpaData['opg.poas.sirius']['donor'], 'siriusAddressType');
     }
 
+    public function checkLpa($lpa, $detailsData) {
 
-    private function checkLpa($lpa, $detailsData) {
-
-        $problem = false;
-        $error = false;
-        $warning = null;
-        $message = null;
-        $additionalRows = [];
+        $response = [
+            "problem" => false,
+            "error" => false,
+            "warning" => "",
+            "message" => "",
+            "additionalRows" => [],
+        ];
 
         $matchHelper = new VoucherMatchLpaActorHelper();
 
@@ -98,7 +89,7 @@ class AddDonorFormHelper
 
         if ($match) {
             $matchName = implode(" ", [$match["firstName"], $match["lastName"]]);
-            $error = true;
+            $response["error"] = true;
 
             $messageArticle = [
                 LpaActorTypes::DONOR->value => "the",
@@ -107,11 +98,12 @@ class AddDonorFormHelper
                 LpaActorTypes::R_ATTORNEY->value => "a",
             ];
 
-            $message = "The person vouching cannot have the same name and date of birth as {$messageArticle[$match['type']]} {$match['type']}.";
+            $response["message"] = "The person vouching cannot have the same name and date of birth as " .
+                "{$messageArticle[$match['type']]} {$match['type']}.";
 
             if ($match["type"] != LpaActorTypes::DONOR->value) {
-                $warning = 'actor-match';
-                $additionalRows = [
+                $response["warning"] = 'actor-match';
+                $response["additionalRows"] = [
                     [
                         "type" => ucfirst($match['type']) . " name",
                         "value" => $matchName
@@ -122,55 +114,51 @@ class AddDonorFormHelper
                     ]
                 ];
             } else {
-                $warning = 'donor-match';
+                $response["warning"] = 'donor-match';
             }
-        }
-        if (! $error) {
-            $addressMatch = $matchHelper->checkAddressDonorMatch($lpa, $detailsData["address"]);
-
-            if ($addressMatch) {
-                $error = true;
-                $warning = "address-match";
-                $message = "The person vouching cannot live at the same address as the donor.";
-            }
-        }
-        if (! $error) {
-            // we check certificate-provider separately as their dob is not recorded on the LPA so
-            // a warning needs to be raised if there is a name match.
-            $actor = [
-                "firstName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["firstNames"] ?? null,
-                "lastName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["lastName"] ?? null,
-            ];
-            $cp_name_match = $matchHelper->compareName(
-                $detailsData["firstName"],
-                $detailsData["lastName"],
-                $actor
-            );
-            if ($cp_name_match) {
-
-                $matchName = $actor["firstName"] . " " . $actor["lastName"];
-
-                $warning = 'actor-match';
-                $message = "There is a certificate provider called {$matchName} named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
-                $additionalRows = [
-                    [
-                        "type" => "Certificate provider name",
-                        "value" => $matchName
-                    ]
-                ];
-            }
+            return $response;
         }
 
-        return [
-            "error" => $error,
-            "warning" => $warning,
-            "message" => $message,
-            "additionalRows" => $additionalRows,
+        $addressMatch = $matchHelper->checkAddressDonorMatch($lpa, $detailsData["address"]);
+
+        if ($addressMatch) {
+            $response["error"] = true;
+            $response["warning"] = "address-match";
+            $response["message"] = "The person vouching cannot live at the same address as the donor.";
+
+            return $response;
+        }
+
+        // we check certificate-provider separately as their dob is not recorded on the LPA so
+        // a warning needs to be raised if there is a name match.
+        $actor = [
+            "firstName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["firstNames"] ?? null,
+            "lastName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["lastName"] ?? null,
         ];
+        $cp_name_match = $matchHelper->compareName(
+            $detailsData["firstName"],
+            $detailsData["lastName"],
+            $actor
+        );
+        if ($cp_name_match) {
+
+            $matchName = $actor["firstName"] . " " . $actor["lastName"];
+
+            $response["warning"] = 'actor-match';
+            $response["message"] = "There is a certificate provider called {$matchName} named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
+            $response["additionalRows"] = [
+                [
+                    "type" => "Certificate provider name",
+                    "value" => $matchName
+                ]
+            ];
+        }
+        return $response;
     }
 
     public function processLpas($lpasData, $detailsData) {
 
+        // TODO: filter out LPAs which are already in $detailsData
         $response = [
             "lpasCount" => 0,
             "error" => false,
