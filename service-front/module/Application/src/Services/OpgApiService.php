@@ -306,12 +306,14 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function updateCaseSetDocumentComplete(string $uuid): void
+    public function updateCaseSetDocumentComplete(string $uuid, string $idDocument): void
     {
         $url = sprintf("/cases/%s/complete-document", $uuid);
 
         try {
-            $this->makeApiRequest($url, 'POST');
+            $this->makeApiRequest($url, 'POST', [
+                'idDocument' => $idDocument
+            ]);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
