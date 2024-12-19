@@ -129,6 +129,31 @@ class SiriusApiService
         return $responseArray;
     }
 
+    public function getAllLinkedLpasByUid(string $uid, Request $request): array
+    {
+        $authHeaders = $this->getAuthHeaders($request) ?? [];
+
+        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+            'headers' => $authHeaders
+        ]);
+
+        $responseArray = [
+            $uid => json_decode(strval($response->getBody()), true),
+        ];
+
+        if (empty($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'])) {
+            return $responseArray;
+        }
+
+        foreach ($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'] as $lpaId) {
+            $response = $this->client->get('/api/v1/digital-lpas/' . $lpaId["uId"], [
+                'headers' => $authHeaders
+            ]);
+            $responseArray[$lpaId["uId"]] = json_decode(strval($response->getBody()), true);
+        }
+        return $responseArray;
+    }
+
     /**
      * @return array{
      *  addressLine1: string,
