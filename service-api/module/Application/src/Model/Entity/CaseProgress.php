@@ -29,6 +29,10 @@ class CaseProgress extends Entity
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?Kbvs $kbvs;
 
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?FraudScore $fraudScore;
+
     public static function fromArray(mixed $data): self
     {
         $instance = new self();
@@ -40,6 +44,8 @@ class CaseProgress extends Entity
                 $instance->docCheck = is_array($value) ? DocCheck::fromArray($value) : null;
             } elseif ($key === 'kbvs') {
                 $instance->kbvs = is_array($value) ? Kbvs::fromArray($value) : null;
+            } elseif ($key === 'fraudScore') {
+                $instance->fraudScore = is_array($value) ? FraudScore::fromArray($value) : null;
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {

@@ -16,6 +16,7 @@ use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
+use Application\Model\Entity\FraudScore;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
@@ -707,10 +708,14 @@ class IdentityController extends AbstractActionController
 
         $response = $this->experianCrosscoreFraudApiService->getFraudScore($dto);
 
+        $caseProgress = $case->caseProgress ?? new CaseProgress();
+
+        $caseProgress->fraudScore = FraudScore::fromArray($response);
+
         $this->dataHandler->updateCaseData(
             $uuid,
-            'fraudScore',
-            $response->toArray(),
+            'caseProgress',
+            $caseProgress,
         );
 
         return new JsonModel($response->toArray());
