@@ -14,6 +14,8 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\CaseProgress;
+use Application\Model\Entity\DocCheck;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
@@ -464,12 +466,12 @@ class IdentityController extends AbstractActionController
 
         /** @var CaseData $caseData */
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
-        $caseProgress = $caseData->caseProgress ?? [];
+        $caseProgress = $caseData->caseProgress ?? new CaseProgress();
 
-        $caseProgress['docCheck'] = [
+        $caseProgress->docCheck = DocCheck::fromArray([
             'idDocument' => $data['idDocument'],
             'state' => true
-        ];
+        ]);
 
         try {
             $this->dataHandler->updateCaseData(
