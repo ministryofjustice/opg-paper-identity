@@ -113,6 +113,13 @@
         },
         "id": 31944000,
         "uId": "M-VOUC-HFOR-2001",
-        "linkedDigitalLpas": []
+        "linkedDigitalLpas": [
+            {
+                "uId": "M-VOUC-HFOR-2002",
+                "caseSubtype": "property-and-affairs",
+                "createdDate": "29\/10\/2024",
+                "status": "In progress"
+            }
+        ]
     }
 }

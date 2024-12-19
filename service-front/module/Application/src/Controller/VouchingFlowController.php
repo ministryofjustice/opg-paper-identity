@@ -187,18 +187,20 @@ class VouchingFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
 
             if ($form->isValid()) {
-                $matches = [];
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $matches = array_merge($matches, $this->voucherMatchLpaActorHelper->checkMatch(
+                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
                         $lpasData,
                         $formData["firstName"],
                         $formData["lastName"],
-                    ));
+                    );
+                    // we raise the warning if there are any matches so stop once we've found one
+                    if ($match) {
+                        break;
+                    }
                 }
-                if ($matches && ! isset($formData["continue-after-warning"])) {
-                    // if there are multiple matches we will only warn about the first
-                    $view->setVariable('matches', reset($matches));
+                if ($match && ! isset($formData["continue-after-warning"])) {
+                    $view->setVariable('match', $match);
                     $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
                 } else {
                     try {
@@ -231,19 +233,23 @@ class VouchingFlowController extends AbstractActionController
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
-                $matches = [];
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $matches = array_merge($matches, $this->voucherMatchLpaActorHelper->checkMatch(
+                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
                         $lpasData,
                         $detailsData["firstName"],
                         $detailsData["lastName"],
                         $dateOfBirth,
-                    ));
+                    );
+                    // echo(json_encode($lpasData));
+                    // echo(json_encode($match));
+                    // we raise the warning if there are any matches so stop once we've found one
+                    if ($match) {
+                        break;
+                    }
                 }
-                if ($matches) {
-                    // if there are multiple matches we will only warn about the first
-                    $view->setVariable('match', reset($matches));
+                if ($match) {
+                    $view->setVariable('match', $match);
                 } else {
                     try {
                         $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
@@ -458,7 +464,7 @@ class VouchingFlowController extends AbstractActionController
                 );
 
                 $processed = $this->addDonorFormHelper->processLpas($lpas, $detailsData);
-                // var_dump($lpas);
+
                 $view->setVariable('lpa_response', $processed);
             }
         }

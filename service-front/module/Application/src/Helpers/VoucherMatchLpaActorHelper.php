@@ -95,7 +95,7 @@ class VoucherMatchLpaActorHelper
      * @param string $dob
      * @return Actor[]
     */
-    public function checkMatch(array $lpasData, string $firstName, string $lastName, string $dob = null): array
+    public function checkMatch(array $lpasData, string $firstName, string $lastName, string $dob = null): array | bool
     {
         $actors = $this->getLpaActors($lpasData);
 
@@ -109,7 +109,12 @@ class VoucherMatchLpaActorHelper
                 return $this->compareDob($dob, $a);
             });
         }
-        return $matches;
+
+        /** `getLpaActors` will always return actors in order
+         * donor > certificate-provider > attorney > replacement-attorney
+         * we return the first of these to have a match or false if there are no matches
+        */
+        return current($matches);
     }
 
     public function checkAddressDonorMatch(array $lpasData, array $address): bool
