@@ -15,6 +15,7 @@ use Application\Forms\PassportDate;
 use Application\Forms\PassportNumber;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\DateProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country;
 use Application\Services\SiriusApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -23,6 +24,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\LpaTypes;
 use Application\Enums\SiriusDocument;
+use Psr\Log\LoggerInterface;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -36,6 +38,8 @@ class DonorFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
         private readonly string $siriusPublicUrl,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -167,6 +171,13 @@ class DonorFlowController extends AbstractActionController
     public function donorDetailsMatchCheckAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
+
+        try {
+            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
+        } catch (\Exception $e) {
+            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
+        }
+
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         /**
