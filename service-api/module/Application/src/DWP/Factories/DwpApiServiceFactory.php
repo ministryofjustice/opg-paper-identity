@@ -10,6 +10,7 @@ use Application\Cache\ApcHelper;
 use Application\DWP\AuthApi\DTO\RequestDTO;
 use Application\DWP\AuthApi\AuthApiException;
 use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\DwpApi\DwpApiException;
 use Application\DWP\DwpApi\DwpApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -28,27 +29,36 @@ class DwpApiServiceFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): DwpApiService {
-        $baseUri = getenv("DWP");
-        if (! is_string($baseUri) || empty($baseUri)) {
-            throw new FraudApiException("EXPERIAN_CROSSCORE_BASE_URL is empty");
+
+        $baseUriCitizen = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
+        $baseUriMatch = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
+
+        if (! is_string($baseUriCitizen) || empty($baseUriCitizen)) {
+            throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
-        $guzzleClient = new Client([
-            'base_uri' => $baseUri
+        if (! is_string($baseUriMatch) || empty($baseUriMatch)) {
+            throw new DwpApiException("DWP Citizen Match endpoint is empty");
+        }
+
+        $guzzleClientCitizen = new Client([
+            'base_uri' => $baseUriCitizen
         ]);
 
-        $domain = (new AwsSecret('experian-crosscore/domain'))->getValue();
-        $tenantId = (new AwsSecret('experian-crosscore/tenant-id'))->getValue();
+        $guzzleClientMatch = new Client([
+            'base_uri' => $baseUriMatch
+        ]);
+
         $logger = $container->get(LoggerInterface::class);
 
-        return new FraudApiService(
-            $guzzleClient,
+        $config = [];
+
+        return new DwpApiService(
+            $guzzleClientCitizen,
+            $guzzleClientMatch,
             $container->get(AuthApiService::class),
             $logger,
-            [
-                'domain' => $domain,
-                'tenantId' => $tenantId
-            ]
+            $config
         );
     }
 }

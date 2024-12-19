@@ -7,21 +7,11 @@ namespace Application\DWP\AuthApi\DTO;
 class RequestDTO
 {
     public function __construct(
-        private readonly string $userName,
-        private readonly string $password,
         private readonly string $clientId,
-        private readonly string $clientSecret
+        private readonly string $clientSecret,
+        private readonly string $bundle,
+        private readonly string $privateKey,
     ) {
-    }
-
-    public function userName(): string
-    {
-        return $this->userName;
-    }
-
-    public function password(): string
-    {
-        return $this->password;
     }
 
     public function clientId(): string
@@ -34,13 +24,21 @@ class RequestDTO
         return $this->clientSecret;
     }
 
+    public function bundle(): string
+    {
+        return $this->bundle;
+    }
+
+    public function privateKey(): string
+    {
+        return $this->privateKey;
+    }
+
     public function toArray(): array
     {
         return [
-            'userName' => $this->userName,
-            'password' => $this->password,
             'clientId' => $this->clientId,
-            'clientSecret' => $this->clientSecret,
+            'clientSecret' => $this->clientSecret
         ];
     }
 }

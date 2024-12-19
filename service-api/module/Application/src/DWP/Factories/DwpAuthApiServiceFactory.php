@@ -27,9 +27,8 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): AuthApiService {
-        $ssmHandler = $container->get(SsmHandler::class);
         $logger = $container->get(LoggerInterface::class);
-        $baseUri =(new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+        $baseUri = ( new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
         if (! is_string($baseUri) || empty($baseUri)) {
             throw new AuthApiException("DWP_AUTH_URL is empty");
         }
@@ -40,22 +39,21 @@ class DwpAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        $username = (new AwsSecret('dwp/username'))->getValue();
-        $password = (new AwsSecret('dwp/password'))->getValue();
+        $bundle = (new AwsSecret('dwp/opg-certificate-bundle'))->getValue();
+        $privateKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
         $clientId = (new AwsSecret('dwp/oauth-client-id'))->getValue();
         $clientSecret = (new AwsSecret('dwp/oauth-client-secret'))->getValue();
 
         $dwpAuthRequestDTO = new RequestDTO(
-            $username,
-            $password,
             $clientId,
-            $clientSecret
+            $clientSecret,
+            $bundle,
+            $privateKey
         );
 
         return new AuthApiService(
             $guzzleClient,
             $apcHelper,
-            $ssmHandler,
             $logger,
             $dwpAuthRequestDTO
         );

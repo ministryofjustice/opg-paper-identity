@@ -19,22 +19,15 @@ class AuthApiService
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
-        private readonly SsmHandler $ssmHandler,
         private readonly LoggerInterface $logger,
         private readonly RequestDTO $dwpAuthRequestDTO
     ) {
     }
 
-    private function generateXCorrelationId(): string
-    {
-        return Uuid::uuid4()->toString();
-    }
-
     public function makeHeaders(): array
     {
         return [
-            'Content-Type' => 'application/json',
-            'X-Correlation-Id' => $this->generateXCorrelationId(),
+            'Content-Type' => 'application/x-www-form-urlencoded'
         ];
     }
 
@@ -60,7 +53,7 @@ class AuthApiService
             'dwp_access_token',
             json_encode([
                 'access_token' => $dwpAuthResponseDTO->accessToken(),
-                'time' => $dwpAuthResponseDTO->issuedAt()
+                'time' => (int)(new \DateTime())->format('U') + (int)$dwpAuthResponseDTO->expiresIn()
             ])
         );
     }
@@ -79,7 +72,7 @@ class AuthApiService
 
         $tokenResponse = json_decode($cachedToken, true);
 
-        if (is_null($tokenResponse) || ($tokenResponse['time'] + 1790) > time()) {
+        if (is_null($tokenResponse) || ($tokenResponse['time'] + 3500) > time()) {
             return $tokenResponse['access_token'];
         } else {
             return $this->authenticate()->accessToken();
@@ -96,10 +89,12 @@ class AuthApiService
         try {
             $response = $this->client->request(
                 'POST',
-                '/oauth2/experianone/v1/token',
+                '/',
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => $dwpAuthRequestDTO->toArray()
+                    'json' => $dwpAuthRequestDTO->toArray(),
+                    'cert' => $dwpAuthRequestDTO->bundle(),
+                    'ssl_key' => $dwpAuthRequestDTO->privateKey()
                 ]
             );
 
@@ -107,10 +102,8 @@ class AuthApiService
 
             return new ResponseDTO(
                 $responseArray['access_token'],
-                $responseArray['refresh_token'],
-                $responseArray['issued_at'],
                 $responseArray['expires_in'],
-                $responseArray['token_type']
+                $responseArray['token_type'],
             );
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();

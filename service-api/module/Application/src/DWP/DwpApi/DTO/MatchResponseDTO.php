@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Application\DWP\AuthApi\DTO;
+namespace Application\DWP\DwpApi\DTO;
 
-class ResponseDTO
+class MatchResponseDTO
 {
     public function __construct(
         private readonly string $accessToken,
+        private readonly string $refreshToken,
+        private readonly string $issuedAt,
         private readonly string $expiresIn,
         private readonly string $tokenType,
     ) {
@@ -16,6 +18,16 @@ class ResponseDTO
     public function accessToken(): string
     {
         return $this->accessToken;
+    }
+
+    public function refreshToken(): string
+    {
+        return $this->refreshToken;
+    }
+
+    public function issuedAt(): string
+    {
+        return $this->issuedAt;
     }
 
     public function expiresIn(): string
@@ -32,6 +44,8 @@ class ResponseDTO
     {
         return [
             'access_token' => $this->accessToken,
+            'refresh_token' => $this->refreshToken,
+            'issued_at' => $this->issuedAt,
             'expires_in' => $this->expiresIn,
             'token_type' => $this->tokenType,
         ];

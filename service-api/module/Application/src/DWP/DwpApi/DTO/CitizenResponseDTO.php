@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\DWP\AuthApi\DTO;
+namespace Application\DWP\DwpApi\DTO;
 
-class ResponseDTO
+class CitizenResponseDTO
 {
     public function __construct(
         private readonly string $accessToken,

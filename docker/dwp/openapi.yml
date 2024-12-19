@@ -30,12 +30,6 @@ paths:
             schema:
               type: object
               properties:
-                username:
-                  type: string
-                  example: "user"
-                password:
-                  type: string
-                  example: "password"
                 client_id:
                   type: string
                   example: "client-id"

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\DWP\AuthApi\DTO;
+namespace Application\DWP\DwpApi\DTO;
 
-class RequestDTO
+class MatchRequestDTO
 {
     public function __construct(
         private readonly string $userName,
