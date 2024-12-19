@@ -99,6 +99,7 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certif
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-public-key \
     --description "DWP OPG certificate public key" \
     --secret-string "empty"
+    
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-secret \
     --description "DWP Oauth2 client secret" \
     --secret-string "empty"

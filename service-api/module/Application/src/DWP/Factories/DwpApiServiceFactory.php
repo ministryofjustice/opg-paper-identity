@@ -10,12 +10,13 @@ use Application\Cache\ApcHelper;
 use Application\DWP\AuthApi\DTO\RequestDTO;
 use Application\DWP\AuthApi\AuthApiException;
 use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\DwpApi\DwpApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
-class DwpAuthApiServiceFactory implements FactoryInterface
+class DwpApiServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
@@ -26,38 +27,28 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): AuthApiService {
-        $ssmHandler = $container->get(SsmHandler::class);
-        $logger = $container->get(LoggerInterface::class);
-        $baseUri =(new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+    ): DwpApiService {
+        $baseUri = getenv("DWP");
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new AuthApiException("DWP_AUTH_URL is empty");
+            throw new FraudApiException("EXPERIAN_CROSSCORE_BASE_URL is empty");
         }
 
         $guzzleClient = new Client([
             'base_uri' => $baseUri
         ]);
 
-        $apcHelper = new ApcHelper();
+        $domain = (new AwsSecret('experian-crosscore/domain'))->getValue();
+        $tenantId = (new AwsSecret('experian-crosscore/tenant-id'))->getValue();
+        $logger = $container->get(LoggerInterface::class);
 
-        $username = (new AwsSecret('dwp/username'))->getValue();
-        $password = (new AwsSecret('dwp/password'))->getValue();
-        $clientId = (new AwsSecret('dwp/oauth-client-id'))->getValue();
-        $clientSecret = (new AwsSecret('dwp/oauth-client-secret'))->getValue();
-
-        $dwpAuthRequestDTO = new RequestDTO(
-            $username,
-            $password,
-            $clientId,
-            $clientSecret
-        );
-
-        return new AuthApiService(
+        return new FraudApiService(
             $guzzleClient,
-            $apcHelper,
-            $ssmHandler,
+            $container->get(AuthApiService::class),
             $logger,
-            $dwpAuthRequestDTO
+            [
+                'domain' => $domain,
+                'tenantId' => $tenantId
+            ]
         );
     }
 }
