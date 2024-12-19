@@ -174,10 +174,6 @@ class IndexController extends AbstractActionController
         $view->setVariable('last_page', $caseProgressData['abandonedFlow']['last_page']);
         $view->setVariable('form', $form);
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        var_dump($detailsData);
-
         return $view->setTemplate('application/pages/abandoned_flow');
     }
 
