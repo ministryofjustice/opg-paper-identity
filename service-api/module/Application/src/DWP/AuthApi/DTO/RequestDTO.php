@@ -14,21 +14,33 @@ class RequestDTO
     ) {
     }
 
+    /**
+     * @return string
+     */
     public function clientId(): string
     {
         return $this->clientId;
     }
 
+    /**
+     * @return string
+     */
     public function clientSecret(): string
     {
         return $this->clientSecret;
     }
 
+    /**
+     * @return string
+     */
     public function bundle(): string
     {
         return $this->bundle;
     }
 
+    /**
+     * @return string
+     */
     public function privateKey(): string
     {
         return $this->privateKey;
@@ -37,8 +49,8 @@ class RequestDTO
     public function toArray(): array
     {
         return [
-            'clientId' => $this->clientId,
-            'clientSecret' => $this->clientSecret
+            'clientId' => $this->clientId(),
+            'clientSecret' => $this->clientSecret()
         ];
     }
 }

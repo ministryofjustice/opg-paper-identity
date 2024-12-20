@@ -14,6 +14,7 @@ use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\DWP\Factories\DwpAuthApiServiceFactory;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Experian\IIQ\AuthManager;
@@ -37,6 +38,7 @@ use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Sirius\EventSender;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
+use Application\DWP\AuthApi\AuthApiService as DwpAuthApiService;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\EventBridge\EventBridgeClient;
 use Aws\Ssm\SsmClient;
@@ -505,6 +507,7 @@ return [
             IIQClient::class => IIQClientFactory::class,
             AuthManager::class => AuthManagerFactory::class,
             ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
+            DwpAuthApiService::class => DwpAuthApiServiceFactory::class
         ],
     ],
     'view_manager' => [
