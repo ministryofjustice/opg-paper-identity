@@ -710,7 +710,7 @@ class IdentityController extends AbstractActionController
 
         $caseProgress = $case->caseProgress ?? new CaseProgress();
 
-        $caseProgress->fraudScore = FraudScore::fromArray($response);
+        $caseProgress->fraudScore = FraudScore::fromArray($response->toArray());
 
         $this->dataHandler->updateCaseData(
             $uuid,
