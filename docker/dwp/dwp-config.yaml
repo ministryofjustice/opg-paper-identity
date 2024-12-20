@@ -6,7 +6,7 @@ resources:
     method: post
     requestBody:
       operator: Contains
-      value: xxxxxx
+      value: clientsecret
     response:
       statusCode: 200
       file: data/tokenResponse.json
