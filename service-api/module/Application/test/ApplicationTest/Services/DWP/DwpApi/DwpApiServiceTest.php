@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services\DWP\DwpApi;
 
-
-
 use Application\Cache\ApcHelper;
 use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\AuthApi\DTO\RequestDTO;
