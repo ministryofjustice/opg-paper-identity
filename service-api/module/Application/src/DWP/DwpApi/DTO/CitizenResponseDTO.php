@@ -4,50 +4,78 @@ declare(strict_types=1);
 
 namespace Application\DWP\DwpApi\DTO;
 
+use Application\DWP\DwpApi\DwpApiException;
+
 class CitizenResponseDTO
 {
-    public function __construct(
-        private readonly string $accessToken,
-        private readonly string $refreshToken,
-        private readonly string $issuedAt,
-        private readonly string $expiresIn,
-        private readonly string $tokenType,
-    ) {
-    }
+    private string $id;
 
-    public function accessToken(): string
+    private string $type;
+
+    private string $matchScenario;
+
+    private string $version;
+
+    private array $raw;
+    public function __construct(array $response)
     {
-        return $this->accessToken;
+        try {
+
+            $this->id = $response['data']['id'];
+            $this->type = $response['data']['type'];
+            $this->matchScenario = $response['data']['attributes']['matchingScenario'];
+            $this->version = $response['jsonapi']['version'];
+            $this->raw = $response;
+            $jayParsedAry = [
+                "jsonapi" => [
+                    "version" => "1.0"
+                ],
+                "data" => [
+                    "id" => "be62ed49-5407-4023-844c-97159ec80411",
+                    "type" => "MatchResult",
+                    "attributes" => [
+                        "matchingScenario" => "Matched on NINO"
+                    ]
+                ]
+            ];
+//
+
+        } catch (\Exception $exception) {
+            throw new DwpApiException($exception->getMessage());
+        }
     }
 
-    public function refreshToken(): string
+    public function id(): string
     {
-        return $this->refreshToken;
+        return $this->id;
     }
 
-    public function issuedAt(): string
+    public function type(): string
     {
-        return $this->issuedAt;
+        return $this->type;
     }
 
-    public function expiresIn(): string
+    public function matchScenario(): string
     {
-        return $this->expiresIn;
+        return $this->matchScenario;
     }
 
-    public function tokenType(): string
+    public function version(): string
     {
-        return $this->tokenType;
+        return $this->version;
     }
 
+    public function raw(): array
+    {
+        return $this->raw;
+    }
     public function toArray(): array
     {
         return [
-            'access_token' => $this->accessToken,
-            'refresh_token' => $this->refreshToken,
-            'issued_at' => $this->issuedAt,
-            'expires_in' => $this->expiresIn,
-            'token_type' => $this->tokenType,
+            'id' => $this->id(),
+            'type' => $this->type(),
+            'matchScenario' => $this->matchScenario(),
+            'version' => $this->version(),
         ];
     }
 }

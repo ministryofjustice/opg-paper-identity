@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\DWP\DwpApi\DTO;
 
-class MatchResponseDTO
+class DetailsResponseDTO
 {
     public function __construct(
         private readonly string $accessToken,

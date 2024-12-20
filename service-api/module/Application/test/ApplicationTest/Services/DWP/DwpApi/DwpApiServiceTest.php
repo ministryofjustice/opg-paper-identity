@@ -9,7 +9,7 @@ use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\AuthApi\DTO\RequestDTO;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
-use Application\DWP\DwpApi\DTO\MatchRequestDTO;
+use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
