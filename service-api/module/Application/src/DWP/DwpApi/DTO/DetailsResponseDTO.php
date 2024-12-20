@@ -4,50 +4,62 @@ declare(strict_types=1);
 
 namespace Application\DWP\DwpApi\DTO;
 
+use Application\DWP\DwpApi\DwpApiException;
+
 class DetailsResponseDTO
 {
-    public function __construct(
-        private readonly string $accessToken,
-        private readonly string $refreshToken,
-        private readonly string $issuedAt,
-        private readonly string $expiresIn,
-        private readonly string $tokenType,
-    ) {
+    private string $firstName;
+    private string $lastName;
+    private string $nino;
+    private string $dob;
+    private array $raw;
+
+    public function __construct(array $response)
+    {
+        try {
+            $this->firstName = $response['data']['attributes']['name']['firstName'];
+            $this->lastName = $response['data']['attributes']['name']['lastName'];
+            $this->nino = $response['data']['attributes']['nino'];
+            $this->dob = $response['data']['attributes']['dateOfBirth']['date'];
+            $this->raw = $response;
+        } catch (\Exception $exception) {
+            throw new DwpApiException($exception->getMessage());
+        }
     }
 
-    public function accessToken(): string
+
+    public function firstName(): string
     {
-        return $this->accessToken;
+        return $this->firstName;
     }
 
-    public function refreshToken(): string
+    public function lastName(): string
     {
-        return $this->refreshToken;
+        return $this->lastName;
     }
 
-    public function issuedAt(): string
+    public function dob(): string
     {
-        return $this->issuedAt;
+        return $this->dob;
     }
 
-    public function expiresIn(): string
+    public function nino(): string
     {
-        return $this->expiresIn;
+        return $this->nino;
     }
 
-    public function tokenType(): string
+    public function raw(): array
     {
-        return $this->tokenType;
+        return $this->raw;
     }
 
     public function toArray(): array
     {
         return [
-            'access_token' => $this->accessToken,
-            'refresh_token' => $this->refreshToken,
-            'issued_at' => $this->issuedAt,
-            'expires_in' => $this->expiresIn,
-            'token_type' => $this->tokenType,
+            'firstName' => $this->firstName(),
+            'lastName' => $this->lastName(),
+            'dob' => $this->dob(),
+            'nino' => $this->nino(),
         ];
     }
 }
