@@ -59,6 +59,7 @@ class AuthApiService
     }
 
     /**
+     * @psalm-suppress PossiblyUnusedMethod
      * @throws GuzzleException
      * @throws AuthApiException
      */

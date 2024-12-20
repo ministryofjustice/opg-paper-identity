@@ -23,6 +23,10 @@ class ResponseDTO
         return $this->expiresIn;
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     * @return string
+     */
     public function tokenType(): string
     {
         return $this->tokenType;

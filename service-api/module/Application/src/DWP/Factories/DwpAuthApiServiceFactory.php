@@ -29,6 +29,9 @@ class DwpAuthApiServiceFactory implements FactoryInterface
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
         $baseUri = ( new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+        /**
+         * @psalm-suppress TypeDoesNotContainType
+         */
         if (! is_string($baseUri) || empty($baseUri)) {
             throw new AuthApiException("DWP_AUTH_URL is empty");
         }
