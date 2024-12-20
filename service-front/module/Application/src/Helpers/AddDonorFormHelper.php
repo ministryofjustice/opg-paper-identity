@@ -13,6 +13,7 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use AWS\CRT\HTTP\Response;
 use Laminas\Form\FormInterface;
 use DateTime;
+use Laminas\Http\Header\RetryAfter;
 
 class AddDonorFormHelper
 {
@@ -156,16 +157,26 @@ class AddDonorFormHelper
         return $response;
     }
 
-    public function processLpas($lpasData, $detailsData) {
+    public function processLpas(array $lpasData, array $detailsData) {
 
-        // TODO: filter out LPAs which are already in $detailsData
         $response = [
             "lpasCount" => 0,
+            "problem" => false,
             "error" => false,
-            "warning" => null,
-            "message" => null,
-            "additionalRow" => null,
+            "warning" => "",
+            "status" => "",
+            "message" => "",
+            "additionalRow" => "",
         ];
+
+        $lpasData = array_filter($lpasData, function($lpa) use($detailsData) {
+            return ! in_array($lpa["uId"], $detailsData["lpas"]);
+        });
+        if (empty($lpasData)) {
+            $response["problem"] = true;
+            $response["message"] = "This LPA has already been added to this identity check.";
+            return $response;
+        }
 
         $lpas = [];
         foreach ($lpasData as $lpa) {
@@ -191,7 +202,7 @@ class AddDonorFormHelper
             $lpa = array_filter($lpas, function ($s) {
                 return ! $s["problem"];
             });
-            if (count($lpa) === 0) {
+            if (empty($lpa)) {
                 $response["problem"] = true;
                 $response["message"] = "The LPA cannot be added";
 
@@ -219,7 +230,7 @@ class AddDonorFormHelper
             });
         }
 
-        if (count($lpas) === 0 ) {
+        if (empty($lpas)) {
             // can we add a message to the form itself???
             // or could have a different kind of error (problem...??)
         } else {
