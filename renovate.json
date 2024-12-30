@@ -17,8 +17,9 @@
         "PHP Exclusion",
         "Don't try to upgrade php to v8.4, since it isn't yet supported by many of our libraries"
       ],
-      "matchDatasources": [
-        "docker"
+      "matchManagers": [
+        "dockerfile",
+        "composer"
       ],
       "matchDepNames": [
         "php"
