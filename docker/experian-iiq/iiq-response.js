@@ -1,6 +1,6 @@
 const iiqStore = stores.open("iiq");
 
-const req = context.request;
+const body = context.request.body.toString();
 
 const saaEnvelope = `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <soap:Body>
@@ -175,8 +175,8 @@ function shuffle(a) {
     .map(({ value }) => value);
 }
 
-if (req.body.includes("SAA")) {
-  if (req.body.includes("Thinfile")) {
+if (body.includes("SAA")) {
+  if (body.includes("Thinfile")) {
     respond().withContent(
         saaEnvelopeNoKbv
             .replace("{{questions}}", [])
@@ -189,13 +189,13 @@ if (req.body.includes("SAA")) {
           return { Question: x };
         });
 
-    const id = req.body.match(
+    const id = body.match(
         /<([a-z0-9-]+):ApplicantIdentifier>(.*?)<\/\1:ApplicantIdentifier>/
     )[2];
 
     let product = ''
     try {
-      product = req.body.match(
+      product = body.match(
           /<([a-z0-9-]+):Product>(.*?)<\/\1:Product>/
       )[2];
     } catch (e) {
@@ -217,12 +217,12 @@ if (req.body.includes("SAA")) {
             .replace("{{urn}}", id)
     );
   }
-} else if (req.body.includes("RTQ")) {
-  const answers = req.body.matchAll(
+} else if (body.includes("RTQ")) {
+  const answers = body.matchAll(
     /<([a-z0-9-]+):Response><\1:QuestionID>(.*?)<\/\1:QuestionID><\1:AnswerGiven>(.*?)<\/\1:AnswerGiven>/g
   );
 
-  const id = req.body.match(/<([a-z0-9-]+):URN>(.*?)<\/\1:URN>/)[2];
+  const id = body.match(/<([a-z0-9-]+):URN>(.*?)<\/\1:URN>/)[2];
   const iiqCase = JSON.parse(iiqStore.load(id));
 
   for (const [, , questionId, answer] of answers) {
