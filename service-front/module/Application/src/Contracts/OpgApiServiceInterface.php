@@ -53,6 +53,10 @@ namespace Application\Contracts;
  *       },
  *       kbvs?: array {
  *           result: bool
+ *       },
+ *       fraudScore?: array {
+ *           decision: string,
+ *           score: int
  *       }
  *   },
  *   vouchingFor?: array{
