@@ -9,7 +9,7 @@ servers:
 x-json-schema-faker:
   alwaysFakeOptionals: false
   optionalsProbability: 0.5
-  fillProperties: false
+  fillProperties: true
 paths:
   /api/v1/users/current:
     get:
@@ -73,23 +73,23 @@ paths:
                   properties:
                     addressLine1:
                       type: string
-                      x-faker: address.streetAddress
+                      x-fake-data: Address.streetAddress
                     addressLine2:
                       type: string
-                      x-faker: address.streetName
+                      x-fake-data: Address.streetName
                     addressLine3:
                       type: string
-                      x-faker: address.cityName
+                      x-fake-data: Address.cityName
                     town:
                       type: string
-                      x-faker: address.cityName
+                      x-fake-data: Address.cityName
                     postcode:
                       type: string
-                      x-faker:
+                      x-fake-data:
                         helpers.replaceSymbols: "??# #??"
                     description:
                       type: string
-                      x-faker:
+                      x-fake-data:
                         fake: "A concatenation of the address lines"
 
   /api/v1/lpa-lookup:
@@ -181,10 +181,10 @@ paths:
                   properties:
                     handle:
                       type: string
-                      x-faker: address.countryCode
+                      x-fake-data: Address.countryCode
                     label:
                       type: string
-                      x-faker: address.country
+                      x-fake-data: Address.country
 
 components:
   schemas:
@@ -225,42 +225,40 @@ components:
           type: string
           enum: [personal-welfare, property-and-affairs]
         donor:
-          required: [firstname, surname, dob, address]
+          required: [firstname, surname, dob, addressLine1, town, postcode]
           type: object
           properties:
             firstname:
               type: string
-              x-faker: name.firstName
+              x-fake-data: Name.firstName
             surname:
               type: string
-              x-faker: name.lastName
+              x-fake-data: Name.lastName
             dob:
               type: string
               pattern: "[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}"
-              x-faker:
-                helpers.replaceSymbols: "1#/0#/19##"
+              example: "01/01/1960"
             addressLine1:
               type: string
-              x-faker: address.streetAddress
+              x-fake-data: Address.streetAddress
             addressLine2:
               type: string
-              x-faker: address.streetName
+              x-fake-data: Address.streetName
             addressLine3:
               type: string
-              x-faker: address.cityName
+              x-fake-data: Address.cityName
             town:
               type: string
-              x-faker: address.cityName
+              x-fake-data: Address.cityName
             postcode:
               type: string
-              x-faker:
-                helpers.replaceSymbols: "??# #??"
+              example: "AB1 C23"
             country:
               type: string
               format: ISO-3166-1
               minLength: 2
               maxLength: 2
-              x-faker: address.countryCode
+              x-fake-data: Address.countryCode
     LpaWithPostcodes:
       type: object
       properties:
