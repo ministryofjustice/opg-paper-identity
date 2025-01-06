@@ -16,7 +16,27 @@ use DateTime;
 class AddDonorFormHelper
 {
 
-    public function checkStatus(array $lpaData): array
+    public static function getDonorNameFromSiriusResponse(array $lpaData): string
+    {
+        return implode(' ', [
+            $lpaData['opg.poas.sirius']['donor']['firstname'] ?? '',
+            $lpaData['opg.poas.sirius']['donor']['surname'] ?? '',
+        ]);
+    }
+
+    public static function getDonorDobFromSiriusResponse(array $lpaData): string
+    {
+        // this is needed as PHP parses dates with mm/dd/yyyy by default
+        $dob = implode("-", array_reverse(explode("/", $lpaData["opg.poas.sirius"]["donor"]["dob"])));
+        return DateTime::createFromFormat('Y-m-d', $dob)->format('d M Y');
+    }
+
+    public static function getDonorAddressFromSiriusResponse(array $lpaData): array
+    {
+        return AddressProcessorHelper::processAddress($lpaData['opg.poas.sirius']['donor'], 'siriusAddressType');
+    }
+
+    public function checkLpaStatus(array $lpaData): array
     {
         // TODO: clarify which statuses are ok to be vouched for
         // and all the potential errors which could be shown
@@ -47,27 +67,7 @@ class AddDonorFormHelper
         return $response;
     }
 
-    public static function getDonorNameFromSiriusResponse(array $lpaData): string
-    {
-        return implode(' ', [
-            $lpaData['opg.poas.sirius']['donor']['firstname'] ?? '',
-            $lpaData['opg.poas.sirius']['donor']['surname'] ?? '',
-        ]);
-    }
-
-    public static function getDonorDobFromSiriusResponse(array $lpaData): string
-    {
-        // this is needed as PHP parses dates with mm/dd/yyyy by default
-        $dob = implode("-", array_reverse(explode("/", $lpaData["opg.poas.sirius"]["donor"]["dob"])));
-        return DateTime::createFromFormat('Y-m-d', $dob)->format('d M Y');
-    }
-
-    public static function getDonorAddressFromSiriusResponse(array $lpaData): array
-    {
-        return AddressProcessorHelper::processAddress($lpaData['opg.poas.sirius']['donor'], 'siriusAddressType');
-    }
-
-    public function checkLpa($lpa, $detailsData) {
+    public function checkLpaIdMatch($lpa, $detailsData) {
 
         $response = [
             "problem" => false,
@@ -164,7 +164,7 @@ class AddDonorFormHelper
             "warning" => "",
             "status" => "",
             "message" => "",
-            "additionalRow" => "",
+            "additionalRows" => [],
         ];
 
         if (empty($lpasData)) {
@@ -184,12 +184,19 @@ class AddDonorFormHelper
 
         $lpas = [];
         foreach ($lpasData as $lpa) {
-            $lpas[] = array_merge($this->checkStatus($lpa), [
+            $result = [
                 "uId" => $lpa["opg.poas.sirius"]["uId"],
-                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"])
-            ]);
+                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
+            ];
+            $status = $this->checkLpaStatus($lpa);
+            if ($status["problem"]) {
+                $result = array_merge($result, $status);
+            } else {
+                $result = array_merge($result, $this->checkLpaIdMatch($lpa, $detailsData));
+            }
+
+            $lpas[] = $result;
         }
-        echo(json_encode($lpasData));
 
         // if there is 1 LPA returned and there is a problem then we just flag the problem
         // if there are multiple LPAs and not all have a problem, then we remove the problem ones and continue (should we show some message)?
@@ -203,18 +210,17 @@ class AddDonorFormHelper
 
                 return $response;
             }
-        } else {
-            // need to sort this out so we can show each of the errors???
-            $lpa = array_filter($lpas, function ($s) {
-                return ! $s["problem"];
-            });
-            if (empty($lpa)) {
-                $response["problem"] = true;
-                $response["message"] = "These LPAs cannot be added, none with status that can be vouched for.";
-
-                return $response;
-            }
         }
+        // need to sort this out so we can show each of the errors???
+        $lpas = array_filter($lpas, function ($s) {
+            return ! $s["problem"];
+        });
+        if (empty($lpas)) {
+            $response["problem"] = true;
+            $response["message"] = "These LPAs cannot be added.";
+
+            return $response;
+            }
 
         if (count($lpas) === 1) {
             $lpa = current($lpas);
@@ -226,28 +232,34 @@ class AddDonorFormHelper
             $lpas = array_filter($lpas, function ($a) {
                 return ! $a["error"];
             });
-        }
 
-        if (empty($lpas)) {
-            $response["problem"] = true;
-            $response["message"] = "These LPAs cannot be added, voucher details match with actors.";
-        } else {
-            // theres not an error but we might need to show a warning
-            $warnings = array_filter($lpas, function ($a) {
-                return ! is_null($a["warning"]);
-            });
-            if ($warnings) {
-                $response["warning"] = current($warnings)["warning"];
-                $response["message"] = current($warnings)["message"];
-                $response["additionalRows"] = current($warnings)["additionalRows"];
+            if (empty($lpas)) {
+                $response["problem"] = true;
+                $response["message"] = "These LPAs cannot be added, voucher details match with actors.";
+
+                return $response;
+            } else {
+                // theres not an error but we might need to show a warning
+                $warnings = array_filter($lpas, function ($a) {
+                    return strlen($a["warning"]) > 0;
+                });
+
+                if ($warnings) {
+                    $response["warning"] = current($warnings)["warning"];
+                    $response["message"] = current($warnings)["message"];
+                    $response["additionalRows"] = current($warnings)["additionalRows"];
+                }
             }
         }
 
+        $lpa = current($lpasData);
+
+
         $response["lpasCount"] = count($lpas);
         $response["lpas"] = $lpas;
-        $response["donorName"] = $this->getDonorNameFromSiriusResponse(current($lpasData));
-        $response["donorDob"] = $this->getDonorDobFromSiriusResponse(current($lpasData));
-        $response["donorAddress"] = $this->getDonorAddressFromSiriusResponse(current($lpasData));
+        $response["donorName"] = $this->getDonorNameFromSiriusResponse($lpa);
+        $response["donorDob"] = $this->getDonorDobFromSiriusResponse($lpa);
+        $response["donorAddress"] = $this->getDonorAddressFromSiriusResponse($lpa);
 
         return $response;
     }
