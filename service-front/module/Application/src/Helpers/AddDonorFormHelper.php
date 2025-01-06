@@ -13,8 +13,6 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use AWS\CRT\HTTP\Response;
 use Laminas\Form\FormInterface;
 use DateTime;
-use Laminas\Http\Header\RetryAfter;
-
 class AddDonorFormHelper
 {
 
@@ -27,25 +25,25 @@ class AddDonorFormHelper
             "status" => "",
             "message" => ""
         ];
-        // if (
-        //     array_key_exists('opg.poas.lpastore', $lpaData) &&
-        //     array_key_exists('status', $lpaData['opg.poas.lpastore'])
-        // ) {
-        //     $status = $lpaData['opg.poas.lpastore']['status'];
-        //     if ( in_array($status, ['complete', 'registered', 'in progress'])) {
-        //         $response["problem"] = true;
-        //         $response["message"] = "This LPA cannot be added as an ID" .
-        //             " check has already been completed for this LPA.";
-        //     }
-        //     if ($response["status"] == 'draft') {
-        //         $response["problem"] = true;
-        //         $response["message"] = "This LPA cannot be added as it’s status is set to Draft.
-        //             LPAs need to be in the In Progress status to be added to this ID check.";
-        //     }
-        // } else {
-        //     $response["problem"] = true;
-        //     $response["message"] = "No LPA Found.";
-        // }
+        if (
+            array_key_exists('opg.poas.lpastore', $lpaData) &&
+            array_key_exists('status', $lpaData['opg.poas.lpastore'])
+        ) {
+            $status = $lpaData['opg.poas.lpastore']['status'];
+            if ( in_array($status, ['complete', 'registered'])) {
+                $response["problem"] = true;
+                $response["message"] = "This LPA cannot be added as an ID" .
+                    " check has already been completed for this LPA.";
+            }
+            if ($response["status"] == 'draft') {
+                $response["problem"] = true;
+                $response["message"] = "This LPA cannot be added as it’s status is set to Draft.
+                    LPAs need to be in the In Progress status to be added to this ID check.";
+            }
+        } else {
+            $response["problem"] = true;
+            $response["message"] = "No LPA Found.";
+        }
         return $response;
     }
 
@@ -131,7 +129,7 @@ class AddDonorFormHelper
         }
 
         // we check certificate-provider separately as their dob is not recorded on the LPA so
-        // a warning needs to be raised if there is a name match.
+        // a warning needs to be raised if there is a name match instead.
         $actor = [
             "firstName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["firstNames"] ?? null,
             "lastName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["lastName"] ?? null,
@@ -169,8 +167,14 @@ class AddDonorFormHelper
             "additionalRow" => "",
         ];
 
+        if (empty($lpasData)) {
+            $response["problem"] = true;
+            $response["message"] = "No LPA Found.";
+            return $response;
+        }
+
         $lpasData = array_filter($lpasData, function($lpa) use($detailsData) {
-            return ! in_array($lpa["uId"], $detailsData["lpas"]);
+            return ! in_array($lpa["opg.poas.sirius"]["uId"], $detailsData["lpas"]);
         });
         if (empty($lpasData)) {
             $response["problem"] = true;
@@ -181,10 +185,11 @@ class AddDonorFormHelper
         $lpas = [];
         foreach ($lpasData as $lpa) {
             $lpas[] = array_merge($this->checkStatus($lpa), [
-                "uId" => $lpa["uId"],
+                "uId" => $lpa["opg.poas.sirius"]["uId"],
                 "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"])
             ]);
         }
+        echo(json_encode($lpasData));
 
         // if there is 1 LPA returned and there is a problem then we just flag the problem
         // if there are multiple LPAs and not all have a problem, then we remove the problem ones and continue (should we show some message)?
@@ -199,23 +204,16 @@ class AddDonorFormHelper
                 return $response;
             }
         } else {
+            // need to sort this out so we can show each of the errors???
             $lpa = array_filter($lpas, function ($s) {
                 return ! $s["problem"];
             });
             if (empty($lpa)) {
                 $response["problem"] = true;
-                $response["message"] = "The LPA cannot be added";
+                $response["message"] = "These LPAs cannot be added, none with status that can be vouched for.";
 
                 return $response;
             }
-        }
-
-        $lpas = [];
-        foreach ($lpasData as $lpa) {
-            $lpas[] = array_merge($this->checkLpa($lpa, $detailsData), [
-                "uId" => $lpa["uId"],
-                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
-            ]);
         }
 
         if (count($lpas) === 1) {
@@ -231,8 +229,8 @@ class AddDonorFormHelper
         }
 
         if (empty($lpas)) {
-            // can we add a message to the form itself???
-            // or could have a different kind of error (problem...??)
+            $response["problem"] = true;
+            $response["message"] = "These LPAs cannot be added, voucher details match with actors.";
         } else {
             // theres not an error but we might need to show a warning
             $warnings = array_filter($lpas, function ($a) {

@@ -13,6 +13,7 @@ use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
 use GuzzleHttp\Exception\ClientException;
+use Psr\Log\LoggerInterface;
 
 /**
  * @psalm-type Address = array{
@@ -67,7 +68,8 @@ use GuzzleHttp\Exception\ClientException;
 class SiriusApiService
 {
     public function __construct(
-        private readonly Client $client
+        private readonly Client $client,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -133,23 +135,40 @@ class SiriusApiService
     {
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
-        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
-            'headers' => $authHeaders
-        ]);
-
-        $responseArray = [
-            $uid => json_decode(strval($response->getBody()), true),
-        ];
+        $responseArray = [];
+        try {
+            $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+                'headers' => $authHeaders
+            ]);
+            $responseArray[$uid] = json_decode(strval($response->getBody()), true);
+        } catch (ClientException $clientException) {
+            $response = $clientException->getResponse();
+            if ($response->getStatusCode() === 404) {
+                $this->logger->info("uid: {$uid} not found");
+                return $responseArray;
+            } else {
+                throw $clientException;
+            }
+        }
 
         if (empty($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'])) {
             return $responseArray;
         }
 
         foreach ($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'] as $lpaId) {
-            $response = $this->client->get('/api/v1/digital-lpas/' . $lpaId["uId"], [
-                'headers' => $authHeaders
-            ]);
-            $responseArray[$lpaId["uId"]] = json_decode(strval($response->getBody()), true);
+            try {
+                $response = $this->client->get('/api/v1/digital-lpas/' . $lpaId["uId"], [
+                    'headers' => $authHeaders
+                ]);
+                $responseArray[$lpaId["uId"]] = json_decode(strval($response->getBody()), true);
+            } catch (ClientException $clientException) {
+                $response = $clientException->getResponse();
+                if ($response->getStatusCode() === 404) {
+                    $this->logger->info("uid: {$uid} not found");
+                } else {
+                    throw $clientException;
+                }
+            }
         }
         return $responseArray;
     }

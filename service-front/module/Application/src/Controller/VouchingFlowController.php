@@ -463,6 +463,8 @@ class VouchingFlowController extends AbstractActionController
                     $this->getRequest()
                 );
 
+                // var_dump($lpas);
+
                 $processed = $this->addDonorFormHelper->processLpas($lpas, $detailsData);
 
                 $view->setVariable('lpa_response', $processed);
