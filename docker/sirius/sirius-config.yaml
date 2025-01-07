@@ -69,3 +69,26 @@ resources:
     response:
       statusCode: 200
       file: data/certificateProviderStop.json
+
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-1001"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddDonor.json
+
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-1002"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddDonorLinked.json
+
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-2001"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddAnotherDonor.json
+
+  - path: "/api/v1/digital-lpas/M-0000-0000-XXXX"
+    method: get
+    response:
+      statusCode: 404
