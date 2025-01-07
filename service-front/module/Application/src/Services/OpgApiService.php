@@ -105,13 +105,13 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function checkNinoValidity(string $nino): string
+    public function checkNinoValidity(string $uuid, string $nino): string
     {
         $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
 
         try {
             $this->makeApiRequest(
-                '/identity/validate_nino',
+                sprintf('/%s/identity/validate_nino', $uuid),
                 'POST',
                 ['nino' => $nino],
                 ['Content-Type' => 'application/json']

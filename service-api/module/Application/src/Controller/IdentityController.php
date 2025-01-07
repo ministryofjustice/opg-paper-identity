@@ -152,7 +152,21 @@ class IdentityController extends AbstractActionController
 
     public function verifyNinoAction(): JsonModel
     {
+        $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
+        $caseData->idMethodIncludingNation->id_value = $data['nino'];
+
+        try {
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'idMethodIncludingNation',
+                $caseData->idMethodIncludingNation
+            );
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
 
         $ninoStatus = $this->ninoService->validateNINO($data['nino']);
 

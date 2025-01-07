@@ -20,7 +20,6 @@ class CitizenResponseDTO
     public function __construct(array $response)
     {
         try {
-
             $this->id = $response['data']['id'];
             $this->type = $response['data']['type'];
             $this->matchScenario = $response['data']['attributes']['matchingScenario'];
@@ -39,7 +38,6 @@ class CitizenResponseDTO
                 ]
             ];
 //
-
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }

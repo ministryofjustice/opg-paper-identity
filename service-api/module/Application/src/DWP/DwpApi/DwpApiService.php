@@ -47,6 +47,11 @@ class DwpApiService
         ];
     }
 
+    public function validateNINO()
+    {
+
+    }
+
     /**
      * @throws GuzzleException
      * @throws DwpApiException

@@ -141,9 +141,9 @@ return [
                 ],
             ],
             'validate_nino' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route' => '/identity/validate_nino',
+                    'route' => '/identity/:uuid/validate_nino',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'verifyNino',
@@ -151,7 +151,7 @@ return [
                 ],
             ],
             'validate_driving_licence' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
                     'route' => '/identity/validate_driving_licence',
                     'defaults' => [
@@ -161,7 +161,7 @@ return [
                 ],
             ],
             'validate_passport' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
                     'route' => '/identity/validate_passport',
                     'defaults' => [
