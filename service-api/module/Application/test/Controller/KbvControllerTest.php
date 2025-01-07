@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\KbvController;
+use Application\Enums\IdMethod;
 use Application\Fixtures\DataQueryHandler;
 use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
 use Application\Helpers\CaseOutcomeCalculator;
+use Application\Model\Entity\CaseProgress;
 use ApplicationTest\TestCase;
 use DateTimeImmutable;
 use Laminas\Http\Response;
@@ -181,7 +183,12 @@ class KbvControllerTest extends TestCase
             'lpas' => [],
         ]);
 
-        $caseData->documentComplete = true;
+        $caseData->caseProgress = CaseProgress::fromArray([
+            'docCheck' => [
+                'idDocument' => IdMethod::NationalInsuranceNumber->value,
+                'state' => true
+            ]
+        ]);
 
         $formattedQuestions = $this->formattedQuestions();
 

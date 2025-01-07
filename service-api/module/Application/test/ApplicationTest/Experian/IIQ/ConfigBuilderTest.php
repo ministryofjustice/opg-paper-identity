@@ -43,9 +43,11 @@ class ConfigBuilderTest extends TestCase
                         ]
                     ],
                     'personType' => 'donor',
-                    'fraudScore' => [
-                        "decision" => "ACCEPT",
-                        "score" => 265
+                    'caseProgress' => [
+                        'fraudScore' => [
+                            "decision" => "ACCEPT",
+                            "score" => 265
+                        ]
                     ]
                 ],
                 [
@@ -92,9 +94,11 @@ class ConfigBuilderTest extends TestCase
                         ]
                     ],
                     'personType' => 'donor',
-                    'fraudScore' => [
-                        "decision" => "STOP",
-                        "score" => 990
+                    'caseProgress' => [
+                        'fraudScore' => [
+                            "decision" => "STOP",
+                            "score" => 990
+                        ]
                     ]
                 ],
                 [
@@ -142,9 +146,11 @@ class ConfigBuilderTest extends TestCase
                         ]
                     ],
                     'personType' => 'donor',
-                    'fraudScore' => [
-                        "decision" => "REFER",
-                        "score" => 950
+                    'caseProgress' => [
+                        'fraudScore' => [
+                            "decision" => "REFER",
+                            "score" => 950
+                        ]
                     ]
                 ],
                 [
@@ -189,9 +195,11 @@ class ConfigBuilderTest extends TestCase
                 'urn' => 'test UUID',
                 'authRefNo' => 'abc',
             ]),
-            'fraudScore' => [
-                "decision" => "ACCEPT",
-                "score" => 265
+            'caseProgress' => [
+                'fraudScore' => [
+                    "decision" => "ACCEPT",
+                    "score" => 265
+                ]
             ]
         ]);
 

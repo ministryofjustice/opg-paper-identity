@@ -358,7 +358,7 @@ class CPFlowController extends AbstractActionController
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
             $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::NationalInsuranceNumber->value);
 
             return $view->setTemplate($template);
         }
@@ -391,7 +391,7 @@ class CPFlowController extends AbstractActionController
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
             $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::DrivingLicenseNumber->value);
 
             return $view->setTemplate($template);
         }
@@ -447,7 +447,7 @@ class CPFlowController extends AbstractActionController
             $view->setVariables($formProcessorResponseDto->getVariables());
             $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
             $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::PassportNumber->value);
 
             return $view->setTemplate($template);
         }

@@ -322,7 +322,8 @@ class DonorFlowController extends AbstractActionController
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
             }
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
 
             return $view->setTemplate($template);
         }
@@ -360,7 +361,8 @@ class DonorFlowController extends AbstractActionController
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
             }
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenseNumber->value);
 
             return $view->setTemplate($template);
         }
@@ -417,7 +419,8 @@ class DonorFlowController extends AbstractActionController
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
             }
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid);
+
+            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
 
             return $view->setTemplate($template);
         }
