@@ -157,6 +157,10 @@ interface OpgApiServiceInterface
      *   },
      *   kbvs?: array {
      *        result: bool
+     *   },
+     *   fraudScore?: array {
+     *        decision: string,
+     *        score: int
      *   }
      * } $data
      */

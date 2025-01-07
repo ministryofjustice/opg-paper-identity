@@ -93,9 +93,6 @@ class CaseData implements JsonSerializable
     public ?CaseProgress $caseProgress = null;
 
     #[Annotation\Required(false)]
-    public ?FraudScore $fraudScore = null;
-
-    #[Annotation\Required(false)]
     public ?CaseAssistance $caseAssistance = null;
     /**
      * @param array<string, mixed> $data
@@ -109,8 +106,6 @@ class CaseData implements JsonSerializable
                 $instance->counterService = CounterService::fromArray($value);
             } elseif ($key === 'caseProgress') {
                 $instance->caseProgress = CaseProgress::fromArray($value);
-            } elseif ($key === 'fraudScore') {
-                $instance->fraudScore = FraudScore::fromArray($value);
             } elseif ($key === 'kbvQuestions') {
                 $instance->kbvQuestions = array_map(fn(array $question) => KBVQuestion::fromArray($question), $value);
             } elseif ($key === 'iiqControl') {
@@ -148,7 +143,6 @@ class CaseData implements JsonSerializable
      *     counterService?: CounterService,
      *     idMethodIncludingNation?: IdMethodIncludingNation,
      *     caseProgress?: CaseProgress,
-     *     fraudScore?: FraudScore,
      *     caseAssistance?: CaseAssistance,
      *     claimedIdentity?: ClaimedIdentity
      * }
@@ -182,10 +176,6 @@ class CaseData implements JsonSerializable
             $arr['caseProgress'] = $this->caseProgress;
         }
 
-        if ($this->fraudScore !== null) {
-            $arr['fraudScore'] = $this->fraudScore;
-        }
-
         if ($this->vouchingFor !== null) {
             $arr['vouchingFor'] = $this->vouchingFor;
         }
@@ -208,8 +198,6 @@ class CaseData implements JsonSerializable
                 throw new NotImplementedException('counterService update function not yet implemented');
             } elseif ($key === 'caseProgress') {
                 throw new NotImplementedException('caseProgress update function not yet implemented');
-            } elseif ($key === 'fraudScore') {
-                throw new NotImplementedException('fraudScore update function not yet implemented');
             } elseif ($key === 'kbvQuestions') {
                 throw new NotImplementedException('kbvQuestions update function not yet implemented');
             } elseif ($key === 'iiqControl') {

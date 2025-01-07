@@ -213,23 +213,29 @@ class ServiceAvailabilityHelperTest extends TestCase
                 "urn" => "b6aa3ee6-cd06-42b0-82c3-77051a4a4e34",
                 "authRefNo" => "6B3TGRWSKC"
             ],
-            "fraudScore" => [
-                "decision" => "ACCEPT",
-                "score" => 265
+            "caseProgress" => [
+                "fraudScore" => [
+                    "decision" => "ACCEPT",
+                    "score" => 265
+                ]
             ]
         ];
 
         $caseNoDecision = array_merge($case, [
-            'fraudScore' => [
-                "decision" => "NODECISION",
-                "score" => 0
+            "caseProgress" => [
+                "fraudScore" => [
+                    "decision" => "NODECISION",
+                    "score" => 0
+                ]
             ]
         ]);
 
         $caseStop = array_merge($case, [
-            'fraudScore' => [
-                "decision" => "STOP",
-                "score" => 999
+            "caseProgress" => [
+                "fraudScore" => [
+                    "decision" => "STOP",
+                    "score" => 999
+                ]
             ]
         ]);
 

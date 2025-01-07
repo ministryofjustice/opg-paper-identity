@@ -61,7 +61,9 @@ class ConfigBuilder
         };
 
         if (is_null($saaConfig['ApplicationData'])) {
-            throw new RuntimeException('Fraudscore result is not recognised: ' . $case->fraudScore->decision);
+            throw new RuntimeException(
+                'Fraudscore result is not recognised: ' . $case->caseProgress?->fraudScore?->decision
+            );
         }
 
         if (! isset($case->claimedIdentity->address)) {
