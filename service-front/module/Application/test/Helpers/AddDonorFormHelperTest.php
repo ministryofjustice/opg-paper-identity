@@ -245,6 +245,19 @@ class AddDonorFormHelperTest extends TestCase
             'additionalRows' => [],
         ];
 
+        $baseResponseDonorInfo = array_merge($baseResponse, [
+            'donorName' => 'First name LastName',
+            'donorDob' => '10 Feb 1990',
+            'donorAddress' => [
+                'line1' => '123 Fakestreet',
+                'line2' => '',
+                'line3' => '',
+                'town' => 'faketown',
+                'postcode' => 'FA2 3KE',
+                'country' => ''
+            ],
+        ]);
+
         $baseCheckLpaStatusResponse = [
             'problem' => false,
             'status' => "In progress",
@@ -272,51 +285,183 @@ class AddDonorFormHelperTest extends TestCase
             'message' => 'This LPA has already been added to this identity check.'
         ]);
 
+        $problemStatusResponse = [
+            'problem' => true,
+            'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
+            'status' => 'complete'
+        ];
+
+        $errorIdCheckResponse = [
+            'problem' => false,
+            'error' => true,
+            'warning' => 'actor-match',
+            'message' => 'The person vouching cannot have the same name and date of birth as an attorney.',
+            'additionalRows' => [
+                [
+                    'type' => 'Attorney name',
+                    'value' => 'some name'
+                ],
+                [
+                    'type' => 'Attorney date of birth',
+                    'value' => '11 Jan 1980'
+                ]
+            ],
+        ];
+
+        $warningIdCheckResponse = [
+            'problem' => false,
+            'error' => false,
+            'warning' => 'actor-match',
+            'message' => 'There is a certificate provider called some name named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+            'additionalRows' => [
+                [
+                    'type' => 'Certificate provider name',
+                    'value' => 'some name'
+                ],
+            ],
+        ];
+
+        $singleProblemResponse = array_merge($baseResponse, [
+            'problem' => true,
+            'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
+            'status' => 'complete'
+        ]);
+
+        $multipleProblemResponse = array_merge($baseResponse, [
+            'problem' => true,
+            'message' => 'These LPAs cannot be added.',
+        ]);
+
         $lpaOne = self::$baseLpa;
         $lpaOne['opg.poas.sirius']['uId'] = 'M-1111-1111-1111';
         $lpaOne['opg.poas.sirius']['caseSubtype'] = 'personal-welfare';
-        $lpaOne['opg.poas.lpastore'] = ['status' => 'In progress'];
 
         $lpaTwo = self::$baseLpa;
         $lpaTwo['opg.poas.sirius']['uId'] = 'M-2222-2222-2222';
         $lpaTwo['opg.poas.sirius']['caseSubtype'] = 'property-and-affairs';
-        $lpaTwo['opg.poas.lpastore'] = ['status' => 'In progress'];
-
-        $happyPathResponse = array_merge($baseResponse, [
-            "lpasCount" => 2,
-            'donorName' => 'First name LastName',
-            'donorDob' => '10 Feb 1990',
-            'donorAddress' => [
-                'line1' => '123 Fakestreet',
-                'line2' => '',
-                'line3' => '',
-                'town' => 'faketown',
-                'postcode' => 'FA2 3KE',
-                'country' => ''
-            ],
-            "lpas" => [
-                array_merge($baseCheckLpaIdMatchResponse, [
-                    'uId' => 'M-1111-1111-1111',
-                    'type' => 'PW'
-                ]),
-                array_merge($baseCheckLpaIdMatchResponse, [
-                    'uId' => 'M-2222-2222-2222',
-                    'type' => 'PA'
-                ]),
-            ],
-        ]);
 
         return [
             // no LPAs
             [[], null, null, $noLpaResopnse],
             // lpa already on Id Check
             [[$lpaOnIdCheck], null, null, $lpaOnIdCheckResponse],
+            // single problem LPA
+            [[$lpaOne], [$problemStatusResponse], null, $singleProblemResponse],
+            // multiple problem LPAs
+            [
+                [$lpaOne, $lpaTwo],
+                [$problemStatusResponse, $problemStatusResponse],
+                null,
+                $multipleProblemResponse,
+            ],
+            // one problem, one happy LPA
+            [
+                [$lpaOne, $lpaTwo],
+                [$problemStatusResponse, $baseCheckLpaStatusResponse],
+                [$baseCheckLpaIdMatchResponse],
+                array_merge($baseResponseDonorInfo, [
+                    'lpasCount' => 1,
+                    'lpas' => [ 1 => array_merge($baseCheckLpaIdMatchResponse, [
+                            'uId' => 'M-2222-2222-2222',
+                            'type' => 'PA'
+                        ])
+                    ]
+                ])
+            ],
+            // one error
+            [
+                [$lpaOne],
+                [$baseCheckLpaStatusResponse],
+                [$errorIdCheckResponse],
+                array_merge($baseResponseDonorInfo, $errorIdCheckResponse, [
+                    'lpasCount' => 1,
+                    'lpas' => [
+                        array_merge($errorIdCheckResponse, [
+                            'uId' => 'M-1111-1111-1111',
+                            'type' => 'PW',
+                            'error' => true,
+                        ])
+                    ],
+                ])
+            ],
+            // multiple errors
+            [
+                [$lpaOne, $lpaTwo],
+                [$baseCheckLpaStatusResponse, $baseCheckLpaStatusResponse],
+                [$errorIdCheckResponse, $errorIdCheckResponse],
+                array_merge($baseResponse, [
+                    'problem' => true,
+                    'message' => 'These LPAs cannot be added, voucher details match with actors.'
+                ])
+            ],
+            // one error, one happy LPA
+            [
+                [$lpaOne, $lpaTwo],
+                [$baseCheckLpaStatusResponse, $baseCheckLpaStatusResponse],
+                [$errorIdCheckResponse, $baseCheckLpaIdMatchResponse],
+                array_merge($baseResponseDonorInfo, [
+                    'lpasCount' => 1,
+                    'lpas' => [ 1 =>
+                        array_merge($baseCheckLpaIdMatchResponse, [
+                            'uId' => 'M-2222-2222-2222',
+                            'type' => 'PA',
+                        ])
+                    ],
+                ])
+            ],
+            // happy path with warnings
+            [
+                [$lpaOne, $lpaTwo],
+                [$baseCheckLpaStatusResponse, $baseCheckLpaStatusResponse],
+                [$warningIdCheckResponse, $baseCheckLpaIdMatchResponse],
+                array_merge($baseResponseDonorInfo, [
+                    "lpasCount" => 2,
+                    'warning' => 'actor-match',
+                    'message' => 'There is a certificate provider called some name named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+                    'additionalRows' => [
+                        [
+                            'type' => 'Certificate provider name',
+                            'value' => 'some name',
+                        ]
+                    ],
+                    "lpas" => [
+                        array_merge($baseCheckLpaIdMatchResponse, [
+                            'uId' => 'M-1111-1111-1111',
+                            'type' => 'PW',
+                            'warning' => 'actor-match',
+                            'message' => 'There is a certificate provider called some name named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+                            'additionalRows' => [
+                                [
+                                    'type' => 'Certificate provider name',
+                                    'value' => 'some name',
+                                ]
+                            ],
+                        ]),
+                        array_merge($baseCheckLpaIdMatchResponse, [
+                            'uId' => 'M-2222-2222-2222',
+                            'type' => 'PA'
+                        ]),
+                    ],
+                ])
+            ],
             // happy path
             [
                 [$lpaOne, $lpaTwo],
                 [$baseCheckLpaStatusResponse, $baseCheckLpaStatusResponse],
                 [$baseCheckLpaIdMatchResponse, $baseCheckLpaIdMatchResponse],
-                $happyPathResponse,
+                array_merge($baseResponseDonorInfo, [
+                    "lpasCount" => 2,
+                    "lpas" => [
+                        array_merge($baseCheckLpaIdMatchResponse, [
+                            'uId' => 'M-1111-1111-1111',
+                            'type' => 'PW'
+                        ]),
+                        array_merge($baseCheckLpaIdMatchResponse, [
+                            'uId' => 'M-2222-2222-2222',
+                            'type' => 'PA'
+                        ]),
+                    ],
+                ])
             ],
         ];
     }
