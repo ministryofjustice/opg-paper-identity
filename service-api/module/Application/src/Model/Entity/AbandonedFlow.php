@@ -17,8 +17,8 @@ use Laminas\Validator\NotEmpty;
  */
 class AbandonedFlow extends Entity
 {
-    #[Annotation\Required(false)]
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    #[Annotation\Required(true)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::STRING])]
     public ?string $last_page;
 
     #[Validator(NotEmpty::class)]
