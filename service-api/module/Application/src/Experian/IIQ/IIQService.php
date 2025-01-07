@@ -133,14 +133,14 @@ class IIQService
                     $request->SAAResult->Results->Outcome !== 'Authentication Questions returned' &&
                     $request->SAAResult->Results->Outcome !== 'Insufficient Questions (Unable to Authenticate)'
                 ) {
-                    $this->logger->error($request->SAAResult->Results->Outcome);
+                    $this->logger->error(json_encode($request->SAAResult));
 
-                    throw new CannotGetQuestionsException("Error retrieving questions");
+                    throw new CannotGetQuestionsException("Error retrieving questions: invalid outcome");
                 }
                 if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
-                    $this->logger->error($request->SAAResult->Results->NextTransId->string);
+                    $this->logger->error(json_encode($request->SAAResult));
 
-                    throw new CannotGetQuestionsException("Error retrieving questions");
+                    throw new CannotGetQuestionsException("Error retrieving questions: unexpected NextTransactionId");
                 }
             }
 
