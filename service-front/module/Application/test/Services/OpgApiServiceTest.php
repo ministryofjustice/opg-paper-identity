@@ -621,7 +621,7 @@ class OpgApiServiceTest extends TestCase
 
         $opgApiService = new OpgApiService($client);
 
-        $opgApiService->updateCaseSetDocumentComplete($data['uuid']);
+        $opgApiService->updateCaseSetDocumentComplete($data['uuid'], IdMethod::NationalInsuranceNumber->value);
     }
 
     public static function setDocumentCompleteData(): array
