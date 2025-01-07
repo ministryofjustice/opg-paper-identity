@@ -16,8 +16,8 @@ class CaseProgressTest extends TestCase
 
         $caseProgress = CaseProgress::fromArray($data);
 
-        $this->assertEquals($data['last_page'], $caseProgress->last_page);
-        $this->assertEquals($data['timestamp'], $caseProgress->timestamp);
+        $this->assertEquals($data['abandonedFlow']['last_page'], $caseProgress->abandonedFlow?->last_page);
+        $this->assertEquals($data['abandonedFlow']['timestamp'], $caseProgress->abandonedFlow?->timestamp);
     }
 
     /**
@@ -46,8 +46,10 @@ class CaseProgressTest extends TestCase
         ?string $timestamp = '2021-01-01'
     ): array {
         return [
-            'last_page' => $lastPage,
-            'timestamp' => $timestamp,
+            'abandonedFlow' => [
+                'last_page' => $lastPage,
+                'timestamp' => $timestamp,
+            ]
         ];
     }
 }
