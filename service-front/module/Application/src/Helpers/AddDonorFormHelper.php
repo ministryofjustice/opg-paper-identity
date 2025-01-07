@@ -16,6 +16,11 @@ use DateTime;
 class AddDonorFormHelper
 {
 
+    public function __construct(
+        private readonly VoucherMatchLpaActorHelper $matchHelper)
+    {
+    }
+
     public static function getDonorNameFromSiriusResponse(array $lpaData): string
     {
         return implode(' ', [
@@ -49,16 +54,16 @@ class AddDonorFormHelper
             array_key_exists('opg.poas.lpastore', $lpaData) &&
             array_key_exists('status', $lpaData['opg.poas.lpastore'])
         ) {
-            $status = $lpaData['opg.poas.lpastore']['status'];
-            if ( in_array($status, ['complete', 'registered'])) {
+            $response['status'] = $lpaData['opg.poas.lpastore']['status'];
+            if ( in_array($response['status'], ['complete', 'registered'])) {
                 $response["problem"] = true;
                 $response["message"] = "This LPA cannot be added as an ID" .
                     " check has already been completed for this LPA.";
             }
             if ($response["status"] == 'draft') {
                 $response["problem"] = true;
-                $response["message"] = "This LPA cannot be added as it’s status is set to Draft.
-                    LPAs need to be in the In Progress status to be added to this ID check.";
+                $response["message"] = "This LPA cannot be added as it’s status is set to Draft." .
+                    " LPAs need to be in the In Progress status to be added to this ID check.";
             }
         } else {
             $response["problem"] = true;
@@ -77,9 +82,7 @@ class AddDonorFormHelper
             "additionalRows" => [],
         ];
 
-        $matchHelper = new VoucherMatchLpaActorHelper();
-
-        $match = $matchHelper->checkMatch(
+        $match = $this->matchHelper->checkMatch(
             $lpa,
             $detailsData["firstName"],
             $detailsData["lastName"],
@@ -108,7 +111,7 @@ class AddDonorFormHelper
                         "value" => $matchName
                     ],
                     [
-                        "type" => ucfirst($match['type']) . "date of birth",
+                        "type" => ucfirst($match['type']) . " date of birth",
                         "value" => DateTime::createFromFormat('Y-m-d', $match["dob"])->format('d M Y')
                     ]
                 ];
@@ -118,7 +121,7 @@ class AddDonorFormHelper
             return $response;
         }
 
-        $addressMatch = $matchHelper->checkAddressDonorMatch($lpa, $detailsData["address"]);
+        $addressMatch = $this->matchHelper->checkAddressDonorMatch($lpa, $detailsData["address"]);
 
         if ($addressMatch) {
             $response["error"] = true;
@@ -134,7 +137,7 @@ class AddDonorFormHelper
             "firstName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["firstNames"] ?? null,
             "lastName" => $lpa["opg.poas.lpastore"]["certificateProvider"]["lastName"] ?? null,
         ];
-        $cp_name_match = $matchHelper->compareName(
+        $cp_name_match = $this->matchHelper->compareName(
             $detailsData["firstName"],
             $detailsData["lastName"],
             $actor
@@ -162,7 +165,6 @@ class AddDonorFormHelper
             "problem" => false,
             "error" => false,
             "warning" => "",
-            "status" => "",
             "message" => "",
             "additionalRows" => [],
         ];
@@ -253,7 +255,6 @@ class AddDonorFormHelper
         }
 
         $lpa = current($lpasData);
-
 
         $response["lpasCount"] = count($lpas);
         $response["lpas"] = $lpas;
