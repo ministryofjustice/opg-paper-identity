@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Aws\Secrets\AwsSecret;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\DWP\DwpApi\DwpApiService;
 use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
@@ -35,7 +37,7 @@ use Ramsey\Uuid\Uuid;
 class IdentityController extends AbstractActionController
 {
     public function __construct(
-        private readonly ValidatorInterface $ninoService,
+        private readonly DwpApiService $dwpApiService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataWriteHandler $dataHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
@@ -168,10 +170,10 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
-        $ninoStatus = $this->ninoService->validateNINO($data['nino']);
+        $ninoStatus = $this->dwpApiService->validateNINO();
 
         $response = [
-            'status' => $ninoStatus,
+            'status' => $ninoStatus->toArray(),
         ];
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);

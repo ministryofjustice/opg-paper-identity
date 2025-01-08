@@ -28,7 +28,7 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         array $options = null
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
-        $baseUri = ( new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+        $baseUri = 'http://dwp-mock:8080/';// ( new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
         /**
          * @psalm-suppress TypeDoesNotContainType
          */
@@ -37,7 +37,8 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         }
 
         $guzzleClient = new Client([
-            'base_uri' => $baseUri
+            'base_uri' => $baseUri,
+            'verify' => false,
         ]);
 
         $apcHelper = new ApcHelper();

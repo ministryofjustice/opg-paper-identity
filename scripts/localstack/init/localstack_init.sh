@@ -64,28 +64,16 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-cross
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-token-endpoint \
     --description "DWP authentication API" \
-        --secret-string "empty"
+        --secret-string "http://dwp-mock/"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-match-endpoint \
     --description "DWP match api" \
-        --secret-string "empty"
-
-awslocal secretsmanager create-secret --name local//paper-identity/dwp/citizen-endpoint \
-    --description "DWP citizen details api" \
         --secret-string "empty"
 
 awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-endpoint \
     --description "DWP Citizen endpoint" \
-    --secret-string "empty"
-
-awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-match-endpoint \
-    --description "DWP Citizen match endpoint" \
-    --secret-string "empty"
-
-awslocal secretsmanager create-secret --name local/dwp/oauth-token-endpoint \
-    --description "DWP Oauth2 endpoint" \
     --secret-string "empty"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \
@@ -102,6 +90,10 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certif
     
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-secret \
     --description "DWP Oauth2 client secret" \
+    --secret-string "empty"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-id \
+    --description "DWP Oauth2 client ID" \
     --secret-string "empty"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-bundle \

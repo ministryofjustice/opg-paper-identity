@@ -14,6 +14,8 @@ use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\DWP\DwpApi\DwpApiService;
+use Application\DWP\Factories\DwpApiServiceFactory;
 use Application\DWP\Factories\DwpAuthApiServiceFactory;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
@@ -507,7 +509,8 @@ return [
             IIQClient::class => IIQClientFactory::class,
             AuthManager::class => AuthManagerFactory::class,
             ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
-            DwpAuthApiService::class => DwpAuthApiServiceFactory::class
+            DwpAuthApiService::class => DwpAuthApiServiceFactory::class,
+            DwpApiService::class => DwpApiServiceFactory::class
         ],
     ],
     'view_manager' => [

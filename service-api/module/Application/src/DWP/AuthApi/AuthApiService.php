@@ -88,14 +88,19 @@ class AuthApiService
         RequestDTO $dwpAuthRequestDTO
     ): ResponseDTO {
         try {
+
+
+            //            die(json_encode($this->client->getConfig()));
+
             $response = $this->client->request(
                 'POST',
                 '/',
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $dwpAuthRequestDTO->toArray(),
-                    'cert' => $dwpAuthRequestDTO->bundle(),
-                    'ssl_key' => $dwpAuthRequestDTO->privateKey()
+//                    'cert' => $dwpAuthRequestDTO->bundle(),
+//                    'ssl_key' => $dwpAuthRequestDTO->privateKey(),
+//                    'verify' => false
                 ]
             );
 

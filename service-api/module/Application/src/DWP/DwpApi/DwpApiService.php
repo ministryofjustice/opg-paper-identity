@@ -8,6 +8,7 @@ use Application\DWP\AuthApi\AuthApiException;
 use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
+use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -47,9 +48,9 @@ class DwpApiService
         ];
     }
 
-    public function validateNINO()
+    public function validateNINO(): DetailsResponseDTO
     {
-
+        die(json_encode($this->makeHeaders()));
     }
 
     /**
