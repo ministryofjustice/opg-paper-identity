@@ -26,7 +26,13 @@ class AddDonor implements FormTemplate
     ])]
     public string $lpa;
 
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public bool $declaration;
 
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public array $lpas;
 }
