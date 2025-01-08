@@ -17,15 +17,6 @@ class AddDonorFormHelperTest extends TestCase
     private VoucherMatchLpaActorHelper&MockObject $matchHelperMock;
     private AddDonorFormHelper $addDonorFormHelper;
 
-    public function setUp(): void
-    {
-        $this->matchHelperMock = $this->createMock(VoucherMatchLpaActorHelper::class);
-
-        parent::setUp();
-
-        $this->addDonorFormHelper = new AddDonorFormHelper($this->matchHelperMock);
-    }
-
     public static array $baseLpa = [
         'opg.poas.sirius' => [
             'donor' => [
@@ -39,7 +30,7 @@ class AddDonorFormHelperTest extends TestCase
         ]
     ];
 
-    private static array $baseDetailsData = [
+    public static array $baseDetailsData = [
         'firstName' => 'Voucher',
         'lastName' => 'McVoucher',
         'dob' => '1990-11-15',
@@ -51,13 +42,22 @@ class AddDonorFormHelperTest extends TestCase
         'lpas' => ['M-0000-0000-0000'],
     ];
 
-    function testGetDonorNameFromSiriusResponse(): void
+    public function setUp(): void
+    {
+        $this->matchHelperMock = $this->createMock(VoucherMatchLpaActorHelper::class);
+
+        parent::setUp();
+
+        $this->addDonorFormHelper = new AddDonorFormHelper($this->matchHelperMock);
+    }
+
+    public function testGetDonorNameFromSiriusResponse(): void
     {
         $response = $this->addDonorFormHelper->getDonorNameFromSiriusResponse(self::$baseLpa);
         $this->assertEquals('First name LastName', $response);
     }
 
-    function testGetDonorDobFromSiriusResponse(): void
+    public function testGetDonorDobFromSiriusResponse(): void
     {
         $response = $this->addDonorFormHelper->getDonorDobFromSiriusResponse(self::$baseLpa);
         $this->assertEquals('10 Feb 1990', $response);
@@ -66,7 +66,7 @@ class AddDonorFormHelperTest extends TestCase
     /**
      * @dataProvider statusData
      */
-    function testCheckLpaStatus($lpaStoreData, $expectedResult): void
+    public function testCheckLpaStatus(array $lpaStoreData, array $expectedResult): void
     {
         $lpaData = self::$baseLpa;
         $lpaData['opg.poas.lpastore'] = $lpaStoreData;
@@ -74,7 +74,7 @@ class AddDonorFormHelperTest extends TestCase
         $this->assertEquals($expectedResult, $response);
     }
 
-    static function statusData(): array
+    public static function statusData(): array
     {
         return [
             [[], ['problem' => true, 'status' => '', 'message' => 'No LPA Found.']],
@@ -87,7 +87,7 @@ class AddDonorFormHelperTest extends TestCase
     /**
      * @dataProvider idMatchData
      */
-    function testCheckLpaIdMatch($checkMatchReturn, $checkAddressReturn, $compareNameReturn, $lpastore, $expectedResponse): void
+    public function testCheckLpaIdMatch(array|bool $checkMatchReturn, mixed $checkAddressReturn, mixed $compareNameReturn, ?array $lpastore, array $expectedResponse): void
     {
         $this
             ->matchHelperMock
@@ -122,7 +122,7 @@ class AddDonorFormHelperTest extends TestCase
 
     }
 
-    static function idMatchData(): array
+    public static function idMatchData(): array
     {
         $emptyResponse = [
             "problem" => false,
@@ -209,7 +209,7 @@ class AddDonorFormHelperTest extends TestCase
     /**
      * @dataProvider processLpasData
      */
-    function testProcessLpas($lpasData, $checkLpaStatusReturns, $checkLpaIdMatchReturns, $expectedResponse): void
+    public function testProcessLpas(array $lpasData, ?array $checkLpaStatusReturns, ?array $checkLpaIdMatchReturns, array $expectedResponse): void
     {
         $helper = $this->getMockBuilder('Application\Helpers\AddDonorFormHelper')
             ->setConstructorArgs([new VoucherMatchLpaActorHelper])
@@ -234,7 +234,7 @@ class AddDonorFormHelperTest extends TestCase
         $this->assertEquals($expectedResponse, $response);
     }
 
-    static function processLpasData(): array
+    public static function processLpasData(): array
     {
         $baseResponse = [
             'lpasCount' => 0,

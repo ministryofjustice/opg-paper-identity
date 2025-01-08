@@ -13,6 +13,8 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use AWS\CRT\HTTP\Response;
 use Laminas\Form\FormInterface;
 use DateTime;
+use Laminas\Http\Header\RetryAfter;
+
 class AddDonorFormHelper
 {
 
@@ -72,7 +74,7 @@ class AddDonorFormHelper
         return $response;
     }
 
-    public function checkLpaIdMatch($lpa, $detailsData) {
+    public function checkLpaIdMatch(array $lpa, array $detailsData): array {
 
         $response = [
             "problem" => false,
@@ -158,7 +160,26 @@ class AddDonorFormHelper
         return $response;
     }
 
-    public function processLpas(array $lpasData, array $detailsData) {
+    private function checkLpas(array $lpasData, array $detailsData) : array {
+        $lpas = [];
+        foreach ($lpasData as $lpa) {
+            $result = [
+                "uId" => $lpa["opg.poas.sirius"]["uId"],
+                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
+            ];
+            $status = $this->checkLpaStatus($lpa);
+            if ($status["problem"]) {
+                $result = array_merge($result, $status);
+            } else {
+                $result = array_merge($result, $this->checkLpaIdMatch($lpa, $detailsData));
+            }
+
+            $lpas[] = $result;
+        }
+        return $lpas;
+    }
+
+    public function processLpas(array $lpasData, array $detailsData): array {
 
         $response = [
             "lpasCount" => 0,
@@ -184,36 +205,19 @@ class AddDonorFormHelper
             return $response;
         }
 
-        $lpas = [];
-        foreach ($lpasData as $lpa) {
-            $result = [
-                "uId" => $lpa["opg.poas.sirius"]["uId"],
-                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
-            ];
-            $status = $this->checkLpaStatus($lpa);
-            if ($status["problem"]) {
-                $result = array_merge($result, $status);
-            } else {
-                $result = array_merge($result, $this->checkLpaIdMatch($lpa, $detailsData));
-            }
-
-            $lpas[] = $result;
-        }
+        $lpas = $this->checkLpas($lpasData, $detailsData);
 
         // if there is 1 LPA returned and there is a problem then we just flag the problem
-        // if there are multiple LPAs and not all have a problem, then we remove the problem ones and continue (should we show some message)?
-        // if there are multiple LPAs and they all have a problem then we flag the first...
-        if (count($lpas) === 1) {
-            $lpa = current($lpas);
-            if ($lpa["problem"]) {
-                $response["problem"] = true;
-                $response["status"] = $lpa["status"];
-                $response["message"] = $lpa["message"];
 
-                return $response;
-            }
+        if (count($lpas) === 1 && current($lpas)["problem"]) {
+            $response["problem"] = true;
+            $response["status"] = current($lpas)["status"];
+            $response["message"] = current($lpas)["message"];
+
+            return $response;
         }
-        // need to sort this out so we can show each of the errors???
+
+        // if there are multiple LPAs then we remove the problem ones and continue
         $lpas = array_filter($lpas, function ($s) {
             return ! $s["problem"];
         });
@@ -247,6 +251,7 @@ class AddDonorFormHelper
                 });
 
                 if ($warnings) {
+                    // we only show the first warning
                     $response["warning"] = current($warnings)["warning"];
                     $response["message"] = current($warnings)["message"];
                     $response["additionalRows"] = current($warnings)["additionalRows"];
