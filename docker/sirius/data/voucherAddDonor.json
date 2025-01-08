@@ -3,16 +3,30 @@
     "opg.poas.lpastore": {
         "attorneys": [
             {
-                "dateOfBirth": "1976-04-10",
+                "dateOfBirth": "1971-06-11",
                 "status": "active",
                 "channel": "online",
                 "uid": "89121d57-1fb2-3bcb-b556-fe108b686bff",
                 "firstNames": "Yasmin",
-                "lastName": "Carpenter",
+                "lastName": "Hope",
                 "address": {
                     "line1": "28 Osborne Road",
                     "town": "KING'S HILL",
                     "postcode": "WS10 3QW"
+                },
+                "signedAt": "1895-06-16T01:16:27.0Z"
+            },
+            {
+                "dateOfBirth": "1976-04-10",
+                "status": "replacement",
+                "channel": "online",
+                "uid": "89121d57-1fb2-3bcb-b556-fe108b686bff",
+                "firstNames": "Joshua",
+                "lastName": "Rogers",
+                "address": {
+                    "line1": "12 Hull Road",
+                    "town": "PACKINGTON",
+                    "postcode": "LE65 2BT"
                 },
                 "signedAt": "1895-06-16T01:16:27.0Z"
             }

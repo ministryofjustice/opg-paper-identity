@@ -443,7 +443,7 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('form', $form);
         $view->setVariable('case_uuid', $uuid);
 
-        if ($this->getRequest()->isPost() and $form->isValid()) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formArray = $this->formToArray($form);
 
             if (isset($formArray['lpas'])) {
