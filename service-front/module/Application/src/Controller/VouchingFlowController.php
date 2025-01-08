@@ -187,6 +187,7 @@ class VouchingFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
 
             if ($form->isValid()) {
+                $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
                     $match = $this->voucherMatchLpaActorHelper->checkMatch(
@@ -233,6 +234,7 @@ class VouchingFlowController extends AbstractActionController
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
+                $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
                     $match = $this->voucherMatchLpaActorHelper->checkMatch(
@@ -241,8 +243,6 @@ class VouchingFlowController extends AbstractActionController
                         $detailsData["lastName"],
                         $dateOfBirth,
                     );
-                    // echo(json_encode($lpasData));
-                    // echo(json_encode($match));
                     // we raise the warning if there are any matches so stop once we've found one
                     if ($match) {
                         break;
@@ -406,7 +406,7 @@ class VouchingFlowController extends AbstractActionController
             $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
-            $type = LpaTypes::fromName($lpaData['opg.poas.lpastore']['lpaType']);
+            $type = LpaTypes::fromName($lpaData['opg.poas.lpastore']['lpaType'] ?? '');
 
             $lpaDetails[$lpa] = [
                 'name' => $donorName,
@@ -419,7 +419,7 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData['vouchingFor']);
+        $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);
         $view->setVariable('lpa_details', $lpaDetails);
         $view->setVariable('case_uuid', $uuid);
 
@@ -435,7 +435,7 @@ class VouchingFlowController extends AbstractActionController
 
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData['vouchingFor']);
+        $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);
         $view->setVariable('form', $form);
         $view->setVariable('case_uuid', $uuid);
 
@@ -475,7 +475,7 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/vouching/vouch_for_another_donor');
     }
 
-    function removeLpaAction()
+    public function removeLpaAction(): Response
     {
         $uuid = $this->params()->fromRoute("uuid");
         $lpa = $this->params()->fromRoute("lpa");
