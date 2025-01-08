@@ -15,20 +15,23 @@ class ResponseDTO
     public function __construct(
         array $response
     ) {
-        $set = false;
         try {
+            $found = false;
             foreach ($response['clientResponsePayload']['orchestrationDecisions'] as $value) {
                 if ($value['decisionSource'] == 'MachineLearning') {
-                    $this->decision = $value['decision'];
+                    $found = true;
                     $this->score = $value['score'];
-                    $set = true;
                 }
             }
-            if (! $set) {
-                throw new FraudApiException("Machine learning data not present.");
+            if (! $found) {
+                throw new FraudApiException('Fraudscore response does not contain required score data');
             }
+            $this->decision = $response['responseHeader']['overallResponse']['decision'];
         } catch (\Exception $exception) {
-            throw new FraudApiException($exception->getMessage());
+            throw new FraudApiException(
+                "Fraudscore response does not contain required decision data: " .
+                $exception->getMessage()
+            );
         }
     }
 
