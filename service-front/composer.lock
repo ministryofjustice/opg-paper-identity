@@ -7500,16 +7500,16 @@
         },
         {
             "name": "pact-foundation/pact-php",
-            "version": "10.0.0",
+            "version": "10.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pact-foundation/pact-php.git",
-                "reference": "41c63a8ff8263a0981c2df170eea6a1591b89fa1"
+                "reference": "e005fd799b283ee54c2115276aaafb3c1c718cd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pact-foundation/pact-php/zipball/41c63a8ff8263a0981c2df170eea6a1591b89fa1",
-                "reference": "41c63a8ff8263a0981c2df170eea6a1591b89fa1",
+                "url": "https://api.github.com/repos/pact-foundation/pact-php/zipball/e005fd799b283ee54c2115276aaafb3c1c718cd8",
+                "reference": "e005fd799b283ee54c2115276aaafb3c1c718cd8",
                 "shasum": ""
             },
             "require": {
@@ -7524,47 +7524,48 @@
             },
             "require-dev": {
                 "behat/behat": "^3.13",
+                "clue/framework-x": "^0.17.0",
                 "ext-sockets": "*",
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "galbar/jsonpath": "^3.0",
                 "guzzlehttp/guzzle": "^7.8",
                 "pact-foundation/example-protobuf-sync-message-provider": "@dev",
-                "php-amqplib/php-amqplib": "^3.0",
-                "phpstan/phpstan": "^1.9",
-                "phpunit/phpunit": "^10.1.0|>=11.0 <11.3",
+                "phpstan/phpstan": "^2.0.4",
+                "phpunit/phpunit": "^10.1.0|^11.0",
                 "ramsey/uuid": "^4.7",
+                "rector/rector": "^2.0",
                 "roave/security-advisories": "dev-latest",
-                "slim/slim": "^4.13"
+                "webonyx/graphql-php": "^15.14"
             },
             "type": "library",
             "extra": {
                 "downloads": {
-                    "pact-ffi-headers": {
-                        "version": "0.4.23",
-                        "url": "https://github.com/pact-foundation/pact-reference/releases/download/libpact_ffi-v{$version}/pact.h",
-                        "path": "bin/pact-ffi-headers/pact.h"
-                    },
                     "pact-ffi-lib": {
-                        "version": "0.4.23",
-                        "variables": {
-                            "{$prefix}": "PHP_OS_FAMILY === 'Windows' ? 'pact_ffi' : 'libpact_ffi'",
-                            "{$os}": "PHP_OS === 'Darwin' ? 'macos' : strtolower(PHP_OS_FAMILY)",
-                            "{$architecture}": "in_array(php_uname('m'), ['arm64', 'aarch64']) ? 'aarch64' : 'x86_64'",
-                            "{$musl}": "PHP_OS === 'Linux' && musl() === true ? '-musl' : ''",
-                            "{$extension}": "PHP_OS_FAMILY === 'Windows' ? 'dll' : (PHP_OS === 'Darwin' ? 'dylib' : 'so')"
-                        },
                         "url": "https://github.com/pact-foundation/pact-reference/releases/download/libpact_ffi-v{$version}/{$prefix}-{$os}-{$architecture}{$musl}.{$extension}.gz",
-                        "path": "bin/pact-ffi-lib/pact.{$extension}"
+                        "path": "bin/pact-ffi-lib/pact.{$extension}",
+                        "version": "0.4.26",
+                        "variables": {
+                            "{$os}": "PHP_OS === 'Darwin' ? 'macos' : strtolower(PHP_OS_FAMILY)",
+                            "{$musl}": "PHP_OS === 'Linux' && musl() === true ? '-musl' : ''",
+                            "{$prefix}": "PHP_OS_FAMILY === 'Windows' ? 'pact_ffi' : 'libpact_ffi'",
+                            "{$extension}": "PHP_OS_FAMILY === 'Windows' ? 'dll' : (PHP_OS === 'Darwin' ? 'dylib' : 'so')",
+                            "{$architecture}": "in_array(php_uname('m'), ['arm64', 'aarch64']) ? 'aarch64' : 'x86_64'"
+                        }
+                    },
+                    "pact-ffi-headers": {
+                        "url": "https://github.com/pact-foundation/pact-reference/releases/download/libpact_ffi-v{$version}/pact.h",
+                        "path": "bin/pact-ffi-headers/pact.h",
+                        "version": "0.4.26"
                     },
                     "pact-stub-server": {
+                        "url": "https://github.com/pact-foundation/pact-stub-server/releases/download/v{$version}/pact-stub-server-{$os}-{$architecture}{$extension}.gz",
+                        "path": "bin/pact-stub-server/pact-stub-server{$extension}",
                         "version": "0.6.0",
                         "variables": {
                             "{$os}": "PHP_OS === 'Darwin' ? 'osx' : strtolower(PHP_OS_FAMILY)",
-                            "{$architecture}": "in_array(php_uname('m'), ['arm64', 'aarch64']) ? 'aarch64' : 'x86_64'",
-                            "{$extension}": "PHP_OS_FAMILY === 'Windows' ? '.exe' : ''"
+                            "{$extension}": "PHP_OS_FAMILY === 'Windows' ? '.exe' : ''",
+                            "{$architecture}": "in_array(php_uname('m'), ['arm64', 'aarch64']) ? 'aarch64' : 'x86_64'"
                         },
-                        "url": "https://github.com/pact-foundation/pact-stub-server/releases/download/v{$version}/pact-stub-server-{$os}-{$architecture}{$extension}.gz",
-                        "path": "bin/pact-stub-server/pact-stub-server{$extension}",
                         "executable": true
                     }
                 }
@@ -7596,9 +7597,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pact-foundation/pact-php/issues",
-                "source": "https://github.com/pact-foundation/pact-php/tree/10.0.0"
+                "source": "https://github.com/pact-foundation/pact-php/tree/10.1.0"
             },
-            "time": "2024-09-04T11:12:11+00:00"
+            "time": "2025-01-04T06:48:32+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -9620,16 +9621,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v7.1.2",
+            "version": "v7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "92a91985250c251de9b947a14bb2c9390b1a562c"
+                "reference": "b8dce482de9d7c9fe2891155035a7248ab5c7fdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/92a91985250c251de9b947a14bb2c9390b1a562c",
-                "reference": "92a91985250c251de9b947a14bb2c9390b1a562c",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/b8dce482de9d7c9fe2891155035a7248ab5c7fdb",
+                "reference": "b8dce482de9d7c9fe2891155035a7248ab5c7fdb",
                 "shasum": ""
             },
             "require": {
@@ -9666,7 +9667,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v7.1.2"
+                "source": "https://github.com/symfony/filesystem/tree/v7.2.0"
             },
             "funding": [
                 {
@@ -9682,20 +9683,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-28T10:03:55+00:00"
+            "time": "2024-10-25T15:15:23+00:00"
         },
         {
             "name": "symfony/finder",
-            "version": "v7.1.4",
+            "version": "v7.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "d95bbf319f7d052082fb7af147e0f835a695e823"
+                "reference": "87a71856f2f56e4100373e92529eed3171695cfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/d95bbf319f7d052082fb7af147e0f835a695e823",
-                "reference": "d95bbf319f7d052082fb7af147e0f835a695e823",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/87a71856f2f56e4100373e92529eed3171695cfb",
+                "reference": "87a71856f2f56e4100373e92529eed3171695cfb",
                 "shasum": ""
             },
             "require": {
@@ -9730,7 +9731,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v7.1.4"
+                "source": "https://github.com/symfony/finder/tree/v7.2.2"
             },
             "funding": [
                 {
@@ -9746,20 +9747,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-08-13T14:28:19+00:00"
+            "time": "2024-12-30T19:00:17+00:00"
         },
         {
             "name": "symfony/process",
-            "version": "v7.1.7",
+            "version": "v7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "9b8a40b7289767aa7117e957573c2a535efe6585"
+                "reference": "d34b22ba9390ec19d2dd966c40aa9e8462f27a7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/9b8a40b7289767aa7117e957573c2a535efe6585",
-                "reference": "9b8a40b7289767aa7117e957573c2a535efe6585",
+                "url": "https://api.github.com/repos/symfony/process/zipball/d34b22ba9390ec19d2dd966c40aa9e8462f27a7e",
+                "reference": "d34b22ba9390ec19d2dd966c40aa9e8462f27a7e",
                 "shasum": ""
             },
             "require": {
@@ -9791,7 +9792,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v7.1.7"
+                "source": "https://github.com/symfony/process/tree/v7.2.0"
             },
             "funding": [
                 {
@@ -9807,7 +9808,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-11-06T09:25:12+00:00"
+            "time": "2024-11-06T14:24:19+00:00"
         },
         {
             "name": "theseer/tokenizer",
