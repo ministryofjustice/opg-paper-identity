@@ -13,6 +13,8 @@ use GuzzleHttp\Psr7\Response;
 use Laminas\Http\Headers;
 use Laminas\Http\Request;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @psalm-suppress DeprecatedMethod
@@ -24,8 +26,9 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthSuccess(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -49,8 +52,10 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthFailureNoCookie(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -63,8 +68,10 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthFailureNoXSRF(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -78,8 +85,10 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthFailureNotAuthed(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -106,7 +115,10 @@ class SiriusApiServiceTest extends TestCase
     public function testSearchAddressesByPostcodeSuccess(): void
     {
         $clientMock = $this->createMock(Client::class);
-        $sut = new SiriusApiService($clientMock);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -143,7 +155,10 @@ class SiriusApiServiceTest extends TestCase
     public function testSearchAddressesByPostcodeThrowsPostcodeInvalidException(): void
     {
         $clientMock = $this->createMock(Client::class);
-        $sut = new SiriusApiService($clientMock);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -173,7 +188,10 @@ class SiriusApiServiceTest extends TestCase
     public function testSearchAddressesByPostcodeThrowsGenericException(): void
     {
         $clientMock = $this->createMock(Client::class);
-        $sut = new SiriusApiService($clientMock);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
