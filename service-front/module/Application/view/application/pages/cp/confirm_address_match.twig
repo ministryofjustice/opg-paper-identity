@@ -47,7 +47,7 @@
                     {% endfor %}
                 </p>
                 <p class="govuk-body">
-                    <a href="/{{ details_data['id'] }}/cp/enter-address-manual">Edit this address</a>
+                    <a class="govuk-link" href="{{ ('/' ~ details_data['id'] ~ '/cp/enter-address-manual') | basepath }}">Edit this address</a>
                 </p>
                 <input type="hidden" name="confirm_alt" value="confirmed">
             </div>
