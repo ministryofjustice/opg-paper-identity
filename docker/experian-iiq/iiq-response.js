@@ -176,7 +176,7 @@ function shuffle(a) {
 }
 
 if (body.includes("SAA")) {
-  if (body.includes("Thinfile")) {
+  if (body.includes("Thinfile") || true) {
     respond().withContent(
         saaEnvelopeNoKbv
             .replace("{{questions}}", [])
