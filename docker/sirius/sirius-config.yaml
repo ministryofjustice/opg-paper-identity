@@ -88,6 +88,30 @@ resources:
       statusCode: 200
       file: data/voucherAddAnotherDonor.json
 
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-3001"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddDonorComplete.json
+
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-3002"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddDonorDraft.json
+
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-3003"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddDonorStatus.json
+
+  - path: "/api/v1/digital-lpas/M-VOUC-HFOR-3004"
+    method: get
+    response:
+      statusCode: 200
+      file: data/voucherAddDonorLinkedStatus.json
+
   - path: "/api/v1/digital-lpas/M-0000-0000-XXXX"
     method: get
     response:

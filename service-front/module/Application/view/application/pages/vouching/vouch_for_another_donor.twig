@@ -8,13 +8,13 @@
     {% if form.get('lpa').messages %}
         <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
             <h2 class="govuk-heading-m">There is a problem</h2>
-            <p class="govuk-body">{{ form.get('lpa').messages | join(', ', ' and ') }}</p>
+            <p class="govuk-body" id="validationError">{{ form.get('lpa').messages | join(', ', ' and ') }}</p>
         </div>
     {% endif %}
     {% if lpa_response['problem'] %}
         <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
             <h2 class="govuk-heading-m">There is a problem</h2>
-            <p class="govuk-body">{{ lpa_response['message'] }}</p>
+            <p class="govuk-body" id="problemMessage">{{ lpa_response['message'] }}</p>
         </div>
     {% endif %}
 
@@ -32,9 +32,7 @@
                 C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z" />
                 </svg>
         {% endif %}
-            <div class="moj-banner__message" name="donor_warning">
-                {{ lpa_response['message'] }}
-            </div>
+            <div class="moj-banner__message" id="warningMessage">{{ lpa_response['message'] }}</div>
         </div>
     {% endif %}
 
@@ -74,21 +72,20 @@
     {% if lpa_response and not lpa_response['problem'] %}
         <div>
             <table class="govuk-table govuk-!-width-two-thirds">
-                <caption class="govuk-table__caption govuk-table__caption--m">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} LPAs found</strong></caption>
+                <caption class="govuk-table__caption govuk-table__caption--m" id="lpaCount">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} LPAs found</strong></caption>
                 <tbody class="govuk-table__body">
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">LPA reference number(s)</th>
                     <td class="govuk-table__cell">
                     {% for lpa in lpa_response['lpas'] %}
-                        <span class="app-type-text-colour--{{ lpa['type'] }}">{{ lpa['type'] }}</span>
-                        {{ lpa['uId'] }}{% if loop.last == false %}<br>{% endif %}
+                        <span class="app-type-text-colour--{{ lpa['type'] }}">{{ lpa['type'] }}</span>{{ lpa['uId'] }}{% if loop.last == false %}<br>{% endif %}
                     {% endfor %}
                     </td>
                     <td class="govuk-table__cell"></td>
                 </tr>
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">Donor name</th>
-                    <td class="govuk-table__cell">{{ lpa_response['donorName'] }}</td>
+                    <td class="govuk-table__cell" id="donorName">{{ lpa_response['donorName'] }}</td>
                     <td class="govuk-table__cell">
                     {% if lpa_response['warning'] == 'donor-match' %}
                         <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
@@ -97,8 +94,8 @@
                 </tr>
                 {% for row in lpa_response["additionalRows"] %}
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{{ row['type'] }}</th>
-                        <td class="govuk-table__cell">{{ row['value'] }}</td>
+                        <th scope="row" class="govuk-table__header", id="addRowType">{{ row['type'] }}</th>
+                        <td class="govuk-table__cell" id="addRowValue">{{ row['value'] }}</td>
                         <td class="govuk-table__cell">
                         <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
                         </td>
@@ -107,7 +104,7 @@
 
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">Donor date of birth</th>
-                    <td class="govuk-table__cell">{{ lpa_response['donorDob'] }}</td>
+                    <td class="govuk-table__cell" id="donorDob">{{ lpa_response['donorDob'] }}</td>
                     <td class="govuk-table__cell">
                         {% if lpa_response['warning'] == 'donor-match' %}
                             <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
@@ -159,7 +156,7 @@
                         {% if form.get('declaration').messages %}
                             <p id="declaration-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span>
-                                {{ form.get('declaration').messages | join(', ', ' and ') }}
+                                <span id="declarationError">{{ form.get('declaration').messages | join(', ', ' and ') }}</span>
                             </p>
                         {% endif %}
                         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
