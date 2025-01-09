@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Enums\LpaTypes;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Exceptions\PostcodeInvalidException;
@@ -11,9 +12,11 @@ use Application\Forms\AddressInput;
 use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
+use Application\Forms\AddDonor;
 use Application\Services\SiriusApiService;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
 use Application\Forms\Postcode;
@@ -32,12 +35,17 @@ class VouchingFlowController extends AbstractActionController
     protected $plugins;
     private string $uuid;
 
+    public array $routes = [
+        "confirm_donors" => "root/voucher_confirm_donors",
+    ];
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly AddressProcessorHelper $addressProcessorHelper,
+        private readonly AddDonorFormHelper $addDonorFormHelper,
         private readonly array $config
     ) {
     }
@@ -183,18 +191,21 @@ class VouchingFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost();
 
             if ($form->isValid()) {
-                $matches = [];
+                $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $matches = array_merge($matches, $this->voucherMatchLpaActorHelper->checkMatch(
+                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
                         $lpasData,
                         $formData["firstName"],
                         $formData["lastName"],
-                    ));
+                    );
+                    // we raise the warning if there are any matches so stop once we've found one
+                    if ($match) {
+                        break;
+                    }
                 }
-                if ($matches && ! isset($formData["continue-after-warning"])) {
-                    // if there are multiple matches we will only warn about the first
-                    $view->setVariable('matches', reset($matches));
+                if ($match && ! isset($formData["continue-after-warning"])) {
+                    $view->setVariable('match', $match);
                     $view->setVariable('matched_name', $formData["firstName"] . ' ' . $formData["lastName"]);
                 } else {
                     try {
@@ -227,19 +238,22 @@ class VouchingFlowController extends AbstractActionController
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
-                $matches = [];
+                $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $matches = array_merge($matches, $this->voucherMatchLpaActorHelper->checkMatch(
+                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
                         $lpasData,
                         $detailsData["firstName"],
                         $detailsData["lastName"],
                         $dateOfBirth,
-                    ));
+                    );
+                    // we raise the warning if there are any matches so stop once we've found one
+                    if ($match) {
+                        break;
+                    }
                 }
-                if ($matches) {
-                    // if there are multiple matches we will only warn about the first
-                    $view->setVariable('match', reset($matches));
+                if ($match) {
+                    $view->setVariable('match', $match);
                 } else {
                     try {
                         $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
@@ -373,7 +387,7 @@ class VouchingFlowController extends AbstractActionController
                     $view->setVariable('address_match', true);
                 } else {
                     $this->opgApiService->addSelectedAddress($uuid, $this->formToArray($form));
-                    return $this->redirect()->toRoute('root/voucher_enter_address_manual', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($this->routes["confirm_donors"], ['uuid' => $uuid]);
                 }
             }
         }
@@ -383,6 +397,90 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/vouching/enter_address_manual');
+    }
+
+    public function confirmDonorsAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+
+            $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+
+            $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
+            $type = LpaTypes::fromName($lpaData['opg.poas.lpastore']['lpaType'] ?? '');
+
+            $lpaDetails[$lpa] = [
+                'name' => $donorName,
+                'type' => $type,
+            ];
+        }
+
+        $view = new ViewModel();
+
+        $view->setVariable('lpas', $detailsData['lpas']);
+        $view->setVariable('lpa_count', count($detailsData['lpas']));
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);
+        $view->setVariable('lpa_details', $lpaDetails);
+        $view->setVariable('case_uuid', $uuid);
+
+        return $view->setTemplate('application/pages/vouching/confirm_donors');
+    }
+
+    public function addDonorAction(): ViewModel|Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $form = $this->createForm(AddDonor::class);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);
+        $view->setVariable('form', $form);
+        $view->setVariable('case_uuid', $uuid);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formArray = $this->formToArray($form);
+
+            if (isset($formArray['lpas'])) {
+                if (isset($formArray['declaration'])) {
+                    foreach ($formArray['lpas'] as $lpa) {
+                        $this->opgApiService->updateCaseWithLpa($uuid, $lpa);
+                    }
+                    return $this->redirect()->toRoute($this->routes["confirm_donors"], ['uuid' => $uuid]);
+                }
+                else {
+                    $form->setMessages([
+                        'declaration' => [
+                            "Confirm declaration to continue",
+                        ],
+                    ]);
+                }
+            }
+            $lpas = $this->siriusApiService->getAllLinkedLpasByUid(
+                $formArray['lpa'],
+                $this->getRequest()
+            );
+
+            $processed = $this->addDonorFormHelper->processLpas($lpas, $detailsData);
+
+            $view->setVariable('lpa_response', $processed);
+        }
+        return $view->setTemplate('application/pages/vouching/vouch_for_another_donor');
+    }
+
+    public function removeLpaAction(): Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpa = $this->params()->fromRoute("lpa");
+
+        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
+
+        return $this->redirect()->toRoute($this->routes["confirm_donors"], ['uuid' => $uuid]);
     }
 
     public function identityCheckPassedAction(): ViewModel
