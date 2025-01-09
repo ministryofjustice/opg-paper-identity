@@ -1,0 +1,86 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+
+{% block content %}
+    <form method="POST" class="govuk-!-width-three-quarters">
+        <h1 class="govuk-heading-xl">
+            {% block title %}
+                Donors being vouched for in this identity check
+            {% endblock %}
+        </h1>
+
+        <p class="govuk-body">
+            People may vouch for more than 1 donor during this call by adding another donor to this list.
+        </p>
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Donor LPA's included in this identity check
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key  govuk-!-width-one-half">
+                                    LPA reference number
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Donor
+                                </dt>
+                                <dt class="govuk-summary-list__key">
+                                    Action
+                                </dt>
+                            </div>
+                            {% for index, datum in lpa_details %}
+                                <div class="govuk-summary-list__row">
+                                    <dd class="govuk-summary-list__value">
+                                        <span class="app-type-text-colour--{{ datum['type'] }}">
+                                            {{ datum['type'] }}
+                                        </span>
+                                        <span id="lpaId">{{ index }}</span>
+                                    </dd>
+                                    <dd class="govuk-summary-list__value">
+                                        {{ datum['name'] }}
+                                    </dd>
+                                    <dd class="govuk-summary-list__value">
+                                        {% if lpa_count > 1 %}
+                                            <a
+                                                href="./remove-lpa/{{ index }}"
+                                                class="govuk-link"
+                                            >
+                                                Remove
+                                                <span class="govuk-visually-hidden">LPA {{ index }}</span>
+                                            </a>
+                                        {% endif %}
+                                    </dd>
+                                </div>
+                            {% endfor %}
+                            <div class="govuk-summary-list__row">
+                                <dd class="govuk-summary-list__value">
+                                </dd>
+                                <dd class="govuk-summary-list__value">
+                                </dd>
+                                <dd class="govuk-summary-list__value">
+                                    <a
+                                            href="./add-donor"
+                                            class="govuk-button govuk-button--secondary"
+                                    >
+                                        Vouch for another donor
+                                    </a>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <a href="" class="govuk-button">Continue</a>
+    </form>
+{% endblock %}
+
+
