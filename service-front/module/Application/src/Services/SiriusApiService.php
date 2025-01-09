@@ -67,8 +67,7 @@ use Psr\Log\LoggerInterface;
  */
 class SiriusApiService
 {
-
-    const LPA_API_PATH = '/api/v1/digital-lpas/';
+    private const LPA_API_PATH = '/api/v1/digital-lpas/';
 
     public function __construct(
         private readonly Client $client,

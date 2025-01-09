@@ -7,20 +7,57 @@ namespace Application\Helpers;
 use Application\Enums\LpaTypes;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddressProcessorHelper;
-// TODO: actually create and make use of
-use Application\Helpers\DTO\AddDonorFormHelperResponseDto;
 use Application\Helpers\VoucherMatchLpaActorHelper;
-use AWS\CRT\HTTP\Response;
-use Laminas\Form\FormInterface;
 use DateTime;
-use Laminas\Http\Header\RetryAfter;
 
+/**
+ * @psalm-type LpaStatus = array {
+ *   problem: bool,
+ *   message: string
+ * }
+ *
+ * @psalm-type AdditionalRow = array {
+ *   type: string,
+ *   value: string
+ * }
+ *
+ *  @psalm-type LpaIdMatchCheck = array {
+ *   problem: bool,
+ *   error: bool,
+ *   warning: string,
+ *   message: string,
+ *   additionalRows: AdditionalRow[]
+ * }
+ *
+ * @psalm-type CheckedLpa = array {
+ *   uId: string,
+ *   type: string,
+ *   problem: bool,
+ *   error: bool,
+ *   warning: string,
+ *   message: string,
+ *   additionalRows: AdditionalRow[]
+ * }
+ *
+ * @psalm-type ProcessedLpas = array {
+ *   lpasCount: int,
+ *   problem: bool,
+ *   error: bool,
+ *   warning: string,
+ *   message: string,
+ *   additionalRows: AdditionalRow[],
+ *   lpas?: CheckedLpa[],
+ *   donorName?: string,
+ *   donorDob?: string,
+ *   donorAddress?: string[]
+ * }
+ * }
+ */
 class AddDonorFormHelper
 {
-
     public function __construct(
-        private readonly VoucherMatchLpaActorHelper $matchHelper)
-    {
+        private readonly VoucherMatchLpaActorHelper $matchHelper
+    ) {
     }
 
     public static function getDonorNameFromSiriusResponse(array $lpaData): string
@@ -43,26 +80,26 @@ class AddDonorFormHelper
         return AddressProcessorHelper::processAddress($lpaData['opg.poas.sirius']['donor'], 'siriusAddressType');
     }
 
+    /**
+     * @return LpaStatus
+     */
     public function checkLpaStatus(array $lpaData): array
     {
-        // TODO: clarify which statuses are ok to be vouched for
-        // and all the potential errors which could be shown
         $response = [
             "problem" => false,
-            "status" => "",
             "message" => ""
         ];
         if (
             array_key_exists('opg.poas.lpastore', $lpaData) &&
             array_key_exists('status', $lpaData['opg.poas.lpastore'])
         ) {
-            $response['status'] = $lpaData['opg.poas.lpastore']['status'];
-            if ( in_array($response['status'], ['complete', 'registered'])) {
+            $status = $lpaData['opg.poas.lpastore']['status'];
+            if (in_array($status, ['complete', 'registered'])) {
                 $response["problem"] = true;
                 $response["message"] = "This LPA cannot be added as an ID" .
                     " check has already been completed for this LPA.";
             }
-            if ($response["status"] == 'draft') {
+            if ($status == 'draft') {
                 $response["problem"] = true;
                 $response["message"] = "This LPA cannot be added as it’s status is set to Draft." .
                     " LPAs need to be in the In Progress status to be added to this ID check.";
@@ -74,7 +111,11 @@ class AddDonorFormHelper
         return $response;
     }
 
-    public function checkLpaIdMatch(array $lpa, array $detailsData): array {
+    /**
+     * @return LpaIdMatchCheck
+     */
+    public function checkLpaIdMatch(array $lpa, array $detailsData): array
+    {
 
         $response = [
             "problem" => false,
@@ -145,11 +186,12 @@ class AddDonorFormHelper
             $actor
         );
         if ($cp_name_match) {
-
             $matchName = $actor["firstName"] . " " . $actor["lastName"];
 
             $response["warning"] = 'actor-match';
-            $response["message"] = "There is a certificate provider called {$matchName} named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.";
+            $response["message"] = "There is a certificate provider called {$matchName} named on this LPA. " .
+                'A certificate provider cannot vouch for the identity of a donor. ' .
+                'Confirm that these are two different people with the same name.';
             $response["additionalRows"] = [
                 [
                     "type" => "Certificate provider name",
@@ -160,12 +202,17 @@ class AddDonorFormHelper
         return $response;
     }
 
-    private function checkLpas(array $lpasData, array $detailsData) : array {
+    /**
+     * @return CheckedLpa[]
+     */
+    private function checkLpas(array $lpasData, array $detailsData): array
+    {
         $lpas = [];
         foreach ($lpasData as $lpa) {
             $result = [
                 "uId" => $lpa["opg.poas.sirius"]["uId"],
-                "type" => LpaTypes::fromName( $lpa["opg.poas.sirius"]["caseSubtype"]),
+                "type" => LpaTypes::fromName($lpa["opg.poas.sirius"]["caseSubtype"]),
+                "error" => false,
             ];
             $status = $this->checkLpaStatus($lpa);
             if ($status["problem"]) {
@@ -179,8 +226,11 @@ class AddDonorFormHelper
         return $lpas;
     }
 
-    public function processLpas(array $lpasData, array $detailsData): array {
-
+    /**
+     * @return ProcessedLpas
+     */
+    public function processLpas(array $lpasData, array $detailsData): array
+    {
         $response = [
             "lpasCount" => 0,
             "problem" => false,
@@ -196,7 +246,7 @@ class AddDonorFormHelper
             return $response;
         }
 
-        $lpasData = array_filter($lpasData, function($lpa) use($detailsData) {
+        $lpasData = array_filter($lpasData, function ($lpa) use ($detailsData) {
             return ! in_array($lpa["opg.poas.sirius"]["uId"], $detailsData["lpas"]);
         });
         if (empty($lpasData)) {
@@ -211,7 +261,6 @@ class AddDonorFormHelper
 
         if (count($lpas) === 1 && current($lpas)["problem"]) {
             $response["problem"] = true;
-            $response["status"] = current($lpas)["status"];
             $response["message"] = current($lpas)["message"];
 
             return $response;
@@ -226,7 +275,7 @@ class AddDonorFormHelper
             $response["message"] = "These LPAs cannot be added.";
 
             return $response;
-            }
+        }
 
         if (count($lpas) === 1) {
             $lpa = current($lpas);

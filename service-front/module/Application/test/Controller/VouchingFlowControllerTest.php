@@ -957,7 +957,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             $this->assertControllerName(VouchingFlowController::class);
             $this->assertControllerClass('VouchingFlowController');
             $this->assertMatchedRouteName('root/voucher_add_donor');
-
     }
 
     /**
@@ -1123,9 +1122,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['addDonor']}", 'POST', [
             'lpas' => ['lpa1', 'lpa2'],
-            'declaration' => true,
+            'declaration' => 'declaration_confirmed',
         ]);
-        // $this->assertResponseStatusCode(302);
+        $this->assertResponseStatusCode(302);
         // $this->assertRedirectTo("/$this->uuid/{$this->routes['confirmDonors']}");
     }
 
