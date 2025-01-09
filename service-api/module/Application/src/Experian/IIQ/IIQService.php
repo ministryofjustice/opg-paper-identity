@@ -128,28 +128,31 @@ class IIQService
                 'sAARequest' => $saaRequest,
             ]);
 
-            if ($request->SAAResult->Results) {
-                if (
-                    $request->SAAResult->Results->Outcome !== 'Authentication Questions returned' &&
-                    $request->SAAResult->Results->Outcome !== 'Insufficient Questions (Unable to Authenticate)'
-                ) {
-                    $this->logger->error(json_encode($request->SAAResult));
+            $control = [
+                'URN' => $request->SAAResult->Control->URN,
+                'AuthRefNo' => $request->SAAResult->Control->AuthRefNo,
+            ];
 
-                    throw new CannotGetQuestionsException("Error retrieving questions: invalid outcome");
-                }
-                if ($request->SAAResult->Results->NextTransId->string !== 'RTQ') {
-                    $this->logger->error(json_encode($request->SAAResult));
-
-                    throw new CannotGetQuestionsException("Error retrieving questions: unexpected NextTransactionId");
-                }
+            if (
+                $request->SAAResult->Results->Outcome === 'Insufficient Questions (Unable to Authenticate)' &&
+                $request->SAAResult->Results->NextTransId->string === 'END'
+            ) {
+                return ['questions' => [], 'control' => $control];
             }
 
-            //need to pass these control structure for RTQ transaction
-            $control = [];
-            $control['URN'] = $request->SAAResult->Control->URN;
-            $control['AuthRefNo'] = $request->SAAResult->Control->AuthRefNo;
+            if (
+                $request->SAAResult->Results->Outcome === 'Authentication Questions returned' &&
+                $request->SAAResult->Results->NextTransId->string === 'RTQ'
+            ) {
+                return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+            }
 
-            return ['questions' => (array)$request->SAAResult->Questions->Question, 'control' => $control];
+            $this->logger->error('Error retrieving questions', [
+                'outcome' => $request->SAAResult->Results->Outcome,
+                'nextTransId' => $request->SAAResult->Results->NextTransId->string,
+            ]);
+
+            throw new CannotGetQuestionsException("Error retrieving questions");
         });
     }
 
