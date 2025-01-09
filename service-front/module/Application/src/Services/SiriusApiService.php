@@ -67,8 +67,6 @@ use Psr\Log\LoggerInterface;
  */
 class SiriusApiService
 {
-    private const LPA_API_PATH = '/api/v1/digital-lpas/';
-
     public function __construct(
         private readonly Client $client,
         private readonly LoggerInterface $logger
@@ -119,7 +117,7 @@ class SiriusApiService
     {
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
-        $response = $this->client->get(self::LPA_API_PATH . $uid, [
+        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
             'headers' => $authHeaders
         ]);
 
@@ -139,7 +137,7 @@ class SiriusApiService
 
         $responseArray = [];
         try {
-            $response = $this->client->get(self::LPA_API_PATH . $uid, [
+            $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
                 'headers' => $authHeaders
             ]);
             $responseArray[$uid] = json_decode(strval($response->getBody()), true);
@@ -159,7 +157,7 @@ class SiriusApiService
 
         foreach ($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'] as $lpaId) {
             try {
-                $response = $this->client->get(self::LPA_API_PATH . $lpaId["uId"], [
+                $response = $this->client->get('/api/v1/digital-lpas/' . $lpaId["uId"], [
                     'headers' => $authHeaders
                 ]);
                 $responseArray[$lpaId["uId"]] = json_decode(strval($response->getBody()), true);
