@@ -38,7 +38,7 @@ const saaEnvelopeNoKbv = `<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/s
         <Results>
           <Outcome>Insufficient Questions (Unable to Authenticate)</Outcome>
           <NextTransId>
-            <string>RTQ</string>
+            <string>END</string>
           </NextTransId>
         </Results>
       </SAAResult>
