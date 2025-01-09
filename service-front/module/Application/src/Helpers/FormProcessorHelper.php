@@ -9,10 +9,12 @@ use Application\Exceptions\OpgApiException;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use Psr\Log\LoggerInterface;
 
 class FormProcessorHelper
 {
     public function __construct(
+        private LoggerInterface $logger,
         private OpgApiServiceInterface $opgApiService
     ) {
     }
@@ -250,7 +252,11 @@ class FormProcessorHelper
                 $template = $templates['thin_file'];
                 break;
             default:
-                throw new OpgApiException('Unknown response received from fraud check service.');
+                $this->logger->error('Fraud check response', [
+                    'response' => json_encode($fraudCheck),
+                ]);
+
+                throw new OpgApiException('Unknown response received from fraud check service');
         }
         return $template;
     }

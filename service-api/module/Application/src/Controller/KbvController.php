@@ -41,7 +41,7 @@ class KbvController extends AbstractActionController
 
         $case = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        if (is_null($case) || $case->documentComplete === false) {
+        if (is_null($case?->caseProgress?->docCheck) || $case?->caseProgress?->docCheck?->state === false) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             $response = [
                 "error" => "Document checks incomplete or unable to locate case",

@@ -42,6 +42,23 @@ namespace Application\Contracts;
  *     state: string,
  *     result: bool,
  *   },
+ *   caseProgress?: array{
+ *       abandonedFlow?: array{
+ *           last_page?: string,
+ *           timestamp?: string
+ *       },
+ *       docCheck?: array{
+ *           idDocument: string,
+ *           state: string
+ *       },
+ *       kbvs?: array {
+ *           result: bool
+ *       },
+ *       fraudScore?: array {
+ *           decision: string,
+ *           score: int
+ *       }
+ *   },
  *   vouchingFor?: array{
  *     firstName: string,
  *     lastName: string},
@@ -113,7 +130,7 @@ interface OpgApiServiceInterface
      */
     public function updateCaseProfessionalAddress(string $uuid, array $data): void;
 
-    public function updateCaseSetDocumentComplete(string $uuid): void;
+    public function updateCaseSetDocumentComplete(string $uuid, string $idDocument): void;
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
 
@@ -130,8 +147,21 @@ interface OpgApiServiceInterface
 
     /**
      * @param array{
-     *   last_page: string,
-     *   timestamp: string,
+     *   abandonedFlow?: array{
+     *        last_page?: string,
+     *        timestamp?: string
+     *   },
+     *   docCheck?: array{
+     *        idDocument: string,
+     *        state: string
+     *   },
+     *   kbvs?: array {
+     *        result: bool
+     *   },
+     *   fraudScore?: array {
+     *        decision: string,
+     *        score: int
+     *   }
      * } $data
      */
     public function updateCaseProgress(string $uuid, array $data): void;

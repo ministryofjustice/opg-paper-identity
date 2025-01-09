@@ -10,6 +10,10 @@ RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
 # Patch Vulnerabilities
 RUN apk upgrade --no-cache openssl curl libcurl
 
+# Get Latest CA Cert Bundle
+ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
+RUN chmod 0644 /etc/ssl/cert.pem
+
 WORKDIR /var/www/
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"

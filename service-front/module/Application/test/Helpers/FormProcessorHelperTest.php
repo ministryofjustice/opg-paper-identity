@@ -15,6 +15,7 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class FormProcessorHelperTest extends TestCase
 {
@@ -28,8 +29,9 @@ class FormProcessorHelperTest extends TestCase
         FormInterface $form,
         array $templates,
     ): void {
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($loggerMock, $opgApiServiceMock);
 
         $form->setData($formData);
 
@@ -114,8 +116,9 @@ class FormProcessorHelperTest extends TestCase
         array $templates,
         string $template,
     ): void {
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($loggerMock, $opgApiServiceMock);
 
         $form->setData($formData);
 
@@ -202,8 +205,9 @@ class FormProcessorHelperTest extends TestCase
         array $templates,
         string $template,
     ): void {
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($loggerMock, $opgApiServiceMock);
 
         $form->setData($formData);
 
@@ -290,8 +294,9 @@ class FormProcessorHelperTest extends TestCase
         string $template,
         bool $validDate,
     ): void {
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($loggerMock, $opgApiServiceMock);
 
         $processed = $formProcessorHelper->processPassportDateForm($caseUuid, $formData, $form, $templates);
 
@@ -368,8 +373,9 @@ class FormProcessorHelperTest extends TestCase
      */
     public function testprocessDateForm(array $params, string $expected): void
     {
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($loggerMock, $opgApiServiceMock);
 
         $actual = $formProcessorHelper->processDateForm($params);
 
@@ -426,8 +432,9 @@ class FormProcessorHelperTest extends TestCase
         if ($exception) {
             $this->expectException(OpgApiException::class);
         }
+        $loggerMock = $this->createMock(LoggerInterface::class);
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
+        $formProcessorHelper = new FormProcessorHelper($loggerMock, $opgApiServiceMock);
 
         $actual = $formProcessorHelper->processTemplate($fraudCheck, $templates);
 

@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Model\Entity;
 
+use Application\Model\Entity\AbandonedFlow;
 use Application\Model\Entity\CaseProgress;
 use Laminas\Form\Annotation\AttributeBuilder;
 use PHPUnit\Framework\TestCase;
 
-class CaseProgressTest extends TestCase
+class AbandonedFlowTest extends TestCase
 {
     public function testValidInput(): void
     {
         $data = $this->getData();
 
-        $caseProgress = CaseProgress::fromArray($data);
+        $abandonedFlow = AbandonedFlow::fromArray($data);
 
-        $this->assertEquals($data['last_page'], $caseProgress->last_page);
-        $this->assertEquals($data['timestamp'], $caseProgress->timestamp);
+        $this->assertEquals($data['last_page'], $abandonedFlow->last_page);
+        $this->assertEquals($data['timestamp'], $abandonedFlow->timestamp);
     }
 
     /**
@@ -25,7 +26,7 @@ class CaseProgressTest extends TestCase
      */
     public function testFormValidation(array $data, bool $isValid): void
     {
-        $form = (new AttributeBuilder())->createForm(CaseProgress::class);
+        $form = (new AttributeBuilder())->createForm(AbandonedFlow::class);
 
         $form->setData($data);
         $this->assertEquals($isValid, $form->isValid());

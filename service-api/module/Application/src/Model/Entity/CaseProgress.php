@@ -17,21 +17,36 @@ use Laminas\Validator\NotEmpty;
  */
 class CaseProgress extends Entity
 {
-    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::STRING])]
-    public string $last_page;
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?AbandonedFlow $abandonedFlow = null;
 
-    #[Validator(NotEmpty::class)]
-    public string $timestamp;
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?DocCheck $docCheck = null;
 
-    /**
-     * @param properties-of<self> $data
-     */
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?Kbvs $kbvs = null;
+
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?FraudScore $fraudScore = null;
+
     public static function fromArray(mixed $data): self
     {
         $instance = new self();
 
         foreach ($data as $key => $value) {
-            if (property_exists($instance, $key)) {
+            if ($key === 'abandonedFlow') {
+                $instance->abandonedFlow = is_array($value) ? AbandonedFlow::fromArray($value) : null;
+            } elseif ($key === 'docCheck') {
+                $instance->docCheck = is_array($value) ? DocCheck::fromArray($value) : null;
+            } elseif ($key === 'kbvs') {
+                $instance->kbvs = is_array($value) ? Kbvs::fromArray($value) : null;
+            } elseif ($key === 'fraudScore') {
+                $instance->fraudScore = is_array($value) ? FraudScore::fromArray($value) : null;
+            } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
                 throw new Exception(sprintf('%s does not have property "%s"', $instance::class, $key));
