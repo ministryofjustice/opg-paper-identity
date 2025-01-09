@@ -130,6 +130,42 @@ class IIQServiceTest extends TestCase
         $this->assertEquals('1234', $response['control']['AuthRefNo']);
     }
 
+    public function testStartAuthenticationAttemptFailure(): void
+    {
+        $questions = [
+            ['id' => 1],
+            ['id' => 2],
+        ];
+
+        $this->authManager->expects($this->once())
+            ->method('buildSecurityHeader')
+            ->willReturn(new SoapHeader('placeholder', 'header'));
+
+
+        $this->iiqClient->expects($this->once())
+            ->method('__call')
+            ->willReturn((object)[
+                'SAAResult' => (object)[
+                    'Control' => (object)[
+                        'URN' => 'abcd',
+                        'AuthRefNo' => '1234',
+                    ],
+                    'Results' => (object)[
+                        'Outcome' => 'Insufficient Questions (Unable to Authenticate)',
+                        'NextTransId' => (object)[
+                            'string' => 'END',
+                        ],
+                    ],
+                ],
+            ]);
+
+        $response = $this->sut->startAuthenticationAttempt($this->getSaaRequest());
+
+        $this->assertEquals([], $response['questions']);
+        $this->assertEquals('abcd', $response['control']['URN']);
+        $this->assertEquals('1234', $response['control']['AuthRefNo']);
+    }
+
     public function testStartAuthenticationAttemptsOneRetry(): void
     {
         $soapFault = new SoapFault('0', 'Unauthorized');
