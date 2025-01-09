@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-
 namespace ApplicationTest\Helpers;
-use Application\Enums\LpaTypes;
+
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
@@ -13,7 +12,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class AddDonorFormHelperTest extends TestCase
 {
-
     private VoucherMatchLpaActorHelper&MockObject $matchHelperMock;
     private AddDonorFormHelper $addDonorFormHelper;
 
@@ -77,18 +75,42 @@ class AddDonorFormHelperTest extends TestCase
     public static function statusData(): array
     {
         return [
-            [[], ['problem' => true, 'status' => '', 'message' => 'No LPA Found.']],
-            [['status' => 'complete'], ['problem' => true, 'status' => 'complete', 'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.']],
-            [['status' => 'draft'], ['problem' => true, 'status' => 'draft', 'message' => 'This LPA cannot be added as it’s status is set to Draft. LPAs need to be in the In Progress status to be added to this ID check.']],
-            [['status' => 'In progress'], ['problem' => false, 'status' => 'In progress', 'message' => '']]
+            [
+                [],
+                ['problem' => true, 'message' => 'No LPA Found.']
+            ],
+            [
+                ['status' => 'complete'],
+                [
+                    'problem' => true,
+                    'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.'
+                ]
+            ],
+            [
+                ['status' => 'draft'],
+                [
+                    'problem' => true,
+                    'message' => 'This LPA cannot be added as it’s status is set to Draft. ' .
+                        'LPAs need to be in the In Progress status to be added to this ID check.'
+                    ]
+                ],
+            [
+                ['status' => 'In progress'],
+                ['problem' => false, 'message' => '']
+            ]
         ];
     }
 
     /**
      * @dataProvider idMatchData
      */
-    public function testCheckLpaIdMatch(array|bool $checkMatchReturn, mixed $checkAddressReturn, mixed $compareNameReturn, ?array $lpastore, array $expectedResponse): void
-    {
+    public function testCheckLpaIdMatch(
+        array|bool $checkMatchReturn,
+        mixed $checkAddressReturn,
+        mixed $compareNameReturn,
+        ?array $lpastore,
+        array $expectedResponse
+    ): void {
         $this
             ->matchHelperMock
             ->expects(self::once())
@@ -119,7 +141,6 @@ class AddDonorFormHelperTest extends TestCase
 
         $response = $this->addDonorFormHelper->checkLpaIdMatch($lpa, self::$baseDetailsData);
         $this->assertEquals($expectedResponse, $response);
-
     }
 
     public static function idMatchData(): array
@@ -182,7 +203,9 @@ class AddDonorFormHelperTest extends TestCase
             ];
 
         $nameMatchCpResponse = array_merge($emptyResponse, [
-            'message' => 'There is a certificate provider called CPName CPSurname named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+            'message' => 'There is a certificate provider called CPName CPSurname named on this LPA. ' .
+                'A certificate provider cannot vouch for the identity of a donor. ' .
+                'Confirm that these are two different people with the same name.',
             'warning' => 'actor-match',
             'additionalRows' => [
                 [
@@ -209,11 +232,15 @@ class AddDonorFormHelperTest extends TestCase
     /**
      * @dataProvider processLpasData
      */
-    public function testProcessLpas(array $lpasData, ?array $checkLpaStatusReturns, ?array $checkLpaIdMatchReturns, array $expectedResponse): void
-    {
-        $helper = $this->getMockBuilder('Application\Helpers\AddDonorFormHelper')
-            ->setConstructorArgs([new VoucherMatchLpaActorHelper])
-            ->onlyMethods(array('checkLpaStatus', 'checkLpaIdMatch'))
+    public function testProcessLpas(
+        array $lpasData,
+        ?array $checkLpaStatusReturns,
+        ?array $checkLpaIdMatchReturns,
+        array $expectedResponse
+    ): void {
+        $helper = $this->getMockBuilder(AddDonorFormHelper::class)
+            ->setConstructorArgs([new VoucherMatchLpaActorHelper()])
+            ->onlyMethods(['checkLpaStatus', 'checkLpaIdMatch'])
             ->getMock();
 
         if (! is_null($checkLpaStatusReturns)) {
@@ -260,7 +287,6 @@ class AddDonorFormHelperTest extends TestCase
 
         $baseCheckLpaStatusResponse = [
             'problem' => false,
-            'status' => "In progress",
             'message' => ""
         ];
 
@@ -288,7 +314,6 @@ class AddDonorFormHelperTest extends TestCase
         $problemStatusResponse = [
             'problem' => true,
             'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
-            'status' => 'complete'
         ];
 
         $errorIdCheckResponse = [
@@ -308,11 +333,15 @@ class AddDonorFormHelperTest extends TestCase
             ],
         ];
 
+        $cp_message = 'There is a certificate provider called some name named on this LPA. ' .
+            'A certificate provider cannot vouch for the identity of a donor. ' .
+            'Confirm that these are two different people with the same name.';
+
         $warningIdCheckResponse = [
             'problem' => false,
             'error' => false,
             'warning' => 'actor-match',
-            'message' => 'There is a certificate provider called some name named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+            'message' => $cp_message,
             'additionalRows' => [
                 [
                     'type' => 'Certificate provider name',
@@ -324,7 +353,6 @@ class AddDonorFormHelperTest extends TestCase
         $singleProblemResponse = array_merge($baseResponse, [
             'problem' => true,
             'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
-            'status' => 'complete'
         ]);
 
         $multipleProblemResponse = array_merge($baseResponse, [
@@ -417,7 +445,7 @@ class AddDonorFormHelperTest extends TestCase
                 array_merge($baseResponseDonorInfo, [
                     "lpasCount" => 2,
                     'warning' => 'actor-match',
-                    'message' => 'There is a certificate provider called some name named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+                    'message' => $cp_message,
                     'additionalRows' => [
                         [
                             'type' => 'Certificate provider name',
@@ -429,7 +457,7 @@ class AddDonorFormHelperTest extends TestCase
                             'uId' => 'M-1111-1111-1111',
                             'type' => 'PW',
                             'warning' => 'actor-match',
-                            'message' => 'There is a certificate provider called some name named on this LPA. A certificate provider cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.',
+                            'message' => $cp_message,
                             'additionalRows' => [
                                 [
                                     'type' => 'Certificate provider name',

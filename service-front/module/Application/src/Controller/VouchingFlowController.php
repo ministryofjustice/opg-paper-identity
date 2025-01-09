@@ -406,7 +406,9 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-
+            /**
+            * @psalm-suppress ArgumentTypeCoercion
+            */
             $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
@@ -444,16 +446,15 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('case_uuid', $uuid);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formArray = $this->formToArray($form);
+            $formData = $this->getRequest()->getPost()->toArray();
 
-            if (isset($formArray['lpas'])) {
-                if (isset($formArray['declaration'])) {
-                    foreach ($formArray['lpas'] as $lpa) {
+            if (isset($formData['lpas'])) {
+                if (isset($formData['declaration'])) {
+                    foreach ($formData['lpas'] as $lpa) {
                         $this->opgApiService->updateCaseWithLpa($uuid, $lpa);
                     }
                     return $this->redirect()->toRoute($this->routes["confirm_donors"], ['uuid' => $uuid]);
-                }
-                else {
+                } else {
                     $form->setMessages([
                         'declaration' => [
                             "Confirm declaration to continue",
@@ -462,7 +463,7 @@ class VouchingFlowController extends AbstractActionController
                 }
             }
             $lpas = $this->siriusApiService->getAllLinkedLpasByUid(
-                $formArray['lpa'],
+                $formData['lpa'],
                 $this->getRequest()
             );
 

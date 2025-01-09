@@ -33,7 +33,7 @@ class VoucherMatchLpaActorHelper
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["firstNames"],
                 "lastName" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["lastName"],
-                "dob" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["dateOfBirth"],
+                "dob" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["dateOfBirth"] ?? "",
                 "type" => LpaActorTypes::CP->value,
             ];
             foreach ($lpasData["opg.poas.lpastore"]["attorneys"] as $attorney) {
@@ -93,7 +93,7 @@ class VoucherMatchLpaActorHelper
      * @param string $firstName
      * @param string $lastName
      * @param string $dob
-     * @return Actor[]
+     * @return false|Actor
     */
     public function checkMatch(array $lpasData, string $firstName, string $lastName, string $dob = null): array | bool
     {
