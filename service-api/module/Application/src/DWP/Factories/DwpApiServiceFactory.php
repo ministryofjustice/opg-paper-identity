@@ -58,14 +58,11 @@ class DwpApiServiceFactory implements FactoryInterface
 
         $logger = $container->get(LoggerInterface::class);
 
-        $config = [];
-
         return new DwpApiService(
             $guzzleClientCitizen,
             $guzzleClientMatch,
             $container->get(AuthApiService::class),
-            $logger,
-            $config
+            $logger
         );
     }
 }

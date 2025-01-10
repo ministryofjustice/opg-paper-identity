@@ -11,6 +11,7 @@ use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
 use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiException;
+use Application\Model\Entity\CaseData;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -22,11 +23,10 @@ class DwpApiService
 {
     private $authCount = 0;
     public function __construct(
-        private Client $guzzleClientCitizen,
         private Client $guzzleClientMatch,
+        private Client $guzzleClientDetails,
         private AuthApiService $authApiService,
-        private LoggerInterface $logger,
-        private array $config
+        private LoggerInterface $logger
     ) {
     }
 
@@ -49,9 +49,29 @@ class DwpApiService
         ];
     }
 
-    public function validateNINO(): DetailsResponseDTO
+    public function validateNINO(CaseData $caseData): array
     {
-        die(json_encode($this->makeHeaders()));
+        try {
+            $citizenResponseDTO = $this->makeCitizenMatchRequest(
+                new CitizenRequestDTO($caseData->toArray())
+            );
+            $detailsResponseDTO = $this->makeCitizenDetailsRequest(
+                new DetailsRequestDTO($citizenResponseDTO->id())
+            );
+            return $this->compareRecords($caseData, $detailsResponseDTO);
+        } catch (\Exception $exception) {
+            $this->logger->error('DwpApiException: ' . $exception->getMessage());
+            throw new DwpApiException($exception->getMessage());
+        }
+    }
+
+    public function compareRecords(CaseData $caseData, DetailsResponseDTO $detailsResponseDTO): array
+    {
+        return [
+            $caseData->idMethodIncludingNation->id_value,
+            'PASS',
+            Response::STATUS_CODE_200
+        ];
     }
 
     /**
@@ -66,7 +86,7 @@ class DwpApiService
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
 
-            $response = $this->guzzleClientCitizen->request(
+            $response = $this->guzzleClientMatch->request(
                 'POST',
                 '/',
                 [
@@ -144,7 +164,7 @@ class DwpApiService
 
             $uri = sprintf('/%s', $detailsRequestDTO->id());
 
-            $response = $this->guzzleClientCitizen->request(
+            $response = $this->guzzleClientDetails->request(
                 'GET',
                 $uri,
                 [

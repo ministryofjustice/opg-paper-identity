@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
+use Application\DWP\DwpApi\DwpApiService;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
@@ -267,6 +269,23 @@ class IdentityControllerTest extends TestCase
      */
     public function testNino(string $nino, string $response, int $status): void
     {
+        $dwpMock = $this->createMock(DwpApiService::class);
+
+        $dwpMock->expects($this->once())
+            ->method('makeCitizenMatchRequest')
+            ->willReturn(new CitizenResponseDTO([
+                "jsonapi" => [
+                    "version" => "1.0"
+                ],
+                "data" => [
+                    "id" => "be62ed49-5407-4023-844c-97159ec80411",
+                    "type" => "MatchResult",
+                    "attributes" => [
+                        "matchingScenario" => "Matched on NINO"
+                    ]
+                ]
+            ]));
+
         $this->dispatchJSON(
             '/identity/validate_nino',
             'POST',

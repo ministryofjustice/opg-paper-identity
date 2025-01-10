@@ -426,7 +426,7 @@ class DwpApiServiceTest extends TestCase
 
         $dwpApiService = new DwpApiService(
             $failClient,
-            $successClient,
+            $failClient,
             $this->dwpAuthApiService,
             $this->logger,
             []
