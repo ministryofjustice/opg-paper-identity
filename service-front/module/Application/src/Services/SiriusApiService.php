@@ -31,6 +31,13 @@ use Psr\Log\LoggerInterface;
  *   dateOfBirth: string,
  * }
  *
+ * @psalm-type LinkedLpa = array{
+ *    uId: string,
+ *    caseSubtype: string,
+ *    createdDate: string,
+ *    status: string,
+ *  }
+ *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
  *    id: int,
@@ -46,6 +53,7 @@ use Psr\Log\LoggerInterface;
  *      postcode?: string,
  *      country: string,
  *    },
+ *    linkedDigitalLpas?: LinkedLpa[]
  *  },
  *  "opg.poas.lpastore": ?array{
  *    lpaType: string,
@@ -131,16 +139,14 @@ class SiriusApiService
         return $responseArray;
     }
 
+    /**
+     * @return Lpa[]
+     */
     public function getAllLinkedLpasByUid(string $uid, Request $request): array
     {
-        $authHeaders = $this->getAuthHeaders($request) ?? [];
-
         $responseArray = [];
         try {
-            $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
-                'headers' => $authHeaders
-            ]);
-            $responseArray[$uid] = json_decode(strval($response->getBody()), true);
+            $response = $this->getLpaByUid($uid, $request);
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();
             if ($response->getStatusCode() === 404) {
@@ -151,16 +157,17 @@ class SiriusApiService
             }
         }
 
-        if (empty($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'])) {
+        $linkedUids = $responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
+
+        $responseArray[$uid] = $response;
+        if ($linkedUids === []) {
             return $responseArray;
         }
 
-        foreach ($responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'] as $lpaId) {
+        foreach ($linkedUids as $lpaId) {
             try {
-                $response = $this->client->get('/api/v1/digital-lpas/' . $lpaId["uId"], [
-                    'headers' => $authHeaders
-                ]);
-                $responseArray[$lpaId["uId"]] = json_decode(strval($response->getBody()), true);
+                $response = $this->getLpaByUid($lpaId["uId"], $request);
+                $responseArray[$lpaId["uId"]] = $response;
             } catch (ClientException $clientException) {
                 $response = $clientException->getResponse();
                 if ($response->getStatusCode() === 404) {
