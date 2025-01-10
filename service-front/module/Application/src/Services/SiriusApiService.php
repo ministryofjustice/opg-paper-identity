@@ -163,7 +163,6 @@ class SiriusApiService
             }
         }
 
-        echo(json_encode($response));
         $linkedUids = $response['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
         $responseArray[$uid] = $response;
         if ($linkedUids === []) {

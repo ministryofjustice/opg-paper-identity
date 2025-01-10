@@ -218,7 +218,7 @@ class SiriusApiServiceTest extends TestCase
 
     public function testGetLpaByUid(): void
     {
-        $Uid = 'M-0000-0000-0000';
+        $uId = 'M-0000-0000-0000';
         $lpa = ['lpa'];
 
         $clientMock = $this->createMock(Client::class);
@@ -234,7 +234,7 @@ class SiriusApiServiceTest extends TestCase
         $clientMock
             ->expects($this->once())
             ->method("get")
-            ->with("/api/v1/digital-lpas/$Uid", [
+            ->with("/api/v1/digital-lpas/$uId", [
                 'headers' => [
                     'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
                     'X-XSRF-TOKEN' => 'abcd',
@@ -242,14 +242,14 @@ class SiriusApiServiceTest extends TestCase
             ])
             ->willReturn(new Response(200, [], json_encode($lpa)));
 
-        $result = $sut->getLpaByUid($Uid, $request);
+        $result = $sut->getLpaByUid($uId, $request);
 
         $this->assertEquals($lpa, $result);
     }
 
     public function testGetLpaByUidThrowsValidationException(): void
     {
-        $Uid = 'invalid-uid';
+        $uId = 'invalid-uid';
 
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
@@ -260,7 +260,7 @@ class SiriusApiServiceTest extends TestCase
 
         $this->expectException(UidInvalidException::class);
         $this->expectExceptionMessage('The LPA needs to be valid in the format M-XXXX-XXXX-XXXX');
-        $sut->getLpaByUid($Uid, $request);
+        $sut->getLpaByUid($uId, $request);
     }
 
     public function testGetAllLinkedLpasByUid(): void
