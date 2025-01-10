@@ -13,6 +13,7 @@ use Application\Enums\LpaActorTypes;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Application\Enums\IdMethod as IdMethodEnum;
+
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;

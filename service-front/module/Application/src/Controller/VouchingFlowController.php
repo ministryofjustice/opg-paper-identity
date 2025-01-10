@@ -28,7 +28,6 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 
-
 class VouchingFlowController extends AbstractActionController
 {
     use FormBuilder;

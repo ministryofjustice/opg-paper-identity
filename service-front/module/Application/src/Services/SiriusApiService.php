@@ -7,6 +7,8 @@ namespace Application\Services;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Enums\SiriusDocument;
+use Application\Validators\LpaUidValidator;
+use Application\Exceptions\UidInvalidException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
@@ -123,6 +125,10 @@ class SiriusApiService
      */
     public function getLpaByUid(string $uid, Request $request): array
     {
+        $validator = new LpaUidValidator();
+        if (! $validator->isValid($uid)) {
+            throw new UidInvalidException(join(", ", $validator->getMessages()));
+        }
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
         $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
@@ -157,8 +163,8 @@ class SiriusApiService
             }
         }
 
-        $linkedUids = $responseArray[$uid]['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
-
+        echo(json_encode($response));
+        $linkedUids = $response['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
         $responseArray[$uid] = $response;
         if ($linkedUids === []) {
             return $responseArray;
