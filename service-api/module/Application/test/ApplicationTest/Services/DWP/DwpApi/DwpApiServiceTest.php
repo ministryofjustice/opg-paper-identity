@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services\DWP\DwpApi;
 
-use Application\Cache\ApcHelper;
 use Application\DWP\AuthApi\AuthApiService;
-use Application\DWP\AuthApi\DTO\RequestDTO;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
-use Application\DWP\DwpApi\DwpApiException;
+use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use GuzzleHttp\Exception\ClientException;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
-use Application\Model\Entity\CaseData;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -21,17 +18,9 @@ use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class DwpApiServiceTest extends TestCase
 {
-    //dce -it api ./vendor/bin/phpunit ./module/Application/test/ApplicationTest/Services/DWP/DwpApi
-    private Client $client;
-    private Client $clientCitizen;
-    private Client $clientMatch;
-    private ApcHelper $apcHelper;
-    private RequestDTO $dwpAuthRequestDto;
-    private CitizenRequestDTO $citizenRequestDTO;
     private AuthApiService $dwpAuthApiService;
     private DwpApiService $dwpApiService;
     private LoggerInterface&MockObject $logger;
@@ -84,37 +73,13 @@ class DwpApiServiceTest extends TestCase
     public function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->clientCitizen = $this->createMock(Client::class);
-        $this->clientMatch = $this->createMock(Client::class);
-        $this->client = $this->createMock(Client::class);
-        $this->apcHelper = $this->createMock(ApcHelper::class);
-//        $this->dwpAuthRequestDto = new RequestDTO(
-//            'username',
-//            'password',
-//            'bundle',
-//            'privateKey',
-//        );
+        $clientCitizen = $this->createMock(Client::class);
+        $clientMatch = $this->createMock(Client::class);
         $this->dwpAuthApiService = $this->createMock(AuthApiService::class);
 
-
-//        $this->apcHelper->setValue(
-//            'dwp_access_token',
-//            json_encode([
-//                'access_token' => 'token',
-//                'time' => (int)(new \DateTime())->format('U') + 3600
-//            ])
-//        );
-
-//        $this->dwpAuthApiService = new AuthApiService(
-//            $this->client,
-//            $this->apcHelper,
-//            $this->logger,
-//            $this->dwpAuthRequestDto
-//        );
-
         $this->dwpApiService = new DwpApiService(
-            $this->clientCitizen,
-            $this->clientMatch,
+            $clientCitizen,
+            $clientMatch,
             $this->dwpAuthApiService,
             $this->logger,
             []
@@ -261,5 +226,212 @@ class DwpApiServiceTest extends TestCase
         );
 
         $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(static::CASE));
+    }
+
+    public function testMakeCitizenDetailsRequest(): void
+    {
+        $successMockResponseData = [
+            "jsonapi" => [
+                "version" => ""
+            ],
+            "links" => [
+                "self" => ""
+            ],
+            "data" => [
+                "id" => "",
+                "type" => "Citizen",
+                "attributes" => [
+                    "guid" => "",
+                    "nino" => "",
+                    "identityVerificationStatus" => "verified",
+                    "sex" => "",
+                    "statusIndicator" => false,
+                    "name" => [
+                        "title" => "Mr",
+                        "firstName" => "Lee",
+                        "middleNames" => "",
+                        "lastName" => "Manthrope",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "alternateName" => [
+                        "title" => "",
+                        "firstName" => "",
+                        "middleNames" => "",
+                        "lastName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "requestedName" => [
+                        "requestedName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfDeath" => [
+                        "date" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfBirth" => [
+                        "date" => "1986-09-03",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "accessibilityNeeds" => [
+                        [
+                            "type" => "braille",
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "safeguarding" => [
+                        "type" => "potentially_violent",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "nationality" => [
+                        "nationality" => "british",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "contactDetails" => [
+                        [
+                            "contactType" => "home_telephone_number",
+                            "value" => "07745690909",
+                            "preferredContactIndicator" => false,
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "warningDetails" => [
+                        "warnings" => [
+                            [
+                                "id" => "",
+                                "links" => [
+                                    "about" => ""
+                                ],
+                                "status" => "",
+                                "code" => "",
+                                "title" => "",
+                                "detail" => "",
+                                "source" => [
+                                    "pointer" => "",
+                                    "parameter" => ""
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "relationships" => [
+                    "current-residential-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "current-correspondence-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "addresses" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "relationships" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "claims" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $this->dwpAuthApiService->expects(self::once())
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
+
+        $dwpApiService = new DwpApiService(
+            $successClient,
+            $successClient,
+            $this->dwpAuthApiService,
+            $this->logger,
+            []
+        );
+
+        $this->assertEquals(
+            new DetailsResponseDTO($successMockResponseData),
+            $dwpApiService->makeCitizenDetailsRequest(
+                new DetailsRequestDTO('case-id-string')
+            )
+        );
+    }
+
+    public function testMakeCitizenDetailsRequestWith400Response(): void
+    {
+        $this->expectException(ClientException::class);
+        $failMock = new MockHandler([
+            new GuzzleResponse(400, [], json_encode([])),
+        ]);
+        $failHandlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $failHandlerStack]);
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode([])),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $this->dwpAuthApiService->expects(self::once())
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
+
+        $dwpApiService = new DwpApiService(
+            $failClient,
+            $successClient,
+            $this->dwpAuthApiService,
+            $this->logger,
+            []
+        );
+
+        $dwpApiService->makeCitizenDetailsRequest(new DetailsRequestDTO('case-id-string'));
     }
 }

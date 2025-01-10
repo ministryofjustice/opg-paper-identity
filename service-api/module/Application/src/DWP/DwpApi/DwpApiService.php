@@ -8,6 +8,7 @@ use Application\DWP\AuthApi\AuthApiException;
 use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
+use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
 use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiException;
 use GuzzleHttp\Client;
@@ -73,16 +74,9 @@ class DwpApiService
                     'json' => $postBody
                 ]
             );
-
             $responseArray = json_decode($response->getBody()->getContents(), true);
 
-            return new CitizenResponseDTO(
-                $responseArray
-            );
         } catch (ClientException $clientException) {
-
-//            die(json_encode($clientException->getResponse()->getBody()));
-
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
                 $this->authCount < 2
@@ -98,6 +92,9 @@ class DwpApiService
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }
+        return new CitizenResponseDTO(
+            $responseArray
+        );
     }
 
     public function constructCitizenRequestBody(
@@ -132,5 +129,48 @@ class DwpApiService
         $nino = str_replace(" ", "", $nino);
 
         return substr($nino, strlen($nino) - 4, strlen($nino));
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws DwpApiException
+     * @psalm-suppress InvalidReturnType
+     */
+    public function makeCitizenDetailsRequest(
+        DetailsRequestDTO $detailsRequestDTO
+    ): DetailsResponseDTO {
+        $this->authCount++;
+        try {
+
+            $uri = sprintf('/%s', $detailsRequestDTO->id());
+
+            $response = $this->guzzleClientCitizen->request(
+                'GET',
+                $uri,
+                [
+                    'headers' => $this->makeHeaders(),
+                ]
+            );
+            $responseArray = json_decode($response->getBody()->getContents(), true);
+
+        } catch (ClientException $clientException) {
+            if (
+                $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
+                $this->authCount < 2
+            ) {
+                $this->authApiService->authenticate();
+                $this->makeCitizenDetailsRequest($detailsRequestDTO);
+            } else {
+                $response = $clientException->getResponse();
+                $responseBodyAsString = $response->getBody()->getContents();
+                $this->logger->error('GuzzleDwpApiException: ' . $responseBodyAsString);
+                throw $clientException;
+            }
+        } catch (\Exception $exception) {
+            throw new DwpApiException($exception->getMessage());
+        }
+        return new DetailsResponseDTO(
+            $responseArray
+        );
     }
 }
