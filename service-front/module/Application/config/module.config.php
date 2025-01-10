@@ -619,6 +619,36 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_confirm_donors' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/confirm-donors',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'confirmDonors',
+                            ],
+                        ],
+                    ],
+                    'voucher_add_donor' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/add-donor',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'addDonor',
+                            ],
+                        ],
+                    ],
+                    'voucher_remove_lpa' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'removeLpa',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
