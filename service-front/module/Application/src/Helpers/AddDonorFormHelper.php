@@ -60,6 +60,18 @@ class AddDonorFormHelper
     ) {
     }
 
+    private static function formatDate(
+        string $date,
+        string $inputFormat = 'Y-m-d',
+        string $outputFormat = 'd M Y'
+    ): string {
+        $formattedDate = DateTime::createFromFormat($inputFormat, $date);
+        if (! $formattedDate) {
+            return '';
+        }
+        return $formattedDate->format($outputFormat);
+    }
+
     public static function getDonorNameFromSiriusResponse(array $lpaData): string
     {
         return implode(' ', [
@@ -70,9 +82,8 @@ class AddDonorFormHelper
 
     public static function getDonorDobFromSiriusResponse(array $lpaData): string
     {
-        // this is needed as PHP parses dates with mm/dd/yyyy by default
-        $dob = implode("-", array_reverse(explode("/", $lpaData["opg.poas.sirius"]["donor"]["dob"])));
-        return DateTime::createFromFormat('Y-m-d', $dob)->format('d M Y');
+        $dob = $lpaData["opg.poas.sirius"]["donor"]["dob"];
+        return self::formatDate($dob, 'd/m/Y', 'd M Y');
     }
 
     public static function getDonorAddressFromSiriusResponse(array $lpaData): array
@@ -155,7 +166,7 @@ class AddDonorFormHelper
                     ],
                     [
                         "type" => ucfirst($match['type']) . " date of birth",
-                        "value" => DateTime::createFromFormat('Y-m-d', $match["dob"])->format('d M Y')
+                        "value" => self::formatDate($match['dob'])
                     ]
                 ];
             } else {

@@ -15,30 +15,76 @@ class AddDonorFormHelperTest extends TestCase
     private VoucherMatchLpaActorHelper&MockObject $matchHelperMock;
     private AddDonorFormHelper $addDonorFormHelper;
 
-    public static array $baseLpa = [
-        'opg.poas.sirius' => [
-            'donor' => [
-                'firstname' => 'First name',
-                'surname' => 'LastName',
-                'dob' => '10/02/1990',
-                'addressLine1' => '123 Fakestreet',
-                'town' => 'faketown',
-                'postcode' => 'FA2 3KE'
-            ]
-        ]
+    public static string $firstName = 'Joe';
+    public static string $lastName = 'Blogs';
+    public static string $fullName = 'Joe Blogs';
+    public static string $dobSiriusFmt = '10/02/1990';
+    public static string $dobNormalFmt = '1990-02-10';
+    public static string $dobLongFmt = '10 Feb 1990';
+    public static array $address = [
+        'line1' => '123 Fakestreet',
+        'line2' => '',
+        'line3' => '',
+        'town' => 'faketown',
+        'postcode' => 'FA2 3KE',
+        'country' => ''
     ];
 
-    public static array $baseDetailsData = [
-        'firstName' => 'Voucher',
-        'lastName' => 'McVoucher',
-        'dob' => '1990-11-15',
-        'address' => [
-            'line1' => '321 Pretend Road',
-            'town' => 'NotReal',
-            'postcode' => 'NR9 3PR'
-        ],
-        'lpas' => ['M-0000-0000-0000'],
-    ];
+    public static string $cpMatchMessage = 'There is a certificate provider called Joe Blogs named on this LPA. ' .
+        'A certificate provider cannot vouch for the identity of a donor. ' .
+        'Confirm that these are two different people with the same name.';
+
+    public static function getLpa(array $additionalKeys = []): array
+    {
+        $lpa = [
+            'opg.poas.sirius' => [
+                'donor' => [
+                    'firstname' => self::$firstName,
+                    'surname' => self::$lastName,
+                    'dob' => self::$dobSiriusFmt,
+                    'addressLine1' => self::$address['line1'],
+                    'town' => self::$address['town'],
+                    'postcode' => self::$address['postcode'],
+                ]
+            ]
+        ];
+        return array_merge_recursive($lpa, $additionalKeys);
+    }
+
+    public static function getDetailsData(): array
+    {
+        return [
+            'firstName' => self::$firstName,
+            'lastName' => self::$lastName,
+            'dob' => self::$dobNormalFmt,
+            'address' => self::$address,
+            'lpas' => ['M-0000-0000-0000'],
+        ];
+    }
+
+    public static function getAdditionalRows(string $type): array
+    {
+        if ($type === 'CP') {
+            return [
+                [
+                    'type' => 'Certificate provider name',
+                    'value' => self::$fullName,
+                ]
+            ];
+        } elseif ($type === 'ATTORNEY') {
+            return [
+                [
+                    'type' => 'Attorney name',
+                    'value' => self::$fullName,
+                ],
+                [
+                    'type' => 'Attorney date of birth',
+                    'value' => self::$dobLongFmt,
+                ]
+            ];
+        }
+        return [];
+    }
 
     public function setUp(): void
     {
@@ -51,14 +97,14 @@ class AddDonorFormHelperTest extends TestCase
 
     public function testGetDonorNameFromSiriusResponse(): void
     {
-        $response = $this->addDonorFormHelper->getDonorNameFromSiriusResponse(self::$baseLpa);
-        $this->assertEquals('First name LastName', $response);
+        $response = $this->addDonorFormHelper->getDonorNameFromSiriusResponse(self::getLpa());
+        $this->assertEquals(self::$fullName, $response);
     }
 
     public function testGetDonorDobFromSiriusResponse(): void
     {
-        $response = $this->addDonorFormHelper->getDonorDobFromSiriusResponse(self::$baseLpa);
-        $this->assertEquals('10 Feb 1990', $response);
+        $response = $this->addDonorFormHelper->getDonorDobFromSiriusResponse(self::getLpa());
+        $this->assertEquals(self::$dobLongFmt, $response);
     }
 
     /**
@@ -66,8 +112,9 @@ class AddDonorFormHelperTest extends TestCase
      */
     public function testCheckLpaStatus(array $lpaStoreData, array $expectedResult): void
     {
-        $lpaData = self::$baseLpa;
-        $lpaData['opg.poas.lpastore'] = $lpaStoreData;
+        $lpaData = self::getLpa([
+            'opg.poas.lpastore' => $lpaStoreData
+        ]);
         $response = $this->addDonorFormHelper->checkLpaStatus($lpaData);
         $this->assertEquals($expectedResult, $response);
     }
@@ -115,7 +162,6 @@ class AddDonorFormHelperTest extends TestCase
             ->matchHelperMock
             ->expects(self::once())
             ->method('checkMatch')
-            // ->with($this->uuid)
             ->willReturn($checkMatchReturn);
 
         if (! is_null($checkAddressReturn)) {
@@ -134,12 +180,8 @@ class AddDonorFormHelperTest extends TestCase
                 ->willReturn($compareNameReturn);
         }
 
-        $lpa = self::$baseLpa;
-        if (! is_null($lpastore)) {
-            $lpa['opg.poas.lpastore'] = $lpastore;
-        }
-
-        $response = $this->addDonorFormHelper->checkLpaIdMatch($lpa, self::$baseDetailsData);
+        $lpa = self::getLpa(['opg.poas.lpastore' => $lpastore]);
+        $response = $this->addDonorFormHelper->checkLpaIdMatch($lpa, self::getDetailsData());
         $this->assertEquals($expectedResponse, $response);
     }
 
@@ -153,43 +195,30 @@ class AddDonorFormHelperTest extends TestCase
             "additionalRows" => [],
         ];
 
-        $nameDobMatchDonor = [
-            'firstName' => 'Matchfirst',
-            'lastName' => 'MatchLast',
-            'dob' => '1990-10-11',
-            'type' => LpaActorTypes::DONOR->value,
+        $baseMatch = [
+            'firstName' => self::$firstName,
+            'lastName' => self::$lastName,
+            'dob' => self::$dobNormalFmt,
+            'type' => '',
         ];
 
-        $nameDobMatchDonorResponse = array_merge($emptyResponse, [
+        $nameDobMatchDonor = array_merge($baseMatch, ['type' => LpaActorTypes::DONOR->value]);
+        $nameDobMatchAttorney = array_merge($baseMatch, ['type' => LpaActorTypes::ATTORNEY->value]);
+
+        $donorMatchResponse = array_merge($emptyResponse, [
             'error' => true,
             'message' => 'The person vouching cannot have the same name and date of birth as the donor.',
             'warning' => 'donor-match'
         ]);
 
-        $nameDobMatchAttorney = [
-            'firstName' => 'Matchfirst',
-            'lastName' => 'MatchLast',
-            'dob' => '1990-10-11',
-            'type' => LpaActorTypes::ATTORNEY->value,
-        ];
-
-        $nameDobMatchAttorneyResponse = array_merge($emptyResponse, [
+        $attorneyMatchResponse = array_merge($emptyResponse, [
             'error' => true,
             'message' => 'The person vouching cannot have the same name and date of birth as an attorney.',
             'warning' => 'actor-match',
-            'additionalRows' => [
-                [
-                    'type' => 'Attorney name',
-                    'value' => 'Matchfirst MatchLast'
-                ],
-                [
-                    'type' => 'Attorney date of birth',
-                    'value' => '11 Oct 1990'
-                ]
-            ]
+            'additionalRows' => self::getAdditionalRows('ATTORNEY')
         ]);
 
-        $addressMatchDonorResponse = array_merge($emptyResponse, [
+        $addressMatchResponse = array_merge($emptyResponse, [
             'error' => true,
             'message' => 'The person vouching cannot live at the same address as the donor.',
             'warning' => 'address-match'
@@ -197,33 +226,26 @@ class AddDonorFormHelperTest extends TestCase
 
         $nameMatchCpLpaStore = [
             'certificateProvider' => [
-                'firstNames' => 'CPName',
-                'lastName' => 'CPSurname'
+                'firstNames' => self::$firstName,
+                'lastName' => self::$lastName,
             ]
             ];
 
         $nameMatchCpResponse = array_merge($emptyResponse, [
-            'message' => 'There is a certificate provider called CPName CPSurname named on this LPA. ' .
-                'A certificate provider cannot vouch for the identity of a donor. ' .
-                'Confirm that these are two different people with the same name.',
+            'message' => self::$cpMatchMessage,
             'warning' => 'actor-match',
-            'additionalRows' => [
-                [
-                    'type' => 'Certificate provider name',
-                    'value' => 'CPName CPSurname'
-                ]
-            ]
+            'additionalRows' => self::getAdditionalRows('CP'),
         ]);
 
         return [
             // no matches
             [false, false, false, null, $emptyResponse],
             // match on name and dob with DONOR
-            [$nameDobMatchDonor, null, null, null, $nameDobMatchDonorResponse],
+            [$nameDobMatchDonor, null, null, null, $donorMatchResponse],
             // match on name and dob with ATTORNEY
-            [$nameDobMatchAttorney, null, null, null, $nameDobMatchAttorneyResponse],
+            [$nameDobMatchAttorney, null, null, null, $attorneyMatchResponse],
             // match on address with DONOR
-            [false, true, null, null, $addressMatchDonorResponse],
+            [false, true, null, null, $addressMatchResponse],
             // match on name with CP
             [false, false, true, $nameMatchCpLpaStore, $nameMatchCpResponse],
         ];
@@ -257,7 +279,7 @@ class AddDonorFormHelperTest extends TestCase
                 ->willReturnOnConsecutiveCalls(...$checkLpaIdMatchReturns);
         }
 
-        $response = $helper->processLpas($lpasData, self::$baseDetailsData);
+        $response = $helper->processLpas($lpasData, self::getDetailsData());
         $this->assertEquals($expectedResponse, $response);
     }
 
@@ -273,16 +295,9 @@ class AddDonorFormHelperTest extends TestCase
         ];
 
         $baseResponseDonorInfo = array_merge($baseResponse, [
-            'donorName' => 'First name LastName',
-            'donorDob' => '10 Feb 1990',
-            'donorAddress' => [
-                'line1' => '123 Fakestreet',
-                'line2' => '',
-                'line3' => '',
-                'town' => 'faketown',
-                'postcode' => 'FA2 3KE',
-                'country' => ''
-            ],
+            'donorName' => self::$fullName,
+            'donorDob' => self::$dobLongFmt,
+            'donorAddress' => self::$address,
         ]);
 
         $baseCheckLpaStatusResponse = [
@@ -298,19 +313,6 @@ class AddDonorFormHelperTest extends TestCase
             "additionalRows" => [],
         ];
 
-        $noLpaResopnse = array_merge($baseResponse, [
-            'problem' => true,
-            'message' => 'No LPA Found.'
-        ]);
-
-        $lpaOnIdCheck = self::$baseLpa;
-        $lpaOnIdCheck['opg.poas.sirius']['uId'] = 'M-0000-0000-0000';
-
-        $lpaOnIdCheckResponse = array_merge($baseResponse, [
-            'problem' => true,
-            'message' => 'This LPA has already been added to this identity check.'
-        ]);
-
         $problemStatusResponse = [
             'problem' => true,
             'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
@@ -321,34 +323,14 @@ class AddDonorFormHelperTest extends TestCase
             'error' => true,
             'warning' => 'actor-match',
             'message' => 'The person vouching cannot have the same name and date of birth as an attorney.',
-            'additionalRows' => [
-                [
-                    'type' => 'Attorney name',
-                    'value' => 'some name'
-                ],
-                [
-                    'type' => 'Attorney date of birth',
-                    'value' => '11 Jan 1980'
-                ]
-            ],
+            'additionalRows' => self::getAdditionalRows('ATTORNEY')
         ];
 
-        $cp_message = 'There is a certificate provider called some name named on this LPA. ' .
-            'A certificate provider cannot vouch for the identity of a donor. ' .
-            'Confirm that these are two different people with the same name.';
-
-        $warningIdCheckResponse = [
-            'problem' => false,
-            'error' => false,
+        $warningIdCheckResponse = array_merge($baseCheckLpaIdMatchResponse, [
             'warning' => 'actor-match',
-            'message' => $cp_message,
-            'additionalRows' => [
-                [
-                    'type' => 'Certificate provider name',
-                    'value' => 'some name'
-                ],
-            ],
-        ];
+            'message' => self::$cpMatchMessage,
+            'additionalRows' => self::getAdditionalRows('CP'),
+        ]);
 
         $singleProblemResponse = array_merge($baseResponse, [
             'problem' => true,
@@ -360,21 +342,58 @@ class AddDonorFormHelperTest extends TestCase
             'message' => 'These LPAs cannot be added.',
         ]);
 
-        $lpaOne = self::$baseLpa;
-        $lpaOne['opg.poas.sirius']['uId'] = 'M-1111-1111-1111';
-        $lpaOne['opg.poas.sirius']['caseSubtype'] = 'personal-welfare';
+        $lpaOne = self::getLpa([
+            'opg.poas.sirius' => [
+                'uId' => 'M-1111-1111-1111',
+                'caseSubtype' => 'personal-welfare'
+            ]
+        ]);
 
-        $lpaTwo = self::$baseLpa;
-        $lpaTwo['opg.poas.sirius']['uId'] = 'M-2222-2222-2222';
-        $lpaTwo['opg.poas.sirius']['caseSubtype'] = 'property-and-affairs';
+        $lpaOneResponse = array_merge($baseCheckLpaIdMatchResponse, [
+            'uId' => 'M-1111-1111-1111',
+            'type' => 'PW'
+        ]);
+
+        $lpaTwo = self::getLpa([
+            'opg.poas.sirius' => [
+                'uId' => 'M-2222-2222-2222',
+                'caseSubtype' => 'property-and-affairs'
+            ]
+        ]);
+
+        $lpaTwoResponse = array_merge($baseCheckLpaIdMatchResponse, [
+            'uId' => 'M-2222-2222-2222',
+            'type' => 'PA'
+        ]);
 
         return [
             // no LPAs
-            [[], null, null, $noLpaResopnse],
+            [
+                [],
+                null,
+                null,
+                array_merge($baseResponse, [
+                    'problem' => true,
+                    'message' => 'No LPA Found.'
+                ])
+            ],
             // lpa already on Id Check
-            [[$lpaOnIdCheck], null, null, $lpaOnIdCheckResponse],
+            [
+                [self::getLpa(['opg.poas.sirius' => ['uId' => 'M-0000-0000-0000']])],
+                null,
+                null,
+                array_merge($baseResponse, [
+                    'problem' => true,
+                    'message' => 'This LPA has already been added to this identity check.'
+                ])
+            ],
             // single problem LPA
-            [[$lpaOne], [$problemStatusResponse], null, $singleProblemResponse],
+            [
+                [$lpaOne],
+                [$problemStatusResponse],
+                null,
+                $singleProblemResponse
+            ],
             // multiple problem LPAs
             [
                 [$lpaOne, $lpaTwo],
@@ -389,11 +408,7 @@ class AddDonorFormHelperTest extends TestCase
                 [$baseCheckLpaIdMatchResponse],
                 array_merge($baseResponseDonorInfo, [
                     'lpasCount' => 1,
-                    'lpas' => [ 1 => array_merge($baseCheckLpaIdMatchResponse, [
-                            'uId' => 'M-2222-2222-2222',
-                            'type' => 'PA'
-                        ])
-                    ]
+                    'lpas' => [ 1 => $lpaTwoResponse]
                 ])
             ],
             // one error
@@ -403,13 +418,7 @@ class AddDonorFormHelperTest extends TestCase
                 [$errorIdCheckResponse],
                 array_merge($baseResponseDonorInfo, $errorIdCheckResponse, [
                     'lpasCount' => 1,
-                    'lpas' => [
-                        array_merge($errorIdCheckResponse, [
-                            'uId' => 'M-1111-1111-1111',
-                            'type' => 'PW',
-                            'error' => true,
-                        ])
-                    ],
+                    'lpas' => [array_merge($lpaOneResponse, $errorIdCheckResponse)],
                 ])
             ],
             // multiple errors
@@ -429,12 +438,7 @@ class AddDonorFormHelperTest extends TestCase
                 [$errorIdCheckResponse, $baseCheckLpaIdMatchResponse],
                 array_merge($baseResponseDonorInfo, [
                     'lpasCount' => 1,
-                    'lpas' => [ 1 =>
-                        array_merge($baseCheckLpaIdMatchResponse, [
-                            'uId' => 'M-2222-2222-2222',
-                            'type' => 'PA',
-                        ])
-                    ],
+                    'lpas' => [ 1 => $lpaTwoResponse],
                 ])
             ],
             // happy path with warnings
@@ -445,30 +449,15 @@ class AddDonorFormHelperTest extends TestCase
                 array_merge($baseResponseDonorInfo, [
                     "lpasCount" => 2,
                     'warning' => 'actor-match',
-                    'message' => $cp_message,
-                    'additionalRows' => [
-                        [
-                            'type' => 'Certificate provider name',
-                            'value' => 'some name',
-                        ]
-                    ],
+                    'message' => self::$cpMatchMessage,
+                    'additionalRows' => self::getAdditionalRows('CP'),
                     "lpas" => [
-                        array_merge($baseCheckLpaIdMatchResponse, [
-                            'uId' => 'M-1111-1111-1111',
-                            'type' => 'PW',
+                        array_merge($lpaOneResponse, [
                             'warning' => 'actor-match',
-                            'message' => $cp_message,
-                            'additionalRows' => [
-                                [
-                                    'type' => 'Certificate provider name',
-                                    'value' => 'some name',
-                                ]
-                            ],
+                            'message' => self::$cpMatchMessage,
+                            'additionalRows' => self::getAdditionalRows('CP'),
                         ]),
-                        array_merge($baseCheckLpaIdMatchResponse, [
-                            'uId' => 'M-2222-2222-2222',
-                            'type' => 'PA'
-                        ]),
+                        $lpaTwoResponse,
                     ],
                 ])
             ],
@@ -479,16 +468,7 @@ class AddDonorFormHelperTest extends TestCase
                 [$baseCheckLpaIdMatchResponse, $baseCheckLpaIdMatchResponse],
                 array_merge($baseResponseDonorInfo, [
                     "lpasCount" => 2,
-                    "lpas" => [
-                        array_merge($baseCheckLpaIdMatchResponse, [
-                            'uId' => 'M-1111-1111-1111',
-                            'type' => 'PW'
-                        ]),
-                        array_merge($baseCheckLpaIdMatchResponse, [
-                            'uId' => 'M-2222-2222-2222',
-                            'type' => 'PA'
-                        ]),
-                    ],
+                    "lpas" => [$lpaOneResponse, $lpaTwoResponse],
                 ])
             ],
         ];
