@@ -28,6 +28,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 
+
 class VouchingFlowController extends AbstractActionController
 {
     use FormBuilder;
@@ -450,7 +451,6 @@ class VouchingFlowController extends AbstractActionController
 
             if (isset($formData['lpas'])) {
                 if (isset($formData['declaration'])) {
-
                     foreach ($formData['lpas'] as $lpa) {
                         $this->opgApiService->updateCaseWithLpa($uuid, $lpa);
                     }
