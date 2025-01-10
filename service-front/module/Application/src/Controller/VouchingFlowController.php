@@ -450,6 +450,7 @@ class VouchingFlowController extends AbstractActionController
 
             if (isset($formData['lpas'])) {
                 if (isset($formData['declaration'])) {
+
                     foreach ($formData['lpas'] as $lpa) {
                         $this->opgApiService->updateCaseWithLpa($uuid, $lpa);
                     }

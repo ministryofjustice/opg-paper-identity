@@ -13,7 +13,6 @@ use Application\Enums\LpaActorTypes;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Application\Enums\IdMethod as IdMethodEnum;
-
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
@@ -1091,8 +1090,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     ["span[id=declarationError]", "Confirm declaration to continue"],
                 ]
             ]
-
-
         ];
     }
 
@@ -1109,23 +1106,16 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->opgApiServiceMock
-            ->expects($this->any())
-            ->method('updateCaseWithLpa')
-            ->with($this->uuid, 'lpa1');
-
-        $this
-            ->opgApiServiceMock
-            ->expects($this->any())
-            ->method('updateCaseWithLpa')
-            ->with($this->uuid, 'lpa2');
-
+            ->expects($this->exactly(2))
+            ->method('updateCaseWithLpa');
 
         $this->dispatch("/$this->uuid/{$this->routes['addDonor']}", 'POST', [
+            'lpa' => 'M-AAAA-AAAA-AAAA',
             'lpas' => ['lpa1', 'lpa2'],
             'declaration' => 'declaration_confirmed',
         ]);
-        // $this->assertResponseStatusCode(302);
-        // $this->assertRedirectTo("/$this->uuid/{$this->routes['confirmDonors']}");
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['confirmDonors']}");
     }
 
     public function testRemoveLpaAction(): void
@@ -1136,9 +1126,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('updateCaseWithLpa')
             ->with($this->uuid, 'M-AAAA-AAAA-AAAA', true);
 
-        $this->dispatch("/{$this->uuid}/remove-lpa/M-AAAA-AAAA-AAAA", "GET");
+        $this->dispatch("/{$this->uuid}/vouching/remove-lpa/M-AAAA-AAAA-AAAA", "GET");
         $this->assertResponseStatusCode(302);
-        # TODO: why is this failing!!!
-        // $this->assertRedirectTo("/$this->uuid/{$this->routes['confirmDonors']}");
+        $this->assertRedirectTo("/$this->uuid/{$this->routes['confirmDonors']}");
     }
 }
