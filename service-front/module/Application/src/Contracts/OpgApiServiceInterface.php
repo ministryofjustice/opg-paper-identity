@@ -34,13 +34,13 @@ namespace Application\Contracts;
  *     id_method?: string,
  *     id_route?: string,
  *   },
- *   searchPostcode?: string,
  *   counterService?: array{
  *     selectedPostOffice: string,
  *     notificationState: string,
  *     notificationsAuthToken: string,
  *     state: string,
  *     result: bool,
+ *     searchPostcode: string
  *   },
  *   caseProgress?: array{
  *       abandonedFlow?: array{
