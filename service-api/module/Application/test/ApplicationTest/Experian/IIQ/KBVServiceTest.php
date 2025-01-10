@@ -11,6 +11,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\AnswersOutcome;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\IdentityIQ;
 use Application\Model\Entity\IIQControl;
 use Application\Model\Entity\KBVQuestion;
 use PHPUnit\Framework\TestCase;
@@ -179,7 +180,9 @@ class KBVServiceTest extends TestCase
 
         $caseData = CaseData::fromArray([
             'id' => $uuid,
-            'kbvQuestions' => $questions,
+            'identityIQ' => [
+                'kbvQuestions' => $questions,
+            ]
         ]);
 
         $queryHandler->expects($this->once())

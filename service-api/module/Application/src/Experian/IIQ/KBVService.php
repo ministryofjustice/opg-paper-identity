@@ -59,8 +59,8 @@ class KBVService implements KBVServiceInterface
             throw new RuntimeException('Case not found');
         }
 
-        if (count($caseData->kbvQuestions)) {
-            return $caseData->kbvQuestions;
+        if ($caseData->identityIQ && count($caseData->identityIQ->kbvQuestions)) {
+            return $caseData->identityIQ->kbvQuestions;
         }
 
         $saaRequest = $this->configBuilder->buildSAARequest($caseData);
@@ -70,13 +70,13 @@ class KBVService implements KBVServiceInterface
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
-            'kbvQuestions',
+            'identityIQ.kbvQuestions',
             $formattedQuestions
         );
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
-            'iiqControl',
+            'identityIQ.iiqControl',
             IIQControl::fromArray([
                 'urn' => $questions['control']['URN'],
                 'authRefNo' => $questions['control']['AuthRefNo'],
@@ -97,12 +97,12 @@ class KBVService implements KBVServiceInterface
             throw new RuntimeException('Case not found');
         }
 
-        if (! count($caseData->kbvQuestions)) {
+        if (! $caseData->identityIQ || ! count($caseData->identityIQ->kbvQuestions)) {
             throw new RuntimeException('KBV questions have not been created yet');
         }
 
         $iiqFormattedAnswers = [];
-        foreach ($caseData->kbvQuestions as &$question) {
+        foreach ($caseData->identityIQ->kbvQuestions as &$question) {
             if (key_exists($question->externalId, $answers)) {
                 $iiqFormattedAnswers[] = [
                     'experianId' => $question->externalId,
@@ -121,16 +121,16 @@ class KBVService implements KBVServiceInterface
 
         if (isset($result['questions'])) {
             $questions = [
-                ...$caseData->kbvQuestions,
+                ...$caseData->identityIQ->kbvQuestions,
                 ...$this->formatQuestions($result['questions']),
             ];
         } else {
-            $questions = $caseData->kbvQuestions;
+            $questions = $caseData->identityIQ->kbvQuestions;
         }
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
-            'kbvQuestions',
+            'identityIQ.kbvQuestions',
             $questions
         );
 
