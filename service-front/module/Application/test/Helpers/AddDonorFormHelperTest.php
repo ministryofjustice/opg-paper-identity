@@ -315,7 +315,7 @@ class AddDonorFormHelperTest extends TestCase
 
         $problemStatusResponse = [
             'problem' => true,
-            'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
+            'message' => 'problem message',
         ];
 
         $errorIdCheckResponse = [
@@ -332,10 +332,7 @@ class AddDonorFormHelperTest extends TestCase
             'additionalRows' => self::getAdditionalRows('CP'),
         ]);
 
-        $singleProblemResponse = array_merge($baseResponse, [
-            'problem' => true,
-            'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.',
-        ]);
+        $singleProblemResponse = array_merge($baseResponse, $problemStatusResponse);
 
         $multipleProblemResponse = array_merge($baseResponse, [
             'problem' => true,

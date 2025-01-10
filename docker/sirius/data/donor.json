@@ -1,5 +1,4 @@
 {
-  "uId": "M-XYXY-YAGA-35G3",
   "opg.poas.lpastore": {
     "attorneys": [
       {
@@ -120,24 +119,9 @@
       "dob": "03/09/1986",
       "firstname": "Lee",
       "surname": "Manthrope",
-      "town": "Southampton",
-      "postcode": "SO15 3AA"
+      "town": "Southampton"
     },
     "id": 31944000,
-    "uId": "M-XYXY-YAGA-35G3",
-    "linkedDigitalLpas": [
-      {
-          "uId": "M-XYXY-YAGA-35G4",
-          "caseSubtype": "personal-welfare",
-          "createdDate": "",
-          "status": ""
-      },
-      {
-          "uId": "M-XYXY-YAGA-35G0",
-          "caseSubtype": "personal-welfare",
-          "createdDate": "",
-          "status": ""
-      }
-    ]
+    "uId": "M-XYXY-YAGA-35G3"
   }
 }
