@@ -110,12 +110,12 @@ class DwpApiService
                 "type" => "Match",
                 "attributes" => [
                     "dateOfBirth" => "1986-09-03",
-                    "ninoFragment" => "233C",
+                    "ninoFragment" => "456A",
                     "firstName" => "Lee",
                     "lastName" => "Manthrope",
                     "postcode" => "SO15 3AA",
                     "contactDetails" => [
-                        "lee.manthrope@example.com"
+                        ""
                     ]
                 ]
             ]

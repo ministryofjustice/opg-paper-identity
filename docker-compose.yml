@@ -37,8 +37,6 @@ services:
       retries: 3
     volumes:
       - ./docker/dwp:/opt/imposter/config
-    ports:
-      - 8089:8080
 
   yoti-mock:
     image: paper-identity/yoti-mock

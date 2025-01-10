@@ -68,13 +68,13 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-toke
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-match-endpoint \
     --description "DWP match api" \
-        --secret-string "empty"
+        --secret-string "http://dwp-mock/"
 
 awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-endpoint \
     --description "DWP Citizen endpoint" \
-    --secret-string "empty"
+    --secret-string "http://dwp-mock/"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \
     --description "DWP certificate" \
@@ -98,7 +98,14 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-clie
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-bundle \
     --description "DWP OPG certificate bundle" \
-    --secret-string "empty"
+    --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----
+                     ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZW
+                     QyNTUxOQAAACAS+mdlcmFsZG9yaW9yZGFuQGRpZ2l0YWwuanIVa2HTmJfp+li4OHvb8a8U
+                     fp+li4OHvb8a8Uz5e0t44qB3jpTSKXCigAAAEDAk1ZBa/dkpaLyww3E7N73bHZPDGGQmID
+                     BE4XLd929mBL4hVrYdOYl+n6WLg4e9vxrxTPl7S3jioHeOlNIpcKKAAAALmpvaG4uZml0e
+                     z5e0t44qB3jpTSKXCigAAALhl+vBZZfrwWQAAAAtzc2gtZWQyNTUxOQAAACAS+IVa2HTmJ
+                     VzdGljZS5nb3YudWsBAgMEBQYH
+                     -----END OPENSSH PRIVATE KEY----"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-private-key \
     --description "Experian Crosscore Tenant ID" \

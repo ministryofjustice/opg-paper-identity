@@ -14,16 +14,22 @@ class CitizenRequestDTO
     private $dob;
     private $postcode;
     private $addressLine1;
+    private $nino;
 
     public function __construct(
         protected array $caseData
     ) {
         try {
-            $this->postcode = $this->caseData['address']['postcode'];
-            $this->addressLine1 = $this->caseData['address']['line1'];
-            $this->dob = $this->caseData['dob'];
-            $this->firstName = $this->caseData['firstName'];
-            $this->lastName = $this->caseData['lastName'];
+            if($this->caseData['idMethodIncludingNation']['id_method'] !== 'NATIONAL_INSURANCE_NUMBER') {
+                throw new DwpApiException('Identity method is not a national insurance number');
+            }
+
+            $this->postcode = $this->caseData['claimedIdentity']['address']['postcode'];
+            $this->addressLine1 = $this->caseData['claimedIdentity']['address']['line1'];
+            $this->dob = $this->caseData['claimedIdentity']['dob'];
+            $this->firstName = $this->caseData['claimedIdentity']['firstName'];
+            $this->lastName = $this->caseData['claimedIdentity']['lastName'];
+            $this->nino = $this->caseData['idMethodIncludingNation']['id_value'];
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }
@@ -54,6 +60,11 @@ class CitizenRequestDTO
         return $this->addressLine1;
     }
 
+    public function nino(): string
+    {
+        return $this->nino;
+    }
+
     public function toArray(): array
     {
         return [
@@ -61,7 +72,8 @@ class CitizenRequestDTO
             'lastName' => $this->lastName(),
             'dob' => $this->dob(),
             'postcode' => $this->postcode(),
-            'addressLine1' => $this->addressLine1()
+            'addressLine1' => $this->addressLine1(),
+            'nino' => $this->nino()
         ];
     }
 }

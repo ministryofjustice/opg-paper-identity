@@ -17,57 +17,91 @@ class CitizenRequestDTOTest extends TestCase
         parent::setUp();
 
         $this->citizenRequestDTO = new CitizenRequestDTO([
-            "firstName" => "Mary Ann",
-            "lastName" => "Chapman",
-            "dob" => "1949-01-01",
+            "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
             "personType" => "donor",
-            "address" => [
-                "line1" => "1 Street",
-                "line2" => "Road",
-                "town" => "town",
-                "postcode" => "SW1B 1BB",
-                "country" => "UK"
-            ],
             "lpas" => [
-                "M-XYXY-YAGA-35G3",
-                "M-VGAS-OAGA-34G9"
+                "M-XYXY-YAGA-35G3"
+            ],
+            "documentComplete" => false,
+            "identityCheckPassed" => null,
+            "searchPostcode" => null,
+            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
+            "kbvQuestions" => [
+            ],
+            "idMethodIncludingNation" => [
+                "id_method" => "NATIONAL_INSURANCE_NUMBER",
+                "id_route" => "TELEPHONE",
+                "id_country" => "GBR",
+                "id_value" => "NP123456A"
+            ],
+            "caseProgress" => [
+                "abandonedFlow" => null,
+                "docCheck" => [
+                    "idDocument" => "NATIONAL_INSURANCE_NUMBER",
+                    "state" => true
+                ],
+                "kbvs" => null,
+                "fraudScore" => [
+                    "decision" => "ACCEPT",
+                    "score" => 265
+                ]
+            ],
+            "claimedIdentity" => [
+                "dob" => "1986-09-03",
+                "firstName" => "Lee",
+                "lastName" => "Manthrope",
+                "address" => [
+                    "postcode" => "SO15 3AA",
+                    "country" => "GB",
+                    "line3" => "",
+                    "town" => "Southamption",
+                    "line2" => "",
+                    "line1" => "18 BOURNE COURT"
+                ],
+                "professionalAddress" => null
             ]
         ]);
     }
 
     public function testFirstName(): void
     {
-        $this->assertEquals('Mary Ann', $this->citizenRequestDTO->firstName());
+        $this->assertEquals('Lee', $this->citizenRequestDTO->firstName());
     }
 
     public function testLastName(): void
     {
-        $this->assertEquals('Chapman', $this->citizenRequestDTO->lastName());
+        $this->assertEquals('Manthrope', $this->citizenRequestDTO->lastName());
     }
 
     public function testDob(): void
     {
-        $this->assertEquals("1949-01-01", $this->citizenRequestDTO->dob());
+        $this->assertEquals("1986-09-03", $this->citizenRequestDTO->dob());
     }
 
     public function testPostcode(): void
     {
-        $this->assertEquals("SW1B 1BB", $this->citizenRequestDTO->postcode());
+        $this->assertEquals("SO15 3AA", $this->citizenRequestDTO->postcode());
     }
 
     public function testAddressLine1(): void
     {
-        $this->assertEquals('1 Street', $this->citizenRequestDTO->addressLine1());
+        $this->assertEquals('18 BOURNE COURT', $this->citizenRequestDTO->addressLine1());
+    }
+
+    public function testNino(): void
+    {
+        $this->assertEquals('NP123456A', $this->citizenRequestDTO->nino());
     }
 
     public function testArray(): void
     {
         $this->assertEquals([
-            'firstName' => 'Mary Ann',
-            'lastName' => 'Chapman',
-            'dob' => "1949-01-01",
-            'postcode' => "SW1B 1BB",
-            'addressLine1' => '1 Street',
+            'firstName' => 'Lee',
+            'lastName' => 'Manthrope',
+            'dob' => "1986-09-03",
+            'postcode' => "SO15 3AA",
+            'addressLine1' => '18 BOURNE COURT',
+            'nino' => 'NP123456A'
         ], $this->citizenRequestDTO->toArray());
     }
 }

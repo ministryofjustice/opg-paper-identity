@@ -88,19 +88,15 @@ class AuthApiService
         RequestDTO $dwpAuthRequestDTO
     ): ResponseDTO {
         try {
-
-
-            //            die(json_encode($this->client->getConfig()));
-
             $response = $this->client->request(
                 'POST',
-                '/',
+                'citizen-information/oauth2/token',
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $dwpAuthRequestDTO->toArray(),
-//                    'cert' => $dwpAuthRequestDTO->bundle(),
-//                    'ssl_key' => $dwpAuthRequestDTO->privateKey(),
-//                    'verify' => false
+                    'cert' => $dwpAuthRequestDTO->bundle(),
+                    'ssl_key' => $dwpAuthRequestDTO->privateKey(),
+                    'verify' => false
                 ]
             );
 
