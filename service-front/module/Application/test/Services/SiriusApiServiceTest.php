@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Services;
 
 use Application\Exceptions\PostcodeInvalidException;
+use Application\Exceptions\UidInvalidException;
 use Application\Services\SiriusApiService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -13,6 +14,8 @@ use GuzzleHttp\Psr7\Response;
 use Laminas\Http\Headers;
 use Laminas\Http\Request;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @psalm-suppress DeprecatedMethod
@@ -24,8 +27,9 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthSuccess(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -49,8 +53,10 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthFailureNoCookie(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -63,8 +69,10 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthFailureNoXSRF(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -78,8 +86,10 @@ class SiriusApiServiceTest extends TestCase
     public function testCheckAuthFailureNotAuthed(): void
     {
         $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $sut = new SiriusApiService($clientMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -106,7 +116,10 @@ class SiriusApiServiceTest extends TestCase
     public function testSearchAddressesByPostcodeSuccess(): void
     {
         $clientMock = $this->createMock(Client::class);
-        $sut = new SiriusApiService($clientMock);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -143,7 +156,10 @@ class SiriusApiServiceTest extends TestCase
     public function testSearchAddressesByPostcodeThrowsPostcodeInvalidException(): void
     {
         $clientMock = $this->createMock(Client::class);
-        $sut = new SiriusApiService($clientMock);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -173,7 +189,10 @@ class SiriusApiServiceTest extends TestCase
     public function testSearchAddressesByPostcodeThrowsGenericException(): void
     {
         $clientMock = $this->createMock(Client::class);
-        $sut = new SiriusApiService($clientMock);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -195,5 +214,101 @@ class SiriusApiServiceTest extends TestCase
 
         $this->expectException(GuzzleException::class);
         $sut->searchAddressesByPostcode('SW1A2AA', $request);
+    }
+
+    public function testGetLpaByUid(): void
+    {
+        $Uid = 'M-0000-0000-0000';
+        $lpa = ['lpa'];
+
+        $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
+        $request = new Request();
+        $headers = $request->getHeaders();
+        assert($headers instanceof Headers);
+        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+
+        $clientMock
+            ->expects($this->once())
+            ->method("get")
+            ->with("/api/v1/digital-lpas/$Uid", [
+                'headers' => [
+                    'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
+                    'X-XSRF-TOKEN' => 'abcd',
+                ],
+            ])
+            ->willReturn(new Response(200, [], json_encode($lpa)));
+
+        $result = $sut->getLpaByUid($Uid, $request);
+
+        $this->assertEquals($lpa, $result);
+    }
+
+    public function testGetLpaByUidThrowsValidationException(): void
+    {
+        $Uid = 'invalid-uid';
+
+        $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
+        $request = new Request();
+
+        $this->expectException(UidInvalidException::class);
+        $this->expectExceptionMessage('The LPA needs to be valid in the format M-XXXX-XXXX-XXXX');
+        $sut->getLpaByUid($Uid, $request);
+    }
+
+    public function testGetAllLinkedLpasByUid(): void
+    {
+        $lpas = [
+            'M-0000-0000-0000' => [
+                'opg.poas.sirius' => [
+                    'linkedDigitalLpas' => [
+                        ['uId' => 'M-0000-0000-0001'],
+                        ['uId' => 'M-0000-0000-0002']
+                    ]
+                ]
+            ],
+            'M-0000-0000-0001' => ['lpa1'],
+            'M-0000-0000-0002' => ['lpa2'],
+        ];
+
+        $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
+        $request = new Request();
+        $headers = $request->getHeaders();
+        assert($headers instanceof Headers);
+        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+
+        $expectedHeader = [
+            'headers' => [
+                'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
+                'X-XSRF-TOKEN' => 'abcd',
+            ],
+        ];
+
+        $clientMock
+            ->expects($this->exactly(3))
+            ->method("get")
+            ->willReturnCallback(fn (string $url, array $header) => match (true) {
+                $url === '/api/v1/digital-lpas/M-0000-0000-0000' && $header === $expectedHeader =>
+                    new Response(200, [], json_encode($lpas['M-0000-0000-0000'])),
+                $url === '/api/v1/digital-lpas/M-0000-0000-0001' && $header === $expectedHeader =>
+                    new Response(200, [], json_encode($lpas['M-0000-0000-0001'])),
+                $url === '/api/v1/digital-lpas/M-0000-0000-0002' && $header === $expectedHeader =>
+                    new Response(200, [], json_encode($lpas['M-0000-0000-0002'])),
+                default => self::fail('Did not expect:' . print_r($url, true))
+            });
+
+        $result = $sut->getAllLinkedLpasByUid('M-0000-0000-0000', $request);
+        $this->assertEquals($lpas, $result);
     }
 }
