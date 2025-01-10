@@ -18,7 +18,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
         string $lastName,
         ?string $dob,
         array $lpasData,
-        array $expected_result
+        array | bool $expected_result
     ): void {
         $matchLpaActor = new VoucherMatchLpaActorHelper();
         $result = $matchLpaActor->checkMatch($lpasData, $firstName, $lastName, $dob);
@@ -91,7 +91,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                 "lpasData" => [
                     "opg.poas.sirius" => [],
                 ],
-                "expected_result" => []
+                "expected_result" => false
             ],
             [
                 "firstName" => "donorfirstname",
@@ -102,12 +102,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "opg.poas.lpastore" => $lpaDataLpaStore,
                 ],
                 "expected_result" => [
-                    [
-                        "firstName" => "donorfirstname",
-                        "lastName" => "donorlastname",
-                        "dob" => "1980-01-05",
-                        "type" => LpaActorTypes::DONOR->value,
-                    ],
+                    "firstName" => "donorfirstname",
+                    "lastName" => "donorlastname",
+                    "dob" => "1980-01-05",
+                    "type" => LpaActorTypes::DONOR->value,
                 ]
             ],
             [
@@ -118,7 +116,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "opg.poas.sirius" => $lpaDataSirius,
                     "opg.poas.lpastore" => $lpaDataLpaStore,
                 ],
-                "expected_result" => []
+                "expected_result" => false
             ],
             [
                 "firstName" => "attorneyfirstname",
@@ -129,18 +127,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "opg.poas.lpastore" => $lpaDataLpaStore,
                 ],
                 "expected_result" => [
-                    [
-                        "firstName" => "attorneyfirstname",
-                        "lastName" => "attorneylastname",
-                        "dob" => "1980-01-05",
-                        "type" => LpaActorTypes::ATTORNEY->value,
-                    ],
-                    [
-                        "firstName" => "attorneyfirstname",
-                        "lastName" => "attorneylastname",
-                        "dob" => "1990-01-05",
-                        "type" => LpaActorTypes::ATTORNEY->value,
-                    ],
+                    "firstName" => "attorneyfirstname",
+                    "lastName" => "attorneylastname",
+                    "dob" => "1980-01-05",
+                    "type" => LpaActorTypes::ATTORNEY->value,
                 ],
             ],
             [
@@ -152,12 +142,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "opg.poas.lpastore" => $lpaDataLpaStore,
                 ],
                 "expected_result" => [
-                    [
-                        "firstName" => "attorneyfirstname",
-                        "lastName" => "attorneylastname",
-                        "dob" => "1990-01-05",
-                        "type" => LpaActorTypes::ATTORNEY->value,
-                    ],
+                    "firstName" => "attorneyfirstname",
+                    "lastName" => "attorneylastname",
+                    "dob" => "1990-01-05",
+                    "type" => LpaActorTypes::ATTORNEY->value,
                 ],
             ],
             [
@@ -169,12 +157,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "opg.poas.lpastore" => $lpaDataLpaStore,
                 ],
                 "expected_result" => [
-                    [
-                        "firstName" => "replacementAttorneyfirstname",
-                        "lastName" => "replacementAttorneylastname",
-                        "dob" => "1990-01-05",
-                        "type" => LpaActorTypes::R_ATTORNEY->value,
-                    ],
+                    "firstName" => "replacementAttorneyfirstname",
+                    "lastName" => "replacementAttorneylastname",
+                    "dob" => "1990-01-05",
+                    "type" => LpaActorTypes::R_ATTORNEY->value,
                 ],
             ],
             [
@@ -185,12 +171,10 @@ class VoucherMatchLpaActorHelperTest extends TestCase
                     "opg.poas.sirius" => $lpaDataSirius,
                 ],
                 "expected_result" => [
-                    [
-                        "firstName" => "firstname",
-                        "lastName" => "lastname",
-                        "dob" => "1980-01-05",
-                        "type" => LpaActorTypes::DONOR->value,
-                    ],
+                    "firstName" => "firstname",
+                    "lastName" => "lastname",
+                    "dob" => "1980-01-05",
+                    "type" => LpaActorTypes::DONOR->value,
                 ],
             ],
         ];
@@ -198,7 +182,6 @@ class VoucherMatchLpaActorHelperTest extends TestCase
 
     public static function addressLpaData(): array
     {
-
         $addressOne = [
             'line1' => '123 Fake Street',
             'line2' => '',

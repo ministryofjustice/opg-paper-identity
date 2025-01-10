@@ -1,0 +1,188 @@
+{% extends "layout/layout" %}
+
+{% block beforeMain %}
+    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+{% endblock %}
+
+{% block content %}
+    {% if form.get('lpa').messages %}
+        <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+            <h2 class="govuk-heading-m">There is a problem</h2>
+            <p class="govuk-body" id="validationError">{{ form.get('lpa').messages | join(', ', ' and ') }}</p>
+        </div>
+    {% endif %}
+    {% if lpa_response['problem'] %}
+        <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+            <h2 class="govuk-heading-m">There is a problem</h2>
+            <p class="govuk-body" id="problemMessage">{{ lpa_response['message'] }}</p>
+        </div>
+    {% endif %}
+
+
+    {% if lpa_response['warning'] %}
+        {% if lpa_response['error'] %}
+            <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+                <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                    <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z" />
+                </svg>
+        {% else %}
+            <div class="moj-banner moj-banner--information  govuk-!-width-two-thirds" role="region" aria-label="information">
+                <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                    <path d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8
+                C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z" />
+                </svg>
+        {% endif %}
+            <div class="moj-banner__message" id="warningMessage">{{ lpa_response['message'] }}</div>
+        </div>
+    {% endif %}
+
+    <h1 class="govuk-heading-xl">{% block title %}Vouch or another donor{% endblock %}</h1>
+
+    <form method="POST">
+        <div class="govuk-form-group govuk-!-width-two-thirds {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="event-name">
+                What is the LPA number?
+                </label>
+            </h1>
+            <div id="lpa-number-hint" class="govuk-hint">
+                LPA reference numbers are 12 numbers long.
+                <br>
+                For example: M-0000-0000-0000
+            </div>
+            {% if form.get('lpa').messages %}
+                <p id="lpa-number-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>{{ form.get('lpa').messages | join(', ', ' and ') }}
+                </p>
+            {% endif %}
+            <div>
+                <input
+                class="govuk-input moj-search__input govuk-!-width-two-thirds {% if form.get('lpa').messages %}govuk-input--error{% endif %}"
+                id="lpa"
+                name="lpa"
+                value="{{ form.get('lpa').value }}"
+                type="search"
+                autocomplete="off"
+                aria-describedby="lpa-hint {% if form.get('lpa').messages %}lpa-error{% endif %}"
+                >
+                <input type="submit" class="govuk-button moj-search__button" value="Find LPA">
+            </div>
+        </div>
+    </form>
+    {% if lpa_response and not lpa_response['problem'] %}
+        <div>
+            <table class="govuk-table govuk-!-width-two-thirds">
+                <caption class="govuk-table__caption govuk-table__caption--m" id="lpaCount">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} LPAs found</strong></caption>
+                <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">LPA reference number(s)</th>
+                    <td class="govuk-table__cell">
+                    {% for lpa in lpa_response['lpas'] %}
+                        <span class="app-type-text-colour--{{ lpa['type'] }}">{{ lpa['type'] }}</span>{{ lpa['uId'] }}{% if loop.last == false %}<br>{% endif %}
+                    {% endfor %}
+                    </td>
+                    <td class="govuk-table__cell"></td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Donor name</th>
+                    <td class="govuk-table__cell" id="donorName">{{ lpa_response['donorName'] }}</td>
+                    <td class="govuk-table__cell">
+                    {% if lpa_response['warning'] == 'donor-match' %}
+                        <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% for row in lpa_response["additionalRows"] %}
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header", id="addRowType">{{ row['type'] }}</th>
+                        <td class="govuk-table__cell" id="addRowValue">{{ row['value'] }}</td>
+                        <td class="govuk-table__cell">
+                        <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Donor date of birth</th>
+                    <td class="govuk-table__cell" id="donorDob">{{ lpa_response['donorDob'] }}</td>
+                    <td class="govuk-table__cell">
+                        {% if lpa_response['warning'] == 'donor-match' %}
+                            <strong class="govuk-tag govuk-tag--{% if lpa_response['error'] %}red{% else %}blue{% endif %}">Warning</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">Donor address</th>
+                    <td class="govuk-table__cell">
+                        {% for line in lpa_response['donorAddress'] %}
+                            {% if line %}
+                                {{ line }}<br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="govuk-table__cell">
+                        {% if lpa_response['warning'] == 'address-match' %}
+                            <strong class="govuk-tag govuk-tag--red">Warning</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        {% if not lpa_response['error'] %}
+            <div class="govuk-warning-text govuk-!-width-two-thirds">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    Ask them to confirm the name, date of birth, and address of this donor before adding.
+                </strong>
+                <br>
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    Check they are not in a relationship with the donor or a member of the donor’s family or named on the LPA.
+                </strong>
+            </div>
+            <form method="POST">
+                <fieldset class="govuk-fieldset govuk-!-width-two-thirds" aria-describedby="declaration">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h2 class="govuk-fieldset__heading">
+                        Declaration
+                    </h2>
+                    </legend>
+                    <p class="govuk-body">Have them confirm the following:</p>
+
+                    <div class="govuk-form-group {% if form.get('declaration').messages %}govuk-form-group--error{% endif %}">
+                        {% if form.get('declaration').messages %}
+                            <p id="declaration-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                <span id="declarationError">{{ form.get('declaration').messages | join(', ', ' and ') }}</span>
+                            </p>
+                        {% endif %}
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="declaration_confirmed" name="declaration" type="checkbox" value="declaration_confirmed"
+                                {% if form.get('declaration').value == "declaration_confirmed" %}checked{% endif %}>
+                                <label class="govuk-label govuk-checkboxes__label" for="declaration">
+                                To the best of your knowledge, the person who asked you to vouch for them is {{ lpa_response['donorName'] }} and you have known them for at least 2 years.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <input type="hidden" name="lpa" value="{{ form.get('lpa').value }}">
+                {% for lpa in lpa_response['lpas'] %}
+                    <input type="hidden" name="lpas[]" value={{ lpa['uId'] }}>
+                {% endfor %}
+                <input type="submit" class="govuk-button govuk-!-margin-right-2" value="Add this donor to identity check">
+                <a href="./confirm-donors" class="govuk-button govuk-button--secondary">Return to donor list</a>
+            </form>
+        {% else %}
+            <a href="./confirm-donors" class="govuk-button govuk-button--secondary">Return to donor list</a>
+        {% endif %}
+    {% else %}
+        <a href="./confirm-donors" class="govuk-button govuk-button--secondary">Return to donor list</a>
+    {% endif %}
+
+{% endblock %}
+
