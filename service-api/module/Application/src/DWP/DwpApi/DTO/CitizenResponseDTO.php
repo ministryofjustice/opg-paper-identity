@@ -25,19 +25,7 @@ class CitizenResponseDTO
             $this->matchScenario = $response['data']['attributes']['matchingScenario'];
             $this->version = $response['jsonapi']['version'];
             $this->raw = $response;
-            $jayParsedAry = [
-                "jsonapi" => [
-                    "version" => "1.0"
-                ],
-                "data" => [
-                    "id" => "be62ed49-5407-4023-844c-97159ec80411",
-                    "type" => "MatchResult",
-                    "attributes" => [
-                        "matchingScenario" => "Matched on NINO"
-                    ]
-                ]
-            ];
-//
+
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }

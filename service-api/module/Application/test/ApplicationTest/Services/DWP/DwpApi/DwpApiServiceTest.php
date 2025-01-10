@@ -7,11 +7,17 @@ namespace ApplicationTest\Services\DWP\DwpApi;
 use Application\Cache\ApcHelper;
 use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\AuthApi\DTO\RequestDTO;
+use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
+use Application\DWP\DwpApi\DwpApiException;
+use GuzzleHttp\Exception\ClientException;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
 use Application\Model\Entity\CaseData;
 use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -20,24 +26,60 @@ use Throwable;
 class DwpApiServiceTest extends TestCase
 {
     //dce -it api ./vendor/bin/phpunit ./module/Application/test/ApplicationTest/Services/DWP/DwpApi
-
-
     private Client $client;
     private Client $clientCitizen;
-
     private Client $clientMatch;
-
     private ApcHelper $apcHelper;
-
     private RequestDTO $dwpAuthRequestDto;
-
     private CitizenRequestDTO $citizenRequestDTO;
-
     private AuthApiService $dwpAuthApiService;
-
     private DwpApiService $dwpApiService;
-
     private LoggerInterface&MockObject $logger;
+    private const CASE = [
+        "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
+        "personType" => "donor",
+        "lpas" => [
+            "M-XYXY-YAGA-35G3"
+        ],
+        "documentComplete" => false,
+        "identityCheckPassed" => null,
+        "searchPostcode" => null,
+        "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
+        "kbvQuestions" => [
+        ],
+        "idMethodIncludingNation" => [
+            "id_method" => "NATIONAL_INSURANCE_NUMBER",
+            "id_route" => "TELEPHONE",
+            "id_country" => "GBR",
+            "id_value" => "NP123456A"
+        ],
+        "caseProgress" => [
+            "abandonedFlow" => null,
+            "docCheck" => [
+                "idDocument" => "NATIONAL_INSURANCE_NUMBER",
+                "state" => true
+            ],
+            "kbvs" => null,
+            "fraudScore" => [
+                "decision" => "ACCEPT",
+                "score" => 265
+            ]
+        ],
+        "claimedIdentity" => [
+            "dob" => "1986-09-03",
+            "firstName" => "Lee",
+            "lastName" => "Manthrope",
+            "address" => [
+                "postcode" => "SO15 3AA",
+                "country" => "GB",
+                "line3" => "",
+                "town" => "Southamption",
+                "line2" => "",
+                "line1" => "18 BOURNE COURT"
+            ],
+            "professionalAddress" => null
+        ]
+    ];
 
     public function setUp(): void
     {
@@ -46,19 +88,29 @@ class DwpApiServiceTest extends TestCase
         $this->clientMatch = $this->createMock(Client::class);
         $this->client = $this->createMock(Client::class);
         $this->apcHelper = $this->createMock(ApcHelper::class);
-        $this->dwpAuthRequestDto = new RequestDTO(
-            'username',
-            'password',
-            'bundle',
-            'privateKey',
-        );
+//        $this->dwpAuthRequestDto = new RequestDTO(
+//            'username',
+//            'password',
+//            'bundle',
+//            'privateKey',
+//        );
+        $this->dwpAuthApiService = $this->createMock(AuthApiService::class);
 
-        $this->dwpAuthApiService = new AuthApiService(
-            $this->client,
-            $this->apcHelper,
-            $this->logger,
-            $this->dwpAuthRequestDto
-        );
+
+//        $this->apcHelper->setValue(
+//            'dwp_access_token',
+//            json_encode([
+//                'access_token' => 'token',
+//                'time' => (int)(new \DateTime())->format('U') + 3600
+//            ])
+//        );
+
+//        $this->dwpAuthApiService = new AuthApiService(
+//            $this->client,
+//            $this->apcHelper,
+//            $this->logger,
+//            $this->dwpAuthRequestDto
+//        );
 
         $this->dwpApiService = new DwpApiService(
             $this->clientCitizen,
@@ -112,52 +164,6 @@ class DwpApiServiceTest extends TestCase
 
     public static function requestBodyData(): array
     {
-        $case = [
-            "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
-            "personType" => "donor",
-            "lpas" => [
-                "M-XYXY-YAGA-35G3"
-            ],
-            "documentComplete" => false,
-            "identityCheckPassed" => null,
-            "searchPostcode" => null,
-            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "kbvQuestions" => [
-            ],
-            "idMethodIncludingNation" => [
-                "id_method" => "NATIONAL_INSURANCE_NUMBER",
-                "id_route" => "TELEPHONE",
-                "id_country" => "GBR",
-                "id_value" => "NP123456A"
-            ],
-            "caseProgress" => [
-                "abandonedFlow" => null,
-                "docCheck" => [
-                    "idDocument" => "NATIONAL_INSURANCE_NUMBER",
-                    "state" => true
-                ],
-                "kbvs" => null,
-                "fraudScore" => [
-                    "decision" => "ACCEPT",
-                    "score" => 265
-                ]
-            ],
-            "claimedIdentity" => [
-                "dob" => "1986-09-03",
-                "firstName" => "Lee",
-                "lastName" => "Manthrope",
-                "address" => [
-                    "postcode" => "SO15 3AA",
-                    "country" => "GB",
-                    "line3" => "",
-                    "town" => "Southamption",
-                    "line2" => "",
-                    "line1" => "18 BOURNE COURT"
-                ],
-                "professionalAddress" => null
-            ]
-        ];
-
         return [
             [
                 [
@@ -178,8 +184,82 @@ class DwpApiServiceTest extends TestCase
                         ]
                     ]
                 ],
-                new CitizenRequestDTO($case)
+                new CitizenRequestDTO(static::CASE)
             ]
         ];
+    }
+
+    /**
+     * @return void
+     */
+    public function testMakeCitizenMatchRequest(): void
+    {
+        $successMockResponseData = [
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            "data" => [
+                "id" => "be62ed49-5407-4023-844c-97159ec80411",
+                "type" => "MatchResult",
+                "attributes" => [
+                    "matchingScenario" => "Matched on NINO"
+                ]
+            ]
+        ];
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $this->dwpAuthApiService->expects(self::once())
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
+
+        $dwpApiService = new DwpApiService(
+            $successClient,
+            $successClient,
+            $this->dwpAuthApiService,
+            $this->logger,
+            []
+        );
+
+        $this->assertEquals(
+            new CitizenResponseDTO($successMockResponseData),
+            $dwpApiService->makeCitizenMatchRequest(
+                new CitizenRequestDTO(static::CASE)
+            )
+        );
+    }
+
+    public function testMakeCitizenMatchRequestWith400Response(): void
+    {
+        $this->expectException(ClientException::class);
+        $failMock = new MockHandler([
+            new GuzzleResponse(400, [], json_encode([])),
+        ]);
+        $failHandlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $failHandlerStack]);
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode([])),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $this->dwpAuthApiService->expects(self::once())
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
+
+        $dwpApiService = new DwpApiService(
+            $failClient,
+            $successClient,
+            $this->dwpAuthApiService,
+            $this->logger,
+            []
+        );
+
+        $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(static::CASE));
     }
 }

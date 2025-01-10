@@ -20,7 +20,7 @@ use Ramsey\Uuid\Uuid;
 class DwpApiService
 {
     private $authCount = 0;
-    function __construct(
+    public function __construct(
         private Client $guzzleClientCitizen,
         private Client $guzzleClientMatch,
         private AuthApiService $authApiService,
@@ -58,7 +58,7 @@ class DwpApiService
      * @throws DwpApiException
      * @psalm-suppress InvalidReturnType
      */
-    public function makeCitizenRequest(
+    public function makeCitizenMatchRequest(
         CitizenRequestDTO $citizenRequestDTO
     ): CitizenResponseDTO {
         $this->authCount++;
@@ -67,7 +67,7 @@ class DwpApiService
 
             $response = $this->guzzleClientCitizen->request(
                 'POST',
-                '3',
+                '/',
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $postBody
@@ -80,9 +80,15 @@ class DwpApiService
                 $responseArray
             );
         } catch (ClientException $clientException) {
-            if ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 && $this->authCount < 2) {
+
+//            die(json_encode($clientException->getResponse()->getBody()));
+
+            if (
+                $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
+                $this->authCount < 2
+            ) {
                 $this->authApiService->authenticate();
-                $this->makeCitizenRequest($citizenRequestDTO);
+                $this->makeCitizenMatchRequest($citizenRequestDTO);
             } else {
                 $response = $clientException->getResponse();
                 $responseBodyAsString = $response->getBody()->getContents();
@@ -97,29 +103,28 @@ class DwpApiService
     public function constructCitizenRequestBody(
         CitizenRequestDTO $citizenRequestDTO
     ): array {
-//        $requestUuid = Uuid::uuid4()->toString();
-//        $personId = $this->makePersonId($experianCrosscoreFraudRequestDTO);
-//        $nameId = $this->makePersonId($experianCrosscoreFraudRequestDTO, true);
-//        $addressDTO = $experianCrosscoreFraudRequestDTO->address();
-
-        return [
-            "jsonapi" => [
-                "version" => "1.0"
-            ],
-            "data" => [
-                "type" => "Match",
-                "attributes" => [
-                    "dateOfBirth" => "1986-09-03",
-                    "ninoFragment" => "456A",
-                    "firstName" => "Lee",
-                    "lastName" => "Manthrope",
-                    "postcode" => "SO15 3AA",
-                    "contactDetails" => [
-                        ""
+        try {
+            return [
+                "jsonapi" => [
+                    "version" => "1.0"
+                ],
+                "data" => [
+                    "type" => "Match",
+                    "attributes" => [
+                        "dateOfBirth" => $citizenRequestDTO->dob(),
+                        "ninoFragment" => $this->makeNinoFragment($citizenRequestDTO->nino()),
+                        "firstName" => $citizenRequestDTO->firstName(),
+                        "lastName" => $citizenRequestDTO->lastName(),
+                        "postcode" => $citizenRequestDTO->postcode(),
+                        "contactDetails" => [
+                            ""
+                        ]
                     ]
                 ]
-            ]
-        ];
+            ];
+        } catch (\Exception $exception) {
+            throw new DwpApiException($exception->getMessage());
+        }
     }
 
     public function makeNinoFragment(string $nino): string

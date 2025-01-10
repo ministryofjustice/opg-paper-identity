@@ -33,6 +33,9 @@ class DwpApiServiceFactory implements FactoryInterface
 //        $baseUriCitizen = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
 //        $baseUriMatch = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
 
+        //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/{guid}/citizens
+        //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/match
+
         $baseUriCitizen = 'http://dwp-mock/';
 
         $baseUriMatch  = 'http://dwp-mock/';
