@@ -33,7 +33,7 @@ class VoucherMatchLpaActorHelper
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["firstNames"],
                 "lastName" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["lastName"],
-                "dob" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["dateOfBirth"],
+                "dob" => $lpasData["opg.poas.lpastore"]["certificateProvider"]["dateOfBirth"] ?? "",
                 "type" => LpaActorTypes::CP->value,
             ];
             foreach ($lpasData["opg.poas.lpastore"]["attorneys"] as $attorney) {
@@ -57,7 +57,8 @@ class VoucherMatchLpaActorHelper
             $actors[] = [
                 "firstName" => $lpasData["opg.poas.sirius"]["donor"]["firstname"],
                 "lastName" => $lpasData["opg.poas.sirius"]["donor"]["surname"],
-                // we replace
+                // we replace the `/` with `-` and reverse the array to create a YYYY-MM-DD format
+                // this is needed as PHP parses dates with mm/dd/yyyy by default
                 "dob" => implode("-", array_reverse(explode("/", $lpasData["opg.poas.sirius"]["donor"]["dob"]))),
                 "type" => LpaActorTypes::DONOR->value,
             ];
@@ -66,7 +67,7 @@ class VoucherMatchLpaActorHelper
         return $actors;
     }
 
-    private function compareName(string $firstName, string $lastName, array $actor): bool
+    public function compareName(string $firstName, string $lastName, array $actor): bool
     {
         if (is_null($actor["firstName"]) || is_null($actor["lastName"])) {
             return false;
@@ -78,7 +79,7 @@ class VoucherMatchLpaActorHelper
         return $firstNameMatch && $lastNameMatch;
     }
 
-    private function compareDob(string $dob, array $actor): bool
+    public function compareDob(string $dob, array $actor): bool
     {
         if (is_null($actor["dob"])) {
             return false;
@@ -92,9 +93,9 @@ class VoucherMatchLpaActorHelper
      * @param string $firstName
      * @param string $lastName
      * @param string $dob
-     * @return Actor[]
+     * @return false|Actor
     */
-    public function checkMatch(array $lpasData, string $firstName, string $lastName, string $dob = null): array
+    public function checkMatch(array $lpasData, string $firstName, string $lastName, string $dob = null): array | bool
     {
         $actors = $this->getLpaActors($lpasData);
 
@@ -108,7 +109,12 @@ class VoucherMatchLpaActorHelper
                 return $this->compareDob($dob, $a);
             });
         }
-        return $matches;
+
+        /** `getLpaActors` will always return actors in order
+         * donor > certificate-provider > attorney > replacement-attorney
+         * we return the first of these to have a match or false if there are no matches
+        */
+        return current($matches);
     }
 
     public function checkAddressDonorMatch(array $lpasData, array $address): bool
