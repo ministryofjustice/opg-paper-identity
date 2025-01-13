@@ -129,7 +129,6 @@ class HealthcheckControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "DRIVING_LICENCE",
                 'id_country' => "GBR",
@@ -165,7 +164,6 @@ class HealthcheckControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "DRIVING_LICENCE",
                 'id_country' => "GBR",

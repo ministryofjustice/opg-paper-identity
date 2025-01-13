@@ -423,7 +423,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
                 'id_country' => "",
@@ -512,7 +511,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
                 'id_country' => "",
@@ -652,7 +650,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
                 'id_country' => "",
