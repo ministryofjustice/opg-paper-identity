@@ -42,7 +42,7 @@ use Psr\Log\LoggerInterface;
  *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
- *    uId?: string,
+ *    uId: string,
  *    id: int,
  *    caseSubtype: string,
  *    donor: array{

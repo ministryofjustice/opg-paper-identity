@@ -271,14 +271,19 @@ trailer\n<<\n/Root 3 0 R\n>>\n
              */
             public function getLpaByUid(string $uid, Request $request): array
             {
-                return ['opg.poas.sirius' => ['id' => 789, 'caseSubtype' => 'property-and-affairs', 'donor' => [
-                    'firstname' => 'Susan',
-                    'surname' => 'Muller',
-                    'dob' => '1980-06-30',
-                    'addressLine1' => 'Vandammeplein 8',
-                    'town' => 'Hernezele',
-                    'country' => 'BE',
-                ]], 'opg.poas.lpastore' => null];
+                return ['opg.poas.sirius' => [
+                    'uId' => 'M-0000-0000-0000',
+                    'id' => 789,
+                    'caseSubtype' => 'property-and-affairs',
+                    'donor' => [
+                        'firstname' => 'Susan',
+                        'surname' => 'Muller',
+                        'dob' => '1980-06-30',
+                        'addressLine1' => 'Vandammeplein 8',
+                        'town' => 'Hernezele',
+                        'country' => 'BE',
+                    ]
+                ], 'opg.poas.lpastore' => null];
             }
         };
 

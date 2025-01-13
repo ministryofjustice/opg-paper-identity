@@ -254,7 +254,7 @@ class AddDonorFormHelper
         $lpas = [];
         foreach ($lpasData as $lpa) {
             $result = [
-                "uId" => $lpa["opg.poas.sirius"]["uId"] ?? '',
+                "uId" => $lpa["opg.poas.sirius"]["uId"],
                 "type" => LpaTypes::fromName($lpa["opg.poas.sirius"]["caseSubtype"]),
                 "error" => false,
             ];
@@ -293,7 +293,7 @@ class AddDonorFormHelper
         }
 
         $lpasData = array_filter($lpasData, function ($lpa) use ($detailsData) {
-            return ! in_array($lpa["opg.poas.sirius"]["uId"] ?? '', $detailsData["lpas"]);
+            return ! in_array($lpa["opg.poas.sirius"]["uId"], $detailsData["lpas"]);
         });
         if (empty($lpasData)) {
             $response["problem"] = true;
