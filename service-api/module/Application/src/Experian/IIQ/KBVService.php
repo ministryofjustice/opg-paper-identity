@@ -70,36 +70,19 @@ class KBVService implements KBVServiceInterface
 
         $formattedQuestions = $this->formatQuestions($questions['questions']);
 
-        $identityIQ = IdentityIQ::fromArray(
-            [
-                'kbvQuestions' => $formattedQuestions,
-                'iiqControl' => [
-                    'urn' => $questions['control']['URN'],
-                    'authRefNo' => $questions['control']['AuthRefNo'],
-                ]
+        $identityIQ = [
+            'kbvQuestions' => $formattedQuestions,
+            'iiqControl' => [
+                'urn' => $questions['control']['URN'],
+                'authRefNo' => $questions['control']['AuthRefNo'],
             ]
-        );
+        ];
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'identityIQ',
             $identityIQ
         );
-
-//        $this->writeHandler->updateCaseData(
-//            $caseData->id,
-//            'identityIQ.kbvQuestions',
-//            $formattedQuestions
-//        );
-//
-//        $this->writeHandler->updateCaseData(
-//            $caseData->id,
-//            'identityIQ.iiqControl',
-//            IIQControl::fromArray([
-//                'urn' => $questions['control']['URN'],
-//                'authRefNo' => $questions['control']['AuthRefNo'],
-//            ])
-//        );
 
         return $formattedQuestions;
     }
