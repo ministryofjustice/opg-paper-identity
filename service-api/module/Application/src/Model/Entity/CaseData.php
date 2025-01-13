@@ -29,6 +29,12 @@ class CaseData implements JsonSerializable
     public string $id;
 
     /**
+     * @var "TELEPHONE"|"POSTOFFICE"|"VOUCHING"
+     */
+    #[Annotation\Required(false)]
+    public ?string $idRoute = null;
+
+    /**
      * @var "donor"|"certificateProvider"
      */
     #[Validator(NotEmpty::class)]
@@ -53,13 +59,8 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
     public array $lpas;
 
-    /**
-     * @var KBVQuestion[]
-     */
-    #[Annotation\ComposedObject(KBVQuestion::class, isCollection: true)]
-    public array $kbvQuestions = [];
-
-    public ?IIQControl $iiqControl = null;
+    #[Annotation\ComposedObject(IdentityIQ::class)]
+    public ?IdentityIQ $identityIQ = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
@@ -70,9 +71,6 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?bool $identityCheckPassed = null;
-
-    #[Annotation\Required(false)]
-    public ?string $searchPostcode = null;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Uuid::class)]
@@ -106,10 +104,6 @@ class CaseData implements JsonSerializable
                 $instance->counterService = CounterService::fromArray($value);
             } elseif ($key === 'caseProgress') {
                 $instance->caseProgress = CaseProgress::fromArray($value);
-            } elseif ($key === 'kbvQuestions') {
-                $instance->kbvQuestions = array_map(fn(array $question) => KBVQuestion::fromArray($question), $value);
-            } elseif ($key === 'iiqControl') {
-                $instance->iiqControl = IIQControl::fromArray($value);
             } elseif ($key === 'idMethodIncludingNation') {
                 $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
             } elseif ($key === 'vouchingFor') {
@@ -118,6 +112,8 @@ class CaseData implements JsonSerializable
                 $instance->claimedIdentity = ClaimedIdentity::fromArray($value);
             } elseif ($key === 'caseAssistance') {
                 $instance->caseAssistance = CaseAssistance::fromArray($value);
+            } elseif ($key === 'identityIQ') {
+                $instance->identityIQ = IdentityIQ::fromArray($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -131,14 +127,12 @@ class CaseData implements JsonSerializable
     /**
      * @return array{
      *     id: string,
+     *     idRoute: "TELEPHONE"|"POSTOFFICE"|"VOUCHING"|null,
      *     personType: "donor"|"certificateProvider",
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],
-     *     kbvQuestions: KBVQuestion[],
-     *     iiqControl?: IIQControl,
      *     documentComplete: bool,
      *     identityCheckPassed: ?bool,
-     *     searchPostcode: ?string,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
      *     idMethodIncludingNation?: IdMethodIncludingNation,
@@ -151,13 +145,12 @@ class CaseData implements JsonSerializable
     {
         $arr = [
             'id' => $this->id,
+            'idRoute' => $this->idRoute,
             'personType' => $this->personType,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
-            'searchPostcode' => $this->searchPostcode,
             'yotiSessionId' => $this->yotiSessionId,
-            'kbvQuestions' => $this->kbvQuestions,
         ];
 
         if ($this->idMethodIncludingNation !== null) {
@@ -166,10 +159,6 @@ class CaseData implements JsonSerializable
 
         if ($this->counterService !== null) {
             $arr['counterService'] = $this->counterService;
-        }
-
-        if ($this->iiqControl !== null) {
-            $arr['iiqControl'] = $this->iiqControl;
         }
 
         if ($this->caseProgress !== null) {

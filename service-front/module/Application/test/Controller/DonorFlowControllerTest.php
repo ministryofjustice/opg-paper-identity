@@ -311,7 +311,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 "id_country" => "GBR",
                 "id_method" => "DRIVING_LICENCE",

@@ -178,40 +178,41 @@ class ServiceAvailabilityHelperTest extends TestCase
             ],
             "documentComplete" => true,
             "identityCheckPassed" => true,
-            "searchPostcode" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "kbvQuestions" => [
-                [
-                    "externalId" => "Q00007",
-                    "question" => "Which company provides your car insurance?",
-                    "prompts" => [
-                        "ShieldSafe",
-                        "Guardian Drive Assurance",
-                        "SafeDrive Insurance",
-                        "Swift Cover Protection"
+            "identityIQ" => [
+                "kbvQuestions" => [
+                    [
+                        "externalId" => "Q00007",
+                        "question" => "Which company provides your car insurance?",
+                        "prompts" => [
+                            "ShieldSafe",
+                            "Guardian Drive Assurance",
+                            "SafeDrive Insurance",
+                            "Swift Cover Protection"
+                        ],
+                        "answered" => false
                     ],
-                    "answered" => false
+                    [
+                        "externalId" => "Q00003",
+                        "question" => "What is your mother’s maiden name?",
+                        "prompts" => [
+                            "Germanotta",
+                            "Blythe",
+                            "Gumm",
+                            "Micklewhite"
+                        ],
+                        "answered" => false
+                    ]
                 ],
-                [
-                    "externalId" => "Q00003",
-                    "question" => "What is your mother’s maiden name?",
-                    "prompts" => [
-                        "Germanotta",
-                        "Blythe",
-                        "Gumm",
-                        "Micklewhite"
-                    ],
-                    "answered" => false
-                ]
+                "iiqControl" => [
+                    "urn" => "b6aa3ee6-cd06-42b0-82c3-77051a4a4e34",
+                    "authRefNo" => "6B3TGRWSKC"
+                ],
             ],
             "idMethodIncludingNation" => [
                 "id_method" => "PASSPORT",
                 "id_route" => "TELEPHONE",
                 "id_country" => "GBR"
-            ],
-            "iiqControl" => [
-                "urn" => "b6aa3ee6-cd06-42b0-82c3-77051a4a4e34",
-                "authRefNo" => "6B3TGRWSKC"
             ],
             "caseProgress" => [
                 "fraudScore" => [
