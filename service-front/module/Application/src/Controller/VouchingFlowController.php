@@ -422,7 +422,6 @@ class VouchingFlowController extends AbstractActionController
 
         $view = new ViewModel();
 
-        $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);

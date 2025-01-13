@@ -8,9 +8,15 @@ use Application\Enums\LpaTypes;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
+use Application\Services\SiriusApiService;
+use Application\Contracts\OpgApiServiceInterface;
 use DateTime;
 
 /**
+ * @psalm-import-type Lpa from SiriusApiService
+ * @psalm-import-type Address from OpgApiServiceInterface
+ * @psalm-import-type CaseData from OpgApiServiceInterface
+ *
  * @psalm-type LpaStatus = array {
  *   problem: bool,
  *   message: string
@@ -49,7 +55,7 @@ use DateTime;
  *   lpas?: CheckedLpa[],
  *   donorName?: string,
  *   donorDob?: string,
- *   donorAddress?: string[]
+ *   donorAddress?: Address
  * }
  * }
  */
@@ -72,6 +78,10 @@ class AddDonorFormHelper
         return $formattedDate->format($outputFormat);
     }
 
+    /**
+     * @param Lpa $lpaData
+     * @return string
+     */
     public static function getDonorNameFromSiriusResponse(array $lpaData): string
     {
         return implode(' ', [
@@ -80,18 +90,27 @@ class AddDonorFormHelper
         ]);
     }
 
+    /**
+     * @param Lpa $lpaData
+     * @return string
+     */
     public static function getDonorDobFromSiriusResponse(array $lpaData): string
     {
         $dob = $lpaData["opg.poas.sirius"]["donor"]["dob"];
         return self::formatDate($dob, 'd/m/Y', 'd M Y');
     }
 
+    /**
+     * @param Lpa $lpaData
+     * @return Address
+     */
     public static function getDonorAddressFromSiriusResponse(array $lpaData): array
     {
         return AddressProcessorHelper::processAddress($lpaData['opg.poas.sirius']['donor'], 'siriusAddressType');
     }
 
     /**
+     * @param Lpa $lpaData
      * @return LpaStatus
      */
     public function checkLpaStatus(array $lpaData): array
@@ -100,6 +119,7 @@ class AddDonorFormHelper
             "problem" => false,
             "message" => ""
         ];
+        /** @psalm-suppress PossiblyNullArgument */
         if (
             array_key_exists('opg.poas.lpastore', $lpaData) &&
             array_key_exists('status', $lpaData['opg.poas.lpastore'])
@@ -123,6 +143,8 @@ class AddDonorFormHelper
     }
 
     /**
+     * @param Lpa $lpa
+     * @param CaseData $detailsData
      * @return LpaIdMatchCheck
      */
     public function checkLpaIdMatch(array $lpa, array $detailsData): array
@@ -214,14 +236,25 @@ class AddDonorFormHelper
     }
 
     /**
+     * @param Lpa[] $lpasData
+     * @param CaseData $detailsData
      * @return CheckedLpa[]
      */
     private function checkLpas(array $lpasData, array $detailsData): array
     {
+        $baseResponse = [
+            'uId' => '',
+            'type' => '',
+            'problem' => false,
+            'error' => false,
+            'warning' => '',
+            'message' => '',
+            'additionalRows' => [],
+        ];
         $lpas = [];
         foreach ($lpasData as $lpa) {
             $result = [
-                "uId" => $lpa["opg.poas.sirius"]["uId"],
+                "uId" => $lpa["opg.poas.sirius"]["uId"] ?? '',
                 "type" => LpaTypes::fromName($lpa["opg.poas.sirius"]["caseSubtype"]),
                 "error" => false,
             ];
@@ -232,12 +265,14 @@ class AddDonorFormHelper
                 $result = array_merge($result, $this->checkLpaIdMatch($lpa, $detailsData));
             }
 
-            $lpas[] = $result;
+            $lpas[] = array_merge($baseResponse, $result);
         }
         return $lpas;
     }
 
     /**
+     * @param Lpa[] $lpasData
+     * @param CaseData $detailsData
      * @return ProcessedLpas
      */
     public function processLpas(array $lpasData, array $detailsData): array
@@ -258,7 +293,7 @@ class AddDonorFormHelper
         }
 
         $lpasData = array_filter($lpasData, function ($lpa) use ($detailsData) {
-            return ! in_array($lpa["opg.poas.sirius"]["uId"], $detailsData["lpas"]);
+            return ! in_array($lpa["opg.poas.sirius"]["uId"] ?? '', $detailsData["lpas"]);
         });
         if (empty($lpasData)) {
             $response["problem"] = true;
@@ -269,7 +304,6 @@ class AddDonorFormHelper
         $lpas = $this->checkLpas($lpasData, $detailsData);
 
         // if there is 1 LPA returned and there is a problem then we just flag the problem
-
         if (count($lpas) === 1 && current($lpas)["problem"]) {
             $response["problem"] = true;
             $response["message"] = current($lpas)["message"];
