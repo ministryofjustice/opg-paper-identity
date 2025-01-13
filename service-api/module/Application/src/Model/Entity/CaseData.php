@@ -59,6 +59,7 @@ class CaseData implements JsonSerializable
     #[Annotation\Validator(Explode::class, options: ['validator' => ['name' => LpaUidValidator::class]])]
     public array $lpas;
 
+    #[Annotation\ComposedObject(IdentityIQ::class)]
     public ?IdentityIQ $identityIQ = null;
 
     #[Annotation\Required(false)]

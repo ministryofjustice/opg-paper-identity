@@ -180,10 +180,6 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo '<pre>';
-        var_dump($detailsData);
-        echo '</pre>';
-
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */

@@ -18,7 +18,6 @@ class IdentityIQ extends Entity
     public ?IIQControl $iiqControl = null;
 
     /**
-     * @psalm-suppress PossiblyUnusedMethod
      * @param array<string, mixed> $data
      */
     public static function fromArray(mixed $data): self
