@@ -7,12 +7,15 @@ namespace Application\Services;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Enums\SiriusDocument;
+use Application\Validators\LpaUidValidator;
+use Application\Exceptions\UidInvalidException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
 use GuzzleHttp\Exception\ClientException;
+use Psr\Log\LoggerInterface;
 
 /**
  * @psalm-type Address = array{
@@ -30,6 +33,13 @@ use GuzzleHttp\Exception\ClientException;
  *   dateOfBirth: string,
  * }
  *
+ * @psalm-type LinkedLpa = array{
+ *    uId: string,
+ *    caseSubtype: string,
+ *    createdDate: string,
+ *    status: string,
+ *  }
+ *
  * @psalm-type Lpa = array{
  *  "opg.poas.sirius": array{
  *    id: int,
@@ -45,6 +55,7 @@ use GuzzleHttp\Exception\ClientException;
  *      postcode?: string,
  *      country: string,
  *    },
+ *    linkedDigitalLpas?: LinkedLpa[]
  *  },
  *  "opg.poas.lpastore": ?array{
  *    lpaType: string,
@@ -67,7 +78,8 @@ use GuzzleHttp\Exception\ClientException;
 class SiriusApiService
 {
     public function __construct(
-        private readonly Client $client
+        private readonly Client $client,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -113,9 +125,13 @@ class SiriusApiService
      */
     public function getLpaByUid(string $uid, Request $request): array
     {
+        $validator = new LpaUidValidator();
+        if (! $validator->isValid($uid)) {
+            throw new UidInvalidException(join(", ", $validator->getMessages()));
+        }
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
-        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+        $response = $this->client->get('/api/v1/digital-lpas/' . urlencode($uid), [
             'headers' => $authHeaders
         ]);
 
@@ -126,6 +142,46 @@ class SiriusApiService
                 ->getAddress($responseArray['opg.poas.lpastore']['certificateProvider']['address']);
         }
 
+        return $responseArray;
+    }
+
+    /**
+     * @return Lpa[]
+     */
+    public function getAllLinkedLpasByUid(string $uid, Request $request): array
+    {
+        $responseArray = [];
+        try {
+            $response = $this->getLpaByUid($uid, $request);
+        } catch (ClientException $clientException) {
+            $response = $clientException->getResponse();
+            if ($response->getStatusCode() === 404) {
+                $this->logger->info("uid: {$uid} not found");
+                return $responseArray;
+            } else {
+                throw $clientException;
+            }
+        }
+
+        $linkedUids = $response['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
+        $responseArray[$uid] = $response;
+        if ($linkedUids === []) {
+            return $responseArray;
+        }
+
+        foreach ($linkedUids as $lpaId) {
+            try {
+                $response = $this->getLpaByUid($lpaId["uId"], $request);
+                $responseArray[$lpaId["uId"]] = $response;
+            } catch (ClientException $clientException) {
+                $response = $clientException->getResponse();
+                if ($response->getStatusCode() === 404) {
+                    $this->logger->info("uid: {$uid} not found");
+                } else {
+                    throw $clientException;
+                }
+            }
+        }
         return $responseArray;
     }
 
