@@ -11,6 +11,7 @@ use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\IdentityIQ;
 use Application\Model\Entity\IIQControl;
 use Application\Model\Entity\KBVQuestion;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -69,20 +70,36 @@ class KBVService implements KBVServiceInterface
 
         $formattedQuestions = $this->formatQuestions($questions['questions']);
 
-        $this->writeHandler->updateCaseData(
-            $caseData->id,
-            'identityIQ.kbvQuestions',
-            $formattedQuestions
+        $identityIQ = IdentityIQ::fromArray(
+            [
+                'kbvQuestions' => $formattedQuestions,
+                'iiqControl' => [
+                    'urn' => $questions['control']['URN'],
+                    'authRefNo' => $questions['control']['AuthRefNo'],
+                ]
+            ]
         );
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
-            'identityIQ.iiqControl',
-            IIQControl::fromArray([
-                'urn' => $questions['control']['URN'],
-                'authRefNo' => $questions['control']['AuthRefNo'],
-            ])
+            'identityIQ',
+            $identityIQ
         );
+
+//        $this->writeHandler->updateCaseData(
+//            $caseData->id,
+//            'identityIQ.kbvQuestions',
+//            $formattedQuestions
+//        );
+//
+//        $this->writeHandler->updateCaseData(
+//            $caseData->id,
+//            'identityIQ.iiqControl',
+//            IIQControl::fromArray([
+//                'urn' => $questions['control']['URN'],
+//                'authRefNo' => $questions['control']['AuthRefNo'],
+//            ])
+//        );
 
         return $formattedQuestions;
     }
@@ -120,13 +137,13 @@ class KBVService implements KBVServiceInterface
 
         $nextTransactionId = $result['result']['NextTransId']->string;
 
-        if (isset($result['questions'])) {
-            if (! isset($caseData->identityIQ)) {
-                $caseData->identityIQ = IdentityIQ::fromArray([
-                    'kbvQuestions' => []
-                ]);
-            }
+        if (! isset($caseData->identityIQ)) {
+            $caseData->identityIQ = IdentityIQ::fromArray([
+                'kbvQuestions' => []
+            ]);
+        }
 
+        if (isset($result['questions'])) {
             $questions = [
                 ...$caseData->identityIQ->kbvQuestions,
                 ...$this->formatQuestions($result['questions']),
@@ -134,6 +151,8 @@ class KBVService implements KBVServiceInterface
         } else {
             $questions = $caseData->identityIQ->kbvQuestions;
         }
+
+        $this->logger->info("questions", $questions);
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
