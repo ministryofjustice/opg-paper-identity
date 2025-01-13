@@ -4,6 +4,7 @@
       {
         "dateOfBirth": "1960-09-18",
         "status": "active",
+        "appointmentType": "original",
         "channel": "online",
         "uid": "89121d57-1fb2-3bcb-b556-fe108b686bff",
         "firstNames": "Josephine",
