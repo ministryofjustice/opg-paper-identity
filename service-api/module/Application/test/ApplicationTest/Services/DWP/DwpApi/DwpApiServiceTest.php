@@ -7,6 +7,8 @@ namespace ApplicationTest\Services\DWP\DwpApi;
 use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
+use Application\DWP\DwpApi\DwpApiException;
+use Application\Model\Entity\CaseData;
 use GuzzleHttp\Exception\ClientException;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
@@ -40,7 +42,7 @@ class DwpApiServiceTest extends TestCase
             "id_method" => "NATIONAL_INSURANCE_NUMBER",
             "id_route" => "TELEPHONE",
             "id_country" => "GBR",
-            "id_value" => "NP123456A"
+            "id_value" => "ZZ123456A"
         ],
         "caseProgress" => [
             "abandonedFlow" => null,
@@ -119,8 +121,10 @@ class DwpApiServiceTest extends TestCase
     /**
      * @dataProvider requestBodyData
      */
-    public function testConstructCitizenRequestBody(array $expected, CitizenRequestDTO $dto): void
-    {
+    public function testConstructCitizenRequestBody(
+        array $expected,
+        CitizenRequestDTO $dto
+    ): void {
         $this->assertEquals(
             $expected,
             $this->dwpApiService->constructCitizenRequestBody($dto),
@@ -149,7 +153,7 @@ class DwpApiServiceTest extends TestCase
                         ]
                     ]
                 ],
-                new CitizenRequestDTO(static::CASE)
+                new CitizenRequestDTO(CaseData::fromArray(static::CASE))
             ]
         ];
     }
@@ -193,7 +197,51 @@ class DwpApiServiceTest extends TestCase
         $this->assertEquals(
             new CitizenResponseDTO($successMockResponseData),
             $dwpApiService->makeCitizenMatchRequest(
-                new CitizenRequestDTO(static::CASE)
+                new CitizenRequestDTO(CaseData::fromArray(static::CASE))
+            )
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testMakeCitizenMatchRequestNotEnoughData(): void
+    {
+        $successMockResponseData = [
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            "data" => [
+                "id" => "",
+                "type" => "MatchResult",
+                "attributes" => [
+                    "matchingScenario" => ""
+                ]
+            ]
+        ];
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $this->dwpAuthApiService->expects(self::once())
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
+
+        $dwpApiService = new DwpApiService(
+            $successClient,
+            $successClient,
+            $this->dwpAuthApiService,
+            $this->logger,
+            []
+        );
+
+        $this->assertEquals(
+            new CitizenResponseDTO($successMockResponseData),
+            $dwpApiService->makeCitizenMatchRequest(
+                new CitizenRequestDTO(CaseData::fromArray(static::CASE))
             )
         );
     }
@@ -225,7 +273,7 @@ class DwpApiServiceTest extends TestCase
             []
         );
 
-        $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(static::CASE));
+        $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(CaseData::fromArray(static::CASE)));
     }
 
     public function testMakeCitizenDetailsRequest(): void

@@ -187,6 +187,11 @@ class DetailsResponseDTOTest extends TestCase
         $this->assertEquals("AA112233A", $this->detailsResponseDTO->nino());
     }
 
+    public function testVerified(): void
+    {
+        $this->assertEquals("verified", $this->detailsResponseDTO->verified());
+    }
+
     public function testRaw(): void
     {
         $this->assertEquals($this->testData, $this->detailsResponseDTO->raw());
@@ -199,6 +204,7 @@ class DetailsResponseDTOTest extends TestCase
             'lastName' => "Manthrope",
             'dob' => "1986-09-03",
             'nino' => "AA112233A",
+            'verified' => "verified"
         ], $this->detailsResponseDTO->toArray());
     }
 }

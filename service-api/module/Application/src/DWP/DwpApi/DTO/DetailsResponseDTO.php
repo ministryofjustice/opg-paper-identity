@@ -12,6 +12,7 @@ class DetailsResponseDTO
     private string $lastName;
     private string $nino;
     private string $dob;
+    private string $verified;
     private array $raw;
 
     public function __construct(array $response)
@@ -21,6 +22,7 @@ class DetailsResponseDTO
             $this->lastName = $response['data']['attributes']['name']['lastName'];
             $this->nino = $response['data']['attributes']['nino'];
             $this->dob = $response['data']['attributes']['dateOfBirth']['date'];
+            $this->verified = $response['data']['attributes']['identityVerificationStatus'];
             $this->raw = $response;
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
@@ -48,6 +50,11 @@ class DetailsResponseDTO
         return $this->nino;
     }
 
+    public function verified(): string
+    {
+        return $this->verified;
+    }
+
     public function raw(): array
     {
         return $this->raw;
@@ -60,6 +67,7 @@ class DetailsResponseDTO
             'lastName' => $this->lastName(),
             'dob' => $this->dob(),
             'nino' => $this->nino(),
+            'verified' => $this->verified(),
         ];
     }
 }

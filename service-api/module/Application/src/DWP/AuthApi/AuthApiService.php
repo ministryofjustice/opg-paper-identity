@@ -94,9 +94,9 @@ class AuthApiService
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $dwpAuthRequestDTO->toArray(),
-                    'cert' => $dwpAuthRequestDTO->bundle(),
-                    'ssl_key' => $dwpAuthRequestDTO->privateKey(),
-                    'verify' => false
+//                    'cert' => $dwpAuthRequestDTO->bundle(),
+//                    'ssl_key' => $dwpAuthRequestDTO->privateKey(),
+//                    'verify' => false
                 ]
             );
 

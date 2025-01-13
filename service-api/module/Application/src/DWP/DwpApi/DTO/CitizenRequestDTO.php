@@ -17,19 +17,19 @@ class CitizenRequestDTO
     private $nino;
 
     public function __construct(
-        protected array $caseData
+        protected CaseData $caseData
     ) {
         try {
-            if($this->caseData['idMethodIncludingNation']['id_method'] !== 'NATIONAL_INSURANCE_NUMBER') {
+            if($this->caseData->idMethodIncludingNation->id_method !== 'NATIONAL_INSURANCE_NUMBER') {
                 throw new DwpApiException('Identity method is not a national insurance number');
             }
 
-            $this->postcode = $this->caseData['claimedIdentity']['address']['postcode'];
-            $this->addressLine1 = $this->caseData['claimedIdentity']['address']['line1'];
-            $this->dob = $this->caseData['claimedIdentity']['dob'];
-            $this->firstName = $this->caseData['claimedIdentity']['firstName'];
-            $this->lastName = $this->caseData['claimedIdentity']['lastName'];
-            $this->nino = $this->caseData['idMethodIncludingNation']['id_value'];
+            $this->postcode = $this->caseData->claimedIdentity->address['postcode'];
+            $this->addressLine1 = $this->caseData->claimedIdentity->address['line1'];
+            $this->dob = $this->caseData->claimedIdentity->dob;
+            $this->firstName = $this->caseData->claimedIdentity->firstName;
+            $this->lastName = $this->caseData->claimedIdentity->lastName;
+            $this->nino = $this->caseData->idMethodIncludingNation->id_value;
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }

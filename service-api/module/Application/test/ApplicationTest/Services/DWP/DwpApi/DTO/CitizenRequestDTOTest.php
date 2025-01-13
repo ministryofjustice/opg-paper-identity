@@ -16,7 +16,7 @@ class CitizenRequestDTOTest extends TestCase
     {
         parent::setUp();
 
-        $this->citizenRequestDTO = new CitizenRequestDTO([
+        $case = CaseData::fromArray([
             "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
             "personType" => "donor",
             "lpas" => [
@@ -32,7 +32,7 @@ class CitizenRequestDTOTest extends TestCase
                 "id_method" => "NATIONAL_INSURANCE_NUMBER",
                 "id_route" => "TELEPHONE",
                 "id_country" => "GBR",
-                "id_value" => "NP123456A"
+                "id_value" => "ZZ123456A"
             ],
             "caseProgress" => [
                 "abandonedFlow" => null,
@@ -61,6 +61,8 @@ class CitizenRequestDTOTest extends TestCase
                 "professionalAddress" => null
             ]
         ]);
+
+        $this->citizenRequestDTO = new CitizenRequestDTO($case);
     }
 
     public function testFirstName(): void
@@ -90,7 +92,7 @@ class CitizenRequestDTOTest extends TestCase
 
     public function testNino(): void
     {
-        $this->assertEquals('NP123456A', $this->citizenRequestDTO->nino());
+        $this->assertEquals('ZZ123456A', $this->citizenRequestDTO->nino());
     }
 
     public function testArray(): void
@@ -101,7 +103,7 @@ class CitizenRequestDTOTest extends TestCase
             'dob' => "1986-09-03",
             'postcode' => "SO15 3AA",
             'addressLine1' => '18 BOURNE COURT',
-            'nino' => 'NP123456A'
+            'nino' => 'ZZ123456A'
         ], $this->citizenRequestDTO->toArray());
     }
 }

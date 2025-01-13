@@ -51,22 +51,36 @@ class DwpApiService
 
     public function validateNINO(CaseData $caseData): array
     {
-        try {
+//        try {
             $citizenResponseDTO = $this->makeCitizenMatchRequest(
-                new CitizenRequestDTO($caseData->toArray())
+                new CitizenRequestDTO($caseData)
             );
             $detailsResponseDTO = $this->makeCitizenDetailsRequest(
                 new DetailsRequestDTO($citizenResponseDTO->id())
             );
-            return $this->compareRecords($caseData, $detailsResponseDTO);
-        } catch (\Exception $exception) {
-            $this->logger->error('DwpApiException: ' . $exception->getMessage());
-            throw new DwpApiException($exception->getMessage());
-        }
+            return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO);
+//        } catch (\Exception $exception) {
+//            $this->logger->error('DwpApiException: ' . $exception->getMessage());
+//            throw new DwpApiException($exception->getMessage());
+//        }
     }
 
-    public function compareRecords(CaseData $caseData, DetailsResponseDTO $detailsResponseDTO): array
+    public function compareRecords(
+        CaseData $caseData,
+        DetailsResponseDTO $detailsResponseDTO,
+        CitizenResponseDTO $citizenResponseDTO
+    ): array
     {
+        if (
+            $citizenResponseDTO->matchScenario() !== 'Matched on NINO' ||
+            $detailsResponseDTO->verified() !== 'verified'
+        ) {
+            return [
+                $caseData->idMethodIncludingNation->id_value,
+                'NO_MATCH',
+                Response::STATUS_CODE_200
+            ];
+        }
         return [
             $caseData->idMethodIncludingNation->id_value,
             'PASS',

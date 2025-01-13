@@ -36,9 +36,9 @@ class DwpApiServiceFactory implements FactoryInterface
         //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/{guid}/citizens
         //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/match
 
-        $baseUriCitizen = 'http://dwp-mock/';
+        $baseUriCitizen = 'http://dwp-mock:8080/';
 
-        $baseUriMatch  = 'http://dwp-mock/';
+        $baseUriMatch  = 'http://dwp-mock:8080/capi/v2/citizens/match';
 
         if (! is_string($baseUriCitizen) || empty($baseUriCitizen)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");

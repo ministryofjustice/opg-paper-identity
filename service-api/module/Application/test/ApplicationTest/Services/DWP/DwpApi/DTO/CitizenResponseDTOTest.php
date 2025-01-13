@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Services\DWP\DwpApi\DTO;
 
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
+use Application\DWP\DwpApi\DwpApiException;
 use PHPUnit\Framework\TestCase;
 
 class CitizenResponseDTOTest extends TestCase

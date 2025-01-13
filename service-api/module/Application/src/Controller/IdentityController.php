@@ -160,6 +160,7 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
+
         $caseData->idMethodIncludingNation->id_value = $data['nino'];
 
         try {
@@ -176,7 +177,7 @@ class IdentityController extends AbstractActionController
         $ninoStatus = $this->dwpApiService->validateNINO($caseData);
 
         $response = [
-            'status' => $ninoStatus->toArray(),
+            'status' => $ninoStatus,
         ];
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);

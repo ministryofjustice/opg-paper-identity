@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
+use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
+use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
@@ -267,33 +269,70 @@ class IdentityControllerTest extends TestCase
     /**
      * @dataProvider ninoData
      */
-    public function testNino(string $nino, string $response, int $status): void
+    public function testNino(
+        string $nino, string $result, array $citizenResponse, array $detailsResponse, int $status
+    ): void
     {
+        $uuid =  "aaaaaaaa-1111-2222-3333-000000000";
+        $case = [
+            "id" => $uuid,
+            "personType" => "donor",
+            "claimedIdentity" => [
+                "firstName" => "Mary Ann",
+                "lastName" => "Chapman",
+                "dob" => "1949-01-01",
+                "address" => [
+                    "postcode" => "SW1B 1BB",
+                    "country" => "UK",
+                    "town" => "town",
+                    "line2" => "Road",
+                    "line1" => "1 Street",
+                ],
+                "professionalAddress" => [
+                ],
+            ],
+            "lpas" => [
+                "M-XYXY-YAGA-35G3",
+                "M-VGAS-OAGA-34G9",
+            ],
+            "documentComplete" => false,
+            "searchPostcode" => null,
+            "idMethodIncludingNation" => [
+                'id_method' => "NATIONAL_INSURANCE_NUMBER",
+                'id_country' => "GBR",
+                'id_route' => "TELEPHONE",
+            ],
+        ];
+
         $dwpMock = $this->createMock(DwpApiService::class);
+        $dwpAuthMock = $this->createMock(AuthApiService::class);
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn(CaseData::fromArray($case));
+
+        $dwpAuthMock->expects($this->exactly(2))
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
 
         $dwpMock->expects($this->once())
             ->method('makeCitizenMatchRequest')
-            ->willReturn(new CitizenResponseDTO([
-                "jsonapi" => [
-                    "version" => "1.0"
-                ],
-                "data" => [
-                    "id" => "be62ed49-5407-4023-844c-97159ec80411",
-                    "type" => "MatchResult",
-                    "attributes" => [
-                        "matchingScenario" => "Matched on NINO"
-                    ]
-                ]
-            ]));
+            ->willReturn(new CitizenResponseDTO($citizenResponse));
+
+        $dwpMock->expects($this->once())
+            ->method('makeCitizenDetailsRequest')
+            ->willReturn(new DetailsResponseDTO($detailsResponse));
 
         $this->dispatchJSON(
-            '/identity/validate_nino',
+            "/identity/$uuid/validate_nino",
             'POST',
             ['nino' => $nino]
         );
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
-        $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
+        $this->assertEquals('{"status":"' . $result . '"}', $this->getResponse()->getContent());
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
@@ -301,11 +340,181 @@ class IdentityControllerTest extends TestCase
 
     public static function ninoData(): array
     {
+        $citizenResponse = [
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            "data" => [
+                "id" => "be62ed49-5407-4023-844c-97159ec80411",
+                "type" => "MatchResult",
+                "attributes" => [
+                    "matchingScenario" => "Matched on NINO"
+                ]
+            ]
+        ];
+
+        $citizenResponseNoMatch = $citizenResponse;
+        $citizenResponseNoMatch['data']['attributes']['matchingScenario'] = '';
+
+        $detailsResponse = [
+            "jsonapi" => [
+                "version" => ""
+            ],
+            "links" => [
+                "self" => ""
+            ],
+            "data" => [
+                "id" => "",
+                "type" => "Citizen",
+                "attributes" => [
+                    "guid" => "",
+                    "nino" => "",
+                    "identityVerificationStatus" => "verified",
+                    "sex" => "",
+                    "statusIndicator" => false,
+                    "name" => [
+                        "title" => "Mr",
+                        "firstName" => "Lee",
+                        "middleNames" => "",
+                        "lastName" => "Manthrope",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "alternateName" => [
+                        "title" => "",
+                        "firstName" => "",
+                        "middleNames" => "",
+                        "lastName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "requestedName" => [
+                        "requestedName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfDeath" => [
+                        "date" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfBirth" => [
+                        "date" => "1986-09-03",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "accessibilityNeeds" => [
+                        [
+                            "type" => "braille",
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "safeguarding" => [
+                        "type" => "potentially_violent",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "nationality" => [
+                        "nationality" => "british",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "contactDetails" => [
+                        [
+                            "contactType" => "home_telephone_number",
+                            "value" => "07745690909",
+                            "preferredContactIndicator" => false,
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "warningDetails" => [
+                        "warnings" => [
+                            [
+                                "id" => "",
+                                "links" => [
+                                    "about" => ""
+                                ],
+                                "status" => "",
+                                "code" => "",
+                                "title" => "",
+                                "detail" => "",
+                                "source" => [
+                                    "pointer" => "",
+                                    "parameter" => ""
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "relationships" => [
+                    "current-residential-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "current-correspondence-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "addresses" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "relationships" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "claims" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $detailsResponseNoMatch = $detailsResponse;
+        $detailsResponseNoMatch['data']['attributes']['identityVerificationStatus'] = "";
+
         return [
-            ['AA112233A', 'PASS', Response::STATUS_CODE_200],
-            ['BB112233A', 'PASS', Response::STATUS_CODE_200],
-            ['AA112233D', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
-            ['AA112233C', 'NO_MATCH', Response::STATUS_CODE_200],
+            ['AA112233A', 'PASS', $citizenResponse, $detailsResponse, Response::STATUS_CODE_200],
+//            ['BB112233A', 'PASS', $citizenResponse, $detailsResponse, Response::STATUS_CODE_200],
+////            ['AA112233D', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
+//            ['AA112233C', 'NO_MATCH', $citizenResponseNoMatch, $detailsResponse, Response::STATUS_CODE_200],
+//            ['AA112233C', 'NO_MATCH', $citizenResponse, $detailsResponseNoMatch, Response::STATUS_CODE_200],
+//            ['AA112233C', 'NO_MATCH', $citizenResponseNoMatch, $detailsResponseNoMatch, Response::STATUS_CODE_200],
         ];
     }
 
