@@ -41,6 +41,10 @@ class KbvController extends AbstractActionController
         }
         $view->setVariable('details_data', $detailsData);
 
+//        echo "<pre>";
+//        var_dump($detailsData);
+//        echo "</pre>";
+
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
         if ($questionsData === false) {

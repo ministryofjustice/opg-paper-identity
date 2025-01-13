@@ -8,6 +8,7 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
+use Application\Model\Entity\IdentityIQ;
 use Application\Model\Entity\IIQControl;
 use Application\Model\Entity\KBVQuestion;
 use Psr\Log\LoggerInterface;
@@ -120,6 +121,12 @@ class KBVService implements KBVServiceInterface
         $nextTransactionId = $result['result']['NextTransId']->string;
 
         if (isset($result['questions'])) {
+            if (! isset($caseData->identityIQ)) {
+                $caseData->identityIQ = IdentityIQ::fromArray([
+                    'kbvQuestions' => []
+                ]);
+            }
+
             $questions = [
                 ...$caseData->identityIQ->kbvQuestions,
                 ...$this->formatQuestions($result['questions']),
