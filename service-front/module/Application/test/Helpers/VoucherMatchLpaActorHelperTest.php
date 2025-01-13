@@ -50,25 +50,25 @@ class VoucherMatchLpaActorHelperTest extends TestCase
             ],
             "attorneys" => [
                 [
-                    "status" => "active",
+                    "appointmentType" => "original",
                     "firstNames" => "attorneyfirstname",
                     "lastName" => "attorneylastname",
                     "dateOfBirth" => "1980-01-05",
                 ],
                 [
-                    "status" => "active",
+                    "appointmentType" => "original",
                     "firstNames" => "attorneyfirstname",
                     "lastName" => "attorneylastname",
                     "dateOfBirth" => "1990-01-05",
                 ],
                 [
-                    "status" => "active",
+                    "appointmentType" => "original",
                     "firstNames" => "differentAttorneyfirstname",
                     "lastName" => "differentAttorneylastname",
                     "dateOfBirth" => "1980-01-05",
                 ],
                 [
-                    "status" => "replacement",
+                    "appointmentType" => "replacement",
                     "firstNames" => "replacementAttorneyfirstname",
                     "lastName" => "replacementAttorneylastname",
                     "dateOfBirth" => "1990-01-05",

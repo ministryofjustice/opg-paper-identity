@@ -37,19 +37,19 @@ class VoucherMatchLpaActorHelper
                 "type" => LpaActorTypes::CP->value,
             ];
             foreach ($lpasData["opg.poas.lpastore"]["attorneys"] as $attorney) {
-                if (in_array($attorney["status"], ["active", "removed"])) {
-                    $actors[] = [
-                        "firstName" => $attorney["firstNames"],
-                        "lastName" => $attorney["lastName"],
-                        "dob" => $attorney["dateOfBirth"],
-                        "type" => LpaActorTypes::ATTORNEY->value,
-                    ];
-                } elseif ($attorney["status"] === "replacement") {
+                if ($attorney["appointmentType"] === "replacement") {
                     $actors[] = [
                         "firstName" => $attorney["firstNames"],
                         "lastName" => $attorney["lastName"],
                         "dob" => $attorney["dateOfBirth"],
                         "type" => LpaActorTypes::R_ATTORNEY->value,
+                    ];
+                } else {
+                    $actors[] = [
+                        "firstName" => $attorney["firstNames"],
+                        "lastName" => $attorney["lastName"],
+                        "dob" => $attorney["dateOfBirth"],
+                        "type" => LpaActorTypes::ATTORNEY->value,
                     ];
                 }
             }
