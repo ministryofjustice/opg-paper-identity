@@ -131,7 +131,7 @@ class SiriusApiService
         }
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
-        $response = $this->client->get('/api/v1/digital-lpas/' . $uid, [
+        $response = $this->client->get('/api/v1/digital-lpas/' . urlencode($uid), [
             'headers' => $authHeaders
         ]);
 
