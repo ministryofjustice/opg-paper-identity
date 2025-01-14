@@ -1,8 +1,7 @@
 {% extends "layout/layout" %}
 
 {% block beforeMain %}
-    <! –– key/values in vouching_for overwrite details_data ––>
-    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}{% endblock %}
+    {% include 'layout/id_check_banner.twig' with details_data %}{% endblock %}
 {% block content %}
 <form method="POST">
     <fieldset class="govuk-fieldset govuk-!-width-two-thirds">
