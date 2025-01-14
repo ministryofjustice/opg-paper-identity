@@ -36,7 +36,7 @@
         </div>
     {% endif %}
 
-    <h1 class="govuk-heading-xl">{% block title %}Vouch or another donor{% endblock %}</h1>
+    <h1 class="govuk-heading-xl">{% block title %}Vouch for another donor{% endblock %}</h1>
 
     <form method="POST">
         <div class="govuk-form-group govuk-!-width-two-thirds {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
@@ -72,13 +72,13 @@
     {% if lpa_response and not lpa_response['problem'] %}
         <div>
             <table class="govuk-table govuk-!-width-two-thirds">
-                <caption class="govuk-table__caption govuk-table__caption--m" id="lpaCount">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} LPAs found</strong></caption>
+                <caption class="govuk-table__caption govuk-table__caption--m" id="lpaCount">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} eligible LPA{% if lpa_response['lpasCount'] > 1 %}s{% endif %} found for this donor.</strong></caption>
                 <tbody class="govuk-table__body">
                 <tr class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">LPA reference number(s)</th>
                     <td class="govuk-table__cell">
                     {% for lpa in lpa_response['lpas'] %}
-                        <span class="app-type-text-colour--{{ lpa['type'] }}">{{ lpa['type'] }}</span>{{ lpa['uId'] }}{% if loop.last == false %}<br>{% endif %}
+                        <span class="app-type-text-colour--{{ lpa['type'] }}">{{ lpa['type'] }}</span> {{ lpa['uId'] }}{% if loop.last == false %}<br>{% endif %}
                     {% endfor %}
                     </td>
                     <td class="govuk-table__cell"></td>

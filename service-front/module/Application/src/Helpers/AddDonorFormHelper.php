@@ -132,8 +132,8 @@ class AddDonorFormHelper
             }
             if ($status == 'draft') {
                 $response["problem"] = true;
-                $response["message"] = "This LPA cannot be added as it’s status is set to Draft." .
-                    " LPAs need to be in the In Progress status to be added to this ID check.";
+                $response["message"] = "This LPA cannot be added as it’s status is set to \"Draft\"." .
+                    " LPAs need to be in the \"In progress\" status to be added to this ID check.";
             }
         } else {
             $response["problem"] = true;
@@ -317,8 +317,9 @@ class AddDonorFormHelper
         });
         if (empty($lpas)) {
             $response["problem"] = true;
-            $response["message"] = "These LPAs cannot be added.";
-
+            $response["message"] =
+                "These LPAs cannot be added as they do not have the correct status for an ID check. " .
+                "LPAs need to be in the \"In progress\" status to be added to this identity check.";
             return $response;
         }
 
