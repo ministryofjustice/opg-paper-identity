@@ -64,7 +64,8 @@ class SessionStatusServiceTest extends TestCase
             'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'notificationState' => '',
             'state' => '',
-            'result' => false
+            'result' => false,
+            'searchPostcode' => null,
         ]);
 
         $result = $this->sut->getSessionStatus($caseData);

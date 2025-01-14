@@ -6,6 +6,7 @@ namespace ApplicationTest\Experian\IIQ;
 
 use Application\Experian\IIQ\ConfigBuilder;
 use Application\Model\Entity\CaseData;
+use Application\Model\Entity\IdentityIQ;
 use Application\Model\Entity\IIQControl;
 use PHPUnit\Framework\TestCase;
 
@@ -191,9 +192,11 @@ class ConfigBuilderTest extends TestCase
         $configBuilder = new ConfigBuilder();
 
         $caseData = CaseData::fromArray([
-            'iiqControl' => IIQControl::fromArray([
-                'urn' => 'test UUID',
-                'authRefNo' => 'abc',
+            'identityIQ' => IdentityIQ::fromArray([
+                'iiqControl' => IIQControl::fromArray([
+                    'urn' => 'test UUID',
+                    'authRefNo' => 'abc',
+                ])
             ]),
             'caseProgress' => [
                 'fraudScore' => [
