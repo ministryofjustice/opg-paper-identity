@@ -610,6 +610,11 @@ class IdentityController extends AbstractActionController
                 'idMethodIncludingNation',
                 $data,
             );
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'idRoute',
+                $data['id_route'],
+            );
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
