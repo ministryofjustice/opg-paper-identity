@@ -129,7 +129,6 @@ class KBVService implements KBVServiceInterface
             $questions = $caseData->identityIQ->kbvQuestions;
         }
 
-        $this->logger->info("questions", $questions);
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
