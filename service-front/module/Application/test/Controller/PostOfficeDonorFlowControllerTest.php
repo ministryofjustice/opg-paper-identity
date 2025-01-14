@@ -159,6 +159,40 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/post_office_documents');
     }
 
+    /**
+     * @dataProvider postOfficeDocumnentsRedirectData
+     */
+    public function testPostOfficeDocumentsRedirect(
+        string $selectedOption,
+        string $personType,
+        string $expectedRedirect
+    ): void {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+        $mockResponseDataIdDetails["personType"] = $personType;
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/post-office-documents", 'POST', [
+            'id_method' => $selectedOption
+        ]);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
+    }
+
+    public function postOfficeDocumnentsRedirectData(): array
+    {
+        return [
+            ['PASSPORT', 'donor', 'post-office-do-details-match'],
+            ['PASSPORT', 'voucher', 'vouching/voucher-name'],
+            ['NONUKID', 'certificateProvider', 'po-choose-country'],
+            ['NONUKID', 'voucher', 'po-choose-country'],
+        ];
+    }
+
     public function testWhatHappensNextPageWithData(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
@@ -259,12 +293,12 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/donor-choose-country", 'GET');
+        $this->dispatch("/$this->uuid/po-choose-country", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(PostOfficeFlowController::class);
         $this->assertControllerClass('PostOfficeFlowController');
-        $this->assertMatchedRouteName('root/donor_choose_country');
+        $this->assertMatchedRouteName('root/po_choose_country');
 
         $this->assertQueryContentContains('[name="id_country"] > option[value="AUT"]', 'Austria');
         $this->assertNotQuery('[name="id_country"] > option[value="GBR"]');
@@ -291,12 +325,12 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/donor-choose-country-id", 'GET');
+        $this->dispatch("/$this->uuid/po-choose-country-id", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(PostOfficeFlowController::class);
         $this->assertControllerClass('PostOfficeFlowController');
-        $this->assertMatchedRouteName('root/donor_choose_country_id');
+        $this->assertMatchedRouteName('root/po_choose_country_id');
     }
 
     public function testPostOfficeCountriesIdPageSubmit(): void
@@ -316,9 +350,8 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('updateIdMethodWithCountry')
             ->with($this->uuid, ['id_method' => 'PASSPORT']);
 
-        $this->dispatch("/$this->uuid/donor-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
+        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
         $this->assertResponseStatusCode(302);
-
         $this->assertRedirectTo(sprintf('/%s/donor-details-match-check', $this->uuid));
     }
 }

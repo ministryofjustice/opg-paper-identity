@@ -1,13 +1,12 @@
 {% extends "layout/layout" %}
 
 {% block beforeMain %}
-    <! –– key/values in vouching_for overwrite details_data ––>
-    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
 {% endblock %}
 
 {% block content %}
     <div class="govuk-!-width-two-thirds">
-        <h1 class="govuk-heading-xl">{% block title %}Vouching for  {{ vouching_for.firstName }} {{ vouching_for.lastName}}{% endblock %}</h1>
+        <h1 class="govuk-heading-xl">{% block title %}Vouching for  {{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}{% endblock %}</h1>
         <p class="govuk-body govuk-!-margin-bottom-6">
             To vouch for the donor, the person vouching must have been asked by the donor to vouch. They will need to complete an identity check over the phone,
             or alternatively at the Post Office. They should have details of what is required in the letter passed to them by the donor.
@@ -69,7 +68,7 @@
                         <input class="govuk-checkboxes__input" id="declaration_confirmed" name="declaration" type="checkbox" value="declaration_confirmed"
                         {% if form.get('declaration').value == "declaration_confirmed" %}checked{% endif %}>
                         <label class="govuk-label govuk-checkboxes__label" for="declaration">
-                        To the best of your knowledge, the person who asked you to vouch for them is {{ vouching_for.firstName }} {{ vouching_for.lastName }}
+                        To the best of your knowledge, the person who asked you to vouch for them is {{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}
                         and you have known them for at least 2 years.
                         </label>
                     </div>
