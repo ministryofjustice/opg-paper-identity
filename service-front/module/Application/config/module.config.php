@@ -489,20 +489,20 @@ return [
                             ],
                         ],
                     ],
-                    'donor_choose_country' => [
+                    'po_choose_country' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-choose-country',
+                            'route' => '/:uuid/po-choose-country',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountry',
                             ],
                         ],
                     ],
-                    'donor_choose_country_id' => [
+                    'po_choose_country_id' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-choose-country-id',
+                            'route' => '/:uuid/po-choose-country-id',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountryId',
@@ -616,6 +616,36 @@ return [
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
                                 'action' => 'enterAddressManual',
+                            ],
+                        ],
+                    ],
+                    'voucher_confirm_donors' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/confirm-donors',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'confirmDonors',
+                            ],
+                        ],
+                    ],
+                    'voucher_add_donor' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/add-donor',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'addDonor',
+                            ],
+                        ],
+                    ],
+                    'voucher_remove_lpa' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'removeLpa',
                             ],
                         ],
                     ],

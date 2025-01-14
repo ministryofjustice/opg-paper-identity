@@ -52,6 +52,9 @@ class PostOfficeFlowController extends AbstractActionController
         $form = $this->createForm(IdMethod::class);
         $view = new ViewModel();
 
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
         if (count($this->getRequest()->getPost())) {
             if (array_key_exists('check_button', $this->getRequest()->getPost()->toArray())) {
                 $view->setVariable('date_sub_form', $dateSubForm);
@@ -68,21 +71,21 @@ class PostOfficeFlowController extends AbstractActionController
 
                     if ($formData['id_method'] == 'NONUKID') {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
-                        return $this->redirect()->toRoute("root/donor_choose_country", ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute("root/po_choose_country", ['uuid' => $uuid]);
                     } else {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, [
                             'id_method' => $formData['id_method'],
                             'id_country' => PostOfficeCountry::GBR->value,
                         ]);
+                        if ($detailsData["personType"] === "voucher") {
+                            return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+                        }
                         return $this->redirect()->toRoute("root/po_do_details_match", ['uuid' => $uuid]);
                     }
                 }
             }
         }
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate($templates['default']);
     }
@@ -299,7 +302,7 @@ class PostOfficeFlowController extends AbstractActionController
 
             $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
-            return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("root/po_choose_country_id", ['uuid' => $uuid]);
         }
 
         $countriesData = PostOfficeCountry::cases();
@@ -336,6 +339,9 @@ class PostOfficeFlowController extends AbstractActionController
             $formData = $this->formToArray($form);
             $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
 
+            if ($detailsData["personType"] === "voucher") {
+                return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+            }
             return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
         }
 
