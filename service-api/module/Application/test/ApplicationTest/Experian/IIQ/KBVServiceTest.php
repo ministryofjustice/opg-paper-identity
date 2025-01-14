@@ -110,6 +110,7 @@ class KBVServiceTest extends TestCase
         $writeHandler->expects($this->once())
             ->method('updateCaseData')
             ->willReturnCallback(
+            /** @psalm-suppress MissingClosureParamType */
                 fn(...$params) => match (true) {
                     $params[0] === $uuid && $params[1] === 'identityIQ'
                     && isset($params[2]['kbvQuestions'])
