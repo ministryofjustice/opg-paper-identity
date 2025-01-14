@@ -137,8 +137,8 @@ class AddDonorFormHelperTest extends TestCase
                 ['status' => 'draft'],
                 [
                     'problem' => true,
-                    'message' => 'This LPA cannot be added as it’s status is set to Draft. ' .
-                        'LPAs need to be in the In Progress status to be added to this ID check.'
+                    'message' => "This LPA cannot be added as it’s status is set to \"Draft\". " .
+                        "LPAs need to be in the \"In progress\" status to be added to this ID check."
                     ]
                 ],
             [
@@ -336,7 +336,8 @@ class AddDonorFormHelperTest extends TestCase
 
         $multipleProblemResponse = array_merge($baseResponse, [
             'problem' => true,
-            'message' => 'These LPAs cannot be added.',
+            'message' => "These LPAs cannot be added as they do not have the correct status for an ID check. " .
+                "LPAs need to be in the \"In progress\" status to be added to this identity check.",
         ]);
 
         $lpaOne = self::getLpa([

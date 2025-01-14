@@ -1085,7 +1085,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     ]
                 ],
                 [
-                    ["caption[id=lpaCount]", 'Results: 2 LPAs found'],
+                    ["caption[id=lpaCount]", 'Results: 2 eligible LPAs found for this donor.'],
                     ["td[id=donorName]", 'Joe Blogs'],
                     ["td[id=donorDob]", '01 Feb 2000'],
                     ["span[id=declarationError]", "Confirm declaration to continue"],
