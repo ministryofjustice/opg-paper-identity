@@ -8,8 +8,10 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
+use Application\Model\Entity\IdentityIQ;
 use Application\Model\Entity\IIQControl;
 use Application\Model\Entity\KBVQuestion;
+use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -59,8 +61,8 @@ class KBVService implements KBVServiceInterface
             throw new RuntimeException('Case not found');
         }
 
-        if (count($caseData->kbvQuestions)) {
-            return $caseData->kbvQuestions;
+        if ($caseData->identityIQ && count($caseData->identityIQ->kbvQuestions)) {
+            return $caseData->identityIQ->kbvQuestions;
         }
 
         $saaRequest = $this->configBuilder->buildSAARequest($caseData);
@@ -68,19 +70,18 @@ class KBVService implements KBVServiceInterface
 
         $formattedQuestions = $this->formatQuestions($questions['questions']);
 
-        $this->writeHandler->updateCaseData(
-            $caseData->id,
-            'kbvQuestions',
-            $formattedQuestions
-        );
+        $identityIQ = [
+            'kbvQuestions' => $formattedQuestions,
+            'iiqControl' => [
+                'urn' => $questions['control']['URN'],
+                'authRefNo' => $questions['control']['AuthRefNo'],
+            ]
+        ];
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
-            'iiqControl',
-            IIQControl::fromArray([
-                'urn' => $questions['control']['URN'],
-                'authRefNo' => $questions['control']['AuthRefNo'],
-            ])
+            'identityIQ',
+            $identityIQ
         );
 
         return $formattedQuestions;
@@ -97,12 +98,12 @@ class KBVService implements KBVServiceInterface
             throw new RuntimeException('Case not found');
         }
 
-        if (! count($caseData->kbvQuestions)) {
+        if (! $caseData->identityIQ || ! count($caseData->identityIQ->kbvQuestions)) {
             throw new RuntimeException('KBV questions have not been created yet');
         }
 
         $iiqFormattedAnswers = [];
-        foreach ($caseData->kbvQuestions as &$question) {
+        foreach ($caseData->identityIQ->kbvQuestions as &$question) {
             if (key_exists($question->externalId, $answers)) {
                 $iiqFormattedAnswers[] = [
                     'experianId' => $question->externalId,
@@ -121,16 +122,18 @@ class KBVService implements KBVServiceInterface
 
         if (isset($result['questions'])) {
             $questions = [
-                ...$caseData->kbvQuestions,
+                ...$caseData->identityIQ->kbvQuestions,
                 ...$this->formatQuestions($result['questions']),
             ];
         } else {
-            $questions = $caseData->kbvQuestions;
+            $questions = $caseData->identityIQ->kbvQuestions;
         }
+
+        $this->logger->info("questions", $questions);
 
         $this->writeHandler->updateCaseData(
             $caseData->id,
-            'kbvQuestions',
+            'identityIQ.kbvQuestions',
             $questions
         );
 

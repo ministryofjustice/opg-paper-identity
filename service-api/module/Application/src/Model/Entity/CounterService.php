@@ -25,6 +25,12 @@ class CounterService extends Entity
     #[Annotation\Required(false)]
     public string $state = '';
 
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    #[Annotation\Required(false)]
+    public ?string $searchPostcode = null;
+
     #[Annotation\Required(false)]
     #[Annotation\Validator(IsType::class, options: ['type' => 'boolean'])]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
