@@ -81,6 +81,7 @@ class SiriusDataProcessorHelperTest extends TestCase
                     'town' => 'Test town',
                 ],
                 'id' => 123,
+                'uId' => 'M-0000-0000-0000',
             ],
         ];
 
