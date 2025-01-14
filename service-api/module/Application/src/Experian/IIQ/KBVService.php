@@ -120,12 +120,6 @@ class KBVService implements KBVServiceInterface
 
         $nextTransactionId = $result['result']['NextTransId']->string;
 
-        if (! isset($caseData->identityIQ)) {
-            $caseData->identityIQ = IdentityIQ::fromArray([
-                'kbvQuestions' => []
-            ]);
-        }
-
         if (isset($result['questions'])) {
             $questions = [
                 ...$caseData->identityIQ->kbvQuestions,
