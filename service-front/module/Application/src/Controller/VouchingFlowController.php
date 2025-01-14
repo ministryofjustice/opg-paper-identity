@@ -58,7 +58,6 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(ConfirmVouching::class);
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
@@ -101,7 +100,6 @@ class VouchingFlowController extends AbstractActionController
         }
 
         $optionsData = $identityDocs;
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('service_availability', $serviceAvailability);
         $view->setVariable('form', $form);
 
@@ -184,7 +182,6 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(VoucherName::class);
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
@@ -228,7 +225,6 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(VoucherBirthDate::class);
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
@@ -284,7 +280,6 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(Postcode::class);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $postcode = $this->formToArray($form)['postcode'];
@@ -393,7 +388,6 @@ class VouchingFlowController extends AbstractActionController
         }
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData["vouchingFor"] ?? null);
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/vouching/enter_address_manual');
@@ -424,7 +418,6 @@ class VouchingFlowController extends AbstractActionController
 
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);
         $view->setVariable('lpa_details', $lpaDetails);
         $view->setVariable('case_uuid', $uuid);
 
@@ -440,7 +433,6 @@ class VouchingFlowController extends AbstractActionController
 
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('vouching_for', $detailsData['vouchingFor'] ?? []);
         $view->setVariable('form', $form);
         $view->setVariable('case_uuid', $uuid);
 
