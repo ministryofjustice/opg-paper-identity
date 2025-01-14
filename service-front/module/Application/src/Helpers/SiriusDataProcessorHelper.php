@@ -11,54 +11,7 @@ use DateTime;
 use Laminas\Http\Request;
 
 /**
- * @psalm-type Address = array{
- *  line1: string,
- *  line2?: string,
- *  line3?: string,
- *  town?: string,
- *  postcode?: string,
- *  country: string,
- * }
- *
- * @psalm-type Attorney = array{
- *   firstNames: string,
- *   lastName: string,
- *   dateOfBirth: string,
- * }
- *
- * @psalm-type Lpa = array{
- *  "opg.poas.sirius": ?array{
- *    id: int,
- *    caseSubtype: string,
- *    donor: ?array{
- *      firstname: string,
- *      surname: string,
- *      dob: string,
- *      addressLine1: string,
- *      addressLine2?: string,
- *      addressLine3?: string,
- *      town?: string,
- *      postcode?: string,
- *      country: string,
- *    },
- *  },
- *  "opg.poas.lpastore": ?array{
- *    lpaType: string,
- *    donor: ?array{
- *      firstNames: string,
- *      lastName: string,
- *      dateOfBirth: string,
- *      address: Address,
- *    }|null,
- *    certificateProvider: ?array{
- *      firstNames: string,
- *      lastName: string,
- *      dateOfBirth: string,
- *      address: Address,
- *    },
- *    attorneys: ?Attorney[]|null,
- *  },
- * }
+ * @psalm-import-type Lpa from SiriusApiService
  */
 class SiriusDataProcessorHelper
 {
