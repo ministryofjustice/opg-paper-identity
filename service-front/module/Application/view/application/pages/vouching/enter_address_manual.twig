@@ -1,7 +1,7 @@
 {% extends "layout/layout" %}
 
 {% block beforeMain %}
-    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
 {% endblock %}
 {% block content %}
 {% if address_match %}
