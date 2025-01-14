@@ -489,20 +489,20 @@ return [
                             ],
                         ],
                     ],
-                    'donor_choose_country' => [
+                    'po_choose_country' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-choose-country',
+                            'route' => '/:uuid/po-choose-country',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountry',
                             ],
                         ],
                     ],
-                    'donor_choose_country_id' => [
+                    'po_choose_country_id' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-choose-country-id',
+                            'route' => '/:uuid/po-choose-country-id',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountryId',
