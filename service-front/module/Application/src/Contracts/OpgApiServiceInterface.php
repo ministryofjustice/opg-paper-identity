@@ -23,7 +23,7 @@ namespace Application\Contracts;
  *
  * @psalm-type CaseData = array{
  *   lpas: string[],
- *   personType: "donor"|"certificateProvider",
+ *   personType: "donor"|"certificateProvider"|"voucher",
  *   firstName: string,
  *   lastName: string,
  *   dob: string,
