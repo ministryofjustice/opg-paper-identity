@@ -32,7 +32,7 @@ For local development we mock several external services. The mock behaviour is e
 
 When requesting an LPA from Sirius, only certain LPA numbers are supported by the mock service. This is to ensure that the user data returned is consistent with the other services presently mocked by the system, eg Experian.
 
-The LPAs are as follows: 
+The LPAs are as follows:
 
 M-XYXY-YAGA-35G3 - donor that will pass Experian's Fraudscore
 M-XYXY-YAGA-35G4 - donor that will fail Experian's Fraudscore with a no decision (ie person cannot be identified)
@@ -79,3 +79,22 @@ The mock KBV service will return a random selection of the following questions. 
 When requesting the nearest Post Office to a postcode, the mock will always return the same three results.
 
 When creating a session with the Post Office, the mock will always return a 2xx response as long as the request shape matches the API specification.
+
+### Vouching Add Donor
+
+In the vouching route there is the option to add additional donors to be vouched for. To test the potential iterations of statuses/
+ID-matches a number of LPAs have been mocked locally. Here the uIDs and json-files with their data are given, you can look in the
+json files to find the names/dobs/addresses which will cause ID-match warnings/errors.
+
+- M-0000-0000-XXXX -> will return a 404
+
+- M-VOUC-HFOR-1001 -> voucherAddDonor.json
+- M-VOUC-HFOR-1002 -> voucherAddDonorLinked.json
+- M-VOUC-HFOR-2001 -> voucherAddAnotherDonor.json
+- M-VOUC-HFOR-3001 -> voucherAddDonorComplete.json
+- M-VOUC-HFOR-3002 -> voucherAddDonorDraft.json
+- M-VOUC-HFOR-3003 -> voucherAddDonorStatus.json
+- M-VOUC-HFOR-3004 -> voucherAddDonorLinkedStatus.json
+
+1001 and 1002 are linked, so both will be returned if either are searched for.
+All uIds starting with a 3 have a status which cannot be vouched for.
