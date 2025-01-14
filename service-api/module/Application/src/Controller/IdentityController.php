@@ -174,11 +174,7 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
-        $ninoStatus = $this->dwpApiService->validateNINO($caseData);
-
-        $response = [
-            'status' => $ninoStatus,
-        ];
+        $response = $this->dwpApiService->validateNINO($caseData);
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 

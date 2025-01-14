@@ -17,6 +17,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Laminas\Http\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -122,9 +123,10 @@ class DwpApiServiceTest extends TestCase
      * @dataProvider requestBodyData
      */
     public function testConstructCitizenRequestBody(
-        array $expected,
+        array             $expected,
         CitizenRequestDTO $dto
-    ): void {
+    ): void
+    {
         $this->assertEquals(
             $expected,
             $this->dwpApiService->constructCitizenRequestBody($dto),
@@ -481,5 +483,397 @@ class DwpApiServiceTest extends TestCase
         );
 
         $dwpApiService->makeCitizenDetailsRequest(new DetailsRequestDTO('case-id-string'));
+    }
+
+
+    /**
+     * @dataProvider compareRecordsData
+     */
+    public function testCompareRecords(
+        array $expected,
+        CaseData $caseData,
+        CitizenResponseDTO $citizenResponseDTO,
+        DetailsResponseDTO $detailsResponseDTO,
+    ): void {
+        $this->assertEquals(
+            $expected,
+            $this->dwpApiService->compareRecords(
+                $caseData,
+                $detailsResponseDTO,
+                $citizenResponseDTO
+            )
+        );
+    }
+
+    public static function compareRecordsData(): array
+    {
+        $successMatchDTO = new CitizenResponseDTO([
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            "data" => [
+                "id" => "be62ed49-5407-4023-844c-97159ec80411",
+                "type" => "MatchResult",
+                "attributes" => [
+                    "matchingScenario" => "Matched on NINO"
+                ]
+            ]
+        ]);
+
+        $noMatchDTO = new CitizenResponseDTO([
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            "data" => [
+                "id" => "",
+                "type" => "MatchResult",
+                "attributes" => [
+                    "matchingScenario" => ""
+                ]
+            ]
+        ]);
+
+        $successDetailsDTO = new DetailsResponseDTO([
+            "jsonapi" => [
+                "version" => ""
+            ],
+            "links" => [
+                "self" => ""
+            ],
+            "data" => [
+                "id" => "",
+                "type" => "Citizen",
+                "attributes" => [
+                    "guid" => "",
+                    "nino" => "",
+                    "identityVerificationStatus" => "verified",
+                    "sex" => "",
+                    "statusIndicator" => false,
+                    "name" => [
+                        "title" => "Mr",
+                        "firstName" => "Lee",
+                        "middleNames" => "",
+                        "lastName" => "Manthrope",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "alternateName" => [
+                        "title" => "",
+                        "firstName" => "",
+                        "middleNames" => "",
+                        "lastName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "requestedName" => [
+                        "requestedName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfDeath" => [
+                        "date" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfBirth" => [
+                        "date" => "1986-09-03",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "accessibilityNeeds" => [
+                        [
+                            "type" => "braille",
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "safeguarding" => [
+                        "type" => "potentially_violent",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "nationality" => [
+                        "nationality" => "british",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "contactDetails" => [
+                        [
+                            "contactType" => "home_telephone_number",
+                            "value" => "07745690909",
+                            "preferredContactIndicator" => false,
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "warningDetails" => [
+                        "warnings" => [
+                            [
+                                "id" => "",
+                                "links" => [
+                                    "about" => ""
+                                ],
+                                "status" => "",
+                                "code" => "",
+                                "title" => "",
+                                "detail" => "",
+                                "source" => [
+                                    "pointer" => "",
+                                    "parameter" => ""
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "relationships" => [
+                    "current-residential-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "current-correspondence-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "addresses" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "relationships" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "claims" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $failDetailsResponse = new DetailsResponseDTO([
+            "jsonapi" => [
+                "version" => ""
+            ],
+            "links" => [
+                "self" => ""
+            ],
+            "data" => [
+                "id" => "",
+                "type" => "Citizen",
+                "attributes" => [
+                    "guid" => "",
+                    "nino" => "",
+                    "identityVerificationStatus" => "",
+                    "sex" => "",
+                    "statusIndicator" => false,
+                    "name" => [
+                        "title" => "Mr",
+                        "firstName" => "Lee",
+                        "middleNames" => "",
+                        "lastName" => "Manthrope",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "alternateName" => [
+                        "title" => "",
+                        "firstName" => "",
+                        "middleNames" => "",
+                        "lastName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "requestedName" => [
+                        "requestedName" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfDeath" => [
+                        "date" => "",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "dateOfBirth" => [
+                        "date" => "1986-09-03",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "accessibilityNeeds" => [
+                        [
+                            "type" => "braille",
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "safeguarding" => [
+                        "type" => "potentially_violent",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "nationality" => [
+                        "nationality" => "british",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ],
+                    "contactDetails" => [
+                        [
+                            "contactType" => "home_telephone_number",
+                            "value" => "07745690909",
+                            "preferredContactIndicator" => false,
+                            "metadata" => [
+                                "verificationType" => "self_asserted",
+                                "startDate" => "2024-12-11",
+                                "endDate" => "2024-12-11"
+                            ]
+                        ]
+                    ],
+                    "warningDetails" => [
+                        "warnings" => [
+                            [
+                                "id" => "",
+                                "links" => [
+                                    "about" => ""
+                                ],
+                                "status" => "",
+                                "code" => "",
+                                "title" => "",
+                                "detail" => "",
+                                "source" => [
+                                    "pointer" => "",
+                                    "parameter" => ""
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "relationships" => [
+                    "current-residential-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "current-correspondence-address" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "addresses" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "relationships" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ],
+                    "claims" => [
+                        "links" => [
+                            "self" => ""
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $caseData = CaseData::fromArray(static::CASE);
+
+        return [
+            [
+                [
+                    $caseData->idMethodIncludingNation->id_value,
+                    'PASS',
+                    Response::STATUS_CODE_200
+                ],
+                $caseData,
+                $successMatchDTO,
+                $successDetailsDTO
+            ],
+            [
+                [
+                    $caseData->idMethodIncludingNation->id_value,
+                    'NO_MATCH',
+                    Response::STATUS_CODE_200
+                ],
+                $caseData,
+                $noMatchDTO,
+                $failDetailsResponse
+            ],
+            [
+                [
+                    $caseData->idMethodIncludingNation->id_value,
+                    'NO_MATCH',
+                    Response::STATUS_CODE_200
+                ],
+                $caseData,
+                $successMatchDTO,
+                $failDetailsResponse
+            ],
+            [
+                [
+                    $caseData->idMethodIncludingNation->id_value,
+                    'NO_MATCH',
+                    Response::STATUS_CODE_200
+                ],
+                $caseData,
+                $noMatchDTO,
+                $successDetailsDTO
+            ],
+        ];
     }
 }

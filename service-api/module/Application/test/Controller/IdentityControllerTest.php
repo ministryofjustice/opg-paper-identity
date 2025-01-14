@@ -32,6 +32,7 @@ class IdentityControllerTest extends TestCase
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
     private FraudApiService&MockObject $experianCrosscoreFraudApiService;
+    private DwpApiService&MockObject $dwpServiceMock;
 
     public function setUp(): void
     {
@@ -51,6 +52,7 @@ class IdentityControllerTest extends TestCase
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
+        $this->dwpServiceMock = $this->createMock(DwpApiService::class);
 
 
         parent::setUp();
@@ -62,6 +64,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
+        $serviceManager->setService(DwpApiService::class, $this->dwpServiceMock);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -270,7 +273,11 @@ class IdentityControllerTest extends TestCase
      * @dataProvider ninoData
      */
     public function testNino(
-        string $nino, string $result, array $citizenResponse, array $detailsResponse, int $status
+        string $nino,
+        array $result,
+        array $citizenResponse,
+        array $detailsResponse,
+        int $status
     ): void
     {
         $uuid =  "aaaaaaaa-1111-2222-3333-000000000";
@@ -304,24 +311,17 @@ class IdentityControllerTest extends TestCase
             ],
         ];
 
-        $dwpMock = $this->createMock(DwpApiService::class);
-        $dwpAuthMock = $this->createMock(AuthApiService::class);
-
         $this->dataQueryHandlerMock
             ->expects($this->once())
             ->method('getCaseByUUID')
             ->with($uuid)
             ->willReturn(CaseData::fromArray($case));
 
-        $dwpAuthMock->expects($this->exactly(2))
-            ->method('retrieveCachedTokenResponse')
-            ->willReturn('access_token');
-
-        $dwpMock->expects($this->once())
+        $this->dwpServiceMock->expects($this->once())
             ->method('makeCitizenMatchRequest')
             ->willReturn(new CitizenResponseDTO($citizenResponse));
 
-        $dwpMock->expects($this->once())
+        $this->dwpServiceMock->expects($this->once())
             ->method('makeCitizenDetailsRequest')
             ->willReturn(new DetailsResponseDTO($detailsResponse));
 
@@ -330,9 +330,12 @@ class IdentityControllerTest extends TestCase
             'POST',
             ['nino' => $nino]
         );
+
+        die($this->getResponse()->getContent());
+
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
-        $this->assertEquals('{"status":"' . $result . '"}', $this->getResponse()->getContent());
+        $this->assertEquals(json_encode($result), $this->getResponse()->getContent());
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
@@ -509,7 +512,17 @@ class IdentityControllerTest extends TestCase
         $detailsResponseNoMatch['data']['attributes']['identityVerificationStatus'] = "";
 
         return [
-            ['AA112233A', 'PASS', $citizenResponse, $detailsResponse, Response::STATUS_CODE_200],
+            [
+                'AA112233A',
+                [
+                    'AA112233A',
+                    'PASS',
+                    Response::STATUS_CODE_200
+                ],
+                $citizenResponse,
+                $detailsResponse,
+                Response::STATUS_CODE_200
+            ],
 //            ['BB112233A', 'PASS', $citizenResponse, $detailsResponse, Response::STATUS_CODE_200],
 ////            ['AA112233D', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
 //            ['AA112233C', 'NO_MATCH', $citizenResponseNoMatch, $detailsResponse, Response::STATUS_CODE_200],

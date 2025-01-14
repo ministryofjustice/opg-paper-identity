@@ -51,7 +51,7 @@ class DwpApiService
 
     public function validateNINO(CaseData $caseData): array
     {
-//        try {
+        try {
             $citizenResponseDTO = $this->makeCitizenMatchRequest(
                 new CitizenRequestDTO($caseData)
             );
@@ -59,10 +59,10 @@ class DwpApiService
                 new DetailsRequestDTO($citizenResponseDTO->id())
             );
             return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO);
-//        } catch (\Exception $exception) {
-//            $this->logger->error('DwpApiException: ' . $exception->getMessage());
-//            throw new DwpApiException($exception->getMessage());
-//        }
+        } catch (\Exception $exception) {
+            $this->logger->error('DwpApiException: ' . $exception->getMessage());
+            throw new DwpApiException($exception->getMessage());
+        }
     }
 
     public function compareRecords(
