@@ -88,14 +88,14 @@ class ConfigBuilder
      */
     public function buildRTQRequest(array $answersArray, CaseData $case): array
     {
-        if ($case->iiqControl === null) {
+        if ($case->identityIQ === null || $case->identityIQ->iiqControl === null) {
             throw new RuntimeException('Cannot respond to questions without IIQ control data');
         }
 
         $rtqConfig = [
             'Control' => [
-                'URN' => $case->iiqControl->urn,
-                'AuthRefNo' => $case->iiqControl->authRefNo,
+                'URN' => $case->identityIQ->iiqControl->urn,
+                'AuthRefNo' => $case->identityIQ->iiqControl->authRefNo,
             ],
             'Responses' => [
                 'Response' => [],

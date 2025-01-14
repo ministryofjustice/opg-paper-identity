@@ -120,10 +120,10 @@ class PostOfficeFlowController extends AbstractActionController
         $form = $this->createForm(PostOfficeAddress::class);
         $locationForm = $this->createForm(PostOfficeSearchLocation::class);
 
-        if (! isset($detailsData['searchPostcode'])) {
+        if (! isset($detailsData['counterService']['searchPostcode'])) {
             $searchString = $detailsData['address']['postcode'];
         } else {
-            $searchString = $detailsData['searchPostcode'];
+            $searchString = $detailsData['counterService']['searchPostcode'];
         }
 
         $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
