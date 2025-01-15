@@ -452,4 +452,15 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException($exception->getMessage());
         }
     }
+
+    public function abandonFlow(string $uuid): void
+    {
+        $url = sprintf("/cases/%s/abandon", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }

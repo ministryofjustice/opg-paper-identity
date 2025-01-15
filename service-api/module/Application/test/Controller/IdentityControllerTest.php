@@ -11,10 +11,12 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
+use Application\Sirius\EventSender;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
+use Laminas\Cache\Storage\Event;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
@@ -28,6 +30,7 @@ class IdentityControllerTest extends TestCase
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
     private FraudApiService&MockObject $experianCrosscoreFraudApiService;
+    private EventSender&MockObject $eventSenderMock;
 
     public function setUp(): void
     {
@@ -47,6 +50,7 @@ class IdentityControllerTest extends TestCase
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
+        $this->eventSenderMock = $this->createMocK(EventSender::class);
 
 
         parent::setUp();
@@ -58,6 +62,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
+        $serviceManager->setService(EventSender::class, $this->eventSenderMock);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -850,5 +855,67 @@ class IdentityControllerTest extends TestCase
                 $successMockResponseData,
             ],
         ];
+    }
+
+    public function testAbandonCaseAction(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+
+        $caseData = CaseData::fromArray([
+            'id' => $uuid,
+            'personType' => 'donor',
+            'lpas' => [
+                'M-XYXY-YAGA-35G3',
+                'M-VGAS-OAGA-34G9',
+            ],
+        ]);
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($caseData);
+
+        $this->eventSenderMock
+            ->expects($this->once())
+            ->method('send')
+            ->with(
+                'identity-check-resolved',
+                [
+                    'reference' => 'opg:' . $caseData->id,
+                    'actorType' => $caseData->personType,
+                    'lpaIds' => $caseData->lpas,
+                    'time' => time(),
+                    'outcome' => 'exit',
+                ]
+            );
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/abandon',
+            'POST'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+    }
+
+    public function testAbandonCaseActionWithMissingCase(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn(null);
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/abandon',
+            'POST'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_404);
+        $body = json_decode($this->getResponse()->getContent(), true);
+
+        $this->assertEquals('Case not found', $body['title']);
     }
 }
