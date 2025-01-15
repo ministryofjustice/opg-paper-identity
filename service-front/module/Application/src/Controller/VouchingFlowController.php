@@ -409,8 +409,28 @@ class VouchingFlowController extends AbstractActionController
     public function confirmDonorsAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
-
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if ($this->getRequest()->isPost()) {
+            if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
+                $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+            } else {
+                switch ($detailsData['idMethodIncludingNation']['id_method']) {
+                    case IdMethodEnum::PassportNumber->value:
+                        $this->redirect()->toRoute("root/passport_number", ['uuid' => $uuid]);
+                        break;
+                    case IdMethodEnum::DrivingLicenseNumber->value:
+                        $this->redirect()->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
+                        break;
+                    case IdMethodEnum::NationalInsuranceNumber->value:
+                        $this->redirect()->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
             /**
@@ -430,7 +450,6 @@ class VouchingFlowController extends AbstractActionController
         }
 
         $view = new ViewModel();
-
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpa_details', $lpaDetails);
@@ -500,5 +519,16 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/vouching/identity_check_passed');
+    }
+
+    public function identityCheckFailedAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_failed');
     }
 }
