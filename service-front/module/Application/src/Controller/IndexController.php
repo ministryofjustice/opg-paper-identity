@@ -8,11 +8,9 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
-use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
-use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -34,6 +32,7 @@ class IndexController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly LpaFormHelper $lpaFormHelper,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -81,7 +80,7 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute($route[$type], ['uuid' => $case['uuid']]);
     }
 
-    public function abandonFlowAction(): ViewModel
+    public function abandonFlowAction(): ViewModel|Response
     {
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
@@ -99,15 +98,10 @@ class IndexController extends AbstractActionController
         $form = $this->createForm(AbandonFlow::class);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            $siriusData = [
-                "reference" => $uuid,
-                "actorType" => $detailsData['personType'],
-                "lpaIds" => $detailsData['lpas'],
-                "time" => (new \DateTime('NOW'))->format('c'),
-                "outcome" => "exit"
-            ];
+            $this->opgApiService->abandonFlow($uuid);
 
-            $this->siriusApiService->abandonCase($siriusData, $this->getRequest());
+            $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+            return $this->redirect()->toUrl($siriusUrl);
         }
 
         $view->setVariable('details_data', $detailsData);

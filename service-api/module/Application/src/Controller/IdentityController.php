@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
-use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
-use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
@@ -20,12 +18,12 @@ use Application\Model\Entity\FraudScore;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
+use Application\Sirius\EventSender;
 use Application\View\JsonModel;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -44,7 +42,8 @@ class IdentityController extends AbstractActionController
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
-        private readonly FraudApiService $experianCrosscoreFraudApiService
+        private readonly FraudApiService $experianCrosscoreFraudApiService,
+        private readonly EventSender $eventSender,
     ) {
     }
 
@@ -760,5 +759,28 @@ class IdentityController extends AbstractActionController
         $response['result'] = "Progress recorded at " . $uuid . '/' . $data['last_page'];
 
         return new JsonModel($response);
+    }
+
+    public function abandonCaseAction(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
+
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+
+            return new JsonModel(new Problem('Case not found'));
+        }
+
+        $this->eventSender->send("identity-check-resolved", [
+            "reference" => "opg:" . $caseData->id,
+            "actorType" => $caseData->personType,
+            "lpaIds" => $caseData->lpas,
+            "time" => time(),
+            "outcome" => 'exit',
+        ]);
+
+        return new JsonModel();
     }
 }
