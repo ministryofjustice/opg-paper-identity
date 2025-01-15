@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
+use Psr\Log\LoggerInterface;
 
 class SiriusApiServiceFactory implements FactoryInterface
 {
@@ -25,9 +26,11 @@ class SiriusApiServiceFactory implements FactoryInterface
         }
 
         $client = new Client(['base_uri' => $baseUri]);
+        $logger = $container->get(LoggerInterface::class);
 
         return new SiriusApiService(
-            $client
+            $client,
+            $logger
         );
     }
 }
