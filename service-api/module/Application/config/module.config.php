@@ -461,6 +461,16 @@ return [
                     ],
                 ],
             ],
+            'abandon' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/abandon',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'abandonCase',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

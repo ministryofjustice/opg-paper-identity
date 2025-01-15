@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
+use Application\Enums\IdMethod;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
-use Application\Enums\IdMethod;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -48,7 +49,7 @@ class OpgApiServiceTest extends TestCase
                     'town' => 'Middleton',
                     'postcode' => 'LA1 2XN',
                     'country' => 'DD',
-                ]
+                ],
             ],
             "personType" => "donor",
             "lpas" => [
@@ -788,7 +789,7 @@ class OpgApiServiceTest extends TestCase
                     IdMethod::PassportNumber->value => true,
                     IdMethod::NationalInsuranceNumber->value => true,
                     IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false
+                    'EXPERIAN' => false,
                 ]),
             ),
         ]);
@@ -813,15 +814,53 @@ class OpgApiServiceTest extends TestCase
                     "NATIONAL_INSURANCE_NUMBER" => true,
                     "DRIVING_LICENCE" => true,
                     "PASSPORT" => true,
-                    "POST_OFFICE" => true
+                    "POST_OFFICE" => true,
                 ],
-                false
+                false,
             ],
             [
                 $failClient,
                 [],
-                true
+                true,
             ],
         ];
+    }
+
+    public function testAbandonCase(): void
+    {
+        $successMock = new MockHandler([
+            function (Request $request) {
+                $this->assertEquals('POST', $request->getMethod());
+                $this->assertEquals('/cases/case-uuid/abandon', strval($request->getUri()));
+
+                return new Response(200, [], '');
+            },
+        ]);
+
+        $client = new Client(['handler' => HandlerStack::create($successMock)]);
+
+        $sut = new OpgApiService($client);
+
+        $sut->abandonFlow('case-uuid');
+    }
+
+    public function testAbandonCaseFailure(): void
+    {
+        $successMock = new MockHandler([
+            function (Request $request) {
+                $this->assertEquals('POST', $request->getMethod());
+                $this->assertEquals('/cases/case-uuid/abandon', strval($request->getUri()));
+
+                return new Response(404, [], '');
+            },
+        ]);
+
+        $client = new Client(['handler' => HandlerStack::create($successMock)]);
+
+        $sut = new OpgApiService($client);
+
+        $this->expectException(OpgApiException::class);
+
+        $sut->abandonFlow('case-uuid');
     }
 }
