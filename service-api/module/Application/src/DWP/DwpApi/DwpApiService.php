@@ -18,9 +18,14 @@ use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Application\Aws\Secrets\AwsSecret;
+
+use function Amp\Promise\all;
 
 class DwpApiService
 {
+    private string $matchPath;
+    private string $detailsPath;
     private $authCount = 0;
     public function __construct(
         private Client $guzzleClientMatch,
@@ -28,6 +33,8 @@ class DwpApiService
         private AuthApiService $authApiService,
         private LoggerInterface $logger
     ) {
+        $this->matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
+        $this->detailsPath = (new AwsSecret('dwp/citizen-details-endpoint'))->getValue();
     }
 
     /**
@@ -99,11 +106,9 @@ class DwpApiService
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
 
-//            die(json_encode($this->guzzleClientMatch->getConfig()));
-
             $response = $this->guzzleClientMatch->request(
                 'POST',
-                '/',
+                $this->matchPath,
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $postBody
@@ -175,7 +180,7 @@ class DwpApiService
     ): DetailsResponseDTO {
         $this->authCount++;
         try {
-            $uri = sprintf('/%s/citizens', $detailsRequestDTO->id());
+            $uri = sprintf($this->detailsPath, $detailsRequestDTO->id());
 
             $response = $this->guzzleClientDetails->request(
                 'GET',

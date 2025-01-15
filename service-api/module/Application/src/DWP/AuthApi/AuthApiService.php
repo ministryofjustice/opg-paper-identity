@@ -13,15 +13,18 @@ use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Application\Aws\SsmHandler;
 use GuzzleHttp\Exception\ClientException;
+use Application\Aws\Secrets\AwsSecret;
 
 class AuthApiService
 {
+    private string $path;
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
         private readonly LoggerInterface $logger,
         private readonly RequestDTO $dwpAuthRequestDTO
     ) {
+        $this->path = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
     }
 
     public function makeHeaders(): array
@@ -37,7 +40,6 @@ class AuthApiService
      */
     public function authenticate(): ResponseDTO
     {
-//        die(json_encode($this->client->getConfig()));
         $credentials = $this->dwpAuthRequestDTO;
 
         $tokenResponse = $this->getToken($credentials);
@@ -91,7 +93,7 @@ class AuthApiService
         try {
             $response = $this->client->request(
                 'POST',
-                '',
+                $this->path,
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $dwpAuthRequestDTO->toArray(),

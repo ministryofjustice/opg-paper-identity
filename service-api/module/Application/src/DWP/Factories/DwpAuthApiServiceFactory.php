@@ -28,7 +28,7 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         array $options = null
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
-        $baseUri = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+        $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
         $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
         $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
@@ -42,8 +42,8 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         $guzzleClient = new Client([
             'base_uri' => $baseUri,
             'verify' => false,
-//            'cert' => $certificate,
-//            'ssl_key' => $sslKey
+            'cert' => $certificate,
+            'ssl_key' => $sslKey
         ]);
 
         $apcHelper = new ApcHelper();

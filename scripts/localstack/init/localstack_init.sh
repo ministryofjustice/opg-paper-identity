@@ -64,21 +64,26 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-cross
     --description "Experian Crosscore Tenant ID" \
     --secret-string "empty"
 
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/base-uri \
+    --description "DWP base URI" \
+        --secret-string "http://dwp-mock:8080" \
+        --region "eu-west-1"
+
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-token-endpoint \
     --description "DWP authentication API" \
-        --secret-string 'http://dwp-mock:8080/citizen-information/oauth2/token' \
+        --secret-string '/citizen-information/oauth2/token' \
         --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-match-endpoint \
     --description "DWP match api" \
-        --secret-string "http://dwp-mock:8080/capi/v2/citizens/match" \
+        --secret-string "/capi/v2/citizens/match" \
         --region "eu-west-1"
 
 awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
 
-awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-endpoint \
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-details-endpoint \
     --description "DWP Citizen details endpoint" \
-    --secret-string "http://dwp-mock:8080/capi/v2/citizens" \
+    --secret-string "/capi/v2/citizens/%s/citizens" \
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \
