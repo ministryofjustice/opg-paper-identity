@@ -4,6 +4,7 @@
       {
         "dateOfBirth": "1917-04-22",
         "status": "removed",
+        "appointmentType": "original",
         "channel": "paper",
         "uid": "3171d3d4-0404-b83e-6f63-c207a3edea6f",
         "firstNames": "Keyon",
