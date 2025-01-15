@@ -37,6 +37,7 @@ class AuthApiService
      */
     public function authenticate(): ResponseDTO
     {
+//        die(json_encode($this->client->getConfig()));
         $credentials = $this->dwpAuthRequestDTO;
 
         $tokenResponse = $this->getToken($credentials);
@@ -90,13 +91,10 @@ class AuthApiService
         try {
             $response = $this->client->request(
                 'POST',
-                'citizen-information/oauth2/token',
+                '',
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $dwpAuthRequestDTO->toArray(),
-//                    'cert' => $dwpAuthRequestDTO->bundle(),
-//                    'ssl_key' => $dwpAuthRequestDTO->privateKey(),
-//                    'verify' => false
                 ]
             );
 

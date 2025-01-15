@@ -28,25 +28,22 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         array $options = null
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
-
-        try {
-            $baseUri = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
-            //local/paper-identity/dwp/oauth-token-endpoint
-        } catch (\Exception $exception) {
-            $baseUri = 'http://localhost:8089/citizen-information/oauth2/token';
-            $logger->info('dwp/oauth-token-endpoint could not be found');
-        }
+        $baseUri = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+        $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
+        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
         /**
          * @psalm-suppress TypeDoesNotContainType
          */
         if (! is_string($baseUri) || empty($baseUri)) {
-            throw new AuthApiException("DWP_AUTH_URL is empty");
+            throw new AuthApiException("DWP oauth-token-endpoint is empty");
         }
 
         $guzzleClient = new Client([
             'base_uri' => $baseUri,
             'verify' => false,
+//            'cert' => $certificate,
+//            'ssl_key' => $sslKey
         ]);
 
         $apcHelper = new ApcHelper();

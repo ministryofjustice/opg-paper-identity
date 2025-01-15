@@ -274,9 +274,8 @@ class IdentityControllerTest extends TestCase
         string $nino,
         array $result,
         int $status
-    ): void
-    {
-        $uuid =  "aaaaaaaa-1111-2222-3333-000000000";
+    ): void {
+        $uuid = "aaaaaaaa-1111-2222-3333-000000000";
         $case = [
             "id" => $uuid,
             "personType" => "donor",

@@ -20,7 +20,7 @@ class CitizenRequestDTO
         protected CaseData $caseData
     ) {
         try {
-            if($this->caseData->idMethodIncludingNation->id_method !== 'NATIONAL_INSURANCE_NUMBER') {
+            if ($this->caseData->idMethodIncludingNation->id_method !== 'NATIONAL_INSURANCE_NUMBER') {
                 throw new DwpApiException('Identity method is not a national insurance number');
             }
 

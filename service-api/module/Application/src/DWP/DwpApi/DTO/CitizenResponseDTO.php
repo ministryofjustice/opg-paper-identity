@@ -25,7 +25,6 @@ class CitizenResponseDTO
             $this->matchScenario = $response['data']['attributes']['matchingScenario'];
             $this->version = $response['jsonapi']['version'];
             $this->raw = $response;
-
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }

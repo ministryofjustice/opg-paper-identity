@@ -272,10 +272,9 @@ class DwpApiServiceTest extends TestCase
      * @dataProvider requestBodyData
      */
     public function testConstructCitizenRequestBody(
-        array             $expected,
+        array $expected,
         CitizenRequestDTO $dto
-    ): void
-    {
+    ): void {
         $this->assertEquals(
             $expected,
             $this->dwpApiService->constructCitizenRequestBody($dto),

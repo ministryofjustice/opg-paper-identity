@@ -99,6 +99,8 @@ class DwpApiService
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
 
+//            die(json_encode($this->guzzleClientMatch->getConfig()));
+
             $response = $this->guzzleClientMatch->request(
                 'POST',
                 '/',
@@ -108,7 +110,6 @@ class DwpApiService
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
-
         } catch (ClientException $clientException) {
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
@@ -174,7 +175,6 @@ class DwpApiService
     ): DetailsResponseDTO {
         $this->authCount++;
         try {
-
             $uri = sprintf('/%s/citizens', $detailsRequestDTO->id());
 
             $response = $this->guzzleClientDetails->request(
@@ -185,7 +185,6 @@ class DwpApiService
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
-
         } catch (ClientException $clientException) {
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&

@@ -33,12 +33,6 @@ class DwpApiServiceFactory implements FactoryInterface
         $baseUriCitizenDetails = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
         $baseUriCitizenMatch = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
 
-        //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/{guid}/citizens
-        //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/match
-
-//        $baseUriCitizenDetails = 'http://dwp-mock:8080/capi/v2/citizens';
-//        $baseUriCitizenMatch  = 'http://dwp-mock:8080/capi/v2/citizens/match';
-
         if (! is_string($baseUriCitizenDetails) || empty($baseUriCitizenDetails)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
@@ -58,8 +52,8 @@ class DwpApiServiceFactory implements FactoryInterface
         $logger = $container->get(LoggerInterface::class);
 
         return new DwpApiService(
-            $guzzleClientCitizenDetails,
             $guzzleClientCitizenMatch,
+            $guzzleClientCitizenDetails,
             $container->get(AuthApiService::class),
             $logger
         );

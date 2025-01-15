@@ -78,7 +78,7 @@ awslocal ssm put-parameter --name "service-availability" --type "String" --value
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-endpoint \
     --description "DWP Citizen details endpoint" \
-    --secret-string "https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens" \
+    --secret-string "http://dwp-mock:8080/capi/v2/citizens" \
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \
@@ -93,10 +93,7 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certif
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-public-key \
     --description "DWP OPG certificate public key" \
-    --secret-string "-----BEGIN OPENSSH PUBLIC KEY-----
-                     MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnx
-                     S30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=
-                     -----END RSA PUBLIC KEY-----" \
+    --secret-string "-----BEGIN OPENSSH PUBLIC KEY-----MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=-----END RSA PUBLIC KEY-----" \
    --region "eu-west-1"
     
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-secret \
@@ -111,14 +108,7 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-clie
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-bundle \
     --description "DWP OPG certificate bundle" \
-    --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----
-                     ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZQ
-                     QyNTUxOQAAACAS+mdlcmFsZG9yaW9yZGFuQGRpZ2l0YWwuanIVa2HTmJfp+li4OHvb8a8U
-                     fp+li4OHvb8a8Uz5e0t44qB3jpTSKXCigAAAEDAk1ZBa/dkpaLyww3E7N73bHZPDGGQmID
-                     BE4XLd929mBL4hVrYdOYl+n6WLg4e9vxrxTPl7S3jioHeOlNIpcKKAAAALmpvaG4uZml0e
-                     z5e0t44qB3jpTSKXCigAAALhl+vBZZfrwWQAAAAtzc2gtZWQyNTUxOQAAACAS+IVa2HTmJ
-                     VzdGljZS5nb3YudWsBAgMEBQYH
-                     -----END OPENSSH PRIVATE KEY----" \
+    --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZQ-----END OPENSSH PRIVATE KEY----" \
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-private-key \
