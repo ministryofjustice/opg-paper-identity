@@ -27,6 +27,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
+use DateTime;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -180,12 +181,17 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(VoucherName::class);
+        $form->setData([
+            "firstName" => $detailsData["firstName"],
+            "lastName" =>  $detailsData["lastName"]
+        ]);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
+            $form->setData($formData);
 
             if ($form->isValid()) {
                 $match = false;
@@ -223,7 +229,14 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(VoucherBirthDate::class);
-
+        if (! is_null($detailsData['dob'])) {
+            $dob = DateTime::createFromFormat('Y-m-d', $detailsData['dob']);
+            $form->setData([
+                'dob_day' => date_format($dob, 'd'),
+                'dob_month' => date_format($dob, 'm'),
+                'dob_year' => date_format($dob, 'Y')
+            ]);
+        }
         $view->setVariable('details_data', $detailsData);
 
         if ($this->getRequest()->isPost()) {
