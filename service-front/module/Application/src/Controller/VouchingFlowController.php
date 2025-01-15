@@ -28,6 +28,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 use DateTime;
+use \Exception;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -89,7 +90,6 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('date_sub_form', $dateSubForm);
 
         $detailsData = $this->opgApiService->getDetailsData($this->uuid);
-
         $serviceAvailability = $this->opgApiService->getServiceAvailability($this->uuid);
 
         $identityDocs = [];
@@ -191,7 +191,7 @@ class VouchingFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($formData->toArray());
 
             if ($form->isValid()) {
                 $match = false;
@@ -412,10 +412,16 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost()) {
-            if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
+            $idRoute = '';
+            $idMethod = '';
+            if (isset($detailsData['idMethodIncludingNation'])) {
+                $idRoute = $detailsData['idMethodIncludingNation']['id_route'] ?? '';
+                $idMethod = $detailsData['idMethodIncludingNation']['id_method'] ?? '';
+            }
+            if ($idRoute === 'POST_OFFICE') {
                 $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
             } else {
-                switch ($detailsData['idMethodIncludingNation']['id_method']) {
+                switch ($idMethod) {
                     case IdMethodEnum::PassportNumber->value:
                         $this->redirect()->toRoute("root/passport_number", ['uuid' => $uuid]);
                         break;

@@ -9,7 +9,6 @@ use Application\Controller\DocumentCheckController;
 use Application\Helpers\FormProcessorHelper;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 
 class DocumentCheckControllerFactory implements FactoryInterface
 {
@@ -27,7 +26,6 @@ class DocumentCheckControllerFactory implements FactoryInterface
             $container->get(OpgApiServiceInterface::class),
             $container->get(FormProcessorHelper::class),
             $config,
-            $container->get(LoggerInterface::class)
         );
     }
 }

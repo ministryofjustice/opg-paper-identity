@@ -15,7 +15,6 @@ use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\DateProcessorHelper;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Psr\Log\LoggerInterface;
 
 class DocumentCheckController extends AbstractActionController
 {
@@ -27,7 +26,6 @@ class DocumentCheckController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly array $config,
-        private readonly LoggerInterface $logger,
     ) {
     }
 

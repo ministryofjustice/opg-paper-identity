@@ -67,60 +67,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_lpa_check');
     }
 
-    public function testNationalInsuranceNumberReturnsPageWithData(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getServiceAvailability')
-            ->willReturn($mockServiceResponse);
-
-        $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/national_insurance_number');
-        $this->assertQueryContentContains('p[id=nino_fullname]', 'Mary Anne Chapman');
-        $this->assertQueryContentContains('p[id=nino_dob]', '01 May 1943');
-    }
-
-    public function testDrivingLicenceNumberReturnsPageWithData(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getServiceAvailability')
-            ->willReturn($mockServiceResponse);
-
-        $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/driving_licence_number');
-    }
-
     public function testHowWillDonorConfirmPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();

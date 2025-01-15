@@ -11,6 +11,7 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Application\Contracts\OpgApiServiceInterface;
 use DateTime;
+use Exception;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
@@ -150,8 +151,7 @@ class AddDonorFormHelper
      */
     public function checkLpaIdMatch(array $lpa, array $detailsData): array
     {
-
-        $response = [
+            $response = [
             "problem" => false,
             "error" => false,
             "warning" => "",
