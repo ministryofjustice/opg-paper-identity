@@ -4,6 +4,7 @@
         "attorneys": [
             {
                 "dateOfBirth": "1971-06-11",
+                "appointmentType": "original",
                 "status": "active",
                 "channel": "online",
                 "uid": "89121d57-1fb2-3bcb-b556-fe108b686bff",
@@ -18,7 +19,8 @@
             },
             {
                 "dateOfBirth": "1976-04-10",
-                "status": "replacement",
+                "appointmentType": "replacement",
+                "status": "active",
                 "channel": "online",
                 "uid": "89121d57-1fb2-3bcb-b556-fe108b686bff",
                 "firstNames": "Joshua",

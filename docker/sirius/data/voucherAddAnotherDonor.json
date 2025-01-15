@@ -4,6 +4,7 @@
         "attorneys": [
             {
                 "dateOfBirth": "1990-11-07",
+                "appointmentType": "original",
                 "status": "active",
                 "channel": "online",
                 "uid": "89121d57-1fb2-3bcb-b556-fe108b686bff",
