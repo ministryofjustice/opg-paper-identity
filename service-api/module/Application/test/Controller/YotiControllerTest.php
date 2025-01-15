@@ -16,18 +16,18 @@ use ApplicationTest\TestCase;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Stdlib\ArrayUtils;
+use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 
 class YotiControllerTest extends TestCase
 {
     private YotiService&MockObject $yotiServiceMock;
     private SessionStatusService&MockObject $statusService;
-
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
-
     private DataWriteHandler&MockObject $dataHandler;
-
     private SessionConfig&MockObject $sessionConfigMock;
+    private LoggerInterface&MockObject $logger;
 
     public function setUp(): void
     {
@@ -47,7 +47,7 @@ class YotiControllerTest extends TestCase
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->dataHandler = $this->createMock(DataWriteHandler::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
-
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         parent::setUp();
 
@@ -58,6 +58,7 @@ class YotiControllerTest extends TestCase
         $serviceManager->setService(SessionStatusService::class, $this->statusService);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(DataWriteHandler::class, $this->dataHandler);
+        $serviceManager->setService(LoggerInterface::class, $this->logger);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -246,6 +247,11 @@ class YotiControllerTest extends TestCase
 
         $this->dataHandler
             ->expects($this->never())->method('updateCaseData');
+
+        $this->logger
+            ->expects($this->once())
+            ->method('info')
+            ->with('Unauthorized notification for case: 2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc: first_branch_visit');
 
         $this->dispatchJSON(
             '/counter-service/notification',

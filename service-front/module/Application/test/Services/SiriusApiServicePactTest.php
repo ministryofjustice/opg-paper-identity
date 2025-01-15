@@ -168,39 +168,6 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals('DE', $cpAddress['country'] ?? '');
     }
 
-    public function testAbandonCase(): void
-    {
-        $request = new ConsumerRequest();
-        $body = [
-            "reference" => "49895f88-501b-4491-8381-e8aeeaef177d",
-            "actorType" => "donor",
-            "lpaIds" => [
-                "M-1234-9876-4567",
-            ],
-            "time" => "2024-07-30T10:53:57+00:00",
-            "outcome" => "exit",
-        ];
-        $request
-            ->setMethod('POST')
-            ->setPath('/api/v1/identity-check')
-            ->setBody($body);
-
-        $response = new ProviderResponse();
-        $response
-            ->setStatus(204);
-
-        $this->builder
-            ->given('A digital LPA exists')
-            ->uponReceiving('A notification that case was exited')
-            ->with($request)
-            ->willRespondWith($response);
-
-        $response = $this->buildService()->abandonCase($body, new Request());
-
-        $this->assertEquals(204, $response['status']);
-        $this->assertEquals("", $response['error']);
-    }
-
     /**
      * Returns an example of a tiny PDF with visible content
      */

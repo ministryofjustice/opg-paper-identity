@@ -214,29 +214,6 @@ class SiriusApiService
     }
 
     /**
-     * @param array{
-     *   reference: string,
-     *   actorType: string,
-     *   lpaIds: string[],
-     *   time: string,
-     *   outcome: string,
-     * } $data
-     * @return array{status: int, error: mixed}
-     */
-    public function abandonCase(array $data, Request $request): array
-    {
-        $response = $this->client->post('/api/v1/identity-check', [
-            'headers' => $this->getAuthHeaders($request),
-            'json' => $data
-        ]);
-
-        return [
-            'status' => $response->getStatusCode(),
-            'error' => json_decode(strval($response->getBody()), true)
-        ];
-    }
-
-    /**
      * @param array $caseDetails
      * @param SiriusDocument $systemType
      * @param Request $request
