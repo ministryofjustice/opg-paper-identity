@@ -148,7 +148,7 @@ return [
                     'route' => '/identity/:uuid/validate_nino',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'verifyNino',
+                        'action' => 'validateNino',
                     ],
                 ],
             ],
@@ -496,7 +496,7 @@ return [
                 $serviceLocator->get(LoggerInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
-            NinoValidatorInterface::class => NinoValidatorFactory::class,
+//            NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,

@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\DWP\DwpApi\DwpApiException;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
@@ -155,30 +156,30 @@ class IdentityController extends AbstractActionController
         return new JsonModel(new Problem('Case not found'));
     }
 
-    public function verifyNinoAction(): JsonModel
+    /**
+     * @throws DwpApiException
+     */
+    public function validateNinoAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
-
-        $caseData->idMethodIncludingNation->id_value = $data['nino'];
+        $idMethodValues = $caseData->idMethodIncludingNation;
+        $idMethodValues->id_value = $data['nino'];
 
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethodIncludingNation',
-                $caseData->idMethodIncludingNation
+                $idMethodValues
             );
+            $response = $this->dwpApiService->validateNino($caseData);
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            return new JsonModel($response);
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));
         }
-
-        $response = $this->dwpApiService->validateNINO($caseData);
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-
-        return new JsonModel($response);
     }
 
     public function validateDrivingLicenceAction(): JsonModel

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Controller;
 
 use Application\Controller\IdentityController;
-use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiService;
@@ -53,7 +52,6 @@ class IdentityControllerTest extends TestCase
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
         $this->dwpServiceMock = $this->createMock(DwpApiService::class);
-
 
         parent::setUp();
 
@@ -275,8 +273,6 @@ class IdentityControllerTest extends TestCase
     public function testNino(
         string $nino,
         array $result,
-        array $citizenResponse,
-        array $detailsResponse,
         int $status
     ): void
     {
@@ -317,21 +313,19 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn(CaseData::fromArray($case));
 
-        $this->dwpServiceMock->expects($this->once())
-            ->method('makeCitizenMatchRequest')
-            ->willReturn(new CitizenResponseDTO($citizenResponse));
+        $this->dataImportHandler
+            ->expects($this->once())
+            ->method('updateCaseData');
 
         $this->dwpServiceMock->expects($this->once())
-            ->method('makeCitizenDetailsRequest')
-            ->willReturn(new DetailsResponseDTO($detailsResponse));
+            ->method('validateNino')
+            ->willReturn($result);
 
         $this->dispatchJSON(
             "/identity/$uuid/validate_nino",
             'POST',
             ['nino' => $nino]
         );
-
-        die($this->getResponse()->getContent());
 
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
@@ -519,15 +513,17 @@ class IdentityControllerTest extends TestCase
                     'PASS',
                     Response::STATUS_CODE_200
                 ],
-                $citizenResponse,
-                $detailsResponse,
                 Response::STATUS_CODE_200
             ],
-//            ['BB112233A', 'PASS', $citizenResponse, $detailsResponse, Response::STATUS_CODE_200],
-////            ['AA112233D', 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
-//            ['AA112233C', 'NO_MATCH', $citizenResponseNoMatch, $detailsResponse, Response::STATUS_CODE_200],
-//            ['AA112233C', 'NO_MATCH', $citizenResponse, $detailsResponseNoMatch, Response::STATUS_CODE_200],
-//            ['AA112233C', 'NO_MATCH', $citizenResponseNoMatch, $detailsResponseNoMatch, Response::STATUS_CODE_200],
+            [
+                'AA112233E',
+                [
+                    'AA112233E',
+                    'NO_MATCH',
+                    Response::STATUS_CODE_200
+                ],
+                Response::STATUS_CODE_200
+            ],
         ];
     }
 

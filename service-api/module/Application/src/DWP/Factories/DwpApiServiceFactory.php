@@ -30,37 +30,36 @@ class DwpApiServiceFactory implements FactoryInterface
         array $options = null
     ): DwpApiService {
 
-//        $baseUriCitizen = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
-//        $baseUriMatch = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
+        $baseUriCitizenDetails = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
+        $baseUriCitizenMatch = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
 
         //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/{guid}/citizens
         //https://external-test.integr-dev.dwpcloud.uk:8443/capi/v2/citizens/match
 
-        $baseUriCitizen = 'http://dwp-mock:8080/';
+//        $baseUriCitizenDetails = 'http://dwp-mock:8080/capi/v2/citizens';
+//        $baseUriCitizenMatch  = 'http://dwp-mock:8080/capi/v2/citizens/match';
 
-        $baseUriMatch  = 'http://dwp-mock:8080/capi/v2/citizens/match';
-
-        if (! is_string($baseUriCitizen) || empty($baseUriCitizen)) {
+        if (! is_string($baseUriCitizenDetails) || empty($baseUriCitizenDetails)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
-        if (! is_string($baseUriMatch) || empty($baseUriMatch)) {
+        if (! is_string($baseUriCitizenMatch) || empty($baseUriCitizenMatch)) {
             throw new DwpApiException("DWP Citizen Match endpoint is empty");
         }
 
-        $guzzleClientCitizen = new Client([
-            'base_uri' => $baseUriCitizen
+        $guzzleClientCitizenDetails = new Client([
+            'base_uri' => $baseUriCitizenDetails
         ]);
 
-        $guzzleClientMatch = new Client([
-            'base_uri' => $baseUriMatch
+        $guzzleClientCitizenMatch = new Client([
+            'base_uri' => $baseUriCitizenMatch
         ]);
 
         $logger = $container->get(LoggerInterface::class);
 
         return new DwpApiService(
-            $guzzleClientCitizen,
-            $guzzleClientMatch,
+            $guzzleClientCitizenDetails,
+            $guzzleClientCitizenMatch,
             $container->get(AuthApiService::class),
             $logger
         );

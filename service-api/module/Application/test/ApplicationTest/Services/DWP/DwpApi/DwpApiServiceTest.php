@@ -73,6 +73,155 @@ class DwpApiServiceTest extends TestCase
         ]
     ];
 
+    private const DETAILS_RESPONSE = [
+        "jsonapi" => [
+            "version" => ""
+        ],
+        "links" => [
+            "self" => ""
+        ],
+        "data" => [
+            "id" => "",
+            "type" => "Citizen",
+            "attributes" => [
+                "guid" => "",
+                "nino" => "",
+                "identityVerificationStatus" => "verified",
+                "sex" => "",
+                "statusIndicator" => false,
+                "name" => [
+                    "title" => "Mr",
+                    "firstName" => "Lee",
+                    "middleNames" => "",
+                    "lastName" => "Manthrope",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "alternateName" => [
+                    "title" => "",
+                    "firstName" => "",
+                    "middleNames" => "",
+                    "lastName" => "",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "requestedName" => [
+                    "requestedName" => "",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "dateOfDeath" => [
+                    "date" => "",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "dateOfBirth" => [
+                    "date" => "1986-09-03",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "accessibilityNeeds" => [
+                    [
+                        "type" => "braille",
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ]
+                ],
+                "safeguarding" => [
+                    "type" => "potentially_violent",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "nationality" => [
+                    "nationality" => "british",
+                    "metadata" => [
+                        "verificationType" => "self_asserted",
+                        "startDate" => "2024-12-11",
+                        "endDate" => "2024-12-11"
+                    ]
+                ],
+                "contactDetails" => [
+                    [
+                        "contactType" => "home_telephone_number",
+                        "value" => "07745690909",
+                        "preferredContactIndicator" => false,
+                        "metadata" => [
+                            "verificationType" => "self_asserted",
+                            "startDate" => "2024-12-11",
+                            "endDate" => "2024-12-11"
+                        ]
+                    ]
+                ],
+                "warningDetails" => [
+                    "warnings" => [
+                        [
+                            "id" => "",
+                            "links" => [
+                                "about" => ""
+                            ],
+                            "status" => "",
+                            "code" => "",
+                            "title" => "",
+                            "detail" => "",
+                            "source" => [
+                                "pointer" => "",
+                                "parameter" => ""
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "relationships" => [
+                "current-residential-address" => [
+                    "links" => [
+                        "self" => ""
+                    ]
+                ],
+                "current-correspondence-address" => [
+                    "links" => [
+                        "self" => ""
+                    ]
+                ],
+                "addresses" => [
+                    "links" => [
+                        "self" => ""
+                    ]
+                ],
+                "relationships" => [
+                    "links" => [
+                        "self" => ""
+                    ]
+                ],
+                "claims" => [
+                    "links" => [
+                        "self" => ""
+                    ]
+                ]
+            ]
+        ]
+    ];
+
     public function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -280,154 +429,7 @@ class DwpApiServiceTest extends TestCase
 
     public function testMakeCitizenDetailsRequest(): void
     {
-        $successMockResponseData = [
-            "jsonapi" => [
-                "version" => ""
-            ],
-            "links" => [
-                "self" => ""
-            ],
-            "data" => [
-                "id" => "",
-                "type" => "Citizen",
-                "attributes" => [
-                    "guid" => "",
-                    "nino" => "",
-                    "identityVerificationStatus" => "verified",
-                    "sex" => "",
-                    "statusIndicator" => false,
-                    "name" => [
-                        "title" => "Mr",
-                        "firstName" => "Lee",
-                        "middleNames" => "",
-                        "lastName" => "Manthrope",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "alternateName" => [
-                        "title" => "",
-                        "firstName" => "",
-                        "middleNames" => "",
-                        "lastName" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "requestedName" => [
-                        "requestedName" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "dateOfDeath" => [
-                        "date" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "dateOfBirth" => [
-                        "date" => "1986-09-03",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "accessibilityNeeds" => [
-                        [
-                            "type" => "braille",
-                            "metadata" => [
-                                "verificationType" => "self_asserted",
-                                "startDate" => "2024-12-11",
-                                "endDate" => "2024-12-11"
-                            ]
-                        ]
-                    ],
-                    "safeguarding" => [
-                        "type" => "potentially_violent",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "nationality" => [
-                        "nationality" => "british",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "contactDetails" => [
-                        [
-                            "contactType" => "home_telephone_number",
-                            "value" => "07745690909",
-                            "preferredContactIndicator" => false,
-                            "metadata" => [
-                                "verificationType" => "self_asserted",
-                                "startDate" => "2024-12-11",
-                                "endDate" => "2024-12-11"
-                            ]
-                        ]
-                    ],
-                    "warningDetails" => [
-                        "warnings" => [
-                            [
-                                "id" => "",
-                                "links" => [
-                                    "about" => ""
-                                ],
-                                "status" => "",
-                                "code" => "",
-                                "title" => "",
-                                "detail" => "",
-                                "source" => [
-                                    "pointer" => "",
-                                    "parameter" => ""
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                "relationships" => [
-                    "current-residential-address" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "current-correspondence-address" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "addresses" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "relationships" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "claims" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $successMockResponseData = static::DETAILS_RESPONSE;
 
         $successMock = new MockHandler([
             new GuzzleResponse(200, [], json_encode($successMockResponseData)),
@@ -533,303 +535,12 @@ class DwpApiServiceTest extends TestCase
             ]
         ]);
 
-        $successDetailsDTO = new DetailsResponseDTO([
-            "jsonapi" => [
-                "version" => ""
-            ],
-            "links" => [
-                "self" => ""
-            ],
-            "data" => [
-                "id" => "",
-                "type" => "Citizen",
-                "attributes" => [
-                    "guid" => "",
-                    "nino" => "",
-                    "identityVerificationStatus" => "verified",
-                    "sex" => "",
-                    "statusIndicator" => false,
-                    "name" => [
-                        "title" => "Mr",
-                        "firstName" => "Lee",
-                        "middleNames" => "",
-                        "lastName" => "Manthrope",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "alternateName" => [
-                        "title" => "",
-                        "firstName" => "",
-                        "middleNames" => "",
-                        "lastName" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "requestedName" => [
-                        "requestedName" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "dateOfDeath" => [
-                        "date" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "dateOfBirth" => [
-                        "date" => "1986-09-03",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "accessibilityNeeds" => [
-                        [
-                            "type" => "braille",
-                            "metadata" => [
-                                "verificationType" => "self_asserted",
-                                "startDate" => "2024-12-11",
-                                "endDate" => "2024-12-11"
-                            ]
-                        ]
-                    ],
-                    "safeguarding" => [
-                        "type" => "potentially_violent",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "nationality" => [
-                        "nationality" => "british",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "contactDetails" => [
-                        [
-                            "contactType" => "home_telephone_number",
-                            "value" => "07745690909",
-                            "preferredContactIndicator" => false,
-                            "metadata" => [
-                                "verificationType" => "self_asserted",
-                                "startDate" => "2024-12-11",
-                                "endDate" => "2024-12-11"
-                            ]
-                        ]
-                    ],
-                    "warningDetails" => [
-                        "warnings" => [
-                            [
-                                "id" => "",
-                                "links" => [
-                                    "about" => ""
-                                ],
-                                "status" => "",
-                                "code" => "",
-                                "title" => "",
-                                "detail" => "",
-                                "source" => [
-                                    "pointer" => "",
-                                    "parameter" => ""
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                "relationships" => [
-                    "current-residential-address" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "current-correspondence-address" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "addresses" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "relationships" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "claims" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ]
-                ]
-            ]
-        ]);
+        $successDetailsDTO = new DetailsResponseDTO(static::DETAILS_RESPONSE);
 
-        $failDetailsResponse = new DetailsResponseDTO([
-            "jsonapi" => [
-                "version" => ""
-            ],
-            "links" => [
-                "self" => ""
-            ],
-            "data" => [
-                "id" => "",
-                "type" => "Citizen",
-                "attributes" => [
-                    "guid" => "",
-                    "nino" => "",
-                    "identityVerificationStatus" => "",
-                    "sex" => "",
-                    "statusIndicator" => false,
-                    "name" => [
-                        "title" => "Mr",
-                        "firstName" => "Lee",
-                        "middleNames" => "",
-                        "lastName" => "Manthrope",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "alternateName" => [
-                        "title" => "",
-                        "firstName" => "",
-                        "middleNames" => "",
-                        "lastName" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "requestedName" => [
-                        "requestedName" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "dateOfDeath" => [
-                        "date" => "",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "dateOfBirth" => [
-                        "date" => "1986-09-03",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "accessibilityNeeds" => [
-                        [
-                            "type" => "braille",
-                            "metadata" => [
-                                "verificationType" => "self_asserted",
-                                "startDate" => "2024-12-11",
-                                "endDate" => "2024-12-11"
-                            ]
-                        ]
-                    ],
-                    "safeguarding" => [
-                        "type" => "potentially_violent",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "nationality" => [
-                        "nationality" => "british",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ],
-                    "contactDetails" => [
-                        [
-                            "contactType" => "home_telephone_number",
-                            "value" => "07745690909",
-                            "preferredContactIndicator" => false,
-                            "metadata" => [
-                                "verificationType" => "self_asserted",
-                                "startDate" => "2024-12-11",
-                                "endDate" => "2024-12-11"
-                            ]
-                        ]
-                    ],
-                    "warningDetails" => [
-                        "warnings" => [
-                            [
-                                "id" => "",
-                                "links" => [
-                                    "about" => ""
-                                ],
-                                "status" => "",
-                                "code" => "",
-                                "title" => "",
-                                "detail" => "",
-                                "source" => [
-                                    "pointer" => "",
-                                    "parameter" => ""
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-                "relationships" => [
-                    "current-residential-address" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "current-correspondence-address" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "addresses" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "relationships" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ],
-                    "claims" => [
-                        "links" => [
-                            "self" => ""
-                        ]
-                    ]
-                ]
-            ]
-        ]);
+        $failDetailsResponse = static::DETAILS_RESPONSE;
+        $failDetailsResponse['data']['attributes']['identityVerificationStatus'] = '';
+
+        $failDetailsDTO = new DetailsResponseDTO($failDetailsResponse);
 
         $caseData = CaseData::fromArray(static::CASE);
 
@@ -852,7 +563,7 @@ class DwpApiServiceTest extends TestCase
                 ],
                 $caseData,
                 $noMatchDTO,
-                $failDetailsResponse
+                $failDetailsDTO
             ],
             [
                 [
@@ -862,7 +573,7 @@ class DwpApiServiceTest extends TestCase
                 ],
                 $caseData,
                 $successMatchDTO,
-                $failDetailsResponse
+                $failDetailsDTO
             ],
             [
                 [

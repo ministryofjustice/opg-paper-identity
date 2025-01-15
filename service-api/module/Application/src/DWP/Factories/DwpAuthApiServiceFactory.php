@@ -28,7 +28,15 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         array $options = null
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
-        $baseUri = 'http://dwp-mock:8080/';// (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+
+        try {
+            $baseUri = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
+            //local/paper-identity/dwp/oauth-token-endpoint
+        } catch (\Exception $exception) {
+            $baseUri = 'http://localhost:8089/citizen-information/oauth2/token';
+            $logger->info('dwp/oauth-token-endpoint could not be found');
+        }
+
         /**
          * @psalm-suppress TypeDoesNotContainType
          */

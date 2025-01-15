@@ -49,7 +49,7 @@ class DwpApiService
         ];
     }
 
-    public function validateNINO(CaseData $caseData): array
+    public function validateNino(CaseData $caseData): array
     {
         try {
             $citizenResponseDTO = $this->makeCitizenMatchRequest(
@@ -69,8 +69,7 @@ class DwpApiService
         CaseData $caseData,
         DetailsResponseDTO $detailsResponseDTO,
         CitizenResponseDTO $citizenResponseDTO
-    ): array
-    {
+    ): array {
         if (
             $citizenResponseDTO->matchScenario() !== 'Matched on NINO' ||
             $detailsResponseDTO->verified() !== 'verified'
@@ -176,7 +175,7 @@ class DwpApiService
         $this->authCount++;
         try {
 
-            $uri = sprintf('/%s', $detailsRequestDTO->id());
+            $uri = sprintf('/%s/citizens', $detailsRequestDTO->id());
 
             $response = $this->guzzleClientDetails->request(
                 'GET',

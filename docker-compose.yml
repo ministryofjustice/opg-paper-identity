@@ -73,6 +73,8 @@ services:
         condition: service_healthy
       experian-crosscore-mock:
         condition: service_healthy
+      dwp-mock:
+        condition: service_healthy
     entrypoint: /usr/local/bin/docker-php-entrypoint
     command: [ "php-fpm" ]
     env_file: ./service-api/docker-compose.env
