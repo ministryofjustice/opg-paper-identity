@@ -8,7 +8,10 @@ use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
+use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
+use Application\Controller\IndexController;
+use Application\Enums\IdMethod;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
@@ -18,7 +21,6 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
-use Application\Enums\IdMethod;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -658,7 +660,7 @@ return [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\VouchingFlowController::class => LazyControllerAbstractFactory::class,
-            Controller\IndexController::class => LazyControllerAbstractFactory::class,
+            Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
         ],
