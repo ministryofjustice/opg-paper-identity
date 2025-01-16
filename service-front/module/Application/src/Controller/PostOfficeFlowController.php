@@ -6,7 +6,6 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
-use Application\Enums\LpaTypes;
 use Application\Enums\SiriusDocument;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
@@ -15,8 +14,6 @@ use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
-use Application\Helpers\DateProcessorHelper;
-use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -24,7 +21,6 @@ use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Psr\Log\LoggerInterface;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -38,9 +34,6 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
-        private readonly string $siriusPublicUrl,
-        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -51,6 +44,9 @@ class PostOfficeFlowController extends AbstractActionController
         $dateSubForm = $this->createForm(PassportDatePo::class);
         $form = $this->createForm(IdMethod::class);
         $view = new ViewModel();
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
 
         if (count($this->getRequest()->getPost())) {
             if (array_key_exists('check_button', $this->getRequest()->getPost()->toArray())) {
@@ -68,46 +64,97 @@ class PostOfficeFlowController extends AbstractActionController
 
                     if ($formData['id_method'] == 'NONUKID') {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
-                        return $this->redirect()->toRoute("root/donor_choose_country", ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute("root/po_choose_country", ['uuid' => $uuid]);
                     } else {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, [
                             'id_method' => $formData['id_method'],
                             'id_country' => PostOfficeCountry::GBR->value,
                         ]);
-                        return $this->redirect()->toRoute("root/po_do_details_match", ['uuid' => $uuid]);
+                        switch ($detailsData["personType"]) {
+                            case "voucher":
+                                return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+                            case "certificateProvider":
+                                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                            default:
+                                return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
+                        }
                     }
                 }
             }
         }
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate($templates['default']);
     }
 
-    public function doDetailsMatchAction(): ViewModel
+    public function chooseCountryAction(): ViewModel|Response
     {
+        $templates = ['default' => 'application/pages/post_office/choose_country'];
         $uuid = $this->params()->fromRoute("uuid");
+        $view = new ViewModel();
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = $this->createForm(Country::class);
 
-        try {
-            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
-        } catch (\Exception $e) {
-            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
+
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+            return $this->redirect()->toRoute("root/po_choose_country_id", ['uuid' => $uuid]);
         }
 
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $countriesData = PostOfficeCountry::cases();
+        $countriesData = array_filter(
+            $countriesData,
+            fn (PostOfficeCountry $country) => $country !== PostOfficeCountry::GBR
+        );
 
-        $view = new ViewModel();
-
-        $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
-        $view->setVariable('sirius_edit_url', $siriusEditUrl);
+        $view->setVariable('form', $form);
+        $view->setVariable('countries_data', $countriesData);
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('uuid', $uuid);
 
-        return $view->setTemplate('application/pages/post_office/donor_details_match_check');
+        return $view->setTemplate($templates['default']);
+    }
+
+    public function chooseCountryIdAction(): ViewModel|Response
+    {
+        $templates = ['default' => 'application/pages/post_office/choose_country_id'];
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
+            throw new \Exception("Country for document list has not been set.");
+        }
+
+        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country']);
+
+        $docs = $this->documentTypeRepository->getByCountry($country);
+
+        $form = $this->createForm(CountryDocument::class);
+
+        if ($this->getRequest()->isPost() && $form->isValid()) {
+            $formData = $this->formToArray($form);
+            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+
+            switch ($detailsData["personType"]) {
+                case "voucher":
+                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+                case "certificateProvider":
+                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                default:
+                    return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
+            }
+        }
+
+        $view = new ViewModel([
+            'form' => $form,
+            'countryName' => $country->translate(),
+            'details_data' => $detailsData,
+            'supported_docs' => $docs,
+        ]);
+
+        return $view->setTemplate($templates['default']);
     }
 
     public function findPostOfficeBranchAction(): ViewModel|Response
@@ -236,116 +283,5 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
-    }
-
-    public function donorLpaCheckAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $view = new ViewModel();
-        $lpaDetails = [];
-
-        foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-
-            if (! empty($lpasData['opg.poas.lpastore'])) {
-                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-            } else {
-                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
-                    $lpasData['opg.poas.sirius']['donor']['surname'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
-            }
-
-            $lpaDetails[$lpa] = [
-                'name' => $name,
-                'type' => $type,
-            ];
-        }
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('lpa_details', $lpaDetails);
-        $view->setVariable('lpa_count', count($detailsData['lpas']));
-
-        return $view->setTemplate('application/pages/post_office/donor_lpa_check');
-    }
-
-    public function removeLpaAction(): Response
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $lpa = $this->params()->fromRoute("lpa");
-
-        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
-
-        return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
-    }
-
-    public function chooseCountryAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/post_office/choose_country'];
-        $uuid = $this->params()->fromRoute("uuid");
-        $view = new ViewModel();
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = $this->createForm(Country::class);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formData = $this->formToArray($form);
-
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-
-            return $this->redirect()->toRoute("root/donor_choose_country_id", ['uuid' => $uuid]);
-        }
-
-        $countriesData = PostOfficeCountry::cases();
-        $countriesData = array_filter(
-            $countriesData,
-            fn (PostOfficeCountry $country) => $country !== PostOfficeCountry::GBR
-        );
-
-        $view->setVariable('form', $form);
-        $view->setVariable('countries_data', $countriesData);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        return $view->setTemplate($templates['default']);
-    }
-
-    public function chooseCountryIdAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/post_office/choose_country_id'];
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
-            throw new \Exception("Country for document list has not been set.");
-        }
-
-        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country']);
-
-        $docs = $this->documentTypeRepository->getByCountry($country);
-
-        $form = $this->createForm(CountryDocument::class);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formData = $this->formToArray($form);
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-
-            return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
-        }
-
-        $view = new ViewModel([
-            'form' => $form,
-            'countryName' => $country->translate(),
-            'details_data' => $detailsData,
-            'supported_docs' => $docs,
-        ]);
-
-        return $view->setTemplate($templates['default']);
     }
 }
