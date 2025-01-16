@@ -22,7 +22,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     private VoucherMatchLpaActorHelper&MockObject $voucherMatchMock;
     private string $uuid;
     private array $routes;
-    private array $fakeAddress;
 
     public function setUp(): void
     {

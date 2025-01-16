@@ -191,7 +191,7 @@ class VouchingFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
-            $form->setData($formData);
+            $form->setData($formData->toArray());
 
             if ($form->isValid()) {
                 $match = false;
@@ -229,6 +229,9 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(VoucherBirthDate::class);
+        /**
+         * @psalm-suppress RedundantConditionGivenDocblockType
+         */
         if (! is_null($detailsData['dob'])) {
             $dob = DateTime::createFromFormat('Y-m-d', $detailsData['dob']);
             $form->setData([
