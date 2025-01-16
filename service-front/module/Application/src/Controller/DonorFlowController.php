@@ -431,7 +431,7 @@ class DonorFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $form = $this->createForm(FinishIDCheck::class);
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost()->toArray();
@@ -450,7 +450,7 @@ class DonorFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
             /**
