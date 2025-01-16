@@ -145,7 +145,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertModuleName('application');
         $this->assertControllerName(PostOfficeFlowController::class);
         $this->assertControllerClass('PostOfficeFlowController');
-        $this->assertMatchedRouteName('root/what_happens_next');
+        $this->assertMatchedRouteName('root/po_what_happens_next');
     }
 
     public function testRouteNotAvailableData(): void

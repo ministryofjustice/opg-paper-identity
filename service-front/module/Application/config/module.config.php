@@ -209,16 +209,6 @@ return [
                             ],
                         ],
                     ],
-                    'po_do_details_match' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/post-office-do-details-match',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'doDetailsMatch',
-                            ],
-                        ],
-                    ],
                     'find_post_office_branch' => [
                         'type' => Segment::class,
                         'options' => [
@@ -239,7 +229,7 @@ return [
                             ],
                         ],
                     ],
-                    'what_happens_next' => [
+                    'po_what_happens_next' => [
                         'type' => Segment::class,
                         'options' => [
                             'route' => '/:uuid/what-happens-next',
