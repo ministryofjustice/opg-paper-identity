@@ -417,8 +417,15 @@ class VouchingFlowController extends AbstractActionController
     public function confirmDonorsAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
-
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if ($this->getRequest()->isPost()) {
+            if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
+                $this->redirect()
+                    ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
+            }
+        }
+
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
             /**

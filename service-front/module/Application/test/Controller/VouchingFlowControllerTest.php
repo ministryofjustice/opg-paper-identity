@@ -1008,6 +1008,42 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('span[id=lpaId]', 'M-AAAA-1234-5678');
     }
 
+
+    /**
+     * @dataProvider confirmDonorsRedirectData
+     */
+    public function testConfirmDonorsRedirect(array $idMethodIncludingNation, string $expectedRedirect): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['confirmDonors']}", 'POST');
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
+
+    }
+
+    public function confirmDonorsRedirectData(): array
+    {
+        return [
+            [
+                [
+                    "id_country" => "AUT",
+                    "id_method" => "DRIVING_LICENCE",
+                    'id_route' => 'POST_OFFICE'
+                ],
+                'find-post-office-branch'
+            ],
+        ];
+    }
+
     public function testAddDonorPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
