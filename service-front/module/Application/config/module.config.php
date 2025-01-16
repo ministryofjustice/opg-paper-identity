@@ -234,7 +234,7 @@ return [
                     'po_what_happens_next' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/what-happens-next',
+                            'route' => '/:uuid/post-office-what-happens-next',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'whatHappensNext',
