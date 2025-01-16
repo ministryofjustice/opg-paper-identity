@@ -57,7 +57,10 @@ class FormProcessorHelper
         if ($form->isValid()) {
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
             $variables['nino_data'] = $formArray;
-            $variables['validity'] = $this->opgApiService->checkNinoValidity($formArray['nino']);
+            $variables['validity'] = $this->opgApiService->checkNinoValidity(
+                $uuid,
+                $formArray['nino']
+            );
         }
 
         return new FormProcessorResponseDto(
