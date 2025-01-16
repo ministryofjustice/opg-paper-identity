@@ -59,7 +59,8 @@ class SessionConfigTest extends TestCase
         $idIncludingNation = IdMethodIncludingNation::fromArray([
             "id_country" => "ITA",
             "id_method" => "DRIVING_LICENCE",
-            "id_route" => 'POST_OFFICE'
+            "id_route" => 'POST_OFFICE',
+            "id_value" => 'AA112233C'
         ]);
         $this->caseMock->idMethodIncludingNation = $idIncludingNation;
 
