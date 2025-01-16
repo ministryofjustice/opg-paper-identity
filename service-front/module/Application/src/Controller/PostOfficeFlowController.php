@@ -64,7 +64,7 @@ class PostOfficeFlowController extends AbstractActionController
 
                     if ($formData['id_method'] == 'NONUKID') {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
-                        return $this->redirect()->toRoute("root/po_choose_country", ['uuid' => $uuid]);
+                        $redirect = "root/po_choose_country";
                     } else {
                         $this->opgApiService->updateIdMethodWithCountry($uuid, [
                             'id_method' => $formData['id_method'],
@@ -72,13 +72,14 @@ class PostOfficeFlowController extends AbstractActionController
                         ]);
                         switch ($detailsData["personType"]) {
                             case "voucher":
-                                return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+                                $redirect = "root/voucher_name";
                             case "certificateProvider":
-                                return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                                $redirect = "root/cp_name_match_check";
                             default:
-                                return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
+                                $redirect = "root/donor_details_match_check";
                         }
                     }
+                    $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
                 }
             }
         }
@@ -139,12 +140,13 @@ class PostOfficeFlowController extends AbstractActionController
 
             switch ($detailsData["personType"]) {
                 case "voucher":
-                    return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $uuid]);
+                    $redirect = "root/voucher_name";
                 case "certificateProvider":
-                    return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
+                    $redirect = "root/cp_name_match_check";
                 default:
-                    return $this->redirect()->toRoute("root/donor_details_match_check", ['uuid' => $uuid]);
+                    $redirect = "root/donor_details_match_check";
             }
+            return $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
         }
 
         $view = new ViewModel([
