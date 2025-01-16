@@ -303,7 +303,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "NATIONAL_INSURANCE_NUMBER",
                 'id_country' => "GBR",

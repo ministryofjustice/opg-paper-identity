@@ -35,10 +35,7 @@ class DwpApiServiceTest extends TestCase
         ],
         "documentComplete" => false,
         "identityCheckPassed" => null,
-        "searchPostcode" => null,
         "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-        "kbvQuestions" => [
-        ],
         "idMethodIncludingNation" => [
             "id_method" => "NATIONAL_INSURANCE_NUMBER",
             "id_route" => "TELEPHONE",
