@@ -74,8 +74,10 @@ class OpgApiService implements OpgApiServiceInterface
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
 
             // There may be times when we need to load the case data regardless, such as at the end of each flow
-            if (! $skipIdCheckPerformedCheck && ($response['identityCheckPassed'] === true ||
-                    $response['identityCheckPassed'] === false)) {
+            if (
+                ! $skipIdCheckPerformedCheck && ($response['identityCheckPassed'] === true ||
+                    $response['identityCheckPassed'] === false)
+            ) {
                 throw new OpgApiException('Identity check has already been performed');
             }
 
