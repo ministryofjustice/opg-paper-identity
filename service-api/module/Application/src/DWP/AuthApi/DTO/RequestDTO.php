@@ -50,7 +50,9 @@ class RequestDTO
     {
         return [
             'clientId' => $this->clientId(),
-            'clientSecret' => $this->clientSecret()
+            'clientSecret' => $this->clientSecret(),
+            'bundle' => $this->bundle(),
+            'private_key' => $this->privateKey()
         ];
     }
 }

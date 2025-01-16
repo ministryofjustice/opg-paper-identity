@@ -29,6 +29,8 @@ class DwpAuthApiServiceTest extends TestCase
 
     private LoggerInterface&MockObject $logger;
 
+    private string $oauthTokenEndpoint = '';
+
     public function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -45,7 +47,8 @@ class DwpAuthApiServiceTest extends TestCase
             $this->client,
             $this->apcHelper,
             $this->logger,
-            $this->dwpAuthRequestDto
+            $this->dwpAuthRequestDto,
+            $this->oauthTokenEndpoint
         );
     }
 
@@ -74,6 +77,7 @@ class DwpAuthApiServiceTest extends TestCase
             $this->apcHelper,
             $this->logger,
             $this->dwpAuthRequestDto,
+            $this->oauthTokenEndpoint
         );
 
         $response = $dwpAuthApiService->authenticate();

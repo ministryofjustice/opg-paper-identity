@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
 
 class DwpApiServiceTest extends TestCase
 {
-    private AuthApiService $dwpAuthApiService;
+    private AuthApiService&MockObject $dwpAuthApiService;
     private DwpApiService $dwpApiService;
     private LoggerInterface&MockObject $logger;
     private const CASE = [
@@ -225,16 +225,15 @@ class DwpApiServiceTest extends TestCase
     public function setUp(): void
     {
         $this->logger = $this->createMock(LoggerInterface::class);
-        $clientCitizen = $this->createMock(Client::class);
-        $clientMatch = $this->createMock(Client::class);
+        $client = $this->createMock(Client::class);
         $this->dwpAuthApiService = $this->createMock(AuthApiService::class);
 
         $this->dwpApiService = new DwpApiService(
-            $clientCitizen,
-            $clientMatch,
+            $client,
             $this->dwpAuthApiService,
             $this->logger,
-            []
+            '',
+            ''
         );
     }
 
@@ -338,10 +337,10 @@ class DwpApiServiceTest extends TestCase
 
         $dwpApiService = new DwpApiService(
             $successClient,
-            $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            []
+            '',
+            ''
         );
 
         $this->assertEquals(
@@ -382,10 +381,10 @@ class DwpApiServiceTest extends TestCase
 
         $dwpApiService = new DwpApiService(
             $successClient,
-            $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            []
+            '',
+            ''
         );
 
         $this->assertEquals(
@@ -405,22 +404,16 @@ class DwpApiServiceTest extends TestCase
         $failHandlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $failHandlerStack]);
 
-        $successMock = new MockHandler([
-            new GuzzleResponse(200, [], json_encode([])),
-        ]);
-        $handlerStack = HandlerStack::create($successMock);
-        $successClient = new Client(['handler' => $handlerStack]);
-
         $this->dwpAuthApiService->expects(self::once())
             ->method('retrieveCachedTokenResponse')
             ->willReturn('access_token');
 
         $dwpApiService = new DwpApiService(
             $failClient,
-            $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            []
+            '',
+            ''
         );
 
         $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(CaseData::fromArray(static::CASE)));
@@ -442,10 +435,10 @@ class DwpApiServiceTest extends TestCase
 
         $dwpApiService = new DwpApiService(
             $successClient,
-            $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            []
+            '',
+            ''
         );
 
         $this->assertEquals(
@@ -465,22 +458,16 @@ class DwpApiServiceTest extends TestCase
         $failHandlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $failHandlerStack]);
 
-        $successMock = new MockHandler([
-            new GuzzleResponse(200, [], json_encode([])),
-        ]);
-        $handlerStack = HandlerStack::create($successMock);
-        $successClient = new Client(['handler' => $handlerStack]);
-
         $this->dwpAuthApiService->expects(self::once())
             ->method('retrieveCachedTokenResponse')
             ->willReturn('access_token');
 
         $dwpApiService = new DwpApiService(
             $failClient,
-            $failClient,
             $this->dwpAuthApiService,
             $this->logger,
-            []
+            '',
+            ''
         );
 
         $dwpApiService->makeCitizenDetailsRequest(new DetailsRequestDTO('case-id-string'));
@@ -546,7 +533,7 @@ class DwpApiServiceTest extends TestCase
         return [
             [
                 [
-                    $caseData->idMethodIncludingNation->id_value,
+                    'ZZ123456A',
                     'PASS',
                     Response::STATUS_CODE_200
                 ],
@@ -556,7 +543,7 @@ class DwpApiServiceTest extends TestCase
             ],
             [
                 [
-                    $caseData->idMethodIncludingNation->id_value,
+                    'ZZ123456A',
                     'NO_MATCH',
                     Response::STATUS_CODE_200
                 ],
@@ -566,7 +553,7 @@ class DwpApiServiceTest extends TestCase
             ],
             [
                 [
-                    $caseData->idMethodIncludingNation->id_value,
+                    'ZZ123456A',
                     'NO_MATCH',
                     Response::STATUS_CODE_200
                 ],
@@ -576,7 +563,7 @@ class DwpApiServiceTest extends TestCase
             ],
             [
                 [
-                    $caseData->idMethodIncludingNation->id_value,
+                    'ZZ123456A',
                     'NO_MATCH',
                     Response::STATUS_CODE_200
                 ],

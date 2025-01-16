@@ -37,6 +37,10 @@ class CitizenResponseDTOTest extends TestCase
         $this->assertEquals('uuid-string', $this->citizenResponseDTO->id());
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     *
+     */
     public function type(): void
     {
         $this->assertEquals('MatchResult', $this->citizenResponseDTO->type());

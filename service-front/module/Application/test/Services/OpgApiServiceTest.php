@@ -125,7 +125,7 @@ class OpgApiServiceTest extends TestCase
 
         $opgApiService = new OpgApiService($client);
 
-        $response = $opgApiService->checkNinoValidity($nino);
+        $response = $opgApiService->checkNinoValidity('uuid', $nino);
 
         $this->assertEquals($responseData, $response);
     }

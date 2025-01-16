@@ -17,14 +17,13 @@ use Application\Aws\Secrets\AwsSecret;
 
 class AuthApiService
 {
-    private string $path;
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
         private readonly LoggerInterface $logger,
-        private readonly RequestDTO $dwpAuthRequestDTO
+        private readonly RequestDTO $dwpAuthRequestDTO,
+        private readonly string $oauthTokenEndpoint
     ) {
-        $this->path = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
     }
 
     public function makeHeaders(): array
@@ -62,7 +61,6 @@ class AuthApiService
     }
 
     /**
-     * @psalm-suppress PossiblyUnusedMethod
      * @throws GuzzleException
      * @throws AuthApiException
      */
@@ -93,11 +91,12 @@ class AuthApiService
         try {
             $response = $this->client->request(
                 'POST',
-                $this->path,
+                $this->oauthTokenEndpoint,
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $dwpAuthRequestDTO->toArray(),
-                ]
+                    'verify' => false,
+                ],
             );
 
             $responseArray = json_decode($response->getBody()->getContents(), true);

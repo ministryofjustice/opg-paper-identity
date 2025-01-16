@@ -24,17 +24,14 @@ use function Amp\Promise\all;
 
 class DwpApiService
 {
-    private string $matchPath;
-    private string $detailsPath;
-    private $authCount = 0;
+    private int $authCount = 0;
     public function __construct(
-        private Client $guzzleClientMatch,
-        private Client $guzzleClientDetails,
+        private Client $guzzleClient,
         private AuthApiService $authApiService,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private string $detailsPath,
+        private string $matchPath,
     ) {
-        $this->matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
-        $this->detailsPath = (new AwsSecret('dwp/citizen-details-endpoint'))->getValue();
     }
 
     /**
@@ -77,36 +74,42 @@ class DwpApiService
         DetailsResponseDTO $detailsResponseDTO,
         CitizenResponseDTO $citizenResponseDTO
     ): array {
-        if (
-            $citizenResponseDTO->matchScenario() !== 'Matched on NINO' ||
-            $detailsResponseDTO->verified() !== 'verified'
-        ) {
+        if ($caseData->idMethodIncludingNation) {
+            if (
+                $citizenResponseDTO->matchScenario() !== 'Matched on NINO' ||
+                $detailsResponseDTO->verified() !== 'verified'
+            ) {
+                return [
+                    /** @psalm-suppress PossiblyNullPropertyFetch */
+                    $caseData->idMethodIncludingNation->id_value,
+                    'NO_MATCH',
+                    Response::STATUS_CODE_200
+                ];
+            }
             return [
+                /** @psalm-suppress PossiblyNullPropertyFetch */
                 $caseData->idMethodIncludingNation->id_value,
-                'NO_MATCH',
+                'PASS',
                 Response::STATUS_CODE_200
             ];
+        } else {
+            throw new DwpApiException('National Insurance Number not set.');
         }
-        return [
-            $caseData->idMethodIncludingNation->id_value,
-            'PASS',
-            Response::STATUS_CODE_200
-        ];
     }
 
     /**
      * @throws GuzzleException
      * @throws DwpApiException
-     * @psalm-suppress InvalidReturnType
      */
     public function makeCitizenMatchRequest(
         CitizenRequestDTO $citizenRequestDTO
     ): CitizenResponseDTO {
         $this->authCount++;
+        $responseArray = [];
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
 
-            $response = $this->guzzleClientMatch->request(
+            $response = $this->guzzleClient->request(
                 'POST',
                 $this->matchPath,
                 [
@@ -173,16 +176,16 @@ class DwpApiService
     /**
      * @throws GuzzleException
      * @throws DwpApiException
-     * @psalm-suppress InvalidReturnType
      */
     public function makeCitizenDetailsRequest(
         DetailsRequestDTO $detailsRequestDTO
     ): DetailsResponseDTO {
         $this->authCount++;
+        $responseArray = [];
         try {
             $uri = sprintf($this->detailsPath, $detailsRequestDTO->id());
 
-            $response = $this->guzzleClientDetails->request(
+            $response = $this->guzzleClient->request(
                 'GET',
                 $uri,
                 [

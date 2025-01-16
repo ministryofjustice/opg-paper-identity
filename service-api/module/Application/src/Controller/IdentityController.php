@@ -164,7 +164,13 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
+        /**
+         * @psalm-suppress PossiblyNullPropertyFetch
+         */
         $idMethodValues = $caseData->idMethodIncludingNation;
+        /**
+         * @psalm-suppress PossiblyNullPropertyAssignment
+         */
         $idMethodValues->id_value = $data['nino'];
 
         try {

@@ -21,41 +21,36 @@ class DwpApiServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
-     * @param string                          $requestedName
-     * @param array<mixed>|null               $options
+     * @param string $requestedName
+     * @param array<mixed>|null $options
+     * @throws DwpApiException
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         array $options = null
     ): DwpApiService {
+        $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
+        $detailsPath = (new AwsSecret('dwp/citizen-details-endpoint'))->getValue();
+        $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
 
-        $baseUriCitizenDetails = (new AwsSecret('dwp/base-uri'))->getValue();
-        $baseUriCitizenMatch = (new AwsSecret('dwp/base-uri'))->getValue();
-
-        if (! is_string($baseUriCitizenDetails) || empty($baseUriCitizenDetails)) {
+        if (empty($baseUri)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
-        if (! is_string($baseUriCitizenMatch) || empty($baseUriCitizenMatch)) {
-            throw new DwpApiException("DWP Citizen Match endpoint is empty");
-        }
-
-        $guzzleClientCitizenDetails = new Client([
-            'base_uri' => $baseUriCitizenDetails
-        ]);
-
-        $guzzleClientCitizenMatch = new Client([
-            'base_uri' => $baseUriCitizenMatch
+        $guzzleClient = new Client([
+            'base_uri' => $baseUri,
+            'verify' => false
         ]);
 
         $logger = $container->get(LoggerInterface::class);
 
         return new DwpApiService(
-            $guzzleClientCitizenMatch,
-            $guzzleClientCitizenDetails,
+            $guzzleClient,
             $container->get(AuthApiService::class),
-            $logger
+            $logger,
+            $detailsPath,
+            $matchPath
         );
     }
 }

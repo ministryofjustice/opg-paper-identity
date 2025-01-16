@@ -88,17 +88,17 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-de
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \
     --description "DWP certificate" \
-    --secret-string "empty" \
+    --secret-string "-----BEGIN CERTIFICATE-----ThisIsntARealCertSoDontWorry4f54g5g54w534t3/MQswCQYDVQQGEwJGUjETcbTV5RDkrlaYwm5yqlTIglvCv7o=-----END CERTIFICATE-----" \
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate \
     --description "DWP OPG certificate" \
-    --secret-string "empty" \
+    --secret-string "-----BEGIN CERTIFICATE-----ThisIsntARealCertSoDontWorry4f54g5g54w534t3/MQswCQYDVQQGEwJGUjETcbTV5RDkrlaYwm5yqlTIglvCv7o=-----END CERTIFICATE-----" \
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-public-key \
     --description "DWP OPG certificate public key" \
-    --secret-string "-----BEGIN OPENSSH PUBLIC KEY-----MEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=-----END RSA PUBLIC KEY-----" \
+    --secret-string "-----BEGIN OPENSSH PUBLIC KEY-----ThisIsntARealKeySoDontWorryMEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=-----END RSA PUBLIC KEY-----" \
    --region "eu-west-1"
     
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-secret \
@@ -118,6 +118,6 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certif
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-private-key \
     --description "Experian Crosscore Tenant ID" \
-    --secret-string "empty" \
+    --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZQ-----END OPENSSH PRIVATE KEY----" \
     --region "eu-west-1"
 

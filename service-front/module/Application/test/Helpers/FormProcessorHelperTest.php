@@ -126,7 +126,7 @@ class FormProcessorHelperTest extends TestCase
             $opgApiServiceMock
                 ->expects(self::once())
                 ->method('checkNinoValidity')
-                ->with($formData->toArray()['nino'])
+                ->with($caseUuid, $formData->toArray()['nino'])
                 ->willReturn($responseData['status']);
         }
 
