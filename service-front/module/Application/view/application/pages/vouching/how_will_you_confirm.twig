@@ -1,7 +1,7 @@
 {% extends "layout/layout" %}
 
 {% block beforeMain %}
-    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,7 @@
                         <p class="govuk-notification-banner__heading">
                         <div class="govuk-warning-text">
                             <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
-                                  aria-hidden="true">!</span>
+                                aria-hidden="true">!</span>
                             <strong class="govuk-warning-text__text">
                                 {{ service_availability.messages.banner }}
                             </strong>
