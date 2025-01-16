@@ -81,16 +81,14 @@ class DwpApiService
             ) {
                 return [
                     /** @psalm-suppress PossiblyNullPropertyFetch */
-                    $caseData->idMethodIncludingNation->id_value,
-                    'NO_MATCH',
-                    Response::STATUS_CODE_200
+                    'nino' => $caseData->idMethodIncludingNation->id_value,
+                    'status' => 'NO_MATCH'
                 ];
             }
             return [
                 /** @psalm-suppress PossiblyNullPropertyFetch */
-                $caseData->idMethodIncludingNation->id_value,
-                'PASS',
-                Response::STATUS_CODE_200
+                'nino' => $caseData->idMethodIncludingNation->id_value,
+                'status' => 'PASS'
             ];
         } else {
             throw new DwpApiException('National Insurance Number not set.');

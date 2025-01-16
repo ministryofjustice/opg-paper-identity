@@ -111,7 +111,7 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest(
-                sprintf('/%s/identity/validate_nino', $uuid),
+                sprintf('/identity/%s/validate_nino', $uuid),
                 'POST',
                 ['nino' => $nino],
                 ['Content-Type' => 'application/json']

@@ -533,9 +533,8 @@ class DwpApiServiceTest extends TestCase
         return [
             [
                 [
-                    'ZZ123456A',
-                    'PASS',
-                    Response::STATUS_CODE_200
+                    'nino' => 'ZZ123456A',
+                    'status' => 'PASS',
                 ],
                 $caseData,
                 $successMatchDTO,
@@ -543,9 +542,8 @@ class DwpApiServiceTest extends TestCase
             ],
             [
                 [
-                    'ZZ123456A',
-                    'NO_MATCH',
-                    Response::STATUS_CODE_200
+                    'nino' => 'ZZ123456A',
+                    'status' => 'NO_MATCH',
                 ],
                 $caseData,
                 $noMatchDTO,
@@ -553,9 +551,8 @@ class DwpApiServiceTest extends TestCase
             ],
             [
                 [
-                    'ZZ123456A',
-                    'NO_MATCH',
-                    Response::STATUS_CODE_200
+                    'nino' => 'ZZ123456A',
+                    'status' => 'NO_MATCH',
                 ],
                 $caseData,
                 $successMatchDTO,
@@ -563,9 +560,8 @@ class DwpApiServiceTest extends TestCase
             ],
             [
                 [
-                    'ZZ123456A',
-                    'NO_MATCH',
-                    Response::STATUS_CODE_200
+                    'nino' => 'ZZ123456A',
+                    'status' => 'NO_MATCH',
                 ],
                 $caseData,
                 $noMatchDTO,
