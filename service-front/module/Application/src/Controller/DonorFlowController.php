@@ -188,7 +188,7 @@ class DonorFlowController extends AbstractActionController
             'details_data' => $detailsData,
             'formattedDob' => DateProcessorHelper::formatDate($detailsData['dob']),
             'uuid' => $uuid,
-            'next_page' =>  './donor-lpa-check',
+            'next_page' => './donor-lpa-check',
             'sirius_edit_url' => $siriusEditUrl
         ]);
 
