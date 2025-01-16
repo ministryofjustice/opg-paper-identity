@@ -2,16 +2,20 @@
     <div class="moj-identity-bar">
         <div class="moj-identity-bar__container">
             <div class="moj-identity-bar__details">
-                <span class="moj-identity-bar__title">Identity Check: <b>{{ firstName }} {{ lastName }}</b>
-                    {% if details_data.personType == 'certificateProvider' %}
-                        (certificate provider)
-                    {% else %}
-                        (donor)
-                        {% if details_data.personType == 'voucher'%}
-                            <strong class="govuk-tag govuk-!-margin-left-2">vouching route</strong>
+                {% if details_data.personType == 'voucher'%}
+                    <span class="moj-identity-bar__title">Identity Check: <b>{{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}</b>
+                {% else %}
+                    <span class="moj-identity-bar__title">Identity Check: <b>{{ firstName }} {{ lastName }}</b>
+                {% endif %}
+                        {% if details_data.personType == 'certificateProvider' %}
+                            (certificate provider)
+                        {% else %}
+                            (donor)
+                            {% if details_data.personType == 'voucher'%}
+                                <strong class="govuk-tag govuk-!-margin-left-2">vouching route</strong>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                </span>
+                    </span>
             </div>
             <div class="moj-identity-bar__actions">
                 <div class="govuk-!-static-margin-top-2">
