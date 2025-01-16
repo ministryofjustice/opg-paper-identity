@@ -34,13 +34,13 @@ namespace Application\Contracts;
  *     id_method?: string,
  *     id_route?: string,
  *   },
- *   searchPostcode?: string,
  *   counterService?: array{
  *     selectedPostOffice: string,
  *     notificationState: string,
  *     notificationsAuthToken: string,
  *     state: string,
  *     result: bool,
+ *     searchPostcode: string
  *   },
  *   caseProgress?: array{
  *       abandonedFlow?: array{
@@ -71,7 +71,7 @@ interface OpgApiServiceInterface
     /**
      * @return CaseData
      */
-    public function getDetailsData(string $uuid): array;
+    public function getDetailsData(string $uuid, bool $skipIdCheckPerformedCheck = false): array;
 
     public function checkNinoValidity(string $uuid, string $nino): string;
 
@@ -187,4 +187,6 @@ interface OpgApiServiceInterface
      * @return void
      */
     public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
+
+    public function abandonFlow(string $uuid): void;
 }

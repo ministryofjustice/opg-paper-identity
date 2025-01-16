@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Services;
 
+use Application\Enums\IdMethod;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
-use Application\Enums\IdMethod;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -21,17 +22,23 @@ class OpgApiServiceTest extends TestCase
      * @dataProvider detailsData
      * @param class-string<Throwable>|null $expectedException
      */
-    public function testGetDetailsData(Client $client, ?array $responseData, ?string $expectedException): void
-    {
+    public function testGetDetailsData(
+        Client $client,
+        ?array $responseData,
+        ?string $expectedException,
+        bool $skipIdCheckPerformedCheck = false
+    ): void {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
 
         $opgApiService = new OpgApiService($client);
 
-        $response = $opgApiService->getDetailsData('uuid');
+        $response = $opgApiService->getDetailsData('uuid', $skipIdCheckPerformedCheck);
 
-        $this->assertEquals($responseData, $response);
+        if ($responseData !== null) {
+            $this->assertEquals($responseData, $response);
+        }
     }
 
     public static function detailsData(): array
@@ -48,13 +55,10 @@ class OpgApiServiceTest extends TestCase
                     'town' => 'Middleton',
                     'postcode' => 'LA1 2XN',
                     'country' => 'DD',
-                ]
+                ],
             ],
             "personType" => "donor",
-            "lpas" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-VGAS-OAGA-34G9",
-            ],
+            "identityCheckPassed" => true,
         ];
 
         $expectedReturnData = [
@@ -71,10 +75,7 @@ class OpgApiServiceTest extends TestCase
             ],
             "professionalAddress" => null,
             "personType" => "donor",
-            "lpas" => [
-                "PA M-XYXY-YAGA-35G3",
-                "PW M-VGAS-OAGA-34G9",
-            ],
+            "identityCheckPassed" => true,
         ];
 
         $successMock = new MockHandler([
@@ -95,21 +96,70 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($notFoundMock);
         $notFoundClient = new Client(['handler' => $handlerStack]);
 
+        $identityCheckExceptionMock = new MockHandler([
+            new Response(200, [], json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => true]))),
+        ]);
+        $identityCheckHandler = HandlerStack::create($identityCheckExceptionMock);
+        $identityCheckClient = new Client(['handler' => $identityCheckHandler]);
+
+        $identityCheckNullMock = new MockHandler([
+            new Response(200, [], json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => null]))),
+        ]);
+        $identityCheckNullHandler = HandlerStack::create($identityCheckNullMock);
+        $identityCheckNullClient = new Client(['handler' => $identityCheckNullHandler]);
+
+        $expectedReturnDataNullCheck = [
+            "firstName" => "Mary Ann",
+            "lastName" => "Chapman",
+            "dob" => "1943-05-01",
+            "address" => [
+                'line1' => '1 Street',
+                'line2' => '',
+                'line3' => '',
+                'town' => 'Middleton',
+                'postcode' => 'LA1 2XN',
+                'country' => 'DD',
+            ],
+            "professionalAddress" => null,
+            "personType" => "donor",
+            "identityCheckPassed" => null,
+        ];
+
         return [
+            // Success Case
             [
                 $successClient,
                 $expectedReturnData,
                 null,
+                true,
             ],
+            // Bad Request Case
             [
                 $failClient,
                 null,
                 OpgApiException::class,
+                false,
             ],
+            // Not Found Case
             [
                 $notFoundClient,
                 null,
                 HttpException::class,
+                false,
+            ],
+            // Identity Check Performed Exception
+            [
+                $identityCheckClient,
+                null,
+                OpgApiException::class,
+                false,
+            ],
+            // Identity Check Passed Null Case
+            [
+                $identityCheckNullClient,
+                $expectedReturnDataNullCheck,
+                null,
+                false,
             ],
         ];
     }
@@ -788,7 +838,7 @@ class OpgApiServiceTest extends TestCase
                     IdMethod::PassportNumber->value => true,
                     IdMethod::NationalInsuranceNumber->value => true,
                     IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false
+                    'EXPERIAN' => false,
                 ]),
             ),
         ]);
@@ -813,15 +863,53 @@ class OpgApiServiceTest extends TestCase
                     "NATIONAL_INSURANCE_NUMBER" => true,
                     "DRIVING_LICENCE" => true,
                     "PASSPORT" => true,
-                    "POST_OFFICE" => true
+                    "POST_OFFICE" => true,
                 ],
-                false
+                false,
             ],
             [
                 $failClient,
                 [],
-                true
+                true,
             ],
         ];
+    }
+
+    public function testAbandonCase(): void
+    {
+        $successMock = new MockHandler([
+            function (Request $request) {
+                $this->assertEquals('POST', $request->getMethod());
+                $this->assertEquals('/cases/case-uuid/abandon', strval($request->getUri()));
+
+                return new Response(200, [], '');
+            },
+        ]);
+
+        $client = new Client(['handler' => HandlerStack::create($successMock)]);
+
+        $sut = new OpgApiService($client);
+
+        $sut->abandonFlow('case-uuid');
+    }
+
+    public function testAbandonCaseFailure(): void
+    {
+        $successMock = new MockHandler([
+            function (Request $request) {
+                $this->assertEquals('POST', $request->getMethod());
+                $this->assertEquals('/cases/case-uuid/abandon', strval($request->getUri()));
+
+                return new Response(404, [], '');
+            },
+        ]);
+
+        $client = new Client(['handler' => HandlerStack::create($successMock)]);
+
+        $sut = new OpgApiService($client);
+
+        $this->expectException(OpgApiException::class);
+
+        $sut->abandonFlow('case-uuid');
     }
 }

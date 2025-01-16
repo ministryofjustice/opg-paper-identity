@@ -8,7 +8,10 @@ use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
+use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
+use Application\Controller\IndexController;
+use Application\Enums\IdMethod;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
@@ -18,7 +21,6 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
-use Application\Enums\IdMethod;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -619,6 +621,36 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_confirm_donors' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/confirm-donors',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'confirmDonors',
+                            ],
+                        ],
+                    ],
+                    'voucher_add_donor' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/add-donor',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'addDonor',
+                            ],
+                        ],
+                    ],
+                    'voucher_remove_lpa' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/remove-lpa/:lpa',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'removeLpa',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -628,7 +660,7 @@ return [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\VouchingFlowController::class => LazyControllerAbstractFactory::class,
-            Controller\IndexController::class => LazyControllerAbstractFactory::class,
+            Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
         ],

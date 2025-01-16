@@ -425,7 +425,6 @@ class LpaFormHelperTest extends TestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "searchPostcode" => null,
             "idMethod" => null
         ];
     }

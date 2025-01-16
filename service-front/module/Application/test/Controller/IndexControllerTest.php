@@ -8,6 +8,7 @@ use Application\Controller\IndexController;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
@@ -52,11 +53,12 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     public static function startActionDataProvider(): array
     {
         $siriusData = [
+            'uId' => 'M-0000-0000-0000',
             'id' => 1234,
             'donor' => [
                 'firstname' => 'Lili', 'surname' => 'Laur', 'dob' => '18/02/2019',
                 'addressLine1' => '17 East Lane', 'addressLine2' => 'Wickerham',
-                'town' => '', 'postcode' => 'W1 3EJ', 'country' => 'GB'
+                'town' => '', 'postcode' => 'W1 3EJ', 'country' => 'GB',
             ],
             'caseSubtype' => 'property-and-affairs',
         ];
@@ -81,7 +83,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             'draft, donor' => [
                 [
                     'opg.poas.sirius' => $siriusData,
-                    'opg.poas.lpastore' => null
+                    'opg.poas.lpastore' => null,
                 ],
                 'donor',
                 [
@@ -92,14 +94,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                         'line3' => '',
                         'town' => '',
                         'postcode' => 'W1 3EJ',
-                        'country' => 'GB'
+                        'country' => 'GB',
                     ],
-                ]
+                ],
             ],
             'executed, donor' => [
                 [
                     'opg.poas.sirius' => $siriusData,
-                    'opg.poas.lpastore' => $lpaStoreData
+                    'opg.poas.lpastore' => $lpaStoreData,
                 ],
                 'donor',
                 [
@@ -110,14 +112,14 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                         'line3' => '',
                         'town' => 'Edinburgh',
                         'postcode' => 'EH1 2EJ',
-                        'country' => 'GB'
+                        'country' => 'GB',
                     ],
-                ]
+                ],
             ],
             'executed, cp' => [
                 [
                     'opg.poas.sirius' => $siriusData,
-                    'opg.poas.lpastore' => $lpaStoreData
+                    'opg.poas.lpastore' => $lpaStoreData,
                 ],
                 'certificateProvider',
                 [
@@ -128,9 +130,9 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                         'line3' => '',
                         'town' => '',
                         'postcode' => '',
-                        'country' => 'ES'
+                        'country' => 'ES',
                     ],
-                ]
+                ],
             ],
         ];
     }
@@ -177,7 +179,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $draftLpa = [
             'opg.poas.sirius' => [],
-            'opg.poas.lpastore' => null
+            'opg.poas.lpastore' => null,
         ];
 
         $siriusApiService->expects($this->once())
@@ -206,7 +208,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $draftLpa = [
             'opg.poas.sirius' => [],
-            'opg.poas.lpastore' => null
+            'opg.poas.lpastore' => null,
         ];
 
         $siriusApiService->expects($this->once())
@@ -249,5 +251,64 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch('/health-check/service', 'GET');
         $this->assertResponseStatusCode(200);
+    }
+
+    public function testAbandonAction(): void
+    {
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $opgApiService = $this->createMock(OpgApiService::class);
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setService(SiriusApiService::class, $siriusApiService);
+        $serviceManager->setService(OpgApiService::class, $opgApiService);
+
+        $lastPage = '/case-uuid/national-insurance-number';
+
+        $opgApiService->expects($this->once())
+            ->method('updateCaseProgress')
+            ->with('case-uuid', $this->callback(fn ($data) => $data['abandonedFlow']['last_page'] === $lastPage));
+
+        $this->dispatch(sprintf('/case-uuid/abandon-flow?last_page=%s', $lastPage), 'GET');
+        $this->assertResponseStatusCode(200);
+
+        $button = (new Crawler($this->getResponse()->getContent()))
+            ->filterXPath('//a[contains(., "No, continue identity check")]');
+
+        $this->assertEquals('/case-uuid/national-insurance-number', $button->attr('href'));
+    }
+
+    public function testAbandonActionSubmit(): void
+    {
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $opgApiService = $this->createMock(OpgApiService::class);
+
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setService(SiriusApiService::class, $siriusApiService);
+        $serviceManager->setService(OpgApiService::class, $opgApiService);
+
+        $lastPage = '/case-uuid/national-insurance-number';
+
+        $opgApiService->expects($this->once())
+            ->method('getDetailsData')
+            ->with('case-uuid')
+            ->willReturn([
+                'lpas' => ['case-uuid'],
+            ]);
+
+        $opgApiService->expects($this->once())
+            ->method('updateCaseProgress')
+            ->with('case-uuid', $this->callback(fn ($data) => $data['abandonedFlow']['last_page'] === $lastPage));
+
+        $opgApiService->expects($this->once())
+            ->method('abandonFlow')
+            ->with('case-uuid');
+
+        $this->dispatch(sprintf('/case-uuid/abandon-flow?last_page=%s', $lastPage), 'POST', [
+            'reason' => 'cd',
+            'notes' => 'Custom notes',
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("SIRIUS_PUBLIC_URL/lpa/frontend/lpa/case-uuid");
     }
 }

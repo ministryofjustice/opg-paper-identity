@@ -14,15 +14,20 @@ use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
+use Application\Sirius\EventSender;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
 use ApplicationTest\TestCase;
+use DateTimeImmutable;
+use Laminas\Cache\Storage\Event;
 use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
+use Lcobucci\Clock\FrozenClock;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Clock\ClockInterface;
 
 class IdentityControllerTest extends TestCase
 {
@@ -491,7 +496,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
                 'id_country' => "",
@@ -580,7 +584,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
                 'id_country' => "",
@@ -720,7 +723,6 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "searchPostcode" => null,
             "idMethodIncludingNation" => [
                 'id_method' => "",
                 'id_country' => "",
@@ -921,5 +923,74 @@ class IdentityControllerTest extends TestCase
                 $successMockResponseData,
             ],
         ];
+    }
+
+    public function testAbandonCaseAction(): void
+    {
+        $eventSenderMock = $this->createMock(EventSender::class);
+        $frozenClock = new FrozenClock(new DateTimeImmutable('2024-05-12T13:45:56Z'));
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(EventSender::class, $eventSenderMock);
+        $serviceManager->setService(ClockInterface::class, $frozenClock);
+
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+
+        $caseData = CaseData::fromArray([
+            'id' => $uuid,
+            'personType' => 'donor',
+            'lpas' => [
+                'M-XYXY-YAGA-35G3',
+                'M-VGAS-OAGA-34G9',
+            ],
+        ]);
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($caseData);
+
+        $eventSenderMock
+            ->expects($this->once())
+            ->method('send')
+            ->with(
+                'identity-check-resolved',
+                [
+                    'reference' => 'opg:' . $caseData->id,
+                    'actorType' => $caseData->personType,
+                    'lpaIds' => $caseData->lpas,
+                    'time' => '2024-05-12T13:45:56+00:00',
+                    'outcome' => 'exit',
+                ]
+            );
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/abandon',
+            'POST'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+    }
+
+    public function testAbandonCaseActionWithMissingCase(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn(null);
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/abandon',
+            'POST'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_404);
+        $body = json_decode($this->getResponse()->getContent(), true);
+
+        $this->assertEquals('Case not found', $body['title']);
     }
 }

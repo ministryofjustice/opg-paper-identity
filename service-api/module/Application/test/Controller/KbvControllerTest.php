@@ -138,12 +138,6 @@ class KbvControllerTest extends TestCase
                 'address' => []
             ],
             'lpas' => [],
-            'kbvQuestions' => [
-                [],
-                [],
-                [],
-                [],
-            ],
         ]);
 
         return [

@@ -15,6 +15,8 @@ use PhpPact\Consumer\Model\ProviderResponse;
 use PhpPact\Standalone\MockService\MockServerConfigInterface;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
@@ -23,6 +25,7 @@ class SiriusApiServicePactTest extends TestCase
 {
     private MockServerConfigInterface $pactConfig;
     private InteractionBuilder $builder;
+    private LoggerInterface|MockObject $loggerMock;
 
     public function setUp(): void
     {
@@ -34,9 +37,10 @@ class SiriusApiServicePactTest extends TestCase
 
     private function buildService(): SiriusApiService
     {
+        $this->loggerMock = $this->createMock(LoggerInterface::class);
         $client = new Client(['base_uri' => $this->pactConfig->getBaseUri()]);
 
-        return new SiriusApiService($client);
+        return new SiriusApiService($client, $this->loggerMock);
     }
 
     public function tearDown(): void
@@ -164,39 +168,6 @@ class SiriusApiServicePactTest extends TestCase
         $this->assertEquals('DE', $cpAddress['country'] ?? '');
     }
 
-    public function testAbandonCase(): void
-    {
-        $request = new ConsumerRequest();
-        $body = [
-            "reference" => "49895f88-501b-4491-8381-e8aeeaef177d",
-            "actorType" => "donor",
-            "lpaIds" => [
-                "M-1234-9876-4567",
-            ],
-            "time" => "2024-07-30T10:53:57+00:00",
-            "outcome" => "exit",
-        ];
-        $request
-            ->setMethod('POST')
-            ->setPath('/api/v1/identity-check')
-            ->setBody($body);
-
-        $response = new ProviderResponse();
-        $response
-            ->setStatus(204);
-
-        $this->builder
-            ->given('A digital LPA exists')
-            ->uponReceiving('A notification that case was exited')
-            ->with($request)
-            ->willRespondWith($response);
-
-        $response = $this->buildService()->abandonCase($body, new Request());
-
-        $this->assertEquals(204, $response['status']);
-        $this->assertEquals("", $response['error']);
-    }
-
     /**
      * Returns an example of a tiny PDF with visible content
      */
@@ -259,21 +230,27 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             ->willRespondWith($response);
 
         $client = new Client(['base_uri' => $this->pactConfig->getBaseUri()]);
+        $loggerMock = $this->createMock(LoggerInterface::class);
 
-        $service = new class ($client) extends SiriusApiService {
+        $service = new class ($client, $loggerMock) extends SiriusApiService {
             /**
              * @return Lpa
              */
             public function getLpaByUid(string $uid, Request $request): array
             {
-                return ['opg.poas.sirius' => ['id' => 789, 'caseSubtype' => 'property-and-affairs', 'donor' => [
-                    'firstname' => 'Susan',
-                    'surname' => 'Muller',
-                    'dob' => '1980-06-30',
-                    'addressLine1' => 'Vandammeplein 8',
-                    'town' => 'Hernezele',
-                    'country' => 'BE',
-                ]], 'opg.poas.lpastore' => null];
+                return ['opg.poas.sirius' => [
+                    'uId' => 'M-0000-0000-0000',
+                    'id' => 789,
+                    'caseSubtype' => 'property-and-affairs',
+                    'donor' => [
+                        'firstname' => 'Susan',
+                        'surname' => 'Muller',
+                        'dob' => '1980-06-30',
+                        'addressLine1' => 'Vandammeplein 8',
+                        'town' => 'Hernezele',
+                        'country' => 'BE',
+                    ]
+                ], 'opg.poas.lpastore' => null];
             }
         };
 

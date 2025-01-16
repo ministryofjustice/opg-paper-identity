@@ -68,10 +68,18 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getDetailsData(string $uuid): array
+    public function getDetailsData(string $uuid, bool $skipIdCheckPerformedCheck = false): array
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
+
+            // There may be times when we need to load the case data regardless, such as at the end of each flow
+            if (
+                ! $skipIdCheckPerformedCheck && ($response['identityCheckPassed'] === true ||
+                    $response['identityCheckPassed'] === false)
+            ) {
+                throw new OpgApiException('Identity check has already been performed');
+            }
 
             $response['firstName'] = $response['claimedIdentity']['firstName'];
             $response['lastName'] = $response['claimedIdentity']['lastName'];
@@ -448,6 +456,17 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest($url, 'PUT', $data);
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
+
+    public function abandonFlow(string $uuid): void
+    {
+        $url = sprintf("/cases/%s/abandon", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
