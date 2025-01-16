@@ -1027,7 +1027,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/{$this->routes['confirmDonors']}", 'POST');
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
-
     }
 
     public function confirmDonorsRedirectData(): array

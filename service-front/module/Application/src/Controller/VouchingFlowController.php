@@ -183,7 +183,7 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(VoucherName::class);
         $form->setData([
             "firstName" => $detailsData["firstName"],
-            "lastName" =>  $detailsData["lastName"]
+            "lastName" => $detailsData["lastName"]
         ]);
 
         $view->setVariable('details_data', $detailsData);
@@ -420,6 +420,9 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost()) {
+            /**
+            * @psalm-suppress PossiblyUndefinedArrayOffset
+            */
             if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
                 $this->redirect()
                     ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);

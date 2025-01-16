@@ -299,7 +299,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('updateIdMethodWithCountry')
             ->with($this->uuid, ['id_method' => 'PASSPORT']);
 
-        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST',['id_method' => 'PASSPORT']);
+        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/{$this->uuid}/$expectedRedirect");
     }
