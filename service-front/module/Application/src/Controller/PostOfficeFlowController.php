@@ -264,7 +264,7 @@ class PostOfficeFlowController extends AbstractActionController
             );
 
             if ($pdf['status'] === 201) {
-                return $this->redirect()->toRoute('root/what_happens_next', ['uuid' => $uuid]);
+                return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
             } else {
                 $view->setVariable('errors', ['API Error']);
             }
