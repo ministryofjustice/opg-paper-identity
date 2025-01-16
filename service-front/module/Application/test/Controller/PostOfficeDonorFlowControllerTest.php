@@ -140,7 +140,7 @@ class PostOfficeDonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this->dispatch("/$this->uuid/what-happens-next", 'GET');
+        $this->dispatch("/$this->uuid/post-office-what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
         $this->assertControllerName(PostOfficeFlowController::class);
