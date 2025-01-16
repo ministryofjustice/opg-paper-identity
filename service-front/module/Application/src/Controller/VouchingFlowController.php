@@ -486,7 +486,7 @@ class VouchingFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
 
         $view = new ViewModel();
 

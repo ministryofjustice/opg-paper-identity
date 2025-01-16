@@ -458,7 +458,7 @@ class CPFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
@@ -472,7 +472,7 @@ class CPFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
             /**
