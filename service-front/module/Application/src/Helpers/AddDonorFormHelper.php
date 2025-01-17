@@ -119,9 +119,10 @@ class AddDonorFormHelper
             "problem" => false,
             "message" => ""
         ];
-        /** @psalm-suppress PossiblyNullArgument */
+
         if (
             array_key_exists('opg.poas.lpastore', $lpaData) &&
+            ! is_null($lpaData['opg.poas.lpastore']) &&
             array_key_exists('status', $lpaData['opg.poas.lpastore'])
         ) {
             $status = $lpaData['opg.poas.lpastore']['status'];

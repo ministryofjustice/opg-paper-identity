@@ -414,7 +414,7 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/vouching/enter_address_manual');
     }
 
-    public function confirmDonorsAction(): ViewModel
+    public function confirmDonorsAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -424,8 +424,7 @@ class VouchingFlowController extends AbstractActionController
             * @psalm-suppress PossiblyUndefinedArrayOffset
             */
             if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
-                $this->redirect()
-                    ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
+                return $this->redirect()->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             }
         }
 
@@ -437,7 +436,9 @@ class VouchingFlowController extends AbstractActionController
             $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
-            $type = LpaTypes::fromName($lpaData['opg.poas.lpastore']['lpaType'] ?? '');
+            $type = LpaTypes::fromName(
+                $lpaData['opg.poas.lpastore']['lpaType'] ?? $lpaData['opg.poas.sirius']['caseSubtype']
+            );
 
             $lpaDetails[$lpa] = [
                 'name' => $donorName,

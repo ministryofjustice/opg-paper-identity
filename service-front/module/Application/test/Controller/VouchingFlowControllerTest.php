@@ -988,8 +988,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     'opg.poas.lpastore' => ['lpaType' => 'personal-welfare']
                 ],
                 $lpa === 'M-AAAA-1234-5678' => [
-                    'opg.poas.sirius' => ['donor' => ['firstname' => 'another', 'surname' => 'name']],
-                    'opg.poas.lpastore' => ['lpaType' => 'property-and-affairs']
+                    'opg.poas.sirius' => [
+                        'donor' => ['firstname' => 'another', 'surname' => 'name'],
+                        'caseSubtype' => 'property-and-affairs'
+                    ],
                 ],
             });
 
@@ -1000,7 +1002,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_confirm_donors');
 
+        $this->assertQueryContentContains('span[id=lpaType]', 'PW');
         $this->assertQueryContentContains('span[id=lpaId]', 'M-XYXY-YAGA-35G3');
+        $this->assertQueryContentContains('span[id=lpaType]', 'PA');
         $this->assertQueryContentContains('span[id=lpaId]', 'M-AAAA-1234-5678');
     }
 
