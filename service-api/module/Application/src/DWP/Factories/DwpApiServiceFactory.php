@@ -33,15 +33,24 @@ class DwpApiServiceFactory implements FactoryInterface
         $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
         $detailsPath = (new AwsSecret('dwp/citizen-details-endpoint'))->getValue();
         $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
+        $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
+        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
         if (empty($baseUri)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
-        $guzzleClient = new Client([
+        $useCertificate = filter_var(getenv("DWP_USE_CERTIFICATE"), FILTER_VALIDATE_BOOLEAN);
+        $clientOptions = [
             'base_uri' => $baseUri,
-            'verify' => false
-        ]);
+        ];
+
+        if ($useCertificate) {
+            $clientOptions['cert'] = $certificate;
+            $clientOptions['ssl_key'] = $sslKey;
+        }
+
+        $guzzleClient = new Client($clientOptions);
 
         $logger = $container->get(LoggerInterface::class);
 

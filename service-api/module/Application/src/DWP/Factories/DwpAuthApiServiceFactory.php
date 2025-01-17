@@ -31,19 +31,25 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         $logger = $container->get(LoggerInterface::class);
         $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
         $oauthTokenEndpoint = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
-//        $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
-//        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
+        $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
+        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
         if (empty($baseUri)) {
             throw new AuthApiException("DWP oauth-token-endpoint is empty");
         }
 
-        $guzzleClient = new Client([
+        $useCertificate = filter_var(getenv("DWP_USE_CERTIFICATE"), FILTER_VALIDATE_BOOLEAN);
+
+        $clientOptions = [
             'base_uri' => $baseUri,
-            'verify' => false,
-//            'cert' => $certificate,
-//            'ssl_key' => $sslKey
-        ]);
+        ];
+
+        if ($useCertificate) {
+            $clientOptions['cert'] = $certificate;
+            $clientOptions['ssl_key'] = $sslKey;
+        }
+
+        $guzzleClient = new Client($clientOptions);
 
         $apcHelper = new ApcHelper();
 
