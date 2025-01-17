@@ -424,8 +424,7 @@ class VouchingFlowController extends AbstractActionController
             * @psalm-suppress PossiblyUndefinedArrayOffset
             */
             if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
-                $this->redirect()
-                    ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
+                return $this->redirect()->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             }
         }
 
