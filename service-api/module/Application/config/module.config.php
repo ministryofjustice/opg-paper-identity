@@ -547,7 +547,9 @@ return [
                     'available security questions or failure to answer them correctly on a previous occasion.',
                 'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                     'available information from Experian or a failure to answer the security questions correctly ' .
-                    'on a previous occasion.'
+                    'on a previous occasion.',
+                'LOCKED_SUCCESS' => 'Identity check has succeeded for this case and it is now locked.',
+                'LOCKED_FAIL' => 'Identity check has failed for this case and it is now locked.',
             ],
             'certificateProvider' => [
                 'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
@@ -556,6 +558,8 @@ return [
                 'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
                     'available information from Experian or a failure to answer the security ' .
                     'questions correctly on a previous occasion.',
+                'LOCKED_SUCCESS' => 'Identity check has succeeded for this case and it is now locked.',
+                'LOCKED_FAIL' => 'Identity check has failed for this case and it is now locked.',
             ]
         ],
     ]
