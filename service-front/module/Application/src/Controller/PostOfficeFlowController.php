@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\SiriusDocument;
+use Application\Enums\LpaTypes;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\IdMethod;
@@ -203,7 +204,6 @@ class PostOfficeFlowController extends AbstractActionController
                     $templates
                 );
             }
-
             if (! is_null($processed->getRedirect())) {
                 return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
             }
@@ -223,8 +223,20 @@ class PostOfficeFlowController extends AbstractActionController
         $optionsData = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
+        $lpaDetails = [];
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
 
+            if (! empty($lpasData['opg.poas.lpastore'])) {
+                $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            } else {
+                $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            }
+        }
+
+        $view->setVariable('lpa_details', $lpaDetails);
+
+        $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
 
         $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"] ?? '', true);
 

@@ -56,9 +56,8 @@
                                 data-aria-controls="default"
                         />
                         <label class="govuk-label govuk-radios__label" for="{{ index }}">
-                            {{ item.name }} <br>
-                            {{ item.address }}
-                            {{ item.postcode }} <br>
+                            {{ item.name }}<br>
+                            {{ item.address }}, {{ item.post_code }}
                         </label>
                     </div>
                 {% endfor %}
