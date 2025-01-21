@@ -1,7 +1,7 @@
 {% extends "layout/layout" %}
 
 {% block beforeMain %}
-    {% include 'layout/id_check_banner.twig' with details_data|merge(vouching_for) %}
+    {% include 'layout/id_check_banner.twig' with details_data %}
 {% endblock %}
 
 {% block content %}
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </fieldset>
-            <a href="" class="govuk-button">Continue</a>
+            <button class="govuk-button">Continue</button>
         </div>
     </form>
 {% endblock %}
