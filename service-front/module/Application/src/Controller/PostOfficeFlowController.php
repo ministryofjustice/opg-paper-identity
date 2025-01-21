@@ -246,9 +246,6 @@ class PostOfficeFlowController extends AbstractActionController
         $lpaDetails = [];
 
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             if (! empty($lpasData['opg.poas.lpastore'])) {
