@@ -212,26 +212,6 @@ return [
                             ],
                         ],
                     ],
-                    'po_do_details_match' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/post-office-do-details-match',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'doDetailsMatch',
-                            ],
-                        ],
-                    ],
-                    'po_donor_lpa_check' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/post-office-donor-lpa-check',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'donorLpaCheck',
-                            ],
-                        ],
-                    ],
                     'find_post_office_branch' => [
                         'type' => Segment::class,
                         'options' => [
@@ -252,10 +232,10 @@ return [
                             ],
                         ],
                     ],
-                    'what_happens_next' => [
+                    'po_what_happens_next' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/what-happens-next',
+                            'route' => '/:uuid/post-office-what-happens-next',
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'whatHappensNext',
@@ -279,36 +259,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'howWillCpConfirm',
-                            ],
-                        ],
-                    ],
-                    'cp_post_office_documents' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/post-office-documents',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'postOfficeDocuments',
-                            ],
-                        ],
-                    ],
-                    'cp_choose_country' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/choose-country',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'chooseCountry',
-                            ],
-                        ],
-                    ],
-                    'cp_choose_country_id' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/choose-country-id',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'chooseCountryId',
                             ],
                         ],
                     ],
@@ -469,26 +419,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'chooseCountryId',
-                            ],
-                        ],
-                    ],
-                    'cp_find_post_office_branch' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/find-post-office-branch',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'findPostOfficeBranch',
-                            ],
-                        ],
-                    ],
-                    'cp_confirm_post_office' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/confirm-post-office',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'confirmPostOffice',
                             ],
                         ],
                     ],

@@ -151,7 +151,7 @@ class AddDonorFormHelper
      */
     public function checkLpaIdMatch(array $lpa, array $detailsData): array
     {
-            $response = [
+        $response = [
             "problem" => false,
             "error" => false,
             "warning" => "",

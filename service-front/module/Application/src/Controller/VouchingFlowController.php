@@ -28,7 +28,6 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 use DateTime;
-use \Exception;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -183,7 +182,7 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(VoucherName::class);
         $form->setData([
             "firstName" => $detailsData["firstName"],
-            "lastName" =>  $detailsData["lastName"]
+            "lastName" => $detailsData["lastName"]
         ]);
 
         $view->setVariable('details_data', $detailsData);
@@ -229,6 +228,9 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(VoucherBirthDate::class);
+        /**
+         * @psalm-suppress RedundantConditionGivenDocblockType
+         */
         if (! is_null($detailsData['dob'])) {
             $dob = DateTime::createFromFormat('Y-m-d', $detailsData['dob']);
             $form->setData([
@@ -238,6 +240,7 @@ class VouchingFlowController extends AbstractActionController
             ]);
         }
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
@@ -266,7 +269,11 @@ class VouchingFlowController extends AbstractActionController
                 } else {
                     try {
                         $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                        return $this->redirect()->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                        if (isset($detailsData["address"])) {
+                            return $this->redirect()->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
+                        } else {
+                            return $this->redirect()->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                        }
                     } catch (\Exception $exception) {
                         $form->setMessages(["There was an error saving the data"]);
                     }
@@ -418,22 +425,26 @@ class VouchingFlowController extends AbstractActionController
                 $idRoute = $detailsData['idMethodIncludingNation']['id_route'] ?? '';
                 $idMethod = $detailsData['idMethodIncludingNation']['id_method'] ?? '';
             }
+            $redirect = false;
             if ($idRoute === 'POST_OFFICE') {
-                $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+                $redirect = "root/find_post_office_branch";
             } else {
                 switch ($idMethod) {
                     case IdMethodEnum::PassportNumber->value:
-                        $this->redirect()->toRoute("root/passport_number", ['uuid' => $uuid]);
+                        $redirect = "root/passport_number";
                         break;
                     case IdMethodEnum::DrivingLicenseNumber->value:
-                        $this->redirect()->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
+                        $redirect = "root/driving_licence_number";
                         break;
                     case IdMethodEnum::NationalInsuranceNumber->value:
-                        $this->redirect()->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
+                        $redirect = "root/national_insurance_number";
                         break;
                     default:
                         break;
                 }
+            }
+            if ($redirect) {
+                return $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
             }
         }
 

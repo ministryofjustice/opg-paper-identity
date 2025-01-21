@@ -17,8 +17,11 @@ class DocumentCheckControllerFactory implements FactoryInterface
      * @param string $requestedName
      * @param mixed[]|null $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): DocumentCheckController
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        $requestedName,
+        array $options = null
+    ): DocumentCheckController {
         /** @var string $siriusPublicUrl */
         $config = $container->get('Config');
 

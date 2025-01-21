@@ -176,15 +176,6 @@ class DonorFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        /**
-         * @psalm-suppress PossiblyUndefinedArrayOffset
-         */
-        if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
-            $nextPage = './post-office-donor-lpa-check';
-        } else {
-            $nextPage = './donor-lpa-check';
-        }
-
         $view = new ViewModel();
 
         $siriusEditUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
@@ -193,7 +184,7 @@ class DonorFlowController extends AbstractActionController
             'details_data' => $detailsData,
             'formattedDob' => DateProcessorHelper::formatDate($detailsData['dob']),
             'uuid' => $uuid,
-            'next_page' => $nextPage,
+            'next_page' => './donor-lpa-check',
             'sirius_edit_url' => $siriusEditUrl
         ]);
 
@@ -261,7 +252,7 @@ class DonorFlowController extends AbstractActionController
              */
             if ($detailsData['idMethodIncludingNation']['id_route'] == 'POST_OFFICE') {
                 $this->redirect()
-                    ->toRoute("root/post_office_documents", ['uuid' => $uuid]);
+                    ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             } else {
                 switch ($detailsData['idMethodIncludingNation']['id_method']) {
                     case IdMethod::PassportNumber->value:
