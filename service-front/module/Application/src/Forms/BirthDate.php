@@ -17,7 +17,13 @@ class BirthDate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(BirthDateValidator::class)]
+    #[Annotation\Validator(BirthDateValidator::class, options: [
+        "messages" => [
+            BirthDateValidator::DATE_EMPTY => "Enter their date of birth",
+            BirthDateValidator::DATE_FORMAT => "Date of birth must be a valid date",
+            BirthDateValidator::DATE_18  => "The person must be 18 years or older."
+        ]
+    ])]
     public mixed $date;
     /**
      * @psalm-suppress PossiblyUnusedProperty
