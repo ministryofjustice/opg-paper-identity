@@ -21,23 +21,32 @@ class PostcodeValidatorTest extends TestCase
     /**
      * @dataProvider ninoData
      */
-    public function testValidator(string $postcode, bool $valid): void
+    public function testValidator(string $postcode, ?array $context, bool $expected): void
     {
-        $this->assertEquals($valid, $this->postcodeValidator->isValid($postcode));
+        $this->assertEquals($expected, $this->postcodeValidator->isValid($postcode, $context));
     }
 
     public static function ninoData(): array
     {
+        $ukContext = ['country' => 'United Kingdom'];
+        $nonUkContext = ['country' => 'Australia'];
         return [
-            ['SW1A 1AA', true],
-            ['JC8 5XZ', true],
-            ['SW18 1JX', true],
-            ['HA62NU', true],
-            ['HSD 3NU', false],
-            ['A123 2NU', false],
-            ['HA6 NNU', false],
-            ['WC2H 7LTa', false],
-            ['WC2H', false],
+            ['SW1A 1AA', null, true],
+            ['JC8 5XZ', null, true],
+            ['SW18 1JX', null, true],
+            ['HA62NU', null, true],
+            ['HSD 3NU', null, false],
+            ['A123 2NU', null, false],
+            ['HA6 NNU', null, false],
+            ['WC2H 7LTa', null, false],
+            ['WC2H', null, false],
+            ['SW1A 1AA', $ukContext, true],
+            ['HSD 3NU', $ukContext, false],
+            ['WC2H', $ukContext, false],
+            ['SW1A 1AA', $nonUkContext, true],
+            ['HSD 3NU', $nonUkContext, true],
+            ['', $nonUkContext, true],
+            ['123456', $nonUkContext, true]
         ];
     }
 }
