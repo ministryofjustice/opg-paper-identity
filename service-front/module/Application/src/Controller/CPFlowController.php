@@ -155,9 +155,6 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
@@ -338,6 +335,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('service_availability', $serviceAvailability);
 
         $view->setVariable('details_data', $detailsData);
+        echo json_encode($detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
 
@@ -348,8 +346,14 @@ class CPFlowController extends AbstractActionController
                 $templates
             );
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            } else {
+                $template = $templates['fail'];
+            }
+
             $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::NationalInsuranceNumber->value);
 
             return $view->setTemplate($template);
@@ -381,8 +385,12 @@ class CPFlowController extends AbstractActionController
                 $templates
             );
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            } else {
+                $template = $templates['fail'];
+            }
             $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::DrivingLicenseNumber->value);
 
             return $view->setTemplate($template);
@@ -437,8 +445,12 @@ class CPFlowController extends AbstractActionController
             }
 
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            } else {
+                $template = $templates['fail'];
+            }
             $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::PassportNumber->value);
 
             return $view->setTemplate($template);
@@ -467,14 +479,14 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
              */
             $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                /**
+                 * @psalm-suppress PossiblyNullArrayAccess
+                 */
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
         }
 

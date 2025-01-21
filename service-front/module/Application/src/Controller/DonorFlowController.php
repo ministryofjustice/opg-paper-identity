@@ -221,9 +221,6 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('lpa_count', count($detailsData['lpas']));
 
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             if (! empty($lpasData['opg.poas.lpastore'])) {
@@ -289,7 +286,6 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
-        $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability);
@@ -309,9 +305,11 @@ class DonorFlowController extends AbstractActionController
             );
 
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            } else {
+                $template = $templates['fail'];
             }
 
             $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
@@ -327,7 +325,6 @@ class DonorFlowController extends AbstractActionController
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
-        $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
         $view->setVariable('service_availability', $serviceAvailability);
@@ -348,9 +345,12 @@ class DonorFlowController extends AbstractActionController
             );
 
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            } else {
+                $template = $templates['fail'];
             }
 
             $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenseNumber->value);
@@ -406,9 +406,12 @@ class DonorFlowController extends AbstractActionController
                 );
             }
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+            } else {
+                $template = $templates['fail'];
             }
 
             $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
@@ -444,9 +447,6 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
