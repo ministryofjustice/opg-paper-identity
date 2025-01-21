@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Validators;
 
+use GuzzleHttp\Promise\Is;
 use Laminas\Validator\AbstractValidator;
 
 class PostcodeValidator extends AbstractValidator
@@ -16,16 +17,18 @@ class PostcodeValidator extends AbstractValidator
         self::POSTCODE_FORMAT => "Enter a valid postcode",
     ];
 
-    public function isValid($value): bool
+    public function isValid($value, ?array $context = null): bool
     {
         $this->setValue($this->formatValue($value));
 
-        if (empty($value)) {
-            $this->error(self::EMPTY);
-            return false;
-        } elseif (! $this->checkPattern() == 1) {
-            $this->error(self::POSTCODE_FORMAT);
-            return false;
+        if (! isset($context['country']) || empty($context['country']) || $context['country'] === "United Kingdom") {
+            if (empty($value)) {
+                $this->error(self::EMPTY);
+                return false;
+            } elseif (! $this->checkPattern() == 1) {
+                $this->error(self::POSTCODE_FORMAT);
+                return false;
+            }
         }
         return true;
     }
