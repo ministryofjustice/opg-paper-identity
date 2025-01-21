@@ -11,17 +11,13 @@ use Application\Exceptions\PostcodeInvalidException;
 use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
-use Application\Forms\Country;
-use Application\Forms\CountryDocument;
 use Application\Forms\AddressInput;
 use Application\Forms\DrivingLicenceNumber;
-use Application\Forms\FinishIDCheck;
 use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
 use Application\Forms\PassportDateCp;
-use Application\Forms\PassportDatePo;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
@@ -29,11 +25,8 @@ use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\PostOffice\Country as PostOfficeCountry;
-use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Application\Enums\IdMethod as IdMethodEnum;
-use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -52,7 +45,6 @@ class CPFlowController extends AbstractActionController
         private readonly SiriusApiService $siriusApiService,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly LpaFormHelper $lpaFormHelper,
-        private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
@@ -106,7 +98,7 @@ class CPFlowController extends AbstractActionController
                             $uuid,
                             $data
                         );
-                        return $this->redirect()->toRoute("root/cp_post_office_documents", ['uuid' => $uuid]);
+                        return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
                     } else {
                         $data = [
                             'id_route' => 'TELEPHONE',
@@ -278,6 +270,15 @@ class CPFlowController extends AbstractActionController
             }
             $view->setVariable('form', $form);
         }
+        /**
+         * @psalm-suppress TooManyArguments
+         */
+        $messages = $form->getMessages("date");
+        if (isset($messages["date_under_18"])) {
+            $view->setVariable("date_error", $messages["date_under_18"]);
+        } elseif (! empty($messages)) {
+            $view->setVariable("date_problem", $messages);
+        }
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
@@ -302,7 +303,7 @@ class CPFlowController extends AbstractActionController
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
         if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
-            $nextRoute = 'root/cp_find_post_office_branch';
+            $nextRoute = 'root/find_post_office_branch';
         } else {
             $nextRoute = $routes[$detailsData['idMethodIncludingNation']['id_method']];
         }
@@ -623,118 +624,5 @@ class CPFlowController extends AbstractActionController
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
         return $this->redirect()->toRoute("root/cp_confirm_lpas", ['uuid' => $uuid]);
-    }
-
-    public function postOfficeDocumentsAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/cp/post_office_documents'];
-        $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDatePo::class);
-        $form = $this->createForm(IdMethod::class);
-        $view = new ViewModel();
-
-        if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost()->toArray();
-
-            if (array_key_exists('check_button', $formData)) {
-                $view->setVariable('date_sub_form', $dateSubForm);
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $dateSubForm,
-                    $templates
-                );
-                $view->setVariables($formProcessorResponseDto->getVariables());
-            } else {
-                $view->setVariable('form', $form);
-                if ($form->isValid()) {
-                    if ($formData['id_method'] == 'NONUKID') {
-                        $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
-                        return $this->redirect()->toRoute("root/cp_choose_country", ['uuid' => $uuid]);
-                    } else {
-                        $this->opgApiService->updateIdMethodWithCountry($uuid, [
-                            'id_method' => $formData['id_method'],
-                            'id_country' => PostOfficeCountry::GBR->value,
-                        ]);
-                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-                    }
-                }
-            }
-        }
-
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        return $view->setTemplate($templates['default']);
-    }
-
-    public function chooseCountryAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/cp/choose_country'];
-        $uuid = $this->params()->fromRoute("uuid");
-        $view = new ViewModel();
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $form = $this->createForm(Country::class);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formData = $this->formToArray($form);
-
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-
-            return $this->redirect()->toRoute("root/cp_choose_country_id", ['uuid' => $uuid]);
-        }
-
-        $countriesData = PostOfficeCountry::cases();
-        $countriesData = array_filter(
-            $countriesData,
-            fn (PostOfficeCountry $country) => $country !== PostOfficeCountry::GBR
-        );
-
-        $view->setVariable('form', $form);
-        $view->setVariable('countries_data', $countriesData);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        return $view->setTemplate($templates['default']);
-    }
-
-    public function chooseCountryIdAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/cp/choose_country_id'];
-        $uuid = $this->params()->fromRoute("uuid");
-        $view = new ViewModel();
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
-            throw new \Exception("Country for document list has not been set.");
-        }
-
-        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country']);
-
-        $docs = $this->documentTypeRepository->getByCountry($country);
-
-        $form = $this->createForm(CountryDocument::class);
-        $view->setVariable('form', $form);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formData = $this->formToArray($form);
-
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
-
-            return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-        }
-
-        $view->setVariables([
-            'form' => $form,
-            'countryName' => $country->translate(),
-            'details_data' => $detailsData,
-            'supported_docs' => $docs,
-            'uuid' => $uuid,
-        ]);
-
-        return $view->setTemplate($templates['default']);
     }
 }

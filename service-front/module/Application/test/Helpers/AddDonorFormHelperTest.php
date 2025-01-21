@@ -110,7 +110,7 @@ class AddDonorFormHelperTest extends TestCase
     /**
      * @dataProvider statusData
      */
-    public function testCheckLpaStatus(array $lpaStoreData, array $expectedResult): void
+    public function testCheckLpaStatus(?array $lpaStoreData, array $expectedResult): void
     {
         $lpaData = self::getLpa([
             'opg.poas.lpastore' => $lpaStoreData
@@ -122,6 +122,10 @@ class AddDonorFormHelperTest extends TestCase
     public static function statusData(): array
     {
         return [
+            [
+                null,
+                ['problem' => true, 'message' => 'No LPA Found.']
+            ],
             [
                 [],
                 ['problem' => true, 'message' => 'No LPA Found.']

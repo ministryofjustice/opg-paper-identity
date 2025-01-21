@@ -22,7 +22,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     private VoucherMatchLpaActorHelper&MockObject $voucherMatchMock;
     private string $uuid;
     private array $routes;
-    private array $fakeAddress;
 
     public function setUp(): void
     {
@@ -40,12 +39,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "confirmDonors" => "vouching/confirm-donors",
             "addDonor" => "vouching/add-donor",
         ];
-        $this->fakeAddress = [
-            'line1' => '456 Pretend Road',
-            'town' => 'Faketown',
-            'postcode' => 'FA2 3KE',
-            'country' => 'United Kingdom',
-        ];
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiServiceMock = $this->createMock(SiriusApiService::class);
@@ -62,15 +55,25 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(VoucherMatchLpaActorHelper::class, $this->voucherMatchMock);
     }
 
-    public function returnOpgResponseData(): array
+    public function getFakeAddress(): array
     {
         return [
+            'line1' => '456 Pretend Road',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'United Kingdom',
+        ];
+    }
+
+    public function returnOpgResponseData(array $overwrite = []): array
+    {
+        $base = [
             "id" => "49895f88-501b-4491-8381-e8aeeaef177d",
             "personType" => "voucher",
             "firstName" => null,
             "lastName" => null,
             "dob" => null,
-            "address" => [],
+            "address" => null,
             "vouchingFor" => [
                 "firstName" => "firstName",
                 "lastName" => "lastName",
@@ -91,6 +94,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 'id_route' => 'POST_OFFICE'
             ]
         ];
+        return array_merge($base, $overwrite);
     }
 
     public function returnServiceAvailability(): array
@@ -330,6 +334,25 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/voucher_name');
     }
 
+    public function testVoucherNamePreFilled(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['name']}", 'GET');
+        $this->assertQuery('input#voucher-first-name[value=firstName]');
+        $this->assertQuery('input#voucher-last-name[value=lastName]');
+    }
+
     public function testVoucherNameRedirect(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -476,11 +499,31 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/voucher_dob');
     }
 
-    public function testVoucherDobRedirect(): void
+    public function testVoucherDobPreFilled(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails["firstName"] = "firstName";
-        $mockResponseDataIdDetails["lastName"] = "lastName";
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "dob" => '1980-01-01'
+        ]);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'GET');
+        $this->assertQuery('input#voucher-dob-day[value=01]');
+        $this->assertQuery('input#voucher-dob-month[value=01]');
+        $this->assertQuery('input#voucher-dob-year[value=1980]');
+    }
+
+    /**
+     * @dataProvider voucherDobRedirectData
+     */
+    public function testVoucherDobRedirect(array $detailsData, string $expectedRedirect): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData($detailsData);
 
         $this
             ->opgApiServiceMock
@@ -514,14 +557,36 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
 
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/$this->uuid/{$this->routes['postcode']}");
+        $this->assertRedirectTo("/$this->uuid/{$this->routes[$expectedRedirect]}");
+    }
+
+    public function voucherDobRedirectData(): array
+    {
+        return [
+            [
+                [
+                    "firstName" => "firstName",
+                    "lastName" => "lastName",
+                ],
+                'postcode'
+            ],
+            [
+                [
+                    "firstName" => "firstName",
+                    "lastName" => "lastName",
+                    "address" => $this->getFakeAddress(),
+                ],
+                'manualAddress'
+            ]
+        ];
     }
 
     public function testVoucherDobMatchError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails["firstName"] = "firstName";
-        $mockResponseDataIdDetails["lastName"] = "lastName";
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName"
+        ]);
 
         $this
             ->opgApiServiceMock
@@ -733,10 +798,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
         $mockResponseSearchAddress = [
             [
-                'addressLine1' => $this->fakeAddress["line1"],
-                'town' => $this->fakeAddress["town"],
-                'postcode' => $this->fakeAddress["postcode"],
-                'country' => $this->fakeAddress["line1"],
+                'addressLine1' => $this->getFakeAddress()["line1"],
+                'town' => $this->getFakeAddress()["town"],
+                'postcode' => $this->getFakeAddress()["postcode"],
+                'country' => $this->getFakeAddress()["country"],
             ],
         ];
 
@@ -759,7 +824,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('addSelectedAddress')
             ->with(
                 $this->uuid,
-                $this->fakeAddress
+                $this->getFakeAddress()
             );
 
         $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'POST', [
@@ -773,7 +838,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testEnterAddressManualPage(): void
     {
-        $fakeAddress = $this->fakeAddress;
+        $fakeAddress = $this->getFakeAddress();
         unset($fakeAddress["country"]);
 
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -801,15 +866,15 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(VouchingFlowController::class);
         $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_enter_address_manual');
-        //check imputs are pre-populated if address was already selected
-        $this->assertQuery("input[value='456 Pretend Road']");
+        //check inputs are pre-populated if address was already selected
+        $this->assertQuery("input#line1[value='456 Pretend Road']");
         $this->assertQuery("option[value='United Kingdom'][selected]");
     }
 
     public function testEnterAddressManualMatchError(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails["address"] = $this->fakeAddress;
+        $mockResponseDataIdDetails["address"] = $this->getFakeAddress();
 
         $this
             ->opgApiServiceMock
@@ -830,7 +895,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->method("checkAddressDonorMatch")
             ->willReturnOnConsecutiveCalls(false, true);
 
-        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', $this->fakeAddress);
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', $this->getFakeAddress());
         $this->assertResponseStatusCode(200);
         $this->assertQuery("div[name='address_warning']");
     }
@@ -860,9 +925,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     public function testEnterAddressManualRedirect(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails["address"] = $this->fakeAddress;
+        $mockResponseDataIdDetails["address"] = $this->getFakeAddress();
 
-        $address_w_nulls = $this->fakeAddress;
+        $address_w_nulls = $this->getFakeAddress();
         $address_w_nulls["line2"] = '';
         $address_w_nulls["line3"] = '';
 
@@ -897,7 +962,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 $address_w_nulls
             );
 
-        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', $this->fakeAddress);
+        $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', $this->getFakeAddress());
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/{$this->routes['confirmDonors']}");
     }
@@ -923,8 +988,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     'opg.poas.lpastore' => ['lpaType' => 'personal-welfare']
                 ],
                 $lpa === 'M-AAAA-1234-5678' => [
-                    'opg.poas.sirius' => ['donor' => ['firstname' => 'another', 'surname' => 'name']],
-                    'opg.poas.lpastore' => ['lpaType' => 'property-and-affairs']
+                    'opg.poas.sirius' => [
+                        'donor' => ['firstname' => 'another', 'surname' => 'name'],
+                        'caseSubtype' => 'property-and-affairs'
+                    ],
                 ],
             });
 
@@ -935,8 +1002,45 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_confirm_donors');
 
+        $this->assertQueryContentContains('span[id=lpaType]', 'PW');
         $this->assertQueryContentContains('span[id=lpaId]', 'M-XYXY-YAGA-35G3');
+        $this->assertQueryContentContains('span[id=lpaType]', 'PA');
         $this->assertQueryContentContains('span[id=lpaId]', 'M-AAAA-1234-5678');
+    }
+
+
+    /**
+     * @dataProvider confirmDonorsRedirectData
+     */
+    public function testConfirmDonorsRedirect(array $idMethodIncludingNation, string $expectedRedirect): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this->dispatch("/$this->uuid/{$this->routes['confirmDonors']}", 'POST');
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
+    }
+
+    public function confirmDonorsRedirectData(): array
+    {
+        return [
+            [
+                [
+                    "id_country" => "AUT",
+                    "id_method" => "DRIVING_LICENCE",
+                    'id_route' => 'POST_OFFICE'
+                ],
+                'find-post-office-branch'
+            ],
+        ];
     }
 
     public function testAddDonorPage(): void
