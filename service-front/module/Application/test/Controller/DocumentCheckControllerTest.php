@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DocumentCheckController;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
+use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -67,6 +68,65 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/national_insurance_number');
         $this->assertQueryContentContains('p[id=nino_fullname]', 'Mary Anne Chapman');
         $this->assertQueryContentContains('p[id=nino_dob]', '01 May 1943');
+    }
+
+    /**
+     * @dataProvider ninoData
+     */
+    public function testNationalInsuranceNumberReturnsPagePost(string $validity): void
+    {
+        $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
+
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getServiceAvailability')
+            ->willReturn($mockServiceResponse);
+
+        $this
+            ->formProcessorService
+            ->expects(self::once())
+            ->method('processNationalInsuranceNumberForm')
+            ->willReturn($mockProcessed);
+
+        $mockProcessed
+            ->expects($this->exactly(2))
+            ->method('getVariables')
+            ->willReturn(["validity" => $validity]);
+
+        if ($validity === "PASS") {
+            $this
+                ->formProcessorService
+                ->expects(self::once())
+                ->method('processTemplate');
+        }
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('updateCaseSetDocumentComplete')
+            ->with($this->uuid, 'NATIONAL_INSURANCE_NUMBER');
+
+        $this->dispatch("/$this->uuid/national-insurance-number", 'POST', [
+            'nino' => 'NP 11 22 33 C',
+        ]);
+    }
+
+    public function ninoData(): array
+    {
+        return [
+            ["PASS"],
+            ["FAIL"]
+        ];
     }
 
     public function testDrivingLicenceNumberReturnsPageWithData(): void
