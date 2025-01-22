@@ -106,7 +106,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
 
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date cannot be empty.");
+        cy.contains("Enter their date of birth");
 
         cy.reload();
         // cy.screenshot();
@@ -114,7 +114,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#dob-month").type("10", {force: true});
         cy.get("#dob-year").type(year - 10, {force: true});
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Birth date cannot be under 18 years ago");
+        cy.contains("The person must be 18 years or older.");
 
         cy.get("#dob-year").clear();
         cy.get("#dob-year").type(year - 20, {force: true});
@@ -181,7 +181,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
 
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("The date cannot be empty.");
+        cy.contains("Enter their date of birth");
 
         cy.reload();
         // cy.screenshot();
@@ -190,7 +190,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#dob-year").type(year - 10, {force: true});
         cy.get(".govuk-button").contains("Continue").click();
         // cy.screenshot();
-        cy.contains("Birth date cannot be under 18 years ago");
+        cy.contains("The person must be 18 years or older.");
 
         cy.get("#dob-year").clear();
         cy.get("#dob-year").type(year - 20, {force: true});

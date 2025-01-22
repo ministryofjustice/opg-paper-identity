@@ -7,7 +7,7 @@
     "test-headless": "cypress run --headless -b electron"
   },
   "devDependencies": {
-    "cypress": "^13.13.2",
+    "cypress": "^14.0.0",
     "typescript": "*",
     "typescript-eslint": "^8.0.1"
   }
