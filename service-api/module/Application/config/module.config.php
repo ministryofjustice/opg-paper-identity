@@ -562,8 +562,14 @@ return [
                     'tried before and their details did not match the document provided.'
             ],
             'vouching' => [
+                'NODECISION' => 'The person vouching cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions ' .
+                    'correctly on a previous occasion.',
+                'STOP' => 'The person vouching cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security ' .
+                    'questions correctly on a previous occasion.',
                 'LOCKED' => 'The person vouching cannot prove their identity over the phone because they have ' .
-                    'tried before and their details did not match the document provided.'
+                    'tried before and their details did not match the document provided.',
             ]
         ],
     ]
