@@ -73,7 +73,7 @@ interface OpgApiServiceInterface
      */
     public function getDetailsData(string $uuid, bool $skipIdCheckPerformedCheck = false): array;
 
-    public function checkNinoValidity(string $nino): string;
+    public function checkNinoValidity(string $uuid, string $nino): string;
 
     public function checkDlnValidity(string $dln): string;
 
