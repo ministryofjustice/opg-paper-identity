@@ -20,13 +20,22 @@ class DrivingLicenceNumber implements FormTemplate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
+    // empty values are handled in the DLNValidator
+    #[Annotation\Validator(NotEmpty::class, options: [
+        'type' => NotEmpty::ALL & ~NotEmpty::STRING
+    ])]
     #[Annotation\Validator(DLNValidator::class)]
     public string $dln;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
+    //cannot figure out why NotEmpty trumps DLNDateValidator
+    #[Annotation\Validator(NotEmpty::class, options: [
+        "messages" => [
+            NotEmpty::IS_EMPTY  => 'Please choose yes or no'
+        ]
+    ])]
     #[Annotation\Validator(DLNDateValidator::class)]
-    #[Annotation\Validator(NotEmpty::class, options: ["messages" => [NotEmpty::IS_EMPTY => "Please choose yes or no"]])]
     public mixed $inDate = null;
 }

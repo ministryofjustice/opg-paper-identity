@@ -21,24 +21,29 @@ class NinoValidatorTest extends TestCase
     /**
      * @dataProvider ninoData
      */
-    public function testValidator(string $nino, bool $valid): void
+    public function testValidator(string $nino, ?string $error, bool $valid): void
     {
         $this->assertEquals($valid, $this->ninoValidator->isValid($nino));
+        if (! is_null($error)) {
+            $this->assertNotEmpty($this->ninoValidator->getMessages()[$error]);
+        }
     }
 
-    public static function ninoData(): array
+    public function ninoData(): array
     {
         return [
-            ['AA 11 22 33 A', true],
-            ['BB 44 55 66 B', true],
-            ['ZZ 67 89 00 C', true],
-            ['AA 11 22 33 E', false],
-            ['DA 11 22 33 A', false],
-            ['FA 11 22 33 A', false],
-            ['AO 11 22 33 A', false],
-            ['AO 11 22 33 Q', false],
-            ['AO 11 22 33 F', false],
-            ['AO 11 22 33 L', false],
+            ['AA 11 22 33 A', null, true],
+            ['BB 44 55 66 B', null, true],
+            ['ZZ 67 89 00 C', null, true],
+            ['AA 11 22 33 E', null, false],
+            ['DA 11 22 33 A', 'nino_format', false],
+            ['FA 11 22 33 A', 'nino_format', false],
+            ['AO 11 22 33 A', 'nino_format', false],
+            ['AO 11 22 33 Q', 'nino_format', false],
+            ['AO 11 22 33 F', 'nino_format', false],
+            ['AO 11 22 33 L', 'nino_format', false],
+            ['', 'nino_empty', false],
+            ['not valid',  'nino_count', false],
         ];
     }
 }
