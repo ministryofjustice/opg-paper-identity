@@ -17,7 +17,6 @@ use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
-use Application\Forms\PassportDateCp;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
@@ -59,7 +58,7 @@ class CPFlowController extends AbstractActionController
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDateCp::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 

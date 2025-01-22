@@ -21,7 +21,7 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
 use Application\Forms\Postcode;
 use Application\Forms\AddressJson;
-use Application\Forms\PassportDateCp;
+use Application\Forms\PassportDate;
 use Laminas\Form\FormInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -84,7 +84,7 @@ class VouchingFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/vouching/how_will_you_confirm'];
         $view = new ViewModel();
         $this->uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDateCp::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 

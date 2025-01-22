@@ -124,10 +124,9 @@ class DocumentCheckController extends AbstractActionController
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('details_open', false);
 
-        if ($this->getRequest()->isPost() && $form->isValid()) {
+        if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $data = $formData->toArray();
-            $view->setVariable('passport', $data['passport']);
 
             if (array_key_exists('check_button', $data)) {
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
@@ -137,27 +136,29 @@ class DocumentCheckController extends AbstractActionController
                     $templates
                 );
             } else {
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
-                    $uuid,
-                    $form,
-                    $templates
-                );
-                $view->setVariable(
-                    'passport_indate',
-                    array_key_exists('inDate', $data) ?
-                        ucwords($data['inDate']) :
-                        'no'
-                );
-            }
-            $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
-                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            }
+                if ($form->isValid()) {
+                    $view->setVariable('passport', $data['passport']);
 
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
+                    $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
+                        $uuid,
+                        $form,
+                        $templates
+                    );
+                    $view->setVariable(
+                        'passport_indate',
+                        array_key_exists('inDate', $data) ? ucwords($data['inDate']) : 'no'
+                    );
 
-            return $view->setTemplate($template);
+                    $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                    if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                        $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+                    }
+                    $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
+                }
+            }
+            if (isset($formProcessorResponseDto)) {
+                $view->setVariables($formProcessorResponseDto->getVariables());
+            }
         }
         return $view->setTemplate($template);
     }

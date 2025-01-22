@@ -79,7 +79,7 @@
                     </h2>
                 </legend>
                 {% if form.get('inDate').messages %}
-                    <p id="dln-error" class="govuk-error-message">
+                    <p id="inDate-error" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
                         {{ form.get('inDate').messages | join(', ', ' and ') }}
                     </p>
