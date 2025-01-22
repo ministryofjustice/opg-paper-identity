@@ -22,7 +22,7 @@ class ServiceAvailabilityHelperTest extends TestCase
         $case = CaseData::fromArray($caseData);
         $helper = new ServiceAvailabilityHelper($services, $case, $config);
 
-        $this->assertEquals($helper->processServicesWithCaseData(), $expected);
+        $this->assertEquals($expected, $helper->processServicesWithCaseData());
     }
 
     public static function data(): array
@@ -48,7 +48,9 @@ class ServiceAvailabilityHelperTest extends TestCase
                             'available security questions or failure to answer them correctly on a previous occasion.',
                         'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack ' .
                             'of available information from Experian or a failure to answer the security questions ' .
-                            'correctly on a previous occasion.'
+                            'correctly on a previous occasion.',
+                        'LOCKED' => 'The donor cannot prove their identity over the phone because they have ' .
+                            'tried before and their details did not match the document provided.'
                     ],
                     'certificateProvider' => [
                         'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
@@ -57,6 +59,18 @@ class ServiceAvailabilityHelperTest extends TestCase
                         'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
                             'available information from Experian or a failure to answer the security ' .
                             'questions correctly on a previous occasion.',
+                        'LOCKED' => 'The certificate provider cannot prove their identity over the phone ' .
+                            'because they have tried before and their details did not match the document provided.'
+                    ],
+                    'vouching' => [
+                        'NODECISION' => 'The person vouching cannot ID over the phone due to a lack of ' .
+                            'available information from Experian or a failure to answer the security questions ' .
+                            'correctly on a previous occasion.',
+                        'STOP' => 'The person vouching cannot ID over the phone due to a lack of ' .
+                            'available information from Experian or a failure to answer the security ' .
+                            'questions correctly on a previous occasion.',
+                        'LOCKED' => 'The person vouching cannot prove their identity over the phone because they ' .
+                            'have tried before and their details did not match the document provided.',
                     ]
                 ],
             ]
@@ -151,74 +165,51 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'EXPERIAN' => false,
             ],
             'messages' => [
-                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
-                    'available security questions or failure to answer them correctly on a previous occasion.',
+                'banner' => 'The donor cannot prove their identity over the phone because they have tried before and ' .
+                    'their details did not match the document provided.',
             ]
         ];
 
         $case = [
-            "id" => "b6aa3ee6-cd06-42b0-82c3-77051a4a4e34",
+            "id" => "4d41c926-d11c-4341-8500-b36a666a35dd",
+            "idRoute" => "TELEPHONE",
             "personType" => "donor",
-            "claimedIdentity" => [
-                "firstName" => "Lee",
-                "lastName" => "Manthrope",
-                "dob" => "1986-09-03",
-                "address" => [
-                    "line1" => "18 BOURNE COURT",
-                    "line2" => "",
-                    "line3" => "",
-                    "town" => "Southamption",
-                    "postcode" => "SO15 3AA",
-                    "country" => "GB"
-                ],
-                "professionalAddress" => []
-            ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3"
             ],
-            "documentComplete" => true,
-            "identityCheckPassed" => true,
+            "documentComplete" => false,
+            "identityCheckPassed" => false,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "identityIQ" => [
-                "kbvQuestions" => [
-                    [
-                        "externalId" => "Q00007",
-                        "question" => "Which company provides your car insurance?",
-                        "prompts" => [
-                            "ShieldSafe",
-                            "Guardian Drive Assurance",
-                            "SafeDrive Insurance",
-                            "Swift Cover Protection"
-                        ],
-                        "answered" => false
-                    ],
-                    [
-                        "externalId" => "Q00003",
-                        "question" => "What is your mother’s maiden name?",
-                        "prompts" => [
-                            "Germanotta",
-                            "Blythe",
-                            "Gumm",
-                            "Micklewhite"
-                        ],
-                        "answered" => false
-                    ]
-                ],
-                "iiqControl" => [
-                    "urn" => "b6aa3ee6-cd06-42b0-82c3-77051a4a4e34",
-                    "authRefNo" => "6B3TGRWSKC"
-                ],
-            ],
             "idMethodIncludingNation" => [
-                "id_method" => "PASSPORT",
+                "id_method" => "DRIVING_LICENCE",
                 "id_route" => "TELEPHONE",
                 "id_country" => "GBR"
             ],
             "caseProgress" => [
+                "abandonedFlow" => null,
+                "docCheck" => [
+                    "idDocument" => "DRIVING_LICENCE",
+                    "state" => true
+                ],
+                "kbvs" => null,
                 "fraudScore" => [
                     "decision" => "ACCEPT",
                     "score" => 265
                 ]
+            ],
+            "claimedIdentity" => [
+                "dob" => "1986-09-03",
+                "firstName" => "Lee",
+                "lastName" => "Manthrope",
+                "address" => [
+                    "postcode" => "SO15 3AA",
+                    "country" => "GB",
+                    "line3" => "",
+                    "town" => "Southamption",
+                    "line2" => "",
+                    "line1" => "18 BOURNE COURT"
+                ],
+                "professionalAddress" => null
             ]
         ];
 
@@ -241,7 +232,11 @@ class ServiceAvailabilityHelperTest extends TestCase
         ]);
 
         $caseKbvFail = array_merge($case, [
-            "identityCheckPassed" => false
+            "caseProgress" => [
+                "kbvs" => [
+                    "result" => false
+                ]
+            ]
         ]);
 
         return [
