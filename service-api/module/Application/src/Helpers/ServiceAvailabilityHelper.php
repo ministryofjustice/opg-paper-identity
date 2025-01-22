@@ -109,12 +109,16 @@ class ServiceAvailabilityHelper
         }
     }
 
-    private function setAllAutoServices(bool $flag): void
+    private function setServiceFlags(bool $flag, array $options = []): void
     {
         $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = $flag;
         $this->availableServices['DRIVING_LICENCE'] = $flag;
         $this->availableServices['PASSPORT'] = $flag;
         $this->availableServices['EXPERIAN'] = $flag;
+
+        foreach ($options as $service) {
+            $this->availableServices[$service] = $flag;
+        }
     }
 
     public function processServicesWithCaseData(): array
@@ -123,26 +127,29 @@ class ServiceAvailabilityHelper
             $this->processedMessages['banner'] =
                 $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
 
-            $this->setAllAutoServices(false);
+            $this->setServiceFlags(false);
 
             return $this->toArray();
         }
 
-//        if ($this->case->identityCheckPassed === false) {
-//            $this->processedMessages['banner'] =
-//                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
-//
-//            $this->setAllAutoServices(false);
-//
-//            return $this->toArray();
-//        }
+        if ($this->case->caseProgress?->kbvs?->result === true) {
+            $this->processedMessages['banner'] =
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
+
+            $this->setServiceFlags(false, [
+                'POST_OFFICE',
+                'EXPERIAN',
+                'VOUCHING',
+            ]);
+
+            return $this->toArray();
+        }
 
         if (
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION
-//            $this->case->identityCheckPassed !== false
         ) {
-            $this->setAllAutoServices(false);
+            $this->setServiceFlags(false);
 
             if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;

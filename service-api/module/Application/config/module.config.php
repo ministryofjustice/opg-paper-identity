@@ -549,7 +549,9 @@ return [
                     'available information from Experian or a failure to answer the security questions correctly ' .
                     'on a previous occasion.',
                 'LOCKED' => 'The donor cannot prove their identity over the phone because they have tried before ' .
-                    'and their details did not match the document provided.'
+                    'and their details did not match the document provided.',
+                'LOCKED_SUCCESS' => 'The donor cannot prove their identity over the phone because the case is ' .
+                    'complete.',
             ],
             'certificateProvider' => [
                 'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
@@ -559,7 +561,9 @@ return [
                     'available information from Experian or a failure to answer the security ' .
                     'questions correctly on a previous occasion.',
                 'LOCKED' => 'The certificate provider cannot prove their identity over the phone because they have ' .
-                    'tried before and their details did not match the document provided.'
+                    'tried before and their details did not match the document provided.',
+                'LOCKED_SUCCESS' => 'The certificate provider cannot prove their identity over the phone because ' .
+                    'the case is complete.',
             ],
             'vouching' => [
                 'NODECISION' => 'The person vouching cannot ID over the phone due to a lack of ' .
@@ -570,6 +574,8 @@ return [
                     'questions correctly on a previous occasion.',
                 'LOCKED' => 'The person vouching cannot prove their identity over the phone because they have ' .
                     'tried before and their details did not match the document provided.',
+                'LOCKED_SUCCESS' => 'The  person vouchin cannot prove their identity over the phone because ' .
+                    'the case is complete.',
             ]
         ],
     ]
