@@ -10,8 +10,7 @@ class ServiceAvailabilityHelper
 {
     public const DECISION_STOP = 'STOP';
     public const DECISION_NODECISION = 'NODECISION';
-    public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
-    public const LOCKED_FAIL = 'LOCKED_FAIL';
+    public const LOCKED = 'LOCKED';
 
     protected array $availableServices = [];
 
@@ -120,28 +119,28 @@ class ServiceAvailabilityHelper
 
     public function processServicesWithCaseData(): array
     {
-        if ($this->case->identityCheckPassed === true) {
+        if ($this->case->caseProgress?->kbvs?->result === false) {
             $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_SUCCESS];
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
 
             $this->setAllAutoServices(false);
 
             return $this->toArray();
         }
 
-        if ($this->case->identityCheckPassed === false) {
-            $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_FAIL];
-
-            $this->setAllAutoServices(false);
-
-            return $this->toArray();
-        }
+//        if ($this->case->identityCheckPassed === false) {
+//            $this->processedMessages['banner'] =
+//                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
+//
+//            $this->setAllAutoServices(false);
+//
+//            return $this->toArray();
+//        }
 
         if (
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
-            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION ||
-            $this->case->identityCheckPassed !== false
+            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION
+//            $this->case->identityCheckPassed !== false
         ) {
             $this->setAllAutoServices(false);
 
