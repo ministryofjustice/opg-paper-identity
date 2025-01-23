@@ -41,6 +41,7 @@ class DataQueryHandler
                 ],
             ],
         ];
+
         $result = $this->query($idKey);
 
         $arr = $this->returnUnmarshalResult($result)[0];

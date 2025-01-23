@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+aws configure set cli_follow_urlparam false
+
 awslocal dynamodb create-table \
   --table-name identity-verify \
   --attribute-definitions \
@@ -62,16 +64,60 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-cross
     --description "Experian Crosscore Tenant ID" \
     --secret-string "empty"
 
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/base-uri \
+    --description "DWP base URI" \
+        --secret-string "http://dwp-mock:8080" \
+        --region "eu-west-1"
+
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-token-endpoint \
     --description "DWP authentication API" \
-        --secret-string "empty"
+        --secret-string '/citizen-information/oauth2/token' \
+        --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-match-endpoint \
     --description "DWP match api" \
-        --secret-string "empty"
-
-awslocal secretsmanager create-secret --name local//paper-identity/dwp/citizen-endpoint \
-    --description "DWP citizen details api" \
-        --secret-string "empty"
+        --secret-string "/capi/v2/citizens/match" \
+        --region "eu-west-1"
 
 awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-details-endpoint \
+    --description "DWP Citizen details endpoint" \
+    --secret-string "/capi/v2/citizens/%s" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \
+    --description "DWP certificate" \
+    --secret-string "-----BEGIN CERTIFICATE-----ThisIsntARealCertSoDontWorry4f54g5g54w534t3/MQswCQYDVQQGEwJGUjETcbTV5RDkrlaYwm5yqlTIglvCv7o=-----END CERTIFICATE-----" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate \
+    --description "DWP OPG certificate" \
+    --secret-string "-----BEGIN CERTIFICATE-----ThisIsntARealCertSoDontWorry4f54g5g54w534t3/MQswCQYDVQQGEwJGUjETcbTV5RDkrlaYwm5yqlTIglvCv7o=-----END CERTIFICATE-----" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-public-key \
+    --description "DWP OPG certificate public key" \
+    --secret-string "-----BEGIN OPENSSH PUBLIC KEY-----ThisIsntARealKeySoDontWorryMEgCQQCo9+BpMRYQ/dL3DS2CyJxRF+j6ctbT3/Qp84+KeFhnii7NT7fELilKUSnxS30WAvQCCo2yU1orfgqr41mM70MBAgMBAAE=-----END RSA PUBLIC KEY-----" \
+   --region "eu-west-1"
+    
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-secret \
+    --description "DWP Oauth2 client secret" \
+    --secret-string "clientsecret" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-id \
+    --description "DWP Oauth2 client ID" \
+    --secret-string "clientid" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-bundle \
+    --description "DWP OPG certificate bundle" \
+    --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZQ-----END OPENSSH PRIVATE KEY----" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-private-key \
+    --description "Experian Crosscore Tenant ID" \
+    --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZQ-----END OPENSSH PRIVATE KEY----" \
+    --region "eu-west-1"
+
