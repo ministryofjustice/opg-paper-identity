@@ -51,3 +51,44 @@ Cypress.Commands.add("selectKBVAnswer", ({ correct }) => {
       cy.contains(answer).click();
     });
 });
+
+
+Cypress.Commands.add("jumpToPage", (page) => {
+  return cy
+  .url()
+  .then(url => {
+    cy.visit(`/${ url.split('/')[3]}/${ page }`)
+  });
+});
+
+Cypress.Commands.add("editVoucherDetails", (name, dob, address) => {
+  if (name) {
+    var [firstName, lastName] = name.split(" ", 2);
+
+    cy.jumpToPage('vouching/voucher-name')
+
+    cy.get("[id=voucher-first-name]").type(firstName);
+    cy.get("[id=voucher-last-name]").type(lastName);
+    cy.get(".govuk-button").contains("Continue").click();
+  }
+  if (dob) {
+    var [year, month, day] = dob.split("-", 3);
+
+    cy.jumpToPage('vouching/voucher-dob')
+
+    cy.get("[id=voucher-dob-day]").type(day);
+    cy.get("[id=voucher-dob-month]").type(month);
+    cy.get("[id=voucher-dob-year]").type(year);
+    cy.get(".govuk-button").contains("Continue").click();
+  }
+  if (address) {
+    var [line1, town, postcode] = address.split(", ", 3);
+
+    cy.jumpToPage('vouching/enter-address-manual')
+
+    cy.get("[id=line1]").type(line1);
+    cy.get("[id=town]").type(town);
+    cy.get("[id=postcode]").type(postcode);
+    cy.get(".govuk-button").contains("Continue").click();
+  }
+  });
