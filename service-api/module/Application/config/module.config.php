@@ -506,7 +506,6 @@ return [
                 $serviceLocator->get(LoggerInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
-//            NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
