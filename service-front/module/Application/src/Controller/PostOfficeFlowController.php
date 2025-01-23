@@ -15,6 +15,7 @@ use Application\Forms\PassportDatePo;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -22,6 +23,7 @@ use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -303,5 +305,50 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
+    }
+
+    public function donorLpaCheckAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view = new ViewModel();
+        $lpaDetails = [];
+
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+
+            if (! empty($lpasData['opg.poas.lpastore'])) {
+                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            } else {
+                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
+                    $lpasData['opg.poas.sirius']['donor']['surname'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            }
+
+            $lpaDetails[$lpa] = [
+                'name' => $name,
+                'type' => $type,
+            ];
+        }
+
+        $view->setVariable('details_data', $detailsData);
+        $view->setVariable('lpa_details', $lpaDetails);
+        $view->setVariable('lpa_count', count($detailsData['lpas']));
+
+        return $view->setTemplate('application/pages/post_office/donor_lpa_check');
+    }
+
+    public function removeLpaAction(): Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpa = $this->params()->fromRoute("lpa");
+
+        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
+
+        return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
     }
 }
