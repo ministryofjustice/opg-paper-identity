@@ -16,7 +16,6 @@ class CitizenResponseDTO
 
     private string $version;
 
-    private array $raw;
     public function __construct(array $response)
     {
         try {
@@ -24,7 +23,6 @@ class CitizenResponseDTO
             $this->type = $response['data']['type'];
             $this->matchScenario = $response['data']['attributes']['matchingScenario'];
             $this->version = $response['jsonapi']['version'];
-            $this->raw = $response;
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }
@@ -50,10 +48,6 @@ class CitizenResponseDTO
         return $this->version;
     }
 
-    public function raw(): array
-    {
-        return $this->raw;
-    }
     public function toArray(): array
     {
         return [

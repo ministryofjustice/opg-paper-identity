@@ -166,24 +166,21 @@ class IdentityController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
-        /**
-         * @psalm-suppress PossiblyNullPropertyFetch
-         */
-        $idMethodValues = $caseData->idMethodIncludingNation;
-        /**
-         * @psalm-suppress PossiblyNullPropertyAssignment
-         */
-        $idMethodValues->id_value = $data['nino'];
 
         try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'idMethodIncludingNation',
-                $idMethodValues
-            );
-            $response = $this->dwpApiService->validateNino($caseData);
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-            return new JsonModel($response);
+
+            if ($this->dwpApiService->validateNino($caseData, $data['nino'])) {
+                return new JsonModel([
+                    'result' => 'PASS',
+                    'nino' => $data['nino']
+                ]);
+            } else {
+                return new JsonModel([
+                    'result' => 'NO_MATCH',
+                    'nino' => $data['nino']
+                ]);
+            }
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));

@@ -23,7 +23,7 @@ class DetailsResponseDTOTest extends TestCase
             "type" => "Citizen",
             "attributes" => [
                 "guid" => "",
-                "nino" => "AA112233A",
+                "nino" => "NP112233C",
                 "identityVerificationStatus" => "verified",
                 "sex" => "",
                 "statusIndicator" => false,
@@ -184,17 +184,12 @@ class DetailsResponseDTOTest extends TestCase
 
     public function testNino(): void
     {
-        $this->assertEquals("AA112233A", $this->detailsResponseDTO->nino());
+        $this->assertEquals("NP112233C", $this->detailsResponseDTO->nino());
     }
 
     public function testVerified(): void
     {
         $this->assertEquals("verified", $this->detailsResponseDTO->verified());
-    }
-
-    public function testRaw(): void
-    {
-        $this->assertEquals($this->testData, $this->detailsResponseDTO->raw());
     }
 
     public function testArray(): void
@@ -203,7 +198,7 @@ class DetailsResponseDTOTest extends TestCase
             'firstName' => 'Lee',
             'lastName' => "Manthrope",
             'dob' => "1986-09-03",
-            'nino' => "AA112233A",
+            'nino' => "NP112233C",
             'verified' => "verified"
         ], $this->detailsResponseDTO->toArray());
     }

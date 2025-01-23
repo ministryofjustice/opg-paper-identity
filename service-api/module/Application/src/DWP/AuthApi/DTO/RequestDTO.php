@@ -7,52 +7,20 @@ namespace Application\DWP\AuthApi\DTO;
 class RequestDTO
 {
     public function __construct(
-        private readonly string $clientId,
-        private readonly string $clientSecret,
-        private readonly string $bundle,
-        private readonly string $privateKey,
+        public readonly string $clientId,
+        public readonly string $clientSecret,
+        public readonly string $bundle,
+        public readonly string $privateKey,
     ) {
-    }
-
-    /**
-     * @return string
-     */
-    public function clientId(): string
-    {
-        return $this->clientId;
-    }
-
-    /**
-     * @return string
-     */
-    public function clientSecret(): string
-    {
-        return $this->clientSecret;
-    }
-
-    /**
-     * @return string
-     */
-    public function bundle(): string
-    {
-        return $this->bundle;
-    }
-
-    /**
-     * @return string
-     */
-    public function privateKey(): string
-    {
-        return $this->privateKey;
     }
 
     public function toArray(): array
     {
         return [
-            'clientId' => $this->clientId(),
-            'clientSecret' => $this->clientSecret(),
-            'bundle' => $this->bundle(),
-            'private_key' => $this->privateKey()
+            'clientId' => $this->clientId,
+            'clientSecret' => $this->clientSecret,
+            'bundle' => $this->bundle,
+            'private_key' => $this->privateKey
         ];
     }
 }

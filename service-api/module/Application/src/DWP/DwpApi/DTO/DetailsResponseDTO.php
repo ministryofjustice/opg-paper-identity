@@ -13,7 +13,6 @@ class DetailsResponseDTO
     private string $nino;
     private string $dob;
     private string $verified;
-    private array $raw;
 
     public function __construct(array $response)
     {
@@ -23,12 +22,10 @@ class DetailsResponseDTO
             $this->nino = $response['data']['attributes']['nino'];
             $this->dob = $response['data']['attributes']['dateOfBirth']['date'];
             $this->verified = $response['data']['attributes']['identityVerificationStatus'];
-            $this->raw = $response;
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());
         }
     }
-
 
     public function firstName(): string
     {
@@ -53,11 +50,6 @@ class DetailsResponseDTO
     public function verified(): string
     {
         return $this->verified;
-    }
-
-    public function raw(): array
-    {
-        return $this->raw;
     }
 
     public function toArray(): array

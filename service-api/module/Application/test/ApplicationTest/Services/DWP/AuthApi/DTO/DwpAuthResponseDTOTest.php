@@ -39,25 +39,6 @@ class DwpAuthResponseDTOTest extends TestCase
         $this->assertEquals('accessToken', $this->experianCrosscoreAuthResponseDTO->accessToken());
     }
 
-    public function testRefreshToken(): void
-    {
-        $this->assertEquals('refreshToken', $this->experianCrosscoreAuthResponseDTO->refreshToken());
-    }
-
-    public function testIssuedAt(): void
-    {
-        $this->assertEquals('issuedAt', $this->experianCrosscoreAuthResponseDTO->issuedAt());
-    }
-
-    public function testExpiresIn(): void
-    {
-        $this->assertEquals('expiresIn', $this->experianCrosscoreAuthResponseDTO->expiresIn());
-    }
-
-    public function testTokenType(): void
-    {
-        $this->assertEquals('tokenType', $this->experianCrosscoreAuthResponseDTO->tokenType());
-    }
     public function testArray(): void
     {
         $this->assertEquals($this->data, $this->experianCrosscoreAuthResponseDTO->toArray());

@@ -7,9 +7,9 @@ namespace Application\DWP\AuthApi\DTO;
 class ResponseDTO
 {
     public function __construct(
-        private readonly string $accessToken,
-        private readonly string $expiresIn,
-        private readonly string $tokenType,
+        public readonly string $accessToken,
+        public readonly string $expiresIn,
+        public readonly string $tokenType,
     ) {
     }
 
@@ -21,15 +21,6 @@ class ResponseDTO
     public function expiresIn(): string
     {
         return $this->expiresIn;
-    }
-
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     * @return string
-     */
-    public function tokenType(): string
-    {
-        return $this->tokenType;
     }
 
     public function toArray(): array

@@ -128,7 +128,7 @@ class OpgApiService implements OpgApiServiceInterface
             return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'];
+        return $this->responseData['result'];
     }
 
     public function checkDlnValidity(string $dln): string

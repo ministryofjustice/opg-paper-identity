@@ -14,10 +14,10 @@ class CitizenRequestDTO
     private string $dob;
     private string $postcode;
     private string $addressLine1;
-    private string $nino;
 
     public function __construct(
-        protected CaseData $caseData
+        protected CaseData $caseData,
+        private string $nino
     ) {
         try {
             if ($this->caseData->idMethodIncludingNation?->id_method !== 'NATIONAL_INSURANCE_NUMBER') {
@@ -57,13 +57,6 @@ class CitizenRequestDTO
             } else {
                 /** @psalm-suppress PossiblyNullPropertyAssignmentValue */
                 $this->lastName = $this->caseData->claimedIdentity?->lastName;
-            }
-
-            if (is_null($this->caseData->idMethodIncludingNation?->id_value)) {
-                throw new DwpApiException("Case property is not set: national insurance number");
-            } else {
-                /** @psalm-suppress PossiblyNullPropertyAssignmentValue */
-                $this->nino = $this->caseData->idMethodIncludingNation?->id_value;
             }
         } catch (\Exception $exception) {
             throw new DwpApiException($exception->getMessage());

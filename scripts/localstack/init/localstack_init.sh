@@ -83,7 +83,7 @@ awslocal ssm put-parameter --name "service-availability" --type "String" --value
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-details-endpoint \
     --description "DWP Citizen details endpoint" \
-    --secret-string "/capi/v2/citizens/%s/citizens" \
+    --secret-string "/capi/v2/citizens/%s" \
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-chain \

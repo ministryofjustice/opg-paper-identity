@@ -56,11 +56,6 @@ class CitizenResponseDTOTest extends TestCase
         $this->assertEquals("1.0", $this->citizenResponseDTO->version());
     }
 
-    public function testRaw(): void
-    {
-        $this->assertEquals($this->testData, $this->citizenResponseDTO->raw());
-    }
-
     public function testArray(): void
     {
         $this->assertEquals([

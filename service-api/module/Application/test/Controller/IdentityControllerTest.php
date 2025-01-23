@@ -277,7 +277,8 @@ class IdentityControllerTest extends TestCase
      */
     public function testNino(
         string $nino,
-        array $result,
+        bool $result,
+        array $response,
         int $status
     ): void {
         $uuid = "aaaaaaaa-1111-2222-3333-000000000";
@@ -316,10 +317,6 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn(CaseData::fromArray($case));
 
-        $this->dataImportHandler
-            ->expects($this->once())
-            ->method('updateCaseData');
-
         $this->dwpServiceMock->expects($this->once())
             ->method('validateNino')
             ->willReturn($result);
@@ -332,7 +329,7 @@ class IdentityControllerTest extends TestCase
 
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
-        $this->assertEquals(json_encode($result), $this->getResponse()->getContent());
+        $this->assertEquals(json_encode($response), $this->getResponse()->getContent());
         $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
@@ -343,19 +340,19 @@ class IdentityControllerTest extends TestCase
         return [
             [
                 'AA112233A',
+                true,
                 [
-                    'AA112233A',
-                    'PASS',
-                    Response::STATUS_CODE_200
+                    'result' => 'PASS',
+                    'nino' => 'AA112233A',
                 ],
                 Response::STATUS_CODE_200
             ],
             [
                 'AA112233E',
+                false,
                 [
-                    'AA112233E',
-                    'NO_MATCH',
-                    Response::STATUS_CODE_200
+                    'result' => 'NO_MATCH',
+                    'nino' => 'AA112233E',
                 ],
                 Response::STATUS_CODE_200
             ],

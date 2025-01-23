@@ -167,27 +167,22 @@ class OpgApiServiceTest extends TestCase
     /**
      * @dataProvider ninoData
      */
-    public function testValidateNino(string $nino, Client $client, string $responseData, bool $exception): void
+    public function testValidateNino(string $nino, Client $client, array $responseData): void
     {
-        if ($exception) {
-            $this->expectException(OpgApiException::class);
-        }
-
         $opgApiService = new OpgApiService($client);
 
         $response = $opgApiService->checkNinoValidity('uuid', $nino);
 
-        $this->assertEquals($responseData, $response);
+        $this->assertEquals($responseData['result'], $response);
     }
 
     public static function ninoData(): array
     {
         $validNino = 'AA112233A';
         $invalidNino = 'AA112233C';
-        $insufficientNino = 'AA112233D';
 
         $successMockResponseData = [
-            'status' => 'PASS',
+            'result' => 'PASS',
             'nino' => $validNino,
         ];
 
@@ -198,7 +193,7 @@ class OpgApiServiceTest extends TestCase
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = [
-            'status' => 'NO_MATCH',
+            'result' => 'NO_MATCH',
             'nino' => $invalidNino,
         ];
         $failMock = new MockHandler([
@@ -207,35 +202,23 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
 
-        $insufficientMockResponseData = [
-            'status' => 'NOT_ENOUGH_DETAILS',
-            'nino' => $insufficientNino,
-        ];
-        $insufficientMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
-        ]);
-        $handlerStack = HandlerStack::create($insufficientMock);
-        $insufficientClient = new Client(['handler' => $handlerStack]);
-
         return [
             [
                 $validNino,
                 $successClient,
-                'PASS',
-                false,
+                [
+                    'result' => 'PASS',
+                    'nino' => $validNino
+                ]
             ],
             [
                 $invalidNino,
                 $failClient,
-                'NO_MATCH',
-                false,
-            ],
-            [
-                $insufficientNino,
-                $insufficientClient,
-                'NOT_ENOUGH_DETAILS',
-                false,
-            ],
+                [
+                    'result' => 'NO_MATCH',
+                    'nino' => $validNino
+                ]
+            ]
         ];
     }
 

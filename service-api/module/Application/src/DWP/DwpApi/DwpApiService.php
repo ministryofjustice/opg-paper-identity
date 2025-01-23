@@ -53,16 +53,18 @@ class DwpApiService
         ];
     }
 
-    public function validateNino(CaseData $caseData): array
+    public function validateNino(CaseData $caseData, string $nino): bool
     {
         try {
             $citizenResponseDTO = $this->makeCitizenMatchRequest(
-                new CitizenRequestDTO($caseData)
+                new CitizenRequestDTO($caseData, $nino)
             );
             $detailsResponseDTO = $this->makeCitizenDetailsRequest(
-                new DetailsRequestDTO($citizenResponseDTO->id())
+                new DetailsRequestDTO($citizenResponseDTO->id()),
+                $nino
             );
-            return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO);
+
+            return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO, $nino);
         } catch (\Exception $exception) {
             $this->logger->error('DwpApiException: ' . $exception->getMessage());
             throw new DwpApiException($exception->getMessage());
@@ -72,24 +74,34 @@ class DwpApiService
     public function compareRecords(
         CaseData $caseData,
         DetailsResponseDTO $detailsResponseDTO,
-        CitizenResponseDTO $citizenResponseDTO
-    ): array {
+        CitizenResponseDTO $citizenResponseDTO,
+        string $nino
+    ): bool {
         if ($caseData->idMethodIncludingNation) {
+            $submittedNino = strtoupper(
+                preg_replace(
+                    '/(\s+)|(-)/',
+                    '',
+                    $nino
+                )
+            );
+
+            $returnedNino = strtoupper(
+                preg_replace(
+                    '/(\s+)|(-)/',
+                    '',
+                    $detailsResponseDTO->nino()
+                )
+            );
+
             if (
                 $citizenResponseDTO->matchScenario() !== 'Matched on NINO' ||
-                $detailsResponseDTO->verified() !== 'verified'
+                $detailsResponseDTO->verified() !== 'verified' ||
+                $submittedNino !== $returnedNino
             ) {
-                return [
-                    /** @psalm-suppress PossiblyNullPropertyFetch */
-                    'nino' => $caseData->idMethodIncludingNation->id_value,
-                    'status' => 'NO_MATCH'
-                ];
+                return false;
             }
-            return [
-                /** @psalm-suppress PossiblyNullPropertyFetch */
-                'nino' => $caseData->idMethodIncludingNation->id_value,
-                'status' => 'PASS'
-            ];
+            return true;
         } else {
             throw new DwpApiException('National Insurance Number not set.');
         }
@@ -100,7 +112,7 @@ class DwpApiService
      * @throws DwpApiException
      */
     public function makeCitizenMatchRequest(
-        CitizenRequestDTO $citizenRequestDTO
+        CitizenRequestDTO $citizenRequestDTO,
     ): CitizenResponseDTO {
         $this->authCount++;
         $responseArray = [];
@@ -176,7 +188,8 @@ class DwpApiService
      * @throws DwpApiException
      */
     public function makeCitizenDetailsRequest(
-        DetailsRequestDTO $detailsRequestDTO
+        DetailsRequestDTO $detailsRequestDTO,
+        string $nino
     ): DetailsResponseDTO {
         $this->authCount++;
         $responseArray = [];
@@ -197,7 +210,7 @@ class DwpApiService
                 $this->authCount < 2
             ) {
                 $this->authApiService->authenticate();
-                $this->makeCitizenDetailsRequest($detailsRequestDTO);
+                $this->makeCitizenDetailsRequest($detailsRequestDTO, $nino);
             } else {
                 $response = $clientException->getResponse();
                 $responseBodyAsString = $response->getBody()->getContents();

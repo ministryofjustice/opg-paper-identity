@@ -40,7 +40,7 @@ class DwpApiServiceTest extends TestCase
             "id_method" => "NATIONAL_INSURANCE_NUMBER",
             "id_route" => "TELEPHONE",
             "id_country" => "GBR",
-            "id_value" => "ZZ123456A"
+            "id_value" => "NP112233C"
         ],
         "caseProgress" => [
             "abandonedFlow" => null,
@@ -82,7 +82,7 @@ class DwpApiServiceTest extends TestCase
             "type" => "Citizen",
             "attributes" => [
                 "guid" => "",
-                "nino" => "",
+                "nino" => "NP112233C",
                 "identityVerificationStatus" => "verified",
                 "sex" => "",
                 "statusIndicator" => false,
@@ -97,33 +97,6 @@ class DwpApiServiceTest extends TestCase
                         "endDate" => "2024-12-11"
                     ]
                 ],
-                "alternateName" => [
-                    "title" => "",
-                    "firstName" => "",
-                    "middleNames" => "",
-                    "lastName" => "",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "requestedName" => [
-                    "requestedName" => "",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "dateOfDeath" => [
-                    "date" => "",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
                 "dateOfBirth" => [
                     "date" => "1986-09-03",
                     "metadata" => [
@@ -132,92 +105,11 @@ class DwpApiServiceTest extends TestCase
                         "endDate" => "2024-12-11"
                     ]
                 ],
-                "accessibilityNeeds" => [
-                    [
-                        "type" => "braille",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ]
-                ],
-                "safeguarding" => [
-                    "type" => "potentially_violent",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "nationality" => [
-                    "nationality" => "british",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "contactDetails" => [
-                    [
-                        "contactType" => "home_telephone_number",
-                        "value" => "07745690909",
-                        "preferredContactIndicator" => false,
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ]
-                ],
-                "warningDetails" => [
-                    "warnings" => [
-                        [
-                            "id" => "",
-                            "links" => [
-                                "about" => ""
-                            ],
-                            "status" => "",
-                            "code" => "",
-                            "title" => "",
-                            "detail" => "",
-                            "source" => [
-                                "pointer" => "",
-                                "parameter" => ""
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            "relationships" => [
-                "current-residential-address" => [
-                    "links" => [
-                        "self" => ""
-                    ]
-                ],
-                "current-correspondence-address" => [
-                    "links" => [
-                        "self" => ""
-                    ]
-                ],
-                "addresses" => [
-                    "links" => [
-                        "self" => ""
-                    ]
-                ],
-                "relationships" => [
-                    "links" => [
-                        "self" => ""
-                    ]
-                ],
-                "claims" => [
-                    "links" => [
-                        "self" => ""
-                    ]
-                ]
             ]
         ]
     ];
+
+    private const NINO = "NP112233C";
 
     public function setUp(): void
     {
@@ -289,7 +181,7 @@ class DwpApiServiceTest extends TestCase
                         "type" => "Match",
                         "attributes" => [
                             "dateOfBirth" => "1986-09-03",
-                            "ninoFragment" => "456A",
+                            "ninoFragment" => "233C",
                             "firstName" => "Lee",
                             "lastName" => "Manthrope",
                             "postcode" => "SO15 3AA",
@@ -299,7 +191,10 @@ class DwpApiServiceTest extends TestCase
                         ]
                     ]
                 ],
-                new CitizenRequestDTO(CaseData::fromArray(static::CASE))
+                new CitizenRequestDTO(
+                    CaseData::fromArray(static::CASE),
+                    static::NINO
+                ),
             ]
         ];
     }
@@ -343,7 +238,10 @@ class DwpApiServiceTest extends TestCase
         $this->assertEquals(
             new CitizenResponseDTO($successMockResponseData),
             $dwpApiService->makeCitizenMatchRequest(
-                new CitizenRequestDTO(CaseData::fromArray(static::CASE))
+                new CitizenRequestDTO(
+                    CaseData::fromArray(static::CASE),
+                    self::NINO
+                )
             )
         );
     }
@@ -387,7 +285,10 @@ class DwpApiServiceTest extends TestCase
         $this->assertEquals(
             new CitizenResponseDTO($successMockResponseData),
             $dwpApiService->makeCitizenMatchRequest(
-                new CitizenRequestDTO(CaseData::fromArray(static::CASE))
+                new CitizenRequestDTO(
+                    CaseData::fromArray(static::CASE),
+                    self::NINO
+                )
             )
         );
     }
@@ -413,7 +314,10 @@ class DwpApiServiceTest extends TestCase
             ''
         );
 
-        $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(CaseData::fromArray(static::CASE)));
+        $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(
+            CaseData::fromArray(static::CASE),
+            self::NINO
+        ));
     }
 
     public function testMakeCitizenDetailsRequest(): void
@@ -441,7 +345,8 @@ class DwpApiServiceTest extends TestCase
         $this->assertEquals(
             new DetailsResponseDTO($successMockResponseData),
             $dwpApiService->makeCitizenDetailsRequest(
-                new DetailsRequestDTO('case-id-string')
+                new DetailsRequestDTO('case-id-string'),
+                self::NINO
             )
         );
     }
@@ -467,7 +372,10 @@ class DwpApiServiceTest extends TestCase
             ''
         );
 
-        $dwpApiService->makeCitizenDetailsRequest(new DetailsRequestDTO('case-id-string'));
+        $dwpApiService->makeCitizenDetailsRequest(
+            new DetailsRequestDTO('case-id-string'),
+            self::NINO
+        );
     }
 
 
@@ -475,7 +383,7 @@ class DwpApiServiceTest extends TestCase
      * @dataProvider compareRecordsData
      */
     public function testCompareRecords(
-        array $expected,
+        bool $expected,
         CaseData $caseData,
         CitizenResponseDTO $citizenResponseDTO,
         DetailsResponseDTO $detailsResponseDTO,
@@ -485,7 +393,8 @@ class DwpApiServiceTest extends TestCase
             $this->dwpApiService->compareRecords(
                 $caseData,
                 $detailsResponseDTO,
-                $citizenResponseDTO
+                $citizenResponseDTO,
+                self::NINO
             )
         );
     }
@@ -529,37 +438,25 @@ class DwpApiServiceTest extends TestCase
 
         return [
             [
-                [
-                    'nino' => 'ZZ123456A',
-                    'status' => 'PASS',
-                ],
+                true,
                 $caseData,
                 $successMatchDTO,
                 $successDetailsDTO
             ],
             [
-                [
-                    'nino' => 'ZZ123456A',
-                    'status' => 'NO_MATCH',
-                ],
+                false,
                 $caseData,
                 $noMatchDTO,
                 $failDetailsDTO
             ],
             [
-                [
-                    'nino' => 'ZZ123456A',
-                    'status' => 'NO_MATCH',
-                ],
+                false,
                 $caseData,
                 $successMatchDTO,
                 $failDetailsDTO
             ],
             [
-                [
-                    'nino' => 'ZZ123456A',
-                    'status' => 'NO_MATCH',
-                ],
+                false,
                 $caseData,
                 $noMatchDTO,
                 $successDetailsDTO

@@ -22,26 +22,6 @@ class DwpAuthRequestDTOTest extends TestCase
             'clientSecret'
         );
     }
-
-    public function testUserName(): void
-    {
-        $this->assertEquals('userName', $this->experianCrosscoreAuthRequestDTO->userName());
-    }
-
-    public function testPassword(): void
-    {
-        $this->assertEquals('password', $this->experianCrosscoreAuthRequestDTO->password());
-    }
-
-    public function testClientId(): void
-    {
-        $this->assertEquals('clientId', $this->experianCrosscoreAuthRequestDTO->clientId());
-    }
-
-    public function testClientSecret(): void
-    {
-        $this->assertEquals('clientSecret', $this->experianCrosscoreAuthRequestDTO->clientSecret());
-    }
     public function testArray(): void
     {
         $this->assertEquals([
