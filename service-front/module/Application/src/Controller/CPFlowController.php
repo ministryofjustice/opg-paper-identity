@@ -31,6 +31,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
+use Laminas\Form\Element;
 
 class CPFlowController extends AbstractActionController
 {
@@ -48,7 +49,7 @@ class CPFlowController extends AbstractActionController
         private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -252,7 +253,6 @@ class CPFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $form = $this->createForm(BirthDate::class);
 
-
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
             $dateOfBirth = $this->formProcessorHelper->processDateForm($params->toArray());
@@ -260,12 +260,41 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                try {
-                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                // Check if the user is over 100 years old
+                $birthDate = strtotime($dateOfBirth);
+                $maxBirthDate = strtotime('-100 years', time());
 
-                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
-                } catch (\Exception $exception) {
-                    $form->setMessages(["There was an error saving the data"]);
+                // Check if the birth date is more than 100 years ago
+                if ($birthDate < $maxBirthDate) {
+                    // Check if the user has accepted the warning
+                    $warningAccepted = $params['dob_warning_100_accepted'] ?? false;
+
+                    if ($warningAccepted) {
+                        // Allow submission if the warning was accepted
+                        try {
+                            $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                            return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                        } catch (\Exception $exception) {
+                            $form->setMessages(["There was an error saving the data"]);
+                        }
+                    } else {
+                        // Show the warning if the user hasn't confirmed yet
+                        $form->setMessages([
+                            'date' => ['By continuing, you confirm that the certificate provider is more than 
+                            100 years old.']
+                        ]);
+
+                        // Include the hidden field that represents the user confirming CP is over 100 years old
+                        $view->setVariable('displaying_dob_100_warning', true);
+                    }
+                } else {
+                    // If not over 100, process as normal
+                    try {
+                        $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                        return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
+                    } catch (\Exception $exception) {
+                        $form->setMessages(["There was an error saving the data"]);
+                    }
                 }
             }
             $view->setVariable('form', $form);
