@@ -27,6 +27,9 @@
     {% endif %}
 
     <form method="POST">
+        {% if (displaying_dob_100_warning) %}
+            <input type="hidden" name="dob_warning_100_accepted" value="true"/>
+        {% endif %}
         <div class="govuk-form-group">
             <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -76,6 +79,7 @@
                                         type="text"
                                         inputmode="numeric"
                                         value="{{ form.get('dob_day').value }}"
+                                        maxlength="2"
                                 >
                             </div>
                         </div>
@@ -91,6 +95,7 @@
                                         type="text"
                                         inputmode="numeric"
                                         value="{{ form.get('dob_month').value }}"
+                                        maxlength="2"
                                 >
                             </div>
                         </div>
@@ -106,6 +111,7 @@
                                         type="text"
                                         inputmode="numeric"
                                         value="{{ form.get('dob_year').value }}"
+                                        maxlength="4"
                                 >
                             </div>
                         </div>

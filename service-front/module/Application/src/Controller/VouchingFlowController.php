@@ -13,6 +13,7 @@ use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Forms\AddDonor;
+use Application\Model\Entity\CaseData;
 use Application\Services\SiriusApiService;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
@@ -223,6 +224,25 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 
+    private function checkMatchesForLpas(array $detailsData, string $dateOfBirth): bool
+    {
+        $match = false;
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+            $match = $this->voucherMatchLpaActorHelper->checkMatch(
+                $lpasData,
+                $detailsData["firstName"],
+                $detailsData["lastName"],
+                $dateOfBirth,
+            );
+            // we raise the warning if there are any matches so stop once we've found one
+            if ($match) {
+                break;
+            }
+        }
+        return $match;
+    }
+
     public function voucherDobAction(): ViewModel|Response
     {
         $view = new ViewModel();
@@ -251,32 +271,54 @@ class VouchingFlowController extends AbstractActionController
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
-                $match = false;
-                foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
-                        $lpasData,
-                        $detailsData["firstName"],
-                        $detailsData["lastName"],
-                        $dateOfBirth,
-                    );
-                    // we raise the warning if there are any matches so stop once we've found one
-                    if ($match) {
-                        break;
-                    }
-                }
+                $match = $this->checkMatchesForLpas($detailsData, $dateOfBirth);
                 if ($match) {
                     $view->setVariable('match', $match);
                 } else {
-                    try {
-                        $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                        if (isset($detailsData["address"])) {
-                            return $this->redirect()->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
+                    // Check if the user is over 100 years old
+                    $birthDate = strtotime($dateOfBirth);
+                    $maxBirthDate = strtotime('-100 years', time());
+
+                    if ($birthDate < $maxBirthDate) {
+                        // Check if the user has accepted the warning
+                        $warningAccepted = $params['dob_warning_100_accepted'] ?? false;
+
+                        if ($warningAccepted) {
+                            try {
+                                $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                                if (isset($detailsData["address"])) {
+                                    return $this->redirect()
+                                        ->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
+                                } else {
+                                    return $this->redirect()
+                                        ->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                                }
+                            } catch (\Exception $exception) {
+                                $form->setMessages(["There was an error saving the data"]);
+                            }
                         } else {
-                            return $this->redirect()->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                            // Show the warning if the user hasn't confirmed yet
+                            $form->setMessages([
+                                'date' => ['By continuing, you confirm that the certificate provider is more than 
+                            100 years old.']
+                            ]);
+
+                            // Include the hidden field that represents the user confirming CP is over 100 years old
+                            $view->setVariable('displaying_dob_100_warning', true);
                         }
-                    } catch (\Exception $exception) {
-                        $form->setMessages(["There was an error saving the data"]);
+                    } else {
+                        try {
+                            $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                            if (isset($detailsData["address"])) {
+                                return $this->redirect()
+                                    ->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
+                            } else {
+                                return $this->redirect()
+                                    ->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                            }
+                        } catch (\Exception $exception) {
+                            $form->setMessages(["There was an error saving the data"]);
+                        }
                     }
                 }
             }
