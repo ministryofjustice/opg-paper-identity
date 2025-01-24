@@ -34,6 +34,9 @@
     </div>
 {% endif %}
 <form method="POST">
+    {% if (displayiWng_dob_100_warning) %}
+        <input type="hidden" name="dob_warning_100_accepted" value="true"/>
+    {% endif %}
     <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" role="group">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -56,7 +59,15 @@
                         <label class="govuk-label govuk-date-input__label" for="voucher-dob-day">
                             Day
                         </label>
-                        <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if date_problem %}govuk-input--error{% endif %}" id="voucher-dob-day" name="dob_day" type="text" inputmode="numeric" value="{{ form.get('dob_day').value }}">
+                        <input
+                                class="govuk-input govuk-date-input__input govuk-input--width-2 {% if date_problem %}govuk-input--error{% endif %}"
+                                id="voucher-dob-day"
+                                name="dob_day"
+                                type="text"
+                                inputmode="numeric"
+                                value="{{ form.get('dob_day').value }}"
+                                maxlength="2"
+                        >
                         </div>
                     </div>
                     <div class="govuk-date-input__item">
@@ -64,7 +75,15 @@
                         <label class="govuk-label govuk-date-input__label" for="voucher-dob-month">
                             Month
                         </label>
-                        <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if date_problem %}govuk-input--error{% endif %}" id="voucher-dob-month" name="dob_month" type="text" inputmode="numeric" value="{{ form.get('dob_month').value }}">
+                        <input
+                                class="govuk-input govuk-date-input__input govuk-input--width-2 {% if date_problem %}govuk-input--error{% endif %}"
+                                id="voucher-dob-month"
+                                name="dob_month"
+                                type="text"
+                                inputmode="numeric"
+                                value="{{ form.get('dob_month').value }}"
+                                maxlength="2"
+                        >
                         </div>
                     </div>
                     <div class="govuk-date-input__item">
@@ -72,7 +91,15 @@
                         <label class="govuk-label govuk-date-input__label" for="voucher-dob-year">
                             Year
                         </label>
-                        <input class="govuk-input govuk-date-input__input govuk-input--width-4 {% if date_problem %}govuk-input--error{% endif %}" id="voucher-dob-year" name="dob_year" type="text" inputmode="numeric" value="{{ form.get('dob_year').value }}">
+                        <input
+                                class="govuk-input govuk-date-input__input govuk-input--width-4 {% if date_problem %}govuk-input--error{% endif %}"
+                                id="voucher-dob-year"
+                                name="dob_year"
+                                type="text"
+                                inputmode="numeric"
+                                value="{{ form.get('dob_year').value }}"
+                                maxlength="4"
+                        >
                         </div>
                     </div>
                 </div>
