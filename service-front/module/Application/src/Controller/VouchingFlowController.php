@@ -21,7 +21,7 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Forms\IdMethod;
 use Application\Forms\Postcode;
 use Application\Forms\AddressJson;
-use Application\Forms\PassportDateCp;
+use Application\Forms\PassportDate;
 use Laminas\Form\FormInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -84,12 +84,11 @@ class VouchingFlowController extends AbstractActionController
         $templates = ['default' => 'application/pages/vouching/how_will_you_confirm'];
         $view = new ViewModel();
         $this->uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDateCp::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
         $detailsData = $this->opgApiService->getDetailsData($this->uuid);
-
         $serviceAvailability = $this->opgApiService->getServiceAvailability($this->uuid);
 
         $identityDocs = [];
@@ -420,11 +419,32 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost()) {
-            /**
-            * @psalm-suppress PossiblyUndefinedArrayOffset
-            */
-            if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
-                return $this->redirect()->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
+            $idRoute = '';
+            $idMethod = '';
+            if (isset($detailsData['idMethodIncludingNation'])) {
+                $idRoute = $detailsData['idMethodIncludingNation']['id_route'] ?? '';
+                $idMethod = $detailsData['idMethodIncludingNation']['id_method'] ?? '';
+            }
+            $redirect = false;
+            if ($idRoute === 'POST_OFFICE') {
+                $redirect = "root/find_post_office_branch";
+            } else {
+                switch ($idMethod) {
+                    case IdMethodEnum::PassportNumber->value:
+                        $redirect = "root/passport_number";
+                        break;
+                    case IdMethodEnum::DrivingLicenseNumber->value:
+                        $redirect = "root/driving_licence_number";
+                        break;
+                    case IdMethodEnum::NationalInsuranceNumber->value:
+                        $redirect = "root/national_insurance_number";
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if ($redirect) {
+                return $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
             }
         }
 
@@ -447,7 +467,6 @@ class VouchingFlowController extends AbstractActionController
         }
 
         $view = new ViewModel();
-
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpa_details', $lpaDetails);
@@ -517,5 +536,16 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/vouching/identity_check_passed');
+    }
+
+    public function identityCheckFailedAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_failed');
     }
 }

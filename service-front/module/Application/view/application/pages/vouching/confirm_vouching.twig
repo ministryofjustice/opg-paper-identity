@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="govuk-!-width-two-thirds">
-        <h1 class="govuk-heading-xl">{% block title %}Vouching for  {{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}{% endblock %}</h1>
+        <h1 class="govuk-heading-xl" id="confirm-vouching-heading">{% block title %}Vouching for  {{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}{% endblock %}</h1>
         <p class="govuk-body govuk-!-margin-bottom-6">
             To vouch for the donor, the person vouching must have been asked by the donor to vouch. They will need to complete an identity check over the phone,
             or alternatively at the Post Office. They should have details of what is required in the letter passed to them by the donor.
@@ -77,7 +77,7 @@
         </div>
         <br>
         <div class="govuk-button-group">
-            <input type="submit" class="govuk-button" value="Continue with vouching" name="continue">
+            <input type="submit" class="govuk-button" value="Continue with vouching" name="continue" id="continue-with-vouching">
             <input type="submit" class="govuk-button govuk-button--secondary" value="Donor will ID another way" name="tryDifferent">
         </div>
     </form>

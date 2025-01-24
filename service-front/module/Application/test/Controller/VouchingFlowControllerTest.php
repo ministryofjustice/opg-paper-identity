@@ -482,7 +482,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobPage(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
+        $mockResponseDataIdDetails["firstName"] = "firstName";
+        $mockResponseDataIdDetails["lastName"] = "lastName";
 
         $this
             ->opgApiServiceMock
@@ -632,8 +637,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobUnderageError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -655,8 +662,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobEmptyError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -678,8 +687,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobInvalidError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
         $this
             ->opgApiServiceMock
             ->expects(self::once())
