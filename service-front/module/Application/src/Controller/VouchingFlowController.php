@@ -281,7 +281,7 @@ class VouchingFlowController extends AbstractActionController
 
                     if ($birthDate < $maxBirthDate) {
                         // Check if the user has accepted the warning
-                        $warningAccepted = $params['dob_warning_100_accepted'] ?? false;
+                        $warningAccepted = $formData['dob_warning_100_accepted'] ?? false;
 
                         if ($warningAccepted) {
                             try {
