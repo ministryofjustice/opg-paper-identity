@@ -299,8 +299,8 @@ class VouchingFlowController extends AbstractActionController
                         } else {
                             // Show the warning if the user hasn't confirmed yet
                             $form->setMessages([
-                                'date' => ['By continuing, you confirm that the certificate provider is more than 
-                            100 years old.']
+                                'date' => ['By continuing, you confirm that the certificate provider
+                                 is more than 100 years old.']
                             ]);
 
                             // Include the hidden field that represents the user confirming CP is over 100 years old
