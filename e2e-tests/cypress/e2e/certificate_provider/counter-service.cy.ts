@@ -89,4 +89,26 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("We will send you a letter.");
     cy.contains("Please do this by the deadline stated.");
   });
+
+  it("handles 2 LPAs", () => {
+    cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+    cy.contains("How will you confirm your identity?");
+    cy.contains("label", "Post Office").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Which document will they take to the Post Office?");
+    cy.contains("UK passport (up to 18 months expired)").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Does the name match the ID?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("LPAs included in the identity check");
+    cy.contains("Remove").click();
+
+    cy.contains("Remove").should('not.exist');
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("What is their date of birth?");
+  });
 });

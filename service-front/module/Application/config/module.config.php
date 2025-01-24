@@ -421,16 +421,6 @@ return [
                             ],
                         ],
                     ],
-                    'po_remove_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/remove-lpa/:lpa',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'removeLpa',
-                            ],
-                        ],
-                    ],
                     'abandon_flow' => [
                         'type' => Segment::class,
                         'options' => [
