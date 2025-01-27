@@ -47,7 +47,8 @@ class VouchingFlowController extends AbstractActionController
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly AddDonorFormHelper $addDonorFormHelper,
-        private readonly array $config
+        private readonly array $config,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -531,8 +532,11 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
 
-        $view = new ViewModel();
+        if ($this->getRequest()->isPost()) {
+            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
+        }
 
+        $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/vouching/identity_check_passed');
@@ -541,7 +545,7 @@ class VouchingFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
 
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);

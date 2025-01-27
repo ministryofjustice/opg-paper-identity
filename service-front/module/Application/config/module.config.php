@@ -11,6 +11,7 @@ use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
+use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Controller\IndexController;
 use Application\Enums\IdMethod;
 use Application\Factories\LoggerFactory;
@@ -545,7 +546,7 @@ return [
                     'voucher_identity_check_passed' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/voucher/identity-check-passed',
+                            'route' => '/:uuid/vouching/identity-check-passed',
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
                                 'action' => 'identityCheckPassed',
@@ -555,7 +556,7 @@ return [
                     'voucher_identity_check_failed' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/voucher/identity-check-failed',
+                            'route' => '/:uuid/vouching/identity-check-failed',
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
                                 'action' => 'identityCheckFailed',
@@ -571,7 +572,7 @@ return [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
-            Controller\VouchingFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
