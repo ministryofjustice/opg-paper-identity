@@ -26,12 +26,14 @@ class PostOfficeFlowControllerFactory implements FactoryInterface
     ): PostOfficeFlowController {
         /** @var string $siriusPublicUrl */
         $config = $container->get('Config');
+        $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
 
         return new PostOfficeFlowController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(FormProcessorHelper::class),
             $container->get(SiriusApiService::class),
             $container->get(DocumentTypeRepository::class),
+            $siriusPublicUrl,
             $config,
         );
     }
