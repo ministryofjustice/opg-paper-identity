@@ -22,11 +22,18 @@ class BirthDateValidator extends AbstractValidator
 
     private function isRealDate(string $value): bool
     {
-        // Convert string date to DateTime object
-        $date = \DateTime::createFromFormat('Y-m-d', $value);
+        $formats = ['Y-m-d', 'Y-n-j'];
 
-        // Check if the date is valid and matches the format
-        return $date && $date->format('Y-m-d') === $value;
+        foreach ($formats as $format) {
+            $dateTime = DateTime::createFromFormat($format, $value);
+
+            // Check if the parsing was successful and the parsed date matches the input
+            if ($dateTime && $dateTime->format($format) === $value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isValid($value): bool

@@ -266,6 +266,7 @@ class VouchingFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $dateOfBirth = $this->formProcessorHelper->processDateForm($formData->toArray());
+
             $formData->set('date', $dateOfBirth);
             $form->setData($formData);
             $view->setVariable('form', $form);
