@@ -21,19 +21,22 @@ class PassportInDateValidatorTest extends TestCase
     /**
      * @dataProvider passportData
      */
-    public function testValidator(mixed $passport, bool $valid): void
+    public function testValidator(mixed $passport, ?string $error, bool $valid): void
     {
         $this->assertEquals($valid, $this->passportDateValidator->isValid($passport));
+        if (! is_null($error)) {
+            $this->assertNotEmpty($this->passportDateValidator->getMessages()[$error]);
+        }
     }
 
     public static function passportData(): array
     {
         return [
-            ['', false],
-            [null, false],
-            ['--', false],
-            ['no', false],
-            ['yes', true],
+            ['', 'passport_confirm', false],
+            [null, 'passport_confirm', false],
+            ['--', null, false],
+            ['no', 'passport_date', false],
+            ['yes', null, true],
         ];
     }
 }
