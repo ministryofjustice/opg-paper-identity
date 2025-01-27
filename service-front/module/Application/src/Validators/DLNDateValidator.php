@@ -11,8 +11,8 @@ class DLNDateValidator extends AbstractValidator
     public const DLN_DATE = 'DLN_date';
     public const DLN_CONFIRM = 'DLN_confirm';
     protected array $messageTemplates = [
-        self::DLN_DATE => 'The driving licence needs to be in date. Check the expiry date
-        and change to Yes, or try a different method',
+        self::DLN_DATE => 'The driving licence needs to be in date. ' .
+            'Check the expiry date and change to Yes, or try a different method',
         self::DLN_CONFIRM => 'Please choose yes or no',
     ];
 
