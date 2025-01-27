@@ -547,7 +547,11 @@ return [
                     'available security questions or failure to answer them correctly on a previous occasion.',
                 'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                     'available information from Experian or a failure to answer the security questions correctly ' .
-                    'on a previous occasion.'
+                    'on a previous occasion.',
+                'LOCKED' => 'The donor cannot prove their identity over the phone because they have tried before ' .
+                    'and their details did not match the document provided.',
+                'LOCKED_SUCCESS' => 'The donor cannot prove their identity over the phone because the case is ' .
+                    'complete.',
             ],
             'certificateProvider' => [
                 'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
@@ -556,6 +560,22 @@ return [
                 'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
                     'available information from Experian or a failure to answer the security ' .
                     'questions correctly on a previous occasion.',
+                'LOCKED' => 'The certificate provider cannot prove their identity over the phone because they have ' .
+                    'tried before and their details did not match the document provided.',
+                'LOCKED_SUCCESS' => 'The certificate provider cannot prove their identity over the phone because ' .
+                    'the case is complete.',
+            ],
+            'vouching' => [
+                'NODECISION' => 'The person vouching cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions ' .
+                    'correctly on a previous occasion.',
+                'STOP' => 'The person vouching cannot ID over the phone due to a lack of ' .
+                    'available information from Experian or a failure to answer the security ' .
+                    'questions correctly on a previous occasion.',
+                'LOCKED' => 'The person vouching cannot prove their identity over the phone because they have ' .
+                    'tried before and their details did not match the document provided.',
+                'LOCKED_SUCCESS' => 'The  person vouching cannot prove their identity over the phone because ' .
+                    'the case is complete.',
             ]
         ],
     ]
