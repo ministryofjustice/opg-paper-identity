@@ -11,6 +11,7 @@ class ServiceAvailabilityHelper
     public const DECISION_STOP = 'STOP';
     public const DECISION_NODECISION = 'NODECISION';
     public const LOCKED = 'LOCKED';
+    public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
 
     protected array $availableServices = [];
 
@@ -134,7 +135,7 @@ class ServiceAvailabilityHelper
 
         if ($this->case->caseProgress?->kbvs?->result === true) {
             $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_SUCCESS];
 
             $this->setServiceFlags(false, [
                 'POST_OFFICE',

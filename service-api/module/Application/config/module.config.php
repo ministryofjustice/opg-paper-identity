@@ -574,7 +574,7 @@ return [
                     'questions correctly on a previous occasion.',
                 'LOCKED' => 'The person vouching cannot prove their identity over the phone because they have ' .
                     'tried before and their details did not match the document provided.',
-                'LOCKED_SUCCESS' => 'The  person vouchin cannot prove their identity over the phone because ' .
+                'LOCKED_SUCCESS' => 'The  person vouching cannot prove their identity over the phone because ' .
                     'the case is complete.',
             ]
         ],
