@@ -11,7 +11,7 @@ use Application\Enums\LpaTypes;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\IdMethod;
-use Application\Forms\PassportDatePo;
+use Application\Forms\PassportDate;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
@@ -42,7 +42,7 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $templates = ['default' => 'application/pages/post_office/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDatePo::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
         $view = new ViewModel();
 

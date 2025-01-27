@@ -136,7 +136,7 @@ describe("Identify a Certificate Provider", () => {
 
         cy.get("#passport").type("123456781", {force: true});
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Please choose yes or no");
 
         cy.contains("No").click();
         cy.get(".govuk-button").contains("Continue").click();
@@ -145,7 +145,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#passport").clear();
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Enter the passport number.");
 
         cy.contains("Help with checking if passport is in date");
         cy.contains("Help with checking if passport is in date").click();
@@ -220,7 +220,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#dln").clear();
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Enter the Driving licence number.");
 
         cy.get("#dln").type("MORGA657054SM9IJ", {force: true});
         cy.contains("Yes").click();
