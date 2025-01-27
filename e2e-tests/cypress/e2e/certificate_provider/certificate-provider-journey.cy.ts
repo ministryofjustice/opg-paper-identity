@@ -293,6 +293,25 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains(".moj-banner", "Identity check passed");
     });
+
+    it("handles 2 LPAs", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+        cy.contains("Remove").click();
+
+        cy.contains("Remove").should('not.exist');
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("What is their date of birth?");
+    });
 });
 
 
