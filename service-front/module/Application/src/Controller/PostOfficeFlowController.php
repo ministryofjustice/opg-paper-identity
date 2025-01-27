@@ -34,6 +34,7 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
+        private readonly string $siriusPublicUrl,
         private readonly array $config,
     ) {
     }
@@ -291,6 +292,13 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
+
+        $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $view->setVariables([
+            'details_data', $detailsData,
+            'sirius_url' => $siriusUrl
+        ]);
 
         return $view->setTemplate('application/pages/post_office/what_happens_next');
     }
