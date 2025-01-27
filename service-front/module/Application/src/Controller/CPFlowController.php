@@ -267,9 +267,9 @@ class CPFlowController extends AbstractActionController
                 // Check if the birth date is more than 100 years ago
                 if ($birthDate < $maxBirthDate) {
                     // Check if the user has accepted the warning
-                    $warningAccepted = $params['dob_warning_100_accepted'] ?? false;
+                    $warningAccepted = $this->getRequest()->getPost('dob_warning_100_accepted') ?? false;
 
-                    if ($warningAccepted) {
+                    if ($warningAccepted !== false) {
                         // Allow submission if the warning was accepted
                         try {
                             $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);

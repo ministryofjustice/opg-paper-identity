@@ -224,7 +224,7 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 
-    private function checkMatchesForLpas(array $detailsData, string $dateOfBirth): bool
+    private function checkMatchesForLpas(array $detailsData, string $dateOfBirth): bool | array
     {
         $match = false;
         foreach ($detailsData['lpas'] as $lpa) {
@@ -272,7 +272,7 @@ class VouchingFlowController extends AbstractActionController
 
             if ($form->isValid()) {
                 $match = $this->checkMatchesForLpas($detailsData, $dateOfBirth);
-                if ($match) {
+                if ($match !== false) {
                     $view->setVariable('match', $match);
                 } else {
                     // Check if the user is over 100 years old
@@ -281,9 +281,9 @@ class VouchingFlowController extends AbstractActionController
 
                     if ($birthDate < $maxBirthDate) {
                         // Check if the user has accepted the warning
-                        $warningAccepted = $formData['dob_warning_100_accepted'] ?? false;
+                        $warningAccepted = $this->getRequest()->getPost('dob_warning_100_accepted') ?? false;
 
-                        if ($warningAccepted) {
+                        if ($warningAccepted != false) {
                             try {
                                 $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
                                 if (isset($detailsData["address"])) {

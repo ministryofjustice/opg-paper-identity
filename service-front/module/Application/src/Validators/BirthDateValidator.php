@@ -20,7 +20,7 @@ class BirthDateValidator extends AbstractValidator
         self::DATE_18 => 'Birth date cannot be under 18 years ago.'
     ];
 
-    private function isRealDate($value): bool
+    private function isRealDate(string $value): bool
     {
         // Convert string date to DateTime object
         $date = \DateTime::createFromFormat('Y-m-d', $value);
