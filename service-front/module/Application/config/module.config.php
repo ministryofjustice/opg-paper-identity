@@ -9,7 +9,9 @@ use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
+use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
+use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Controller\IndexController;
 use Application\Enums\IdMethod;
 use Application\Factories\LoggerFactory;
@@ -126,7 +128,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/national-insurance-number',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\DocumentCheckController::class,
                                 'action' => 'nationalInsuranceNumber',
                             ],
                         ],
@@ -136,7 +138,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/driving-licence-number',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\DocumentCheckController::class,
                                 'action' => 'drivingLicenceNumber',
                             ],
                         ],
@@ -146,7 +148,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/passport-number',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\DocumentCheckController::class,
                                 'action' => 'passportNumber',
                             ],
                         ],
@@ -311,46 +313,6 @@ return [
                             ],
                         ],
                     ],
-                    'cp_national_insurance_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/national-insurance-number',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'nationalInsuranceNumber',
-                            ],
-                        ],
-                    ],
-                    'cp_driving_licence_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/driving-licence-number',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'drivingLicenceNumber',
-                            ],
-                        ],
-                    ],
-                    'cp_passport_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/passport-number',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'passportNumber',
-                            ],
-                        ],
-                    ],
-                    'cp_id_verify_questions' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/id-verify-questions',
-                            'defaults' => [
-                                'controller' => Controller\KbvController::class,
-                                'action' => 'idVerifyQuestions',
-                            ],
-                        ],
-                    ],
                     'cp_identity_check_passed' => [
                         'type' => Segment::class,
                         'options' => [
@@ -417,16 +379,6 @@ return [
                             'route' => '/:uuid/cp/remove-lpa/:lpa',
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
-                                'action' => 'removeLpa',
-                            ],
-                        ],
-                    ],
-                    'po_remove_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/remove-lpa/:lpa',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'removeLpa',
                             ],
                         ],
@@ -581,6 +533,26 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_identity_check_passed' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/identity-check-passed',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'identityCheckPassed',
+                            ],
+                        ],
+                    ],
+                    'voucher_identity_check_failed' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/identity-check-failed',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'identityCheckFailed',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -589,7 +561,8 @@ return [
         'factories' => [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
-            Controller\VouchingFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
+            Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,

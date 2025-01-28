@@ -17,7 +17,6 @@ use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
-use Application\Forms\PassportDateCp;
 use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
@@ -59,7 +58,7 @@ class CPFlowController extends AbstractActionController
         ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDateCp::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
         $view->setVariable('date_sub_form', $dateSubForm);
 
@@ -155,9 +154,6 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
@@ -294,9 +290,9 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(ConfirmAddress::class);
 
         $routes = [
-            'NATIONAL_INSURANCE_NUMBER' => 'root/cp_national_insurance_number',
-            'DRIVING_LICENCE' => 'root/cp_driving_licence_number',
-            'PASSPORT' => 'root/cp_passport_number',
+            'NATIONAL_INSURANCE_NUMBER' => 'root/national_insurance_number',
+            'DRIVING_LICENCE' => 'root/driving_licence_number',
+            'PASSPORT' => 'root/passport_number',
         ];
 
         /**
@@ -334,128 +330,6 @@ class CPFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/cp/confirm_address_match');
     }
 
-    public function nationalInsuranceNumberAction(): ViewModel
-    {
-        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $view->setVariable('uuid', $uuid);
-
-        $form = $this->createForm(NationalInsuranceNumber::class);
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
-        $view->setVariable('form', $form);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
-                $uuid,
-                $form,
-                $templates
-            );
-            $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::NationalInsuranceNumber->value);
-
-            return $view->setTemplate($template);
-        }
-
-        return $view->setTemplate($templates['default']);
-    }
-
-    public function drivingLicenceNumberAction(): ViewModel
-    {
-        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $view->setVariable('uuid', $uuid);
-
-        $form = $this->createForm(DrivingLicenceNumber::class);
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
-        $view->setVariable('form', $form);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formProcessorResponseDto = $this->formProcessorHelper->processDrivingLicenceForm(
-                $uuid,
-                $form,
-                $templates
-            );
-            $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::DrivingLicenseNumber->value);
-
-            return $view->setTemplate($template);
-        }
-
-        return $view->setTemplate($templates['default']);
-    }
-
-    public function passportNumberAction(): ViewModel
-    {
-        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $view->setVariable('uuid', $uuid);
-
-        $form = $this->createForm(PassportNumber::class);
-        $dateSubForm = $this->createForm(PassportDate::class);
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
-        $view->setVariable('form', $form);
-        $view->setVariable('date_sub_form', $dateSubForm);
-        $view->setVariable('details_open', false);
-
-        if ($this->getRequest()->isPost() && $form->isValid()) {
-            $formData = $this->getRequest()->getPost();
-            $data = $formData->toArray();
-            $view->setVariable('passport', $data['passport']);
-
-            if (array_key_exists('check_button', $formData->toArray())) {
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $dateSubForm,
-                    $templates
-                );
-            } else {
-                $view->setVariable(
-                    'passport_indate',
-                    array_key_exists('inDate', $data) ?
-                        ucwords($data['inDate']) :
-                        'no'
-                );
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportForm(
-                    $uuid,
-                    $form,
-                    $templates
-                );
-            }
-
-            $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethodEnum::PassportNumber->value);
-
-            return $view->setTemplate($template);
-        }
-
-        return $view->setTemplate($templates['default']);
-    }
-
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
@@ -476,14 +350,14 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
              */
             $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                /**
+                 * @psalm-suppress PossiblyNullArrayAccess
+                 */
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
         }
 

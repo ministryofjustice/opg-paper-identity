@@ -11,10 +11,11 @@ use Application\Enums\LpaTypes;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\IdMethod;
-use Application\Forms\PassportDatePo;
+use Application\Forms\PassportDate;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -22,6 +23,7 @@ use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -34,6 +36,7 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
+        private readonly string $siriusPublicUrl,
         private readonly array $config,
     ) {
     }
@@ -42,7 +45,7 @@ class PostOfficeFlowController extends AbstractActionController
     {
         $templates = ['default' => 'application/pages/post_office/post_office_documents'];
         $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDatePo::class);
+        $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
         $view = new ViewModel();
 
@@ -292,6 +295,13 @@ class PostOfficeFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
 
+        $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+
+        $view->setVariables([
+            'details_data', $detailsData,
+            'sirius_url' => $siriusUrl
+        ]);
+
         return $view->setTemplate('application/pages/post_office/what_happens_next');
     }
 
@@ -303,5 +313,15 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
+    }
+
+    public function removeLpaAction(): Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpa = $this->params()->fromRoute("lpa");
+
+        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
+
+        return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
     }
 }
