@@ -253,4 +253,26 @@ describe("Identify a Donor", () => {
 
     cy.contains(".moj-banner", "Identity check failed");
   });
+
+  it("handles 2 LPAs", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+    cy.contains("How will you confirm your identity?");
+    cy.get("label").contains("National insurance number").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Do the details match the ID document?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("Remove").click();
+
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Remove").should('not.exist');
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("National insurance number");
+  });
+
 });
