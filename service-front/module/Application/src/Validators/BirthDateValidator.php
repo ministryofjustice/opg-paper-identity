@@ -12,12 +12,14 @@ class BirthDateValidator extends AbstractValidator
     public const DATE_FORMAT = 'date_format';
     public const DATE_EMPTY = 'date_empty';
     public const DATE_18 = 'date_under_18';
+    public const DATE_FUTURE = 'date_future';
     public const EIGHTEEN_YEARS = '-18 year';
 
     protected array $messageTemplates = [
         self::DATE_FORMAT => 'The date needs to be a valid date.',
         self::DATE_EMPTY => 'The date cannot be empty.',
-        self::DATE_18 => 'Birth date cannot be under 18 years ago.'
+        self::DATE_18 => 'Birth date cannot be under 18 years ago.',
+        self::DATE_FUTURE => 'Date of birth must be in the past.'
     ];
 
     private function isRealDate(string $value): bool
@@ -48,9 +50,16 @@ class BirthDateValidator extends AbstractValidator
 
         // Check if the date is in valid format
         try {
-            new \DateTime($this->value);
+            $dateTime = new \DateTime($this->value);
         } catch (\Exception $exception) {
             $this->error(self::DATE_FORMAT);
+            return false;
+        }
+
+        // Check if the date is in the future
+        $currentDate = new \DateTime();
+        if ($dateTime > $currentDate) {
+            $this->error(self::DATE_FUTURE);
             return false;
         }
 
