@@ -65,6 +65,16 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    public static function fakeAddress(): array
+    {
+        return [
+            'line1' => '456 Pretend Road',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'United Kingdom',
+        ];
+    }
+
     public function returnOpgResponseData(array $overwrite = []): array
     {
         $base = [
@@ -565,7 +575,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/{$this->routes[$expectedRedirect]}");
     }
 
-    public function voucherDobRedirectData(): array
+    public static function voucherDobRedirectData(): array
     {
         return [
             [
@@ -579,7 +589,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 [
                     "firstName" => "firstName",
                     "lastName" => "lastName",
-                    "address" => $this->getFakeAddress(),
+                    "address" => self::fakeAddress(),
                 ],
                 'manualAddress'
             ]
@@ -1040,7 +1050,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
     }
 
-    public function confirmDonorsRedirectData(): array
+    public static function confirmDonorsRedirectData(): array
     {
         return [
             [

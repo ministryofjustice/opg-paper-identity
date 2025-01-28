@@ -8,6 +8,7 @@ use Application\Services\SiriusApiService;
 use Application\Enums\SiriusDocument;
 use GuzzleHttp\Client;
 use Laminas\Http\Request;
+use Laminas\Stdlib\RequestInterface;
 use PhpPact\Consumer\InteractionBuilder;
 use PhpPact\Consumer\Matcher\Matcher;
 use PhpPact\Consumer\Model\ConsumerRequest;
@@ -236,7 +237,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             /**
              * @return Lpa
              */
-            public function getLpaByUid(string $uid, Request $request): array
+            public function getLpaByUid(string $uid, Request|RequestInterface $request): array
             {
                 return ['opg.poas.sirius' => [
                     'uId' => 'M-0000-0000-0000',

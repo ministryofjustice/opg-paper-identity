@@ -451,9 +451,6 @@ class VouchingFlowController extends AbstractActionController
 
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-            * @psalm-suppress ArgumentTypeCoercion
-            */
             $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);

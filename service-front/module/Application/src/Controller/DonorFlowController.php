@@ -217,9 +217,6 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('lpa_count', count($detailsData['lpas']));
 
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             if (! empty($lpasData['opg.poas.lpastore'])) {
@@ -305,9 +302,6 @@ class DonorFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
