@@ -344,7 +344,6 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('service_availability', $serviceAvailability);
 
         $view->setVariable('details_data', $detailsData);
-        echo json_encode($detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
 
