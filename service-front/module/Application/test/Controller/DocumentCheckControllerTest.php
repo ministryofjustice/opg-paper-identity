@@ -110,12 +110,13 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->method('processTemplate')
                 ->willReturn('application\/pages\/national_insurance_number_success');
         }
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('updateCaseSetDocumentComplete')
-            ->with($this->uuid, 'NATIONAL_INSURANCE_NUMBER');
+        if ($validity === 'PASS') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('updateCaseSetDocumentComplete')
+                ->with($this->uuid, 'NATIONAL_INSURANCE_NUMBER');
+        }
 
         $this->dispatch("/$this->uuid/national-insurance-number", 'POST', [
             'nino' => 'NP 11 22 33 C',
@@ -233,11 +234,13 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->willReturn('application\/pages\/driving_licence_number_success');
         }
 
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('updateCaseSetDocumentComplete')
-            ->with($this->uuid, 'DRIVING_LICENCE');
+        if ($validity === 'PASS') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('updateCaseSetDocumentComplete')
+                ->with($this->uuid, 'DRIVING_LICENCE');
+        }
 
         $this->dispatch("/$this->uuid/driving-licence-number", 'POST', [
             'dln' => 'MORGA657054SM9IJ',
@@ -371,11 +374,13 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->willReturn('application\/pages\/passport_number_success');
         }
 
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('updateCaseSetDocumentComplete')
-            ->with($this->uuid, 'PASSPORT');
+        if ($validity === 'PASS') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('updateCaseSetDocumentComplete')
+                ->with($this->uuid, 'PASSPORT');
+        }
 
         $this->dispatch("/$this->uuid/passport-number", 'POST', [
             'passport' => '123456785',

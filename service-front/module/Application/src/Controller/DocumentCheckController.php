@@ -53,17 +53,18 @@ class DocumentCheckController extends AbstractActionController
                 $form,
                 $templates
             );
-
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
-                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            }
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
 
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
+            } else {
+                $template = $templates['fail'];
+            }
             return $view->setTemplate($template);
         }
-        return $view->setTemplate($templates['default']);
+        return $view->setTemplate($template);
     }
 
     public function drivingLicenceNumberAction(): ViewModel
@@ -91,17 +92,18 @@ class DocumentCheckController extends AbstractActionController
                 $form,
                 $templates
             );
-
             $view->setVariables($formProcessorResponseDto->getVariables());
-            $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
-            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
-                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-            }
-            $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenseNumber->value);
 
+            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenseNumber->value);
+            } else {
+                $template = $templates['fail'];
+            }
             return $view->setTemplate($template);
         }
-        return $view->setTemplate($templates['default']);
+        return $view->setTemplate($template);
     }
 
     public function passportNumberAction(): ViewModel
@@ -149,11 +151,16 @@ class DocumentCheckController extends AbstractActionController
                         array_key_exists('inDate', $data) ? ucwords($data['inDate']) : 'no'
                     );
 
-                    $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
+                    $view->setVariables($formProcessorResponseDto->getVariables());
+
                     if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                        $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                         $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
+                        $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
+                    } else {
+                        $template = $templates['fail'];
                     }
-                    $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
+                    return $view->setTemplate($template);
                 }
             }
             if (isset($formProcessorResponseDto)) {
