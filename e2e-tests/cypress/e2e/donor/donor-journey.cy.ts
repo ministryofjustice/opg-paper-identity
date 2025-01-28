@@ -183,7 +183,7 @@ describe("Identify a Donor", () => {
     cy.selectKBVAnswer({ correct: false });
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains(".moj-banner", "Identity check failed");
+    cy.contains(".moj-banner", "Identity check was not successful.");
   });
 
   it("passes on STOP or REFER if you get four out of four KBVs right", () => {
@@ -251,7 +251,7 @@ describe("Identify a Donor", () => {
     cy.selectKBVAnswer({ correct: true });
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains(".moj-banner", "Identity check failed");
+    cy.contains(".moj-banner", "Identity check was not successful.");
   });
 
   it("handles 2 LPAs", () => {
