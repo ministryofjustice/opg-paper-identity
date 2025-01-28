@@ -15,6 +15,7 @@ use Application\Forms\PassportDate;
 use Application\Forms\PostOfficeAddress;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -22,6 +23,7 @@ use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -311,5 +313,15 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
+    }
+
+    public function removeLpaAction(): Response
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $lpa = $this->params()->fromRoute("lpa");
+
+        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
+
+        return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
     }
 }

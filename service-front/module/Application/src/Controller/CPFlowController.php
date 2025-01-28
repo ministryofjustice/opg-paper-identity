@@ -154,9 +154,6 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
@@ -353,14 +350,14 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-             * @psalm-suppress ArgumentTypeCoercion
-             */
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
             /**
              * @psalm-suppress PossiblyNullArrayAccess
              */
             $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                /**
+                 * @psalm-suppress PossiblyNullArrayAccess
+                 */
                 $lpasData['opg.poas.lpastore']['donor']['lastName'];
         }
 
