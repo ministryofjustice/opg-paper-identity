@@ -260,17 +260,14 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                // Check if the user is over 100 years old
                 $birthDate = strtotime($dateOfBirth);
                 $maxBirthDate = strtotime('-100 years', time());
 
-                // Check if the birth date is more than 100 years ago
                 if ($birthDate < $maxBirthDate) {
                     // Check if the user has accepted the warning
                     $warningAccepted = $this->getRequest()->getPost('dob_warning_100_accepted') ?? false;
 
                     if ($warningAccepted !== false) {
-                        // Allow submission if the warning was accepted
                         try {
                             $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
                             return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
@@ -288,7 +285,6 @@ class CPFlowController extends AbstractActionController
                         $view->setVariable('displaying_dob_100_warning', true);
                     }
                 } else {
-                    // If not over 100, process as normal
                     try {
                         $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
                         return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);

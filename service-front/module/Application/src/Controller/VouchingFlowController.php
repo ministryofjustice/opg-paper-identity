@@ -276,12 +276,10 @@ class VouchingFlowController extends AbstractActionController
                 if ($match !== false) {
                     $view->setVariable('match', $match);
                 } else {
-                    // Check if the user is over 100 years old
                     $birthDate = strtotime($dateOfBirth);
                     $maxBirthDate = strtotime('-100 years', time());
 
                     if ($birthDate < $maxBirthDate) {
-                        // Check if the user has accepted the warning
                         $warningAccepted = $this->getRequest()->getPost('dob_warning_100_accepted') ?? false;
 
                         if ($warningAccepted != false) {
