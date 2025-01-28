@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Validators;
 
-use GuzzleHttp\Promise\Is;
 use Laminas\Validator\AbstractValidator;
 
 class PostcodeValidator extends AbstractValidator
