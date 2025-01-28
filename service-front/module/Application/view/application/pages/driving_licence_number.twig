@@ -79,7 +79,7 @@
                     </h2>
                 </legend>
                 {% if form.get('inDate').messages %}
-                    <p id="dln-error" class="govuk-error-message">
+                    <p id="inDate-error" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
                         {{ form.get('inDate').messages | join(', ', ' and ') }}
                     </p>
@@ -99,11 +99,24 @@
             </fieldset>
         </div>
 
+        <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                <span class="govuk-visually-hidden">Warning</span>
+                Ensure the details entered are correct before continuing
+            </strong>
+        </div>
         <div class="govuk-button-group">
             <button class="govuk-button">Continue</button>
 
             {% if details_data.personType == 'certificateProvider' %}
                 <a href="./how-will-cp-confirm" role="button" draggable="false"
+                    class="govuk-button govuk-button--secondary"
+                    data-module="govuk-button">
+                    Try a different method
+                </a>
+            {% elseif details_data.personType == 'voucher' %}
+                <a href="./vouching/how-will-you-confirm" role="button" draggable="false"
                     class="govuk-button govuk-button--secondary"
                     data-module="govuk-button">
                     Try a different method

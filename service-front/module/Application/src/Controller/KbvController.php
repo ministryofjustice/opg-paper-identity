@@ -35,6 +35,9 @@ class KbvController extends AbstractActionController
         if ($detailsData['personType'] == 'certificateProvider') {
             $passRoute = "root/cp_identity_check_passed";
             $failRoute = "root/cp_identity_check_failed";
+        } elseif ($detailsData['personType'] == 'voucher') {
+            $passRoute = "root/voucher_identity_check_passed";
+            $failRoute = "root/voucher_identity_check_failed";
         } else {
             $passRoute = "root/identity_check_passed";
             $failRoute = "root/identity_check_failed";
