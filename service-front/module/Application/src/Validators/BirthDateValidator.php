@@ -17,9 +17,9 @@ class BirthDateValidator extends AbstractValidator
     public const EIGHTEEN_YEARS = '-18 year';
 
     protected array $messageTemplates = [
-        self::DATE_FORMAT => 'The date needs to be a valid date.',
-        self::DATE_EMPTY => 'The date cannot be empty.',
-        self::DATE_18 => 'Birth date cannot be under 18 years ago.',
+        self::DATE_FORMAT => 'Date of birth must be a valid date',
+        self::DATE_EMPTY => 'Enter their date of birth',
+        self::DATE_18 => 'The person must be 18 years or older.',
     ];
 
     public function isValid($value): bool
