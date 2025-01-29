@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.337.2",
+            "version": "3.338.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "f885dd803a257da9d54e72a4750bba73e1196aee"
+                "reference": "20f57e432a4696054598921e24734834ed034f5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f885dd803a257da9d54e72a4750bba73e1196aee",
-                "reference": "f885dd803a257da9d54e72a4750bba73e1196aee",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/20f57e432a4696054598921e24734834ed034f5e",
+                "reference": "20f57e432a4696054598921e24734834ed034f5e",
                 "shasum": ""
             },
             "require": {
@@ -79,31 +79,31 @@
                 "ext-json": "*",
                 "ext-pcre": "*",
                 "ext-simplexml": "*",
-                "guzzlehttp/guzzle": "^6.5.8 || ^7.4.5",
-                "guzzlehttp/promises": "^1.4.0 || ^2.0",
-                "guzzlehttp/psr7": "^1.9.1 || ^2.4.5",
-                "mtdowling/jmespath.php": "^2.6",
-                "php": ">=7.2.5",
-                "psr/http-message": "^1.0 || ^2.0"
+                "guzzlehttp/guzzle": "^7.4.5",
+                "guzzlehttp/promises": "^2.0",
+                "guzzlehttp/psr7": "^2.4.5",
+                "mtdowling/jmespath.php": "^2.8.0",
+                "php": ">=8.1",
+                "psr/http-message": "^2.0"
             },
             "require-dev": {
                 "andrewsville/php-token-reflection": "^1.4",
                 "aws/aws-php-sns-message-validator": "~1.0",
                 "behat/behat": "~3.0",
-                "composer/composer": "^1.10.22",
+                "composer/composer": "^2.7.8",
                 "dms/phpunit-arraysubset-asserts": "^0.4.0",
                 "doctrine/cache": "~1.4",
                 "ext-dom": "*",
                 "ext-openssl": "*",
                 "ext-pcntl": "*",
                 "ext-sockets": "*",
-                "nette/neon": "^2.3",
                 "paragonie/random_compat": ">= 2",
                 "phpunit/phpunit": "^5.6.3 || ^8.5 || ^9.5",
-                "psr/cache": "^1.0 || ^2.0 || ^3.0",
-                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0",
-                "sebastian/comparator": "^1.2.3 || ^4.0",
-                "yoast/phpunit-polyfills": "^1.0"
+                "psr/cache": "^2.0 || ^3.0",
+                "psr/simple-cache": "^2.0 || ^3.0",
+                "sebastian/comparator": "^1.2.3 || ^4.0 || ^5.0",
+                "symfony/filesystem": "^v6.4.0 || ^v7.1.0",
+                "yoast/phpunit-polyfills": "^2.0"
             },
             "suggest": {
                 "aws/aws-php-sns-message-validator": "To validate incoming SNS notifications",
@@ -152,11 +152,11 @@
                 "sdk"
             ],
             "support": {
-                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
+                "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.337.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.338.1"
             },
-            "time": "2025-01-17T19:10:04+00:00"
+            "time": "2025-01-23T19:07:00+00:00"
         },
         {
             "name": "brick/math",
@@ -719,16 +719,16 @@
         },
         {
             "name": "laminas/laminas-cache",
-            "version": "3.12.2",
+            "version": "3.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache.git",
-                "reference": "f99d10dd1f13d5163a924f8561e9dca3d27d8ad2"
+                "reference": "8225b16d03bbff2ecf2bd5a4f38c39ca47389e50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache/zipball/f99d10dd1f13d5163a924f8561e9dca3d27d8ad2",
-                "reference": "f99d10dd1f13d5163a924f8561e9dca3d27d8ad2",
+                "url": "https://api.github.com/repos/laminas/laminas-cache/zipball/8225b16d03bbff2ecf2bd5a4f38c39ca47389e50",
+                "reference": "8225b16d03bbff2ecf2bd5a4f38c39ca47389e50",
                 "shasum": ""
             },
             "require": {
@@ -736,7 +736,7 @@
                 "laminas/laminas-eventmanager": "^3.4",
                 "laminas/laminas-servicemanager": "^3.21",
                 "laminas/laminas-stdlib": "^3.6",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
                 "psr/cache": "^1.0",
                 "psr/clock": "^1.0",
                 "psr/simple-cache": "^1.0",
@@ -816,26 +816,26 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-06-14T13:39:14+00:00"
+            "time": "2025-01-21T12:32:41+00:00"
         },
         {
             "name": "laminas/laminas-cache-storage-adapter-apcu",
-            "version": "2.5.0",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cache-storage-adapter-apcu.git",
-                "reference": "7b857ceb93a177d1a5de81c7f1e647ea1e7ca6e7"
+                "reference": "1d1f90d7783f8c57b068c270f32e313bd88249aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-apcu/zipball/7b857ceb93a177d1a5de81c7f1e647ea1e7ca6e7",
-                "reference": "7b857ceb93a177d1a5de81c7f1e647ea1e7ca6e7",
+                "url": "https://api.github.com/repos/laminas/laminas-cache-storage-adapter-apcu/zipball/1d1f90d7783f8c57b068c270f32e313bd88249aa",
+                "reference": "1d1f90d7783f8c57b068c270f32e313bd88249aa",
                 "shasum": ""
             },
             "require": {
                 "ext-apcu": "^5.1.10",
                 "laminas/laminas-cache": "^3.12.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
             },
             "provide": {
                 "laminas/laminas-cache-storage-implementation": "1.0"
@@ -843,14 +843,14 @@
             "require-dev": {
                 "laminas/laminas-cache-storage-adapter-test": "^2.0",
                 "laminas/laminas-coding-standard": "~2.5.0",
-                "psalm/plugin-phpunit": "^0.18.0",
+                "psalm/plugin-phpunit": "^0.19.0",
                 "vimeo/psalm": "^5.18"
             },
             "type": "library",
             "extra": {
                 "laminas": {
-                    "config-provider": "Laminas\\Cache\\Storage\\Adapter\\Apcu\\ConfigProvider",
-                    "module": "Laminas\\Cache\\Storage\\Adapter\\Apcu"
+                    "module": "Laminas\\Cache\\Storage\\Adapter\\Apcu",
+                    "config-provider": "Laminas\\Cache\\Storage\\Adapter\\Apcu\\ConfigProvider"
                 }
             },
             "autoload": {
@@ -880,7 +880,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-01-08T08:58:18+00:00"
+            "time": "2025-01-23T16:26:22+00:00"
         },
         {
             "name": "laminas/laminas-component-installer",
@@ -7163,16 +7163,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.11.2",
+            "version": "3.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079"
+                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/1368f4a58c3c52114b86b1abe8f4098869cb0079",
-                "reference": "1368f4a58c3c52114b86b1abe8f4098869cb0079",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
+                "reference": "ba05f990e79cbe69b9f35c8c1ac8dca7eecc3a10",
                 "shasum": ""
             },
             "require": {
@@ -7237,9 +7237,13 @@
                 {
                     "url": "https://opencollective.com/php_codesniffer",
                     "type": "open_collective"
+                },
+                {
+                    "url": "https://thanks.dev/phpcsstandards",
+                    "type": "thanks_dev"
                 }
             ],
-            "time": "2024-12-11T16:04:26+00:00"
+            "time": "2025-01-23T17:04:15+00:00"
         },
         {
             "name": "symfony/console",

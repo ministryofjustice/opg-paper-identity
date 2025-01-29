@@ -65,6 +65,16 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    public static function fakeAddress(): array
+    {
+        return [
+            'line1' => '456 Pretend Road',
+            'town' => 'Faketown',
+            'postcode' => 'FA2 3KE',
+            'country' => 'United Kingdom',
+        ];
+    }
+
     public function returnOpgResponseData(array $overwrite = []): array
     {
         $base = [
@@ -482,7 +492,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobPage(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
+        $mockResponseDataIdDetails["firstName"] = "firstName";
+        $mockResponseDataIdDetails["lastName"] = "lastName";
 
         $this
             ->opgApiServiceMock
@@ -546,8 +561,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects($this->exactly(2))
             ->method("checkMatch")
             ->willReturnMap([
-                [["lpaData" => "one"], "firstName", "lastName", "1980-1-1", false],
-                [["lpaData" => "two"], "firstName", "lastName", "1980-1-1", false]
+                [["lpaData" => "one"], "firstName", "lastName", "1980-01-01", false],
+                [["lpaData" => "two"], "firstName", "lastName", "1980-01-01", false]
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
@@ -560,7 +575,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/{$this->routes[$expectedRedirect]}");
     }
 
-    public function voucherDobRedirectData(): array
+    public static function voucherDobRedirectData(): array
     {
         return [
             [
@@ -574,7 +589,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 [
                     "firstName" => "firstName",
                     "lastName" => "lastName",
-                    "address" => $this->getFakeAddress(),
+                    "address" => self::fakeAddress(),
                 ],
                 'manualAddress'
             ]
@@ -632,8 +647,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobUnderageError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -655,8 +672,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobEmptyError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -678,8 +697,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testVoucherDobInvalidError(): void
     {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
+        $mockResponseDataIdDetails = $this->returnOpgResponseData([
+            "firstName" => "firstName",
+            "lastName" => "lastName",
+        ]);
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -1029,7 +1050,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
     }
 
-    public function confirmDonorsRedirectData(): array
+    public static function confirmDonorsRedirectData(): array
     {
         return [
             [
