@@ -46,11 +46,14 @@ class ServiceAvailabilityHelperTest extends TestCase
                     'donor' => [
                         'NODECISION' => 'The donor cannot ID over the phone due to a lack of ' .
                             'available security questions or failure to answer them correctly on a previous occasion.',
-                        'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack ' .
-                            'of available information from Experian or a failure to answer the security questions ' .
-                            'correctly on a previous occasion.',
-                        'LOCKED' => 'The donor cannot prove their identity over the phone because they have ' .
-                            'tried before and their details did not match the document provided.'
+                        'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
+                            'available information from Experian or a failure to answer the security questions correctly ' .
+                            'on a previous occasion.',
+                        'LOCKED_ID_SUCCESS' => 'The donor has already proved their identity over the ' .
+                            'phone with a valid document',
+                        'LOCKED' => 'The donor cannot prove their identity over the phone because they have tried before ' .
+                            'and their details did not match the document provided.',
+                        'LOCKED_SUCCESS' => 'This case is complete.',
                     ],
                     'certificateProvider' => [
                         'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
@@ -59,8 +62,11 @@ class ServiceAvailabilityHelperTest extends TestCase
                         'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
                             'available information from Experian or a failure to answer the security ' .
                             'questions correctly on a previous occasion.',
-                        'LOCKED' => 'The certificate provider cannot prove their identity over the phone ' .
-                            'because they have tried before and their details did not match the document provided.'
+                        'LOCKED_ID_SUCCESS' => 'The certificate provider has already proved their identity over the ' .
+                            'phone with a valid document',
+                        'LOCKED' => 'The certificate provider cannot prove their identity over the phone because they have ' .
+                            'tried before and their details did not match the document provided.',
+                        'LOCKED_SUCCESS' => 'This case is complete.',
                     ],
                     'vouching' => [
                         'NODECISION' => 'The person vouching cannot ID over the phone due to a lack of ' .
@@ -69,8 +75,11 @@ class ServiceAvailabilityHelperTest extends TestCase
                         'STOP' => 'The person vouching cannot ID over the phone due to a lack of ' .
                             'available information from Experian or a failure to answer the security ' .
                             'questions correctly on a previous occasion.',
-                        'LOCKED' => 'The person vouching cannot prove their identity over the phone because they ' .
-                            'have tried before and their details did not match the document provided.',
+                        'LOCKED_ID_SUCCESS' => 'The person vouching has already proved their identity over the ' .
+                            'phone with a valid document',
+                        'LOCKED' => 'The person vouching cannot prove their identity over the phone because they have ' .
+                            'tried before and their details did not match the document provided.',
+                        'LOCKED_SUCCESS' => 'This case is complete.',
                     ]
                 ],
             ]
@@ -170,6 +179,22 @@ class ServiceAvailabilityHelperTest extends TestCase
             ]
         ];
 
+        $expectedDocSuccess = [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => false,
+            ],
+            'messages' => [
+                'banner' => 'The donor has already proved their identity over the ' .
+                    'phone with a valid document',
+            ]
+        ];
+
         $case = [
             "id" => "4d41c926-d11c-4341-8500-b36a666a35dd",
             "idRoute" => "TELEPHONE",
@@ -185,18 +210,18 @@ class ServiceAvailabilityHelperTest extends TestCase
                 "id_route" => "TELEPHONE",
                 "id_country" => "GBR"
             ],
-            "caseProgress" => [
-                "abandonedFlow" => null,
-                "docCheck" => [
-                    "idDocument" => "DRIVING_LICENCE",
-                    "state" => true
-                ],
-                "kbvs" => null,
-                "fraudScore" => [
-                    "decision" => "ACCEPT",
-                    "score" => 265
-                ]
-            ],
+//            "caseProgress" => [
+//                "abandonedFlow" => null,
+//                "docCheck" => [
+//                    "idDocument" => "DRIVING_LICENCE",
+//                    "state" => null
+//                ],
+//                "kbvs" => null,
+//                "fraudScore" => [
+//                    "decision" => "ACCEPT",
+//                    "score" => 265
+//                ]
+//            ],
             "claimedIdentity" => [
                 "dob" => "1986-09-03",
                 "firstName" => "Lee",
@@ -239,6 +264,22 @@ class ServiceAvailabilityHelperTest extends TestCase
             ]
         ]);
 
+        $caseDocChecked = array_merge($case, [
+            "caseProgress" => [
+                "abandonedFlow" => null,
+                "docCheck" => [
+                    "idDocument" => "DRIVING_LICENCE",
+                    "state" => true
+                ],
+                "kbvs" => null,
+                "fraudScore" => [
+                    "decision" => "ACCEPT",
+                    "score" => 265
+                ]
+            ],
+        ]);
+
+
         return [
             [
                 $config,
@@ -263,6 +304,12 @@ class ServiceAvailabilityHelperTest extends TestCase
                 $caseKbvFail,
                 $services,
                 $expectedKbvFail
+            ],
+            [
+                $config,
+                $caseDocChecked,
+                $services,
+                $expectedDocSuccess
             ],
             [
                 $config,

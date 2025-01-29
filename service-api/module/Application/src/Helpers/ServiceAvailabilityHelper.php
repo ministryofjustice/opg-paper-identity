@@ -13,6 +13,8 @@ class ServiceAvailabilityHelper
     public const LOCKED = 'LOCKED';
     public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
 
+    public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
+
     protected array $availableServices = [];
 
     protected array $processedMessages = [];
@@ -124,6 +126,15 @@ class ServiceAvailabilityHelper
 
     public function processServicesWithCaseData(): array
     {
+        if ($this->case->caseProgress?->docCheck?->state === true) {
+            $this->processedMessages['banner'] =
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_ID_SUCCESS];
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
         if ($this->case->caseProgress?->kbvs?->result === false) {
             $this->processedMessages['banner'] =
                 $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
@@ -138,9 +149,13 @@ class ServiceAvailabilityHelper
                 $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_SUCCESS];
 
             $this->setServiceFlags(false, [
+                'NATIONAL_INSURANCE_NUMBER',
+                'DRIVING_LICENCE',
+                'PASSPORT',
                 'POST_OFFICE',
                 'EXPERIAN',
                 'VOUCHING',
+                'COURT_OF_PROTECTION'
             ]);
 
             return $this->toArray();
