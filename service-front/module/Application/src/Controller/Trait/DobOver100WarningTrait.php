@@ -24,9 +24,7 @@ trait DobOver100WarningTrait
 
             if ($warningAccepted) {
                 // Execute the save callback if provided
-                if (is_callable($saveCallback)) {
-                    call_user_func($saveCallback);
-                }
+                call_user_func($saveCallback);
                 return true;
             }
 
@@ -34,9 +32,7 @@ trait DobOver100WarningTrait
             return false;
         }
 
-        if (is_callable($saveCallback)) {
-            call_user_func($saveCallback);
-        }
+        call_user_func($saveCallback);
         return true;
     }
 }

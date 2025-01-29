@@ -260,8 +260,6 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                $dateOfBirth = $this->formProcessorHelper->processDateForm($params->toArray());
-
                 $proceed = $this->handleDobOver100Warning(
                     $dateOfBirth,
                     $this->getRequest(),
