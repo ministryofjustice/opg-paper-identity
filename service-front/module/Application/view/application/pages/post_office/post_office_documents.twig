@@ -142,6 +142,14 @@
             </div>
         </div>
         <input type="submit" class="govuk-button" value="Continue">
-        <a href="#" class="govuk-button govuk-button--secondary">Cancel</a>
+
+        {% if  details_data.personType == 'donor' %}
+            <a href="./how-will-donor-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
+        {% endif %}
+
+        {% if  details_data.personType == 'certificateProvider' %}
+            <a href="./cp/how-will-cp-confirm" class="govuk-button govuk-button--secondary">Cancel</a>
+        {% endif %}
+
     </form>
 {% endblock %}
