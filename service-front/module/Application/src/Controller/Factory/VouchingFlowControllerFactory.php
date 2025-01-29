@@ -6,10 +6,10 @@ namespace Application\Controller\Factory;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
-use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Helpers\AddDonorFormHelper;
+use Application\Helpers\FormProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -28,7 +28,6 @@ class VouchingFlowControllerFactory implements FactoryInterface
     ): VouchingFlowController {
         /** @var string $siriusPublicUrl */
         $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
-        $config = $container->get('Config');
 
         return new VouchingFlowController(
             $container->get(OpgApiServiceInterface::class),
@@ -37,7 +36,6 @@ class VouchingFlowControllerFactory implements FactoryInterface
             $container->get(VoucherMatchLpaActorHelper::class),
             $container->get(AddressProcessorHelper::class),
             $container->get(AddDonorFormHelper::class),
-            $config,
             $siriusPublicUrl,
         );
     }

@@ -6,7 +6,6 @@ namespace Application\Controller\Factory;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
-use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -28,7 +27,6 @@ class DonorFlowControllerFactory implements FactoryInterface
 
         return new DonorFlowController(
             $container->get(OpgApiServiceInterface::class),
-            $container->get(FormProcessorHelper::class),
             $container->get(SiriusApiService::class),
             $config,
             $siriusPublicUrl,

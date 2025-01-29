@@ -8,12 +8,8 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\IdMethod;
 use Application\Forms\FinishIDCheck;
-use Application\Forms\IdMethod as IdMethodForm;
-use Application\Forms\PassportDate;
-use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\PostOffice\Country;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -30,98 +26,12 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly LoggerInterface $logger,
     ) {
-    }
-
-    public function howWillDonorConfirmAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/how_will_the_donor_confirm'];
-        $uuid = $this->params()->fromRoute("uuid");
-        $view = new ViewModel();
-        $dateSubForm = $this->createForm(PassportDate::class);
-        $form = $this->createForm(IdMethodForm::class);
-
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-
-        $identityDocs = [];
-        foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability['data'][$key] === true) {
-                $identityDocs[$key] = $value;
-            }
-        }
-
-        $methods = [];
-        foreach (array_keys($this->config['opg_settings']['identity_methods']) as $key) {
-            if (array_key_exists($key, $serviceAvailability['data'])) {
-                /**
-                 * @psalm-suppress InvalidArrayOffset
-                 */
-                $methods[$key] = $serviceAvailability['data'][$key];
-            } else {
-                /**
-                 * @psalm-suppress InvalidArrayOffset
-                 */
-                $methods[$key] = true;
-            }
-        }
-
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view->setVariable('date_sub_form', $dateSubForm);
-        $view->setVariable('form', $form);
-        $view->setVariable('options_data', $identityDocs);
-        $view->setVariable('methods_data', $methods);
-        $view->setVariable('service_availability', $serviceAvailability);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost()->toArray();
-            if (array_key_exists('check_button', $formData)) {
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $dateSubForm,
-                    $templates
-                );
-                $view->setVariables($formProcessorResponseDto->getVariables());
-            } else {
-                if ($form->isValid()) {
-                    if ($formData['id_method'] == IdMethod::PostOffice->value) {
-                        $data = [
-                            'id_route' => 'POST_OFFICE',
-                        ];
-                        $this->opgApiService->updateIdMethodWithCountry(
-                            $uuid,
-                            $data
-                        );
-                        $returnRoute = "root/post_office_documents";
-                    } elseif ($formData['id_method'] == IdMethod::OnBehalf->value) {
-                        $returnRoute = "root/what_is_vouching";
-                    } else {
-                        $data = [
-                            'id_route' => 'TELEPHONE',
-                            'id_country' => Country::GBR->value,
-                            'id_method' => $formData['id_method']
-                        ];
-                        $this->opgApiService->updateIdMethodWithCountry(
-                            $uuid,
-                            $data
-                        );
-                        $returnRoute = "root/donor_details_match_check";
-                    }
-                    return $this->redirect()->toRoute($returnRoute, ['uuid' => $uuid]);
-                }
-            }
-        }
-
-        return $view->setTemplate($templates['default']);
     }
 
     public function whatIsVouchingAction(): ViewModel|Response
@@ -144,7 +54,7 @@ class DonorFlowController extends AbstractActionController
                     return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
                 }
             } else {
-                return $this->redirect()->toRoute("root/how_donor_confirms", ['uuid' => $uuid]);
+                return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
 
