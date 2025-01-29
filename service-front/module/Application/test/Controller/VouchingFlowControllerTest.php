@@ -561,8 +561,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects($this->exactly(2))
             ->method("checkMatch")
             ->willReturnMap([
-                [["lpaData" => "one"], "firstName", "lastName", "1980-1-1", false],
-                [["lpaData" => "two"], "firstName", "lastName", "1980-1-1", false]
+                [["lpaData" => "one"], "firstName", "lastName", "1980-01-01", false],
+                [["lpaData" => "two"], "firstName", "lastName", "1980-01-01", false]
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
