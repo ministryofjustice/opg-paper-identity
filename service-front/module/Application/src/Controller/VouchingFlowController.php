@@ -29,10 +29,11 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 use DateTime;
+use Application\Controller\Trait\DobOver100WarningTrait;
 
 class VouchingFlowController extends AbstractActionController
 {
-    use FormBuilder;
+    use FormBuilder, DobOver100WarningTrait;
 
     protected $plugins;
     private string $uuid;
@@ -276,38 +277,21 @@ class VouchingFlowController extends AbstractActionController
                 if ($match !== false) {
                     $view->setVariable('match', $match);
                 } else {
-                    $birthDate = strtotime($dateOfBirth);
-                    $maxBirthDate = strtotime('-100 years', time());
-
-                    if ($birthDate < $maxBirthDate) {
-                        $warningAccepted = $this->getRequest()->getPost('dob_warning_100_accepted') ?? false;
-
-                        if ($warningAccepted != false) {
-                            try {
-                                $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                                if (isset($detailsData["address"])) {
-                                    return $this->redirect()
-                                        ->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
-                                } else {
-                                    return $this->redirect()
-                                        ->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                    if ($form->isValid()) {
+                        $proceed = $this->handleDobOver100Warning(
+                            $dateOfBirth,
+                            $this->getRequest(),
+                            $view,
+                            function () use ($uuid, $dateOfBirth, $form) {
+                                try {
+                                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                                } catch (\Exception $exception) {
+                                    $form->setMessages(["There was an error saving the data"]);
                                 }
-                            } catch (\Exception $exception) {
-                                $form->setMessages(["There was an error saving the data"]);
                             }
-                        } else {
-                            // Show the warning if the user hasn't confirmed yet
-                            $form->setMessages([
-                                'date' => ['By continuing, you confirm that the certificate provider
-                                 is more than 100 years old.']
-                            ]);
+                        );
 
-                            // Include the hidden field that represents the user confirming CP is over 100 years old
-                            $view->setVariable('displaying_dob_100_warning', true);
-                        }
-                    } else {
-                        try {
-                            $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                        if ($proceed) {
                             if (isset($detailsData["address"])) {
                                 return $this->redirect()
                                     ->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
@@ -315,8 +299,6 @@ class VouchingFlowController extends AbstractActionController
                                 return $this->redirect()
                                     ->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
                             }
-                        } catch (\Exception $exception) {
-                            $form->setMessages(["There was an error saving the data"]);
                         }
                     }
                 }
@@ -331,7 +313,7 @@ class VouchingFlowController extends AbstractActionController
         } elseif (! empty($messages)) {
             $view->setVariable("date_problem", $messages);
         }
-        return $view->setTemplate('application/pages/vouching/what_is_the_voucher_dob');
+        return $view->setTemplate('application/pages/confirm_dob');
     }
 
     public function enterPostcodeAction(): ViewModel|Response

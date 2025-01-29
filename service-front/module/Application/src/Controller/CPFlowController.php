@@ -31,11 +31,11 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
-use Laminas\Form\Element;
+use Application\Controller\Trait\DobOver100WarningTrait;
 
 class CPFlowController extends AbstractActionController
 {
-    use FormBuilder;
+    use FormBuilder, DobOver100WarningTrait;
 
     protected $plugins;
     public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
@@ -248,7 +248,7 @@ class CPFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $templates = [
-            'default' => 'application/pages/cp/confirm_dob',
+            'default' => 'application/pages/confirm_dob',
         ];
         $uuid = $this->params()->fromRoute("uuid");
         $form = $this->createForm(BirthDate::class);
@@ -260,37 +260,23 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                $birthDate = strtotime($dateOfBirth);
-                $maxBirthDate = strtotime('-100 years', time());
+                $dateOfBirth = $this->formProcessorHelper->processDateForm($params->toArray());
 
-                if ($birthDate < $maxBirthDate) {
-                    // Check if the user has accepted the warning
-                    $warningAccepted = $this->getRequest()->getPost('dob_warning_100_accepted') ?? false;
-
-                    if ($warningAccepted !== false) {
+                $proceed = $this->handleDobOver100Warning(
+                    $dateOfBirth,
+                    $this->getRequest(),
+                    $view,
+                    function () use ($uuid, $dateOfBirth, $form) {
                         try {
                             $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                            return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
                         } catch (\Exception $exception) {
                             $form->setMessages(["There was an error saving the data"]);
                         }
-                    } else {
-                        // Show the warning if the user hasn't confirmed yet
-                        $form->setMessages([
-                            'date' => ['By continuing, you confirm that the certificate provider is more than
-                             100 years old.']
-                        ]);
+                    }
+                );
 
-                        // Include the hidden field that represents the user confirming CP is over 100 years old
-                        $view->setVariable('displaying_dob_100_warning', true);
-                    }
-                } else {
-                    try {
-                        $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                        return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
-                    } catch (\Exception $exception) {
-                        $form->setMessages(["There was an error saving the data"]);
-                    }
+                if ($proceed) {
+                    return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
                 }
             }
             $view->setVariable('form', $form);
@@ -307,6 +293,7 @@ class CPFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('include_fraud_id_check_info', true);
 
         return $view->setTemplate($templates['default']);
     }

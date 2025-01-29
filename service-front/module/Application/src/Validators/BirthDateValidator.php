@@ -56,6 +56,12 @@ class BirthDateValidator extends AbstractValidator
             return false;
         }
 
+        // Check if the date is a real valid date (no impossible dates - eg: 29th Feb, except for leap year)
+        if (! $this->isRealDate($value)) {
+            $this->error(self::DATE_FORMAT);
+            return false;
+        }
+
         // Check if the date is in the future
         $currentDate = new \DateTime();
         if ($dateTime > $currentDate) {
@@ -71,12 +77,6 @@ class BirthDateValidator extends AbstractValidator
         // If the birth date is less than 18 years ago, return an error
         if ($birthDate > $minBirthDate) {
             $this->error(self::DATE_18);
-            return false;
-        }
-
-        // Check if the date is a real valid date (no impossible dates - eg: 29th Feb, except for leap year)
-        if (! $this->isRealDate($value)) {
-            $this->error(self::DATE_FORMAT);
             return false;
         }
 

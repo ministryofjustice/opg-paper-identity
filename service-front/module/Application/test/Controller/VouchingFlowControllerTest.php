@@ -513,9 +513,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'GET');
-        $this->assertQuery('input#voucher-dob-day[value=01]');
-        $this->assertQuery('input#voucher-dob-month[value=01]');
-        $this->assertQuery('input#voucher-dob-year[value=1980]');
+        $this->assertQuery('input#dob-day[value=01]');
+        $this->assertQuery('input#dob-month[value=01]');
+        $this->assertQuery('input#dob-year[value=1980]');
     }
 
     /**
