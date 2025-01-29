@@ -10,6 +10,10 @@ class ServiceAvailabilityHelper
 {
     public const DECISION_STOP = 'STOP';
     public const DECISION_NODECISION = 'NODECISION';
+    public const LOCKED = 'LOCKED';
+    public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
+
+    public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
 
     protected array $availableServices = [];
 
@@ -108,17 +112,60 @@ class ServiceAvailabilityHelper
         }
     }
 
+    private function setServiceFlags(bool $flag, array $options = []): void
+    {
+        $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = $flag;
+        $this->availableServices['DRIVING_LICENCE'] = $flag;
+        $this->availableServices['PASSPORT'] = $flag;
+        $this->availableServices['EXPERIAN'] = $flag;
+
+        foreach ($options as $service) {
+            $this->availableServices[$service] = $flag;
+        }
+    }
+
     public function processServicesWithCaseData(): array
     {
+        if ($this->case->caseProgress?->docCheck?->state === true) {
+            $this->processedMessages['banner'] =
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_ID_SUCCESS];
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
+        if ($this->case->caseProgress?->kbvs?->result === false) {
+            $this->processedMessages['banner'] =
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
+        if ($this->case->caseProgress?->kbvs?->result === true) {
+            $this->processedMessages['banner'] =
+                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_SUCCESS];
+
+            $this->setServiceFlags(false, [
+                'NATIONAL_INSURANCE_NUMBER',
+                'DRIVING_LICENCE',
+                'PASSPORT',
+                'POST_OFFICE',
+                'EXPERIAN',
+                'VOUCHING',
+                'COURT_OF_PROTECTION'
+            ]);
+
+            return $this->toArray();
+        }
+
         if (
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
-            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION ||
-            $this->case->identityCheckPassed === false
+            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION
         ) {
-            $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = false;
-            $this->availableServices['DRIVING_LICENCE'] = false;
-            $this->availableServices['PASSPORT'] = false;
-            $this->availableServices['EXPERIAN'] = false;
+            $this->setServiceFlags(false);
 
             if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;

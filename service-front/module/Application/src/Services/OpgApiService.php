@@ -78,7 +78,7 @@ class OpgApiService implements OpgApiServiceInterface
                 ! $skipIdCheckPerformedCheck && ($response['identityCheckPassed'] === true ||
                     $response['identityCheckPassed'] === false)
             ) {
-                throw new OpgApiException('Identity check has already been performed');
+//                throw new OpgApiException('Identity check has already been performed');
             }
 
             $response['firstName'] = $response['claimedIdentity']['firstName'];

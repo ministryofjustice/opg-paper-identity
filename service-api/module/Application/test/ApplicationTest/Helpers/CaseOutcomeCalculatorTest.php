@@ -34,7 +34,7 @@ class CaseOutcomeCalculatorTest extends TestCase
         );
     }
 
-    public function testupdateSendIdentityCheck(): void
+    public function testUpdateSendIdentityCheck(): void
     {
 
         $caseData = CaseData::fromArray([
@@ -47,7 +47,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
                 'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
+                'notificationsAuthToken' => '00000000-0000-0000-0000-000000000000',
                 'notificationState' => '',
                 'state' => '',
                 'result' => false
