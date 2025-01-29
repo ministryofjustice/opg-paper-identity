@@ -33,7 +33,8 @@ use Application\Controller\Trait\DobOver100WarningTrait;
 
 class VouchingFlowController extends AbstractActionController
 {
-    use FormBuilder, DobOver100WarningTrait;
+    use FormBuilder;
+    use DobOver100WarningTrait;
 
     protected $plugins;
     private string $uuid;

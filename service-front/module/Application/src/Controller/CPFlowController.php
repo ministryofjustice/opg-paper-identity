@@ -35,7 +35,8 @@ use Application\Controller\Trait\DobOver100WarningTrait;
 
 class CPFlowController extends AbstractActionController
 {
-    use FormBuilder, DobOver100WarningTrait;
+    use FormBuilder;
+    use DobOver100WarningTrait;
 
     protected $plugins;
     public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';

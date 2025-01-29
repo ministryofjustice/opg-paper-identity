@@ -25,7 +25,7 @@ class BirthDateValidatorTest extends TestCase
     {
         $this->assertEquals($valid, $this->birthDateValidator->isValid($birthDate));
 
-        if (!$valid) {
+        if (! $valid) {
             $this->assertArrayHasKey($expectedErrorKey, $this->birthDateValidator->getMessages());
         }
     }
