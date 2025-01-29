@@ -7,6 +7,7 @@ namespace Application\Forms;
 use Application\Validators\BirthDateValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
+use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
@@ -23,6 +24,10 @@ class VoucherBirthDate
             BirthDateValidator::DATE_FORMAT => "Date of birth must be a valid date",
             BirthDateValidator::DATE_18  => "The person vouching must be 18 years or older."
         ]
+    ])]
+    // empty values are handled in the BirthDateValidator
+    #[Annotation\Validator(NotEmpty::class, options: [
+        'type' => NotEmpty::ALL & ~NotEmpty::STRING
     ])]
     public mixed $date;
     /**
