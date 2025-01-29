@@ -255,7 +255,10 @@ class PostOfficeFlowController extends AbstractActionController
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
-        if (array_key_exists($detailsData['idMethodIncludingNation']['id_method'], $optionsData)) {
+        if (
+            array_key_exists($detailsData['idMethodIncludingNation']['id_method'], $optionsData) &&
+            $detailsData['idMethodIncludingNation']['id_country'] === PostOfficeCountry::GBR->value
+        ) {
             $idMethodForDisplay = $optionsData[$detailsData['idMethodIncludingNation']['id_method']];
         } else {
             $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country'] ?? '');
