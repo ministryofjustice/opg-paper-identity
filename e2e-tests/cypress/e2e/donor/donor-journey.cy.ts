@@ -7,6 +7,8 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Do the details match the ID document?");
+
+    cy.contains("Edit the donor's details in Sirius").should('have.attr', 'href').and('include', 'lpa_details')
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Which LPAs should this identity check apply to?");
