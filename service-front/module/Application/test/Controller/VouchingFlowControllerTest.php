@@ -541,7 +541,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains(
-            'div[id=date_problem]',
+            'div[name=date_problem]',
             'Error:Enter their date of birth'
         );
     }
@@ -566,7 +566,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains(
-            'div[id=date_problem]',
+            'div[name=date_problem]',
             'Error:Date of birth must be a valid date'
         );
     }

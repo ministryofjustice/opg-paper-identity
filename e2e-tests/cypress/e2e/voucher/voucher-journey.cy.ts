@@ -54,13 +54,13 @@ describe("Voucher journey", () => {
         // voucher-dob
 
         // forces you to enter dob to continue
-        cy.get("[id=date_problem]").should("not.exist");
+        cy.get("[name=date_problem]").should("not.exist");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.get("[id=date_problem]").should("be.visible");
+        cy.get("[name=date_problem]").should("be.visible");
 
-        cy.get("[id=voucher-dob-day]").type("26");
-        cy.get("[id=voucher-dob-month]").type("05");
-        cy.get("[id=voucher-dob-year]").type("1991");
+        cy.get("[id=dob-day]").type("26");
+        cy.get("[id=dob-month]").type("05");
+        cy.get("[id=dob-year]").type("1991");
 
         cy.get(".govuk-button").contains("Continue").click();
 

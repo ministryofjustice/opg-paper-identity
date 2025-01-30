@@ -16,9 +16,9 @@ describe("Voucher journey will check details against actors on the LPA", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         // voucher-dob
-        cy.get("[id=voucher-dob-day]").type("03");
-        cy.get("[id=voucher-dob-month]").type("09");
-        cy.get("[id=voucher-dob-year]").type("1986");
+        cy.get("[id=dob-day]").type("03");
+        cy.get("[id=dob-month]").type("09");
+        cy.get("[id=dob-year]").type("1986");
         cy.get(".govuk-button").contains("Continue").click();
         cy.get("[name=donor_warning]");
 
@@ -38,9 +38,9 @@ describe("Voucher journey will check details against actors on the LPA", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         // voucher-dob
-        cy.get("[id=voucher-dob-day]").type("18");
-        cy.get("[id=voucher-dob-month]").type("09");
-        cy.get("[id=voucher-dob-year]").type("1960");
+        cy.get("[id=dob-day]").type("18");
+        cy.get("[id=dob-month]").type("09");
+        cy.get("[id=dob-year]").type("1960");
         cy.get(".govuk-button").contains("Continue").click();
         cy.get("[name=attorney_warning]");
 
@@ -60,7 +60,7 @@ describe("Voucher journey will check details against actors on the LPA", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         // on dob page
-        cy.get(".govuk-heading-xl").contains("What is their date of birth?")
+        cy.get(".govuk-fieldset__heading").contains("What is their date of birth?")
     });
 
     it("will stop you if you share address donor", () => {
