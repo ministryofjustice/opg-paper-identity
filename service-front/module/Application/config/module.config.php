@@ -8,11 +8,11 @@ use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
+use Application\Controller\Factory\HowConfirmControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
-use Application\Controller\IndexController;
 use Application\Enums\IdMethod;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
@@ -83,13 +83,13 @@ return [
                             ],
                         ],
                     ],
-                    'donor_id_check' => [
+                    'how_will_you_confirm' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-id-check',
+                            'route' => '/:uuid/how-will-you-confirm',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'donorIdCheck',
+                                'controller' => Controller\HowConfirmController::class,
+                                'action' => 'howWillYouConfirm',
                             ],
                         ],
                     ],
@@ -100,16 +100,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'donorLpaCheck',
-                            ],
-                        ],
-                    ],
-                    'how_donor_confirms' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/how-will-donor-confirm',
-                            'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'howWillDonorConfirm',
                             ],
                         ],
                     ],
@@ -250,16 +240,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeRouteNotAvailable',
-                            ],
-                        ],
-                    ],
-                    'cp_how_cp_confirms' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/how-will-cp-confirm',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'howWillCpConfirm',
                             ],
                         ],
                     ],
@@ -443,16 +423,6 @@ return [
                             ],
                         ],
                     ],
-                    'vouching_how_will_you_confirm' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/how-will-you-confirm',
-                            'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'howWillYouConfirm',
-                            ],
-                        ],
-                    ],
                     'voucher_name' => [
                         'type' => Segment::class,
                         'options' => [
@@ -562,6 +532,7 @@ return [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
+            Controller\HowConfirmController::class => HowConfirmControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
