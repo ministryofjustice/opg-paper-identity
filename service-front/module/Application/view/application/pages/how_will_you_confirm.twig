@@ -7,6 +7,24 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+            {% if form.get('id_method').messages %}
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+                <div role="alert">
+                    <h2 class="govuk-error-summary__title">
+                    There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            {% for message in form.get('id_method').messages %}
+                                <li>
+                                    <a href="#idMethodOptions">{{ message }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             {% if service_availability.messages.banner %}
                 <div class="govuk-notification-banner" data-module="govuk-notification-banner">
                     <div class="govuk-notification-banner__content">
@@ -67,7 +85,7 @@
                     </div>
                 {% endif %}
 
-                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
+                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}" id="idMethodOptions">
 
                     {% if form.get('id_method').messages %}
                         <p id="id_method-error" class="govuk-error-message">
@@ -233,66 +251,65 @@
                             </label>
                         </div>
                     </div>
-                </div>
 
-                <div class="govuk-form-group  {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
-                    <h2 class="govuk-heading-m">
-                        {% if service_availability.data.EXPERIAN %}
-                            If unable to ID over the phone:
+                    <div class="govuk-radios govuk-!-margin-top-6" data-module="govuk-radios" name="postOffice">
+
+                        <h2 class="govuk-heading-m">
+                            {% if service_availability.data.EXPERIAN %}
+                                If unable to ID over the phone:
+                            {% endif %}
+                            ID in person at the Post Office
+                        </h2>
+
+                        <p class="govuk-body">
+                            Alternatively, you can take one of the identity documents listed below to a Post Office - this
+                            will take longer and may delay access to your LPA.
+                        </p>
+
+                        {% if service_availability.data.POST_OFFICE %}
+                            <div class="govuk-radios__item">
+                                <input
+                                    class="govuk-radios__input"
+                                    id="POST_OFFICE"
+                                    name="id_method"
+                                    type="radio"
+                                    value="POST_OFFICE"
+                                >
+                                <label class="govuk-label govuk-radios__label" for="PostOffice">
+                                    Post Office
+                                    <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0">
+                                        <summary class="govuk-details__summary">
+                                        <span class="govuk-details__summary-text">
+                                            Identity documents accepted at the Post Office
+                                        </span>
+                                        </summary>
+                                        <div class="govuk-details__text">
+                                            <ul class="govuk-list govuk-list--bullet govuk-hint">
+                                                <li>UK passport (up to 18 months expired)</li>
+                                                <li>UK photocard driving licence</li>
+                                                <li class="govuk-!-padding-bottom-4">UK biometric residence permit</li>
+                                                <li>International passport</li>
+                                                <li>EU/EEA photocard driving licence</li>
+                                                <li>EU/EEA national identity card</li>
+                                            </ul>
+                                        </div>
+                                    </details>
+
+                                </label>
+                            </div>
+                        {% else %}
+                            <div class="govuk-warning-text">
+                                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                <strong class="govuk-warning-text__text">
+                                    <span class="govuk-visually-hidden">Warning</span>
+                                    Post Office verification is not presently available
+                                </strong>
+                            </div>
                         {% endif %}
-                        ID in person at the Post Office
-                    </h2>
-
-                    <p class="govuk-body">
-                        Alternatively, you can take one of the identity documents listed below to a Post Office - this
-                        will take longer and may delay access to your LPA.
-                    </p>
-
-                    {% if service_availability.data.POST_OFFICE %}
-                        <div class="govuk-radios__item">
-                            <input
-                                class="govuk-radios__input"
-                                id="POST_OFFICE"
-                                name="id_method"
-                                type="radio"
-                                value="POST_OFFICE"
-                            >
-                            <label class="govuk-label govuk-radios__label" for="PostOffice">
-                                Post Office
-                                <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0">
-                                    <summary class="govuk-details__summary">
-                                    <span class="govuk-details__summary-text">
-                                        Identity documents accepted at the Post Office
-                                    </span>
-                                    </summary>
-                                    <div class="govuk-details__text">
-                                        <ul class="govuk-list govuk-list--bullet govuk-hint">
-                                            <li>UK passport (up to 18 months expired)</li>
-                                            <li>UK photocard driving licence</li>
-                                            <li class="govuk-!-padding-bottom-4">UK biometric residence permit</li>
-                                            <li>International passport</li>
-                                            <li>EU/EEA photocard driving licence</li>
-                                            <li>EU/EEA national identity card</li>
-                                        </ul>
-                                    </div>
-                                </details>
-
-                            </label>
-                        </div>
-                    {% else %}
-                        <div class="govuk-warning-text">
-                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                            <strong class="govuk-warning-text__text">
-                                <span class="govuk-visually-hidden">Warning</span>
-                                Post Office verification is not presently available
-                            </strong>
-                        </div>
-                    {% endif %}
-                </div>
+                    </div>
 
                 {% if details_data.personType == 'donor' and (methods_data.VOUCHING or methods_data.COURT_OF_PROTECTION) %}
-                    <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
-
+                    <div class="govuk-radios govuk-!-margin-top-6" data-module="govuk-radios" name="otherMethods">
                         <h2 class="govuk-heading-m">Other methods</h2>
 
                         <p class="govuk-hint">
@@ -330,6 +347,7 @@
                         </div>
                     </div>
                 {% endif %}
+                </div>
                 <input type="submit" class="govuk-button" value="Continue">
             </form>
         </div>
