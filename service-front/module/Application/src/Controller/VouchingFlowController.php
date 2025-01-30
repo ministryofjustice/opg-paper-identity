@@ -13,6 +13,7 @@ use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Forms\AddDonor;
+use Application\Model\Entity\CaseData;
 use Application\Services\SiriusApiService;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
@@ -28,10 +29,12 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 use DateTime;
+use Application\Controller\Trait\DobOver100WarningTrait;
 
 class VouchingFlowController extends AbstractActionController
 {
     use FormBuilder;
+    use DobOver100WarningTrait;
 
     protected $plugins;
     private string $uuid;
@@ -223,6 +226,25 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 
+    private function checkMatchesForLpas(array $detailsData, string $dateOfBirth): bool | array
+    {
+        $match = false;
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+            $match = $this->voucherMatchLpaActorHelper->checkMatch(
+                $lpasData,
+                $detailsData["firstName"],
+                $detailsData["lastName"],
+                $dateOfBirth,
+            );
+            // we raise the warning if there are any matches so stop once we've found one
+            if ($match) {
+                break;
+            }
+        }
+        return $match;
+    }
+
     public function voucherDobAction(): ViewModel|Response
     {
         $view = new ViewModel();
@@ -246,37 +268,39 @@ class VouchingFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $dateOfBirth = $this->formProcessorHelper->processDateForm($formData->toArray());
+
             $formData->set('date', $dateOfBirth);
             $form->setData($formData);
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
-                $match = false;
-                foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
-                        $lpasData,
-                        $detailsData["firstName"],
-                        $detailsData["lastName"],
-                        $dateOfBirth,
-                    );
-                    // we raise the warning if there are any matches so stop once we've found one
-                    if ($match) {
-                        break;
-                    }
-                }
-                if ($match) {
+                $match = $this->checkMatchesForLpas($detailsData, $dateOfBirth);
+                if ($match !== false) {
                     $view->setVariable('match', $match);
                 } else {
-                    try {
-                        $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                        if (isset($detailsData["address"])) {
-                            return $this->redirect()->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
-                        } else {
-                            return $this->redirect()->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                    if ($form->isValid()) {
+                        $proceed = $this->handleDobOver100Warning(
+                            $dateOfBirth,
+                            $this->getRequest(),
+                            $view,
+                            function () use ($uuid, $dateOfBirth, $form) {
+                                try {
+                                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                                } catch (\Exception $exception) {
+                                    $form->setMessages(["There was an error saving the data"]);
+                                }
+                            }
+                        );
+
+                        if ($proceed) {
+                            if (isset($detailsData["address"])) {
+                                return $this->redirect()
+                                    ->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
+                            } else {
+                                return $this->redirect()
+                                    ->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                            }
                         }
-                    } catch (\Exception $exception) {
-                        $form->setMessages(["There was an error saving the data"]);
                     }
                 }
             }
@@ -290,7 +314,12 @@ class VouchingFlowController extends AbstractActionController
         } elseif (! empty($messages)) {
             $view->setVariable("date_problem", $messages);
         }
-        return $view->setTemplate('application/pages/vouching/what_is_the_voucher_dob');
+        $view->setVariable(
+            'warning_message',
+            'By continuing, you confirm that the person vouching is more than 100 years old. 
+            If not, please change the date.'
+        );
+        return $view->setTemplate('application/pages/confirm_dob');
     }
 
     public function enterPostcodeAction(): ViewModel|Response
