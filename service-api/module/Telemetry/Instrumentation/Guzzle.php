@@ -110,12 +110,14 @@ class Guzzle
                             $headers = (array) $headers;
                         }
 
-                        foreach (($headers ?: []) as $header) {
-                            if ($response->hasHeader($header)) {
-                                $span->setAttribute(
-                                    sprintf('http.response.header.%s', strtolower($header)),
-                                    $response->getHeader($header)
-                                );
+                        if (is_array($headers)) {
+                            foreach ($headers as $header) {
+                                if ($response->hasHeader($header)) {
+                                    $span->setAttribute(
+                                        sprintf('http.response.header.%s', strtolower($header)),
+                                        $response->getHeader($header)
+                                    );
+                                }
                             }
                         }
 

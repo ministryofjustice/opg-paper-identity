@@ -13,6 +13,7 @@ use Laminas\Validator\NotEmpty;
  * @implements FormTemplate<array{
  *   firstName: string,
  *   lastName: string,
+ *   continue-after-warning: ?string,
  * }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
@@ -29,4 +30,10 @@ class VoucherName implements FormTemplate
      */
     #[Annotation\Validator(NotEmpty::class, ['message' => 'Enter their last name'])]
     public mixed $lastName = null;
+
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    #[Annotation\Name('continue-after-warning')]
+    public ?string $continueAfterWarning = null;
 }
