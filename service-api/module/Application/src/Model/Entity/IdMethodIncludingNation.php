@@ -32,7 +32,6 @@ class IdMethodIncludingNation extends Entity
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public string $id_country;
 
-
     /**
      * @param properties-of<self> $data
      */

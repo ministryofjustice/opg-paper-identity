@@ -10,7 +10,7 @@
     "type": "Citizen",
     "attributes": {
       "guid": "",
-      "nino": "",
+      "nino": "NP112233C",
       "identityVerificationStatus": "verified",
       "sex": "",
       "statusIndicator": false,
