@@ -46,7 +46,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
 
-    public function returnOpgDetailsData(): array
+    public static function returnOpgDetailsData(): array
     {
         return [
             "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
@@ -121,7 +121,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
     }
 
-    public function postOfficeDocumnentsRedirectData(): array
+    public static function postOfficeDocumnentsRedirectData(): array
     {
         return [
             ['PASSPORT', 'donor', 'donor-details-match-check'],
@@ -307,7 +307,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/{$this->uuid}/$expectedRedirect");
     }
 
-    public function postOfficeCountriesIdRedirectData(): array
+    public static function postOfficeCountriesIdRedirectData(): array
     {
         return [
             ['donor', 'donor-details-match-check'],
@@ -522,7 +522,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         }
     }
 
-    public function confirmPostOfficeData(): array
+    public static function confirmPostOfficeData(): array
     {
         return [
             ['get'],

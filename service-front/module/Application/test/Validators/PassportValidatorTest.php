@@ -21,17 +21,21 @@ class PassportValidatorTest extends TestCase
     /**
      * @dataProvider passportData
      */
-    public function testValidator(string $passport, bool $valid): void
+    public function testValidator(string $passport, ?string $error, bool $valid): void
     {
         $this->assertEquals($valid, $this->passportValidator->isValid($passport));
+        if (! is_null($error)) {
+            $this->assertNotEmpty($this->passportValidator->getMessages()[$error]);
+        }
     }
 
     public static function passportData(): array
     {
         return [
-            ['123456789', true],
-            ['12345678Q', false],
-            ['12345678', false],
+            ['123456789', null, true],
+            ['12345678Q', 'passport_format', false],
+            ['12345678', 'passport_count', false],
+            ['', 'passport_empty', false],
         ];
     }
 }

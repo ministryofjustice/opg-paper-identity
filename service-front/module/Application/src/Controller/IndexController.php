@@ -71,13 +71,12 @@ class IndexController extends AbstractActionController
 
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
-        $route = [
-            'donor' => 'root/how_donor_confirms',
-            'certificateProvider' => 'root/cp_how_cp_confirms',
-            'voucher' => 'root/confirm_vouching'
-        ];
-
-        return $this->redirect()->toRoute($route[$type], ['uuid' => $case['uuid']]);
+        if ($type === 'voucher') {
+            $redirect = 'root/confirm_vouching';
+        } else {
+            $redirect = 'root/how_will_you_confirm';
+        }
+        return $this->redirect()->toRoute($redirect, ['uuid' => $case['uuid']]);
     }
 
     public function abandonFlowAction(): ViewModel|Response

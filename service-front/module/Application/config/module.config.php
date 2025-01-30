@@ -8,9 +8,11 @@ use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
+use Application\Controller\Factory\HowConfirmControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
+use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
-use Application\Controller\IndexController;
+use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\IdMethod;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
@@ -81,13 +83,13 @@ return [
                             ],
                         ],
                     ],
-                    'donor_id_check' => [
+                    'how_will_you_confirm' => [
                         'type' => Segment::class,
                         'options' => [
-                            'route' => '/:uuid/donor-id-check',
+                            'route' => '/:uuid/how-will-you-confirm',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'donorIdCheck',
+                                'controller' => Controller\HowConfirmController::class,
+                                'action' => 'howWillYouConfirm',
                             ],
                         ],
                     ],
@@ -98,16 +100,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\DonorFlowController::class,
                                 'action' => 'donorLpaCheck',
-                            ],
-                        ],
-                    ],
-                    'how_donor_confirms' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/how-will-donor-confirm',
-                            'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'howWillDonorConfirm',
                             ],
                         ],
                     ],
@@ -126,7 +118,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/national-insurance-number',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\DocumentCheckController::class,
                                 'action' => 'nationalInsuranceNumber',
                             ],
                         ],
@@ -136,7 +128,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/driving-licence-number',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\DocumentCheckController::class,
                                 'action' => 'drivingLicenceNumber',
                             ],
                         ],
@@ -146,7 +138,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/passport-number',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\DocumentCheckController::class,
                                 'action' => 'passportNumber',
                             ],
                         ],
@@ -251,16 +243,6 @@ return [
                             ],
                         ],
                     ],
-                    'cp_how_cp_confirms' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/how-will-cp-confirm',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'howWillCpConfirm',
-                            ],
-                        ],
-                    ],
                     'cp_name_match_check' => [
                         'type' => Segment::class,
                         'options' => [
@@ -308,46 +290,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'confirmAddress',
-                            ],
-                        ],
-                    ],
-                    'cp_national_insurance_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/national-insurance-number',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'nationalInsuranceNumber',
-                            ],
-                        ],
-                    ],
-                    'cp_driving_licence_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/driving-licence-number',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'drivingLicenceNumber',
-                            ],
-                        ],
-                    ],
-                    'cp_passport_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/passport-number',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'passportNumber',
-                            ],
-                        ],
-                    ],
-                    'cp_id_verify_questions' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/id-verify-questions',
-                            'defaults' => [
-                                'controller' => Controller\KbvController::class,
-                                'action' => 'idVerifyQuestions',
                             ],
                         ],
                     ],
@@ -421,16 +363,6 @@ return [
                             ],
                         ],
                     ],
-                    'po_remove_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/remove-lpa/:lpa',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'removeLpa',
-                            ],
-                        ],
-                    ],
                     'abandon_flow' => [
                         'type' => Segment::class,
                         'options' => [
@@ -488,16 +420,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
                                 'action' => 'confirmVouching',
-                            ],
-                        ],
-                    ],
-                    'vouching_how_will_you_confirm' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/how-will-you-confirm',
-                            'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'howWillYouConfirm',
                             ],
                         ],
                     ],
@@ -581,6 +503,26 @@ return [
                             ],
                         ],
                     ],
+                    'voucher_identity_check_passed' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/identity-check-passed',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'identityCheckPassed',
+                            ],
+                        ],
+                    ],
+                    'voucher_identity_check_failed' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/vouching/identity-check-failed',
+                            'defaults' => [
+                                'controller' => Controller\VouchingFlowController::class,
+                                'action' => 'identityCheckFailed',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -589,7 +531,9 @@ return [
         'factories' => [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
-            Controller\VouchingFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
+            Controller\HowConfirmController::class => HowConfirmControllerFactory::class,
+            Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,

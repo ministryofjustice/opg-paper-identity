@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Application\Controller\Factory;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\PostOfficeFlowController;
+use Application\Controller\DocumentCheckController;
 use Application\Helpers\FormProcessorHelper;
-use Application\PostOffice\DocumentTypeRepository;
-use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 
-class PostOfficeFlowControllerFactory implements FactoryInterface
+class DocumentCheckControllerFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
@@ -23,18 +21,13 @@ class PostOfficeFlowControllerFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): PostOfficeFlowController {
+    ): DocumentCheckController {
+        /** @var string $siriusPublicUrl */
         $config = $container->get('Config');
 
-        /** @var string $siriusPublicUrl */
-        $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
-
-        return new PostOfficeFlowController(
+        return new DocumentCheckController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(FormProcessorHelper::class),
-            $container->get(SiriusApiService::class),
-            $container->get(DocumentTypeRepository::class),
-            $siriusPublicUrl,
             $config,
         );
     }

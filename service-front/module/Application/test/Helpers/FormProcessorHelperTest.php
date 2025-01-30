@@ -411,6 +411,30 @@ class FormProcessorHelperTest extends TestCase
                 ],
                 "1986-04-01"
             ],
+            [
+                [
+                    'dob_year' => "1986",
+                    'dob_month' => "4",
+                    'dob_day' => "1"
+                ],
+                "1986-04-01"
+            ],
+            [
+                [
+                    'dob_year' => "",
+                    'dob_month' => "4",
+                    'dob_day' => "1"
+                ],
+                ""
+            ],
+            [
+                [
+                    'dob_year' => "",
+                    'dob_month' => "",
+                    'dob_day' => ""
+                ],
+                ""
+            ],
         ];
     }
 

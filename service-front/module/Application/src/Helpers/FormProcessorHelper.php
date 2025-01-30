@@ -215,6 +215,14 @@ class FormProcessorHelper
 
     public function processDateForm(array $params): string
     {
+        if (
+            empty($params['dob_year']) ||
+            empty($params['dob_month']) ||
+            empty($params['dob_day'])
+        ) {
+            return '';
+        }
+
         if (strlen($params['dob_year']) == 2) {
             $year = (int)$params['dob_year'] < 6 ?
                 sprintf("20%s", $params['dob_year']) :
@@ -224,7 +232,7 @@ class FormProcessorHelper
         }
 
         return sprintf(
-            "%s-%s-%s",
+            "%s-%02d-%02d",
             $year,
             $params['dob_month'],
             $params['dob_day'],
