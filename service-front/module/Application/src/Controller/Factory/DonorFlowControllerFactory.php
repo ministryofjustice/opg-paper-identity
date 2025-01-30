@@ -23,12 +23,10 @@ class DonorFlowControllerFactory implements FactoryInterface
     {
         /** @var string $siriusPublicUrl */
         $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
-        $config = $container->get('Config');
 
         return new DonorFlowController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(SiriusApiService::class),
-            $config,
             $siriusPublicUrl,
             $container->get(SiriusDataProcessorHelper::class),
             $container->get(LoggerInterface::class)

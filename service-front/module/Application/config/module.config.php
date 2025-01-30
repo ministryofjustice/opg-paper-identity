@@ -93,16 +93,6 @@ return [
                             ],
                         ],
                     ],
-                    'donor_id_check' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/donor-id-check',
-                            'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'donorIdCheck',
-                            ],
-                        ],
-                    ],
                     'donor_lpa_check' => [
                         'type' => Segment::class,
                         'options' => [

@@ -27,7 +27,6 @@ class DonorFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
-        private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly LoggerInterface $logger,
@@ -99,20 +98,6 @@ class DonorFlowController extends AbstractActionController
         ]);
 
         return $view->setTemplate('application/pages/donor_details_match_check');
-    }
-
-    public function donorIdCheckAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $optionsdata = $this->config['opg_settings']['identity_labels'];
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view = new ViewModel();
-
-        $view->setVariable('options_data', $optionsdata);
-        $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/donor_id_check');
     }
 
     public function donorLpaCheckAction(): ViewModel
