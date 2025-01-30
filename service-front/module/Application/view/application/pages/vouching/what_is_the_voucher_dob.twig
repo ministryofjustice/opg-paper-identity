@@ -28,7 +28,7 @@
         {% else %}
             <h2 class="govuk-heading-m">There is a problem</h2>
             {% for problem in date_problem %}
-                <div class="govuk-error-message" name="date_problem"><span class="govuk-visually-hidden">Error:</span><u>{{ problem }}</u></div>
+                <div class="govuk-error-message" id="date_problem"><span class="govuk-visually-hidden">Error:</span><u>{{ problem }}</u></div>
             {% endfor %}
         {% endif %}
     </div>
