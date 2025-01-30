@@ -8,16 +8,22 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             {% if form.get('id_method').messages %}
-                <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
-                    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                        <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z" />
-                    </svg>
-                    <h2 class="govuk-heading-m">There is a problem</h2>
-                    <div class="govuk-error-message" name="noIdSelected">
-                        <span class="govuk-visually-hidden">Error:</span>
-                        <u>{{ form.get('id_method').messages | join(', ', ' and ') }}</u>
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+                <div role="alert">
+                    <h2 class="govuk-error-summary__title">
+                    There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            {% for message in form.get('id_method').messages %}
+                                <li>
+                                    <a href="#idMethodOptions">{{ message }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
+            </div>
             {% endif %}
             {% if service_availability.messages.banner %}
                 <div class="govuk-notification-banner" data-module="govuk-notification-banner">
@@ -79,7 +85,7 @@
                     </div>
                 {% endif %}
 
-                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}">
+                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}" id="idMethodOptions">
 
                     {% if form.get('id_method').messages %}
                         <p id="id_method-error" class="govuk-error-message">
