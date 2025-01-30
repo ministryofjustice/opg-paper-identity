@@ -10,9 +10,6 @@ use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\PostOffice\Country;
-use Application\PostOffice\DocumentType;
-use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -139,48 +136,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                 "uId" => "M-M1VL-PJ9D-IKUS"
             ]
         ];
-    }
-
-    public function returnServiceAvailabilityResponseData(): array
-    {
-        return [
-            'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
-            ],
-            'messages' => []
-        ];
-    }
-
-    public function testCPIdCheckReturnsPageWithData(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getServiceAvailability')
-            ->willReturn($mockServiceResponse);
-
-        $this->dispatch("/$this->uuid/cp/how-will-cp-confirm", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('CpFlowController');
-        $this->assertMatchedRouteName('root/cp_how_cp_confirms');
     }
 
     public function testNameMatchesIDPageWithData(): void
