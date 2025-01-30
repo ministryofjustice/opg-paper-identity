@@ -63,7 +63,7 @@ Cypress.Commands.add("jumpToPage", (page) => {
 
 Cypress.Commands.add("editVoucherDetails", (name, dob, address) => {
   if (name) {
-    var [firstName, lastName] = name.split(" ", 2);
+    let [firstName, lastName] = name.split(" ", 2);
 
     cy.jumpToPage('vouching/voucher-name')
 
@@ -72,7 +72,7 @@ Cypress.Commands.add("editVoucherDetails", (name, dob, address) => {
     cy.get(".govuk-button").contains("Continue").click();
   }
   if (dob) {
-    var [year, month, day] = dob.split("-", 3);
+    let [year, month, day] = dob.split("-", 3);
 
     cy.jumpToPage('vouching/voucher-dob')
 
@@ -82,7 +82,7 @@ Cypress.Commands.add("editVoucherDetails", (name, dob, address) => {
     cy.get(".govuk-button").contains("Continue").click();
   }
   if (address) {
-    var [line1, town, postcode] = address.split(", ", 3);
+    let [line1, town, postcode] = address.split(", ", 3);
 
     cy.jumpToPage('vouching/enter-address-manual')
 

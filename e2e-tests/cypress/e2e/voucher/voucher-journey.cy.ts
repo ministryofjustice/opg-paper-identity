@@ -187,7 +187,6 @@ describe("Voucher journey", () => {
 
         cy.get(".govuk-button").contains("Continue").click();
 
-        // TODO: can I more precisely check these??
         cy.contains("St Neots").click();
         cy.get(".govuk-button").contains("Continue").click();
 
