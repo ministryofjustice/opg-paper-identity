@@ -51,8 +51,9 @@ class PostOfficeFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
+        $view->setVariable('form', $form);
 
-        if (count($this->getRequest()->getPost())) {
+        if ($this->getRequest()->isPost()) {
             if (array_key_exists('check_button', $this->getRequest()->getPost()->toArray())) {
                 $view->setVariable('date_sub_form', $dateSubForm);
                 $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
