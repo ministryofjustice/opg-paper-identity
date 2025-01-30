@@ -79,7 +79,7 @@ class YotiService implements YotiServiceInterface
      */
     public function createSession(array $sessionData, string $nonce, int $timestamp): array
     {
-        $body = json_encode($sessionData);
+        $body = json_encode($sessionData, JSON_THROW_ON_ERROR);
 
         $headers = $this->getSignedRequest('/sessions', 'POST', $nonce, $timestamp, $body);
 
@@ -144,7 +144,7 @@ class YotiService implements YotiServiceInterface
     {
         $config = $this->getSessionConfigFromYoti($sessionId, $nonce, $timestamp);
         $requirementID = $config['capture']['required_resources'][0]['id'];
-        $payload = json_encode($this->letterConfigPayload($caseData, $requirementID));
+        $payload = json_encode($this->letterConfigPayload($caseData, $requirementID), JSON_THROW_ON_ERROR);
 
         $nonce = strval(Uuid::uuid4());
         $dateTime = new DateTime();

@@ -83,7 +83,7 @@ class SessionConfigTest extends TestCase
 
         $sessionConfig = [];
         $sessionConfig["session_deadline"] = $currentDate->format(DateTime::ATOM);
-        $sessionConfig["resources_ttl"] = strtotime($currentDate->format(DateTime::ATOM)) - time() + 86400;
+        $sessionConfig["resources_ttl"] = intval($currentDate->format('U')) - time() + 86400;
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $this->caseMock->id;
         $sessionConfig["notifications"] = [

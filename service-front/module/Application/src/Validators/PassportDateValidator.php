@@ -37,7 +37,13 @@ class PassportDateValidator extends AbstractValidator
             if ($expiryDate === false) {
                 return false;
             }
-            $effectiveExpiry = date('Y-m-d', strtotime($this->expiryAllowance, $expiryDate));
+
+            $effectiveExpiryTime = strtotime($this->expiryAllowance, $expiryDate);
+            if ($effectiveExpiryTime === false) {
+                return false;
+            }
+
+            $effectiveExpiry = date('Y-m-d', $effectiveExpiryTime);
 
             return $now < strtotime($effectiveExpiry);
         } catch (\Exception $exception) {
