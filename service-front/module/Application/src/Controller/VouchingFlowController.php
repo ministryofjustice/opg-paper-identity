@@ -316,7 +316,8 @@ class VouchingFlowController extends AbstractActionController
         }
         $view->setVariable(
             'warning_message',
-            'By continuing, you confirm that the person vouching is more than 100 years old. If not, please change the date.'
+            'By continuing, you confirm that the person vouching is more than 100 years old. 
+            If not, please change the date.'
         );
         return $view->setTemplate('application/pages/confirm_dob');
     }

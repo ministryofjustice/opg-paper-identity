@@ -291,7 +291,8 @@ class CPFlowController extends AbstractActionController
         $view->setVariable('include_fraud_id_check_info', true);
         $view->setVariable(
             'warning_message',
-            'By continuing, you confirm that the certificate provider is more than 100 years old. If not, please change the date.'
+            'By continuing, you confirm that the certificate provider is more than 100 years old. 
+            If not, please change the date.'
         );
         return $view->setTemplate($templates['default']);
     }
