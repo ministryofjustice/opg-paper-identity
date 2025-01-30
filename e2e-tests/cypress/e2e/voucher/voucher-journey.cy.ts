@@ -172,8 +172,8 @@ describe("Voucher journey", () => {
     });
 
     it("lets you vouch via the post-office route", () => {
-        cy.jumpToPage("vouching/how-will-you-confirm");
-        cy.get("[id=PostOffice]").click();
+        cy.jumpToPage("how-will-you-confirm");
+        cy.get("input#POST_OFFICE").click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.get("[id=PASSPORT]").click();
