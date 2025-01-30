@@ -105,7 +105,12 @@ class SessionConfig
 
     public function getResourceTtl(): int
     {
-        $deadlineSeconds = strtotime($this->deadlineDate()) - time();
+        $deadlineTime = strtotime($this->deadlineDate());
+        if ($deadlineTime === false) {
+            throw new YotiException("Invalid deadline date");
+        }
+
+        $deadlineSeconds = $deadlineTime - time();
 
         return $deadlineSeconds + 86400;
     }

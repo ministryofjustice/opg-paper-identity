@@ -122,7 +122,7 @@ class AuthApiService
             $this->logger->error('GuzzleAuthApiException: ' . $responseBodyAsString);
             throw new AuthApiException($clientException->getMessage());
         } catch (\Exception $exception) {
-            $this->logger->error('GuzzleAuthApiException: ' . json_encode($exception->getTrace()));
+            $this->logger->error('GuzzleAuthApiException: ' . json_encode($exception->getTrace(), JSON_THROW_ON_ERROR));
             throw new AuthApiException($exception->getMessage());
         }
     }

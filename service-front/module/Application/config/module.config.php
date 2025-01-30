@@ -34,6 +34,8 @@ if (! is_string($prefix)) {
     $prefix = '';
 }
 
+$yotiSupportedDocs = file_get_contents(__DIR__ . '/yoti-supported-documents.json');
+
 return [
     'router' => [
         'routes' => [
@@ -658,6 +660,9 @@ return [
                     'correctly on a previous occasion.'
             ]
         ],
-        'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
+        'yoti_supported_documents' => json_decode(
+            $yotiSupportedDocs === false ? '' : $yotiSupportedDocs,
+            true
+        ),
     ],
 ];

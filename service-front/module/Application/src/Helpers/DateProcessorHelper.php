@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use DateTime;
+
 class DateProcessorHelper
 {
     /**
@@ -16,6 +18,6 @@ class DateProcessorHelper
         if ($date === null) {
             return '';
         }
-        return date_format(date_create($date), $format);
+        return (new DateTime($date))->format($format);
     }
 }

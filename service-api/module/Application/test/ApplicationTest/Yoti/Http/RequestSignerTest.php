@@ -7,6 +7,7 @@ namespace ApplicationTest\Yoti\Http;
 use Application\Aws\Secrets\AwsSecret;
 use Application\Yoti\Http\Exception\YotiAuthException;
 use Application\Yoti\Http\RequestSigner;
+use OpenSSLAsymmetricKey;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -21,10 +22,14 @@ class RequestSignerTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        /** @var OpenSSLAsymmetricKey $privateKey */
         $privateKey = openssl_pkey_new(['private_key_bits' => 2048]);
-        self::$pemKeyPublic = openssl_pkey_get_details(openssl_pkey_get_private($privateKey))['key'];
 
-        openssl_pkey_export(openssl_pkey_get_private($privateKey), $privateKeyContents);
+        /** @var array{key: string} $privateKeyDetails */
+        $privateKeyDetails = openssl_pkey_get_details($privateKey);
+        self::$pemKeyPublic = $privateKeyDetails['key'];
+
+        openssl_pkey_export($privateKey, $privateKeyContents);
         self::$pemKeyPrivate = $privateKeyContents;
     }
 
@@ -43,7 +48,7 @@ class RequestSignerTest extends TestCase
      */
     public function testGenerateSignature(): void
     {
-        $payload = json_encode(['data' => 'payload']);
+        $payload = json_encode(['data' => 'payload'], JSON_THROW_ON_ERROR);
 
         $this->pemFileMock->expects($this->atLeastOnce())
             ->method("getValue")
@@ -57,6 +62,7 @@ class RequestSignerTest extends TestCase
         );
         $messageToSign = self::METHOD . '&' . self::PATH . '&' . base64_encode($payload);
 
+        /** @var OpenSSLAsymmetricKey $publicKey */
         $publicKey = openssl_pkey_get_public(self::$pemKeyPublic);
 
         $verify = openssl_verify($messageToSign, base64_decode($signedMessage), $publicKey, OPENSSL_ALGO_SHA256);
