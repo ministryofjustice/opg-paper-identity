@@ -76,9 +76,9 @@ Cypress.Commands.add("editVoucherDetails", (name, dob, address) => {
 
     cy.jumpToPage('vouching/voucher-dob')
 
-    cy.get("[id=voucher-dob-day]").type(day);
-    cy.get("[id=voucher-dob-month]").type(month);
-    cy.get("[id=voucher-dob-year]").type(year);
+    cy.get("[id=dob-day]").type(day);
+    cy.get("[id=dob-month]").type(month);
+    cy.get("[id=dob-year]").type(year);
     cy.get(".govuk-button").contains("Continue").click();
   }
   if (address) {
