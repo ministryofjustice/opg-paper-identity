@@ -7,6 +7,10 @@ describe("Counter service certificateProvider journey", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Which document will they take to the Post Office?");
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.contains("There is a problem");
+    cy.contains("Please select an option");
+
     cy.contains("UK passport (up to 18 months expired)").click();
     cy.get(".govuk-button").contains("Continue").click();
 
