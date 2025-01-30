@@ -314,6 +314,10 @@ class VouchingFlowController extends AbstractActionController
         } elseif (! empty($messages)) {
             $view->setVariable("date_problem", $messages);
         }
+        $view->setVariable(
+            'warning_message',
+            'By continuing, you confirm that the voucher is more than 100 years old.'
+        );
         return $view->setTemplate('application/pages/confirm_dob');
     }
 

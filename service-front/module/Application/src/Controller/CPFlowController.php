@@ -289,7 +289,10 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('include_fraud_id_check_info', true);
-
+        $view->setVariable(
+            'warning_message',
+            'By continuing, you confirm that the certificate provider is more than 100 years old.'
+        );
         return $view->setTemplate($templates['default']);
     }
 
