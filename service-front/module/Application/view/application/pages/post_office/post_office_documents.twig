@@ -56,6 +56,7 @@
                 {% if form.get('id_method').messages %}
                     <p id="id_method-error" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
+                        {{ form.get('id_method').messages | join(', ', ' and ') }}
                     </p>
                 {% endif %}
 
