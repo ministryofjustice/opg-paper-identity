@@ -42,12 +42,12 @@ class DLNValidator extends AbstractValidator
 
     private function formatValue(string $value): string
     {
-        return strtoupper(preg_replace('/(\s+)|(-)/', '', $value));
+        return strtoupper(preg_replace('/(\s+)|(-)/', '', $value) ?? '');
     }
 
     private function checkPattern(): int
     {
-        return preg_match(self::DLN_PATTERN, $this->value);
+        return preg_match(self::DLN_PATTERN, $this->value) ?: 0;
     }
 
     private function checkLength(): bool

@@ -62,7 +62,7 @@ class SessionStatusService
 
             $this->caseOutcomeCalculator->updateSendIdentityCheck(
                 $caseData,
-                $response['resources']['id_documents'][0]['created_at'] ?? date_create()->format('c')
+                $response['resources']['id_documents'][0]['created_at'] ?? (new DateTime())->format('c')
             );
         } catch (YotiException $e) {
             $this->logger->error('Yoti result error: ' . $e->getMessage());

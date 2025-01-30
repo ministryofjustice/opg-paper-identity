@@ -23,7 +23,7 @@ class CaseDataTest extends TestCase
         if ($expectedIsValidResult) {
             $this->assertTrue(
                 $validator->isValid(),
-                'Data provided is not valid: ' . json_encode($validator->getMessages())
+                'Data provided is not valid: ' . json_encode($validator->getMessages(), JSON_THROW_ON_ERROR)
             );
         } else {
             $this->assertFalse($validator->isValid());
