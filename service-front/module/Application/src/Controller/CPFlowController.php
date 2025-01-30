@@ -30,10 +30,12 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
+use Application\Controller\Trait\DobOver100WarningTrait;
 
 class CPFlowController extends AbstractActionController
 {
     use FormBuilder;
+    use DobOver100WarningTrait;
 
     protected $plugins;
     public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
@@ -47,7 +49,7 @@ class CPFlowController extends AbstractActionController
         private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -243,11 +245,10 @@ class CPFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $templates = [
-            'default' => 'application/pages/cp/confirm_dob',
+            'default' => 'application/pages/confirm_dob',
         ];
         $uuid = $this->params()->fromRoute("uuid");
         $form = $this->createForm(BirthDate::class);
-
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
@@ -256,12 +257,21 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                try {
-                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                $proceed = $this->handleDobOver100Warning(
+                    $dateOfBirth,
+                    $this->getRequest(),
+                    $view,
+                    function () use ($uuid, $dateOfBirth, $form) {
+                        try {
+                            $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                        } catch (\Exception $exception) {
+                            $form->setMessages(["There was an error saving the data"]);
+                        }
+                    }
+                );
 
+                if ($proceed) {
                     return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
-                } catch (\Exception $exception) {
-                    $form->setMessages(["There was an error saving the data"]);
                 }
             }
             $view->setVariable('form', $form);
@@ -278,7 +288,11 @@ class CPFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-
+        $view->setVariable('include_fraud_id_check_info', true);
+        $view->setVariable(
+            'warning_message',
+            'By continuing, you confirm that the certificate provider is more than 100 years old. If not, please change the date.'
+        );
         return $view->setTemplate($templates['default']);
     }
 
