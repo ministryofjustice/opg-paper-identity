@@ -103,6 +103,7 @@
                                 name="id_method"
                                 type="radio"
                                 value="NATIONAL_INSURANCE_NUMBER"
+                                {{ (form.get('id_method').value == 'NATIONAL_INSURANCE_NUMBER') ? 'checked' : '' }}
                             >
                             <label class="govuk-label govuk-radios__label" for="NATIONAL_INSURANCE_NUMBER">
                                 National insurance number
@@ -116,6 +117,7 @@
                                 name="id_method"
                                 type="radio"
                                 value="PASSPORT"
+                                {{ (form.get('id_method').value == 'PASSPORT') ? 'checked' : '' }}
                             >
                             <label class="govuk-label govuk-radios__label" for="PASSPORT">
                                 UK Passport (current or expired in the last 18 months)
@@ -245,6 +247,7 @@
                                 name="id_method"
                                 type="radio"
                                 value="DRIVING_LICENCE"
+                                {{ (form.get('id_method').value == 'DRIVING_LICENCE') ? 'checked' : '' }}
                             >
                             <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">
                                 UK driving licence (must be current)
@@ -274,6 +277,7 @@
                                     name="id_method"
                                     type="radio"
                                     value="POST_OFFICE"
+                                    {{ (form.get('id_method').value == 'POST_OFFICE') ? 'checked' : '' }}
                                 >
                                 <label class="govuk-label govuk-radios__label" for="PostOffice">
                                     Post Office
@@ -325,6 +329,7 @@
                                         name="id_method"
                                         type="radio"
                                         value="OnBehalf"
+                                        {{ (form.get('id_method').value == 'OnBehalf') ? 'checked' : '' }}
                                     >
                                     <label class="govuk-label govuk-radios__label" for="OnBehalf">
                                         Have someone vouch for the identity of the donor
@@ -339,6 +344,7 @@
                                         name="id_method"
                                         type="radio"
                                         value="cpr"
+                                        {{ (form.get('id_method').value == 'cpr') ? 'checked' : '' }}
                                     >
                                     <label class="govuk-label govuk-radios__label" for="CourtOfProtection">
                                         The donor cannot do any of the above (Court of Protection)</label>
