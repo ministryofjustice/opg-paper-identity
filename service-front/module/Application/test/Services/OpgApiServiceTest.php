@@ -96,12 +96,6 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($notFoundMock);
         $notFoundClient = new Client(['handler' => $handlerStack]);
 
-        $identityCheckExceptionMock = new MockHandler([
-            new Response(200, [], json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => true]))),
-        ]);
-        $identityCheckHandler = HandlerStack::create($identityCheckExceptionMock);
-        $identityCheckClient = new Client(['handler' => $identityCheckHandler]);
-
         $identityCheckNullMock = new MockHandler([
             new Response(200, [], json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => null]))),
         ]);
@@ -147,13 +141,6 @@ class OpgApiServiceTest extends TestCase
                 HttpException::class,
                 false,
             ],
-            // Identity Check Performed Exception
-//            [
-//                $identityCheckClient,
-//                null,
-//                OpgApiException::class,
-//                false,
-//            ],
             // Identity Check Passed Null Case
             [
                 $identityCheckNullClient,
