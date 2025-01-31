@@ -31,16 +31,16 @@ class DwpApiServiceFactory implements FactoryInterface
         array $options = null
     ): DwpApiService {
         $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
-        $detailsPath = (new AwsSecret('dwp/citizen-details-endpoint'))->getValue();
+        $detailsPath = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
         $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
-        $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
+        $certificate = (new AwsSecret('dwp/opg-certificate-bundle'))->getValue();
         $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
         if (empty($baseUri)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
-        $useCertificate = filter_var(getenv("DWP_USE_CERTIFICATE"), FILTER_VALIDATE_BOOLEAN);
+        $useCertificate = filter_var(getenv("DWP_USE_CERTIFICATE", true), FILTER_VALIDATE_BOOLEAN);
         $clientOptions = [
             'base_uri' => $baseUri,
         ];

@@ -81,7 +81,7 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-ma
 
 awslocal ssm put-parameter --name "service-availability" --type "String" --value '{"EXPERIAN":true,"NATIONAL_INSURANCE_NUMBER":true,"DRIVING_LICENCE":true,"PASSPORT":true,"POST_OFFICE":true}' --overwrite
 
-awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-details-endpoint \
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-endpoint \
     --description "DWP Citizen details endpoint" \
     --secret-string "/capi/v2/citizens/%s" \
     --region "eu-west-1"
