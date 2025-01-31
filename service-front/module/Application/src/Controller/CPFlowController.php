@@ -12,28 +12,23 @@ use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\AddressInput;
-use Application\Forms\DrivingLicenceNumber;
-use Application\Forms\IdMethod;
 use Application\Forms\LpaReferenceNumber;
-use Application\Forms\NationalInsuranceNumber;
-use Application\Forms\PassportDate;
-use Application\Forms\PassportNumber;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
-use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\LpaFormHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
-use Application\Enums\IdMethod as IdMethodEnum;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
+use Application\Controller\Trait\DobOver100WarningTrait;
 
 class CPFlowController extends AbstractActionController
 {
     use FormBuilder;
+    use DobOver100WarningTrait;
 
     protected $plugins;
     public const ERROR_POSTCODE_NOT_FOUND = 'The entered postcode could not be found. Please try a valid postcode.';
@@ -47,78 +42,8 @@ class CPFlowController extends AbstractActionController
         private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly LoggerInterface $logger,
+        private readonly LoggerInterface $logger
     ) {
-    }
-
-    public function howWillCpConfirmAction(): ViewModel|Response
-    {
-        $templates = [
-            'default' => 'application/pages/cp/how_will_the_cp_confirm',
-        ];
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDate::class);
-        $form = $this->createForm(IdMethod::class);
-        $view->setVariable('date_sub_form', $dateSubForm);
-
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-
-        $identityDocs = [];
-        foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability['data'][$key] === true) {
-                $identityDocs[$key] = $value;
-            }
-        }
-
-        $optionsData = $identityDocs;
-        $view->setVariable('service_availability', $serviceAvailability);
-        $view->setVariable('form', $form);
-
-        if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost()->toArray();
-            if (array_key_exists('check_button', $formData)) {
-                $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-                    $uuid,
-                    $this->getRequest()->getPost(),
-                    $dateSubForm,
-                    $templates
-                );
-                $view->setVariables($formProcessorResponseDto->getVariables());
-            } else {
-                if ($form->isValid()) {
-                    if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
-                        $data = [
-                            'id_route' => IdMethodEnum::PostOffice->value,
-                        ];
-                        $this->opgApiService->updateIdMethodWithCountry(
-                            $uuid,
-                            $data
-                        );
-                        return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $uuid]);
-                    } else {
-                        $data = [
-                            'id_route' => 'TELEPHONE',
-                            'id_country' => \Application\PostOffice\Country::GBR->value,
-                            'id_method' => $formData['id_method']
-                        ];
-                        $this->opgApiService->updateIdMethodWithCountry(
-                            $uuid,
-                            $data
-                        );
-                        return $this->redirect()->toRoute("root/cp_name_match_check", ['uuid' => $uuid]);
-                    }
-                }
-            }
-        }
-
-        $view->setVariable('options_data', $optionsData);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-
-        return $view->setTemplate($templates['default']);
     }
 
     public function nameMatchCheckAction(): ViewModel
@@ -243,11 +168,10 @@ class CPFlowController extends AbstractActionController
     {
         $view = new ViewModel();
         $templates = [
-            'default' => 'application/pages/cp/confirm_dob',
+            'default' => 'application/pages/confirm_dob',
         ];
         $uuid = $this->params()->fromRoute("uuid");
         $form = $this->createForm(BirthDate::class);
-
 
         if (count($this->getRequest()->getPost())) {
             $params = $this->getRequest()->getPost();
@@ -256,12 +180,21 @@ class CPFlowController extends AbstractActionController
             $form->setData($params);
 
             if ($form->isValid()) {
-                try {
-                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                $proceed = $this->handleDobOver100Warning(
+                    $dateOfBirth,
+                    $this->getRequest(),
+                    $view,
+                    function () use ($uuid, $dateOfBirth, $form) {
+                        try {
+                            $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                        } catch (\Exception $exception) {
+                            $form->setMessages(["There was an error saving the data"]);
+                        }
+                    }
+                );
 
+                if ($proceed) {
                     return $this->redirect()->toRoute('root/cp_confirm_address', ['uuid' => $uuid]);
-                } catch (\Exception $exception) {
-                    $form->setMessages(["There was an error saving the data"]);
                 }
             }
             $view->setVariable('form', $form);
@@ -278,7 +211,12 @@ class CPFlowController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view->setVariable('details_data', $detailsData);
-
+        $view->setVariable('include_fraud_id_check_info', true);
+        $view->setVariable(
+            'warning_message',
+            'By continuing, you confirm that the certificate provider is more than 100 years old. 
+            If not, please change the date.'
+        );
         return $view->setTemplate($templates['default']);
     }
 
