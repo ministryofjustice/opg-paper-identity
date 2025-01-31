@@ -113,13 +113,13 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function checkNinoValidity(string $nino): string
+    public function checkNinoValidity(string $uuid, string $nino): string
     {
         $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
 
         try {
             $this->makeApiRequest(
-                '/identity/validate_nino',
+                sprintf('/identity/%s/validate_nino', $uuid),
                 'POST',
                 ['nino' => $nino],
                 ['Content-Type' => 'application/json']
@@ -128,7 +128,7 @@ class OpgApiService implements OpgApiServiceInterface
             return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'];
+        return $this->responseData['result'];
     }
 
     public function checkDlnValidity(string $dln): string
