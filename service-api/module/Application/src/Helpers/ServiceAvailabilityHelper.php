@@ -12,9 +12,7 @@ class ServiceAvailabilityHelper
     public const DECISION_NODECISION = 'NODECISION';
     public const LOCKED = 'LOCKED';
     public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
-
     public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
-
     protected array $availableServices = [];
 
     protected array $processedMessages = [];
@@ -124,29 +122,21 @@ class ServiceAvailabilityHelper
         }
     }
 
+    private function parseBannerText(string $configMessage): string
+    {
+        $labels = $this->config['opg_settings']['person_type_labels'];
+
+        return sprintf(
+            $this->config['opg_settings']['banner_messages'][$configMessage],
+            $labels[$this->case->personType]
+        );
+    }
+
     public function processServicesWithCaseData(): array
     {
-        if ($this->case->caseProgress?->docCheck?->state === true) {
-            $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_ID_SUCCESS];
-
-            $this->setServiceFlags(false);
-
-            return $this->toArray();
-        }
-
-        if ($this->case->caseProgress?->kbvs?->result === false) {
-            $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED];
-
-            $this->setServiceFlags(false);
-
-            return $this->toArray();
-        }
-
         if ($this->case->caseProgress?->kbvs?->result === true) {
             $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_SUCCESS];
+                $this->parseBannerText(self::LOCKED_SUCCESS);
 
             $this->setServiceFlags(false, [
                 'NATIONAL_INSURANCE_NUMBER',
@@ -161,6 +151,33 @@ class ServiceAvailabilityHelper
             return $this->toArray();
         }
 
+        if ($this->case->identityCheckPassed === false) {
+            $this->processedMessages['banner'] =
+                $this->parseBannerText(self::LOCKED);
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
+        if ($this->case->caseProgress?->docCheck?->state === false) {
+            $this->processedMessages['banner'] =
+                $this->parseBannerText(self::LOCKED);
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
+        if ($this->case->caseProgress?->docCheck?->state === true) {
+            $this->processedMessages['banner'] =
+                $this->parseBannerText(self::LOCKED_ID_SUCCESS);
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
         if (
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION
@@ -170,13 +187,10 @@ class ServiceAvailabilityHelper
             if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;
                 $this->processedMessages['banner'] =
-                    $this->config['opg_settings']['banner_messages'][$this->case->personType][self::DECISION_STOP];
+                    $this->parseBannerText(self::DECISION_STOP);
             } else {
                 $this->processedMessages['banner'] =
-                    $this->config['opg_settings']
-                        ['banner_messages']
-                        [$this->case->personType]
-                        [self::DECISION_NODECISION];
+                    $this->parseBannerText(self::DECISION_NODECISION);
             }
         }
 
