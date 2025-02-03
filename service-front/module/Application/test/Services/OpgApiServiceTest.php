@@ -162,6 +162,13 @@ class OpgApiServiceTest extends TestCase
                 null,
                 false,
             ],
+            // Identity Check Passed
+            [
+                $identityCheckClient,
+                $expectedReturnData,
+                null,
+                false,
+            ],
         ];
     }
 
