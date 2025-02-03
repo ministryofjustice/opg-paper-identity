@@ -18,7 +18,7 @@ class CounterService extends Entity
      *   fad: string,
      * }
      */
-    public array $selectedPostOffice;
+    public ?array $selectedPostOffice = null;
 
     #[Annotation\Required(false)]
     public string $notificationState = '';
