@@ -462,7 +462,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn('2025-01-20T10:56:18+00:00');
 
         if ($dispatch == "post") {
-
             $this
                 ->opgApiServiceMock
                 ->expects(self::once())

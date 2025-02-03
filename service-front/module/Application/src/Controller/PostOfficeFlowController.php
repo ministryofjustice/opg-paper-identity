@@ -180,9 +180,9 @@ class PostOfficeFlowController extends AbstractActionController
         $form = $this->createForm(PostOfficeAddress::class);
         $locationForm = $this->createForm(PostOfficeSearchLocation::class);
 
-        $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid,  $detailsData['address']['postcode']);
+        $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $detailsData['address']['postcode']);
 
-        $view->setVariable('location',  $detailsData['address']['postcode']);
+        $view->setVariable('location', $detailsData['address']['postcode']);
         $view->setVariable('post_office_list', $postOfficeData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
@@ -263,7 +263,6 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('display_id_method', $idMethodForDisplay);
 
         if ($this->getRequest()->isPost()) {
-
             //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
             $pdfData = $counterService['pdfBase64'];
