@@ -332,19 +332,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ],
         ];
 
-        $postOfficesProcessed = [
-            "jsonString1" => [
-                "name" => "new post office",
-                "address" => "1 Fake Street, Faketown",
-                "post_code" => "FA1 2KE",
-            ],
-            "jsonString2" => [
-                "name" => "old post office",
-                "address" => "2 Pretend Road, Pretendcity",
-                "post_code" => "PR3 2TN",
-            ]
-        ];
-
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -359,16 +346,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid, 'SW1B 1BB')
             ->willReturn($mockPostOfficeResponse);
 
-        $this
-            ->formProcessorService
-            ->expects(self::once())
-            ->method("processPostOfficeSearchResponse")
-            ->with($mockPostOfficeResponse)
-            ->willReturn($postOfficesProcessed);
-
         $this->dispatch("/$this->uuid/find-post-office-branch", "GET");
-        $this->assertQuery('input#jsonString1');
-        $this->assertQuery('input#jsonString2');
+        $this->assertQuery('input#postOffice-1234567');
+        $this->assertQuery('input#postOffice-7654321');
     }
 
     public function testfindPostOfficeBranchSelectOption(): void
@@ -430,12 +410,12 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getVariables')
             ->willReturn([
                 'post_office_list' => [
-                    "somePostOffice" => "some post office"
+                    "123456789" => []
                 ]
             ]);
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "POST", ["location" => "FA2 3KE"]);
-        $this->assertQuery('input#somePostOffice');
+        $this->assertQuery('input#postOffice-123456789');
     }
 
 
@@ -446,10 +426,10 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
         $mockResponseDataIdDetails['counterService'] = [
-            'selectedPostOffice' => json_encode([
+            'selectedPostOffice' => [
                 'address' => 'post office, some town',
                 'post_code' => 'PO1 0FC'
-            ])
+            ]
         ];
 
         $this
@@ -482,12 +462,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn('2025-01-20T10:56:18+00:00');
 
         if ($dispatch == "post") {
-            $this
-                ->opgApiServiceMock
-                ->expects(self::once())
-                ->method('confirmSelectedPostOffice')
-                ->with($this->uuid, '20 Jan 2025');
-
             $this
                 ->opgApiServiceMock
                 ->expects(self::once())
