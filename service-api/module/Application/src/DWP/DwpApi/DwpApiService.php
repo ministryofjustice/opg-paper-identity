@@ -78,6 +78,7 @@ class DwpApiService
         string $nino
     ): bool {
         if ($caseData->idMethodIncludingNation) {
+            /** @psalm-suppress PossiblyNullArgument */
             $submittedNino = strtoupper(
                 preg_replace(
                     '/(\s+)|(-)/',
@@ -86,6 +87,7 @@ class DwpApiService
                 )
             );
 
+            /** @psalm-suppress PossiblyNullArgument */
             $returnedNino = strtoupper(
                 preg_replace(
                     '/(\s+)|(-)/',

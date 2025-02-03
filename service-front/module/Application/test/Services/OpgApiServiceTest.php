@@ -210,16 +210,6 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
 
-        $insufficientMockResponseData = [
-            'status' => 'NOT_ENOUGH_DETAILS',
-            'nino' => $insufficientNino,
-        ];
-        $insufficientMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)),
-        ]);
-        $handlerStack = HandlerStack::create($insufficientMock);
-        $insufficientClient = new Client(['handler' => $handlerStack]);
-
         return [
             [
                 $validNino,
@@ -239,7 +229,6 @@ class OpgApiServiceTest extends TestCase
             ]
         ];
     }
-
 
     /**
      * @dataProvider dlnData

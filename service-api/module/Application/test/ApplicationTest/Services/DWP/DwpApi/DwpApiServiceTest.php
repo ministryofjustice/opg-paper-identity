@@ -218,7 +218,7 @@ class DwpApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+            new GuzzleResponse(200, [], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -265,7 +265,7 @@ class DwpApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+            new GuzzleResponse(200, [], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -297,7 +297,7 @@ class DwpApiServiceTest extends TestCase
     {
         $this->expectException(ClientException::class);
         $failMock = new MockHandler([
-            new GuzzleResponse(400, [], json_encode([])),
+            new GuzzleResponse(400, [], json_encode([], JSON_THROW_ON_ERROR)),
         ]);
         $failHandlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $failHandlerStack]);
@@ -325,7 +325,7 @@ class DwpApiServiceTest extends TestCase
         $successMockResponseData = static::DETAILS_RESPONSE;
 
         $successMock = new MockHandler([
-            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+            new GuzzleResponse(200, [], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -355,7 +355,7 @@ class DwpApiServiceTest extends TestCase
     {
         $this->expectException(ClientException::class);
         $failMock = new MockHandler([
-            new GuzzleResponse(400, [], json_encode([])),
+            new GuzzleResponse(400, [], json_encode([], JSON_THROW_ON_ERROR)),
         ]);
         $failHandlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $failHandlerStack]);
