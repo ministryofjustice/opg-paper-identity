@@ -40,7 +40,7 @@ class SessionStatusServiceTest extends TestCase
 
     public function getCaseData(): CaseData
     {
-        $caseData = CaseData::fromArray([
+        return CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'claimedIdentity' => [
                 'firstName' => 'Maria',
@@ -61,7 +61,6 @@ class SessionStatusServiceTest extends TestCase
             ],
             'lpas' => []
         ]);
-        return $caseData;
     }
 
     public function testNoNotificationsReturnsCounterService(): void
