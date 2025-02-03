@@ -265,7 +265,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function addSelectedPostOffice(string $uuid, string $postOffice): void
+    public function addSelectedPostOffice(string $uuid, array $postOffice): void
     {
         $data = [
             'selected_postoffice' => $postOffice,
@@ -273,20 +273,6 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest("/cases/$uuid/add-selected-postoffice", 'POST', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
-
-
-    public function confirmSelectedPostOffice(string $uuid, string $deadline): void
-    {
-        $data = [
-            'deadline' => $deadline,
-        ];
-
-        try {
-            $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }
