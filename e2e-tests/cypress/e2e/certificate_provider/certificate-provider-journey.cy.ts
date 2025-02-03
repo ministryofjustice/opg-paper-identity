@@ -144,7 +144,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("The passport needs to be no more than 18 months out of date");
 
         cy.get("#passport").clear();
-        cy.contains("Yes").click();
+        cy.get(".govuk-radios__label").contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("Enter the passport number.");
 
