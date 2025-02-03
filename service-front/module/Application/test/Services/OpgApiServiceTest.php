@@ -155,17 +155,17 @@ class OpgApiServiceTest extends TestCase
                 HttpException::class,
                 false,
             ],
-            // Identity Check Performed Exception
-            [
-                $identityCheckClient,
-                null,
-                OpgApiException::class,
-                false,
-            ],
             // Identity Check Passed Null Case
             [
                 $identityCheckNullClient,
                 $expectedReturnDataNullCheck,
+                null,
+                false,
+            ],
+            // Identity Check Passed
+            [
+                $identityCheckClient,
+                $expectedReturnData,
                 null,
                 false,
             ],

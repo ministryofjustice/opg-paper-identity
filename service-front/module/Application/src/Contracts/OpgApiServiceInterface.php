@@ -130,7 +130,7 @@ interface OpgApiServiceInterface
      */
     public function updateCaseProfessionalAddress(string $uuid, array $data): void;
 
-    public function updateCaseSetDocumentComplete(string $uuid, string $idDocument): void;
+    public function updateCaseSetDocumentComplete(string $uuid, string $idDocument, bool $state = true): void;
 
     public function updateCaseSetDob(string $uuid, string $dob): void;
 
