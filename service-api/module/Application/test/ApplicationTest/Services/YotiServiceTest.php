@@ -60,7 +60,7 @@ class YotiServiceTest extends TestCase
     public function testPostOfficeBranchSuccess(): void
     {
         $postCode = 'AB12CD';
-        $responseBody = json_encode(['branches' => []]);
+        $responseBody = json_encode(['branches' => []], JSON_THROW_ON_ERROR);
 
         $response = new GuzzleResponse(200, [], $responseBody);
         $this->client->expects($this->once())
@@ -89,7 +89,7 @@ class YotiServiceTest extends TestCase
     public function testCreateSessionSuccess(): void
     {
         $sessionData = ['data' => 'test'];
-        $responseBody = json_encode(['status' => 'created']);
+        $responseBody = json_encode(['status' => 'created'], JSON_THROW_ON_ERROR);
 
         $response = new GuzzleResponse(201, [], $responseBody);
 
@@ -164,7 +164,11 @@ class YotiServiceTest extends TestCase
             ->willReturn('signature');
 
         $config = ['capture' => ['required_resources' => [['id' => 'resource-id']]]];
-        $this->client->method('get')->willReturn(new GuzzleResponse(200, [], json_encode($config)));
+        $this->client->method('get')->willReturn(new GuzzleResponse(
+            200,
+            [],
+            json_encode($config, JSON_THROW_ON_ERROR)
+        ));
 
         $this->yotiService->getSessionConfigFromYoti($sessionId, $nonce, $timestamp);
     }

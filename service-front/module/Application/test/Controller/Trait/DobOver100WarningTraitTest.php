@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Traits;
 
 use Application\Controller\Trait\DobOver100WarningTrait;
+use DateTime;
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\View\Model\ViewModel;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,7 @@ class DobOver100WarningTraitTest extends TestCase
     {
         $view = new ViewModel();
         $callbackCalled = false;
-        $dob = date('Y-m-d', strtotime('-101 years'));
+        $dob = (new DateTime('-101 years'))->format('Y-m-d');
 
         $request = $this->createTestRequest(['dob_warning_100_accepted' => '1']);
 
@@ -47,7 +48,7 @@ class DobOver100WarningTraitTest extends TestCase
     {
         $view = new ViewModel();
         $callbackCalled = false;
-        $dob = date('Y-m-d', strtotime('-101 years'));
+        $dob = (new DateTime('-101 years'))->format('Y-m-d');
 
         $request = $this->createTestRequest(); // No warning acceptance
 
@@ -69,7 +70,7 @@ class DobOver100WarningTraitTest extends TestCase
     {
         $view = new ViewModel();
         $callbackCalled = false;
-        $dob = date('Y-m-d', strtotime('-99 years'));
+        $dob = (new DateTime('-99 years'))->format('Y-m-d');
 
         $request = $this->createTestRequest();
 
@@ -91,7 +92,7 @@ class DobOver100WarningTraitTest extends TestCase
     {
         $view = new ViewModel();
         $callbackCalled = false;
-        $dob = date('Y-m-d', strtotime('-100 years'));
+        $dob = (new DateTime('-100 years'))->format('Y-m-d');
 
         $request = $this->createTestRequest();
 
