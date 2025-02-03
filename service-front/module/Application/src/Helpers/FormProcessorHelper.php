@@ -134,16 +134,6 @@ class FormProcessorHelper
         );
     }
 
-    public function processPostOfficeSearchResponse(array $responseData): array
-    {
-        $locationData = [];
-        foreach ($responseData as $key => $array) {
-            $jsonKey = json_encode(array_merge($array, ['fad' => $key]));
-            $locationData[$jsonKey] = $array;
-        }
-        return $locationData;
-    }
-
     /**
      * @param FormInterface<array{location: string}> $form
      */
@@ -161,8 +151,7 @@ class FormProcessorHelper
 
             $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formArray['location']);
 
-            $locationData = $this->processPostOfficeSearchResponse($responseData);
-            $variables['post_office_list'] = $locationData;
+            $variables['post_office_list'] = $responseData;
         } else {
             $form->setMessages(['location' => ['Please enter a postcode, town or street name']]);
         }
@@ -184,7 +173,8 @@ class FormProcessorHelper
     public function processPostOfficeSelectForm(
         string $uuid,
         FormInterface $form,
-        array $templates = []
+        array $templates = [],
+        array $postOfficeData = [],
     ): FormProcessorResponseDto {
         $redirect = null;
 
@@ -192,7 +182,9 @@ class FormProcessorHelper
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
 
             try {
-                $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
+                $selectedPostOffice = $postOfficeData[$formArray['postoffice']];
+                $selectedPostOffice['fad'] = $formArray['postoffice'];
+                $this->opgApiService->addSelectedPostOffice($uuid, $selectedPostOffice);
                 $redirect = 'root/confirm_post_office';
             } catch (OpgApiException) {
                 $form->setMessages(['Error saving Post Office to this case.']);
