@@ -79,31 +79,39 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, [], json_encode($successMockResponseData)),
+            new Response(200, [], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMock = new MockHandler([
-            new Response(400, [], json_encode(['Bad Request'])),
+            new Response(400, [], json_encode(['Bad Request'], JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
 
         $notFoundMock = new MockHandler([
-            new Response(404, [], json_encode(['error' => 'Case not found'])),
+            new Response(404, [], json_encode(['error' => 'Case not found'], JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($notFoundMock);
         $notFoundClient = new Client(['handler' => $handlerStack]);
 
         $identityCheckExceptionMock = new MockHandler([
-            new Response(200, [], json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => true]))),
+            new Response(
+                200,
+                [],
+                json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => true]), JSON_THROW_ON_ERROR)
+            ),
         ]);
         $identityCheckHandler = HandlerStack::create($identityCheckExceptionMock);
         $identityCheckClient = new Client(['handler' => $identityCheckHandler]);
 
         $identityCheckNullMock = new MockHandler([
-            new Response(200, [], json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => null]))),
+            new Response(
+                200,
+                [],
+                json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => null]), JSON_THROW_ON_ERROR)
+            ),
         ]);
         $identityCheckNullHandler = HandlerStack::create($identityCheckNullMock);
         $identityCheckNullClient = new Client(['handler' => $identityCheckNullHandler]);
@@ -147,17 +155,17 @@ class OpgApiServiceTest extends TestCase
                 HttpException::class,
                 false,
             ],
-            // Identity Check Performed Exception
-            [
-                $identityCheckClient,
-                null,
-                OpgApiException::class,
-                false,
-            ],
             // Identity Check Passed Null Case
             [
                 $identityCheckNullClient,
                 $expectedReturnDataNullCheck,
+                null,
+                false,
+            ],
+            // Identity Check Passed
+            [
+                $identityCheckClient,
+                $expectedReturnData,
                 null,
                 false,
             ],
@@ -187,7 +195,7 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -197,10 +205,20 @@ class OpgApiServiceTest extends TestCase
             'nino' => $invalidNino,
         ];
         $failMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
+
+        $insufficientMockResponseData = [
+            'status' => 'NOT_ENOUGH_DETAILS',
+            'nino' => $insufficientNino,
+        ];
+        $insufficientMock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)),
+        ]);
+        $handlerStack = HandlerStack::create($insufficientMock);
+        $insufficientClient = new Client(['handler' => $handlerStack]);
 
         return [
             [
@@ -251,7 +269,7 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -261,7 +279,7 @@ class OpgApiServiceTest extends TestCase
             'dln' => $invalidDln,
         ];
         $failMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
@@ -271,7 +289,7 @@ class OpgApiServiceTest extends TestCase
             'dln' => $insufficientDln,
         ];
         $insufficientMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($insufficientMock);
         $insufficientClient = new Client(['handler' => $handlerStack]);
@@ -326,7 +344,7 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -336,7 +354,7 @@ class OpgApiServiceTest extends TestCase
             'passport' => $invalidPassport,
         ];
         $failMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
@@ -346,7 +364,7 @@ class OpgApiServiceTest extends TestCase
             'passport' => $insufficientPassport,
         ];
         $insufficientMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($insufficientMock);
         $insufficientClient = new Client(['handler' => $handlerStack]);
@@ -422,7 +440,7 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $mock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($mockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($mockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
@@ -480,13 +498,13 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($correctResponse)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($correctResponse, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($failResponse)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($failResponse, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
@@ -560,14 +578,14 @@ class OpgApiServiceTest extends TestCase
             "lpas" => $lpas,
         ];
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData)),
+            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMockResponseData = ['error' => 'POST /cases/create resulted in a `400 Bad Request`'];
         $failMock = new MockHandler([
-            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData)),
+            new Response(400, ['X-Foo' => 'Bar'], json_encode($failMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);
@@ -822,7 +840,7 @@ class OpgApiServiceTest extends TestCase
                     IdMethod::NationalInsuranceNumber->value => true,
                     IdMethod::PostOffice->value => true,
                     'EXPERIAN' => false,
-                ]),
+                ], JSON_THROW_ON_ERROR),
             ),
         ]);
         $handlerStack = HandlerStack::create($successMock);
@@ -832,7 +850,7 @@ class OpgApiServiceTest extends TestCase
             new Response(
                 200,
                 ['X-Foo' => 'Bar'],
-                json_encode([]),
+                json_encode([], JSON_THROW_ON_ERROR),
             ),
         ]);
         $failHandlerStack = HandlerStack::create($failMock);

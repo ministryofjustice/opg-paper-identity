@@ -78,7 +78,7 @@ class OpgApiService implements OpgApiServiceInterface
                 ! $skipIdCheckPerformedCheck && ($response['identityCheckPassed'] === true ||
                     $response['identityCheckPassed'] === false)
             ) {
-                throw new OpgApiException('Identity check has already been performed');
+//                throw new OpgApiException('Identity check has already been performed');
             }
 
             $response['firstName'] = $response['claimedIdentity']['firstName'];
@@ -115,7 +115,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkNinoValidity(string $uuid, string $nino): string
     {
-        $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
+        $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino) ?? '');
 
         try {
             $this->makeApiRequest(
@@ -133,7 +133,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkDlnValidity(string $dln): string
     {
-        $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln));
+        $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln) ?? '');
 
         try {
             $this->makeApiRequest(
@@ -151,7 +151,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkPassportValidity(string $passport): string
     {
-        $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport));
+        $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport) ?? '');
 
         try {
             $this->makeApiRequest(
@@ -314,14 +314,17 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function updateCaseSetDocumentComplete(string $uuid, string $idDocument): void
+    public function updateCaseSetDocumentComplete(string $uuid, string $idDocument, bool $state = true): void
     {
         $url = sprintf("/cases/%s/complete-document", $uuid);
 
+        $data = [
+            'idDocument' => $idDocument,
+            'state' => $state
+        ];
+
         try {
-            $this->makeApiRequest($url, 'POST', [
-                'idDocument' => $idDocument
-            ]);
+            $this->makeApiRequest($url, 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

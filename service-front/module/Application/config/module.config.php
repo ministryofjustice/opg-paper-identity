@@ -34,6 +34,8 @@ if (! is_string($prefix)) {
     $prefix = '';
 }
 
+$yotiSupportedDocs = file_get_contents(__DIR__ . '/yoti-supported-documents.json');
+
 return [
     'router' => [
         'routes' => [
@@ -641,23 +643,9 @@ return [
                 'fraud' => 'application/pages/fraud_failure'
             ],
         ],
-        'banner_messages' => [
-            'donor' => [
-                'NODECISION' => 'The donor cannot ID over the phone due to a lack of ' .
-                    'available security questions or failure to answer them correctly on a previous occasion.',
-                'STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
-                    'available information from Experian or a failure to answer the security questions correctly ' .
-                    'on a previous occasion.'
-            ],
-            'certificateProvider' => [
-                'STOP' => 'The certificate provider cannot ID over the phone due to a lack of ' .
-                    'available information from Experian or a failure to answer the security ' .
-                    'questions correctly on a previous occasion.',
-                'NODECISION' => 'The certificate provider cannot ID over the phone due to a lack of ' .
-                    'available information from Experian or a failure to answer the security questions ' .
-                    'correctly on a previous occasion.'
-            ]
-        ],
-        'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
+        'yoti_supported_documents' => json_decode(
+            $yotiSupportedDocs === false ? '' : $yotiSupportedDocs,
+            true
+        ),
     ],
 ];

@@ -463,6 +463,7 @@ class IdentityController extends AbstractActionController
         $data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
         $status = Response::STATUS_CODE_200;
+        $state = array_key_exists('state', $data) ? $data['state'] : true;
 
         if (! $uuid) {
             $status = Response::STATUS_CODE_400;
@@ -490,7 +491,7 @@ class IdentityController extends AbstractActionController
 
         $caseProgress->docCheck = DocCheck::fromArray([
             'idDocument' => $data['idDocument'],
-            'state' => true
+            'state' => $state
         ]);
 
         try {

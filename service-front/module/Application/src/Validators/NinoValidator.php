@@ -42,12 +42,12 @@ class NinoValidator extends AbstractValidator
 
     private function formatValue(string $value): string
     {
-        return strtoupper(preg_replace('/(\s+)|(-)/', '', $value));
+        return strtoupper(preg_replace('/(\s+)|(-)/', '', $value) ?? '');
     }
 
     private function checkPattern(): int
     {
-        return preg_match("/^[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z][0-9]{6}[A-D]$/i", $this->value);
+        return preg_match("/^[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z][0-9]{6}[A-D]$/i", $this->value) ?: 0;
     }
 
     private function checkLength(): bool
