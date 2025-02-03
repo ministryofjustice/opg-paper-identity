@@ -65,7 +65,6 @@ class SessionStatusServiceTest extends TestCase
             'notificationState' => '',
             'state' => '',
             'result' => false,
-            'searchPostcode' => null,
         ]);
 
         $result = $this->sut->getSessionStatus($caseData);
