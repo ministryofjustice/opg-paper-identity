@@ -113,7 +113,7 @@ describe("Identify a Donor", () => {
     cy.contains("Enter passport expiry date. For example, 31 03 2012");
 
     cy.get("#passport").type("123456781", {force: true});
-    cy.contains("Yes").click();
+    cy.get(".govuk-radios__label").contains("Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Identity document verified");
@@ -151,7 +151,7 @@ describe("Identify a Donor", () => {
     cy.contains("Enter the Driving licence number.");
 
     cy.get("#dln").type("MORGA657054SM9IJ", {force: true});
-    cy.contains("Yes").click();
+    cy.get(".govuk-radios__label").contains("Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Identity document verified");
