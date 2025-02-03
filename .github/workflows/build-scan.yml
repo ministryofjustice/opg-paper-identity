@@ -62,7 +62,7 @@ jobs:
         run: |
           docker compose build ${{ matrix.service_name }}
       - name: Configure AWS Credentials With Assumed Role to Management
-        uses: aws-actions/configure-aws-credentials@v4.0.2
+        uses: aws-actions/configure-aws-credentials@v4.0.3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
