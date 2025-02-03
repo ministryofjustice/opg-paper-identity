@@ -171,7 +171,11 @@ class YotiControllerTest extends TestCase
                 'id_route' => "TELEPHONE",
             ],
             'counterService' => [
-                'selectedPostOffice' => ''
+                'selectedPostOffice' => [
+                    'fad' => '29348729',
+                    'address' => '123 Fake Street, Fake Town',
+                    'post_code' => 'FA1 2KE'
+                ],
             ]
         ]);
 
