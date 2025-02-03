@@ -45,17 +45,17 @@
                 </p>
             {% endif %}
             <fieldset class="govuk-fieldset">
-                {% for index, item in post_office_list %}
+                {% for fad, item in post_office_list %}
                     <div class="govuk-radios__item">
                         <input
                                 class="govuk-radios__input"
-                                id="{{ index }}"
+                                id="postOffice-{{ fad }}"
                                 name="postoffice"
                                 type="radio"
-                                value="{{ index }}"
+                                value="{{ fad }}"
                                 data-aria-controls="default"
                         />
-                        <label class="govuk-label govuk-radios__label" for="{{ index }}">
+                        <label class="govuk-label govuk-radios__label" for="{{ fad }}">
                             {{ item.name }}<br>
                             {{ item.address }}, {{ item.post_code }}
                         </label>

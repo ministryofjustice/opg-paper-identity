@@ -180,17 +180,10 @@ class PostOfficeFlowController extends AbstractActionController
         $form = $this->createForm(PostOfficeAddress::class);
         $locationForm = $this->createForm(PostOfficeSearchLocation::class);
 
-        if (! isset($detailsData['counterService']['searchPostcode'])) {
-            $searchString = $detailsData['address']['postcode'];
-        } else {
-            $searchString = $detailsData['counterService']['searchPostcode'];
-        }
+        $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid,  $detailsData['address']['postcode']);
 
-        $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
-        $locationData = $this->formProcessorHelper->processPostOfficeSearchResponse($responseData);
-
-        $view->setVariable('location', $searchString);
-        $view->setVariable('post_office_list', $locationData);
+        $view->setVariable('location',  $detailsData['address']['postcode']);
+        $view->setVariable('post_office_list', $postOfficeData);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
@@ -205,7 +198,8 @@ class PostOfficeFlowController extends AbstractActionController
                 $processed = $this->formProcessorHelper->processPostOfficeSelectForm(
                     $uuid,
                     $form,
-                    $templates
+                    $templates,
+                    $postOfficeData
                 );
             }
             if (! is_null($processed->getRedirect())) {
@@ -242,14 +236,13 @@ class PostOfficeFlowController extends AbstractActionController
 
         $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
 
-        $postOfficeData = json_decode($detailsData["counterService"]["selectedPostOffice"] ?? '', true);
-
-        $postOfficeAddress = explode(",", $postOfficeData['address']);
-        $postOfficeAddress = array_merge($postOfficeAddress, [$postOfficeData['post_code']]);
+        assert(isset($detailsData["counterService"]["selectedPostOffice"]), "No Selected Post Office Saved");
+        $postOfficeAddress = $detailsData["counterService"]["selectedPostOffice"]['address'];
+        $postOfficeAddress = explode(', ', $postOfficeAddress);
+        $postOfficeAddress[] = $detailsData["counterService"]["selectedPostOffice"]['post_code'];
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('post_office_summary', true);
         $view->setVariable('post_office_address', $postOfficeAddress);
         $view->setVariable('deadline', $deadline);
 
@@ -270,7 +263,6 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('display_id_method', $idMethodForDisplay);
 
         if ($this->getRequest()->isPost()) {
-            $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
 
             //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
