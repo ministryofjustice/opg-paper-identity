@@ -61,6 +61,11 @@ class DocumentCheckController extends AbstractActionController
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
             } else {
                 $template = $templates['fail'];
+                $this->opgApiService->updateCaseSetDocumentComplete(
+                    $uuid,
+                    IdMethod::NationalInsuranceNumber->value,
+                    false
+                );
             }
             return $view->setTemplate($template);
         }
@@ -99,6 +104,11 @@ class DocumentCheckController extends AbstractActionController
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenseNumber->value);
             } else {
+                $this->opgApiService->updateCaseSetDocumentComplete(
+                    $uuid,
+                    IdMethod::DrivingLicenseNumber->value,
+                    false
+                );
                 $template = $templates['fail'];
             }
             return $view->setTemplate($template);
@@ -158,6 +168,11 @@ class DocumentCheckController extends AbstractActionController
                         $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
                         $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
                     } else {
+                        $this->opgApiService->updateCaseSetDocumentComplete(
+                            $uuid,
+                            IdMethod::PassportNumber->value,
+                            false
+                        );
                         $template = $templates['fail'];
                     }
                     return $view->setTemplate($template);
