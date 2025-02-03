@@ -84,19 +84,14 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(VoucherName::class);
-        $form->setData([
-            "firstName" => $detailsData["firstName"],
-            "lastName" => $detailsData["lastName"]
-        ]);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData->toArray());
-
             if ($form->isValid()) {
+                $formData = $this->formToArray($form);
+
                 $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
@@ -122,7 +117,13 @@ class VouchingFlowController extends AbstractActionController
                     }
                 }
             }
+        } else {
+            $form->setData([
+                "firstName" => $detailsData["firstName"],
+                "lastName" => $detailsData["lastName"]
+            ]);
         }
+
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 

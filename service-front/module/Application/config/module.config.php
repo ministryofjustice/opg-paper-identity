@@ -34,6 +34,8 @@ if (! is_string($prefix)) {
     $prefix = '';
 }
 
+$yotiSupportedDocs = file_get_contents(__DIR__ . '/yoti-supported-documents.json');
+
 return [
     'router' => [
         'routes' => [
@@ -659,6 +661,9 @@ return [
             'certificateProvider' => 'certificate provider',
             'voucher' => 'person vouching'
         ],
-        'yoti_supported_documents' => json_decode(file_get_contents(__DIR__ . '/yoti-supported-documents.json'), true),
+        'yoti_supported_documents' => json_decode(
+            $yotiSupportedDocs === false ? '' : $yotiSupportedDocs,
+            true
+        ),
     ],
 ];

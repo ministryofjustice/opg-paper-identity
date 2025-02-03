@@ -21,7 +21,7 @@ return [
         // modules are loaded. These effectively override configuration
         // provided by modules themselves. Paths may use GLOB_BRACE notation.
         'config_glob_paths' => [
-            realpath(__DIR__) . '/autoload/{{,*.}global,{,*.}local}.php',
+            __DIR__ . '/autoload/{{,*.}global,{,*.}local}.php',
         ],
 
         // Whether or not to enable a configuration cache.

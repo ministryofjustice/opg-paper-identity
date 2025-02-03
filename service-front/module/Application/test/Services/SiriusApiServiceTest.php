@@ -134,7 +134,7 @@ class SiriusApiServiceTest extends TestCase
                 'town' => 'London',
                 'postcode' => 'SW1A 2AA',
             ],
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         $clientMock
             ->expects($this->once())
@@ -240,7 +240,7 @@ class SiriusApiServiceTest extends TestCase
                     'X-XSRF-TOKEN' => 'abcd',
                 ],
             ])
-            ->willReturn(new Response(200, [], json_encode($lpa)));
+            ->willReturn(new Response(200, [], json_encode($lpa, JSON_THROW_ON_ERROR)));
 
         $result = $sut->getLpaByUid($uId, $request);
 
@@ -300,11 +300,11 @@ class SiriusApiServiceTest extends TestCase
             ->method("get")
             ->willReturnCallback(fn (string $url, array $header) => match (true) {
                 $url === '/api/v1/digital-lpas/M-0000-0000-0000' && $header === $expectedHeader =>
-                    new Response(200, [], json_encode($lpas['M-0000-0000-0000'])),
+                    new Response(200, [], json_encode($lpas['M-0000-0000-0000'], JSON_THROW_ON_ERROR)),
                 $url === '/api/v1/digital-lpas/M-0000-0000-0001' && $header === $expectedHeader =>
-                    new Response(200, [], json_encode($lpas['M-0000-0000-0001'])),
+                    new Response(200, [], json_encode($lpas['M-0000-0000-0001'], JSON_THROW_ON_ERROR)),
                 $url === '/api/v1/digital-lpas/M-0000-0000-0002' && $header === $expectedHeader =>
-                    new Response(200, [], json_encode($lpas['M-0000-0000-0002'])),
+                    new Response(200, [], json_encode($lpas['M-0000-0000-0002'], JSON_THROW_ON_ERROR)),
                 default => self::fail('Did not expect:' . print_r($url, true))
             });
 

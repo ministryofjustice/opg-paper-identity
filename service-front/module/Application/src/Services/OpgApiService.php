@@ -115,7 +115,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkNinoValidity(string $nino): string
     {
-        $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino));
+        $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino) ?? '');
 
         try {
             $this->makeApiRequest(
@@ -133,7 +133,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkDlnValidity(string $dln): string
     {
-        $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln));
+        $dln = strtoupper(preg_replace('/(\s+)|(-)/', '', $dln) ?? '');
 
         try {
             $this->makeApiRequest(
@@ -151,7 +151,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function checkPassportValidity(string $passport): string
     {
-        $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport));
+        $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport) ?? '');
 
         try {
             $this->makeApiRequest(
