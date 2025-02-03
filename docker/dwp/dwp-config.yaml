@@ -30,6 +30,15 @@ resources:
     method: post
     requestBody:
       operator: Contains
+      value: 809C
+    response:
+      statusCode: 200
+      file: data/foundDwpMockResponse.json
+
+  - path: "/capi/v2/citizens/match"
+    method: post
+    requestBody:
+      operator: Contains
       value: 123C
     response:
       statusCode: 422
@@ -47,3 +56,8 @@ resources:
       statusCode: 200
       file: data/foundDetailsResponse.json
 
+  - path: "/capi/v2/citizens/4aea28768e333a437f063bd3e4c62c51839204cff6a840a2de9faa4b288f6c43"
+    method: get
+    response:
+      statusCode: 200
+      file: data/foundDwpMockDetailsResponse.json
