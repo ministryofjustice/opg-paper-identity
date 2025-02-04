@@ -91,8 +91,10 @@ class IndexController extends AbstractActionController
             throw new HttpException(400, "ID check has already been completed");
         }
 
-        if ($type === 'certificateProvider'
-            && isset($lpaData['opg.poas.lpastore']['certificateProvider']['identityCheck'])) {
+        if (
+            $type === 'certificateProvider'
+            && isset($lpaData['opg.poas.lpastore']['certificateProvider']['identityCheck'])
+        ) {
             throw new HttpException(400, "ID check has already been completed");
         }
     }
