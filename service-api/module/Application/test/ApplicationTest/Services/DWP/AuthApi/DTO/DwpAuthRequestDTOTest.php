@@ -2,33 +2,31 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Services\Experian\AuthApi\DTO;
+namespace ApplicationTest\Services\DWP\AuthApi\DTO;
 
-use Application\Experian\Crosscore\AuthApi\DTO\RequestDTO;
+use Application\DWP\AuthApi\DTO\RequestDTO;
 use PHPUnit\Framework\TestCase;
 
 class DwpAuthRequestDTOTest extends TestCase
 {
-    private RequestDTO $experianCrosscoreAuthRequestDTO;
+    private RequestDTO $dwpAuthRequestDTO;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->experianCrosscoreAuthRequestDTO = new RequestDTO(
-            'userName',
-            'password',
+        $this->dwpAuthRequestDTO = new RequestDTO(
+            'client_credentials',
             'clientId',
-            'clientSecret'
+            'clientSecret',
         );
     }
     public function testArray(): void
     {
         $this->assertEquals([
-            'username' => 'userName',
-            'password' => 'password',
+            'grant_type' => 'client_credentials',
             'client_id' => 'clientId',
             'client_secret' => 'clientSecret',
-        ], $this->experianCrosscoreAuthRequestDTO->toArray());
+        ], $this->dwpAuthRequestDTO->toArray());
     }
 }

@@ -7,20 +7,18 @@ namespace Application\DWP\AuthApi\DTO;
 class RequestDTO
 {
     public function __construct(
+        public readonly string $grantType,
         public readonly string $clientId,
         public readonly string $clientSecret,
-        public readonly string $bundle,
-        public readonly string $privateKey,
     ) {
     }
 
     public function toArray(): array
     {
         return [
-            'clientId' => $this->clientId,
-            'clientSecret' => $this->clientSecret,
-            'bundle' => $this->bundle,
-            'private_key' => $this->privateKey
+            'grant_type' => $this->grantType,
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
         ];
     }
 }

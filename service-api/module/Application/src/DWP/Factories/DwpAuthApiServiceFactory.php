@@ -31,8 +31,8 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         $logger = $container->get(LoggerInterface::class);
         $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
         $oauthTokenEndpoint = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
-        $certificate = (new AwsSecret('dwp/opg-certificate'))->getValue();
-        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
+//        $certificateBundle = (new AwsSecret('dwp/opg-certificate-bundle'))->getValue();
+//        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
         if (empty($baseUri)) {
             throw new AuthApiException("DWP oauth-token-endpoint is empty");
@@ -44,25 +44,30 @@ class DwpAuthApiServiceFactory implements FactoryInterface
             'base_uri' => $baseUri,
         ];
 
+        $cacertPemFilename = '/opg-private/dwp-cacert.pem';
+        $sslKeyPemFilename = '/opg-private/dwp-sslkey.pem';
+        $certPemFilename = '/opg-private/dwp-cert.pem';
+
         if ($useCertificate) {
-            $clientOptions['cert'] = $certificate;
-            $clientOptions['ssl_key'] = $sslKey;
+            $clientOptions['cert'] = $certPemFilename;
+            $clientOptions['ssl_key'] = $sslKeyPemFilename;
+            $clientOptions['cacert'] = $cacertPemFilename;
         }
 
         $guzzleClient = new Client($clientOptions);
 
         $apcHelper = new ApcHelper();
 
-        $bundle = (new AwsSecret('dwp/opg-certificate-bundle'))->getValue();
-        $privateKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
+//        $bundle = (new AwsSecret('dwp/opg-certificate-bundle'))->getValue();
+//        $privateKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
         $clientId = (new AwsSecret('dwp/oauth-client-id'))->getValue();
         $clientSecret = (new AwsSecret('dwp/oauth-client-secret'))->getValue();
+        $grantType = 'client_credentials';
 
         $dwpAuthRequestDTO = new RequestDTO(
+            $grantType,
             $clientId,
-            $clientSecret,
-            $bundle,
-            $privateKey
+            $clientSecret
         );
 
         return new AuthApiService(

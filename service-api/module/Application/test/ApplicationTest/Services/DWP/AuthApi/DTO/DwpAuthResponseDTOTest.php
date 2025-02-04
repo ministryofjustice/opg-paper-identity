@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\ApplicationTest\Services\Experian\AuthApi\DTO;
+namespace ApplicationTest\Services\DWP\AuthApi\DTO;
 
-use Application\Experian\Crosscore\AuthApi\DTO\ResponseDTO;
+use Application\DWP\AuthApi\DTO\ResponseDTO;
 use PHPUnit\Framework\TestCase;
 
 class DwpAuthResponseDTOTest extends TestCase
 {
-    private ResponseDTO $experianCrosscoreAuthResponseDTO;
+    private ResponseDTO $dwpAuthResponseDTO;
 
     private array $data;
 
@@ -18,17 +18,14 @@ class DwpAuthResponseDTOTest extends TestCase
         parent::setUp();
 
         $this->data = [
-            'access_token' => 'accessToken',
-            'refresh_token' => 'refreshToken',
-            'issued_at' => 'issuedAt',
-            'expires_in' => 'expiresIn',
-            'token_type' => 'tokenType'
+            'access_token' => 'access_token',
+            'expires_in' => 'expires_in',
+            'token_type' => 'Bearer',
         ];
 
-        $this->experianCrosscoreAuthResponseDTO = new ResponseDTO(
+
+        $this->dwpAuthResponseDTO = new ResponseDTO(
             $this->data['access_token'],
-            $this->data['refresh_token'],
-            $this->data['issued_at'],
             $this->data['expires_in'],
             $this->data['token_type'],
         );
@@ -36,11 +33,11 @@ class DwpAuthResponseDTOTest extends TestCase
 
     public function testAccessToken(): void
     {
-        $this->assertEquals('accessToken', $this->experianCrosscoreAuthResponseDTO->accessToken());
+        $this->assertEquals('access_token', $this->dwpAuthResponseDTO->accessToken());
     }
 
     public function testArray(): void
     {
-        $this->assertEquals($this->data, $this->experianCrosscoreAuthResponseDTO->toArray());
+        $this->assertEquals($this->data, $this->dwpAuthResponseDTO->toArray());
     }
 }

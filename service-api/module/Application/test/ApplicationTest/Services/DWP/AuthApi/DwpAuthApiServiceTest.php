@@ -37,10 +37,9 @@ class DwpAuthApiServiceTest extends TestCase
         $this->client = $this->createMock(Client::class);
         $this->apcHelper = $this->createMock(ApcHelper::class);
         $this->dwpAuthRequestDto = new RequestDTO(
-            'username',
-            'password',
-            'bundle',
-            'privateKey',
+            'client_credentials',
+            'clientId',
+            'clientSecret',
         );
 
         $this->dwpAuthApiService = new AuthApiService(
