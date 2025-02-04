@@ -79,6 +79,26 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute($redirect, ['uuid' => $case['uuid']]);
     }
 
+    /**
+     * @param string $type
+     * @psalm-param Lpa $lpaData
+     * @return void
+     * @throws HttpException
+     */
+    private function ensureIdentityCheckHasNotAlreadyBeenPerformed(string $type, array $lpaData): void
+    {
+        if ($type === 'donor' && isset($lpaData['opg.poas.lpastore']['donor']['identityCheck'])) {
+            throw new HttpException(400, "ID check has already been completed");
+        }
+
+        if (
+            $type === 'certificateProvider'
+            && isset($lpaData['opg.poas.lpastore']['certificateProvider']['identityCheck'])
+        ) {
+            throw new HttpException(400, "ID check has already been completed");
+        }
+    }
+
     public function abandonFlowAction(): ViewModel|Response
     {
         $view = new ViewModel();
