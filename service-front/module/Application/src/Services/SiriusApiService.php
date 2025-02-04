@@ -54,7 +54,7 @@ use Psr\Log\LoggerInterface;
  *      addressLine3?: string,
  *      town?: string,
  *      postcode?: string,
- *      country: string,
+ *      country: string
  *    },
  *    linkedDigitalLpas?: LinkedLpa[]
  *  },
@@ -65,12 +65,20 @@ use Psr\Log\LoggerInterface;
  *      lastName: string,
  *      dateOfBirth: string,
  *      address: Address,
+ *      identityCheck?: array{
+ *        checkedAt: string,
+ *        type: string
+ *      },
  *    },
  *    certificateProvider: array{
  *      firstNames: string,
  *      lastName: string,
  *      dateOfBirth: string,
  *      address: Address,
+ *      identityCheck?: array{
+ *        checkedAt: string,
+ *        type: string
+ *      },
  *    },
  *    attorneys: Attorney[],
  *  },

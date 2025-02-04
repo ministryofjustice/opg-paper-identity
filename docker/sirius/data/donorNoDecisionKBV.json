@@ -50,10 +50,6 @@
       "dateOfBirth": "1986-09-03",
       "email": "lee.thinfile@example.com",
       "firstNames": "Lee",
-      "identityCheck": {
-        "checkedAt": "1913-11-28T02:04:34.0Z",
-        "type": "one-login"
-      },
       "lastName": "Thinfile",
       "uid": "20cd4c3b-76e2-6582-27c4-428eb9ca1f9c"
     },
