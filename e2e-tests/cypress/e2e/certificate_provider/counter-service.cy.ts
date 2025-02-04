@@ -3,10 +3,14 @@ describe("Counter service certificateProvider journey", () => {
     cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
     cy.contains("How will you confirm your identity?");
-    cy.contains("label", "Post Office").click();
+    cy.get("input#POST_OFFICE").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Which document will they take to the Post Office?");
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.contains("There is a problem");
+    cy.contains("Please select an option");
+
     cy.contains("UK passport (up to 18 months expired)").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -44,9 +48,8 @@ describe("Counter service certificateProvider journey", () => {
     cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
     cy.contains("How will you confirm your identity?");
-    cy.contains("label", "Post Office").click();
+    cy.get("input#POST_OFFICE").click();
     cy.get(".govuk-button").contains("Continue").click();
-
     cy.contains("Which document will they take to the Post Office?");
     cy.contains("ID from another country").click();
     cy.get(".govuk-button").contains("Continue").click();
@@ -88,5 +91,27 @@ describe("Counter service certificateProvider journey", () => {
 
     cy.contains("We will send you a letter.");
     cy.contains("Please do this by the deadline stated.");
+  });
+
+  it("handles 2 LPAs", () => {
+    cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+    cy.contains("How will you confirm your identity?");
+    cy.get("input#POST_OFFICE").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Which document will they take to the Post Office?");
+    cy.contains("UK passport (up to 18 months expired)").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Does the name match the ID?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("LPAs included in the identity check");
+    cy.contains("Remove").click();
+
+    cy.contains("Remove").should('not.exist');
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("What is their date of birth?");
   });
 });

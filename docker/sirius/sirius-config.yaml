@@ -22,6 +22,12 @@ resources:
       statusCode: 200
       file: data/donor.json
 
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGB-35G3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/donor.json
+
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-35G4"
     method: get
     response:
@@ -47,6 +53,12 @@ resources:
       file: data/donorRefer.json
 
   - path: "/api/v1/digital-lpas/M-XYXY-YAGA-0000"
+    method: get
+    response:
+      statusCode: 200
+      file: data/certificateProvider.json
+
+  - path: "/api/v1/digital-lpas/M-XYXY-YAGB-0000"
     method: get
     response:
       statusCode: 200

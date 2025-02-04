@@ -10,9 +10,9 @@ class ServiceAvailabilityHelper
 {
     public const DECISION_STOP = 'STOP';
     public const DECISION_NODECISION = 'NODECISION';
+    public const LOCKED = 'LOCKED';
     public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
-    public const LOCKED_FAIL = 'LOCKED_FAIL';
-
+    public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
     protected array $availableServices = [];
 
     protected array $processedMessages = [];
@@ -110,51 +110,87 @@ class ServiceAvailabilityHelper
         }
     }
 
-    private function setAllAutoServices(bool $flag): void
+    private function setServiceFlags(bool $flag, array $options = []): void
     {
         $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = $flag;
         $this->availableServices['DRIVING_LICENCE'] = $flag;
         $this->availableServices['PASSPORT'] = $flag;
         $this->availableServices['EXPERIAN'] = $flag;
+
+        foreach ($options as $service) {
+            $this->availableServices[$service] = $flag;
+        }
+    }
+
+    private function parseBannerText(string $configMessage): string
+    {
+        $labels = $this->config['opg_settings']['person_type_labels'];
+
+        return sprintf(
+            $this->config['opg_settings']['banner_messages'][$configMessage],
+            $labels[$this->case->personType]
+        );
     }
 
     public function processServicesWithCaseData(): array
     {
-        if ($this->case->identityCheckPassed === true) {
+        if ($this->case->caseProgress?->kbvs?->result === true) {
             $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_SUCCESS];
+                $this->parseBannerText(self::LOCKED_SUCCESS);
 
-            $this->setAllAutoServices(false);
+            $this->setServiceFlags(false, [
+                'NATIONAL_INSURANCE_NUMBER',
+                'DRIVING_LICENCE',
+                'PASSPORT',
+                'POST_OFFICE',
+                'EXPERIAN',
+                'VOUCHING',
+                'COURT_OF_PROTECTION'
+            ]);
 
             return $this->toArray();
         }
 
         if ($this->case->identityCheckPassed === false) {
             $this->processedMessages['banner'] =
-                $this->config['opg_settings']['banner_messages'][$this->case->personType][self::LOCKED_FAIL];
+                $this->parseBannerText(self::LOCKED);
 
-            $this->setAllAutoServices(false);
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
+        if ($this->case->caseProgress?->docCheck?->state === false) {
+            $this->processedMessages['banner'] =
+                $this->parseBannerText(self::LOCKED);
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
+        if ($this->case->caseProgress?->docCheck?->state === true) {
+            $this->processedMessages['banner'] =
+                $this->parseBannerText(self::LOCKED_ID_SUCCESS);
+
+            $this->setServiceFlags(false);
 
             return $this->toArray();
         }
 
         if (
             $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
-            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION ||
-            $this->case->identityCheckPassed !== false
+            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION
         ) {
-            $this->setAllAutoServices(false);
+            $this->setServiceFlags(false);
 
             if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
                 $this->availableServices['VOUCHING'] = false;
                 $this->processedMessages['banner'] =
-                    $this->config['opg_settings']['banner_messages'][$this->case->personType][self::DECISION_STOP];
+                    $this->parseBannerText(self::DECISION_STOP);
             } else {
                 $this->processedMessages['banner'] =
-                    $this->config['opg_settings']
-                        ['banner_messages']
-                        [$this->case->personType]
-                        [self::DECISION_NODECISION];
+                    $this->parseBannerText(self::DECISION_NODECISION);
             }
         }
 

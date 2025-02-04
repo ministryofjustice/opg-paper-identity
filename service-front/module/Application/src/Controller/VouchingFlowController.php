@@ -13,28 +13,27 @@ use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Forms\AddDonor;
+use Application\Model\Entity\CaseData;
 use Application\Services\SiriusApiService;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
-use Application\Forms\IdMethod;
 use Application\Forms\Postcode;
 use Application\Forms\AddressJson;
-use Application\Forms\PassportDateCp;
-use Laminas\Form\FormInterface;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Application\Enums\IdMethod as IdMethodEnum;
 use DateTime;
+use Application\Controller\Trait\DobOver100WarningTrait;
 
 class VouchingFlowController extends AbstractActionController
 {
     use FormBuilder;
+    use DobOver100WarningTrait;
 
     protected $plugins;
-    private string $uuid;
 
     public array $routes = [
         "confirm_donors" => "root/voucher_confirm_donors",
@@ -47,7 +46,7 @@ class VouchingFlowController extends AbstractActionController
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly AddDonorFormHelper $addDonorFormHelper,
-        private readonly array $config
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -73,106 +72,10 @@ class VouchingFlowController extends AbstractActionController
             }
 
             if ($form->isValid()) {
-                return $this->redirect()->toRoute("root/vouching_how_will_you_confirm", ['uuid' => $uuid]);
+                return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
         return $view->setTemplate('application/pages/vouching/confirm_vouching');
-    }
-
-    public function howWillYouConfirmAction(): ViewModel|Response
-    {
-        $templates = ['default' => 'application/pages/vouching/how_will_you_confirm'];
-        $view = new ViewModel();
-        $this->uuid = $this->params()->fromRoute("uuid");
-        $dateSubForm = $this->createForm(PassportDateCp::class);
-        $form = $this->createForm(IdMethod::class);
-        $view->setVariable('date_sub_form', $dateSubForm);
-
-        $detailsData = $this->opgApiService->getDetailsData($this->uuid);
-
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($this->uuid);
-
-        $identityDocs = [];
-        foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            $data = $serviceAvailability['data'] ?? [];
-            if (isset($data[$key]) && $data[$key] === true) {
-                $identityDocs[$key] = $value;
-            }
-        }
-
-        $optionsData = $identityDocs;
-        $view->setVariable('service_availability', $serviceAvailability);
-        $view->setVariable('form', $form);
-
-        if (count($this->getRequest()->getPost())) {
-            $formData = $this->getRequest()->getPost()->toArray();
-            if (array_key_exists('check_button', $formData)) {
-                $variables = $this->handlePassportDateCheckFormSubmission($dateSubForm, $templates);
-                $view->setVariables($variables);
-            } else {
-                $response = $this->handleIdMethodFormSubmission($form, $formData);
-                if ($response) {
-                    return $response;
-                }
-            }
-        }
-
-        $view->setVariable('options_data', $optionsData);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $this->uuid);
-
-        return $view->setTemplate($templates['default']);
-    }
-
-    /**
-     * @param FormInterface $idMethodForm
-     * @param array<string, mixed> $formData
-     * @return Response|null
-     */
-    private function handleIdMethodFormSubmission(FormInterface $idMethodForm, array $formData): Response|null
-    {
-        if (! $idMethodForm->isValid()) {
-            return null;
-        }
-
-        if ($formData['id_method'] == IdMethodEnum::PostOffice->value) {
-            $data = [
-                'id_route' => IdMethodEnum::PostOffice->value,
-            ];
-            $this->opgApiService->updateIdMethodWithCountry(
-                $this->uuid,
-                $data
-            );
-            return $this->redirect()->toRoute("root/post_office_documents", ['uuid' => $this->uuid]);
-        }
-
-        $data = [
-            'id_route' => 'TELEPHONE',
-            'id_country' => \Application\PostOffice\Country::GBR->value,
-            'id_method' => $formData['id_method']
-        ];
-        $this->opgApiService->updateIdMethodWithCountry(
-            $this->uuid,
-            $data
-        );
-
-        return $this->redirect()->toRoute("root/voucher_name", ['uuid' => $this->uuid]);
-    }
-
-    /**
-     * @param FormInterface $dateSubForm
-     * @param array<string, mixed> $templates
-     * @return array<string, mixed>
-     */
-    private function handlePassportDateCheckFormSubmission(FormInterface $dateSubForm, array $templates): array
-    {
-        $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
-            $this->uuid,
-            $this->getRequest()->getPost(),
-            $dateSubForm,
-            $templates
-        );
-        return $formProcessorResponseDto->getVariables();
     }
 
     public function voucherNameAction(): ViewModel|Response
@@ -181,19 +84,14 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(VoucherName::class);
-        $form->setData([
-            "firstName" => $detailsData["firstName"],
-            "lastName" => $detailsData["lastName"]
-        ]);
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
         if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost();
-            $form->setData($formData->toArray());
-
             if ($form->isValid()) {
+                $formData = $this->formToArray($form);
+
                 $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
@@ -219,8 +117,33 @@ class VouchingFlowController extends AbstractActionController
                     }
                 }
             }
+        } else {
+            $form->setData([
+                "firstName" => $detailsData["firstName"],
+                "lastName" => $detailsData["lastName"]
+            ]);
         }
+
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
+    }
+
+    private function checkMatchesForLpas(array $detailsData, string $dateOfBirth): bool | array
+    {
+        $match = false;
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+            $match = $this->voucherMatchLpaActorHelper->checkMatch(
+                $lpasData,
+                $detailsData["firstName"],
+                $detailsData["lastName"],
+                $dateOfBirth,
+            );
+            // we raise the warning if there are any matches so stop once we've found one
+            if ($match) {
+                break;
+            }
+        }
+        return $match;
     }
 
     public function voucherDobAction(): ViewModel|Response
@@ -246,37 +169,39 @@ class VouchingFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost();
             $dateOfBirth = $this->formProcessorHelper->processDateForm($formData->toArray());
+
             $formData->set('date', $dateOfBirth);
             $form->setData($formData);
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
-                $match = false;
-                foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-                    $match = $this->voucherMatchLpaActorHelper->checkMatch(
-                        $lpasData,
-                        $detailsData["firstName"],
-                        $detailsData["lastName"],
-                        $dateOfBirth,
-                    );
-                    // we raise the warning if there are any matches so stop once we've found one
-                    if ($match) {
-                        break;
-                    }
-                }
-                if ($match) {
+                $match = $this->checkMatchesForLpas($detailsData, $dateOfBirth);
+                if ($match !== false) {
                     $view->setVariable('match', $match);
                 } else {
-                    try {
-                        $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
-                        if (isset($detailsData["address"])) {
-                            return $this->redirect()->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
-                        } else {
-                            return $this->redirect()->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                    if ($form->isValid()) {
+                        $proceed = $this->handleDobOver100Warning(
+                            $dateOfBirth,
+                            $this->getRequest(),
+                            $view,
+                            function () use ($uuid, $dateOfBirth, $form) {
+                                try {
+                                    $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
+                                } catch (\Exception $exception) {
+                                    $form->setMessages(["There was an error saving the data"]);
+                                }
+                            }
+                        );
+
+                        if ($proceed) {
+                            if (isset($detailsData["address"])) {
+                                return $this->redirect()
+                                    ->toRoute("root/voucher_enter_address_manual", ['uuid' => $uuid]);
+                            } else {
+                                return $this->redirect()
+                                    ->toRoute("root/voucher_enter_postcode", ['uuid' => $uuid]);
+                            }
                         }
-                    } catch (\Exception $exception) {
-                        $form->setMessages(["There was an error saving the data"]);
                     }
                 }
             }
@@ -290,7 +215,12 @@ class VouchingFlowController extends AbstractActionController
         } elseif (! empty($messages)) {
             $view->setVariable("date_problem", $messages);
         }
-        return $view->setTemplate('application/pages/vouching/what_is_the_voucher_dob');
+        $view->setVariable(
+            'warning_message',
+            'By continuing, you confirm that the person vouching is more than 100 years old. 
+            If not, please change the date.'
+        );
+        return $view->setTemplate('application/pages/confirm_dob');
     }
 
     public function enterPostcodeAction(): ViewModel|Response
@@ -420,19 +350,37 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost()) {
-            /**
-            * @psalm-suppress PossiblyUndefinedArrayOffset
-            */
-            if ($detailsData['idMethodIncludingNation']['id_route'] === 'POST_OFFICE') {
-                return $this->redirect()->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
+            $idRoute = '';
+            $idMethod = '';
+            if (isset($detailsData['idMethodIncludingNation'])) {
+                $idRoute = $detailsData['idMethodIncludingNation']['id_route'] ?? '';
+                $idMethod = $detailsData['idMethodIncludingNation']['id_method'] ?? '';
+            }
+            $redirect = false;
+            if ($idRoute === 'POST_OFFICE') {
+                $redirect = "root/find_post_office_branch";
+            } else {
+                switch ($idMethod) {
+                    case IdMethodEnum::PassportNumber->value:
+                        $redirect = "root/passport_number";
+                        break;
+                    case IdMethodEnum::DrivingLicenseNumber->value:
+                        $redirect = "root/driving_licence_number";
+                        break;
+                    case IdMethodEnum::NationalInsuranceNumber->value:
+                        $redirect = "root/national_insurance_number";
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if ($redirect) {
+                return $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
             }
         }
 
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
-            /**
-            * @psalm-suppress ArgumentTypeCoercion
-            */
             $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
             $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
@@ -447,7 +395,6 @@ class VouchingFlowController extends AbstractActionController
         }
 
         $view = new ViewModel();
-
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpa_details', $lpaDetails);
@@ -512,10 +459,24 @@ class VouchingFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
 
-        $view = new ViewModel();
+        if ($this->getRequest()->isPost()) {
+            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
+        }
 
+        $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/vouching/identity_check_passed');
+    }
+
+    public function identityCheckFailedAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_failed');
     }
 }

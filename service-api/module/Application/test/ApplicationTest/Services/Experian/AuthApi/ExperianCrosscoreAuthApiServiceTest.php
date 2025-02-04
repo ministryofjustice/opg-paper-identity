@@ -103,13 +103,13 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new GuzzleResponse(200, [], json_encode($successMockResponseData)),
+            new GuzzleResponse(200, [], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
 
         $failMock = new MockHandler([
-            new GuzzleResponse(401, [], json_encode(['Bad Request'])),
+            new GuzzleResponse(401, [], json_encode(['Bad Request'], JSON_THROW_ON_ERROR)),
         ]);
         $handlerStack = HandlerStack::create($failMock);
         $failClient = new Client(['handler' => $handlerStack]);

@@ -7,6 +7,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the name match the ID?");
+        cy.contains("Edit the certificate provider's details in Sirius").should('have.attr', 'href').and('include', 'lpa_details')
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("LPAs included in the identity check");
@@ -136,16 +137,16 @@ describe("Identify a Certificate Provider", () => {
 
         cy.get("#passport").type("123456781", {force: true});
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Please choose yes or no");
 
         cy.contains("No").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("The passport needs to be no more than 18 months out of date");
 
         cy.get("#passport").clear();
-        cy.contains("Yes").click();
+        cy.get(".govuk-radios__label").contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Enter the passport number.");
 
         cy.contains("Help with checking if passport is in date");
         cy.contains("Help with checking if passport is in date").click();
@@ -220,7 +221,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#dln").clear();
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("Value is required and can't be empty");
+        cy.contains("Enter the Driving licence number.");
 
         cy.get("#dln").type("MORGA657054SM9IJ", {force: true});
         cy.contains("Yes").click();
@@ -292,6 +293,25 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains(".moj-banner", "Identity check passed");
+    });
+
+    it("handles 2 LPAs", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+        cy.contains("Remove").click();
+
+        cy.contains("Remove").should('not.exist');
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("What is their date of birth?");
     });
 });
 

@@ -124,7 +124,7 @@ class SiriusApiService
     /**
      * @return Lpa
      */
-    public function getLpaByUid(string $uid, Request $request): array
+    public function getLpaByUid(string $uid, Request|RequestInterface $request): array
     {
         $validator = new LpaUidValidator();
         if (! $validator->isValid($uid)) {
