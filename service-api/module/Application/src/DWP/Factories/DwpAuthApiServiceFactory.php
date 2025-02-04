@@ -49,7 +49,7 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         $certPemFilename = '/opg-private/dwp-cert.pem';
 
         if ($useCertificate) {
-            $clientOptions['cert'] = $certPemFilename;
+            $clientOptions['cert'] = [$certPemFilename, $sslKeyPemFilename];
             $clientOptions['ssl_key'] = $sslKeyPemFilename;
             $clientOptions['verify'] = $cacertPemFilename;
         }

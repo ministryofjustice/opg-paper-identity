@@ -33,7 +33,7 @@ chmod($pemFilename, 0400);
 // DWP files
 
 $cacert = $smClient->getSecretValue([
-    'SecretId' => $prefix . 'dwp/opg-certificate-chain',
+    'SecretId' => $prefix . 'dwp/opg-certificate-bundle',
 ]);
 
 $sslKey = $smClient->getSecretValue([
