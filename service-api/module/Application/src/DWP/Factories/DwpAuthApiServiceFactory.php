@@ -50,8 +50,8 @@ class DwpAuthApiServiceFactory implements FactoryInterface
 
         if ($useCertificate) {
             $clientOptions['cert'] = $certPemFilename;
-            $clientOptions['key'] = $sslKeyPemFilename;
-            $clientOptions['cacert'] = $cacertPemFilename;
+            $clientOptions['ssl_key'] = $sslKeyPemFilename;
+            $clientOptions['verify'] = $cacertPemFilename;
         }
 
         $guzzleClient = new Client($clientOptions);
