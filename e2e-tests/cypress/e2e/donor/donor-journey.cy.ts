@@ -11,7 +11,7 @@ describe("Identify a Donor", () => {
     cy.contains("Edit the donor's details in Sirius").should('have.attr', 'href').and('include', 'lpa_details')
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
@@ -86,7 +86,7 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
     cy.contains("Do the details match the ID document?");
     cy.get(".govuk-button").contains("Continue").click();
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("UK passport");
@@ -128,7 +128,7 @@ describe("Identify a Donor", () => {
     cy.contains("Do the details match the ID document?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("UK Driving Licence");
@@ -167,7 +167,7 @@ describe("Identify a Donor", () => {
     cy.contains("Do the details match the ID document?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
@@ -198,7 +198,7 @@ describe("Identify a Donor", () => {
     cy.contains("Do the details match the ID document?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
@@ -235,7 +235,7 @@ describe("Identify a Donor", () => {
     cy.contains("Do the details match the ID document?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
@@ -266,7 +266,7 @@ describe("Identify a Donor", () => {
     cy.contains("Do the details match the ID document?");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Which LPAs should this identity check apply to?");
+    cy.contains("LPAs included in this identity check");
     cy.contains("Remove").click();
 
     cy.get(".govuk-button").contains("Continue").click();
