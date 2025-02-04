@@ -206,6 +206,7 @@ class DwpApiService
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
+            $this->logger->info("DWP_RESPONSE: " . json_encode($responseArray));
         } catch (ClientException $clientException) {
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
@@ -220,8 +221,10 @@ class DwpApiService
                 throw $clientException;
             }
         } catch (\Exception $exception) {
-            throw new DwpApiException($exception->getMessage());
+            $this->logger->error("DwpApiException: " . $exception->getMessage());
+            throw new DwpApiException("DwpApiException: " . $exception->getMessage());
         }
+
         return new DetailsResponseDTO(
             $responseArray
         );
