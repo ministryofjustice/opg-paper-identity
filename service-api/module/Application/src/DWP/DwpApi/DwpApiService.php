@@ -206,7 +206,7 @@ class DwpApiService
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
-            $this->logger->info("DWP_RESPONSE: " . json_encode($responseArray));
+            $this->logger->info("DWP_RESPONSE: " . json_encode($responseArray, JSON_THROW_ON_ERROR));
         } catch (ClientException $clientException) {
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
