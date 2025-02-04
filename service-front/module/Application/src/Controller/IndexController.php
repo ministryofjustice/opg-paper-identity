@@ -69,6 +69,8 @@ class IndexController extends AbstractActionController
             throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
 
+        $this->ensureIdentityCheckHasNotAlreadyBeenPerformed($type, $lpas[0]);
+
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
         if ($type === 'voucher') {
