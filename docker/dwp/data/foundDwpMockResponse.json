@@ -1,0 +1,12 @@
+{
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "data": {
+    "id": "4aea28768e333a437f063bd3e4c62c51839204cff6a840a2de9faa4b288f6c43",
+    "type": "MatchResult",
+    "attributes": {
+      "matchingScenario": "Matched on NINO"
+    }
+  }
+}
