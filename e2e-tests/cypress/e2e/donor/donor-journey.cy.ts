@@ -23,7 +23,7 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
     cy.contains("Enter the National insurance number.");
 
-    cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+    cy.getInputByLabel("National Insurance number").type("NP 11 22 33 C");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Identity document verified");
@@ -171,7 +171,7 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
-    cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+    cy.getInputByLabel("National Insurance number").type("NP 11 22 33 C");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Identity document verified");
@@ -202,7 +202,7 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
-    cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+    cy.getInputByLabel("National Insurance number").type("NP 11 22 33 C");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Identity document verified");
@@ -239,7 +239,7 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
-    cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+    cy.getInputByLabel("National Insurance number").type("NP 11 22 33 C");
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Identity document verified");
