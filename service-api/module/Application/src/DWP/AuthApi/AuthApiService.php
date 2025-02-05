@@ -74,7 +74,7 @@ class AuthApiService
 
         $tokenResponse = json_decode($cachedToken, true);
 
-        if (is_null($tokenResponse) || ($tokenResponse['time'] + 3500) > time()) {
+        if (is_null($tokenResponse) || ((int)$tokenResponse['time'] + 3500) > time()) {
             return $tokenResponse['access_token'];
         } else {
             return $this->authenticate()->accessToken();

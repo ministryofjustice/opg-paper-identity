@@ -8,7 +8,7 @@ class ResponseDTO
 {
     public function __construct(
         public readonly string $accessToken,
-        public readonly string $expiresIn,
+        public readonly string|int $expiresIn,
         public readonly string $tokenType,
     ) {
     }
@@ -18,7 +18,7 @@ class ResponseDTO
         return $this->accessToken;
     }
 
-    public function expiresIn(): string
+    public function expiresIn(): string|int
     {
         return $this->expiresIn;
     }

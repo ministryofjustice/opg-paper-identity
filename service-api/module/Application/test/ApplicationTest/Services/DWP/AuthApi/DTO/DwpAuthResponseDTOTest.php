@@ -19,7 +19,7 @@ class DwpAuthResponseDTOTest extends TestCase
 
         $this->data = [
             'access_token' => 'access_token',
-            'expires_in' => 'expires_in',
+            'expires_in' => 123456789,
             'token_type' => 'Bearer',
         ];
 
