@@ -51,7 +51,7 @@ $cert = $smClient->getSecretValue([
 
 
 $sslKeyPemFilename = '/opg-private/dwp-sslkey.pem';
-$sslKeyPemContents = $cacert['SecretString'];
+$sslKeyPemContents = $sslKey['SecretString'];
 file_put_contents($sslKeyPemFilename, $sslKeyPemContents);
 chmod($sslKeyPemFilename, 0400);
 
