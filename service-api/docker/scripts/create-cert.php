@@ -47,7 +47,7 @@ $cert = $smClient->getSecretValue([
 $cacertPemFilename = '/opg-private/dwp-cacert.pem';
 $cacertPemContents = $cacert['SecretString'];
 file_put_contents($cacertPemFilename, $cacertPemContents);
-chmod($cacertPemContents, 0400);
+chmod($cacertPemFilename, 0400);
 
 
 $sslKeyPemFilename = '/opg-private/dwp-sslkey.pem';
@@ -59,4 +59,4 @@ chmod($sslKeyPemFilename, 0400);
 $certPemFilename = '/opg-private/dwp-cert.pem';
 $certPemContents = $cert['SecretString'];
 file_put_contents($certPemFilename, $certPemContents);
-chmod($certPemContents, 0400);
+chmod($certPemFilename, 0400);
