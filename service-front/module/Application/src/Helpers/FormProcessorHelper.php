@@ -231,7 +231,7 @@ class FormProcessorHelper
             $template = $templates['default'];
         }
 
-        $variable['form'] = $form;
+        $variables['form'] = $form;
 
         return new FormProcessorResponseDto(
             $uuid,

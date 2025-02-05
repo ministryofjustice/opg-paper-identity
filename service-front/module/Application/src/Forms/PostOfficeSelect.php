@@ -9,6 +9,8 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Validator\NotEmpty;
 use Laminas\Filter\Callback;
 
+use function PHPUnit\Framework\isEmpty;
+
 /**
  * @psalm-suppress MissingConstructor
  * @implements FormTemplate<array{postoffice: string}>
@@ -16,8 +18,15 @@ use Laminas\Filter\Callback;
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class PostOfficeSelect implements FormTemplate
 {
-    // annotations don't allow you to pass additional arguments
-    public static function json_decode_to_array($value): array { return json_decode($value, true); }
+    // annotations don't allow you to pass additional arguments and also happen
+    // before validation
+    public static function json_decode_to_array($value): array|null
+    {
+        if (empty($value)) {
+            return null;
+        }
+        return json_decode($value, true);
+    }
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
