@@ -33,21 +33,23 @@ class DwpApiServiceFactory implements FactoryInterface
         $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
         $detailsPath = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
         $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
-        $certificate = (new AwsSecret('dwp/opg-certificate-bundle'))->getValue();
-        $sslKey = (new AwsSecret('dwp/opg-certificate-private-key'))->getValue();
 
         if (empty($baseUri)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
-        $useCertificate = filter_var(getenv("DWP_USE_CERTIFICATE", true), FILTER_VALIDATE_BOOLEAN);
+        $suppressCertificate = filter_var(
+            getenv("DWP_SUPPRESS_CERTIFICATE"),
+            FILTER_VALIDATE_BOOLEAN
+        );
+
         $clientOptions = [
             'base_uri' => $baseUri,
         ];
 
-        if ($useCertificate) {
-            $clientOptions['cert'] = $certificate;
-            $clientOptions['ssl_key'] = $sslKey;
+        if (! $suppressCertificate) {
+            $clientOptions['cert'] = '/opg-private/dwp-cert.pem';
+            $clientOptions['ssl_key'] = '/opg-private/dwp-sslkey.pem';
         }
 
         $guzzleClient = new Client($clientOptions);
