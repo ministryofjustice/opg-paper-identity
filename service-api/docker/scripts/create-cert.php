@@ -32,22 +32,22 @@ chmod($pemFilename, 0400);
 
 // DWP files
 
-$cacert = $smClient->getSecretValue([
-    'SecretId' => $prefix . 'dwp/opg-certificate-bundle',
-]);
+//$cacert = $smClient->getSecretValue([
+//    'SecretId' => $prefix . 'dwp/opg-certificate-bundle',
+//]);
 
 $sslKey = $smClient->getSecretValue([
     'SecretId' => $prefix . 'dwp/opg-certificate-private-key',
 ]);
 
 $cert = $smClient->getSecretValue([
-    'SecretId' => $prefix . 'dwp/opg-certificate',
+    'SecretId' => $prefix . 'dwp/opg-certificate-bundle',
 ]);
 
-$cacertPemFilename = '/opg-private/dwp-cacert.pem';
-$cacertPemContents = $cacert['SecretString'];
-file_put_contents($cacertPemFilename, $cacertPemContents);
-chmod($cacertPemFilename, 0400);
+//$cacertPemFilename = '/opg-private/dwp-cacert.pem';
+//$cacertPemContents = $cacert['SecretString'];
+//file_put_contents($cacertPemFilename, $cacertPemContents);
+//chmod($cacertPemFilename, 0400);
 
 
 $sslKeyPemFilename = '/opg-private/dwp-sslkey.pem';

@@ -44,14 +44,14 @@ class DwpAuthApiServiceFactory implements FactoryInterface
             'base_uri' => $baseUri,
         ];
 
-        $cacertPemFilename = '/opg-private/dwp-cacert.pem';
+//        $cacertPemFilename = '/opg-private/dwp-cacert.pem';
         $sslKeyPemFilename = '/opg-private/dwp-sslkey.pem';
         $certPemFilename = '/opg-private/dwp-cert.pem';
 
         if ($useCertificate) {
             $clientOptions['cert'] = [$certPemFilename, $sslKeyPemFilename];
             $clientOptions['ssl_key'] = $sslKeyPemFilename;
-            $clientOptions['verify'] = $cacertPemFilename;
+//            $clientOptions['verify'] = $cacertPemFilename;
         }
 
         $guzzleClient = new Client($clientOptions);
