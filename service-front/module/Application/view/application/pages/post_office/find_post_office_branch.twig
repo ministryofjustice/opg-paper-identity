@@ -29,12 +29,9 @@
                     {{ location_form.get('location').messages | join(', ', ' and ') }}
                 </p>
             {% endif %}
-            <input class="govuk-input govuk-!-width-one-third" id="location" name="location"
-                    type="text" value="{{ location }}">
+            <input class="govuk-input govuk-!-width-one-third" id="location" name="location" type="text" value="{{ location }}">
             <input type="submit" class="govuk-button govuk-button--secondary" value="Search"/>
         </div>
-    </form>
-    <form method="POST">
         <div class="govuk-form-group {% if form.get('postoffice').messages %}govuk-form-group--error{% endif %}">
             {% if form.get('postoffice').messages %}
                 <p id="dln-error" class="govuk-error-message">

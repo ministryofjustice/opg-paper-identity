@@ -20,6 +20,7 @@ use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
+use Exception;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -183,7 +184,7 @@ class PostOfficeFlowController extends AbstractActionController
         $form = $this->createForm(PostOfficeSelect::class);
         $locationForm = $this->createForm(PostOfficeSearchLocation::class);
 
-        $searchPostCode = $detailsData['address']['postcode'];
+        $searchString = $detailsData['address']['postcode'];
 
         $view->setVariable('details_data', $detailsData);
 
@@ -191,28 +192,17 @@ class PostOfficeFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             if (array_key_exists('confirmPostOffice', $formData)) {
-                $counterService = $this->opgApiService->createYotiSession($uuid);
-                $pdfData = $counterService['pdfBase64'];
-                $pdf = $this->siriusApiService->sendDocument(
-                    $detailsData,
-                    SiriusDocument::PostOfficeDocCheck,
-                    $this->getRequest(),
-                    $pdfData
-                );
-                if ($pdf['status'] === 201) {
-                    return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
-                } else {
-                    $template = $templates['confirm'];
-                    $view->setVariable('errors', ['API Error']);
-                }
+                return $this->processConfirmPostoffice($uuid, $detailsData);
             } elseif (array_key_exists('selectPostoffice', $formData)) {
+                $searchString = $formData['location'] ?? $searchString;
                 $processed = $this->formProcessorHelper->processPostOfficeSelectForm(
                     $uuid,
                     $form,
                     $templates,
                     $detailsData,
                     $this->config,
-                    $this->getRequest()
+                    $this->getRequest(),
+                    $searchString
                 );
                 $template = $processed->getTemplate();
                 $view->setVariables($processed->getVariables());
@@ -226,18 +216,38 @@ class PostOfficeFlowController extends AbstractActionController
                 $view->setVariables($processed->getVariables());
             } else {
                 $template = $templates['default'];
-                $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostCode);
+                $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
             }
         } else {
             $view->setVariable('form', $form);
             $view->setVariable('location_form', $locationForm);
             $template = $templates['default'];
-            $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostCode);
+            $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
             $view->setVariable('post_office_list', $postOfficeData);
-            $view->setVariable('location', $searchPostCode);
+            $view->setVariable('location', $searchString);
         }
 
         return $view->setTemplate($template);
+    }
+
+    public function processConfirmPostoffice(
+        string $uuid,
+        array $detailsData,
+    ) : Response
+    {
+        $counterService = $this->opgApiService->createYotiSession($uuid);
+        $pdfData = $counterService['pdfBase64'];
+        $pdf = $this->siriusApiService->sendDocument(
+            $detailsData,
+            SiriusDocument::PostOfficeDocCheck,
+            $this->getRequest(),
+            $pdfData
+        );
+        if ($pdf['status'] !== 201) {
+            //TODO: how am i actually meant to do this?
+            throw new Exception();
+        }
+        return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
     }
 
     public function whatHappensNextAction(): ViewModel

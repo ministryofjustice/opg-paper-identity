@@ -34,11 +34,18 @@ class PostOfficeSelect implements FormTemplate
     #[Annotation\Filter(Callback::class, options: [
         'callback' => [self::class, 'json_decode_to_array']
     ])]
-    #[Annotation\Validator(NotEmpty::class)]
+    #[Annotation\Validator(NotEmpty::class, options: [
+        "messages" => [
+            NotEmpty::IS_EMPTY  => "Please select an option"
+        ]
+    ])]
     public mixed $postoffice;
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
     public bool $selectPostoffice;
+
+    #[Annotation\Validator(NotEmpty::class)]
+    public string $location;
 }

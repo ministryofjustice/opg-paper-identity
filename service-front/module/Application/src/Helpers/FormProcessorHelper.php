@@ -179,7 +179,8 @@ class FormProcessorHelper
         array $templates = [],
         array $detailsData = [],
         array $config = [],
-        $request
+        $request,
+        $searchString
     ): FormProcessorResponseDto {
 
         $variables = [];
@@ -227,8 +228,9 @@ class FormProcessorHelper
                 $template = $templates['default'];
             }
         } else {
-            $form->setMessages(['postoffice' => ['Please select an option']]);
             $template = $templates['default'];
+            $variables['location'] = $searchString;
+            $variables['post_office_list'] = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
         }
 
         $variables['form'] = $form;
