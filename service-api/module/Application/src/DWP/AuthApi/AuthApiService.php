@@ -94,8 +94,7 @@ class AuthApiService
                 $this->oauthTokenEndpoint,
                 [
                     'headers' => $this->makeHeaders(),
-                    'data' => $dwpAuthRequestDTO->toArray(),
-                    'verify' => false,
+                    'form_params' => $dwpAuthRequestDTO->toArray()
                 ],
             );
 
