@@ -49,11 +49,7 @@ class SessionStatusServiceTest extends TestCase
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
-                'selectedPostOffice' => [
-                    'fad' => '29348729',
-                    'address' => '123 Fake Street, Fake Town',
-                    'post_code' => 'FA1 2KE'
-                ],
+                'selectedPostOffice' => '29348729',
                 'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
                 'notificationState' => '',
                 'state' => '',
@@ -70,11 +66,7 @@ class SessionStatusServiceTest extends TestCase
         $this->yotiService->expects($this->never())->method('retrieveResults');
 
         $expectedResult = CounterService::fromArray([
-            'selectedPostOffice' => [
-                'fad' => '29348729',
-                'address' => '123 Fake Street, Fake Town',
-                'post_code' => 'FA1 2KE'
-            ],
+            'selectedPostOffice' => '29348729',
             'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'notificationState' => '',
             'state' => '',

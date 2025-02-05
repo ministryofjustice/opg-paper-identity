@@ -11,14 +11,7 @@ use Laminas\Validator\Uuid;
 
 class CounterService extends Entity
 {
-    /**
-     * @var array{
-     *   address: string,
-     *   post_code: string,
-     *   fad: string,
-     * }
-     */
-    public ?array $selectedPostOffice = null;
+    public ?string $selectedPostOffice = null;
 
     #[Annotation\Required(false)]
     public string $notificationState = '';

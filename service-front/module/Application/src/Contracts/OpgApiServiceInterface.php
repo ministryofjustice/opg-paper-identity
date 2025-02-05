@@ -35,10 +35,7 @@ namespace Application\Contracts;
  *     id_route?: string,
  *   },
  *   counterService?: array{
- *     selectedPostOffice: array{
- *       address: string,
- *       post_code: string,
- *       fad: string},
+ *     selectedPostOffice: string,
  *     notificationState: string,
  *     notificationsAuthToken: string,
  *     state: string,
@@ -116,7 +113,7 @@ interface OpgApiServiceInterface
      */
     public function listPostOfficesByPostcode(string $uuid, string $location): array;
 
-    public function addSelectedPostOffice(string $uuid, array $postOffice): void;
+    public function addSelectedPostOffice(string $uuid, string $postOffice): void;
 
     public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): void;
 

@@ -325,7 +325,7 @@ class YotiService implements YotiServiceInterface
         assert(isset($caseData->counterService->selectedPostOffice), "No Selected Post Office Saved");
         $payload["branch"] = [
             "type" => "UK_POST_OFFICE",
-            "fad_code" => $caseData->counterService->selectedPostOffice['fad']
+            "fad_code" => $caseData->counterService->selectedPostOffice
         ];
         return $payload;
     }

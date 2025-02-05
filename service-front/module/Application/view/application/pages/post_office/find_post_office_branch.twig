@@ -11,9 +11,7 @@
         {% endblock %}
     </h1>
     <p class="govuk-body govuk-!-width-two-thirds">
-        Not all Post Offices provide this service, please confirm your postcode so I can find your nearest
-        Post
-        Office
+        Not all Post Offices provide this service, confirm the preferred postcode and find the nearest Post Office that supports document verification.
     </p>
 
     <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
@@ -48,13 +46,13 @@
                 {% for fad, item in post_office_list %}
                     <div class="govuk-radios__item">
                         <input
-                                class="govuk-radios__input"
-                                id="postOffice-{{ fad }}"
-                                name="postoffice"
-                                type="radio"
-                                value="{{ fad }}"
-                                data-aria-controls="default"
-                        />
+                            class="govuk-radios__input"
+                            id="postoffice-{{ fad }}"
+                            name="postoffice"
+                            type="radio"
+                            value="{{ item|json_encode }}"
+                            data-aria-controls="default"
+                        >
                         <label class="govuk-label govuk-radios__label" for="{{ fad }}">
                             {{ item.name }}<br>
                             {{ item.address }}, {{ item.post_code }}
@@ -62,11 +60,9 @@
                     </div>
                 {% endfor %}
             </fieldset>
-
-            <input type="hidden" name="next_page" value="3">
         </div>
         <p class="govuk-form-group">
-            <input type="submit" class="govuk-button" value="Continue"/>
+            <input type="submit" class="govuk-button" value="Continue" name="selectPostoffice">
             <a href="./how-will-you-confirm" class="govuk-button govuk-button--secondary govuk-!-static-margin-left-4">Cancel</a>
         </p>
     </form>

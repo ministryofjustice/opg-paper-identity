@@ -12,7 +12,7 @@ use Application\Forms\Country;
 use Application\Forms\CountryDocument;
 use Application\Forms\IdMethod;
 use Application\Forms\PassportDate;
-use Application\Forms\PostOfficeAddress;
+use Application\Forms\PostOfficeSelect;
 use Application\Forms\PostOfficeSearchLocation;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
@@ -172,115 +172,72 @@ class PostOfficeFlowController extends AbstractActionController
 
     public function findPostOfficeBranchAction(): ViewModel|Response
     {
-        $templates = ['default' => 'application/pages/post_office/find_post_office_branch'];
+        $templates = [
+            'default' => 'application/pages/post_office/find_post_office_branch',
+            'confirm' => 'application/pages/post_office/confirm_post_office',
+        ];
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $form = $this->createForm(PostOfficeAddress::class);
+        $form = $this->createForm(PostOfficeSelect::class);
         $locationForm = $this->createForm(PostOfficeSearchLocation::class);
 
-        $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $detailsData['address']['postcode']);
+        $searchPostCode = $detailsData['address']['postcode'];
 
-        $view->setVariable('location', $detailsData['address']['postcode']);
-        $view->setVariable('post_office_list', $postOfficeData);
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
 
         if ($this->getRequest()->isPost()) {
-            if (array_key_exists('location', $this->getRequest()->getPost()->toArray())) {
+            $formData = $this->getRequest()->getPost()->toArray();
+
+            if (array_key_exists('confirmPostOffice', $formData)) {
+                $counterService = $this->opgApiService->createYotiSession($uuid);
+                $pdfData = $counterService['pdfBase64'];
+                $pdf = $this->siriusApiService->sendDocument(
+                    $detailsData,
+                    SiriusDocument::PostOfficeDocCheck,
+                    $this->getRequest(),
+                    $pdfData
+                );
+                if ($pdf['status'] === 201) {
+                    return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
+                } else {
+                    $template = $templates['confirm'];
+                    $view->setVariable('errors', ['API Error']);
+                }
+            } elseif (array_key_exists('selectPostoffice', $formData)) {
+                $processed = $this->formProcessorHelper->processPostOfficeSelectForm(
+                    $uuid,
+                    $form,
+                    $templates,
+                    $detailsData,
+                    $this->config,
+                    $this->getRequest()
+                );
+                $template = $processed->getTemplate();
+                $view->setVariables($processed->getVariables());
+            } elseif (array_key_exists('location', $formData)) {
                 $processed = $this->formProcessorHelper->processPostOfficeSearchForm(
                     $uuid,
                     $locationForm,
                     $templates
                 );
+                $template = $processed->getTemplate();
+                $view->setVariables($processed->getVariables());
             } else {
-                $processed = $this->formProcessorHelper->processPostOfficeSelectForm(
-                    $uuid,
-                    $form,
-                    $templates,
-                    $postOfficeData
-                );
+                $template = $templates['default'];
+                $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostCode);
             }
-            if (! is_null($processed->getRedirect())) {
-                return $this->redirect()->toRoute($processed->getRedirect(), ['uuid' => $uuid]);
-            }
-            $view->setVariables($processed->getVariables());
         } else {
             $view->setVariable('form', $form);
             $view->setVariable('location_form', $locationForm);
+            $template = $templates['default'];
+            $postOfficeData = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchPostCode);
+            $view->setVariable('post_office_list', $postOfficeData);
+            $view->setVariable('location', $searchPostCode);
         }
 
-        return $view->setTemplate('application/pages/post_office/find_post_office_branch');
-    }
-
-    public function confirmPostOfficeAction(): ViewModel|Response
-    {
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $optionsData = $this->config['opg_settings']['identity_documents'];
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-
-            if (! empty($lpasData['opg.poas.lpastore'])) {
-                $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-            } else {
-                $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
-            }
-        }
-
-        $view->setVariable('lpa_details', $lpaDetails);
-
-        $deadline = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
-
-        assert(isset($detailsData["counterService"]["selectedPostOffice"]), "No Selected Post Office Saved");
-        $postOfficeAddress = $detailsData["counterService"]["selectedPostOffice"]['address'];
-        $postOfficeAddress = explode(', ', $postOfficeAddress);
-        $postOfficeAddress[] = $detailsData["counterService"]["selectedPostOffice"]['post_code'];
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
-        $view->setVariable('post_office_address', $postOfficeAddress);
-        $view->setVariable('deadline', $deadline);
-
-        /**
-         * @psalm-suppress PossiblyUndefinedArrayOffset
-         */
-        if (
-            array_key_exists($detailsData['idMethodIncludingNation']['id_method'], $optionsData) &&
-            $detailsData['idMethodIncludingNation']['id_country'] === PostOfficeCountry::GBR->value
-        ) {
-            $idMethodForDisplay = $optionsData[$detailsData['idMethodIncludingNation']['id_method']];
-        } else {
-            $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country'] ?? '');
-            $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method'] ?? '');
-            $idMethodForDisplay = sprintf('%s (%s)', $idMethod->translate(), $country->translate());
-        }
-
-        $view->setVariable('display_id_method', $idMethodForDisplay);
-
-        if ($this->getRequest()->isPost()) {
-            //trigger Post Office counter service & send pdf to sirius
-            $counterService = $this->opgApiService->createYotiSession($uuid);
-            $pdfData = $counterService['pdfBase64'];
-            $pdf = $this->siriusApiService->sendDocument(
-                $detailsData,
-                SiriusDocument::PostOfficeDocCheck,
-                $this->getRequest(),
-                $pdfData
-            );
-
-            if ($pdf['status'] === 201) {
-                return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
-            } else {
-                $view->setVariable('errors', ['API Error']);
-            }
-        }
-
-        return $view->setTemplate('application/pages/post_office/confirm_post_office');
+        return $view->setTemplate($template);
     }
 
     public function whatHappensNextAction(): ViewModel
@@ -308,15 +265,5 @@ class PostOfficeFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/post_office/post_office_route_not_available');
-    }
-
-    public function removeLpaAction(): Response
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $lpa = $this->params()->fromRoute("lpa");
-
-        $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
-
-        return $this->redirect()->toRoute("root/po_donor_lpa_check", ['uuid' => $uuid]);
     }
 }

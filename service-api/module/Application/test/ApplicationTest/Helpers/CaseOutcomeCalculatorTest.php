@@ -46,11 +46,8 @@ class CaseOutcomeCalculatorTest extends TestCase
             'personType' => 'donor',
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
-                'selectedPostOffice' => [
-                    'fad' => '29348729',
-                    'address' => '123 Fake Street, Fake Town',
-                    'post_code' => 'FA1 2KE'
-                ],                'notificationsAuthToken' => '00000000-0000-0000-0000-000000000000',
+                'selectedPostOffice' => '29348729',
+                'notificationsAuthToken' => '00000000-0000-0000-0000-000000000000',
                 'notificationState' => '',
                 'state' => '',
                 'result' => false

@@ -265,7 +265,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData;
     }
 
-    public function addSelectedPostOffice(string $uuid, array $postOffice): void
+    public function addSelectedPostOffice(string $uuid, string $postOffice): void
     {
         $data = [
             'selected_postoffice' => $postOffice,

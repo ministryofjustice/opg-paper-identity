@@ -53,9 +53,10 @@ class YotiController extends AbstractActionController
             $branchList = $this->yotiService->postOfficeBranch($data["search_string"]);
             foreach ($branchList['branches'] as $branch) {
                 $branches[$branch["fad_code"]] = [
+                    "fad_code" => $branch["fad_code"],
                     "name" => $branch["name"],
                     "address" => $branch["address"],
-                    "post_code" => $branch["post_code"]
+                    "post_code" => $branch["post_code"],
                 ];
             }
         } catch (YotiException $e) {
