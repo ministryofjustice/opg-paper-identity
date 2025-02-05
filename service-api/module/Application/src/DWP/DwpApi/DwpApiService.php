@@ -121,6 +121,8 @@ class DwpApiService
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
 
+            $this->logger->error('MATCH_POSTBODY: ' . json_encode($postBody, JSON_THROW_ON_ERROR));
+
             $response = $this->guzzleClient->request(
                 'POST',
                 $this->matchPath,
@@ -166,7 +168,7 @@ class DwpApiService
                         "ninoFragment" => $this->makeNinoFragment($citizenRequestDTO->nino()),
                         "firstName" => $citizenRequestDTO->firstName(),
                         "lastName" => $citizenRequestDTO->lastName(),
-                        "postcode" => $citizenRequestDTO->postcode(),
+                        "postcode" => $this->makeFormattedPostcode($citizenRequestDTO->postcode()),
                         "contactDetails" => [
                             ""
                         ]
@@ -183,6 +185,16 @@ class DwpApiService
         $nino = str_replace(" ", "", $nino);
 
         return substr($nino, strlen($nino) - 4, strlen($nino));
+    }
+
+    public function makeFormattedPostcode(string $postcode): string
+    {
+        $cleanPostcode = preg_replace("/[^A-Za-z0-9]/", '', $postcode);
+        /**
+         * @psalm-suppress PossiblyNullArgument
+         */
+        $cleanPostcode = strtoupper($cleanPostcode);
+        return substr($cleanPostcode, 0, -3) . " " . substr($cleanPostcode, -3);
     }
 
     /**

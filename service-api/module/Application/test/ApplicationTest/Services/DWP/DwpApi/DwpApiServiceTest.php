@@ -127,6 +127,37 @@ class DwpApiServiceTest extends TestCase
     }
 
     /**
+     * @dataProvider postcodeData
+     */
+    public function testPostcodeFormatter(string $postcode, string $expected): void
+    {
+        $this->assertEquals($expected, $this->dwpApiService->makeFormattedPostcode($postcode));
+    }
+
+    public static function postcodeData(): array
+    {
+        return [
+            [
+                "SW1A1AA",
+                "SW1A 1AA"
+            ],
+            [
+                "SW1A-1AA",
+                "SW1A 1AA"
+            ],
+            [
+                " SW1A 1AA",
+                "SW1A 1AA"
+            ],
+            [
+                "SW1A 1AA",
+                "SW1A 1AA"
+            ],
+        ];
+    }
+
+
+    /**
      * @dataProvider ninoData
      */
     public function testNinoFragment(string $nino, string $fragment): void
