@@ -15,6 +15,15 @@ resources:
     method: post
     requestBody:
       operator: Contains
+      value: Hurst
+    response:
+      statusCode: 200
+      scriptFile: useFraudScoreJsonFile.groovy
+
+  - path: "/decisionanalytics/crosscore/cc_mock_route/3"
+    method: post
+    requestBody:
+      operator: Contains
       value: Nohope
     response:
       statusCode: 200
