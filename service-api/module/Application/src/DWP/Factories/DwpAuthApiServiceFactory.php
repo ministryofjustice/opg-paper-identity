@@ -36,13 +36,16 @@ class DwpAuthApiServiceFactory implements FactoryInterface
             throw new AuthApiException("DWP oauth-token-endpoint is empty");
         }
 
-        $useCertificate = filter_var(getenv("DWP_USE_CERTIFICATE"), FILTER_VALIDATE_BOOLEAN);
+        $suppressCertificate = filter_var(
+            getenv("DWP_SUPPRESS_CERTIFICATE"),
+            FILTER_VALIDATE_BOOLEAN
+        );
 
         $clientOptions = [
             'base_uri' => $baseUri,
         ];
 
-        if ($useCertificate) {
+        if (! $suppressCertificate) {
             $clientOptions['cert'] = '/opg-private/dwp-cert.pem';
             $clientOptions['ssl_key'] = '/opg-private/dwp-sslkey.pem';
         }
