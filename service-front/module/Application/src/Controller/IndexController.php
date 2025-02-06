@@ -96,8 +96,21 @@ class IndexController extends AbstractActionController
 
         $form = $this->createForm(AbandonFlow::class);
 
+        $request = $this->getRequest();
+
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $this->opgApiService->abandonFlow($uuid);
+
+            $noteDescription = "Reason: " . $request->getPost("reason");
+            $noteDescription .= "\n\n" . $request->getPost("notes");
+
+            $this->siriusApiService->addNote(
+                $request,
+                $detailsData["lpas"][0],
+                "ID Check Abandoned",
+                "ID Check Incomplete",
+                $noteDescription
+            );
 
             $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
             return $this->redirect()->toUrl($siriusUrl);
