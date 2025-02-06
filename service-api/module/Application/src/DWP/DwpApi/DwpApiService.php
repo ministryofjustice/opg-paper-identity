@@ -121,7 +121,7 @@ class DwpApiService
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
 
-            $this->logger->error('MATCH_POSTBODY: ' . json_encode($postBody, JSON_THROW_ON_ERROR));
+            $this->logger->error('MATCH_POSTBODY: ', $postBody);
 
             $response = $this->guzzleClient->request(
                 'POST',
