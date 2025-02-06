@@ -120,7 +120,6 @@ class DwpApiService
         $responseArray = [];
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
-
             $this->logger->error('MATCH_POSTBODY: ', $postBody);
 
             $response = $this->guzzleClient->request(
