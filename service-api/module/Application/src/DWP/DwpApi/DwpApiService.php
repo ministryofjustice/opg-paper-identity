@@ -209,7 +209,7 @@ class DwpApiService
         $this->authCount++;
         $responseArray = [];
         try {
-            $uri = sprintf($this->detailsPath, $detailsRequestDTO->id());
+            $uri = $this->detailsPath . $detailsRequestDTO->id();
 
             $response = $this->guzzleClient->request(
                 'GET',
