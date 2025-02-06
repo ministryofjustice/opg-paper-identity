@@ -117,7 +117,16 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certif
     --region "eu-west-1"
 
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/opg-certificate-private-key \
-    --description "Experian Crosscore Tenant ID" \
+    --description "DWP OPG private key" \
     --secret-string "-----BEGIN OPENSSH PRIVATE KEY-----ThisIsntARealKeySoDontWorryvbmUAAAAEbm9uZQAAAADADADAAAAAMwAAAAtzc2gtZQ-----END OPENSSH PRIVATE KEY----" \
     --region "eu-west-1"
 
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/dwp-policy-id \
+    --description "DWP Policy ID" \
+    --secret-string "policy-id" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/dwp/dwp-context \
+    --description "DWP Context" \
+    --secret-string "context" \
+    --region "eu-west-1"

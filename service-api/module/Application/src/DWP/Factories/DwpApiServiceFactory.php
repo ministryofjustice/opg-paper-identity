@@ -33,6 +33,8 @@ class DwpApiServiceFactory implements FactoryInterface
         $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
         $detailsPath = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
         $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
+        $dwpContext = (new AwsSecret('dwp/dwp-context'))->getValue();
+        $dwpPolicyId = (new AwsSecret('dwp/dwp-policy-id'))->getValue();
 
         if (empty($baseUri)) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
@@ -40,8 +42,8 @@ class DwpApiServiceFactory implements FactoryInterface
 
         $headerOptions = [];
 
-        $headerOptions['policy_id'] = getenv('DWP_POLICY_ID');
-        $headerOptions['context'] = getenv('DWP_CONTEXT');
+        $headerOptions['policy_id'] = $dwpPolicyId;
+        $headerOptions['context'] = $dwpContext;
 
         $suppressCertificate = filter_var(
             getenv("DWP_SUPPRESS_CERTIFICATE"),
