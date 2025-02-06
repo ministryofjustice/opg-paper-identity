@@ -21,7 +21,7 @@ resources:
     method: post
     requestBody:
       operator: Contains
-      value: 233C
+      value: 2233
     response:
       statusCode: 200
       file: data/foundResponse.json
@@ -30,7 +30,7 @@ resources:
     method: post
     requestBody:
       operator: Contains
-      value: 809C
+      value: 7809
     response:
       statusCode: 200
       file: data/foundDwpMockResponse.json
@@ -39,7 +39,7 @@ resources:
     method: post
     requestBody:
       operator: Contains
-      value: 123C
+      value: 3123
     response:
       statusCode: 422
       file: data/ambiguousResponse.json

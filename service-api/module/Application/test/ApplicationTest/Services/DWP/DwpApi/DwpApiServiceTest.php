@@ -170,19 +170,19 @@ class DwpApiServiceTest extends TestCase
         return [
             [
                 "AA 12 23 34 C",
-                "334C"
+                "2334"
             ],
             [
                 "AA122334C",
-                "334C"
+                "2334"
             ],
             [
                 " AA 12 23 34 C ",
-                "334C"
+                "2334"
             ],
             [
                 " AA122334C ",
-                "334C"
+                "2334"
             ],
         ];
     }
@@ -212,7 +212,7 @@ class DwpApiServiceTest extends TestCase
                         "type" => "Match",
                         "attributes" => [
                             "dateOfBirth" => "1986-09-03",
-                            "ninoFragment" => "233C",
+                            "ninoFragment" => "2233",
                             "firstName" => "Lee",
                             "lastName" => "Manthrope",
                             "postcode" => "SO15 3AA",

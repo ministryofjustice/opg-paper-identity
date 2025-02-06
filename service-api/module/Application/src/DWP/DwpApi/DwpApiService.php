@@ -182,8 +182,7 @@ class DwpApiService
     public function makeNinoFragment(string $nino): string
     {
         $nino = str_replace(" ", "", $nino);
-
-        return substr($nino, strlen($nino) - 4, strlen($nino));
+        return substr($nino, (strlen($nino) - 5), - 1);
     }
 
     public function makeFormattedPostcode(string $postcode): string
