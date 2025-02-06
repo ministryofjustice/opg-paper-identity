@@ -277,6 +277,43 @@ class SiriusApiService
         ];
     }
 
+    public function addNote(
+        Request $request,
+        string $uid,
+        string $name,
+        string $type,
+        string $description
+    ): array {
+        $lpaDetails = $this->getLpaByUid($uid, $request);
+        $caseId = $lpaDetails["opg.poas.sirius"]["id"];
+        $donorId = $lpaDetails["opg.poas.sirius"]["donor"]["id"];
+
+        if (! $caseId) {
+            return [
+                'status' => 400,
+                'response' => 'Case Id not found'
+            ];
+        }
+
+        $data = [
+            "ownerId" => $caseId,
+            "ownerType" => "case",
+            "name" => $name,
+            "type" => $type,
+            "description" => $description
+        ];
+
+        $response = $this->client->post('/api/v1/persons/' . $donorId . '/notes', [
+            'headers' => $this->getAuthHeaders($request),
+            'json' => $data
+        ]);
+
+        return [
+            'status' => $response->getStatusCode(),
+            'response' => json_decode(strval($response->getBody()), true)
+        ];
+    }
+
     /**
     * @return array{handle: string, label: string}
     */
