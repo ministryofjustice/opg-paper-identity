@@ -8,7 +8,7 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+        cy.getInputByLabel("National Insurance number").type("NP 112233 C");
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.selectKBVAnswer({correct: true});
@@ -37,7 +37,7 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+        cy.getInputByLabel("National Insurance number").type("NP 112233 C");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
@@ -73,7 +73,7 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
-        cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+        cy.getInputByLabel("National Insurance number").type("NP 112233 C");
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.selectKBVAnswer({correct: false});

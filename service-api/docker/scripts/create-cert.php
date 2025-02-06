@@ -28,3 +28,23 @@ $pemContents = $certificate['SecretString'] . "\n\n" . $certificateKey['SecretSt
 
 file_put_contents($pemFilename, $pemContents);
 chmod($pemFilename, 0400);
+
+
+// DWP secrets
+$sslKey = $smClient->getSecretValue([
+    'SecretId' => $prefix . 'dwp/opg-certificate-private-key',
+]);
+
+$cert = $smClient->getSecretValue([
+    'SecretId' => $prefix . 'dwp/opg-certificate-bundle',
+]);
+
+$sslKeyPemFilename = '/opg-private/dwp-sslkey.pem';
+$sslKeyPemContents = $sslKey['SecretString'];
+file_put_contents($sslKeyPemFilename, $sslKeyPemContents);
+chmod($sslKeyPemFilename, 0400);
+
+$certPemFilename = '/opg-private/dwp-cert.pem';
+$certPemContents = $cert['SecretString'];
+file_put_contents($certPemFilename, $certPemContents);
+chmod($certPemFilename, 0400);
