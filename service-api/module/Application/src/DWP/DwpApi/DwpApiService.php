@@ -20,17 +20,18 @@ use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Application\Aws\Secrets\AwsSecret;
 
-use function Amp\Promise\all;
-
 class DwpApiService
 {
     private int $authCount = 0;
+
+    private string $correlationUuid = "";
     public function __construct(
         private Client $guzzleClient,
         private AuthApiService $authApiService,
         private LoggerInterface $logger,
         private string $detailsPath,
         private string $matchPath,
+        private array $headerOptions,
     ) {
     }
 
@@ -42,19 +43,21 @@ class DwpApiService
     {
         return [
             'Content-Type' => 'application/json',
-            'Context' => 'application/process',
+            'Context' => $this->headerOptions['context'],
             'Authorization' => sprintf(
                 'Bearer %s',
                 $this->authApiService->retrieveCachedTokenResponse()
             ),
-            'Correlation-Id' => '',
-            'Policy-Id' => '',
+            'Correlation-Id' => $this->correlationUuid,
+            'Policy-Id' => $this->headerOptions['policy_id'],
             'Instigating-User-Id' => ''
         ];
     }
 
-    public function validateNino(CaseData $caseData, string $nino): bool
+    public function validateNino(CaseData $caseData, string $nino, string $correlationUuid): bool
     {
+        $this->correlationUuid = $correlationUuid;
+
         try {
             $citizenResponseDTO = $this->makeCitizenMatchRequest(
                 new CitizenRequestDTO($caseData, $nino)

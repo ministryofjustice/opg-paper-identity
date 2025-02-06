@@ -27,6 +27,8 @@ class DwpApiServiceTest extends TestCase
     private AuthApiService&MockObject $dwpAuthApiService;
     private DwpApiService $dwpApiService;
     private LoggerInterface&MockObject $logger;
+
+    private array $headerOptions = [];
     private const CASE = [
         "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
         "personType" => "donor",
@@ -117,12 +119,16 @@ class DwpApiServiceTest extends TestCase
         $client = $this->createMock(Client::class);
         $this->dwpAuthApiService = $this->createMock(AuthApiService::class);
 
+        $this->headerOptions['policy_id'] = "policy-id";
+        $this->headerOptions['context'] = 'context';
+
         $this->dwpApiService = new DwpApiService(
             $client,
             $this->dwpAuthApiService,
             $this->logger,
             '',
-            ''
+            '',
+            $this->headerOptions
         );
     }
 
@@ -263,7 +269,8 @@ class DwpApiServiceTest extends TestCase
             $this->dwpAuthApiService,
             $this->logger,
             '',
-            ''
+            '',
+            $this->headerOptions
         );
 
         $this->assertEquals(
@@ -310,7 +317,8 @@ class DwpApiServiceTest extends TestCase
             $this->dwpAuthApiService,
             $this->logger,
             '',
-            ''
+            '',
+            $this->headerOptions
         );
 
         $this->assertEquals(
@@ -342,7 +350,8 @@ class DwpApiServiceTest extends TestCase
             $this->dwpAuthApiService,
             $this->logger,
             '',
-            ''
+            '',
+            $this->headerOptions
         );
 
         $dwpApiService->makeCitizenMatchRequest(new CitizenRequestDTO(
@@ -370,7 +379,8 @@ class DwpApiServiceTest extends TestCase
             $this->dwpAuthApiService,
             $this->logger,
             '',
-            ''
+            '',
+            $this->headerOptions
         );
 
         $this->assertEquals(
@@ -400,7 +410,8 @@ class DwpApiServiceTest extends TestCase
             $this->dwpAuthApiService,
             $this->logger,
             '',
-            ''
+            '',
+            $this->headerOptions
         );
 
         $dwpApiService->makeCitizenDetailsRequest(

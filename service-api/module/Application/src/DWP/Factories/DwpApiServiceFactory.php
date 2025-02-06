@@ -38,6 +38,11 @@ class DwpApiServiceFactory implements FactoryInterface
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 
+        $headerOptions = [];
+
+        $headerOptions['policy_id'] = getenv('DWP_POLICY_ID');
+        $headerOptions['context'] = getenv('DWP_CONTEXT');
+
         $suppressCertificate = filter_var(
             getenv("DWP_SUPPRESS_CERTIFICATE"),
             FILTER_VALIDATE_BOOLEAN
@@ -61,7 +66,8 @@ class DwpApiServiceFactory implements FactoryInterface
             $container->get(AuthApiService::class),
             $logger,
             $detailsPath,
-            $matchPath
+            $matchPath,
+            $headerOptions
         );
     }
 }
