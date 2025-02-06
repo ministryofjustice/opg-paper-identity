@@ -47,8 +47,6 @@ class DocumentCheckController extends AbstractActionController
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
 
-        echo json_encode($detailsData);
-
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formProcessorResponseDto = $this->formProcessorHelper->processNationalInsuranceNumberForm(
                 $uuid,

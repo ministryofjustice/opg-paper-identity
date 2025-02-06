@@ -39,9 +39,9 @@ class DwpApiService
      * @throws GuzzleException
      * @throws AuthApiException
      */
-    public function makeHeaders(): array
+    public function makeHeaders(array $optionalHeaders = []): array
     {
-        return [
+        return array_merge([
             'Content-Type' => 'application/json',
             'Context' => $this->headerOptions['context'],
             'Authorization' => sprintf(
@@ -50,8 +50,8 @@ class DwpApiService
             ),
             'Correlation-Id' => $this->correlationUuid,
             'Policy-Id' => $this->headerOptions['policy_id'],
-            'Instigating-User-Id' => ''
-        ];
+            'Instigating-User-Id' => '',
+        ], $optionalHeaders);
     }
 
     public function validateNino(CaseData $caseData, string $nino, string $correlationUuid): bool
@@ -215,7 +215,7 @@ class DwpApiService
                 'GET',
                 $uri,
                 [
-                    'headers' => $this->makeHeaders(),
+                    'headers' => $this->makeHeaders(['Access-Level => 4']),
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
