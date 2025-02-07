@@ -6,10 +6,10 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
+use Application\Exceptions\SiriusApiException;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\Helpers\DTO\FormProcessorResponseDto;
-use Application\PostOffice\Country;
+use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
@@ -78,6 +78,25 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ]
         ];
     }
+
+    public static function getListPostofficeResponse(): array
+    {
+        return [
+            '1234567' => [
+                'name' => 'new post office',
+                'address' => '1 Fake Street, Faketown',
+                'post_code' => 'FA1 2KE',
+                'fad_code' => '1234567',
+            ],
+            '7654321' => [
+                'name' => 'old post office',
+                'address' => '2 Pretend Road, Pretendcity',
+                'post_code' => 'PR3 2TN',
+                'fad_code' => '7654321',
+            ],
+        ];
+    }
+
 
     public function testPostOfficeDocumentsPage(): void
     {
@@ -203,7 +222,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $documentTypeRepository->expects($this->once())
             ->method('getByCountry')
-            ->with(Country::AUT)
+            ->with(PostOfficeCountry::AUT)
             ->willReturn([DocumentType::Passport, DocumentType::NationalId]);
 
         $this
@@ -239,7 +258,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $documentTypeRepository->expects($this->once())
             ->method('getByCountry')
-            ->with(Country::AUT)
+            ->with(PostOfficeCountry::AUT)
             ->willReturn([DocumentType::Passport, DocumentType::NationalId]);
 
         $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', []);
@@ -319,18 +338,10 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public function testfindPostOfficeBranchAction(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-        $mockPostOfficeResponse = [
-            '1234567' => [
-                'name' => 'new post office',
-                'address' => '1 Fake Street, Faketown',
-                'post_code' => 'FA1 2KE'
-            ],
-            '7654321' => [
-                'name' => 'old post office',
-                'address' => '2 Pretend Road, Pretendcity',
-                'post_code' => 'PR3 2TN'
-            ],
-        ];
+        $mockPostOfficeResponse = $this->getListPostofficeResponse();
+
+        $poOne = json_encode($mockPostOfficeResponse['1234567']);
+        $poTwo = json_encode($mockPostOfficeResponse['7654321']);
 
         $this
             ->opgApiServiceMock
@@ -347,90 +358,31 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockPostOfficeResponse);
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "GET");
-        $this->assertQuery('input#postOffice-1234567');
-        $this->assertQuery('input#postOffice-7654321');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(PostOfficeFlowController::class);
+        $this->assertControllerClass('PostOfficeFlowController');
+        $this->assertMatchedRouteName('root/find_post_office_branch');
+        $this->assertQuery("input#postoffice-1234567[value='$poOne']");
+        $this->assertQueryContentContains('span#poAddress-1234567', '1 Fake Street, Faketown, FA1 2KE');
+        $this->assertQuery("input#postoffice-7654321[value='$poTwo']");
+        $this->assertQueryContentContains('span#poAddress-7654321', '2 Pretend Road, Pretendcity, PR3 2TN');
     }
-
-    public function testfindPostOfficeBranchSelectOption(): void
-    {
-        $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
-
-        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this
-            ->formProcessorService
-            ->expects(self::once())
-            ->method("processPostOfficeSelectForm")
-            ->willReturn($mockProcessed);
-
-        $mockProcessed
-            ->expects($this->exactly(2))
-            ->method('getRedirect')
-            ->willReturn('root/confirm_post_office');
-
-        $this->dispatch("/$this->uuid/find-post-office-branch", "POST");
-        $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/$this->uuid/confirm-post-office");
-    }
-
-    public function testfindPostOfficeBranchSearchPostcode(): void
-    {
-        $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
-
-        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this
-            ->formProcessorService
-            ->expects(self::once())
-            ->method("processPostOfficeSearchForm")
-            ->willReturn($mockProcessed);
-
-        $mockProcessed
-            ->expects(self::once())
-            ->method('getRedirect')
-            ->willReturn(null);
-
-
-        $mockProcessed
-            ->expects(self::once())
-            ->method('getVariables')
-            ->willReturn([
-                'post_office_list' => [
-                    "123456789" => []
-                ]
-            ]);
-
-        $this->dispatch("/$this->uuid/find-post-office-branch", "POST", ["location" => "FA2 3KE"]);
-        $this->assertQuery('input#postOffice-123456789');
-    }
-
 
     /**
-     * @dataProvider confirmPostOfficeData
+     * @dataProvider selectPostOfficeData
      */
-    public function testConfirmPostOfficeAction(string $dispatch): void
-    {
+    public function testfindPostOfficeBranchSelect(
+        array $post,
+        bool $valid,
+        ?array $idMethodIncludingNation,
+        ?string $searchString,
+        array $queries = [],
+    ): void {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-        $mockResponseDataIdDetails['counterService'] = [
-            'selectedPostOffice' => [
-                'address' => 'post office, some town',
-                'post_code' => 'PO1 0FC'
-            ]
-        ];
+        if (isset($idMethodIncludingNation)) {
+            $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+        }
 
         $this
             ->opgApiServiceMock
@@ -439,68 +391,200 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this
-            ->siriusApiService
-            ->expects($this->exactly(2))
-            ->method('getLpaByUid')
-            ->willReturnCallback(fn (string $lpa) => match (true) {
-                $lpa === 'M-0000-0000-0001' => [
-                    'opg.poas.lpastore' => ['lpaType' => 'personal-welfare']
-                ],
-                $lpa === 'M-0000-0000-0002' => [
-                    'opg.poas.sirius' => [
-                        'caseSubtype' => 'property-and-affairs'
-                    ],
-                ],
-            });
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('estimatePostofficeDeadline')
-            ->with($this->uuid)
-            ->willReturn('2025-01-20T10:56:18+00:00');
-
-        if ($dispatch == "post") {
+        if ($valid) {
             $this
                 ->opgApiServiceMock
                 ->expects(self::once())
-                ->method('createYotiSession')
-                ->with($this->uuid)
-                ->willReturn(['pdfBase64' => 'base64forpdf']);
+                ->method('addSelectedPostOffice')
+                ->with($this->uuid, '1234567');
 
             $this
                 ->siriusApiService
+                ->expects($this->exactly(2))
+                ->method('getLpaByUid')
+                ->willReturnCallback(fn (string $lpa) => match (true) {
+                    $lpa === 'M-0000-0000-0001' => [
+                        'opg.poas.lpastore' => ['lpaType' => 'personal-welfare']
+                    ],
+                    $lpa === 'M-0000-0000-0002' => [
+                        'opg.poas.sirius' => [
+                            'caseSubtype' => 'property-and-affairs'
+                        ],
+                    ],
+                });
+
+            $this
+                ->opgApiServiceMock
                 ->expects(self::once())
-                ->method('sendDocument')
-                ->willReturn(['status' => 201]);
+                ->method('estimatePostofficeDeadline')
+                ->with($this->uuid)
+                ->willReturn('01 Jan 2025');
+        } else {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('listPostOfficesByPostcode')
+                ->with($this->uuid, $searchString ?? $mockResponseDataIdDetails['address']['postcode'])
+                ->willReturn($this->getListPostofficeResponse());
         }
 
-        $this->dispatch("/$this->uuid/confirm-post-office", $dispatch);
+        $this->dispatch("/$this->uuid/find-post-office-branch", "POST", $post);
 
-        if ($dispatch === 'get') {
-            $this->assertResponseStatusCode(200);
-            $this->assertModuleName('application');
-            $this->assertControllerName(PostOfficeFlowController::class);
-            $this->assertControllerClass('PostOfficeFlowController');
-            $this->assertMatchedRouteName('root/confirm_post_office');
-
-            $this->assertQueryContentContains('span[id=lpaType]', 'PW');
-            $this->assertQueryContentContains('span[id=lpaId]', 'M-0000-0000-0001');
-            $this->assertQueryContentContains('span[id=lpaType]', 'PA');
-            $this->assertQueryContentContains('span[id=lpaId]', 'M-0000-0000-0002');
-            $this->assertQueryContentContains('dd[id=submissionDeadline]', '20 Jan 2025');
-        } elseif ($dispatch === 'post') {
-            $this->assertResponseStatusCode(302);
-            $this->assertRedirectTo("/$this->uuid/post-office-what-happens-next");
+        foreach ($queries as $query) {
+            $this->assertQueryContentContains(...$query);
         }
     }
 
-    public static function confirmPostOfficeData(): array
+    public function selectPostOfficeData(): array
     {
-        return [
-            ['get'],
-            ['post'],
+        $validPost = [
+            'selectPostoffice' => 'Continue',
+            'postoffice' => json_encode($this->getListPostofficeResponse()['1234567']),
         ];
+
+        $ukPassport = [
+            'id_method' => 'PASSPORT',
+            'id_country' => PostOfficeCountry::GBR->value
+        ];
+
+        return [
+            'happy path render confirm page' => [
+                $validPost, true, null, null,
+                [
+                    ['span#lpaType', 'PW'],
+                    ['span#lpaType', 'PA'],
+                    ['span#lpaId', 'M-0000-0000-0001'],
+                    ['span#lpaId', 'M-0000-0000-0002'],
+                    ['dd#submissionDeadline', '01 Jan 2025'],
+                    ['dd#displayIdMethod', 'Driving licence (Austria)'],
+                    ['span#poAddressLine', '1 Fake Street'],
+                    ['span#poAddressLine', 'Faketown'],
+                    ['span#poAddressLine', 'FA1 2KE']
+                ]
+            ],
+            'uk driving licence on confirm page' => [
+                $validPost, true, $ukPassport, null,
+                [
+                    ['dd#displayIdMethod', 'UK Passport (current or expired in the last 18 months)'],
+                ]
+            ],
+            'invalid, render find-post-office page with error' => [
+                ['selectPostoffice' => 'Continue'], false, null, null,
+                [
+                    ['input#searchString[value="SW1B 1BB"]', ''],
+                    ['span#postoffice-error', 'Please select an option']
+                ]
+            ],
+            'invalid, but different searchString provided' => [
+                [
+                    'searchString' => 'somewhere',
+                    'selectPostoffice' => 'Continue'
+                ],
+                false, null, 'somewhere',
+                [
+                    ['input#searchString[value="somewhere"]', ''],
+                    ['span#postoffice-error', 'Please select an option']
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider searchPostOfficeData
+     */
+    public function testfindPostOfficeBranchSearch(
+        array $post,
+        bool $valid,
+        array $queries = [],
+    ): void {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+
+        if ($valid) {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('listPostOfficesByPostcode')
+                ->with($this->uuid, $post['searchString'])
+                ->willReturn($this->getListPostofficeResponse());
+        }
+
+        $this->dispatch("/$this->uuid/find-post-office-branch", "POST", $post);
+
+        foreach ($queries as $query) {
+            $this->assertQueryContentContains(...$query);
+        }
+
+        if (! $valid) {
+            // if the serach form is not valid then no post-offices are returned
+            $this->assertNotQuery('input[name="postoffice"]');
+        }
+    }
+
+    public function searchPostOfficeData(): array
+    {
+
+        $poOne = json_encode($this->getListPostofficeResponse()['1234567']);
+        $poTwo = json_encode($this->getListPostofficeResponse()['7654321']);
+
+        return [
+            'empty field shows error and no post-offices ' => [
+                ['searchString' => ''],
+                false,
+                [
+                    ['span#searchString-error', 'Please enter a postcode, town or street name']
+                ],
+            ],
+            'search with a different searchString' => [
+                ['searchString' => 'FakeTown'],
+                true,
+                [
+                    ['input#searchString[value="FakeTown"]', ''],
+                    ["input#postoffice-1234567[value='$poOne']", ''],
+                    ['span#poAddress-1234567', '1 Fake Street, Faketown, FA1 2KE'],
+                    ["input#postoffice-7654321[value='$poTwo']", ''],
+                    ['span#poAddress-7654321', '2 Pretend Road, Pretendcity, PR3 2TN']
+                ],
+            ]
+        ];
+    }
+
+    public function testfindPostOfficeBranchConfirm(): void
+    {
+        $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($mockResponseDataIdDetails);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('createYotiSession')
+            ->with($this->uuid)
+            ->willReturn(['pdfBase64' => 'pdf']);
+
+        $this
+            ->siriusApiService
+            ->expects(self::once())
+            ->method('sendDocument')
+            ->willReturn(['status' => 201]);
+
+        $this->dispatch("/$this->uuid/find-post-office-branch", "POST", [
+            'confirmPostOffice' => 'Continue'
+        ]);
+
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo("/$this->uuid/post-office-what-happens-next");
     }
 }

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
+use GuzzleHttp\Promise\Is;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Validator\NotEmpty;
 use Laminas\Filter\Callback;
 
 use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNan;
 
 /**
  * @psalm-suppress MissingConstructor
@@ -18,11 +20,14 @@ use function PHPUnit\Framework\isEmpty;
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class PostOfficeSelect implements FormTemplate
 {
-    // annotations don't allow you to pass additional arguments and also happen
-    // before validation
-    public static function json_decode_to_array($value): array|null
+    // annotations don't allow you to pass additional arguments and happen
+    // before validation so need to wrap json_decode
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    public static function jsonDecodeToArray(?string $value): array|null
     {
-        if (empty($value)) {
+        if (is_null($value) || $value === '') {
             return null;
         }
         return json_decode($value, true);
@@ -32,7 +37,7 @@ class PostOfficeSelect implements FormTemplate
      * @psalm-suppress PossiblyUnusedProperty
      */
     #[Annotation\Filter(Callback::class, options: [
-        'callback' => [self::class, 'json_decode_to_array']
+        'callback' => [self::class, 'jsonDecodeToArray']
     ])]
     #[Annotation\Validator(NotEmpty::class, options: [
         "messages" => [
@@ -46,6 +51,8 @@ class PostOfficeSelect implements FormTemplate
      */
     public bool $selectPostoffice;
 
-    #[Annotation\Validator(NotEmpty::class)]
-    public string $location;
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
+    public string $searchString;
 }

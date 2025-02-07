@@ -6,11 +6,7 @@ namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\OpgApiException;
-use Application\Enums\LpaTypes;
 use Application\Helpers\DTO\FormProcessorResponseDto;
-use Application\PostOffice\Country as PostOfficeCountry;
-use Application\PostOffice\DocumentType;
-use Application\Services\SiriusApiService;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 
@@ -18,7 +14,6 @@ class FormProcessorHelper
 {
     public function __construct(
         private OpgApiServiceInterface $opgApiService,
-        private SiriusApiService $siriusApiService
     ) {
     }
 
@@ -136,110 +131,6 @@ class FormProcessorHelper
             $form,
             $template,
             $variables
-        );
-    }
-
-    /**
-     * @param FormInterface<array{location: string}> $form
-     */
-    public function processPostOfficeSearchForm(
-        string $uuid,
-        FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
-        $variables = [];
-
-        if ($form->isValid()) {
-            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
-
-            $variables['location'] = $formArray['location'];
-
-            $variables['post_office_list'] = $this->opgApiService->listPostOfficesByPostcode($uuid, $formArray['location']);
-        } else {
-            $form->setMessages(['location' => ['Please enter a postcode, town or street name']]);
-        }
-
-        $variables['location_form'] = $form;
-
-        return new FormProcessorResponseDto(
-            $uuid,
-            $form,
-            $templates['default'],
-            $variables,
-            null
-        );
-    }
-
-    /**
-     * @param FormInterface<array{postoffice: string}> $form
-     */
-    public function processPostOfficeSelectForm(
-        string $uuid,
-        FormInterface $form,
-        array $templates = [],
-        array $detailsData = [],
-        array $config = [],
-        $request,
-        $searchString
-    ): FormProcessorResponseDto {
-
-        $variables = [];
-        if ($form->isValid()) {
-            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
-
-            try {
-                // refactor to only save FAD code
-                $selectedPostOffice = $formArray['postoffice']['fad_code'];
-                $this->opgApiService->addSelectedPostOffice($uuid, $selectedPostOffice);
-                $template = $templates['confirm'];
-
-                $lpaDetails = [];
-                foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
-
-                    if (! empty($lpasData['opg.poas.lpastore'])) {
-                        $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-                    } else {
-                        $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
-                    }
-                }
-                $variables['lpa_details'] = $lpaDetails;
-                $variables['deadline'] = (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y");
-                $optionsData = $config['opg_settings']['identity_documents'];
-
-                if (
-                    array_key_exists($detailsData['idMethodIncludingNation']['id_method'], $optionsData) &&
-                    $detailsData['idMethodIncludingNation']['id_country'] === PostOfficeCountry::GBR->value
-                ) {
-                    $idMethodForDisplay = $optionsData[$detailsData['idMethodIncludingNation']['id_method']];
-                } else {
-                    $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country'] ?? '');
-                    $idMethod = DocumentType::from($detailsData['idMethodIncludingNation']['id_method'] ?? '');
-                    $idMethodForDisplay = sprintf('%s (%s)', $idMethod->translate(), $country->translate());
-                }
-
-                $postOfficeAddress = explode(',', $formArray['postoffice']['address']);
-                $postOfficeAddress[] =  $formArray['postoffice']['post_code'];
-
-                $variables['display_id_method'] = $idMethodForDisplay;
-                $variables['post_office_address'] = $postOfficeAddress;
-            } catch (OpgApiException) {
-                $form->setMessages(['Error saving Post Office to this case.']);
-                $template = $templates['default'];
-            }
-        } else {
-            $template = $templates['default'];
-            $variables['location'] = $searchString;
-            $variables['post_office_list'] = $this->opgApiService->listPostOfficesByPostcode($uuid, $searchString);
-        }
-
-        $variables['form'] = $form;
-
-        return new FormProcessorResponseDto(
-            $uuid,
-            $form,
-            $template,
-            $variables,
         );
     }
 

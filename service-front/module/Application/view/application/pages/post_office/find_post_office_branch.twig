@@ -16,27 +16,27 @@
 
     <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
     <form method="POST">
-        <div class="govuk-form-group {% if location_form.get('location').messages %}govuk-form-group--error{% endif %}">
+        <div class="govuk-form-group {% if search_form.get('searchString').messages %}govuk-form-group--error{% endif %}">
             <h1 class="govuk-label-wrapper">
-                <label class="govuk-label govuk-label--s app-text-gray govuk-body" for="location">
+                <label class="govuk-label govuk-label--s app-text-gray govuk-body" for="searchString">
                     Enter a postcode, town, or street name
                 </label>
             </h1>
 
-            {% if location_form.get('location').messages %}
-                <p id="dln-error" class="govuk-error-message">
+            {% if search_form.get('searchString').messages %}
+                <p class="govuk-error-message">
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ location_form.get('location').messages | join(', ', ' and ') }}
+                    <span id="searchString-error">{{ search_form.get('searchString').messages | join(', ', ' and ') }}</span>
                 </p>
             {% endif %}
-            <input class="govuk-input govuk-!-width-one-third" id="location" name="location" type="text" value="{{ location }}">
+            <input class="govuk-input govuk-!-width-one-third" id="searchString" name="searchString" type="text" value="{{ searchString }}">
             <input type="submit" class="govuk-button govuk-button--secondary" value="Search"/>
         </div>
         <div class="govuk-form-group {% if form.get('postoffice').messages %}govuk-form-group--error{% endif %}">
             {% if form.get('postoffice').messages %}
-                <p id="dln-error" class="govuk-error-message">
+                <p class="govuk-error-message">
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ form.get('postoffice').messages | join(', ', ' and ') }}
+                    <span id="postoffice-error">{{ form.get('postoffice').messages | join(', ', ' and ') }}</span>
                 </p>
             {% endif %}
             <fieldset class="govuk-fieldset">
@@ -52,7 +52,7 @@
                         >
                         <label class="govuk-label govuk-radios__label" for="{{ fad }}">
                             {{ item.name }}<br>
-                            {{ item.address }}, {{ item.post_code }}
+                            <span id="poAddress-{{ fad }}">{{ item.address }}, {{ item.post_code }}</span>
                         </label>
                     </div>
                 {% endfor %}

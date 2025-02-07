@@ -50,9 +50,7 @@
                         <dt class="govuk-summary-list__key">
                             Document to take
                         </dt>
-                        <dd class="govuk-summary-list__value">
-                            {{ display_id_method }}
-                        </dd>
+                        <dd class="govuk-summary-list__value" id="displayIdMethod">{{ display_id_method }}</dd>
                         <dd class="govuk-summary-list__actions">
                             <a
                                 class="govuk-link"
@@ -70,7 +68,7 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
                             {% for line in post_office_address %}
-                                {{ line }}<br>
+                                <span id="poAddressLine">{{ line }}</span><br>
                             {% endfor %}
                         </dd>
                         <dd class="govuk-summary-list__actions">
