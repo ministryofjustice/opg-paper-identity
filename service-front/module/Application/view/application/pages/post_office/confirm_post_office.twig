@@ -26,7 +26,7 @@
                         <dt class="govuk-summary-list__key">
                             Address
                         </dt>
-                        <dd class="govuk-summary-list__value">
+                        <dd class="govuk-summary-list__value" id="address">
                             {% for line in details_data.address %}
                                 {% if line %}{{ line }}<br>{% endif %}
                             {% endfor %}
