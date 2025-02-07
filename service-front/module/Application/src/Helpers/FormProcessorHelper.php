@@ -13,7 +13,7 @@ use Laminas\Stdlib\Parameters;
 class FormProcessorHelper
 {
     public function __construct(
-        private OpgApiServiceInterface $opgApiService
+        private OpgApiServiceInterface $opgApiService,
     ) {
     }
 
@@ -131,82 +131,6 @@ class FormProcessorHelper
             $form,
             $template,
             $variables
-        );
-    }
-
-    public function processPostOfficeSearchResponse(array $responseData): array
-    {
-        $locationData = [];
-        foreach ($responseData as $key => $array) {
-            $jsonKey = json_encode(array_merge($array, ['fad' => $key]));
-            $locationData[$jsonKey] = $array;
-        }
-        return $locationData;
-    }
-
-    /**
-     * @param FormInterface<array{location: string}> $form
-     */
-    public function processPostOfficeSearchForm(
-        string $uuid,
-        FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
-        $variables = [];
-
-        if ($form->isValid()) {
-            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
-
-            $variables['location'] = $formArray['location'];
-
-            $responseData = $this->opgApiService->listPostOfficesByPostcode($uuid, $formArray['location']);
-
-            $locationData = $this->processPostOfficeSearchResponse($responseData);
-            $variables['post_office_list'] = $locationData;
-        } else {
-            $form->setMessages(['location' => ['Please enter a postcode, town or street name']]);
-        }
-
-        $variables['location_form'] = $form;
-
-        return new FormProcessorResponseDto(
-            $uuid,
-            $form,
-            $templates['default'],
-            $variables,
-            null
-        );
-    }
-
-    /**
-     * @param FormInterface<array{postoffice: string}> $form
-     */
-    public function processPostOfficeSelectForm(
-        string $uuid,
-        FormInterface $form,
-        array $templates = []
-    ): FormProcessorResponseDto {
-        $redirect = null;
-
-        if ($form->isValid()) {
-            $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
-
-            try {
-                $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']);
-                $redirect = 'root/confirm_post_office';
-            } catch (OpgApiException) {
-                $form->setMessages(['Error saving Post Office to this case.']);
-            }
-        } else {
-            $form->setMessages(['postoffice' => ['Please select an option']]);
-        }
-
-        return new FormProcessorResponseDto(
-            $uuid,
-            $form,
-            $templates['default'],
-            ['form' => $form],
-            $redirect
         );
     }
 

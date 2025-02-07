@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use DateTime;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Promise\Is;
 
 class YotiService implements YotiServiceInterface
 {
@@ -320,12 +321,11 @@ class YotiService implements YotiServiceInterface
                 ]
             ]
         ];
-        /** @var CounterService $counterServiceData */
-        $counterServiceData = $caseData->counterService;
-        $postOfficeData = json_decode($counterServiceData->selectedPostOffice, true);
+
+        assert(isset($caseData->counterService->selectedPostOffice), "No Selected Post Office Saved");
         $payload["branch"] = [
-          "type" => "UK_POST_OFFICE",
-          "fad_code" => $postOfficeData['fad']
+            "type" => "UK_POST_OFFICE",
+            "fad_code" => $caseData->counterService->selectedPostOffice
         ];
         return $payload;
     }

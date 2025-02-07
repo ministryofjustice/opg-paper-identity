@@ -26,7 +26,7 @@
                         <dt class="govuk-summary-list__key">
                             Address
                         </dt>
-                        <dd class="govuk-summary-list__value">
+                        <dd class="govuk-summary-list__value" id="address">
                             {% for line in details_data.address %}
                                 {% if line %}{{ line }}<br>{% endif %}
                             {% endfor %}
@@ -50,9 +50,7 @@
                         <dt class="govuk-summary-list__key">
                             Document to take
                         </dt>
-                        <dd class="govuk-summary-list__value">
-                            {{ display_id_method }}
-                        </dd>
+                        <dd class="govuk-summary-list__value" id="displayIdMethod">{{ display_id_method }}</dd>
                         <dd class="govuk-summary-list__actions">
                             <a
                                 class="govuk-link"
@@ -70,7 +68,7 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
                             {% for line in post_office_address %}
-                                {{ line }}<br>
+                                <span id="poAddressLine">{{ line }}</span><br>
                             {% endfor %}
                         </dd>
                         <dd class="govuk-summary-list__actions">
@@ -104,7 +102,7 @@
             </p>
         {% endif %}
         <p class="govuk-form-group">
-            <input type="submit" class="govuk-button" value="Continue">
+            <input type="submit" class="govuk-button" value="Continue" name="confirmPostOffice">
             <a href="./how-will-you-confirm" class="govuk-button govuk-button--secondary govuk-!-margin-left-4">Cancel</a>
         </p>
     </form>

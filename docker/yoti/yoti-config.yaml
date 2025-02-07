@@ -10,9 +10,23 @@ resources:
 
   - path: "/idverify/v1/lookup/uk-post-office"
     method: post
+    requestBody:
+      jsonPath: $.search_string
+      value: SW1A
+      operator: NotContains
     response:
       statusCode: 200
-      scriptFile: useBranchesFile.groovy
+      file: data/branchesOne.json
+
+  - path: "/idverify/v1/lookup/uk-post-office"
+    method: post
+    requestBody:
+      jsonPath: $.search_string
+      value: SW1A
+      operator: Contains
+    response:
+      statusCode: 200
+      file: data/branchesTwo.json
 
   - path: "/idverify/v1/sessions/{sessionId}/configuration"
     method: get

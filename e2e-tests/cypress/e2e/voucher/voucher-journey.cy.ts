@@ -187,7 +187,7 @@ describe("Voucher journey", () => {
 
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("St Neots").click();
+        cy.get('input[name=postoffice]').first().click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Confirm Post Office route");
