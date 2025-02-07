@@ -63,7 +63,7 @@
                 <div class="govuk-radios" data-module="govuk-radios">
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="PASSPORT" name="id_method" type="radio"
-                               value="PASSPORT">
+                               value="PASSPORT" {{ (form.get('id_method').value == 'PASSPORT') ? 'checked' : '' }}>
                         <label class="govuk-label govuk-radios__label" for="PASSPORT">UK passport (up to 18 months expired)
 
                             <details
@@ -164,20 +164,20 @@
                     </div>
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="DRIVING_LICENCE" name="id_method" type="radio"
-                               value="DRIVING_LICENCE">
+                               value="DRIVING_LICENCE" {{ (form.get('id_method').value == 'DRIVING_LICENCE') ? 'checked' : '' }}>
                         <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">UK photocard driving
                             licence (must be current)</label>
                     </div>
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="RESIDENCE_PERMIT" name="id_method" type="radio"
-                               value="RESIDENCE_PERMIT">
+                               value="RESIDENCE_PERMIT" {{ (form.get('id_method').value == 'RESIDENCE_PERMIT') ? 'checked' : '' }}>
                         <label class="govuk-label govuk-radios__label" for="RESIDENCE_PERMIT">
                             UK biometric residence card (BRP)
                         </label>
                     </div>
                     <div class="govuk-radios__item">
                         <input class="govuk-radios__input" id="NONUKID" name="id_method" type="radio"
-                               value="NONUKID">
+                               value="NONUKID" {{ (form.get('id_method').value == 'NONUKID') ? 'checked' : '' }}>
                         <label class="govuk-label govuk-radios__label" for="NONUKID">
                             ID from another country
                         </label>

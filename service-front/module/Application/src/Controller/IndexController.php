@@ -69,6 +69,8 @@ class IndexController extends AbstractActionController
             throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
 
+        $this->ensureIdentityCheckHasNotAlreadyBeenPerformed($type, $lpas[0]);
+
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
         if ($type === 'voucher') {
@@ -77,6 +79,26 @@ class IndexController extends AbstractActionController
             $redirect = 'root/how_will_you_confirm';
         }
         return $this->redirect()->toRoute($redirect, ['uuid' => $case['uuid']]);
+    }
+
+    /**
+     * @param string $type
+     * @psalm-param Lpa $lpaData
+     * @return void
+     * @throws HttpException
+     */
+    private function ensureIdentityCheckHasNotAlreadyBeenPerformed(string $type, array $lpaData): void
+    {
+        if ($type === 'donor' && isset($lpaData['opg.poas.lpastore']['donor']['identityCheck'])) {
+            throw new HttpException(400, "ID check has already been completed");
+        }
+
+        if (
+            $type === 'certificateProvider'
+            && isset($lpaData['opg.poas.lpastore']['certificateProvider']['identityCheck'])
+        ) {
+            throw new HttpException(400, "ID check has already been completed");
+        }
     }
 
     public function abandonFlowAction(): ViewModel|Response
