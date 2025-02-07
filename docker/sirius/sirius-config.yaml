@@ -128,3 +128,15 @@ resources:
     method: get
     response:
       statusCode: 404
+
+  - path: "/api/v1/digital-lpas/M-DRAF-TLPA-35G3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/donorDraft.json
+
+  - path: "/api/v1/digital-lpas/M-DRAF-TLPA-CPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpDraft.json
