@@ -101,6 +101,12 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Not a valid LPA number. Enter an LPA number to continue.");
 
         cy.get(".govuk-button").contains("Return to LPA list").click();
+        cy.get(".govuk-button").contains("Add another LPA").click();
+        cy.get("#lpa").should('be.visible').type("M-DRAF-TLPA-CPG3");        // draft LPA
+        cy.get(".govuk-button").contains("Find LPA").click();
+        cy.contains("This LPA cannot be added as it’s status is set to Draft. LPAs need to be in the In progress status to be added to this ID check.");
+
+        cy.get(".govuk-button").contains("Return to LPA list").click();
         cy.contains("LPAs included in the identity check");
         cy.get(".govuk-button").contains("Continue").click();
         //
