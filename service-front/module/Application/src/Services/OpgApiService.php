@@ -278,20 +278,6 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-
-    public function confirmSelectedPostOffice(string $uuid, string $deadline): void
-    {
-        $data = [
-            'deadline' => $deadline,
-        ];
-
-        try {
-            $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
-
     public function addSelectedAddress(string $uuid, array $data): void
     {
         $url = sprintf("/cases/%s/save-address-to-case", $uuid);

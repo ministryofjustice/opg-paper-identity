@@ -133,9 +133,9 @@ class YotiControllerTest extends TestCase
      */
     public function testBranchReturnFormat(): void
     {
-        $response = '{"12345678":{"name":"St Neots","address":"35 High Street, St. ' .
+        $response = '{"12345678":{"fad_code":"12345678","name":"St Neots","address":"35 High Street, St. ' .
             'Neots, Cambridgeshire","post_code":"PE19 1NL"}' .
-                    ',"12345675":{"name":"Hampstead","address":"66 High Street, ' .
+                    ',"12345675":{"fad_code":"12345675","name":"Hampstead","address":"66 High Street, ' .
             'Hampstead Heath, London","post_code":"NW3 6LR"}}';
         $this->yotiServiceMock
             ->expects($this->once())->method('postOfficeBranch')
@@ -171,7 +171,7 @@ class YotiControllerTest extends TestCase
                 'id_route' => "TELEPHONE",
             ],
             'counterService' => [
-                'selectedPostOffice' => ''
+                'selectedPostOffice' => '29348729'
             ]
         ]);
 
