@@ -98,7 +98,7 @@ class IndexController extends AbstractActionController
 
         $request = $this->getRequest();
 
-        if ($this->getRequest()->isPost() && $form->isValid()) {
+        if ($request->isPost() && $form->isValid()) {
             $this->opgApiService->abandonFlow($uuid);
 
             $noteDescription = "Reason: " . $request->getPost("reason");
