@@ -19,31 +19,31 @@ class DetailsResponseDTOTest extends TestCase
             "relationships" => [
                 "relationships" => [
                     "links" => [
-                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                        "self" => "https://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
                             "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ],
                 "addresses" => [
                     "links" => [
-                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                        "self" => "https://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
                             "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ],
                 "claims" => [
                     "links" => [
-                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                        "self" => "https://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
                             "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ],
                 "current-correspondence-address" => [
                     "links" => [
-                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                        "self" => "https://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
                             "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ],
                 "current-residential-address" => [
                     "links" => [
-                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                        "self" => "https://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
                             "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ]
@@ -56,7 +56,7 @@ class DetailsResponseDTOTest extends TestCase
             "type" => "Citizen"
         ],
         "links" => [
-            "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+            "self" => "https://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
                 "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
         ]
     ];
