@@ -101,7 +101,6 @@ class DwpApiService
 
             if (
                 $citizenResponseDTO->matchScenario() !== 'Matched on NINO' ||
-                $detailsResponseDTO->verified() !== 'verified' ||
                 $submittedNino !== $returnedNino
             ) {
                 return false;
@@ -210,7 +209,6 @@ class DwpApiService
         $responseArray = [];
         try {
             $uri = $this->detailsPath . $detailsRequestDTO->id();
-
             $response = $this->guzzleClient->request(
                 'GET',
                 $uri,

@@ -74,40 +74,57 @@ class DwpApiServiceTest extends TestCase
 
     private const DETAILS_RESPONSE = [
         "jsonapi" => [
-            "version" => ""
-        ],
-        "links" => [
-            "self" => ""
+            "version" => "1.0"
         ],
         "data" => [
-            "id" => "",
-            "type" => "Citizen",
+            "relationships" => [
+                "relationships" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+
+                    ]
+                ],
+                "addresses" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+
+                    ]
+                ],
+                "claims" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+
+                    ]
+                ],
+                "current-correspondence-address" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+
+                    ]
+                ],
+                "current-residential-address" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+
+                    ]
+                ]
+            ],
             "attributes" => [
-                "guid" => "",
-                "nino" => "NP112233C",
-                "identityVerificationStatus" => "verified",
-                "sex" => "",
-                "statusIndicator" => false,
-                "name" => [
-                    "title" => "Mr",
-                    "firstName" => "Lee",
-                    "middleNames" => "",
-                    "lastName" => "Manthrope",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "dateOfBirth" => [
-                    "date" => "1986-09-03",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-            ]
+                "guid" => "ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2",
+                "nino" => "NP112233C"
+            ],
+            "id" => "ab2a482ffd49110eeae81a04005a589a0c80c619847602d1923875462900dfaf",
+            "type" => "Citizen"
+        ],
+        "links" => [
+            "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+
         ]
     ];
 
@@ -489,12 +506,6 @@ class DwpApiServiceTest extends TestCase
                 false,
                 $caseData,
                 $noMatchDTO,
-                $failDetailsDTO
-            ],
-            [
-                false,
-                $caseData,
-                $successMatchDTO,
                 $failDetailsDTO
             ],
             [

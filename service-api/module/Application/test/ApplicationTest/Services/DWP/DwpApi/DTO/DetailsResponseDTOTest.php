@@ -13,150 +13,51 @@ class DetailsResponseDTOTest extends TestCase
 
     private array $testData = [
         "jsonapi" => [
-            "version" => ""
-        ],
-        "links" => [
-            "self" => ""
+            "version" => "1.0"
         ],
         "data" => [
-            "id" => "",
-            "type" => "Citizen",
-            "attributes" => [
-                "guid" => "",
-                "nino" => "NP112233C",
-                "identityVerificationStatus" => "verified",
-                "sex" => "",
-                "statusIndicator" => false,
-                "name" => [
-                    "title" => "Mr",
-                    "firstName" => "Lee",
-                    "middleNames" => "",
-                    "lastName" => "Manthrope",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "alternateName" => [
-                    "title" => "",
-                    "firstName" => "",
-                    "middleNames" => "",
-                    "lastName" => "",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "requestedName" => [
-                    "requestedName" => "",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "dateOfDeath" => [
-                    "date" => "",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "dateOfBirth" => [
-                    "date" => "1986-09-03",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "accessibilityNeeds" => [
-                    [
-                        "type" => "braille",
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ]
-                ],
-                "safeguarding" => [
-                    "type" => "potentially_violent",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "nationality" => [
-                    "nationality" => "british",
-                    "metadata" => [
-                        "verificationType" => "self_asserted",
-                        "startDate" => "2024-12-11",
-                        "endDate" => "2024-12-11"
-                    ]
-                ],
-                "contactDetails" => [
-                    [
-                        "contactType" => "home_telephone_number",
-                        "value" => "07745690909",
-                        "preferredContactIndicator" => false,
-                        "metadata" => [
-                            "verificationType" => "self_asserted",
-                            "startDate" => "2024-12-11",
-                            "endDate" => "2024-12-11"
-                        ]
-                    ]
-                ],
-                "warningDetails" => [
-                    "warnings" => [
-                        [
-                            "id" => "",
-                            "links" => [
-                                "about" => ""
-                            ],
-                            "status" => "",
-                            "code" => "",
-                            "title" => "",
-                            "detail" => "",
-                            "source" => [
-                                "pointer" => "",
-                                "parameter" => ""
-                            ]
-                        ]
-                    ]
-                ]
-            ],
             "relationships" => [
-                "current-residential-address" => [
+                "relationships" => [
                     "links" => [
-                        "self" => ""
-                    ]
-                ],
-                "current-correspondence-address" => [
-                    "links" => [
-                        "self" => ""
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ],
                 "addresses" => [
                     "links" => [
-                        "self" => ""
-                    ]
-                ],
-                "relationships" => [
-                    "links" => [
-                        "self" => ""
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ],
                 "claims" => [
                     "links" => [
-                        "self" => ""
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+                    ]
+                ],
+                "current-correspondence-address" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
+                    ]
+                ],
+                "current-residential-address" => [
+                    "links" => [
+                        "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                            "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
                     ]
                 ]
-            ]
+            ],
+            "attributes" => [
+                "guid" => "ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2",
+                "nino" => "NP112233C"
+            ],
+            "id" => "ab2a482ffd49110eeae81a04005a589a0c80c619847602d1923875462900dfaf",
+            "type" => "Citizen"
+        ],
+        "links" => [
+            "self" => "http://capi.sandbox.citizen-information-nonprod.dwpcloud.uk/capi/v2/" .
+                "citizens/ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2/relationships"
         ]
     ];
 
@@ -167,19 +68,12 @@ class DetailsResponseDTOTest extends TestCase
         $this->detailsResponseDTO = new DetailsResponseDTO($this->testData);
     }
 
-    public function testFirstName(): void
+    public function testGuid(): void
     {
-        $this->assertEquals('Lee', $this->detailsResponseDTO->firstName());
-    }
-
-    public function testLastName(): void
-    {
-        $this->assertEquals('Manthrope', $this->detailsResponseDTO->lastName());
-    }
-
-    public function testDob(): void
-    {
-        $this->assertEquals("1986-09-03", $this->detailsResponseDTO->dob());
+        $this->assertEquals(
+            "ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2",
+            $this->detailsResponseDTO->guid()
+        );
     }
 
     public function testNino(): void
@@ -187,19 +81,11 @@ class DetailsResponseDTOTest extends TestCase
         $this->assertEquals("NP112233C", $this->detailsResponseDTO->nino());
     }
 
-    public function testVerified(): void
-    {
-        $this->assertEquals("verified", $this->detailsResponseDTO->verified());
-    }
-
     public function testArray(): void
     {
         $this->assertEquals([
-            'firstName' => 'Lee',
-            'lastName' => "Manthrope",
-            'dob' => "1986-09-03",
+            'guid' => "ab2a482ffd49110eeae81a04005a589a7755c8000f953bef101e95367aab9cf2",
             'nino' => "NP112233C",
-            'verified' => "verified"
         ], $this->detailsResponseDTO->toArray());
     }
 }
