@@ -173,7 +173,7 @@ class LpaFormHelper
             if ($response['status'] == 'draft') {
                 $response['error'] = true;
                 $response['message'] = "This LPA cannot be added as it’s status is set to Draft.
-                    LPAs need to be in the In Progress status to be added to this ID check.";
+                    LPAs need to be in the In progress status to be added to this ID check.";
             }
         } else {
             $response['error'] = true;
