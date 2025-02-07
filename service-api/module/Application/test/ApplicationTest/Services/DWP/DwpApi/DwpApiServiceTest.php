@@ -479,7 +479,7 @@ class DwpApiServiceTest extends TestCase
             ],
             "data" => [
                 "id" => "",
-                "type" => "MatchResult",
+                "type" => "",
                 "attributes" => [
                     "matchingScenario" => ""
                 ]

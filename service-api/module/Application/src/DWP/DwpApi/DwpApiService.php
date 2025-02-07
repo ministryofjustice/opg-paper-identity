@@ -98,11 +98,11 @@ class DwpApiService
                     $detailsResponseDTO->nino()
                 )
             );
-//
-//            if ($citizenResponseDTO->matchScenario() !== 'Matched on NINO') {
-//                $this->logger->info("Match Scenario missing from response.");
-//                return false;
-//            }
+
+            if ($citizenResponseDTO->type() !== 'MatchResult') {
+                $this->logger->info("Match Result missing from response.");
+                return false;
+            }
 
             if ($submittedNino !== $returnedNino) {
                 $this->logger->info("Submitted NINO does not match NINO in details response.");
