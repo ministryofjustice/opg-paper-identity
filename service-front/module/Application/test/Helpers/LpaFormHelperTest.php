@@ -125,7 +125,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $goodLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "processing",
+                        "lpa_status" => "Processing",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -179,8 +179,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added as it’s status is set to Draft.
-                    LPAs need to be in the In progress status to be added to this ID check.",
+                    "message" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.",
                     "status" => "error",
                 ],
                 new Parameters(['lpa' => $draftLpa]),
@@ -199,7 +199,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $onlineLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "processing",
+                        "lpa_status" => "Processing",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -240,7 +240,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $noMatchLpa,
                         "type_of_lpa" => 'property-and-affairs',
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => 'no match',
+                        "lpa_status" => 'No match',
                         "cp_name" => "Daniel Smith",
                         "cp_address" => [
                             'line1' => '81 Penny Street',

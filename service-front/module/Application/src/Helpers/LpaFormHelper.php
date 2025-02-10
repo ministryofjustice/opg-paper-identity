@@ -70,7 +70,7 @@ class LpaFormHelper
                 "lpa_number" => $formData['lpa'],
                 "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                 "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                "lpa_status" => $statusCheck['status'],
+                "lpa_status" => ucfirst($statusCheck['status']),
                 "cp_name" => $idCheck['name'],
                 "cp_address" => $idCheck['address']
             ];
@@ -172,8 +172,8 @@ class LpaFormHelper
             }
             if ($response['status'] == 'draft') {
                 $response['error'] = true;
-                $response['message'] = "This LPA cannot be added as it’s status is set to Draft.
-                    LPAs need to be in the In progress status to be added to this ID check.";
+                $response['message'] = "This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.";
             }
         } else {
             $response['error'] = true;
