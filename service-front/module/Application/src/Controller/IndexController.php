@@ -118,8 +118,22 @@ class IndexController extends AbstractActionController
 
         $form = $this->createForm(AbandonFlow::class);
 
-        if ($this->getRequest()->isPost() && $form->isValid()) {
+        $request = $this->getRequest();
+
+        if ($request->isPost() && $form->isValid()) {
             $this->opgApiService->abandonFlow($uuid);
+
+            $postData = $request->getPost()->toArray();
+            $noteDescription = "Reason: " . $this->mapReason($postData['reason']);
+            $noteDescription .= "\n\n" . $postData['notes'];
+
+            $this->siriusApiService->addNote(
+                $request,
+                $detailsData["lpas"][0],
+                "ID Check Abandoned",
+                "ID Check Incomplete",
+                $noteDescription
+            );
 
             $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
             return $this->redirect()->toUrl($siriusUrl);
@@ -130,6 +144,17 @@ class IndexController extends AbstractActionController
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/abandoned_flow');
+    }
+
+    private function mapReason(string $reason): string
+    {
+        $reasons = [
+            'cd' => 'Call dropped',
+            'nc' => 'Caller not able to complete at this time',
+            'ot' => 'Other'
+        ];
+
+        return $reasons[$reason] ?? 'Unknown';
     }
 
     public function healthCheckAction(): ViewModel
