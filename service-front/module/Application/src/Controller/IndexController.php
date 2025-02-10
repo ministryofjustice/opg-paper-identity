@@ -105,13 +105,16 @@ class IndexController extends AbstractActionController
             $noteDescription = "Reason: " . $this->mapReason($postData['reason']);
             $noteDescription .= "\n\n" . $postData['notes'];
 
-            $this->siriusApiService->addNote(
-                $request,
-                $detailsData["lpas"][0],
-                "ID Check Abandoned",
-                "ID Check Incomplete",
-                $noteDescription
-            );
+            $lpas = $detailsData["lpas"];
+            foreach ($lpas as $lpaUid) {
+                $this->siriusApiService->addNote(
+                    $request,
+                    $lpaUid,
+                    "ID Check Abandoned",
+                    "ID Check Incomplete",
+                    $noteDescription
+                );
+            }
 
             $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
             return $this->redirect()->toUrl($siriusUrl);
