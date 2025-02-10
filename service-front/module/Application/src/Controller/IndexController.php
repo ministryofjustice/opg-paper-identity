@@ -101,9 +101,9 @@ class IndexController extends AbstractActionController
         if ($request->isPost() && $form->isValid()) {
             $this->opgApiService->abandonFlow($uuid);
 
-            $reason = $request->getPost("reason");
-            $noteDescription = "Reason: " . $this->mapReason($reason->toString());
-            $noteDescription .= "\n\n" . $request->getPost("notes");
+            $postData = $request->getPost()->toArray();
+            $noteDescription = "Reason: " . $this->mapReason($postData['reason']);
+            $noteDescription .= "\n\n" . $postData['notes'];
 
             $this->siriusApiService->addNote(
                 $request,
