@@ -58,10 +58,10 @@ class Guzzle
                     ->setAttribute(TraceAttributes::SERVER_ADDRESS, $request->getUri()->getHost())
                     ->setAttribute(TraceAttributes::SERVER_PORT, $request->getUri()->getPort())
                     ->setAttribute(TraceAttributes::URL_PATH, $request->getUri()->getPath())
-                    ->setAttribute(TraceAttributes::CODE_FUNCTION, $function)
+                    ->setAttribute(TraceAttributes::CODE_FUNCTION_NAME, $function)
                     ->setAttribute(TraceAttributes::CODE_NAMESPACE, $class)
                     ->setAttribute(TraceAttributes::CODE_FILEPATH, $filename)
-                    ->setAttribute(TraceAttributes::CODE_LINENO, $lineno)
+                    ->setAttribute(TraceAttributes::CODE_LINE_NUMBER, $lineno)
                     ->startSpan();
 
                 foreach ($propagator->fields() as $field) {
@@ -91,7 +91,7 @@ class Guzzle
                 $span = Span::fromContext($scope->context());
 
                 if ($exception) {
-                    $span->recordException($exception, [TraceAttributes::EXCEPTION_ESCAPED => true]);
+                    $span->recordException($exception);
                     $span->setStatus(StatusCode::STATUS_ERROR, $exception->getMessage());
                     $span->end();
                 }
@@ -130,7 +130,7 @@ class Guzzle
                         return $response;
                     },
                     onRejected: function (\Throwable $t) use ($span) {
-                        $span->recordException($t, [TraceAttributes::EXCEPTION_ESCAPED => true]);
+                        $span->recordException($t);
                         $span->setStatus(StatusCode::STATUS_ERROR, $t->getMessage());
                         $span->end();
 
