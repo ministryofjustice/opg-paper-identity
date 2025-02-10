@@ -105,6 +105,7 @@
     "opg.poas.sirius": {
         "caseSubtype": "personal-welfare",
         "donor": {
+            "id": 12345678,
             "addressLine1": "55 Abbey Row",
             "dob": "16/08/1951",
             "firstname": "Hayden",
