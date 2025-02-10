@@ -140,3 +140,9 @@ resources:
     response:
       statusCode: 200
       file: data/cpDraft.json
+
+  - path: "/api/v1/digital-lpas/M-REGI-STER-DLPA"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpRegistered.json
