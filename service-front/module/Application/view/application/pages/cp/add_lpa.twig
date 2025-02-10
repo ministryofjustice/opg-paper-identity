@@ -23,7 +23,7 @@
                     <b>There is a problem</b>
                 </p>
                 <div class="moj-banner__message">
-                    {{ lpa_response['message'] }}
+                    {{ lpa_response['message']|raw }}
 
                     {% if lpa_response['additionalData'] %}
                         <br><br>This ID check is for:
