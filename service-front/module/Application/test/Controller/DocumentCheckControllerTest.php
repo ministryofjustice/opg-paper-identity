@@ -123,7 +123,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ]);
     }
 
-    public function ninoData(): array
+    public static function ninoData(): array
     {
         return [
             ["PASS"],
@@ -155,7 +155,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         $this->assertQuery('p#nino-error');
     }
 
-    public function ninoErrorsData(): array
+    public static function ninoErrorsData(): array
     {
         return [
             'empty_form' => [
@@ -248,7 +248,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ]);
     }
 
-    public function drivingLicenceData(): array
+    public static function drivingLicenceData(): array
     {
         return [
             ["PASS"],
@@ -283,7 +283,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         }
     }
 
-    public function dlnErrorsData(): array
+    public static function dlnErrorsData(): array
     {
         return [
             'empty form' => [
@@ -388,7 +388,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ]);
     }
 
-    public function passportNumberData(): array
+    public static function passportNumberData(): array
     {
         return [
             ['pass'],
@@ -450,7 +450,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         }
     }
 
-    public function passportNumberErrors(): array
+    public static function passportNumberErrors(): array
     {
         return [
             'empty form' => [
@@ -481,7 +481,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public function returnOpgResponseData(): array
+    public static function returnOpgResponseData(): array
     {
         return [
             "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
@@ -510,7 +510,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public function returnServiceAvailabilityResponseData(): array
+    public static function returnServiceAvailabilityResponseData(): array
     {
         return [
             'data' => [
