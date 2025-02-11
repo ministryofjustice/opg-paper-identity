@@ -57,7 +57,8 @@ RUN composer check-platform-reqs &&\
   composer dumpautoload -o
 
 COPY public public
-COPY config config
+COPY config/autoload config/autoload
+COPY config/*.php config/
 COPY module module
 STOPSIGNAL SIGQUIT
 
