@@ -260,7 +260,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this->assertQuery($expectedQuery);
     }
 
-    public function passortDateCheckData(): array
+    public static function passortDateCheckData(): array
     {
         return [
             [
@@ -317,7 +317,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/{$expectedRedirect}");
     }
 
-    public function idMethodData(): array
+    public static function idMethodData(): array
     {
         return [
             'donor via post-office' => [
