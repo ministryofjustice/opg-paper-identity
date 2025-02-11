@@ -151,6 +151,9 @@ class LpaFormHelper
 
     private function checkStatus(array $siriusCheck): array
     {
+        $draftMessage = "This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.";
+
         $response = [
             'error' => false,
             'status' => "",
@@ -172,9 +175,14 @@ class LpaFormHelper
             }
             if ($response['status'] == 'draft') {
                 $response['error'] = true;
-                $response['message'] = "This LPA cannot be added as it’s status is set to <b>Draft</b>.
-                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.";
+                $response['message'] = $draftMessage;
             }
+        } elseif (
+            array_key_exists('opg.poas.sirius', $siriusCheck) &&
+            array_key_exists('status', $siriusCheck['opg.poas.sirius'])
+        ) {
+            $response['error'] = true;
+            $response['message'] = $draftMessage;
         } else {
             $response['error'] = true;
             $response['message'] = "No LPA Found.";
