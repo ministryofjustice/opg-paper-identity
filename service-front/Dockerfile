@@ -62,7 +62,8 @@ RUN composer check-platform-reqs &&\
 
 COPY public public
 COPY --from=asset-env /app/public public
-COPY config config
+COPY config/autoload config/autoload
+COPY config/*.php config/
 COPY module module
 
 COPY --from=asset-env /app/yoti-supported-documents.json module/Application/config/yoti-supported-documents.json
