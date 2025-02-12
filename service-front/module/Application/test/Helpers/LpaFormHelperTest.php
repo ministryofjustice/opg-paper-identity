@@ -77,7 +77,7 @@ class LpaFormHelperTest extends TestCase
 
         $emptyDraftLpa = "M-0000-0000-0005";
         $slrEmptyDraft = $slr;
-        $slrEmptyDraft['opg.poas.sirius']['uId'] = $draftLpa;
+        $slrEmptyDraft['opg.poas.sirius']['uId'] = $emptyDraftLpa;
         unset($slrEmptyDraft['opg.poas.lpastore']);
 
         $onlineLpa = "M-0000-0000-0006";
