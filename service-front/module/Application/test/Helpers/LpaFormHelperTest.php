@@ -88,7 +88,7 @@ class LpaFormHelperTest extends TestCase
         $noMatchLpa = "M-0000-0000-0006";
         $slrNoMatch = $slr;
         $slrNoMatch['opg.poas.sirius']['uId'] = $noMatchLpa;
-        $slrNoMatch['opg.poas.lpastore']['status'] = 'processing';
+        $slrNoMatch['opg.poas.lpastore']['status'] = 'In progress';
         $slrNoMatch['opg.poas.lpastore']['certificateProvider']['address'] = [
             'line1' => '81 Penny Street',
             'line2' => 'Lancaster',
@@ -130,7 +130,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $goodLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "Processing",
+                        "lpa_status" => "In progress",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -173,7 +173,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
+                    "message" => "These LPAs cannot be added as they do not have the correct status for an ID check." .
+                        " LPAs need to be in the <b>In progress</b> status to be added to this identity check.",
                     "status" => "complete",
                 ],
                 new Parameters(['lpa' => $alreadyDoneLpa]),
@@ -216,7 +217,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $onlineLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "Processing",
+                        "lpa_status" => "In progress",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -257,7 +258,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $noMatchLpa,
                         "type_of_lpa" => 'property-and-affairs',
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => 'Processing',
+                        "lpa_status" => 'In progress',
                         "cp_name" => "Daniel Smith",
                         "cp_address" => [
                             'line1' => '81 Penny Street',
@@ -388,7 +389,7 @@ class LpaFormHelperTest extends TestCase
                 ],
                 "registrationDate" => "1918-08-28",
                 "signedAt" => "1956-06-30T03:57:57.0Z",
-                "status" => "processing",
+                "status" => "in progress",
                 "uid" => "M-804C-XHAD-59UQ",
                 "updatedAt" => "1913-04-09T10:18:35.0Z",
                 "whenTheLpaCanBeUsed" => "when-capacity-lost"

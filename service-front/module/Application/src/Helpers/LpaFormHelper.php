@@ -12,6 +12,9 @@ class LpaFormHelper
     private const DRAFT_MESSAGE = "This LPA cannot be added as it’s status is set to <b>Draft</b>.
                     LPAs need to be in the <b>In progress</b> status to be added to this ID check.";
 
+    private const STATUS_FAIL_MESSAGE = "These LPAs cannot be added as they do not have the correct status " .
+    "for an ID check. LPAs need to be in the <b>In progress</b> status to be added to this identity check.";
+
 
     private const COMPLETE_MESSAGE = "This LPA cannot be added as an ID" .
     " check has already been completed for this LPA.";
@@ -199,7 +202,7 @@ class LpaFormHelper
             $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
         }
 
-        if (strtolower($response['status']) === 'processing') {
+        if (strtolower($response['status']) === 'in progress') {
             return $response;
         }
 
@@ -213,10 +216,10 @@ class LpaFormHelper
         if (
             $response['status'] == 'complete' ||
             $response['status'] == 'registered' ||
-            $response['status'] == 'in progress'
+            $response['status'] == 'processing'
         ) {
             $response['error'] = true;
-            $response['message'] = self::COMPLETE_MESSAGE;
+            $response['message'] = self::STATUS_FAIL_MESSAGE;
 
             return $response;
         }

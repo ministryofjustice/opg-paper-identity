@@ -147,4 +147,14 @@ resources:
       statusCode: 200
       file: data/cpEmpty.json
 
+  - path: "/api/v1/digital-lpas/M-COMP-LETE-CPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpComplete.json
 
+  - path: "/api/v1/digital-lpas/M-INPR-OGRE-CPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpInProgress.json
