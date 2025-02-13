@@ -1,148 +1,43 @@
 {
-  "jsonapi": {
-    "version": ""
+  "jsonapi":{
+    "version":"1.0"
   },
-  "links": {
-    "self": ""
-  },
-  "data": {
-    "id": "",
-    "type": "Citizen",
-    "attributes": {
-      "guid": "",
-      "nino": "AE767809C",
-      "identityVerificationStatus": "verified",
-      "sex": "",
-      "statusIndicator": false,
-      "name": {
-        "title": "Mr",
-        "firstName": "Shawn",
-        "middleNames": "",
-        "lastName": "Hurst",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
+  "data":{
+    "relationships":{
+      "relationships":{
+        "links":{
+          "self":"http:dwp-mock/capi/v2/citizens/ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8"
         }
       },
-      "alternateName": {
-        "title": "",
-        "firstName": "",
-        "middleNames": "",
-        "lastName": "",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
+      "addresses":{
+        "links":{
+          "self":"http:dwp-mock/capi/v2/citizens/ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8"
         }
       },
-      "requestedName": {
-        "requestedName": "",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
+      "claims":{
+        "links":{
+          "self":"http:dwp-mock/capi/v2/citizens/ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8"
         }
       },
-      "dateOfDeath": {
-        "date": "",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
+      "current-correspondence-address":{
+        "links":{
+          "self":"http:dwp-mock/capi/v2/citizens/ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8"
         }
       },
-      "dateOfBirth": {
-        "date": "1982-09-05",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
+      "current-residential-address":{
+        "links":{
+          "self":"http:dwp-mock/capi/v2/citizens/ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8"
         }
-      },
-      "accessibilityNeeds": [
-        {
-          "type": "braille",
-          "metadata": {
-            "verificationType": "self_asserted",
-            "startDate": "2024-12-11",
-            "endDate": "2024-12-11"
-          }
-        }
-      ],
-      "safeguarding": {
-        "type": "potentially_violent",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
-        }
-      },
-      "nationality": {
-        "nationality": "british",
-        "metadata": {
-          "verificationType": "self_asserted",
-          "startDate": "2024-12-11",
-          "endDate": "2024-12-11"
-        }
-      },
-      "contactDetails": [
-        {
-          "contactType": "home_telephone_number",
-          "value": "9099014809",
-          "preferredContactIndicator": false,
-          "metadata": {
-            "verificationType": "self_asserted",
-            "startDate": "2024-12-11",
-            "endDate": "2024-12-11"
-          }
-        }
-      ],
-      "warningDetails": {
-        "warnings": [
-          {
-            "id": "",
-            "links": {
-              "about": ""
-            },
-            "status": "",
-            "code": "",
-            "title": "",
-            "detail": "",
-            "source": {
-              "pointer": "",
-              "parameter": ""
-            }
-          }
-        ]
       }
     },
-    "relationships": {
-      "current-residential-address": {
-        "links": {
-          "self": ""
-        }
-      },
-      "current-correspondence-address": {
-        "links": {
-          "self": ""
-        }
-      },
-      "addresses": {
-        "links": {
-          "self": ""
-        }
-      },
-      "relationships": {
-        "links": {
-          "self": ""
-        }
-      },
-      "claims": {
-        "links": {
-          "self": ""
-        }
-      }
-    }
+    "attributes":{
+      "guid":"ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8",
+      "nino":"AE767809C"
+    },
+    "id":"ab2a482ffd49110eeae81a04005a589a7d1b080be13e2cbf184e8f7acb260b4e",
+    "type":"Citizen"
+  },
+  "links":{
+    "self":"http:dwp-mock/capi/v2/citizens/ab2a482ffd49110eeae81a04005a589ae9556188ce6088f6b55025ec1242ead8"
   }
 }

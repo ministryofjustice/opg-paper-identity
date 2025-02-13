@@ -69,7 +69,7 @@ class DwpApiService
 
             return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO, $nino);
         } catch (\Exception $exception) {
-            $this->logger->error('DwpApiException: ' . $exception->getMessage());
+            $this->logger->error('DwpApiException: ' . "($this->correlationUuid) " . $exception->getMessage());
             throw new DwpApiException($exception->getMessage());
         }
     }
@@ -126,7 +126,6 @@ class DwpApiService
         $responseArray = [];
         try {
             $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
-            $this->logger->info('MATCH_POSTBODY: ', $postBody);
 
             $response = $this->guzzleClient->request(
                 'POST',
@@ -137,7 +136,6 @@ class DwpApiService
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
-            $this->logger->info("DWP_MATCH_RESPONSE: " . json_encode($responseArray, JSON_THROW_ON_ERROR));
         } catch (ClientException $clientException) {
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
@@ -194,10 +192,7 @@ class DwpApiService
 
     public function makeFormattedPostcode(string $postcode): string
     {
-        $cleanPostcode = preg_replace("/[^A-Za-z0-9]/", '', $postcode);
-        /**
-         * @psalm-suppress PossiblyNullArgument
-         */
+        $cleanPostcode = (string) preg_replace("/[^A-Za-z0-9]/", '', $postcode);
         $cleanPostcode = strtoupper($cleanPostcode);
         return substr($cleanPostcode, 0, -3) . " " . substr($cleanPostcode, -3);
     }
