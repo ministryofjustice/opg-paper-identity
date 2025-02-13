@@ -175,8 +175,10 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => ["status_check" => "These LPAs cannot be added as they do not have the correct status for an ID check." .
-                        " LPAs need to be in the <b>In progress</b> status to be added to this identity check."],
+                    "message" => ["status_check" => "These LPAs cannot be added as they do not have " .
+                        "the correct status for an ID check. LPAs need to be in the <b>In progress</b> status " .
+                        "to be added to this identity check."
+                    ],
                     "status" => "complete",
                 ],
                 new Parameters(['lpa' => $alreadyDoneLpa]),

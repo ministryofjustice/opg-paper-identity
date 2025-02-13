@@ -229,26 +229,6 @@ class LpaFormHelper
         $response['status'] = "";
 
         return $response;
-
-//
-//        if (
-//            array_key_exists('opg.poas.lpastore', $siriusCheck) &&
-//            array_key_exists('status', $siriusCheck['opg.poas.lpastore'])
-//        ) {
-//            $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
-//
-//
-//        } elseif (
-//            array_key_exists('opg.poas.sirius', $siriusCheck) &&
-//            array_key_exists('status', $siriusCheck['opg.poas.sirius'])
-//        ) {
-//            $response['error'] = true;
-//            $response['message'] = $draftMessage;
-//        } else {
-//            $response['error'] = true;
-//            $response['message'] = "No LPA Found.";
-//        }
-//        return $response;
     }
 
     private function checkChannel(array $siriusCheck): array
