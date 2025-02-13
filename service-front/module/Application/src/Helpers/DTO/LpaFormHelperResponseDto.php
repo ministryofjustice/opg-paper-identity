@@ -12,7 +12,7 @@ class LpaFormHelperResponseDto
         private string $uuid,
         private FormInterface $form,
         private string $status,
-        private string $message,
+        private array $messages,
         private array $data = [],
         private array $additionalData = [],
     ) {
@@ -33,9 +33,9 @@ class LpaFormHelperResponseDto
         return $this->status;
     }
 
-    public function getMessage(): string
+    public function getMessages(): array
     {
-        return $this->message;
+        return $this->messages;
     }
 
     public function getData(): array
@@ -52,7 +52,7 @@ class LpaFormHelperResponseDto
     {
         return [
             'status' => $this->getStatus(),
-            'message' => $this->getMessage(),
+            'messages' => $this->getMessages(),
             'data' => $this->getData(),
             'additionalData' => $this->getAdditionalData(),
         ];
@@ -64,7 +64,7 @@ class LpaFormHelperResponseDto
             'uuid' => $this->getUuid(),
             'form' => $this->getForm(),
             'status' => $this->getStatus(),
-            'message' => $this->getMessage(),
+            'messages' => $this->getMessages(),
             'data' => $this->getData(),
             'additionalData' => $this->getAdditionalData(),
         ];
