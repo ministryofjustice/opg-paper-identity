@@ -104,4 +104,43 @@ class CitizenRequestDTO
             'nino' => $this->nino()
         ];
     }
+
+    public function constructCitizenRequestBody(): array
+    {
+        try {
+            return [
+                "jsonapi" => [
+                    "version" => "1.0"
+                ],
+                "data" => [
+                    "type" => "Match",
+                    "attributes" => [
+                        "dateOfBirth" => $this->dob(),
+                        "ninoFragment" => $this->makeNinoFragment($this->nino()),
+                        "firstName" => $this->firstName(),
+                        "lastName" => $this->lastName(),
+                        "postcode" => $this->makeFormattedPostcode($this->postcode()),
+                        "contactDetails" => [
+                            ""
+                        ]
+                    ]
+                ]
+            ];
+        } catch (\Exception $exception) {
+            throw new DwpApiException($exception->getMessage());
+        }
+    }
+
+    public function makeNinoFragment(string $nino): string
+    {
+        $nino = str_replace(" ", "", $nino);
+        return substr($nino, (strlen($nino) - 5), - 1);
+    }
+
+    public function makeFormattedPostcode(string $postcode): string
+    {
+        $cleanPostcode = (string) preg_replace("/[^A-Za-z0-9]/", '', $postcode);
+        $cleanPostcode = strtoupper($cleanPostcode);
+        return substr($cleanPostcode, 0, -3) . " " . substr($cleanPostcode, -3);
+    }
 }

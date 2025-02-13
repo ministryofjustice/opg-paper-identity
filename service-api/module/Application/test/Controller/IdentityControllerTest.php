@@ -330,7 +330,7 @@ class IdentityControllerTest extends TestCase
         $this->assertResponseStatusCode($status);
         $this->assertModuleName('application');
         $this->assertEquals(json_encode($response), $this->getResponse()->getContent());
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerName(IdentityController::class);
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
     }
@@ -343,7 +343,6 @@ class IdentityControllerTest extends TestCase
                 true,
                 [
                     'result' => 'PASS',
-                    'nino' => 'AA112233A',
                 ],
                 Response::STATUS_CODE_200
             ],
@@ -352,7 +351,6 @@ class IdentityControllerTest extends TestCase
                 false,
                 [
                     'result' => 'NO_MATCH',
-                    'nino' => 'AA112233E',
                 ],
                 Response::STATUS_CODE_200
             ],

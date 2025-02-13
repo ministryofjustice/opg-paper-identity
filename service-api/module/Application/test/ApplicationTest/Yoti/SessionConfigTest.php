@@ -39,7 +39,7 @@ class SessionConfigTest extends TestCase
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
                 'id_route' => "POST_OFFICE",
-                'id_correlation' => ""
+                'dwp_id_correlation' => ""
             ],
             'lpas' => []
         ]);
@@ -62,7 +62,7 @@ class SessionConfigTest extends TestCase
             "id_method" => "DRIVING_LICENCE",
             "id_route" => 'POST_OFFICE',
             "id_value" => 'AA112233C',
-            'id_correlation' => ""
+            'dwp_id_correlation' => ""
         ]);
         $this->caseMock->idMethodIncludingNation = $idIncludingNation;
 

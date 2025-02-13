@@ -170,7 +170,7 @@ class IdentityController extends AbstractActionController
         try {
             $correlationUuid = Uuid::uuid4()->toString();
             $idMethodData = $caseData?->idMethodIncludingNation?->jsonSerialize();
-            $idMethodData['id_correlation'] = $correlationUuid;
+            $idMethodData['dwp_id_correlation'] = $correlationUuid;
 
             $this->dataHandler->updateCaseData(
                 $uuid,
@@ -183,12 +183,10 @@ class IdentityController extends AbstractActionController
             if ($this->dwpApiService->validateNino($caseData, $data['nino'], $correlationUuid)) {
                 return new JsonModel([
                     'result' => 'PASS',
-                    'nino' => $data['nino']
                 ]);
             } else {
                 return new JsonModel([
                     'result' => 'NO_MATCH',
-                    'nino' => $data['nino']
                 ]);
             }
         } catch (\Exception $exception) {

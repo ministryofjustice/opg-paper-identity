@@ -123,16 +123,13 @@ class DwpApiService
         CitizenRequestDTO $citizenRequestDTO,
     ): CitizenResponseDTO {
         $this->authCount++;
-        $responseArray = [];
         try {
-            $postBody = $this->constructCitizenRequestBody($citizenRequestDTO);
-
             $response = $this->guzzleClient->request(
                 'POST',
                 $this->matchPath,
                 [
                     'headers' => $this->makeHeaders(),
-                    'json' => $postBody
+                    'json' => $citizenRequestDTO->constructCitizenRequestBody()
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
@@ -142,7 +139,7 @@ class DwpApiService
                 $this->authCount < 2
             ) {
                 $this->authApiService->authenticate();
-                $this->makeCitizenMatchRequest($citizenRequestDTO);
+                $responseArray = $this->makeCitizenMatchRequest($citizenRequestDTO);
             } else {
                 $response = $clientException->getResponse();
                 $responseBodyAsString = $response->getBody()->getContents();
@@ -155,46 +152,6 @@ class DwpApiService
         return new CitizenResponseDTO(
             $responseArray
         );
-    }
-
-    public function constructCitizenRequestBody(
-        CitizenRequestDTO $citizenRequestDTO
-    ): array {
-        try {
-            return [
-                "jsonapi" => [
-                    "version" => "1.0"
-                ],
-                "data" => [
-                    "type" => "Match",
-                    "attributes" => [
-                        "dateOfBirth" => $citizenRequestDTO->dob(),
-                        "ninoFragment" => $this->makeNinoFragment($citizenRequestDTO->nino()),
-                        "firstName" => $citizenRequestDTO->firstName(),
-                        "lastName" => $citizenRequestDTO->lastName(),
-                        "postcode" => $this->makeFormattedPostcode($citizenRequestDTO->postcode()),
-                        "contactDetails" => [
-                            ""
-                        ]
-                    ]
-                ]
-            ];
-        } catch (\Exception $exception) {
-            throw new DwpApiException($exception->getMessage());
-        }
-    }
-
-    public function makeNinoFragment(string $nino): string
-    {
-        $nino = str_replace(" ", "", $nino);
-        return substr($nino, (strlen($nino) - 5), - 1);
-    }
-
-    public function makeFormattedPostcode(string $postcode): string
-    {
-        $cleanPostcode = (string) preg_replace("/[^A-Za-z0-9]/", '', $postcode);
-        $cleanPostcode = strtoupper($cleanPostcode);
-        return substr($cleanPostcode, 0, -3) . " " . substr($cleanPostcode, -3);
     }
 
     /**

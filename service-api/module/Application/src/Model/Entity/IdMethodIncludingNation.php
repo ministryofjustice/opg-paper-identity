@@ -34,7 +34,7 @@ class IdMethodIncludingNation extends Entity
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?string $id_correlation;
+    public ?string $dwp_id_correlation;
 
     /**
      * @param properties-of<self> $data
