@@ -163,7 +163,6 @@ class DwpApiService
         string $nino
     ): DetailsResponseDTO {
         $this->authCount++;
-        $responseArray = [];
         try {
             $uri = $this->detailsPath . $detailsRequestDTO->id();
             $response = $this->guzzleClient->request(
@@ -174,18 +173,15 @@ class DwpApiService
                 ]
             );
             $responseArray = json_decode($response->getBody()->getContents(), true);
-            $this->logger->info("DWP_DETAILS_RESPONSE: " . json_encode($responseArray, JSON_THROW_ON_ERROR));
         } catch (ClientException $clientException) {
             if (
                 $clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_401 &&
                 $this->authCount < 2
             ) {
                 $this->authApiService->authenticate();
-                $this->makeCitizenDetailsRequest($detailsRequestDTO, $nino);
+                $responseArray = $this->makeCitizenDetailsRequest($detailsRequestDTO, $nino);
             } else {
-                $response = $clientException->getResponse();
-                $responseBodyAsString = $response->getBody()->getContents();
-                $this->logger->error('GuzzleDwpApiException: ' . $responseBodyAsString);
+                $this->logger->error('GuzzleDwpApiException: ' . $clientException->getMessage());
                 throw $clientException;
             }
         } catch (\Exception $exception) {
