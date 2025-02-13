@@ -39,6 +39,7 @@ class SessionConfigTest extends TestCase
                 'id_method' => "PASSPORT",
                 'id_country' => "GBR",
                 'id_route' => "POST_OFFICE",
+                'dwp_id_correlation' => ""
             ],
             'lpas' => []
         ]);
@@ -59,7 +60,9 @@ class SessionConfigTest extends TestCase
         $idIncludingNation = IdMethodIncludingNation::fromArray([
             "id_country" => "ITA",
             "id_method" => "DRIVING_LICENCE",
-            "id_route" => 'POST_OFFICE'
+            "id_route" => 'POST_OFFICE',
+            "id_value" => 'AA112233C',
+            'dwp_id_correlation' => ""
         ]);
         $this->caseMock->idMethodIncludingNation = $idIncludingNation;
 

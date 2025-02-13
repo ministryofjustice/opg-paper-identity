@@ -11,6 +11,10 @@ services:
   experian-crosscore-mock:
     ports:
       - 8082:8080
+
+  dwp-mock:
+    ports:
+      - 8089:8080
   # API
   api:
     volumes:

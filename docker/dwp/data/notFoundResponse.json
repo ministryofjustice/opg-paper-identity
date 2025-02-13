@@ -1,0 +1,17 @@
+{
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "errors": [
+    {
+      "id": "be62ed49-844c-4023-5407-97159ec80411",
+      "status": 404,
+      "code": 1006,
+      "title": "Not Found",
+      "detail": "Further details required",
+      "source": {
+        "pointer": "data/attributes/ninoFragment"
+      }
+    }
+  ]
+}
