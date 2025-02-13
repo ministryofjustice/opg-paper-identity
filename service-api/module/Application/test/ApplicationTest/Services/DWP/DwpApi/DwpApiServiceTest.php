@@ -412,4 +412,50 @@ class DwpApiServiceTest extends TestCase
             ],
         ];
     }
+
+    public function testValidateNino(): void
+    {
+        $successMockResponseMatchData = [
+            "jsonapi" => [
+                "version" => "1.0"
+            ],
+            "data" => [
+                "id" => "be62ed49-5407-4023-844c-97159ec80411",
+                "type" => "MatchResult",
+                "attributes" => [
+                    "matchingScenario" => "Matched on NINO"
+                ]
+            ]
+        ];
+        $successMockResponseDetailsData = static::DETAILS_RESPONSE;
+
+        $successMock = new MockHandler([
+            new GuzzleResponse(200, [], json_encode($successMockResponseMatchData, JSON_THROW_ON_ERROR)),
+            new GuzzleResponse(200, [], json_encode($successMockResponseDetailsData, JSON_THROW_ON_ERROR)),
+        ]);
+        $handlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $handlerStack]);
+
+        $this->dwpAuthApiService->expects($this->exactly(2))
+            ->method('retrieveCachedTokenResponse')
+            ->willReturn('access_token');
+
+        $dwpApiService = new DwpApiService(
+            $successClient,
+            $this->dwpAuthApiService,
+            $this->logger,
+            '',
+            '',
+            $this->headerOptions
+        );
+
+        $this->assertEquals(
+            true,
+            $dwpApiService->validateNino(
+                CaseData::fromArray(static::CASE),
+                'NP112233C',
+                'correlation-id'
+            )
+        );
+    }
 }
