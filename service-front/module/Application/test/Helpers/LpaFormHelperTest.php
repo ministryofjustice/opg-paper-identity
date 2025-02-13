@@ -34,10 +34,12 @@ class LpaFormHelperTest extends TestCase
             $opgCaseResponse,
         );
 
+
+
         $this->assertArrayHasKey('uuid', $processed->toArray());
         $this->assertArrayHasKey('form', $processed->toArray());
         $this->assertArrayHasKey('status', $processed->toArray());
-        $this->assertArrayHasKey('message', $processed->toArray());
+        $this->assertArrayHasKey('messages', $processed->toArray());
         $this->assertArrayHasKey('data', $processed->toArray());
         $this->assertArrayHasKey('additionalData', $processed->toArray());
         $this->assertEquals($caseUuid, $processed->getUuid());
@@ -141,7 +143,7 @@ class LpaFormHelperTest extends TestCase
                         ]
                     ],
                     "message" => [],
-                    "status" => "success",
+                    "status" => "",
                 ],
                 $params,
                 $form,
@@ -151,8 +153,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => ["This LPA has already been added to this identity check."],
-                    "status" => "error"
+                    "message" => ['duplicate_check' => "This LPA has already been added to this identity check."],
+                    "status" => ""
                 ],
                 new Parameters(['lpa' => $alreadyAddedLpa]),
                 $form,
@@ -173,7 +175,7 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => ["These LPAs cannot be added as they do not have the correct status for an ID check." .
+                    "message" => ["status_check" => "These LPAs cannot be added as they do not have the correct status for an ID check." .
                         " LPAs need to be in the <b>In progress</b> status to be added to this identity check."],
                     "status" => "complete",
                 ],
@@ -185,7 +187,7 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => ["This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    "message" => ["status_check" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
                     LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
                     "status" => "draft",
                 ],
@@ -209,9 +211,9 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => ["This LPA cannot be added to this identity check because
+                    "message" => ["channel_check" => "This LPA cannot be added to this identity check because
                     the certificate provider has signed this LPA online."],
-                    "status" => 'error',
+                    "status" => '',
                     "data" => [
                         "case_uuid" => $caseUuid,
                         "lpa_number" => $onlineLpa,
@@ -236,7 +238,7 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => ["This LPA cannot be added to this ID check because the" .
+                    "message" => ["id_check" => "This LPA cannot be added to this ID check because the" .
                         " certificate provider details on this LPA do not match. " .
                         "Edit the certificate provider record in Sirius if appropriate and find again."],
                     "status" => "no match",

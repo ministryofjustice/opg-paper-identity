@@ -83,8 +83,8 @@ class LpaFormHelper
 
             $statusCheck = $this->checkStatus($siriusCheck);
             if ($statusCheck['error'] === true) {
-                $result['status]'] = $statusCheck['status'];
-                $result['messages'][] = $statusCheck['message'];
+                $result['status'] = $statusCheck['status'];
+                $result['messages']['status_check'] = $statusCheck['message'];
             }
 
             $idCheck = $this->compareCpRecords($detailsData, $siriusCheck);
@@ -92,8 +92,8 @@ class LpaFormHelper
 
             if ($idCheck['error'] === true) {
                 $result['status'] = 'no match';
-                $result['messages'][] = $idCheck['message'];
-                $result['additional_data'] = [
+                $result['messages']['id_check'] = $idCheck['message'];
+                $result['additional_data']['id_check'] = [
                     'name' => $idCheck['name'],
                     'address' => $idCheck['address'],
                     'name_match' => $idCheck['name_match'],
@@ -101,14 +101,9 @@ class LpaFormHelper
                     'error' => $idCheck['error']
                 ];
             } elseif (! $this->checkLpaNotAdded($formData['lpa'], $detailsData)) {
-                $result['status'] = 'error';
-                $result['messages'][] = "This LPA has already been added to this identity check.";
+                $result['messages']['duplicate_check'] = "This LPA has already been added to this identity check.";
             } elseif ($channelCheck['error'] === true) {
-                $result['status'] = 'error';
-                $result['messages'][] = $channelCheck['message'];
-            } else {
-                $result['status'] = "success";
-                $result['messages'][] = "";
+                $result['messages']['channel_check'] = $channelCheck['message'];
             }
 
             $result['data'] = [
