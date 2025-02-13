@@ -16,8 +16,8 @@ class LpaFormHelper
     "for an ID check. LPAs need to be in the <b>In progress</b> status to be added to this identity check.";
 
 
-    private const COMPLETE_MESSAGE = "This LPA cannot be added as an ID" .
-    " check has already been completed for this LPA.";
+//    private const COMPLETE_MESSAGE = "This LPA cannot be added as an ID" .
+//    " check has already been completed for this LPA.";
 
     private const NOT_FOUND_MESSAGE = "No LPA found.";
 
@@ -38,8 +38,8 @@ class LpaFormHelper
         array $detailsData,
     ): LpaFormHelperResponseDto {
         $result = [
-            'status' => "",
-            'message' => ""
+            'status' => '',
+            'messages' => []
         ];
 
         if ($form->isValid()) {
@@ -56,7 +56,7 @@ class LpaFormHelper
                     $uuid,
                     $form,
                     'Not Found',
-                    self::NOT_FOUND_MESSAGE
+                    [self::NOT_FOUND_MESSAGE]
                 );
             }
 
@@ -65,22 +65,26 @@ class LpaFormHelper
                 (! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
                 empty($siriusCheck['opg.poas.lpastore']))
             ) {
+                $data = [
+                    "case_uuid" => $uuid,
+                    "lpa_number" => $formData['lpa'],
+                    "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
+                    "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
+                    "lpa_status" => 'draft',
+                ];
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,
                     'draft',
-                    self::DRAFT_MESSAGE
+                    [self::DRAFT_MESSAGE],
+                    $data
                 );
             }
 
             $statusCheck = $this->checkStatus($siriusCheck);
             if ($statusCheck['error'] === true) {
-                return new LpaFormHelperResponseDto(
-                    $uuid,
-                    $form,
-                    $statusCheck['status'],
-                    $statusCheck['message']
-                );
+                $result['status]'] = $statusCheck['status'];
+                $result['messages'][] = $statusCheck['message'];
             }
 
             $idCheck = $this->compareCpRecords($detailsData, $siriusCheck);
@@ -88,7 +92,7 @@ class LpaFormHelper
 
             if ($idCheck['error'] === true) {
                 $result['status'] = 'no match';
-                $result['message'] = $idCheck['message'];
+                $result['messages'][] = $idCheck['message'];
                 $result['additional_data'] = [
                     'name' => $idCheck['name'],
                     'address' => $idCheck['address'],
@@ -98,14 +102,15 @@ class LpaFormHelper
                 ];
             } elseif (! $this->checkLpaNotAdded($formData['lpa'], $detailsData)) {
                 $result['status'] = 'error';
-                $result['message'] = "This LPA has already been added to this identity check.";
+                $result['messages'][] = "This LPA has already been added to this identity check.";
             } elseif ($channelCheck['error'] === true) {
                 $result['status'] = 'error';
-                $result['message'] = $channelCheck['message'];
+                $result['messages'][] = $channelCheck['message'];
             } else {
                 $result['status'] = "success";
-                $result['message'] = "";
+                $result['messages'][] = "";
             }
+
             $result['data'] = [
                 "case_uuid" => $uuid,
                 "lpa_number" => $formData['lpa'],
@@ -124,7 +129,7 @@ class LpaFormHelper
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
             $result['status'],
-            $result['message'],
+            $result['messages'],
             array_key_exists('data', $result) ? $result['data'] : [],
             array_key_exists('additional_data', $result) ? $result['additional_data'] : [],
         );
@@ -132,7 +137,7 @@ class LpaFormHelper
 
     private function getLpaTypeFromSiriusResponse(array $siriusCheck): string
     {
-        return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? '';
+        return $siriusCheck['opg.poas.sirius']['caseSubtype'] ?? '';
     }
 
     private function getDonorNameFromSiriusResponse(array $siriusCheck): string

@@ -25,7 +25,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
 
     private string $status;
 
-    private string $message;
+    private array $messages;
 
     public function setUp(): void
     {
@@ -35,12 +35,12 @@ class LpaFormHelperResponseDtoTest extends TestCase
         $this->uuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
 
         $this->status = 'success';
-        $this->message = "";
+        $this->messages = [];
         $this->data = [];
         $this->additionalData = [];
         $this->variables = [
             'status' => 'success',
-            'message' => '',
+            'messages' => [],
             'data' => [],
             'additionalData' => [],
         ];
@@ -49,7 +49,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
             $this->uuid,
             $this->form,
             $this->status,
-            $this->message,
+            $this->messages,
             $this->data,
             $this->additionalData,
         );
@@ -80,11 +80,11 @@ class LpaFormHelperResponseDtoTest extends TestCase
         );
     }
 
-    public function testGetMessage(): void
+    public function testGetMessages(): void
     {
         $this->assertEquals(
-            $this->message,
-            $this->lpaFormHelperResponseDto->getMessage()
+            $this->messages,
+            $this->lpaFormHelperResponseDto->getMessages()
         );
     }
 
@@ -119,7 +119,7 @@ class LpaFormHelperResponseDtoTest extends TestCase
                 'uuid' => $this->uuid,
                 'form' => $this->form,
                 'status' => 'success',
-                'message' => '',
+                'messages' => [],
                 'data' => [],
                 'additionalData' => [],
             ],

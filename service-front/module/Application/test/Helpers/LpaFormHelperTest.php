@@ -43,7 +43,7 @@ class LpaFormHelperTest extends TestCase
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($form, $processed->getForm());
         $this->assertEquals($responseData['status'], $processed->getStatus());
-        $this->assertEquals($responseData['message'], $processed->getMessage());
+        $this->assertEquals($responseData['message'], $processed->getMessages());
         if (array_key_exists('data', $responseData)) {
             $this->assertEquals($responseData['data'], $processed->getData());
         }
@@ -140,7 +140,7 @@ class LpaFormHelperTest extends TestCase
                             'country' => 'United Kingdom',
                         ]
                     ],
-                    "message" => "",
+                    "message" => [],
                     "status" => "success",
                 ],
                 $params,
@@ -151,7 +151,7 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA has already been added to this identity check.",
+                    "message" => ["This LPA has already been added to this identity check."],
                     "status" => "error"
                 ],
                 new Parameters(['lpa' => $alreadyAddedLpa]),
@@ -162,7 +162,7 @@ class LpaFormHelperTest extends TestCase
             [
                 $notFoundLpa,
                 [
-                    "message" => "No LPA found.",
+                    "message" => ["No LPA found."],
                     "status" => 'Not Found',
                 ],
                 new Parameters(['lpa' => $notFoundLpa]),
@@ -173,8 +173,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "These LPAs cannot be added as they do not have the correct status for an ID check." .
-                        " LPAs need to be in the <b>In progress</b> status to be added to this identity check.",
+                    "message" => ["These LPAs cannot be added as they do not have the correct status for an ID check." .
+                        " LPAs need to be in the <b>In progress</b> status to be added to this identity check."],
                     "status" => "complete",
                 ],
                 new Parameters(['lpa' => $alreadyDoneLpa]),
@@ -185,8 +185,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
-                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.",
+                    "message" => ["This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
                     "status" => "draft",
                 ],
                 new Parameters(['lpa' => $draftLpa]),
@@ -197,8 +197,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
-                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.",
+                    "message" => ["This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
                     "status" => "draft",
                 ],
                 new Parameters(['lpa' => $draftLpa]),
@@ -209,8 +209,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added to this identity check because
-                    the certificate provider has signed this LPA online.",
+                    "message" => ["This LPA cannot be added to this identity check because
+                    the certificate provider has signed this LPA online."],
                     "status" => 'error',
                     "data" => [
                         "case_uuid" => $caseUuid,
@@ -236,9 +236,9 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added to this ID check because the" .
+                    "message" => ["This LPA cannot be added to this ID check because the" .
                         " certificate provider details on this LPA do not match. " .
-                        "Edit the certificate provider record in Sirius if appropriate and find again.",
+                        "Edit the certificate provider record in Sirius if appropriate and find again."],
                     "status" => "no match",
                     "additional_data" => [
                         'name' => "Daniel Smith",
@@ -395,6 +395,7 @@ class LpaFormHelperTest extends TestCase
                 "whenTheLpaCanBeUsed" => "when-capacity-lost"
             ],
             "opg.poas.sirius" => [
+                "caseSubtype" => "property-and-affairs",
                 "donor" => [
                     "addressLine3" => "Moline",
                     "dob" => "1910-12-22",
