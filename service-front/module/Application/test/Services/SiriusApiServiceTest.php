@@ -318,7 +318,7 @@ class SiriusApiServiceTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
         $sut = new SiriusApiService($clientMock, $loggerMock);
 
-        $request = new Request('POST', '/');
+        $request = new Request();
         $uid = 'M-0000-0000-0000';
         $name = 'ID Check Abandoned';
         $type = 'ID Check Incomplete';
@@ -331,6 +331,7 @@ class SiriusApiServiceTest extends TestCase
             ]
         ];
 
+        /** @psalm-suppress PossiblyFalseArgument */
         $clientMock->expects($this->once())
             ->method('get')
             ->with('/api/v1/digital-lpas/' . $uid, ['headers' => []])
