@@ -15,10 +15,6 @@ class LpaFormHelper
     private const STATUS_FAIL_MESSAGE = "These LPAs cannot be added as they do not have the correct status " .
     "for an ID check. LPAs need to be in the <b>In progress</b> status to be added to this identity check.";
 
-
-//    private const COMPLETE_MESSAGE = "This LPA cannot be added as an ID" .
-//    " check has already been completed for this LPA.";
-
     private const NOT_FOUND_MESSAGE = "No LPA found.";
 
     private const ONLINE_MESSAGE = "This LPA cannot be added to this identity check because
@@ -132,7 +128,7 @@ class LpaFormHelper
 
     private function getLpaTypeFromSiriusResponse(array $siriusCheck): string
     {
-        return $siriusCheck['opg.poas.sirius']['caseSubtype'] ?? '';
+        return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? $siriusCheck['opg.poas.sirius']['caseSubtype'];
     }
 
     private function getDonorNameFromSiriusResponse(array $siriusCheck): string
