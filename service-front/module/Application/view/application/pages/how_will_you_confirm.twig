@@ -49,43 +49,45 @@
             <form method="POST">
 
                 {% if service_availability.data.EXPERIAN %}
-                    <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
-
                     <div class="govuk-form-group">
-                        <p class="govuk-body">
-                            Confirming your identity over the phone is the quickest and easiest option - you will need an
-                            National Insurance number, passport or driving licence.
-                        </p>
+                        <div class="govuk-summary-card">
+                            <div class="govuk-summary-card__title-wrapper">
+                                <h2 class="govuk-summary-card__title">
+                                    Read the following to the caller:
+                                </h2>
+                            </div>
+                            <div class="govuk-summary-card__content">
+                                <p class="govuk-body">
+                                    Confirming your identity over the phone is the quickest and easiest option - you will need an National Insurance number, passport or driving licence.
+                                </p>
 
-                        <div class="govuk-inset-text">
-                            <h3 class="govuk-heading-s">Read the following to the caller:</h3>
+                                <p class="govuk-body">
+                                    We will check your identity, using the details you provide. We will also check your name, address and date of birth against a fraud database.
+                                </p>
 
-                            <p class="govuk-body">
-                                Confirming your identity over the phone is the quickest and easiest option - you will need
-                                an National Insurance number, passport or driving licence.
-                            </p>
+                                <p class="govuk-body">
+                                    We’ll then ask you some security questions that only you should know the answer to. We use these to stop anyone who might have your ID document details from pretending to be you.
+                                </p>
 
-                            <p class="govuk-body">
-                                We will check your identity, using the details you provide. We will also check your name,
-                                address and date of birth against a fraud database.
-                            </p>
+                                <p class="govuk-body">
+                                    We use another organisation to generate these security questions and check your answers against information they have access to.
+                                </p>
 
-                            <p class="govuk-body">
-                                To ensure you are who you say you are, and to stop other people pretending to be you, we
-                                will also ask you a few security questions that only you would know the answer to. We use
-                                another organisation to generate these questions, and check your answers against information
-                                they have access to.
-                            </p>
-
-                            <p class="govuk-body">
-                                Can you confirm you're happy with us doing that and which document you would like to use to
-                                identify with?
-                            </p>
+                                <p class="govuk-body">
+                                    Can you confirm you're happy with us doing that?
+                                </p>
+                            </div>
                         </div>
                     </div>
                 {% endif %}
 
                 <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}" id="idMethodOptions">
+
+                    <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
+
+                    <p class="govuk-body">
+                        Which method will you use to ID over the phone?
+                    </p>
 
                     {% if form.get('id_method').messages %}
                         <p id="id_method-error" class="govuk-error-message">
@@ -125,7 +127,7 @@
                                 <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
                                     <summary class="govuk-details__summary">
                                         <span class="govuk-details__summary-text">
-                                            Help with checking if passport is in date
+                                            Check if you're able to use an expired passport
                                         </span>
                                     </summary>
                                     <div class="govuk-details__text">
@@ -261,12 +263,12 @@
                             {% if service_availability.data.EXPERIAN %}
                                 If unable to ID over the phone:
                             {% endif %}
-                            ID in person at the Post Office
+                            ID in person at the Post <Office></Office>
                         </h2>
 
                         <p class="govuk-body">
-                            Alternatively, you can take one of the identity documents listed below to a Post Office - this
-                            will take longer and may delay access to your LPA.
+                            Alternatively, you can take one of the identity documents listed below to a Post Office -
+                            this will take longer as we will need to send you a letter to take to the Post Office with your chosen ID.
                         </p>
 
                         {% if service_availability.data.POST_OFFICE %}
@@ -317,7 +319,7 @@
                         <h2 class="govuk-heading-m">Other methods</h2>
 
                         <p class="govuk-hint">
-                            Only if the donor does not have or cannot obtain an appropriate ID document.
+                            Only discuss these if the donor does not have, or cannot obtain, an appropriate ID document.
                         </p>
 
                         <div class="govuk-radios" data-module="govuk-radios">
