@@ -56,10 +56,10 @@ describe("Identify a Donor", () => {
     cy.contains("Please select an option");
 
     // Check passport reveal
-    cy.contains("Help with checking if passport is in date");
+    cy.contains("Check if you're able to use an expired passport");
     // cy.screenshot();
-    cy.contains("Help with checking if passport is in date").trigger("click");
-    cy.contains("Help with checking if passport is in date").click();
+    cy.contains("Check if you're able to use an expired passport").trigger("click");
+    cy.contains("Check if you're able to use an expired passport").click();
     cy.contains("Enter passport expiry date. For example 31 03 2012").should('be.visible');
 
     // Check passport date validation fails
@@ -71,8 +71,8 @@ describe("Identify a Donor", () => {
 
     // Check passport date validation succeeds
     cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
-    cy.contains("Help with checking if passport is in date");
-    cy.contains("Help with checking if passport is in date").click();
+    cy.contains("Check if you're able to use an expired passport");
+    cy.contains("Check if you're able to use an expired passport").click();
     cy.contains("Enter passport expiry date. For example 31 03 2012").should('be.visible');
     cy.get("#passport-issued-day").type("31", {force: true});
     cy.get("#passport-issued-month").type("10", {force: true});
