@@ -105,6 +105,7 @@
     "opg.poas.sirius": {
         "caseSubtype": "property-and-affairs",
         "donor": {
+            "id": 12345678,
             "addressLine1": "46 Terrick Rd",
             "dob": "04/03/1973",
             "firstname": "Naomi",

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Exceptions\HttpException;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Enums\SiriusDocument;
@@ -46,6 +47,7 @@ use Psr\Log\LoggerInterface;
  *    id: int,
  *    caseSubtype: string,
  *    donor: array{
+ *      id?: int,
  *      firstname: string,
  *      surname: string,
  *      dob: string,
@@ -275,6 +277,39 @@ class SiriusApiService
             'status' => $response->getStatusCode(),
             'response' => json_decode(strval($response->getBody()), true)
         ];
+    }
+
+    public function addNote(
+        Request $request,
+        string $uid,
+        string $name,
+        string $type,
+        string $description
+    ): void {
+        $lpaDetails = $this->getLpaByUid($uid, $request);
+        $caseId = $lpaDetails["opg.poas.sirius"]["id"] ?? null;
+        $donorId = $lpaDetails["opg.poas.sirius"]["donor"]["id"] ?? null;
+
+        if ($caseId === null) {
+            throw new HttpException(400, 'Case Id not found');
+        }
+
+        if ($donorId === null) {
+            throw new HttpException(400, 'Donor Id not found');
+        }
+
+        $data = [
+            "ownerId" => $caseId,
+            "ownerType" => "case",
+            "name" => $name,
+            "type" => $type,
+            "description" => $description
+        ];
+
+        $this->client->post('/api/v1/persons/' . $donorId . '/notes', [
+            'headers' => $this->getAuthHeaders($request),
+            'json' => $data
+        ]);
     }
 
     /**
