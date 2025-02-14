@@ -287,28 +287,41 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiService::class, $opgApiService);
 
         $lastPage = '/case-uuid/national-insurance-number';
+        $caseUuid = 'case-uuid';
+        $lpaUid = 'M-0000-0000-0000';
+        $siriusPublicUrl = 'SIRIUS_PUBLIC_URL';
 
         $opgApiService->expects($this->once())
             ->method('getDetailsData')
-            ->with('case-uuid')
+            ->with($caseUuid)
             ->willReturn([
-                'lpas' => ['case-uuid'],
+                'lpas' => [$lpaUid],
             ]);
 
         $opgApiService->expects($this->once())
             ->method('updateCaseProgress')
-            ->with('case-uuid', $this->callback(fn ($data) => $data['abandonedFlow']['last_page'] === $lastPage));
+            ->with($caseUuid, $this->callback(fn ($data) => isset($data['abandonedFlow']) && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())
             ->method('abandonFlow')
-            ->with('case-uuid');
+            ->with($caseUuid);
 
-        $this->dispatch(sprintf('/case-uuid/abandon-flow?last_page=%s', $lastPage), 'POST', [
+        $siriusApiService->expects($this->once())
+            ->method('addNote')
+            ->with(
+                $this->callback(fn ($request) => $request !== null),
+                $lpaUid,
+                'ID Check Abandoned',
+                'ID Check Incomplete',
+                $this->callback(fn ($note) => str_contains($note, 'Reason: Call dropped') && str_contains($note, 'Custom notes'))
+            );
+
+        $this->dispatch(sprintf('/%s/abandon-flow?last_page=%s', $caseUuid, $lastPage), 'POST', [
             'reason' => 'cd',
             'notes' => 'Custom notes',
         ]);
 
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("SIRIUS_PUBLIC_URL/lpa/frontend/lpa/case-uuid");
+        $this->assertRedirectTo("{$siriusPublicUrl}/lpa/frontend/lpa/{$lpaUid}");
     }
 }
