@@ -300,7 +300,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $opgApiService->expects($this->once())
             ->method('updateCaseProgress')
-            ->with($caseUuid, $this->callback(fn ($data) => isset($data['abandonedFlow']) && $data['abandonedFlow']['last_page'] === $lastPage));
+            ->with($caseUuid, $this->callback(fn ($data) => isset($data['abandonedFlow'])
+                && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())
             ->method('abandonFlow')
@@ -313,7 +314,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 $lpaUid,
                 'ID Check Abandoned',
                 'ID Check Incomplete',
-                $this->callback(fn ($note) => str_contains($note, 'Reason: Call dropped') && str_contains($note, 'Custom notes'))
+                $this->callback(fn ($note) => str_contains($note, 'Reason: Call dropped')
+                    && str_contains($note, 'Custom notes'))
             );
 
         $this->dispatch(sprintf('/%s/abandon-flow?last_page=%s', $caseUuid, $lastPage), 'POST', [
