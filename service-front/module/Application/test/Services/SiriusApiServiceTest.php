@@ -311,4 +311,48 @@ class SiriusApiServiceTest extends TestCase
         $result = $sut->getAllLinkedLpasByUid('M-0000-0000-0000', $request);
         $this->assertEquals($lpas, $result);
     }
+
+    public function testAddNoteSuccess(): void
+    {
+        $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $sut = new SiriusApiService($clientMock, $loggerMock);
+
+        $request = new Request('POST', '/');
+        $uid = 'M-0000-0000-0000';
+        $name = 'ID Check Abandoned';
+        $type = 'ID Check Incomplete';
+        $description = 'Reason: Call dropped\n\nCustom notes';
+
+        $lpaDetails = [
+            'opg.poas.sirius' => [
+                'id' => 1234,
+                'donor' => ['id' => 5678],
+            ]
+        ];
+
+        $clientMock->expects($this->once())
+            ->method('get')
+            ->with('/api/v1/digital-lpas/' . $uid, ['headers' => []])
+            ->willReturn(new Response(200, [], json_encode($lpaDetails)));
+
+        $clientMock->expects($this->once())
+            ->method('post')
+            ->with(
+                '/api/v1/persons/5678/notes',
+                [
+                    'headers' => null,
+                    'json' => [
+                        'ownerId' => 1234,
+                        'ownerType' => 'case',
+                        'name' => $name,
+                        'type' => $type,
+                        'description' => $description,
+                    ]
+                ]
+            )
+            ->willReturn(new Response(201));
+
+        $sut->addNote($request, $uid, $name, $type, $description);
+    }
 }
