@@ -112,17 +112,19 @@ class CPFlowController extends AbstractActionController
 
     public function addLpaAction(): ViewModel|Response
     {
+        $template = 'application/pages/cp/add_lpa';
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $form = $this->createForm(LpaReferenceNumber::class);
-
         $view = new ViewModel();
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('form', $form);
-        $view->setVariable('case_uuid', $uuid);
 
-        if (count($this->getRequest()->getPost())) {
+        $view->setVariables([
+            'case_uuid' => $uuid,
+            'form' => $form,
+            'details_data' => $detailsData
+        ]);
+
+        if ($this->getRequest()->isPost()) {
             if (! $form->isValid()) {
                 $form->setMessages([
                     'lpa' => [
@@ -130,7 +132,7 @@ class CPFlowController extends AbstractActionController
                     ],
                 ]);
 
-                return $view->setTemplate('application/pages/cp/add_lpa');
+                return $view->setTemplate($template);
             }
 
             $formArray = $this->formToArray($form);
@@ -150,10 +152,12 @@ class CPFlowController extends AbstractActionController
                     $detailsData,
                 );
 
-                $view->setVariables(['lpa_response' => $processed->constructFormVariables()]);
-                $view->setVariable('form', $processed->getForm());
+                $view->setVariables([
+                    'lpa_response' => $processed->constructFormVariables(),
+                    'form' => $processed->getForm()
+                ]);
 
-                return $view->setTemplate('application/pages/cp/add_lpa');
+                return $view->setTemplate($template);
             } else {
                 $this->opgApiService->updateCaseWithLpa($uuid, $this->getRequest()->getPost()->get('add_lpa_number'));
 
@@ -161,7 +165,7 @@ class CPFlowController extends AbstractActionController
             }
         }
 
-        return $view->setTemplate('application/pages/cp/add_lpa');
+        return $view->setTemplate($template);
     }
 
     public function confirmDobAction(): ViewModel|Response
