@@ -23,6 +23,14 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     private string $uuid;
     private array $routes;
 
+    private array $fakeAddress = [
+        'line1' => '456 Pretend Road',
+        'town' => 'Faketown',
+        'postcode' => 'FA2 3KE',
+        'country' => 'United Kingdom',
+    ];
+
+
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../config/application.config.php');
@@ -55,14 +63,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(VoucherMatchLpaActorHelper::class, $this->voucherMatchMock);
     }
 
-    public static function getFakeAddress(): array
+    public function getFakeAddress(): array
     {
-        return [
-            'line1' => '456 Pretend Road',
-            'town' => 'Faketown',
-            'postcode' => 'FA2 3KE',
-            'country' => 'United Kingdom',
-        ];
+        return $this->fakeAddress;
     }
 
     public function returnOpgResponseData(array $overwrite = []): array
@@ -440,7 +443,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 [
                     "firstName" => "firstName",
                     "lastName" => "lastName",
-                    "address" => self::getFakeAddress(),
+                    "address" => [
+                        'line1' => '456 Pretend Road',
+                        'town' => 'Faketown',
+                        'postcode' => 'FA2 3KE',
+                        'country' => 'United Kingdom',
+                    ],
                 ],
                 'manualAddress'
             ]
