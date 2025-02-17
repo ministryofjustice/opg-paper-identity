@@ -256,7 +256,6 @@ class PostOfficeFlowController extends AbstractActionController
 
             $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']['fad_code']);
 
-            //TODO: create helper function cause we do this in loads of places
             $lpaDetails = [];
             foreach ($detailsData['lpas'] as $lpa) {
                 $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
