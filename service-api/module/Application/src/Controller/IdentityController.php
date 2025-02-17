@@ -23,6 +23,7 @@ use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Sirius\EventSender;
+use Application\Sirius\UpdateStatus;
 use Application\View\JsonModel;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Form\Annotation\AttributeBuilder;
@@ -802,12 +803,12 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem('Case not found'));
         }
 
-        $this->eventSender->send("identity-check-resolved", [
+        $this->eventSender->send("identity-check-updated", [
             "reference" => "opg:" . $caseData->id,
             "actorType" => $caseData->personType,
-            "lpaIds" => $caseData->lpas,
+            "lpaUids" => $caseData->lpas,
             "time" => $this->clock->now()->format('c'),
-            "outcome" => "exit",
+            "state" => UpdateStatus::Exit->value,
         ]);
 
         return new JsonModel();

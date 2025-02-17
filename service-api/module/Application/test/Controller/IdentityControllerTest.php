@@ -949,13 +949,13 @@ class IdentityControllerTest extends TestCase
             ->expects($this->once())
             ->method('send')
             ->with(
-                'identity-check-resolved',
+                'identity-check-updated',
                 [
                     'reference' => 'opg:' . $caseData->id,
                     'actorType' => $caseData->personType,
-                    'lpaIds' => $caseData->lpas,
+                    'lpaUids' => $caseData->lpas,
                     'time' => '2024-05-12T13:45:56+00:00',
-                    'outcome' => 'exit',
+                    'state' => 'EXIT',
                 ]
             );
 
