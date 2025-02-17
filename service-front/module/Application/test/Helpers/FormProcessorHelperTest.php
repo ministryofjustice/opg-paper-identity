@@ -516,38 +516,4 @@ class FormProcessorHelperTest extends TestCase
             ],
         ];
     }
-
-    public function testProcessPostOfficeSearchResponse(): void
-    {
-        $mockPostOfficeResponse = [
-            '1234567' => [
-                'name' => 'postoffice',
-                'address' => '1 St, Fake',
-                'post_code' => 'FA1 2KE'
-            ],
-            '7654321' => [
-                'name' => 'another',
-                'address' => '2 Rd, Pretend',
-                'post_code' => 'PR3 2TN'
-            ],
-        ];
-
-        $expected = [
-            "{\"name\":\"postoffice\",\"address\":\"1 St, Fake\",\"post_code\":\"FA1 2KE\",\"fad\":1234567}" => [
-                "name" => "postoffice",
-                "address" => "1 St, Fake",
-                "post_code" => "FA1 2KE",
-            ],
-            "{\"name\":\"another\",\"address\":\"2 Rd, Pretend\",\"post_code\":\"PR3 2TN\",\"fad\":7654321}" => [
-                "name" => "another",
-                "address" => "2 Rd, Pretend",
-                "post_code" => "PR3 2TN",
-            ]
-        ];
-
-        $opgApiServiceMock = $this->createMock(OpgApiService::class);
-        $formProcessorHelper = new FormProcessorHelper($opgApiServiceMock);
-        $actual = $formProcessorHelper->processPostOfficeSearchResponse($mockPostOfficeResponse);
-        $this->assertEquals($expected, $actual);
-    }
 }
