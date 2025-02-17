@@ -273,16 +273,6 @@ return [
                     ],
                 ],
             ],
-            'confirm_selected_postoffice' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/confirm-selected-postoffice',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'confirmSelectedPostoffice',
-                    ],
-                ],
-            ],
             'estimate_postoffice_deadline' => [
                 'type' => Segment::class,
                 'options' => [

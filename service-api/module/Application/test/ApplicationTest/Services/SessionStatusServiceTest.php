@@ -6,6 +6,7 @@ namespace ApplicationTest\Services;
 
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
+use Application\Model\Entity\IdMethodIncludingNation;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use Application\Helpers\CaseOutcomeCalculator;
@@ -15,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 /**
-
+ * @psalm-suppress PossiblyNullPropertyAssignment
  */
 class SessionStatusServiceTest extends TestCase
 {
@@ -37,9 +38,9 @@ class SessionStatusServiceTest extends TestCase
         );
     }
 
-    public function testNoNotificationsReturnsCounterService(): void
+    public function getCaseData(): CaseData
     {
-        $caseData = CaseData::fromArray([
+        return CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'claimedIdentity' => [
                 'firstName' => 'Maria',
@@ -56,6 +57,11 @@ class SessionStatusServiceTest extends TestCase
             ],
             'lpas' => []
         ]);
+    }
+
+    public function testNoNotificationsReturnsCounterService(): void
+    {
+        $caseData = $this->getCaseData();
 
         $this->yotiService->expects($this->never())->method('retrieveResults');
 
@@ -65,7 +71,6 @@ class SessionStatusServiceTest extends TestCase
             'notificationState' => '',
             'state' => '',
             'result' => false,
-            'searchPostcode' => null,
         ]);
 
         $result = $this->sut->getSessionStatus($caseData);
@@ -75,23 +80,8 @@ class SessionStatusServiceTest extends TestCase
 
     public function testFirstNotificationReturnsInProgress(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'lpas' => ['M-TIU9-0TJU-84TU'],
-            'claimedIdentity' => [
-                'firstName' => 'Maria',
-                'lastName' => 'Williams'
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'first_branch_visit',
-                'state' => '',
-                'result' => false
-            ]
-        ]);
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'first_branch_visit';
 
         $this->yotiService->expects($this->never())->method('retrieveResults');
 
@@ -100,23 +90,9 @@ class SessionStatusServiceTest extends TestCase
 
     public function testResultsAreFetchedAfterSessionCompletionNotification(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'lpas' => ['M-TIU9-0TJU-84TU'],
-            'claimedIdentity' => [
-                'firstName' => 'Maria',
-                'lastName' => 'Williams',
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'session_completion',
-                'state' => '',
-                'result' => false
-            ]
-        ]);
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'session_completion';
+
         $response = [
                 'state' => 'COMPLETED',
                 'resources' => ['id_documents' => [['created_at' => '2019-04-18T14:08:18Z']]],
@@ -149,23 +125,9 @@ class SessionStatusServiceTest extends TestCase
 
     public function testResultsAreFetchedAfterWithOneRejectionSavesFalseResult(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'lpas' => ['M-TIU9-0TJU-84TU'],
-            'claimedIdentity' => [
-                'firstName' => 'Maria',
-                'lastName' => 'Williams',
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'session_completion',
-                'state' => '',
-                'result' => false
-            ]
-        ]);
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'session_completion';
+
         $response = [
                 'state' => 'COMPLETED',
                 'resources' => ['id_documents' => [['created_at' => '2019-04-18T14:08:18Z']]],
@@ -216,22 +178,9 @@ class SessionStatusServiceTest extends TestCase
      */
     public function testGetSessionStatusSessionCompletionReturnsResultsEvenIfDBSaveFails(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'claimedIdentity' => [
-                'firstName' => 'Maria',
-                'lastName' => 'Williams',
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'session_completion',
-                'state' => '',
-                'result' => false
-            ]
-        ]);
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'session_completion';
+
         $response = [
                 'state' => 'COMPLETED',
                 'checks' => [
@@ -273,24 +222,14 @@ class SessionStatusServiceTest extends TestCase
      */
     public function testPassportValidityCheckIfUKPassportUsed(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
-                'id_country' => "GBR",
-                'id_route' => "POST_OFFICE",
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'session_completion',
-                'state' => '',
-                'result' => false
-            ],
-            'lpas' => []
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'session_completion';
+        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
+            'id_method' => "PASSPORT",
+            'id_country' => "GBR",
+            'id_route' => "POST_OFFICE",
         ]);
+
         $response = [
             'state' => 'COMPLETED',
             'checks' => [
@@ -332,24 +271,14 @@ class SessionStatusServiceTest extends TestCase
      */
     public function testExpiredPassportReturnsAFalseResult(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
-                'id_country' => "GBR",
-                'id_route' => "POST_OFFICE",
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'session_completion',
-                'state' => '',
-                'result' => false
-            ],
-            'lpas' => []
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'session_completion';
+        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
+            'id_method' => "PASSPORT",
+            'id_country' => "GBR",
+            'id_route' => "POST_OFFICE",
         ]);
+
         $response = [
             'state' => 'COMPLETED',
             'checks' => [
@@ -391,24 +320,14 @@ class SessionStatusServiceTest extends TestCase
      */
     public function testMediaRetrievalAPINotCalledIfNonUKPassport(): void
     {
-        $caseData = CaseData::fromArray([
-            'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
-                'id_country' => "",
-                'id_route' => "",
-            ],
-            'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-                'notificationState' => 'session_completion',
-                'state' => '',
-                'result' => false
-            ],
-            'lpas' => []
+        $caseData = $this->getCaseData();
+        $caseData->counterService->notificationState = 'session_completion';
+        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
+            'id_method' => "PASSPORT",
+            'id_country' => "",
+            'id_route' => "",
         ]);
+
         $response = [
             'state' => 'COMPLETED',
             'checks' => [
