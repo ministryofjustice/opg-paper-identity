@@ -228,6 +228,7 @@ class SessionStatusServiceTest extends TestCase
             'id_method' => "PASSPORT",
             'id_country' => "GBR",
             'id_route' => "POST_OFFICE",
+            'dwp_id_correlation' => null,
         ]);
 
         $response = [
@@ -277,6 +278,7 @@ class SessionStatusServiceTest extends TestCase
             'id_method' => "PASSPORT",
             'id_country' => "GBR",
             'id_route' => "POST_OFFICE",
+            'dwp_id_correlation' => null,
         ]);
 
         $response = [
@@ -326,6 +328,7 @@ class SessionStatusServiceTest extends TestCase
             'id_method' => "PASSPORT",
             'id_country' => "",
             'id_route' => "",
+            'dwp_id_correlation' => null,
         ]);
 
         $response = [
