@@ -113,60 +113,69 @@ class CPFlowController extends AbstractActionController
 
     public function addLpaAction(): ViewModel|Response
     {
+        $template = 'application/pages/cp/add_lpa';
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-
         $form = $this->createForm(LpaReferenceNumber::class);
-
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('form', $form);
-        $view->setVariable('case_uuid', $uuid);
 
         if ($this->getRequest()->isPost()) {
             if ($this->getRequest()->getPost()->get('add_lpa_number')) {
                 $form = $this->createForm(LpaReferenceNumberAdd::class);
             }
 
-            if (! $form->isValid()) {
-                $form->setMessages([
-                    'lpa' => [
-                        "Not a valid LPA number. Enter an LPA number to continue.",
-                    ],
-                ]);
+            $view->setVariables([
+                'case_uuid' => $uuid,
+                'form' => $form
+            ]);
 
-                return $view->setTemplate('application/pages/cp/add_lpa');
-            }
+            if ($this->getRequest()->isPost()) {
+                if (! $form->isValid()) {
+                    $form->setMessages([
+                        'lpa' => [
+                            "Not a valid LPA number. Enter an LPA number to continue.",
+                        ],
+                    ]);
 
-            $formArray = $this->formToArray($form);
-            if ($formArray['lpa']) {
-                $siriusCheck = $this->siriusApiService->getLpaByUid(
+                    return $view->setTemplate($template);
+                }
+
+                $formArray = $this->formToArray($form);
+
+                if ($formArray['lpa']) {
+                    $siriusCheck = $this->siriusApiService->getLpaByUid(
                     /**
                      * @psalm-suppress InvalidMethodCall
                      */
-                    $formArray['lpa'],
-                    $this->getRequest()
-                );
+                        $formArray['lpa'],
+                        $this->getRequest()
+                    );
 
-                $processed = $this->lpaFormHelper->findLpa(
-                    $uuid,
-                    $form,
-                    $siriusCheck,
-                    $detailsData,
-                );
+                    $processed = $this->lpaFormHelper->findLpa(
+                        $uuid,
+                        $form,
+                        $siriusCheck,
+                        $detailsData,
+                    );
 
-                $view->setVariables(['lpa_response' => $processed->constructFormVariables()]);
-                $view->setVariable('form', $processed->getForm());
+                    $view->setVariables([
+                        'lpa_response' => $processed->constructFormVariables(),
+                        'form' => $processed->getForm()
+                    ]);
 
-                return $view->setTemplate('application/pages/cp/add_lpa');
-            } else {
-                $this->opgApiService->updateCaseWithLpa($uuid, $this->getRequest()->getPost()->get('add_lpa_number'));
+                    return $view->setTemplate($template);
+                } else {
+                    $this->opgApiService->updateCaseWithLpa(
+                        $uuid,
+                        $this->getRequest()->getPost()->get('add_lpa_number')
+                    );
 
-                return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute('root/cp_confirm_lpas', ['uuid' => $uuid]);
+                }
             }
         }
-
-        return $view->setTemplate('application/pages/cp/add_lpa');
+        return $view->setTemplate($template);
     }
 
     public function confirmDobAction(): ViewModel|Response

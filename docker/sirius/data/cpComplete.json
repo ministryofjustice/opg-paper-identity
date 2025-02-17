@@ -113,7 +113,7 @@
     ],
     "registrationDate": null,
     "signedAt": "1914-02-25T20:57:31.0Z",
-    "status": "in progress",
+    "status": "complete",
     "trustCorporations": [
       {
         "name": "consectetur in tempor",
@@ -165,7 +165,6 @@
   "opg.poas.sirius": {
     "caseSubtype": "property-and-affairs",
     "donor": {
-      "id": 12345678,
       "addressLine1": "039 Thiel Hollow",
       "country": "CF",
       "dob": "17/06/1903",

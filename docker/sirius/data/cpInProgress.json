@@ -165,7 +165,6 @@
   "opg.poas.sirius": {
     "caseSubtype": "property-and-affairs",
     "donor": {
-      "id": 12345678,
       "addressLine1": "039 Thiel Hollow",
       "country": "CF",
       "dob": "17/06/1903",
