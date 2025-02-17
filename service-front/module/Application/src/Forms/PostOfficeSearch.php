@@ -13,11 +13,15 @@ use Laminas\Validator\NotEmpty;
  * @implements FormTemplate<array{location: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PostOfficeSearchLocation implements FormTemplate
+class PostOfficeSearch implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
-    public mixed $location;
+    #[Annotation\Validator(NotEmpty::class, options: [
+        "messages" => [
+            NotEmpty::IS_EMPTY  => "Please enter a postcode, town or street name"
+        ]
+    ])]
+    public mixed $searchString;
 }
