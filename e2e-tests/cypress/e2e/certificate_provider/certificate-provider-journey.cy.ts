@@ -320,6 +320,29 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("What is their date of birth?");
     });
 
+    it("allows adding new LPA", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+        cy.contains("Remove").should('not.exist');
+
+        cy.contains("Add another LPA").click();
+        cy.get("#lpa").type("M-XYXY-YAGB-0000", {force: true});
+        cy.contains("Find LPA").click();
+        cy.contains("Add LPA to this ID check").click();
+        cy.contains("Remove");
+
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.contains("What is their date of birth?");
+    });
+
     it("throws duplicate error on attempting to add same LPA", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 

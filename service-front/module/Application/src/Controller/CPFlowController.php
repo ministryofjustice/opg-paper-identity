@@ -13,6 +13,7 @@ use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
 use Application\Forms\AddressInput;
 use Application\Forms\LpaReferenceNumber;
+use Application\Forms\LpaReferenceNumberAdd;
 use Application\Forms\Postcode;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
@@ -117,6 +118,11 @@ class CPFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $form = $this->createForm(LpaReferenceNumber::class);
         $view = new ViewModel();
+
+        if ($this->getRequest()->isPost()) {
+            if ($this->getRequest()->getPost()->get('add_lpa_number')) {
+                $form = $this->createForm(LpaReferenceNumberAdd::class);
+            }
 
         $view->setVariables([
             'case_uuid' => $uuid,
