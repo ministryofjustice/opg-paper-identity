@@ -272,12 +272,15 @@ class PostOfficeFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $this->opgApiService->confirmSelectedPostOffice($uuid, $deadline);
 
+            $systemType = $detailsData['personType'] === 'voucher' ?
+                SiriusDocument::PostOfficeDocCheckVoucher : SiriusDocument::PostOfficeDocCheckDonor;
+
             //trigger Post Office counter service & send pdf to sirius
             $counterService = $this->opgApiService->createYotiSession($uuid);
             $pdfData = $counterService['pdfBase64'];
             $pdf = $this->siriusApiService->sendDocument(
                 $detailsData,
-                SiriusDocument::PostOfficeDocCheck,
+                $systemType,
                 $this->getRequest(),
                 $pdfData
             );

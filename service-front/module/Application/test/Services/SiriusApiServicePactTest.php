@@ -195,6 +195,10 @@ trailer\n<<\n/Root 3 0 R\n>>\n
         $details["address"]["country"] = 'England';
         $details["address"]["postcode"] = 'SW4 7SS';
         $details["lpas"][0] = "M-1234-9876-4567";
+        $details["vouchingFor"] = [
+            "firstName" => 'Jane',
+            "lastName" => 'Doe'
+        ];
 
         $suffix = base64_encode($this->getMinimalPdf());
         $address = [
@@ -207,11 +211,13 @@ trailer\n<<\n/Root 3 0 R\n>>\n
         ];
         $body = [
             "type" => "Save",
-            "systemType" => SiriusDocument::PostOfficeDocCheck,
+            "systemType" => SiriusDocument::PostOfficeDocCheckVoucher,
             "content" => "",
             "pdfSuffix" => $suffix,
             "correspondentName" => "Joe Blogs",
             "correspondentAddress" => $address,
+            "donorFirstNames" => "Jane",
+            "donorLastName" => "Doe",
         ];
 
         $request = new ConsumerRequest();
@@ -255,7 +261,8 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             }
         };
 
-        $result = $service->sendDocument($details, SiriusDocument::PostOfficeDocCheck, new Request(), $suffix);
+        $result = $service->sendDocument($details, SiriusDocument::PostOfficeDocCheckVoucher, new Request(), $suffix);
+        echo(json_encode($result));
         $this->assertEquals(201, $result['status']);
     }
 }
