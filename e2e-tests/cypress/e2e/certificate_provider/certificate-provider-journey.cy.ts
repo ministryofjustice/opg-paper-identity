@@ -45,7 +45,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains(".moj-banner", "Identity check passed");
     });
 
-    it("lets you identify with Passport", () => {
+    it("Passport - throws out of date error", () => {
         const d = new Date();
         let year = d.getFullYear();
 
@@ -69,7 +69,11 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#passport-issued-year").type(year - 20, {force: true});
         cy.get(".govuk-button--secondary").contains("Check").click({force: true});
         cy.contains("Out of date");
+    });
 
+    it("Passport - date validation succeeds", () => {
+        const d = new Date();
+        let year = d.getFullYear();
         // Check passport date validation succeeds
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("Help with checking if passport is in date");
@@ -84,8 +88,11 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Identity documents accepted at the Post Office");
         cy.contains("Identity documents accepted at the Post Office").click();
         cy.contains("UK passport (up to 18 months expired)").should('be.visible');
+    });
+    it("Passport - succeeds on correct form selections", () => {
 
-
+        const d = new Date();
+        let year = d.getFullYear();
         // Check passport selection on form succeeds
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("Passport").click();
