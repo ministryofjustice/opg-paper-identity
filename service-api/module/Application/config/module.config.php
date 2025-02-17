@@ -14,6 +14,9 @@ use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
 use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\DWP\DwpApi\DwpApiService;
+use Application\DWP\Factories\DwpApiServiceFactory;
+use Application\DWP\Factories\DwpAuthApiServiceFactory;
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Experian\IIQ\AuthManager;
@@ -37,6 +40,7 @@ use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Sirius\EventSender;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
+use Application\DWP\AuthApi\AuthApiService as DwpAuthApiService;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\EventBridge\EventBridgeClient;
 use Aws\Ssm\SsmClient;
@@ -139,17 +143,17 @@ return [
                 ],
             ],
             'validate_nino' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route' => '/identity/validate_nino',
+                    'route' => '/identity/:uuid/validate_nino',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'verifyNino',
+                        'action' => 'validateNino',
                     ],
                 ],
             ],
             'validate_driving_licence' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
                     'route' => '/identity/validate_driving_licence',
                     'defaults' => [
@@ -159,7 +163,7 @@ return [
                 ],
             ],
             'validate_passport' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
                     'route' => '/identity/validate_passport',
                     'defaults' => [
@@ -492,7 +496,6 @@ return [
                 $serviceLocator->get(LoggerInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
-            NinoValidatorInterface::class => NinoValidatorFactory::class,
             LicenseInterface::class => LicenseFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
@@ -505,6 +508,8 @@ return [
             IIQClient::class => IIQClientFactory::class,
             AuthManager::class => AuthManagerFactory::class,
             ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
+            DwpAuthApiService::class => DwpAuthApiServiceFactory::class,
+            DwpApiService::class => DwpApiServiceFactory::class
         ],
     ],
     'view_manager' => [

@@ -148,7 +148,7 @@ describe("Voucher journey", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.get("[id=nino-error]").should("be.visible");
 
-        cy.get("[id=nino]").type("AA 12 34 56 A");
+        cy.get("[id=nino]").type("NP112233C");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.get(".moj-banner--success").contains("Identity document verified");
