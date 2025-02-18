@@ -584,12 +584,17 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects(self::once())
             ->method('sendDocument')
             // slightly clunky way of checking the arguments are passed correctly without checking `request`
-            ->willReturnCallback(fn (array $caseDetails, SiriusDocument $systemType, Request $request, string $pdfSuffixBase64) => match (true) {
-                (
-                    $caseDetails === $mockResponseDataIdDetails &&
-                    $systemType === $docType &&
-                    $pdfSuffixBase64 === 'pdf'
-                ) => ['status' => 201]});
+            ->willReturnCallback(fn (
+                array $caseDetails,
+                SiriusDocument $systemType,
+                Request $request,
+                string $pdfSuffixBase64) => match (true) {
+                    (
+                        $caseDetails === $mockResponseDataIdDetails &&
+                        $systemType === $docType &&
+                        $pdfSuffixBase64 === 'pdf'
+                    ) => ['status' => 201]
+                });
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "POST", [
             'confirmPostOffice' => 'Continue'
@@ -606,5 +611,4 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ['voucher', SiriusDocument::PostOfficeDocCheckVoucher],
         ];
     }
-
 }
