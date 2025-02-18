@@ -34,8 +34,6 @@ class LpaFormHelperTest extends TestCase
             $opgCaseResponse,
         );
 
-
-
         $this->assertArrayHasKey('uuid', $processed->toArray());
         $this->assertArrayHasKey('form', $processed->toArray());
         $this->assertArrayHasKey('status', $processed->toArray());
@@ -99,6 +97,11 @@ class LpaFormHelperTest extends TestCase
             'country' => 'United Kingdom',
         ];
         $slrNoMatch['opg.poas.lpastore']['certificateProvider']['firstNames'] = "Daniel";
+
+        $registeredLpa = "M-0000-0000-0004";
+        $slrRegistered = $slr;
+        $slrRegistered['opg.poas.sirius']['uId'] = $registeredLpa;
+        $slrRegistered['opg.poas.lpastore']['status'] = 'registered';
 
         $mockResponseData = [
             "data" => [
@@ -277,7 +280,20 @@ class LpaFormHelperTest extends TestCase
                 $form,
                 $slrNoMatch,
                 $olr,
-            ]
+            ],
+            [
+                $caseUuid,
+                [
+                    "message" => ["status_check" => "This LPA cannot be added as an identity " .
+                        "check has already been completed for this LPA"
+                    ],
+                    "status" => "registered",
+                ],
+                new Parameters(['lpa' => $registeredLpa]),
+                $form,
+                $slrRegistered,
+                $olr,
+            ],
         ];
     }
 
