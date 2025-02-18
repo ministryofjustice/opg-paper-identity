@@ -9,8 +9,6 @@ use Application\Fixtures\DataWriteHandler;
 use Application\Sirius\EventSender;
 use ApplicationTest\TestCase;
 use Application\Helpers\CaseOutcomeCalculator;
-use Laminas\Stdlib\ArrayUtils;
-use PhpParser\Node\Stmt\Case_;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -52,7 +50,9 @@ class CaseOutcomeCalculatorTest extends TestCase
                 'state' => '',
                 'result' => false
             ],
-            'lpas' => [],
+            'lpas' => [
+                'M-9387-2843-3891'
+            ],
             'identityCheckPassed' => true,
         ]);
 
@@ -66,12 +66,12 @@ class CaseOutcomeCalculatorTest extends TestCase
 
         $this->eventSenderMock->expects($this->once())
             ->method('send')
-            ->with("identity-check-resolved", [
+            ->with("identity-check-updated", [
                 "reference" => "opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc",
                 "actorType" => "donor",
-                "lpaIds" => [],
+                "lpaUids" => ['M-9387-2843-3891'],
                 "time" => 'some timestamp',
-                "outcome" => 'success',
+                "state" => 'SUCCESS',
             ]);
 
         $this->sut->updateSendIdentityCheck($caseData, 'some timestamp');
