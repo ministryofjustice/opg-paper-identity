@@ -9,6 +9,21 @@ use Laminas\Form\FormInterface;
 
 class LpaFormHelper
 {
+    private const DRAFT_MESSAGE = "This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.";
+
+    private const STATUS_FAIL_MESSAGE = "These LPAs cannot be added as they do not have the correct status " .
+    "for an ID check. LPAs need to be in the <b>In progress</b> status to be added to this identity check.";
+
+    private const NOT_FOUND_MESSAGE = "No LPA found.";
+
+    private const ONLINE_MESSAGE = "This LPA cannot be added to this identity check because
+                    the certificate provider has signed this LPA online.";
+
+    private const NO_MATCH_MESSAGE = "This LPA cannot be added to this ID check because the " .
+    "certificate provider details on this LPA do not match. " .
+    "Edit the certificate provider record in Sirius if appropriate and find again.";
+
     /**
      * @param FormInterface<array{lpa: string}> $form
      */
@@ -19,36 +34,62 @@ class LpaFormHelper
         array $detailsData,
     ): LpaFormHelperResponseDto {
         $result = [
-            'status' => "",
-            'message' => ""
+            'status' => '',
+            'messages' => []
         ];
 
         if ($form->isValid()) {
             $formData = $form->getData(FormInterface::VALUES_AS_ARRAY);
 
             if (
-                ! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
-                empty($siriusCheck['opg.poas.lpastore'])
+                empty($siriusCheck) ||
+                (
+                    array_key_exists('status', $siriusCheck) &&
+                    $siriusCheck['status'] == 404
+                )
             ) {
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,
                     'Not Found',
-                    'No LPA found.'
+                    [self::NOT_FOUND_MESSAGE]
+                );
+            }
+
+            if (
+                array_key_exists('opg.poas.sirius', $siriusCheck) &&
+                (! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
+                empty($siriusCheck['opg.poas.lpastore']))
+            ) {
+                $data = [
+                    "case_uuid" => $uuid,
+                    "lpa_number" => $formData['lpa'],
+                    "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
+                    "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
+                    "lpa_status" => 'draft',
+                ];
+                return new LpaFormHelperResponseDto(
+                    $uuid,
+                    $form,
+                    'draft',
+                    [self::DRAFT_MESSAGE],
+                    $data
                 );
             }
 
             $statusCheck = $this->checkStatus($siriusCheck);
+            if ($statusCheck['error'] === true) {
+                $result['status'] = $statusCheck['status'];
+                $result['messages']['status_check'] = $statusCheck['message'];
+            }
+
             $idCheck = $this->compareCpRecords($detailsData, $siriusCheck);
             $channelCheck = $this->checkChannel($siriusCheck);
 
-            if ($statusCheck['error'] === true) {
-                $result['status'] = 'error';
-                $result['message'] = $statusCheck['message'];
-            } elseif ($idCheck['error'] === true) {
+            if ($idCheck['error'] === true) {
                 $result['status'] = 'no match';
-                $result['message'] = $idCheck['message'];
-                $result['additional_data'] = [
+                $result['messages']['id_check'] = $idCheck['message'];
+                $result['additional_data']['id_check'] = [
                     'name' => $idCheck['name'],
                     'address' => $idCheck['address'],
                     'name_match' => $idCheck['name_match'],
@@ -56,15 +97,11 @@ class LpaFormHelper
                     'error' => $idCheck['error']
                 ];
             } elseif (! $this->checkLpaNotAdded($formData['lpa'], $detailsData)) {
-                $result['status'] = 'error';
-                $result['message'] = "This LPA has already been added to this identity check.";
+                $result['messages']['duplicate_check'] = "This LPA has already been added to this identity check.";
             } elseif ($channelCheck['error'] === true) {
-                $result['status'] = 'error';
-                $result['message'] = $channelCheck['message'];
-            } else {
-                $result['status'] = "success";
-                $result['message'] = "";
+                $result['messages']['channel_check'] = $channelCheck['message'];
             }
+
             $result['data'] = [
                 "case_uuid" => $uuid,
                 "lpa_number" => $formData['lpa'],
@@ -83,7 +120,7 @@ class LpaFormHelper
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
             $result['status'],
-            $result['message'],
+            $result['messages'],
             array_key_exists('data', $result) ? $result['data'] : [],
             array_key_exists('additional_data', $result) ? $result['additional_data'] : [],
         );
@@ -91,7 +128,7 @@ class LpaFormHelper
 
     private function getLpaTypeFromSiriusResponse(array $siriusCheck): string
     {
-        return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? '';
+        return $siriusCheck['opg.poas.lpastore']['lpaType'] ?? $siriusCheck['opg.poas.sirius']['caseSubtype'];
     }
 
     private function getDonorNameFromSiriusResponse(array $siriusCheck): string
@@ -127,17 +164,13 @@ class LpaFormHelper
             ) {
                 $response['address_match'] = true;
             } else {
-                $response['message'] = "This LPA cannot be added to this ID check because the " .
-                    "certificate provider details on this LPA do not match." .
-                    "Edit the certificate provider record in Sirius if appropriate and find again.";
+                $response['message'] = self::NO_MATCH_MESSAGE;
             }
 
             if ($checkName == $detailsData['firstName'] . " " . $detailsData['lastName']) {
                 $response['name_match'] = true;
             } else {
-                $response['message'] = "This LPA cannot be added to this ID check because the" .
-                    " certificate provider details on this LPA do not match. " .
-                    "Edit the certificate provider record in Sirius if appropriate and find again.";
+                $response['message'] = self::NO_MATCH_MESSAGE;
             }
             if (! $response['address_match'] || ! $response['name_match']) {
                 $response['error'] = true;
@@ -153,32 +186,44 @@ class LpaFormHelper
     {
         $response = [
             'error' => false,
-            'status' => "",
             'message' => ""
         ];
+
         if (
-            array_key_exists('opg.poas.lpastore', $siriusCheck) &&
-            array_key_exists('status', $siriusCheck['opg.poas.lpastore'])
+            ! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
+            ! array_key_exists('status', $siriusCheck['opg.poas.lpastore'])
         ) {
-            $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
-            if (
-                $response['status'] == 'complete' ||
-                $response['status'] == 'registered' ||
-                $response['status'] == 'in progress'
-            ) {
-                $response['error'] = true;
-                $response['message'] = "This LPA cannot be added as an ID" .
-                    " check has already been completed for this LPA.";
-            }
-            if ($response['status'] == 'draft') {
-                $response['error'] = true;
-                $response['message'] = "This LPA cannot be added as it’s status is set to <b>Draft</b>.
-                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.";
-            }
+            $response['status'] = 'draft';
         } else {
-            $response['error'] = true;
-            $response['message'] = "No LPA Found.";
+            $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
         }
+
+        if (strtolower($response['status']) === 'in progress') {
+            return $response;
+        }
+
+        if ($response['status'] == 'draft') {
+            $response['error'] = true;
+            $response['message'] = self::DRAFT_MESSAGE;
+
+            return $response;
+        }
+
+        if (
+            $response['status'] == 'complete' ||
+            $response['status'] == 'registered' ||
+            $response['status'] == 'processing'
+        ) {
+            $response['error'] = true;
+            $response['message'] = self::STATUS_FAIL_MESSAGE;
+
+            return $response;
+        }
+
+        $response['error'] = true;
+        $response['message'] = self::NOT_FOUND_MESSAGE;
+        $response['status'] = "";
+
         return $response;
     }
 
@@ -197,8 +242,7 @@ class LpaFormHelper
             $response['channel'] = $siriusCheck['opg.poas.lpastore']['certificateProvider']['channel'];
             if ($response['channel'] == 'online') {
                 $response['error'] = true;
-                $response['message'] = "This LPA cannot be added to this identity check because
-                    the certificate provider has signed this LPA online.";
+                $response['message'] = self::ONLINE_MESSAGE;
             }
         }
         return $response;

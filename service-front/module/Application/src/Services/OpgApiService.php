@@ -113,13 +113,13 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function checkNinoValidity(string $nino): string
+    public function checkNinoValidity(string $uuid, string $nino): string
     {
         $nino = strtoupper(preg_replace('/(\s+)|(-)/', '', $nino) ?? '');
 
         try {
             $this->makeApiRequest(
-                '/identity/validate_nino',
+                sprintf('/identity/%s/validate_nino', $uuid),
                 'POST',
                 ['nino' => $nino],
                 ['Content-Type' => 'application/json']
@@ -128,7 +128,7 @@ class OpgApiService implements OpgApiServiceInterface
             return $opgApiException->getMessage();
         }
 
-        return $this->responseData['status'];
+        return $this->responseData['result'];
     }
 
     public function checkDlnValidity(string $dln): string
@@ -273,20 +273,6 @@ class OpgApiService implements OpgApiServiceInterface
 
         try {
             $this->makeApiRequest("/cases/$uuid/add-selected-postoffice", 'POST', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
-
-
-    public function confirmSelectedPostOffice(string $uuid, string $deadline): void
-    {
-        $data = [
-            'deadline' => $deadline,
-        ];
-
-        try {
-            $this->makeApiRequest("/cases/$uuid/confirm-selected-postoffice", 'POST', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Aws\Secrets\AwsSecret;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\DWP\DwpApi\DwpApiException;
+use Application\DWP\DwpApi\DwpApiService;
+use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiException;
@@ -37,7 +41,7 @@ use Ramsey\Uuid\Uuid;
 class IdentityController extends AbstractActionController
 {
     public function __construct(
-        private readonly ValidatorInterface $ninoService,
+        private readonly DwpApiService $dwpApiService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataWriteHandler $dataHandler,
         private readonly LicenseValidatorInterface $licenseValidator,
@@ -154,19 +158,41 @@ class IdentityController extends AbstractActionController
         return new JsonModel(new Problem('Case not found'));
     }
 
-    public function verifyNinoAction(): JsonModel
+    /**
+     * @throws DwpApiException
+     */
+    public function validateNinoAction(): JsonModel
     {
+        $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
 
-        $ninoStatus = $this->ninoService->validateNINO($data['nino']);
+        try {
+            $correlationUuid = Uuid::uuid4()->toString();
+            $idMethodData = $caseData?->idMethodIncludingNation?->jsonSerialize();
+            $idMethodData['dwp_id_correlation'] = $correlationUuid;
 
-        $response = [
-            'status' => $ninoStatus,
-        ];
+            $this->dataHandler->updateCaseData(
+                $uuid,
+                'idMethodIncludingNation',
+                $idMethodData
+            );
 
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        return new JsonModel($response);
+            if ($this->dwpApiService->validateNino($caseData, $data['nino'], $correlationUuid)) {
+                return new JsonModel([
+                    'result' => 'PASS',
+                ]);
+            } else {
+                return new JsonModel([
+                    'result' => 'NO_MATCH',
+                ]);
+            }
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
     }
 
     public function validateDrivingLicenceAction(): JsonModel
@@ -239,42 +265,6 @@ class IdentityController extends AbstractActionController
         $counterServiceMap = [
             "selectedPostOffice" => $data['selected_postoffice'],
         ];
-
-        try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'counterService',
-                $counterServiceMap,
-            );
-        } catch (\Exception $exception) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-
-            return new JsonModel(new Problem($exception->getMessage()));
-        }
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $response['result'] = "Updated";
-
-        return new JsonModel($response);
-    }
-
-    public function confirmSelectedPostofficeAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        /** @var CaseData $caseData */
-        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
-        $response = [];
-
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-
-            return new JsonModel(new Problem('Missing UUID'));
-        }
-
-        $counterServiceMap = [];
-        if ($caseData->counterService !== null) {
-            $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
-        }
 
         try {
             $this->dataHandler->updateCaseData(

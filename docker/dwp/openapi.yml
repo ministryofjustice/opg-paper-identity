@@ -30,12 +30,6 @@ paths:
             schema:
               type: object
               properties:
-                username:
-                  type: string
-                  example: "user"
-                password:
-                  type: string
-                  example: "password"
                 client_id:
                   type: string
                   example: "client-id"
@@ -71,7 +65,7 @@ paths:
                   success:
                     type: string
                     enum: false
-  /v2/citizens/match:
+  /capi/v2/citizens/match:
     post:
       tags:
         - Person API
@@ -149,7 +143,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorData'
-  /v2/citizens/match/{guid}:
+  /capi/v2/citizens/{guid}:
     get:
       tags:
         - Person Details API
@@ -435,47 +429,6 @@ components:
         nino:
           type: string
           maxLength: 9
-        identityVerificationStatus:
-          type: string
-          description: A string value indicating the verification type.
-            not_verified - Children under 15yrs 9mths are not verified.  Occasionally adults are not verified for a period of time.
-            qualified - Only a limited set of details have been verified.
-            verified - Identity has been verified
-          enum:
-            - not_verified
-            - qualified
-            - verified
-          example: verified
-        sex:
-          type: string
-          maxLength: 1
-        statusIndicator:
-          type: boolean
-          description: A boolean value indicating the status of the Citizen - 'true' indicates an elevated access Level is required to access the Citizen's data.
-        name:
-          $ref: '#/components/schemas/Name'
-        alternateName:
-          $ref: '#/components/schemas/Name'
-        requestedName:
-          $ref: '#/components/schemas/RequestedName'
-        dateOfDeath:
-          $ref: '#/components/schemas/DateOfDeath'
-        dateOfBirth:
-          $ref: '#/components/schemas/DateOfBirth'
-        accessibilityNeeds:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccessibilityNeeds'
-        safeguarding:
-          $ref: '#/components/schemas/Safeguarding'
-        nationality:
-          $ref: '#/components/schemas/Nationality'
-        contactDetails:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContactDetails'
-        warningDetails:
-          $ref: '#/components/schemas/WarningDetails'
     Metadata:
       description: Optional meta-data about an item, such as level of verification and method and the dates at which it was created/notified or ceased to be used. (endDate)
       type: object

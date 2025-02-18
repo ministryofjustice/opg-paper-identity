@@ -34,16 +34,18 @@ class LpaFormHelperTest extends TestCase
             $opgCaseResponse,
         );
 
+
+
         $this->assertArrayHasKey('uuid', $processed->toArray());
         $this->assertArrayHasKey('form', $processed->toArray());
         $this->assertArrayHasKey('status', $processed->toArray());
-        $this->assertArrayHasKey('message', $processed->toArray());
+        $this->assertArrayHasKey('messages', $processed->toArray());
         $this->assertArrayHasKey('data', $processed->toArray());
         $this->assertArrayHasKey('additionalData', $processed->toArray());
         $this->assertEquals($caseUuid, $processed->getUuid());
         $this->assertEquals($form, $processed->getForm());
         $this->assertEquals($responseData['status'], $processed->getStatus());
-        $this->assertEquals($responseData['message'], $processed->getMessage());
+        $this->assertEquals($responseData['message'], $processed->getMessages());
         if (array_key_exists('data', $responseData)) {
             $this->assertEquals($responseData['data'], $processed->getData());
         }
@@ -75,6 +77,11 @@ class LpaFormHelperTest extends TestCase
         $slrDraft['opg.poas.sirius']['uId'] = $draftLpa;
         $slrDraft['opg.poas.lpastore']['status'] = 'draft';
 
+        $emptyDraftLpa = "M-0000-0000-0005";
+        $slrEmptyDraft = $slr;
+        $slrEmptyDraft['opg.poas.sirius']['uId'] = $emptyDraftLpa;
+        unset($slrEmptyDraft['opg.poas.lpastore']);
+
         $onlineLpa = "M-0000-0000-0006";
         $slrOnline = $slr;
         $slrOnline['opg.poas.sirius']['uId'] = $onlineLpa;
@@ -83,7 +90,7 @@ class LpaFormHelperTest extends TestCase
         $noMatchLpa = "M-0000-0000-0006";
         $slrNoMatch = $slr;
         $slrNoMatch['opg.poas.sirius']['uId'] = $noMatchLpa;
-        $slrNoMatch['opg.poas.lpastore']['status'] = 'no match';
+        $slrNoMatch['opg.poas.lpastore']['status'] = 'In progress';
         $slrNoMatch['opg.poas.lpastore']['certificateProvider']['address'] = [
             'line1' => '81 Penny Street',
             'line2' => 'Lancaster',
@@ -125,7 +132,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $goodLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "Processing",
+                        "lpa_status" => "In progress",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -135,8 +142,8 @@ class LpaFormHelperTest extends TestCase
                             'country' => 'United Kingdom',
                         ]
                     ],
-                    "message" => "",
-                    "status" => "success",
+                    "message" => [],
+                    "status" => "",
                 ],
                 $params,
                 $form,
@@ -146,8 +153,8 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA has already been added to this identity check.",
-                    "status" => "error"
+                    "message" => ['duplicate_check' => "This LPA has already been added to this identity check."],
+                    "status" => ""
                 ],
                 new Parameters(['lpa' => $alreadyAddedLpa]),
                 $form,
@@ -157,19 +164,22 @@ class LpaFormHelperTest extends TestCase
             [
                 $notFoundLpa,
                 [
-                    "message" => "No LPA found.",
+                    "message" => ["No LPA found."],
                     "status" => 'Not Found',
                 ],
                 new Parameters(['lpa' => $notFoundLpa]),
                 $form,
-                $olr,
                 $slrNotFound,
+                $olr,
             ],
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added as an ID check has already been completed for this LPA.",
-                    "status" => "error",
+                    "message" => ["status_check" => "These LPAs cannot be added as they do not have " .
+                        "the correct status for an ID check. LPAs need to be in the <b>In progress</b> status " .
+                        "to be added to this identity check."
+                    ],
+                    "status" => "complete",
                 ],
                 new Parameters(['lpa' => $alreadyDoneLpa]),
                 $form,
@@ -179,9 +189,9 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
-                    LPAs need to be in the <b>In progress</b> status to be added to this ID check.",
-                    "status" => "error",
+                    "message" => ["status_check" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
+                    "status" => "draft",
                 ],
                 new Parameters(['lpa' => $draftLpa]),
                 $form,
@@ -191,15 +201,27 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added to this identity check because
-                    the certificate provider has signed this LPA online.",
-                    "status" => 'error',
+                    "message" => ["This LPA cannot be added as it’s status is set to <b>Draft</b>.
+                    LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
+                    "status" => "draft",
+                ],
+                new Parameters(['lpa' => $draftLpa]),
+                $form,
+                $slrEmptyDraft,
+                $olr,
+            ],
+            [
+                $caseUuid,
+                [
+                    "message" => ["channel_check" => "This LPA cannot be added to this identity check because
+                    the certificate provider has signed this LPA online."],
+                    "status" => '',
                     "data" => [
                         "case_uuid" => $caseUuid,
                         "lpa_number" => $onlineLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "Processing",
+                        "lpa_status" => "In progress",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -218,9 +240,9 @@ class LpaFormHelperTest extends TestCase
             [
                 $caseUuid,
                 [
-                    "message" => "This LPA cannot be added to this ID check because the" .
+                    "message" => ["id_check" => "This LPA cannot be added to this ID check because the" .
                         " certificate provider details on this LPA do not match. " .
-                        "Edit the certificate provider record in Sirius if appropriate and find again.",
+                        "Edit the certificate provider record in Sirius if appropriate and find again."],
                     "status" => "no match",
                     "additional_data" => [
                         'name' => "Daniel Smith",
@@ -240,7 +262,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $noMatchLpa,
                         "type_of_lpa" => 'property-and-affairs',
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => 'No match',
+                        "lpa_status" => 'In progress',
                         "cp_name" => "Daniel Smith",
                         "cp_address" => [
                             'line1' => '81 Penny Street',
@@ -371,12 +393,13 @@ class LpaFormHelperTest extends TestCase
                 ],
                 "registrationDate" => "1918-08-28",
                 "signedAt" => "1956-06-30T03:57:57.0Z",
-                "status" => "processing",
+                "status" => "in progress",
                 "uid" => "M-804C-XHAD-59UQ",
                 "updatedAt" => "1913-04-09T10:18:35.0Z",
                 "whenTheLpaCanBeUsed" => "when-capacity-lost"
             ],
             "opg.poas.sirius" => [
+                "caseSubtype" => "property-and-affairs",
                 "donor" => [
                     "addressLine3" => "Moline",
                     "dob" => "1910-12-22",

@@ -29,7 +29,7 @@ class NinoValidatorTest extends TestCase
         }
     }
 
-    public function ninoData(): array
+    public static function ninoData(): array
     {
         return [
             ['AA 11 22 33 A', null, true],

@@ -16,39 +16,42 @@
         </div>
     {% endif %}
     {% if lpa_response %}
-        {% if lpa_response['status'] != "success" %}
+        {% if lpa_response['messages']|length > 0 %}
 
-            <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
-                <p class="govuk-body">
-                    <b>There is a problem</b>
-                </p>
-                <div class="moj-banner__message">
-                    {{ lpa_response['message']|raw }}
+            {% for key,message in lpa_response['messages'] %}
 
-                    {% if lpa_response['additionalData'] %}
-                        <br><br>This ID check is for:
-                        <table class="govuk-table govuk-!-width-one-half">
-                            <tr class="govuk-table__row">
-                                <th scope="row" class="govuk-table__header">Name</th>
-                                <td class="govuk-table__cell">
-                                    {{ details_data['firstName'] }}
-                                    {{ details_data['lastName'] }}
-                                </td>
-                            </tr>
-                            <tr class="govuk-table__row">
-                                <th scope="row" class="govuk-table__header">Address</th>
-                                <td class="govuk-table__cell">
-                                    {% for line in details_data['address'] %}
-                                        {% if line %}
-                                            {{ line }}<br>
-                                        {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                        </table>
-                    {% endif %}
+                <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+                    <p class="govuk-body">
+                        <b>There is a problem</b>
+                    </p>
+                    <div class="moj-banner__message">
+                        {{ message|raw }}
+
+                        {% if lpa_response['additionalData'][key] %}
+                            <br><br>This ID check is for:
+                            <table class="govuk-table govuk-!-width-one-half">
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header">Name</th>
+                                    <td class="govuk-table__cell">
+                                        {{ details_data['firstName'] }}
+                                        {{ details_data['lastName'] }}
+                                    </td>
+                                </tr>
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header">Address</th>
+                                    <td class="govuk-table__cell">
+                                        {% for line in details_data['address'] %}
+                                            {% if line %}
+                                                {{ line }}<br>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </table>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         {% endif %}
     {% endif %}
 
@@ -101,8 +104,7 @@
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">Status</th>
-                        <td class="govuk-table__cell">{{ lpa_response['data']['lpa_status'] }}</td>
-                        <td class="govuk-table__cell"></td>
+                        <td class="govuk-table__cell">{{ lpa_response['data']['lpa_status']|title }}</td>                        <td class="govuk-table__cell"></td>
                     </tr>
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header">CP name</th>
@@ -168,7 +170,7 @@
     </div>
     {% if lpa_response %}
         <form method="POST">
-            {% if lpa_response['status'] == 'success' %}
+            {% if lpa_response['messages']|length == 0 %}
                 <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['lpa_number'] }}">
                 <input type="submit" class="govuk-button" value="Add LPA to this ID check">
             {% endif %}

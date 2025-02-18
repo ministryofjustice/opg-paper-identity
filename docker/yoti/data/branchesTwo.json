@@ -1,0 +1,48 @@
+{
+  "branches": [
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "87654321",
+      "name": "Broadway",
+      "address": "1 Broadway, London, Greater London",
+      "post_code": "SW1H 0AX",
+      "location": {
+        "latitude": 0.00000,
+        "longitude": 0.00000
+      }
+    },
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "77654321",
+      "name": "Regent Street St. James's",
+      "address": "11 Regent Street St. James's, London, Greater London",
+      "post_code": "SW1Y 4LR",
+      "location": {
+        "latitude": 0.00000,
+        "longitude": 0.00000
+      }
+    },
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "66654321",
+      "name": "Mayfair",
+      "address": "32A Grosvenor Street, London, Greater London",
+      "post_code": "W1K 4PA",
+      "location": {
+        "latitude": 0.00000,
+        "longitude": 0.00000
+      }
+    },
+    {
+      "type": "UK_POST_OFFICE",
+      "fad_code": "66654321",
+      "name": "Knightsbridge",
+      "address": "6 Raphael Street, London, Greater London",
+      "post_code": "SW7 1DL",
+      "location": {
+        "latitude": 0.00000,
+        "longitude": 0.00000
+      }
+    }
+  ]
+}

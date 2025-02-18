@@ -25,7 +25,7 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains("National insurance number");
         cy.contains("20 January 1999");
-        cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+        cy.getInputByLabel("National Insurance number").type("NP 11 22 33 C");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Identity document verified");
@@ -45,7 +45,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains(".moj-banner", "Identity check passed");
     });
 
-    it("lets you identify with Passport", () => {
+    it("Passport - throws out of date error", () => {
         const d = new Date();
         let year = d.getFullYear();
 
@@ -69,7 +69,11 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#passport-issued-year").type(year - 20, {force: true});
         cy.get(".govuk-button--secondary").contains("Check").click({force: true});
         cy.contains("Out of date");
+    });
 
+    it("Passport - date validation succeeds", () => {
+        const d = new Date();
+        let year = d.getFullYear();
         // Check passport date validation succeeds
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("Help with checking if passport is in date");
@@ -84,8 +88,11 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Identity documents accepted at the Post Office");
         cy.contains("Identity documents accepted at the Post Office").click();
         cy.contains("UK passport (up to 18 months expired)").should('be.visible');
+    });
+    it("Passport - succeeds on correct form selections", () => {
 
-
+        const d = new Date();
+        let year = d.getFullYear();
         // Check passport selection on form succeeds
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
         cy.contains("Passport").click();
@@ -281,7 +288,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("National insurance number");
-        cy.getInputByLabel("National Insurance number").type("AA 12 34 56 A");
+        cy.getInputByLabel("National Insurance number").type("NP 11 22 33 C");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Identity document verified");
@@ -318,6 +325,105 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("What is their date of birth?");
+    });
+
+    it("allows adding new LPA", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+        cy.contains("Remove").should('not.exist');
+
+        cy.contains("Add another LPA").click();
+        cy.get("#lpa").type("M-XYXY-YAGB-0000", {force: true});
+        cy.contains("Find LPA").click();
+        cy.contains("Add LPA to this ID check").click();
+        cy.contains("Remove");
+
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.contains("What is their date of birth?");
+    });
+
+    it("throws duplicate error on attempting to add same LPA", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+
+        cy.get(".govuk-button").contains("Add another LPA").click();
+        cy.contains("Find an LPA to add");
+        cy.get("#lpa").should('be.visible').type("M-XYXY-YAGA-0000");        // same LPA number
+        cy.get(".govuk-button").contains("Find LPA").click();
+        cy.contains("This LPA has already been added to this identity check.");
+    });
+
+    it("throws draft error on attempting to add sirius-only LPA", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+
+        cy.get(".govuk-button").contains("Add another LPA").click();
+        cy.contains("Find an LPA to add");
+        cy.get("#lpa").should('be.visible').type("M-EMPT-YLPA-CPG3");        // same LPA number
+        cy.get(".govuk-button").contains("Find LPA").click();
+        cy.contains("This LPA cannot be added as it’s status is set to Draft. LPAs need to be in the In progress status to be added to this ID check.");
+    });
+
+    it("throws error on attempting to add complete LPA", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+
+        cy.get(".govuk-button").contains("Add another LPA").click();
+        cy.contains("Find an LPA to add");
+        cy.get("#lpa").should('be.visible').type("M-COMP-LETE-CPG3");        // same LPA number
+        cy.get(".govuk-button").contains("Find LPA").click();
+        cy.contains("These LPAs cannot be added as they do not have the correct status for an ID check. LPAs need to be in the In progress status to be added to this identity check.");
+    });
+
+    it("throws no match error on attempting to add LPA with non-matching ID details", () => {
+        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("Does the name match the ID?");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.contains("LPAs included in the identity check");
+
+        cy.get(".govuk-button").contains("Add another LPA").click();
+        cy.contains("Find an LPA to add");
+        cy.get("#lpa").should('be.visible').type("M-XYXY-YAGA-35G3");        // same LPA number
+        cy.get(".govuk-button").contains("Find LPA").click();
+        cy.contains("This LPA cannot be added to this ID check because the certificate provider details on this LPA do not match. Edit the certificate provider record in Sirius if appropriate and find again.");
     });
 });
 
