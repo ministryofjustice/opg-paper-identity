@@ -95,7 +95,7 @@
             "tbachert/spi": false
         },
         "platform": {
-            "php": "8.3",
+            "php": "8.3.17",
             "ext-apcu": "5.1.10"
         }
     }
