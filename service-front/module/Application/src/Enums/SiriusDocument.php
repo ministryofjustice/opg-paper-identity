@@ -7,5 +7,6 @@ namespace Application\Enums;
 enum SiriusDocument: string
 {
     case VouchInvitation = "DLP-VOUCH-INVITE";
-    case PostOfficeDocCheck = "DLP-ID-PO-D";
+    case PostOfficeDocCheckDonor = "DLP-ID-PO-D";
+    case PostOfficeDocCheckVoucher = "DLP-ID-PO-V";
 }

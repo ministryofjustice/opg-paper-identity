@@ -228,11 +228,16 @@ class PostOfficeFlowController extends AbstractActionController
         string $uuid,
         array $detailsData,
     ): Response {
+
+        $systemType = $detailsData['personType'] === 'voucher' ?
+            SiriusDocument::PostOfficeDocCheckVoucher : SiriusDocument::PostOfficeDocCheckDonor;
+
+        //trigger Post Office counter service & send pdf to sirius
         $counterService = $this->opgApiService->createYotiSession($uuid);
         $pdfData = $counterService['pdfBase64'];
         $pdf = $this->siriusApiService->sendDocument(
             $detailsData,
-            SiriusDocument::PostOfficeDocCheck,
+            $systemType,
             $this->getRequest(),
             $pdfData
         );

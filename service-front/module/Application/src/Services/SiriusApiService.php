@@ -16,6 +16,7 @@ use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -254,6 +255,12 @@ class SiriusApiService
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
             "correspondentAddress" => $address
         ];
+
+        if ($systemType === SiriusDocument::PostOfficeDocCheckVoucher) {
+            $data['donorFirstNames'] = $caseDetails['vouchingFor']['firstName'];
+            $data['donorLastName'] = $caseDetails['vouchingFor']['lastName'];
+        }
+
         if ($pdfSuffixBase64 !== null) {
             $data["pdfSuffix"] = $pdfSuffixBase64;
         }
