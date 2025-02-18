@@ -370,6 +370,10 @@ components:
           type: string
         description:
           type: string
+        donorFirstNames:
+          type: string
+        donorLastName:
+          type: string
     Error:
       type: object
       required:
