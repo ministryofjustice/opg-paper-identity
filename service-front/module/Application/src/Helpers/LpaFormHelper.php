@@ -24,6 +24,9 @@ class LpaFormHelper
     "certificate provider details on this LPA do not match. " .
     "Edit the certificate provider record in Sirius if appropriate and find again.";
 
+    private const REGISTERED_MESSAGE = "This LPA cannot be added as an identity check has already " .
+    "been completed for this LPA";
+
     /**
      * @param FormInterface<array{lpa: string}> $form
      */
@@ -209,9 +212,15 @@ class LpaFormHelper
             return $response;
         }
 
+        if ($response['status'] == 'registered') {
+            $response['error'] = true;
+            $response['message'] = self::REGISTERED_MESSAGE;
+
+            return $response;
+        }
+
         if (
             $response['status'] == 'complete' ||
-            $response['status'] == 'registered' ||
             $response['status'] == 'processing'
         ) {
             $response['error'] = true;
