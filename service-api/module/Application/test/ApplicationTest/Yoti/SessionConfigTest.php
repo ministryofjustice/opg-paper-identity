@@ -79,14 +79,14 @@ class SessionConfigTest extends TestCase
     public function sessionConfigExpected(): array
     {
         $currentDate = new DateTime();
-        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
+        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '28';
         $modifierString = '+' . $deadlineSet . ' days';
         $currentDate->modify($modifierString);
         $currentDate->setTime(22, 0, 0);
 
         $sessionConfig = [];
         $sessionConfig["session_deadline"] = $currentDate->format(DateTime::ATOM);
-        $sessionConfig["resources_ttl"] = intval($currentDate->format('U')) - time() + 86400;
+        $sessionConfig["resources_ttl"] = 3024000;
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $this->caseMock->id;
         $sessionConfig["notifications"] = [

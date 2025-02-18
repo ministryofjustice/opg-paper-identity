@@ -105,14 +105,8 @@ class SessionConfig
 
     public function getResourceTtl(): int
     {
-        $deadlineTime = strtotime($this->deadlineDate());
-        if ($deadlineTime === false) {
-            throw new YotiException("Invalid deadline date");
-        }
-
-        $deadlineSeconds = $deadlineTime - time();
-
-        return $deadlineSeconds + 86400;
+        $resourceTtlDays = (string)getenv("YOTI_SESSION_RESOURCE_TTL") ? : '35';
+        return 60 * 60 * 24 * $resourceTtlDays;
     }
 
     public function deadlineDate(): string
@@ -120,7 +114,7 @@ class SessionConfig
         $currentDate = new DateTime();
 
         // Add number of days for session dateline as loaded via env
-        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
+        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '28';
         $modifierString = '+' . $deadlineSet . ' days';
         $currentDate->modify($modifierString);
 
