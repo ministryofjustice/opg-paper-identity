@@ -23,6 +23,20 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     private FormProcessorHelper&MockObject $formProcessorService;
     private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
+    private static array $listPostOfficeResponse = [
+            '1234567' => [
+                'name' => 'new post office',
+                'address' => '1 Fake Street, Faketown',
+                'post_code' => 'FA1 2KE',
+                'fad_code' => '1234567',
+            ],
+            '7654321' => [
+                'name' => 'old post office',
+                'address' => '2 Pretend Road, Pretendcity',
+                'post_code' => 'PR3 2TN',
+                'fad_code' => '7654321',
+            ],
+        ];
 
     public function setUp(): void
     {
@@ -79,22 +93,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public static function getListPostofficeResponse(): array
+    public function getListPostofficeResponse(): array
     {
-        return [
-            '1234567' => [
-                'name' => 'new post office',
-                'address' => '1 Fake Street, Faketown',
-                'post_code' => 'FA1 2KE',
-                'fad_code' => '1234567',
-            ],
-            '7654321' => [
-                'name' => 'old post office',
-                'address' => '2 Pretend Road, Pretendcity',
-                'post_code' => 'PR3 2TN',
-                'fad_code' => '7654321',
-            ],
-        ];
+        return self::$listPostOfficeResponse;
     }
 
 
@@ -435,11 +436,11 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         }
     }
 
-    public function selectPostOfficeData(): array
+    public static function selectPostOfficeData(): array
     {
         $validPost = [
             'selectPostoffice' => 'Continue',
-            'postoffice' => json_encode($this->getListPostofficeResponse()['1234567']),
+            'postoffice' => json_encode(static::$listPostOfficeResponse['1234567']),
         ];
 
         $ukPassport = [
@@ -528,11 +529,11 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         }
     }
 
-    public function searchPostOfficeData(): array
+    public static function searchPostOfficeData(): array
     {
 
-        $poOne = json_encode($this->getListPostofficeResponse()['1234567']);
-        $poTwo = json_encode($this->getListPostofficeResponse()['7654321']);
+        $poOne = json_encode(static::$listPostOfficeResponse['1234567']);
+        $poTwo = json_encode(static::$listPostOfficeResponse['7654321']);
 
         return [
             'empty field shows error and no post-offices ' => [
