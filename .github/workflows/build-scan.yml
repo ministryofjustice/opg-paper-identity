@@ -43,6 +43,8 @@ jobs:
             service_name: api-test
           - ecr_repository: paper-identity/front-test
             service_name: front-test
+          - ecr_repository: paper-identity/dwp-mock
+            service_name: dwp-mock
           - ecr_repository: paper-identity/experian-crosscore-auth-mock
             service_name: experian-crosscore-auth-mock
           - ecr_repository: paper-identity/experian-crosscore-mock
