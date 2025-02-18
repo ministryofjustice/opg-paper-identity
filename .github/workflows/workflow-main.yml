@@ -78,6 +78,8 @@ jobs:
             service_name: api
           - image_app_name: paper-identity/front
             service_name: front
+          - image_app_name: paper-identity/dwp-mock
+            service_name: dwp-mock
           - image_app_name: paper-identity/experian-crosscore-auth-mock
             service_name: experian-crosscore-auth-mock
           - image_app_name: paper-identity/experian-crosscore-mock
