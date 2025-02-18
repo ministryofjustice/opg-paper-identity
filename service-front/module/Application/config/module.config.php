@@ -215,16 +215,6 @@ return [
                             ],
                         ],
                     ],
-                    'confirm_post_office' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/confirm-post-office',
-                            'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'confirmPostOffice',
-                            ],
-                        ],
-                    ],
                     'po_what_happens_next' => [
                         'type' => Segment::class,
                         'options' => [

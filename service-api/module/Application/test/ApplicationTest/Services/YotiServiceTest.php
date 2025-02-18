@@ -220,7 +220,7 @@ class YotiServiceTest extends TestCase
                 'id_route' => "POST_OFFICE",
             ],
             'counterService' => [
-                'selectedPostOffice' => json_encode(['fad' => '29348729'])
+                'selectedPostOffice' => '29348729'
             ],
             'lpas' => []
         ]);

@@ -284,42 +284,6 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function confirmSelectedPostofficeAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        /** @var CaseData $caseData */
-        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
-        $response = [];
-
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-
-            return new JsonModel(new Problem('Missing UUID'));
-        }
-
-        $counterServiceMap = [];
-        if ($caseData->counterService !== null) {
-            $counterServiceMap["selectedPostOffice"] = $caseData->counterService->selectedPostOffice;
-        }
-
-        try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'counterService',
-                $counterServiceMap,
-            );
-        } catch (\Exception $exception) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-
-            return new JsonModel(new Problem($exception->getMessage()));
-        }
-
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $response['result'] = "Updated";
-
-        return new JsonModel($response);
-    }
-
     public function addCaseLpaAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');

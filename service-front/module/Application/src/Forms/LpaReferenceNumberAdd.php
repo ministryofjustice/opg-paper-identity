@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Application\Forms;
 
+use Application\Validators\LpaUidValidator;
 use Laminas\Form\Annotation;
 use Laminas\Hydrator\ObjectPropertyHydrator;
-use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
- * @implements FormTemplate<array{postoffice: string}>
+ * @implements FormTemplate<array{lpa: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
-class PostOfficeAddress implements FormTemplate
+class LpaReferenceNumberAdd implements FormTemplate
 {
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(NotEmpty::class)]
-    public mixed $postoffice;
+    #[Annotation\Validator(LpaUidValidator::class)]
+    public string $add_lpa_number;
 }
