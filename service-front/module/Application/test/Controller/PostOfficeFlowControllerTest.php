@@ -6,13 +6,14 @@ namespace ApplicationTest\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
-use Application\Exceptions\SiriusApiException;
+use Application\Enums\SiriusDocument;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
+use Laminas\Http\Request;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -557,9 +558,13 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public function testfindPostOfficeBranchConfirm(): void
+    /**
+     * @dataProvider confirmPostOfficeData
+     */
+    public function testfindPostOfficeBranchConfirm(string $personType, SiriusDocument $docType): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
+        $mockResponseDataIdDetails['personType'] = $personType;
 
         $this
             ->opgApiServiceMock
@@ -579,7 +584,18 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->siriusApiService
             ->expects(self::once())
             ->method('sendDocument')
-            ->willReturn(['status' => 201]);
+            // slightly clunky way of checking the arguments are passed correctly without checking `request`
+            ->willReturnCallback(fn (
+                array $caseDetails,
+                SiriusDocument $systemType,
+                Request $request,
+                string $pdfSuffixBase64) => match (true) {
+                    (
+                        $caseDetails === $mockResponseDataIdDetails &&
+                        $systemType === $docType &&
+                        $pdfSuffixBase64 === 'pdf'
+                    ) => ['status' => 201]
+                });
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "POST", [
             'confirmPostOffice' => 'Continue'
@@ -587,5 +603,13 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/post-office-what-happens-next");
+    }
+
+    public function confirmPostOfficeData(): array
+    {
+        return [
+            ['donor', SiriusDocument::PostOfficeDocCheckDonor],
+            ['voucher', SiriusDocument::PostOfficeDocCheckVoucher],
+        ];
     }
 }
