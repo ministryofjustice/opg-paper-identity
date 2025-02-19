@@ -6,7 +6,7 @@ namespace Application\Helpers;
 
 use Application\Exceptions\LpaTypeException;
 
-class LpaTypeHelper
+class LpaStatusTypeHelper
 {
     private array $lpaStatusTypes = [
         'draft' => 'Draft',
@@ -46,7 +46,7 @@ class LpaTypeHelper
         'voucher' => 'Voucher'
     ];
 
-    private bool $canStart = true;
+    private bool $startable = true;
 
     private string $status = 'draft';
 
@@ -55,7 +55,7 @@ class LpaTypeHelper
         private string $personType = 'donor'
     ) {
         if (isset($lpa['opg.poas.lpastore']['donor']['identityCheck'])) {
-            $this->canStart = false;
+            $this->startable = false;
             $this->status = 'registered';
         } else {
             $this->setStatus();
@@ -82,9 +82,9 @@ class LpaTypeHelper
         }
 
         try {
-            $this->canStart = in_array($this->status, $this->lpaPermissions[$this->personType]);
+            $this->startable = in_array($this->status, $this->lpaPermissions[$this->personType]);
         } catch (LpaTypeException $exception) {
-            $this->canStart = false;
+            $this->startable = false;
         }
     }
 
@@ -99,8 +99,8 @@ class LpaTypeHelper
     /**
      * @return bool
      */
-    public function isCanStart(): bool
+    public function isStartable(): bool
     {
-        return $this->canStart;
+        return $this->startable;
     }
 }

@@ -6,37 +6,37 @@ namespace ApplicationTest\Helpers;
 
 use Application\Exceptions\LpaTypeException;
 use Application\Helpers\LpaFormHelper;
-use Application\Helpers\LpaTypeHelper;
+use Application\Helpers\LpaStatusTypeHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
 use Application\Forms\LpaReferenceNumber;
 
-class LpaTypeHelperTest extends TestCase
+class LpaStatusTypeHelperTest extends TestCase
 {
     /**
-     * @dataProvider lpaTypeHelperData
+     * @dataProvider lpaStatusTypeHelperData
      * @return void
      */
     public function testLpaTypeHelper(
         array $lpa,
         string $personType,
         string $expectedStatus,
-        bool $expectedCanStart,
+        bool $expectedStartable,
         bool $throwsException
     ): void {
         if ($throwsException) {
             $this->expectException(LpaTypeException::class);
         }
 
-        $lpaTypeHelper = new LpaTypeHelper($lpa, $personType);
+        $lpaStatusTypeHelper = new LpaStatusTypeHelper($lpa, $personType);
 
-        $this->assertEquals($expectedStatus, $lpaTypeHelper->getStatus());
-        $this->assertEquals($expectedCanStart, $lpaTypeHelper->isCanStart());
+        $this->assertEquals($expectedStatus, $lpaStatusTypeHelper->getStatus());
+        $this->assertEquals($expectedStartable, $lpaStatusTypeHelper->isStartable());
     }
 
-    public static function lpaTypeHelperData(): array
+    public static function lpaStatusTypeHelperData(): array
     {
         $draftLpa = self::siriusLpaResponse();
         $emptyDraftLpa = self::siriusLpaResponse();

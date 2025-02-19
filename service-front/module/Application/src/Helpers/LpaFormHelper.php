@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Helpers\LpaStatusTypeHelper;
 use Application\Helpers\DTO\LpaFormHelperResponseDto;
 use Laminas\Form\FormInterface;
 
