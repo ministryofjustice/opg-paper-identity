@@ -215,7 +215,7 @@ class LpaFormHelper
             return $response;
         }
 
-        if (!$statusCheck->isStartable()) {
+        if (! $statusCheck->isStartable()) {
             $response['error'] = true;
             $response['message'] = self::STATUS_FAIL_MESSAGE;
 

@@ -54,7 +54,7 @@ class LpaStatusTypeHelper
         private array $lpa,
         private string $personType = 'donor'
     ) {
-        if (isset($lpa['opg.poas.lpastore']['donor']['identityCheck'])) {
+        if (isset($lpa['opg.poas.lpastore'][$this->personType]['identityCheck'])) {
             $this->startable = false;
             $this->status = 'registered';
         } else {
@@ -65,7 +65,10 @@ class LpaStatusTypeHelper
 
     private function setStatus(): void
     {
-        if (! array_key_exists('opg.poas.lpastore', $this->lpa)) {
+        if (
+            ! array_key_exists('opg.poas.lpastore', $this->lpa) ||
+            empty($this->lpa['opg.poas.lpastore'])
+        ) {
             $this->status = 'draft';
         } else {
             $this->status = $this->lpa['opg.poas.lpastore']['status'];
@@ -78,7 +81,7 @@ class LpaStatusTypeHelper
     private function setCanStart(): void
     {
         if (! array_key_exists($this->personType, $this->personTypes)) {
-            throw new LpaTypeException($this->personType . " is not a valid Person Type");
+            throw new LpaTypeException('Person type "' . $this->personType . '" is not valid');
         }
 
         try {

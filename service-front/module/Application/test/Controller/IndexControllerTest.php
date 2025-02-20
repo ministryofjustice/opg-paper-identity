@@ -48,7 +48,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     }
 
     /**
-     * @return array<string, array{Lpa, string, array<mixed>}>
+     * @return array//<string, array{Lpa, string, array<mixed>}>
      */
     public static function startActionDataProvider(): array
     {
@@ -77,6 +77,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             ],
             'lpaType' => 'personal-welfare',
             'attorneys' => [],
+            'status' => 'in-progress',
         ];
 
         return [
@@ -197,7 +198,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         );
     }
 
-    public function testStartActionFailsWithInvalidType(): void
+    public function testStartActionFailsWithInvalidPersonType(): void
     {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $opgApiService = $this->createMock(OpgApiService::class);
