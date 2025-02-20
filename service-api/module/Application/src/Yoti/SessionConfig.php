@@ -115,7 +115,7 @@ class SessionConfig
         $TenPm = $now->setTime(22, 0, 0);
         $timeTill10PM = $TenPm->getTimestamp() - $now->getTimestamp();
 
-        $resourceTtlDays = (string)getenv("YOTI_SESSION_RESOURCE_TTL") ? : '35';
+        $resourceTtlDays = (int)getenv("YOTI_SESSION_RESOURCE_TTL") ? : 35;
 
         return (60 * 60 * 24 * $resourceTtlDays) + $timeTill10PM;
     }
