@@ -24,6 +24,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\FormInterface;
+use DateTime;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -277,7 +278,8 @@ class PostOfficeFlowController extends AbstractActionController
 
             $view->setVariables([
                 'lpa_details' => $lpaDetails,
-                'deadline' => (new \DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d M Y"),
+                'formatted_dob' => (new DateTime($detailsData['dob']))->format("d F Y"),
+                'deadline' => (new DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d F Y"),
                 'display_id_method' => $this->getIdMethodForDisplay(
                     $this->config['opg_settings']['identity_documents'],
                     $detailsData['idMethodIncludingNation']
