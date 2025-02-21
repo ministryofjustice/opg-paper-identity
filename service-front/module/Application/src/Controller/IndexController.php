@@ -42,7 +42,7 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function startAction(): Response
+    public function startAction(): Response|ViewModel
     {
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
@@ -70,7 +70,16 @@ class IndexController extends AbstractActionController
             throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
 
-        $this->checkStatusOfLpaIsStartable($type, $lpas[0]);
+        $lpaStatusTypeCheck = $this->checkStatusOfLpaIsStartable($type, $lpas[0]);
+        if ($lpaStatusTypeCheck !== 'ok') {
+            $view = new ViewModel();
+            $view->setVariables([
+                'message' => $lpaStatusTypeCheck,
+                'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $type)
+            ]);
+            return $view->setTemplate('application/pages/cannot_start');
+        }
 
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
@@ -82,24 +91,37 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute($redirect, ['uuid' => $case['uuid']]);
     }
 
+    private function constructDetailsDataBeforeCreatedCase(array $lpa, string $personType): array
+    {
+        $processed = $this->siriusDataProcessorHelper->processLpaResponse(
+            $personType,
+            $lpa
+        );
+
+        return [
+            'personType' => $personType,
+            'firstName' => $processed['first_name'],
+            'lastName' => $processed['last_name'],
+        ];
+    }
+
     /**
      * @param string $type
      * @psalm-param Lpa $lpaData
-     * @return void
+     * @return string
      * @throws HttpException
      */
-    private function checkStatusOfLpaIsStartable(string $type, array $lpaData): void
+    private function checkStatusOfLpaIsStartable(string $type, array $lpaData): string
     {
         try {
             $lpaStatusCheck = new LpaStatusTypeHelper($lpaData, $type);
 
             if (! $lpaStatusCheck->isStartable()) {
-                $errorMessage = $lpaStatusCheck->getStatus() === 'registered' ?
+                return $lpaStatusCheck->getStatus() === 'registered' ?
                     "ID check has already been completed" :
                     "ID check has has status: " . $lpaStatusCheck->getStatus() . " and cannot be started";
-
-                throw new HttpException(400, $errorMessage);
             }
+            return 'ok';
         } catch (\Exception $exception) {
             throw new HttpException(400, $exception->getMessage());
         }
