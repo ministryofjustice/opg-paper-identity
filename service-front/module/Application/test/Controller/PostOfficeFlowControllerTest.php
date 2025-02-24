@@ -607,7 +607,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/post-office-what-happens-next");
     }
 
-    public function confirmPostOfficeData(): array
+    public static function confirmPostOfficeData(): array
     {
         return [
             ['donor', SiriusDocument::PostOfficeDocCheckDonor],
