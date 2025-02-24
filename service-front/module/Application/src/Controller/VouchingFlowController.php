@@ -13,6 +13,7 @@ use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Forms\AddDonor;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Model\Entity\CaseData;
 use Application\Services\SiriusApiService;
 use Application\Helpers\AddressProcessorHelper;
@@ -46,6 +47,7 @@ class VouchingFlowController extends AbstractActionController
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly AddDonorFormHelper $addDonorFormHelper,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly string $siriusPublicUrl,
     ) {
     }
