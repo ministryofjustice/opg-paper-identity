@@ -40,7 +40,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
 
     cy.contains("We will send you a letter.");
     cy.contains("Please do this by the deadline stated.");
@@ -91,7 +91,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("National ID (Austria)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
   });
 
   it("handles 2 LPAs", () => {
@@ -136,7 +136,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
 
     cy.contains("We will send you a letter.");
     cy.contains("Please do this by the deadline stated.");
@@ -185,7 +185,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
     cy.get('span#poAddressLine').contains("6 Raphael Street");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
 
     cy.contains("We will send you a letter.");
     cy.contains("Please do this by the deadline stated.");
