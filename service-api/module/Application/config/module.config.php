@@ -465,6 +465,16 @@ return [
                     ],
                 ],
             ],
+            'start_court_of_protection' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/start-court-of-protection',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'startCourtOfProtection',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

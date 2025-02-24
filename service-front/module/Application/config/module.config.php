@@ -540,7 +540,7 @@ return [
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
-            Controller\CourtOfProtectionFlowController::class => CourtOfProtectionFlowControllerFactory::class,
+            Controller\CourtOfProtectionFlowController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [

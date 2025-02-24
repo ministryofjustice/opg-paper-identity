@@ -9,12 +9,9 @@ use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
 use Application\Forms\ConfirmCourtOfProtection;
 use Application\Services\SiriusApiService;
-use Application\Sirius\UpdateStatus;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Application\Sirius\EventSender;
-use Psr\Clock\ClockInterface;
 
 class CourtOfProtectionFlowController extends AbstractActionController
 {
@@ -25,8 +22,6 @@ class CourtOfProtectionFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
-        private readonly ClockInterface $clock,
-        private readonly EventSender $eventSender,
     ) {
     }
 
@@ -67,13 +62,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
         $view->setVariable('lpa_details', $lpaDetails);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            $this->eventSender->send("identity-check-updated", [
-                "time" => $this->clock->now()->format('c'),
-                "actorType" => $detailsData['personType'],
-                "lpaUids" => $detailsData['lpas'],
-                "state" => UpdateStatus::CopStarted,
-            ]);
-
+            $this->opgApiService->startCourtOfProtection($uuid);
             return $this->redirect()->toRoute("root/court_of_protection/confirm", ['uuid' => $uuid]);
         }
 
