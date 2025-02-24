@@ -18,6 +18,13 @@
         </include>
     </source>
 
+    <coverage>
+        <report>
+        <clover outputFile="./build/reports/coverage.xml"/>
+        <html outputDirectory="./build/reports/coverage-report" lowUpperBound="35" highLowerBound="70"/>
+        </report>
+    </coverage>
+
     <testsuites>
         <testsuite name="Laminas MVC Skeleton Test Suite">
             <directory>./module/*/test</directory>
