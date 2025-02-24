@@ -77,6 +77,34 @@ jobs:
           files: service-${{ matrix.service }}/build/*.xml
           test_file_prefix: +service-${{ matrix.service }}/
           check_name: ${{ matrix.service }} ${{ matrix.suite }} tests
+      - name: archive test results
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: service-${{ matrix.service }}
+          path: service-${{ matrix.service }}/build
+        if: always()
+  code_coverage:
+    strategy:
+      matrix:
+        service: [api, front]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2 # pin@v3
+      - name: download artifact for ${{ matrix.service }} tests
+        uses: actions/download-artifact@v4.1.8
+        continue-on-error: true
+        with:
+          name: service-${{ matrix.service }}
+          path: service-${{ matrix.service }}
+      - name: service ${{ matrix.service }} codecov upload
+        uses: codecov/codecov-action@v5
+        with:
+          name: paper-id
+          directory: ./service-${{ matrix.service }}
+          fail_ci_if_error: false
+          flags: paper-id-${{ matrix.service }}
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
     runs-on: ubuntu-latest
