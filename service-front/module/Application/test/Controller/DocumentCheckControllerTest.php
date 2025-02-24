@@ -108,7 +108,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->formProcessorService
                 ->expects(self::once())
                 ->method('processTemplate')
-                ->willReturn('application\/pages\/national_insurance_number_success');
+                ->willReturn('application\/pages\/document_success');
         }
         if ($validity === 'PASS') {
             $this
@@ -231,7 +231,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->formProcessorService
                 ->expects(self::once())
                 ->method('processTemplate')
-                ->willReturn('application\/pages\/driving_licence_number_success');
+                ->willReturn('application\/pages\/document_success');
         }
 
         if ($validity === 'PASS') {
@@ -371,7 +371,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->formProcessorService
                 ->expects(self::once())
                 ->method('processTemplate')
-                ->willReturn('application\/pages\/passport_number_success');
+                ->willReturn('application\/pages\/document_success');
         }
 
         if ($validity === 'PASS') {
