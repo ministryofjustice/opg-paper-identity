@@ -6,6 +6,7 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Controller\Factory\CourtOfProtectionFlowControllerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\HowConfirmControllerFactory;
@@ -202,6 +203,16 @@ return [
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeDocuments',
+                            ],
+                        ],
+                    ],
+                    'court_of_protection' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/court-of-protection',
+                            'defaults' => [
+                                'controller' => Controller\CourtOfProtectionFlowController::class,
+                                'action' => 'register',
                             ],
                         ],
                     ],
@@ -529,6 +540,7 @@ return [
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
+            Controller\CourtOfProtectionFlowController::class => LazyControllerAbstractFactory::class,
         ],
     ],
     'listeners' => [

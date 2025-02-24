@@ -186,4 +186,6 @@ interface OpgApiServiceInterface
     public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
 
     public function abandonFlow(string $uuid): void;
+
+    public function startCourtOfProtection(string $uuid): void;
 }
