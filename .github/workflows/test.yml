@@ -91,15 +91,15 @@ jobs:
         with:
           name: service-${{ matrix.service }}
           path: service-${{ matrix.service }}
-      # - name: service ${{ matrix.service }} codecov upload
-      #   uses: codecov/codecov-action@v5
-      #   with:
-      #     name: paper-id
-      #     directory: ./service-${{ matrix.service }}
-      #     fail_ci_if_error: false
-      #     flags: paper-id-${{ matrix.service }}
-      #     verbose: true
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: service ${{ matrix.service }} codecov upload
+        uses: codecov/codecov-action@v5
+        with:
+          name: paper-id
+          directory: ./service-${{ matrix.service }}
+          fail_ci_if_error: false
+          flags: paper-id-${{ matrix.service }}
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
     runs-on: ubuntu-latest
