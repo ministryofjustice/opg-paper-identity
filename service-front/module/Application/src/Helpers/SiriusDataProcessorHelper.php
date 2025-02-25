@@ -137,12 +137,12 @@ class SiriusDataProcessorHelper
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    public function createLpaDetailsArray(array $lpas, array $detailsData): array
+    public function createLpaDetailsArray(array $detailsData, $request): array
     {
         $lpaDetails = [];
 
         foreach ($detailsData['lpas'] as $lpa) {
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
 
             if (! empty($lpasData['opg.poas.lpastore'])) {
                 $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
