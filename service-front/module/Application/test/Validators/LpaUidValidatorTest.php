@@ -7,7 +7,7 @@ namespace ApplicationTest\Validators;
 use Application\Validators\LpaUidValidator;
 use PHPUnit\Framework\TestCase;
 
-class LpaValidatorTest extends TestCase
+class LpaUidValidatorTest extends TestCase
 {
     protected LpaUidValidator $lpaValidator;
 
@@ -30,12 +30,14 @@ class LpaValidatorTest extends TestCase
     {
         return [
             ['M-0000-0000-0000', true],
-            ['M-0000-0000-000t', true],
             ['M-0000-0000-1234', true],
+            ['M-0000-0000-000t', false],
             ['M-0000-0000-123', false],
             ['T-0000-0000-1234', false],
             ['M-0-00-0000-1234', false],
             ['-0-00-0000-1234', false],
+            ['M-0000-0000-1234-1234', false],
+            ['PREFIX-M-0000-0000-1234', false],
         ];
     }
 }
