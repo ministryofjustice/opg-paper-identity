@@ -84,6 +84,7 @@ use Psr\Log\LoggerInterface;
  *      },
  *    },
  *    attorneys: Attorney[],
+ *    status: string
  *  },
  * }
  */
