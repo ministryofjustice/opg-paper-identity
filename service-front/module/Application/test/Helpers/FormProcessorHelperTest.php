@@ -65,7 +65,7 @@ class FormProcessorHelperTest extends TestCase
         $form = (new AttributeBuilder())->createForm(DrivingLicenceNumber::class);
         $templates = [
             'default' => 'application/pages/driving_licence_number',
-            'success' => 'application/pages/driving_licence_number_success',
+            'success' => 'application/pages/document_success',
             'fail' => 'application/pages/driving_licence_number_fail',
             'thin_file' => 'application/pages/thin_file_failure',
             'fraud' => 'application/pages/fraud_failure'
@@ -239,7 +239,7 @@ class FormProcessorHelperTest extends TestCase
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $templates = [
             'default' => 'application/pages/passport_number',
-            'success' => 'application/pages/passport_number_success',
+            'success' => 'application/pages/document_success',
             'fail' => 'application/pages/passport_number_fail',
         ];
 
@@ -462,7 +462,7 @@ class FormProcessorHelperTest extends TestCase
     {
         $templates = [
             'default' => 'application/pages/national_insurance_number',
-            'success' => 'application/pages/national_insurance_number_success',
+            'success' => 'application/pages/document_success',
             'fail' => 'application/pages/national_insurance_number_fail',
             'thin_file' => 'application/pages/thin_file_failure',
             'fraud' => 'application/pages/fraud_failure',
@@ -476,7 +476,7 @@ class FormProcessorHelperTest extends TestCase
                     "decision" => "ACCEPT",
                     "score" => 95
                 ],
-                "application/pages/national_insurance_number_success"
+                "application/pages/document_success"
             ],
             [
                 false,
@@ -485,7 +485,7 @@ class FormProcessorHelperTest extends TestCase
                     "decision" => "CONTINUE",
                     "score" => 95
                 ],
-                "application/pages/national_insurance_number_success"
+                "application/pages/document_success"
             ],
             [
                 false,
@@ -494,7 +494,7 @@ class FormProcessorHelperTest extends TestCase
                     "decision" => "REFER",
                     "score" => 95
                 ],
-                "application/pages/national_insurance_number_success"
+                "application/pages/document_success"
             ],
             [
                 false,
@@ -512,7 +512,7 @@ class FormProcessorHelperTest extends TestCase
                     "decision" => "STOP",
                     "score" => 980
                 ],
-                "application/pages/national_insurance_number_success"
+                "application/pages/document_success"
             ],
         ];
     }
