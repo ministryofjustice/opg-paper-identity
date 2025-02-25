@@ -50,7 +50,7 @@
                             value="{{ item|json_encode }}"
                             data-aria-controls="default"
                         >
-                        <label class="govuk-label govuk-radios__label" for="{{ fad }}">
+                        <label class="govuk-label govuk-radios__label" for="postoffice-{{ fad }}">
                             {{ item.name }}<br>
                             <span id="poAddress-{{ fad }}">{{ item.address }}, {{ item.post_code }}</span>
                         </label>
