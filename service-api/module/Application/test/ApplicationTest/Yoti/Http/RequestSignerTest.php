@@ -42,7 +42,6 @@ class RequestSignerTest extends TestCase
     }
 
     /**
-     * @covers ::generateSignature
      * @psalm-suppress PossiblyUndefinedMethod
      * @psalm-suppress PossiblyInvalidArgument
      */
