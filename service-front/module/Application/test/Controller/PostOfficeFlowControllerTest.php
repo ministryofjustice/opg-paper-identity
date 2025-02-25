@@ -457,7 +457,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                     ['span#lpaType', 'PA'],
                     ['span#lpaId', 'M-0000-0000-0001'],
                     ['span#lpaId', 'M-0000-0000-0002'],
-                    ['dd#submissionDeadline', '01 Jan 2025'],
+                    ['dd#name', 'Mary Anne Chapman'],
+                    ['dd#dob', '01 May 1943'],
+                    ['dd#submissionDeadline', '01 January 2025'],
                     ['dd#displayIdMethod', 'Driving licence (Austria)'],
                     ['span#poAddressLine', '1 Fake Street'],
                     ['span#poAddressLine', 'Faketown'],
@@ -605,7 +607,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertRedirectTo("/$this->uuid/post-office-what-happens-next");
     }
 
-    public function confirmPostOfficeData(): array
+    public static function confirmPostOfficeData(): array
     {
         return [
             ['donor', SiriusDocument::PostOfficeDocCheckDonor],
