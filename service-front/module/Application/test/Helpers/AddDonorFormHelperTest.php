@@ -146,7 +146,7 @@ class AddDonorFormHelperTest extends TestCase
                     ]
                 ],
             [
-                ['status' => 'In progress'],
+                ['status' => 'in-progress'],
                 ['problem' => false, 'message' => '']
             ]
         ];

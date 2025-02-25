@@ -107,7 +107,7 @@ class LpaFormHelper
                 "lpa_number" => $formData['lpa'],
                 "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                 "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                "lpa_status" => ucfirst($statusCheck['status']),
+                "lpa_status" => $statusCheck['status'],
                 "cp_name" => $idCheck['name'],
                 "cp_address" => $idCheck['address']
             ];
@@ -198,7 +198,7 @@ class LpaFormHelper
             $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
         }
 
-        if (strtolower($response['status']) === 'in progress') {
+        if ($response['status'] === 'in-progress') {
             return $response;
         }
 

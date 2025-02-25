@@ -90,7 +90,7 @@ class LpaFormHelperTest extends TestCase
         $noMatchLpa = "M-0000-0000-0006";
         $slrNoMatch = $slr;
         $slrNoMatch['opg.poas.sirius']['uId'] = $noMatchLpa;
-        $slrNoMatch['opg.poas.lpastore']['status'] = 'In progress';
+        $slrNoMatch['opg.poas.lpastore']['status'] = 'in-progress';
         $slrNoMatch['opg.poas.lpastore']['certificateProvider']['address'] = [
             'line1' => '81 Penny Street',
             'line2' => 'Lancaster',
@@ -132,7 +132,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $goodLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "In progress",
+                        "lpa_status" => "in-progress",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -221,7 +221,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $onlineLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "In progress",
+                        "lpa_status" => "in-progress",
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -262,7 +262,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $noMatchLpa,
                         "type_of_lpa" => 'property-and-affairs',
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => 'In progress',
+                        "lpa_status" => 'in-progress',
                         "cp_name" => "Daniel Smith",
                         "cp_address" => [
                             'line1' => '81 Penny Street',
