@@ -91,12 +91,18 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseData);
 
+        $mockSiriusLpaData = $this->returnSiriusLpaResponse();
+        $this->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('getLpaByUid')
+            ->willReturn($mockSiriusLpaData);
+
         $this->opgApiServiceMock
             ->expects(self::once())
             ->method('startCourtOfProtection')
             ->with($this->uuid);
 
-        $this->dispatch("/{$this->uuid}/court-of-protection", 'POST', ['confirm' => 'yes']);
+        $this->dispatch("/{$this->uuid}/court-of-protection", 'POST', ['confirmation' => true]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/{$this->uuid}/court-of-protection/confirm");
     }

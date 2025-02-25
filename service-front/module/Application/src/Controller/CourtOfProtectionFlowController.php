@@ -41,7 +41,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
 
-            if (! empty($lpasData['opg.poas.lpastore'])) {
+            if (isset($lpasData['opg.poas.lpastore'])) {
                 $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
                     $lpasData['opg.poas.lpastore']['donor']['lastName'];
 
