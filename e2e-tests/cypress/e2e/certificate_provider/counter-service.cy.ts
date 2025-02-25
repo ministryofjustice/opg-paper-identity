@@ -30,7 +30,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=postoffice]').first().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -81,7 +81,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=postoffice]').first().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -126,7 +126,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=postoffice]').first().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -173,7 +173,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=searchString]').type('SW1A 1AA');
     cy.get('input[value=Search').click();
     cy.get('input[name=postoffice]').last().click();
