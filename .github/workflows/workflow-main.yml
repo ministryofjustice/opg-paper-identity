@@ -65,6 +65,7 @@ jobs:
       tag: ${{ needs.semver_tag.outputs.tag }}
     secrets:
       pact_broker_password: ${{ secrets.PACT_BROKER_PASSWORD }}
+      codecov_token:  ${{ secrets.CODECOV_TOKEN }}
 
   push:
     name: "ECR push"
