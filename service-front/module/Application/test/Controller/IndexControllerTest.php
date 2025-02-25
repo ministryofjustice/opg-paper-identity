@@ -77,6 +77,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             ],
             'lpaType' => 'personal-welfare',
             'attorneys' => [],
+            'status' => 'in-progress',
         ];
 
         return [
@@ -192,12 +193,12 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/start?personType=certificateProvider&lpas[]=M-1234-5678-90AB', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertStringContainsString(
-            'Cannot ID check this certificate provider as the LPA has not yet been submitted',
+            'ID check has has status: draft and cannot be started',
             $this->getResponse()->getBody()
         );
     }
 
-    public function testStartActionFailsWithInvalidType(): void
+    public function testStartActionFailsWithInvalidPersonType(): void
     {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $opgApiService = $this->createMock(OpgApiService::class);
