@@ -100,10 +100,10 @@ jobs:
       - name: service ${{ matrix.service }} codecov upload
         uses: codecov/codecov-action@v5
         with:
-          name: paper-id
+          name: opg-paper-id
           directory: ./service-${{ matrix.service }}
           fail_ci_if_error: false
-          flags: paper-id-${{ matrix.service }}
+          flags: opg-paper-id-${{ matrix.service }}
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
