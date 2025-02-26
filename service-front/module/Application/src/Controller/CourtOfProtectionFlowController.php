@@ -35,8 +35,10 @@ class CourtOfProtectionFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('form', $form);
 
-        // Also need to check their fraud marker
-        $view->setVariable('has_fraud_marker', $detailsData["caseProgress"]["fraudScore"]["decision"] === "STOP");
+        $hasFraudMarker = isset($detailsData["caseProgress"]["fraudScore"]["decision"])
+            && $detailsData["caseProgress"]["fraudScore"]["decision"] === "STOP";
+
+        $view->setVariable('has_fraud_marker', $hasFraudMarker);
 
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
