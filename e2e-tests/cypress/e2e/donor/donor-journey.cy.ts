@@ -277,4 +277,31 @@ describe("Identify a Donor", () => {
     cy.contains("National insurance number");
   });
 
+  it("lets you choose the post-office route", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35F0");
+
+    cy.get("input#POST_OFFICE").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.get("[id=PASSPORT]").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Do the details match the ID document?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("LPAs included in this identity check");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.get('input[name=postoffice]').first().click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Confirm Post Office route");
+    cy.contains("Passport");
+    cy.contains("St. Neots");
+    cy.contains("Submission deadline");
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
+
+    cy.contains("We will send the donor a letter with the details discussed today.");
+  });
+
 });
