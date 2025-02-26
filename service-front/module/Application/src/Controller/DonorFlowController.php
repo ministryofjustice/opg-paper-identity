@@ -195,6 +195,7 @@ class DonorFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid, true);
+
         $lpaDetails = [];
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);

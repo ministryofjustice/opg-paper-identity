@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Helpers\LpaStatusTypeHelper;
 use Application\Helpers\DTO\LpaFormHelperResponseDto;
 use Laminas\Form\FormInterface;
 
@@ -110,7 +111,7 @@ class LpaFormHelper
                 "lpa_number" => $formData['lpa'],
                 "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                 "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                "lpa_status" => $statusCheck['status'],
+                "lpa_status" => ucfirst($statusCheck['status']),
                 "cp_name" => $idCheck['name'],
                 "cp_address" => $idCheck['address']
             ];
@@ -192,16 +193,11 @@ class LpaFormHelper
             'message' => ""
         ];
 
-        if (
-            ! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
-            ! array_key_exists('status', $siriusCheck['opg.poas.lpastore'])
-        ) {
-            $response['status'] = 'draft';
-        } else {
-            $response['status'] = $siriusCheck['opg.poas.lpastore']['status'];
-        }
+        $statusCheck = new LpaStatusTypeHelper($siriusCheck, 'certificateProvider');
 
-        if ($response['status'] === 'in-progress') {
+        $response['status'] = $statusCheck->getStatus();
+
+        if (strtolower($response['status']) === 'in-progress') {
             return $response;
         }
 
@@ -219,10 +215,7 @@ class LpaFormHelper
             return $response;
         }
 
-        if (
-            $response['status'] == 'complete' ||
-            $response['status'] == 'processing'
-        ) {
+        if (! $statusCheck->isStartable()) {
             $response['error'] = true;
             $response['message'] = self::STATUS_FAIL_MESSAGE;
 
