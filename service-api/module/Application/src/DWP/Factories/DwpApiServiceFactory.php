@@ -30,13 +30,13 @@ class DwpApiServiceFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): DwpApiService {
-        $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
+        $baseUri = getenv("DWP_BASE_URI");
         $detailsPath = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
         $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
         $dwpContext = (new AwsSecret('dwp/dwp-context'))->getValue();
         $dwpPolicyId = (new AwsSecret('dwp/dwp-policy-id'))->getValue();
 
-        if (empty($baseUri)) {
+        if ($baseUri === false) {
             throw new DwpApiException("DWP Citizen endpoint is empty");
         }
 

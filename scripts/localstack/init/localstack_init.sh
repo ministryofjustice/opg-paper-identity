@@ -64,11 +64,6 @@ awslocal secretsmanager create-secret --name local/paper-identity/experian-cross
     --description "Experian Crosscore Tenant ID" \
     --secret-string "empty"
 
-awslocal secretsmanager create-secret --name local/paper-identity/dwp/base-uri \
-    --description "DWP base URI" \
-        --secret-string "http://dwp-mock:8080" \
-        --region "eu-west-1"
-
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-token-endpoint \
     --description "DWP authentication API" \
         --secret-string '/citizen-information/oauth2/token' \
@@ -85,7 +80,7 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/citizen-en
     --description "DWP Citizen details endpoint" \
     --secret-string "/capi/v2/citizens/" \
     --region "eu-west-1"
-    
+
 awslocal secretsmanager create-secret --name local/paper-identity/dwp/oauth-client-secret \
     --description "DWP Oauth2 client secret" \
     --secret-string "clientsecret" \

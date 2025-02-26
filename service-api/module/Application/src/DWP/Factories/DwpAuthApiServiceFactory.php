@@ -29,10 +29,10 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         array $options = null
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
-        $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
+        $baseUri = getenv("DWP_BASE_URI");
         $oauthTokenEndpoint = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
 
-        if (empty($baseUri)) {
+        if ($baseUri === false) {
             throw new AuthApiException("DWP oauth-token-endpoint is empty");
         }
 
