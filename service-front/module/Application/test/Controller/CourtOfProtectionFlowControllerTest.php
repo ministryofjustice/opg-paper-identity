@@ -104,6 +104,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/{$this->uuid}/court-of-protection", 'POST', ['confirmation' => true]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/{$this->uuid}/court-of-protection/confirm");
+        $this->assertRedirectTo("/{$this->uuid}/court-of-protection-what-next");
     }
 }

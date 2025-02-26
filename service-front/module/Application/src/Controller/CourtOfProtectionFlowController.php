@@ -22,6 +22,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
@@ -63,9 +64,22 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $this->opgApiService->startCourtOfProtection($uuid);
-            return $this->redirect()->toRoute("root/court_of_protection/confirm", ['uuid' => $uuid]);
+            return $this->redirect()->toRoute("root/court_of_protection_what_next", ['uuid' => $uuid]);
         }
 
         return $view->setTemplate('application/pages/court_of_protection');
+    }
+
+    public function whatNextAction(): ViewModel|Response
+    {
+        $view = new ViewModel();
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $view->setVariable('details_data', $detailsData);
+
+        $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
+        $view->setVariable('sirius_url', $siriusUrl);
+
+        return $view->setTemplate('application/pages/court_of_protection_what_next');
     }
 }

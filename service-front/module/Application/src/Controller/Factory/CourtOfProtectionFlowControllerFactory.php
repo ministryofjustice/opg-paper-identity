@@ -22,9 +22,13 @@ class CourtOfProtectionFlowControllerFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): CourtOfProtectionFlowController {
+        /** @var string $siriusPublicUrl */
+        $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
+
         return new CourtOfProtectionFlowController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(SiriusApiService::class),
+            $siriusPublicUrl
         );
     }
 }

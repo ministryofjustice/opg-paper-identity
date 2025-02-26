@@ -216,6 +216,16 @@ return [
                             ],
                         ],
                     ],
+                    'court_of_protection_what_next' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/court-of-protection-what-next',
+                            'defaults' => [
+                                'controller' => Controller\CourtOfProtectionFlowController::class,
+                                'action' => 'whatNext',
+                            ],
+                        ],
+                    ],
                     'find_post_office_branch' => [
                         'type' => Segment::class,
                         'options' => [
@@ -540,7 +550,7 @@ return [
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
-            Controller\CourtOfProtectionFlowController::class => LazyControllerAbstractFactory::class,
+            Controller\CourtOfProtectionFlowController::class => CourtOfProtectionFlowControllerFactory::class,
         ],
     ],
     'listeners' => [
