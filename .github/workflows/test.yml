@@ -93,18 +93,24 @@ jobs:
           path: /tmp/images
       - uses: actions/download-artifact@v4
         with:
-          name: image-api-test
+          name: image-experian-crosscore-auth-mock
           path: /tmp/images
       - uses: actions/download-artifact@v4
         with:
-          name: image-front-test
+          name: image-experian-crosscore-mock
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: image-experian-iiq-mock
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: image-yoti-mock
           path: /tmp/images
       - name: Load Images
-        run: |
-          docker load -i /tmp/images/api-test.tar
-          docker load -i /tmp/images/front-test.tar
-          docker load -i /tmp/images/api.tar
-          docker load -i /tmp/images/front.tar
+        run: (echo "docker load -i /tmp/images/api.tar"; echo "docker load -i /tmp/images/front.tar"; echo "docker load -i /tmp/images/experian-crosscore-auth-mock.tar"; echo "docker load -i /tmp/images/experian-crosscore-mock.tar"; echo "docker load -i /tmp/images/experian-iiq-mock.tar"; echo "docker load -i /tmp/images/yoti-mock.tar") | parallel
+      - name: Build Remaining Images
+        run: (echo "docker compose build --parallel cypress sirius-mock api-web front-web"; echo "docker compose pull localstack") | parallel
       - name: Run cypress
         run: make cypress
       - name: Store screenshots
