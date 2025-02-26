@@ -42,8 +42,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send you a letter.");
-    cy.contains("Please do this by the deadline stated.");
+    cy.contains("We will send the certificate provider a letter with the details discussed today.");
   });
 
   it("accepts an international ID", () => {
@@ -138,8 +137,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send you a letter.");
-    cy.contains("Please do this by the deadline stated.");
+    cy.contains("We will send the certificate provider a letter with the details discussed today.");
   });
 
   it("allows you to search for a different postoffice", () => {
@@ -188,7 +186,6 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send you a letter.");
-    cy.contains("Please do this by the deadline stated.");
+    cy.contains("We will send the certificate provider a letter with the details discussed today.");
   });
 });
