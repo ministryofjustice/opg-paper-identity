@@ -32,6 +32,7 @@ class KbvController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         if ($detailsData['personType'] == 'certificateProvider') {
             $passRoute = "root/cp_identity_check_passed";
             $failRoute = "root/cp_identity_check_failed";
@@ -43,6 +44,14 @@ class KbvController extends AbstractActionController
             $failRoute = "root/identity_check_failed";
         }
         $view->setVariable('details_data', $detailsData);
+
+        /**
+         * @psalm-suppress InvalidArrayOffset
+         */
+        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+            $view->setVariable('message', 'The identity check has already been completed');
+            return $view->setTemplate('application/pages/cannot_start');
+        }
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
