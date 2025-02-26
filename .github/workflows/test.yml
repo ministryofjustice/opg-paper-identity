@@ -88,7 +88,6 @@ jobs:
           directory: ./service-${{ matrix.service }}/build
           fail_ci_if_error: false
           flags: paper-id-${{ matrix.service }}
-          verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
