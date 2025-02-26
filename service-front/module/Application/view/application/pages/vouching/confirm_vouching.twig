@@ -35,7 +35,7 @@
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="eligibility_confirmed" name="eligibility" type="checkbox" value="eligibility_confirmed"
                         {% if form.get('eligibility').value == "eligibility_confirmed" %}checked{% endif %}>
-                        <label class="govuk-label govuk-checkboxes__label" for="eligibility">
+                        <label class="govuk-label govuk-checkboxes__label" for="eligibility_confirmed">
                         They are not:
                         <ul class="govuk-list govuk-list--bullet">
                             <li>under the age of 18</li>
@@ -67,7 +67,7 @@
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="declaration_confirmed" name="declaration" type="checkbox" value="declaration_confirmed"
                         {% if form.get('declaration').value == "declaration_confirmed" %}checked{% endif %}>
-                        <label class="govuk-label govuk-checkboxes__label" for="declaration">
+                        <label class="govuk-label govuk-checkboxes__label" for="declaration_confirmed">
                         To the best of your knowledge, the person who asked you to vouch for them is {{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}
                         and you have known them for at least 2 years.
                         </label>

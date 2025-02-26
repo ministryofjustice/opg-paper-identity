@@ -7,7 +7,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the name match the ID?");
-        cy.contains("Edit the certificate provider's details in Sirius").should('have.attr', 'href').and('include', 'lpa_details')
+        cy.contains("Edit the certificate provider's details in Sirius").should('have.attr', 'href').and('include', 'lpa-details')
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("LPAs included in the identity check");
