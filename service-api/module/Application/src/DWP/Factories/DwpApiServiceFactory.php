@@ -30,14 +30,12 @@ class DwpApiServiceFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): DwpApiService {
-        $baseUri = (new AwsSecret('dwp/base-uri'))->getValue();
-        $detailsPath = (new AwsSecret('dwp/citizen-endpoint'))->getValue();
-        $matchPath = (new AwsSecret('dwp/citizen-match-endpoint'))->getValue();
+        $baseUri = getenv("DWP_BASE_URI");
         $dwpContext = (new AwsSecret('dwp/dwp-context'))->getValue();
         $dwpPolicyId = (new AwsSecret('dwp/dwp-policy-id'))->getValue();
 
-        if (empty($baseUri)) {
-            throw new DwpApiException("DWP Citizen endpoint is empty");
+        if ($baseUri === false) {
+            throw new DwpApiException("DWP base URI is empty");
         }
 
         $headerOptions = [];
@@ -67,8 +65,6 @@ class DwpApiServiceFactory implements FactoryInterface
             $guzzleClient,
             $container->get(AuthApiService::class),
             $logger,
-            $detailsPath,
-            $matchPath,
             $headerOptions
         );
     }
