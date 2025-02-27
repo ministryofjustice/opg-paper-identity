@@ -301,7 +301,8 @@ describe("Identify a Donor", () => {
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send the donor a letter with the details discussed today.");
+    cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
+    cy.contains("If you haven't already, please return your signed LPA.");
   });
 
 });
