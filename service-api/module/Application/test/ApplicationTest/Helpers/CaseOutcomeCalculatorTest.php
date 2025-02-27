@@ -62,7 +62,7 @@ class CaseOutcomeCalculatorTest extends TestCase
 
         $this->loggerMock->expects($this->once())
             ->method('info')
-            ->with("Update for CaseId 2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc- Result: 1");
+            ->with("Update for CaseId 2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc- Result: Passed");
 
         $this->eventSenderMock->expects($this->once())
             ->method('send')
