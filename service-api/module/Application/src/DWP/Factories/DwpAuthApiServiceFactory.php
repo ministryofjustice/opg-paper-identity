@@ -30,10 +30,9 @@ class DwpAuthApiServiceFactory implements FactoryInterface
     ): AuthApiService {
         $logger = $container->get(LoggerInterface::class);
         $baseUri = getenv("DWP_BASE_URI");
-        $oauthTokenEndpoint = (new AwsSecret('dwp/oauth-token-endpoint'))->getValue();
 
         if ($baseUri === false) {
-            throw new AuthApiException("DWP oauth-token-endpoint is empty");
+            throw new AuthApiException("DWP base URI is empty");
         }
 
         $suppressCertificate = filter_var(
@@ -68,8 +67,7 @@ class DwpAuthApiServiceFactory implements FactoryInterface
             $guzzleClient,
             $apcHelper,
             $logger,
-            $dwpAuthRequestDTO,
-            $oauthTokenEndpoint
+            $dwpAuthRequestDTO
         );
     }
 }
