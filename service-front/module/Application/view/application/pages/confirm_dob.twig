@@ -42,8 +42,8 @@
         {% endif %}
         <div class="govuk-form-group">
             <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+                    <h1 class="govuk-fieldset__heading govuk-!-margin-bottom-4">
                         {% block title %}
                             What is their date of birth?
                         {% endblock %}
@@ -69,9 +69,11 @@
                     </div>
                 {% endif %}
 
-                <h2 class="govuk-heading-m">Enter date of birth</h2>
+                {% if details_data.personType == 'certificateProvider' %}
+                    <h2 class="govuk-heading-m">Enter date of birth</h2>
+                {% endif %}
                 <div id="passport-issued-hint" class="govuk-hint">
-                    Enter date of birth, for example 31 03 1980
+                    For example, 31 3 1980.
                 </div>
                 {% if form.get('date').messages %}
                     <p id="lpa-error" class="govuk-error-message">
