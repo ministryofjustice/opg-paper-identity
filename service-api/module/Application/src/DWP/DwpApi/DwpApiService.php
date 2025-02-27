@@ -33,8 +33,8 @@ class DwpApiService
     ) {
     }
 
-    const DWP_MATCH_ENDPOINT = '/capi/v2/citizens/match';
-    const DWP_DETAILS_ENDPOINT = '/capi/v2/citizens/';
+    private const DWP_MATCH_ENDPOINT = '/capi/v2/citizens/match';
+    private const DWP_DETAILS_ENDPOINT = '/capi/v2/citizens/';
 
     /**
      * @throws GuzzleException

@@ -25,7 +25,7 @@ class AuthApiService
     ) {
     }
 
-    const DWP_AUTH_ENDPOINT = '/citizen-information/oauth2/token';
+    private const DWP_AUTH_ENDPOINT = '/citizen-information/oauth2/token';
 
     public function makeHeaders(): array
     {
