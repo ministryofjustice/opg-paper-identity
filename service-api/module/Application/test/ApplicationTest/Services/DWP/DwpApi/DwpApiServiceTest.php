@@ -143,8 +143,6 @@ class DwpApiServiceTest extends TestCase
             $client,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
     }
@@ -181,8 +179,6 @@ class DwpApiServiceTest extends TestCase
             $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
 
@@ -229,8 +225,6 @@ class DwpApiServiceTest extends TestCase
             $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
 
@@ -262,8 +256,6 @@ class DwpApiServiceTest extends TestCase
             $failClient,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
 
@@ -291,8 +283,6 @@ class DwpApiServiceTest extends TestCase
             $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
 
@@ -322,8 +312,6 @@ class DwpApiServiceTest extends TestCase
             $failClient,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
 
@@ -444,8 +432,6 @@ class DwpApiServiceTest extends TestCase
             $successClient,
             $this->dwpAuthApiService,
             $this->logger,
-            '',
-            '',
             $this->headerOptions
         );
 
