@@ -23,6 +23,7 @@ describe("Identify a Donor", () => {
         cy.contains("The donor has already confirmed their identity. The donor has already completed an ID check for this LPA");
         cy.contains("Post Office verification is not presently available");
 
+
         cy.get("National insurance number").should("not.exist");
         cy.get("Passport").should("not.exist");
         cy.get("Driving licence").should("not.exist");
@@ -45,6 +46,7 @@ describe("Identify a Donor", () => {
         cy.contains("Post Office");
         cy.contains("Have someone vouch for the identity of the donor");
         cy.contains("The donor cannot do any of the above (Court of Protection)");
+        cy.contains('Preferred: ID over the phone').should('not.exist');
     });
 
 
@@ -62,6 +64,8 @@ describe("Identify a Donor", () => {
 
         cy.jumpToPage("how-will-you-confirm");
         cy.contains("The donor cannot prove their identity over the phone because they have tried before and their details did not match the document provided.");
+        cy.contains('Preferred: ID over the phone').should('not.exist');
+
     });
 
     it("shows document fail banner on start page after KBV fail" , () => {
@@ -83,6 +87,7 @@ describe("Identify a Donor", () => {
 
         cy.jumpToPage("how-will-you-confirm");
         cy.contains("The donor cannot prove their identity over the phone because they have tried before and their details did not match the document provided.");
+        cy.contains('Preferred: ID over the phone').should('not.exist');
     });
 
 });
