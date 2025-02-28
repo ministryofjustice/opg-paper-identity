@@ -196,6 +196,6 @@ describe("Voucher journey", () => {
         cy.contains("Submission deadline");
         cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-        cy.contains("We will send you a letter with the details discussed today.");
+        cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
     });
 });
