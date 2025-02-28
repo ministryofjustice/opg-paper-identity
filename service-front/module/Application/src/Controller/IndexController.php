@@ -118,7 +118,7 @@ class IndexController extends AbstractActionController
 
             if (! $lpaStatusCheck->isStartable()) {
                 return $lpaStatusCheck->getStatus() === 'registered' ?
-                    "ID check has already been completed" :
+                    "The identity check has already been completed" :
                     "ID check has has status: " . $lpaStatusCheck->getStatus() . " and cannot be started";
             }
             return 'ok';
