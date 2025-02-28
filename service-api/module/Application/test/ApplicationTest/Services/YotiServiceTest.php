@@ -26,7 +26,7 @@ use Ramsey\Uuid\Uuid;
  */
 class YotiServiceTest extends TestCase
 {
-    private Client $client;
+    private Client&MockObject $client;
     private LoggerInterface&MockObject $logger;
     private AwsSecret&MockObject $sdkId;
     private AwsSecret&MockObject $key;
@@ -37,6 +37,9 @@ class YotiServiceTest extends TestCase
 
     protected function setUp(): void
     {
+        /**
+         * @psalm-suppress InvalidPropertyAssignmentValue
+         */
         $this->client = $this->createMock(Client::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->sdkId = $this->createMock(AwsSecret::class);
