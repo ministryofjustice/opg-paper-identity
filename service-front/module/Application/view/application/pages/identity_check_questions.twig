@@ -10,6 +10,31 @@
     <form method="post" target="">
         {% for questionBlock in questions_data %}
 
+            {% if first_question == questionBlock.question and questionBlock.externalId == question.externalId %}
+                <div class="govuk-summary-card govuk-!-width-two-thirds">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            You must read the following to the caller:
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <p class="govuk-body">
+                            Thank you - we have confirmed your identity document is valid.
+                        </p>
+                        <p class="govuk-body">
+                            As mentioned earlier, I will now ask you a few security questions that only you would know the answer to.
+                        </p>
+                        <p class="govuk-body">
+                            I will read the question to you and then read you a choice of answers. Take your time to answer them,
+                            if you need to look at any documents to help you answer the question that is fine.
+                        </p>
+                        <p class="govuk-body">
+                            I can read you a choice of answers and you can pick your answer, or if you'd prefer you can just tell me the answer after the question.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
             {% if questionBlock.externalId != question.externalId %}
                 <input
                     type="hidden"
