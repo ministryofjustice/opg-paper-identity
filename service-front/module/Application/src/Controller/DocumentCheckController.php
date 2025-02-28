@@ -43,6 +43,14 @@ class DocumentCheckController extends AbstractActionController
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        /**
+         * @psalm-suppress InvalidArrayOffset
+         */
+        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+            $view->setVariable('message', 'The identity check has already been completed');
+            return $view->setTemplate('application/pages/cannot_start');
+        }
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
         $view->setVariable('form', $form);
@@ -85,6 +93,14 @@ class DocumentCheckController extends AbstractActionController
 
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        /**
+         * @psalm-suppress InvalidArrayOffset
+         */
+        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+            $view->setVariable('message', 'The identity check has already been completed');
+            return $view->setTemplate('application/pages/cannot_start');
+        }
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
@@ -129,6 +145,14 @@ class DocumentCheckController extends AbstractActionController
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        /**
+         * @psalm-suppress InvalidArrayOffset
+         */
+        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+            $view->setVariable('message', 'The identity check has already been completed');
+            return $view->setTemplate('application/pages/cannot_start');
+        }
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
