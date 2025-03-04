@@ -43,15 +43,17 @@ class ServiceAvailabilityHelperTest extends TestCase
                     'EXPERIAN' => 'Experian',
                 ],
                 'banner_messages' => [
-                    'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security questions ' .
-                        'or failure to answer them correctly on a previous occasion.',
-                    'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
-                        'available information from Experian or a failure to answer the security questions correctly ' .
+                    'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security ' .
+                        'questions or failure to answer them correctly on a previous occasion.',
+                    'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack ' .
+                        'of available information from Experian or a failure to answer the security questions ' .
+                        'correctly on a previous occasion.',
+                    'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available ' .
+                        'information from Experian or a failure to answer the security questions correctly on a ' .
+                        'previous occasion.',
+                    'VOUCHER_STOP' => 'The person vouching cannot ID over the phone due to a lack of available ' .
+                        'information from Experian or a failure to answer the security questions correctly ' .
                         'on a previous occasion.',
-                    'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available information ' .
-                        'from Experian or a failure to answer the security questions correctly on a previous occasion.',
-                    'VOUCHER_STOP' => 'The person vouching cannot ID over the phone due to a lack of available information ' .
-                        'from Experian or a failure to answer the security questions correctly on a previous occasion.',
                     'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the ' .
                         'phone with a valid document',
                     'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
