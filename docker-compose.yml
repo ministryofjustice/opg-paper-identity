@@ -62,6 +62,9 @@ services:
     image: paper-identity/api
     build:
       context: service-api
+      platforms:
+        - "linux/arm64"
+        - "linux/amd64"
       dockerfile: Dockerfile
       target: production
     depends_on:
@@ -83,6 +86,9 @@ services:
     image: paper-identity/api-test
     build:
       context: service-api
+      platforms:
+        - "linux/arm64"
+        - "linux/amd64"
       dockerfile: Dockerfile
       target: development
     depends_on:
@@ -100,6 +106,9 @@ services:
     image: paper-identity/front
     build:
       context: service-front
+      platforms:
+        - "linux/arm64"
+        - "linux/amd64"
       dockerfile: Dockerfile
     depends_on:
       api-web:
@@ -114,6 +123,9 @@ services:
     image: paper-identity/front-test
     build:
       context: service-front
+      platforms:
+        - "linux/arm64"
+        - "linux/amd64"
       dockerfile: Dockerfile
       target: development
     volumes:
