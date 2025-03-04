@@ -35,7 +35,7 @@ class CaseData implements JsonSerializable
     public ?string $idRoute = null;
 
     /**
-     * @var "donor"|"certificateProvider"
+     * @var "donor"|"certificateProvider"|"voucher"
      */
     #[Validator(NotEmpty::class)]
     public string $personType;
@@ -128,7 +128,7 @@ class CaseData implements JsonSerializable
      * @return array{
      *     id: string,
      *     idRoute: "TELEPHONE"|"POSTOFFICE"|"VOUCHING"|null,
-     *     personType: "donor"|"certificateProvider",
+     *     personType: "donor"|"certificateProvider"|"voucher",
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],
      *     documentComplete: bool,
