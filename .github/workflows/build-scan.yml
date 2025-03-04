@@ -53,12 +53,13 @@ jobs:
             service_name: experian-iiq-mock
           - ecr_repository: paper-identity/yoti-mock
             service_name: yoti-mock
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     name: Build ${{ matrix.service_name }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.checkout_tag }}
+
       - name: Set up Docker
         run: |
           echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
