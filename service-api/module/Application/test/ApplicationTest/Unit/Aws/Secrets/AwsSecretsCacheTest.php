@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Aws\Secrets;
+namespace ApplicationTest\Unit\Aws\Secrets;
 
 use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;

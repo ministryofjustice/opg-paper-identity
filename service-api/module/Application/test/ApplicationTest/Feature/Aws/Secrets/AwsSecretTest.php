@@ -6,7 +6,7 @@ namespace ApplicationTest\Feature\Aws\Secrets;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Aws\Secrets\AwsSecretsCache;
-use PHPUnit\Framework\TestCase;
+use ApplicationTest\TestCase;
 use RuntimeException;
 
 class AwsSecretTest extends TestCase

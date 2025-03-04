@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Unit\Helpers;
+namespace ApplicationTest\Feature\Helpers;
 
 use Application\Helpers\ServiceAvailabilityHelper;
 use Application\Model\Entity\CaseData;

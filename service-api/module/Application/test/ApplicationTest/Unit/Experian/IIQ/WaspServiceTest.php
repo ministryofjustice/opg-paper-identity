@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Experian\IIQ;
+namespace ApplicationTest\Unit\Experian\IIQ;
 
 use Application\Experian\IIQ\Soap\WaspClient;
 use Application\Experian\IIQ\WaspService;
