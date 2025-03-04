@@ -124,7 +124,7 @@ services:
     build:
       context: service-front
       platforms:
-        - "linux/arm64/v8"
+        - "linux/arm64/v7"
         - "linux/amd64"
       dockerfile: Dockerfile
       target: development
