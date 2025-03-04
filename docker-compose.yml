@@ -63,7 +63,7 @@ services:
     build:
       context: service-api
       platforms:
-        - "linux/arm64/v8"
+        - "linux/arm64/v7"
         - "linux/amd64"
       dockerfile: Dockerfile
       target: production
@@ -87,7 +87,7 @@ services:
     build:
       context: service-api
       platforms:
-        - "linux/arm64/v8"
+        - "linux/arm64/v7"
         - "linux/amd64"
       dockerfile: Dockerfile
       target: development
@@ -107,7 +107,7 @@ services:
     build:
       context: service-front
       platforms:
-        - "linux/arm64/v8"
+        - "linux/arm64/v7"
         - "linux/amd64"
       dockerfile: Dockerfile
     depends_on:
@@ -124,7 +124,7 @@ services:
     build:
       context: service-front
       platforms:
-        - "linux/arm64/v8"
+        - "linux/arm64/v7"
         - "linux/amd64"
       dockerfile: Dockerfile
       target: development
