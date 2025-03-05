@@ -22,9 +22,10 @@ class AuthApiService
         private readonly ApcHelper $apcHelper,
         private readonly LoggerInterface $logger,
         private readonly RequestDTO $dwpAuthRequestDTO,
-        private readonly string $oauthTokenEndpoint
     ) {
     }
+
+    private const DWP_AUTH_ENDPOINT = '/citizen-information/oauth2/token';
 
     public function makeHeaders(): array
     {
@@ -91,7 +92,7 @@ class AuthApiService
         try {
             $response = $this->client->request(
                 'POST',
-                $this->oauthTokenEndpoint,
+                self::DWP_AUTH_ENDPOINT,
                 [
                     'headers' => $this->makeHeaders(),
                     'form_params' => $dwpAuthRequestDTO->toArray()

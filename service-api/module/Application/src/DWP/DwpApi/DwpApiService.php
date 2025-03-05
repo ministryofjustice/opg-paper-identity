@@ -29,11 +29,12 @@ class DwpApiService
         private Client $guzzleClient,
         private AuthApiService $authApiService,
         private LoggerInterface $logger,
-        private string $detailsPath,
-        private string $matchPath,
         private array $headerOptions,
     ) {
     }
+
+    private const DWP_MATCH_ENDPOINT = '/capi/v2/citizens/match';
+    private const DWP_DETAILS_ENDPOINT = '/capi/v2/citizens/';
 
     /**
      * @throws GuzzleException
@@ -126,7 +127,7 @@ class DwpApiService
         try {
             $response = $this->guzzleClient->request(
                 'POST',
-                $this->matchPath,
+                self::DWP_MATCH_ENDPOINT,
                 [
                     'headers' => $this->makeHeaders(),
                     'json' => $citizenRequestDTO->constructCitizenRequestBody()
@@ -164,7 +165,7 @@ class DwpApiService
     ): DetailsResponseDTO {
         $this->authCount++;
         try {
-            $uri = $this->detailsPath . $detailsRequestDTO->id();
+            $uri = self::DWP_DETAILS_ENDPOINT . $detailsRequestDTO->id();
             $response = $this->guzzleClient->request(
                 'GET',
                 $uri,
