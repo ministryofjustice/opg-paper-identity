@@ -43,16 +43,22 @@ class ServiceAvailabilityHelperTest extends TestCase
                     'EXPERIAN' => 'Experian',
                 ],
                 'banner_messages' => [
-                    'NODECISION' => 'The %s cannot ID over the phone due to a lack of ' .
-                        'available security questions or failure to answer them correctly on a previous occasion.',
-                    'STOP' => 'The %s cannot ID over the phone or have someone vouch for them due to a lack of ' .
-                        'available information from Experian or a failure to answer the security questions correctly ' .
+                    'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security ' .
+                        'questions or failure to answer them correctly on a previous occasion.',
+                    'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack ' .
+                        'of available information from Experian or a failure to answer the security questions ' .
+                        'correctly on a previous occasion.',
+                    'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available ' .
+                        'information from Experian or a failure to answer the security questions correctly on a ' .
+                        'previous occasion.',
+                    'VOUCHER_STOP' => 'The person vouching cannot ID over the phone due to a lack of available ' .
+                        'information from Experian or a failure to answer the security questions correctly ' .
                         'on a previous occasion.',
                     'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the ' .
                         'phone with a valid document',
                     'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
                         'and their details did not match the document provided.',
-                    'LOCKED_SUCCESS' => 'The %s has already confirmed their identity. The donor has already ' .
+                    'LOCKED_SUCCESS' => 'The %s has already confirmed their identity. The %s has already ' .
                         'completed an ID check for this LPA',
                 ],
                 'person_type_labels' => [
@@ -152,8 +158,9 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'EXPERIAN' => false,
             ],
             'messages' => [
-                'banner' => 'The donor cannot prove their identity over the phone because they have tried before and ' .
-                    'their details did not match the document provided.',
+                'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
+                    'available information from Experian or a failure to answer the security questions correctly ' .
+                    'on a previous occasion.',
             ]
         ];
 
