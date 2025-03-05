@@ -54,6 +54,12 @@ class KbvController extends AbstractActionController
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
+        /**
+         * @psalm-suppress PossiblyInvalidArrayAccess
+         */
+        $firstQuestion = $questionsData[0]['question'];
+        $view->setVariable('first_question', $firstQuestion);
+
         if ($questionsData === false) {
             throw new HttpException(500, 'Could not load KBV questions');
         }
@@ -65,6 +71,7 @@ class KbvController extends AbstractActionController
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
 
         $form = new Form();
+
         foreach ($questionsData as $question) {
             $form->add(new Element($question['externalId']));
         }
