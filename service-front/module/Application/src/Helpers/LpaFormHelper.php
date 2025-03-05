@@ -198,6 +198,7 @@ class LpaFormHelper
         $response['status'] = $statusCheck->getStatus();
 
         if (strtolower($response['status']) === 'in-progress') {
+        if ($response['status'] === 'in-progress') {
             return $response;
         }
 

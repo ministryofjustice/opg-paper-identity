@@ -460,4 +460,15 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException($exception->getMessage());
         }
     }
+
+    public function startCourtOfProtection(string $uuid): void
+    {
+        $url = sprintf("/cases/%s/start-court-of-protection", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }

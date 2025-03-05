@@ -30,7 +30,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=postoffice]').first().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -40,10 +40,10 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send you a letter.");
-    cy.contains("Please do this by the deadline stated.");
+    cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
+    cy.contains("If you haven't already, please return your signed certificate.");
   });
 
   it("accepts an international ID", () => {
@@ -81,7 +81,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=postoffice]').first().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -91,7 +91,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("National ID (Austria)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
   });
 
   it("handles 2 LPAs", () => {
@@ -126,7 +126,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
     cy.get('input[name=postoffice]').first().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -136,10 +136,10 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send you a letter.");
-    cy.contains("Please do this by the deadline stated.");
+    cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
+    cy.contains("If you haven't already, please return your signed certificate.");
   });
 
   it("allows you to search for a different postoffice", () => {
@@ -173,9 +173,10 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.get('.govuk-heading-xl').contains("Find a Post Office");
+    cy.get('.govuk-heading-xl').contains("Post Office branch finder");
+    cy.get('input[name=searchString]').clear();
     cy.get('input[name=searchString]').type('SW1A 1AA');
-    cy.get('input[value=Search').click();
+    cy.get("input[value='Search for a Post Office']").click();
     cy.get('input[name=postoffice]').last().click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -185,9 +186,9 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
     cy.get('span#poAddressLine').contains("6 Raphael Street");
     cy.contains("Submission deadline");
-    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send you a letter.");
-    cy.contains("Please do this by the deadline stated.");
+    cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
+    cy.contains("If you haven't already, please return your signed certificate.");
   });
 });

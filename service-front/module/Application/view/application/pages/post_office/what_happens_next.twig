@@ -5,16 +5,48 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class="govuk-heading-xl">
+    <div class="govuk-!-width-two-thirds">
+        <h1 class="govuk-heading-xl">
         {% block title %}
             What happens next?
         {% endblock %}
-    </h1>
-    <p class="govuk-body govuk-!-width-two-thirds">
-        We will send you a letter. When you receive the letter you can take it to your chosen Post Office location
-        with your chosen ID method to complete the process.
+        </h1>
 
-        <br><br>Please do this by the deadline stated.
-    </p>
-    <a href="{{ sirius_url }}" class="govuk-button">Continue</a
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Read the following to the caller:
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                <p class="govuk-body">
+                    We will send you a letter to take to the Post Office with your chosen identity document. Wait until
+                    you receive the letter before going, and please go within 28 days - the final date will be on the letter.
+                </p>
+
+                <p class="govuk-body">
+                    If you miss this date then you'll need to call us again to get a new letter.
+                </p>
+
+                {% if details_data.personType == 'donor' %}
+                    <p class="govuk-body">
+                        You must complete your ID check within 6 months of signing the LPA, or the LPA cannot be registered
+                        and your payment will not be refunded.
+                    </p>
+
+                    <p class="govuk-body">
+                        If you haven't already, please return your signed LPA.
+                    </p>
+                {% elseif details_data.personType == 'certificateProvider' %}
+                    <p class="govuk-body">
+                        If you haven't already, please return your signed certificate.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <a href="{{ sirius_url }}" class="govuk-button govuk-!-margin-top-3">Finish and return to Sirius</a>
+
+    </div>
+
 {% endblock %}

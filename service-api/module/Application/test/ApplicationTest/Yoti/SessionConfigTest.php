@@ -8,8 +8,11 @@ use Application\Model\Entity\CaseData;
 use Application\Model\Entity\IdMethodIncludingNation;
 use Application\Yoti\SessionConfig;
 use DateTime;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use Lcobucci\Clock\FrozenClock;
+use Psr\Clock\ClockInterface;
 
 class SessionConfigTest extends TestCase
 {
@@ -45,7 +48,8 @@ class SessionConfigTest extends TestCase
         ]);
         $this->uuid = strval(Uuid::uuid4());
         // an instance of SUT
-        $this->sut = new SessionConfig();
+        $mockClock = new FrozenClock(new DateTimeImmutable('2025-02-20 15:00:30'));
+        $this->sut = new SessionConfig($mockClock);
     }
 
     public function testSessionFormat(): void
@@ -78,15 +82,9 @@ class SessionConfigTest extends TestCase
 
     public function sessionConfigExpected(): array
     {
-        $currentDate = new DateTime();
-        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
-        $modifierString = '+' . $deadlineSet . ' days';
-        $currentDate->modify($modifierString);
-        $currentDate->setTime(22, 0, 0);
-
         $sessionConfig = [];
-        $sessionConfig["session_deadline"] = $currentDate->format(DateTime::ATOM);
-        $sessionConfig["resources_ttl"] = intval($currentDate->format('U')) - time() + 86400;
+        $sessionConfig["session_deadline"] = '2025-03-20T22:00:00+00:00';
+        $sessionConfig["resources_ttl"] = 3049170;
         $sessionConfig["ibv_options"]["support"] = 'MANDATORY';
         $sessionConfig["user_tracking_id"] = $this->caseMock->id;
         $sessionConfig["notifications"] = [
