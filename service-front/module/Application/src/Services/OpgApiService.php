@@ -18,6 +18,7 @@ use Laminas\Http\Response;
  */
 class OpgApiService implements OpgApiServiceInterface
 {
+    public const TYPE_HEADER = 'application/json';
     /**
      * @psalm-suppress PropertyNotSetInConstructor
      * @psalm-suppress PossiblyUnusedProperty
@@ -39,7 +40,7 @@ class OpgApiService implements OpgApiServiceInterface
             $this->makeApiRequest(
                 '/health-check',
                 'GET',
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => self::TYPE_HEADER]
             );
             return true;
         } catch (\Exception $exception) {
@@ -68,7 +69,7 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function getDetailsData(string $uuid, bool $skipIdCheckPerformedCheck = false): array
+    public function getDetailsData(string $uuid): array
     {
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
@@ -114,7 +115,7 @@ class OpgApiService implements OpgApiServiceInterface
                 sprintf('/identity/%s/validate_nino', $uuid),
                 'POST',
                 ['nino' => $nino],
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => self::TYPE_HEADER]
             );
         } catch (OpgApiException $opgApiException) {
             return $opgApiException->getMessage();
@@ -132,7 +133,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_driving_licence',
                 'POST',
                 ['dln' => $dln],
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => self::TYPE_HEADER]
             );
         } catch (OpgApiException $opgApiException) {
             return $opgApiException->getMessage();
@@ -150,7 +151,7 @@ class OpgApiService implements OpgApiServiceInterface
                 '/identity/validate_passport',
                 'POST',
                 ['passport' => $passport],
-                ['Content-Type' => 'application/json']
+                ['Content-Type' => self::TYPE_HEADER]
             );
         } catch (OpgApiException $opgApiException) {
             return $opgApiException->getMessage();
