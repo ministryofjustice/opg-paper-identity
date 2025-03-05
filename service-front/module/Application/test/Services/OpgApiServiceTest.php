@@ -25,8 +25,7 @@ class OpgApiServiceTest extends TestCase
     public function testGetDetailsData(
         Client $client,
         ?array $responseData,
-        ?string $expectedException,
-        bool $skipIdCheckPerformedCheck = false
+        ?string $expectedException
     ): void {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
@@ -34,7 +33,7 @@ class OpgApiServiceTest extends TestCase
 
         $opgApiService = new OpgApiService($client);
 
-        $response = $opgApiService->getDetailsData('uuid', $skipIdCheckPerformedCheck);
+        $response = $opgApiService->getDetailsData('uuid');
 
         if ($responseData !== null) {
             $this->assertEquals($responseData, $response);
@@ -100,7 +99,10 @@ class OpgApiServiceTest extends TestCase
             new Response(
                 200,
                 [],
-                json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => true]), JSON_THROW_ON_ERROR)
+                json_encode(array_merge(
+                    $successMockResponseData,
+                    ["identityCheckPassed" => true]
+                ), JSON_THROW_ON_ERROR)
             ),
         ]);
         $identityCheckHandler = HandlerStack::create($identityCheckExceptionMock);
@@ -110,7 +112,10 @@ class OpgApiServiceTest extends TestCase
             new Response(
                 200,
                 [],
-                json_encode(array_merge($successMockResponseData, ["identityCheckPassed" => null]), JSON_THROW_ON_ERROR)
+                json_encode(array_merge(
+                    $successMockResponseData,
+                    ["identityCheckPassed" => null]
+                ), JSON_THROW_ON_ERROR)
             ),
         ]);
         $identityCheckNullHandler = HandlerStack::create($identityCheckNullMock);
@@ -195,7 +200,11 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode($successMockResponseData, JSON_THROW_ON_ERROR)
+            ),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -258,7 +267,11 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode($successMockResponseData, JSON_THROW_ON_ERROR)
+            ),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -278,7 +291,11 @@ class OpgApiServiceTest extends TestCase
             'dln' => $insufficientDln,
         ];
         $insufficientMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)
+            ),
         ]);
         $handlerStack = HandlerStack::create($insufficientMock);
         $insufficientClient = new Client(['handler' => $handlerStack]);
@@ -333,7 +350,11 @@ class OpgApiServiceTest extends TestCase
         ];
 
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode($successMockResponseData, JSON_THROW_ON_ERROR)
+            ),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
@@ -353,7 +374,11 @@ class OpgApiServiceTest extends TestCase
             'passport' => $insufficientPassport,
         ];
         $insufficientMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)
+            ),
         ]);
         $handlerStack = HandlerStack::create($insufficientMock);
         $insufficientClient = new Client(['handler' => $handlerStack]);
@@ -567,7 +592,11 @@ class OpgApiServiceTest extends TestCase
             "lpas" => $lpas,
         ];
         $successMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($successMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(
+                200,
+                ['X-Foo' => 'Bar'],
+                json_encode($successMockResponseData, JSON_THROW_ON_ERROR)
+            ),
         ]);
         $handlerStack = HandlerStack::create($successMock);
         $successClient = new Client(['handler' => $handlerStack]);
