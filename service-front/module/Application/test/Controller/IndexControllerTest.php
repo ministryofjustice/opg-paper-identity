@@ -193,7 +193,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/start?personType=certificateProvider&lpas[]=M-1234-5678-90AB', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertStringContainsString(
-            'ID check has has status: draft and cannot be started',
+            'ID check has status: draft and cannot be started',
             $this->getResponse()->getBody()
         );
     }

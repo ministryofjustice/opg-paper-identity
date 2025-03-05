@@ -46,9 +46,9 @@ class LpaStatusTypeHelper
         'voucher' => 'Voucher'
     ];
 
-    private bool $startable = true;
+    private bool $startable;
 
-    private string $status = 'draft';
+    private string $status;
 
     public function __construct(
         private array $lpa,
