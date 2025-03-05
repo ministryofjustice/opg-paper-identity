@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Services;
+namespace ApplicationTest\ApplicationTest\Unit\Services;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Model\Entity\CaseData;

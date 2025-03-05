@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Yoti;
+namespace ApplicationTest\ApplicationTest\Unit\Yoti;
 
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\IdMethodIncludingNation;

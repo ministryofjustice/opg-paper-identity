@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Services\DWP\DwpApi;
+namespace ApplicationTest\ApplicationTest\Unit\Services\DWP\DwpApi;
 
 use Application\DWP\AuthApi\AuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;

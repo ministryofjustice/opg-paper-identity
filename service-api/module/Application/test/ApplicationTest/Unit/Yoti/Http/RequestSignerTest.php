@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Yoti\Http;
+namespace ApplicationTest\ApplicationTest\Unit\Yoti\Http;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Yoti\Http\Exception\YotiAuthException;

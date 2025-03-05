@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Services\Experian\FraudApi;
+namespace ApplicationTest\ApplicationTest\Unit\Services\Experian\FraudApi;
 
 use Application\Experian\Crosscore\AuthApi\AuthApiService;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;

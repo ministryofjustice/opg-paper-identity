@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Services\DWP\AuthApi;
+namespace ApplicationTest\ApplicationTest\Unit\Services\DWP\AuthApi;
 
 use Application\Cache\ApcHelper;
 use Application\DWP\AuthApi\AuthApiException;

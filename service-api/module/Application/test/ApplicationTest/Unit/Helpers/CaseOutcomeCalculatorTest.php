@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Helpers;
+namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Sirius\EventSender;
-use ApplicationTest\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class CaseOutcomeCalculatorTest extends TestCase

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Services;
+namespace ApplicationTest\Unit\Services;
 
 use Application\Enums\SiriusDocument;
 use Application\Services\SiriusApiService;

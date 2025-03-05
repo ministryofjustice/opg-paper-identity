@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Helpers;
+namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
 use Application\Helpers\ServiceAvailabilityHelper;
 use Application\Model\Entity\CaseData;
-use ApplicationTest\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ServiceAvailabilityHelperTest extends TestCase
 {

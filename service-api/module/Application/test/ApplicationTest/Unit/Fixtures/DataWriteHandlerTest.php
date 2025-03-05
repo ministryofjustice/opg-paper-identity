@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Fixtures;
+namespace ApplicationTest\ApplicationTest\Unit\Fixtures;
 
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;

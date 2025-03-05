@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Feature\Services;
+namespace ApplicationTest\Unit\Services;
 
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Exceptions\UidInvalidException;
