@@ -107,4 +107,34 @@ class DataWriteHandler
             ]);
         }
     }
+
+    public function setTTL(string $uuid, string $ttl): void
+    {
+
+        $idKey = [
+            'key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+        ];
+
+        try {
+            $this->dynamoDbClient->updateItem([
+                'Key' => $idKey['key'],
+                'TableName' => $this->tableName,
+                'UpdateExpression' => "SET #H = :h",
+                'ExpressionAttributeNames' => [
+                    '#H' => 'ttl'
+                ],
+                'ExpressionAttributeValues' => [
+                    ':h' => [
+                        'N' => $ttl
+                    ]
+                ]
+            ]);
+        } catch (AwsException $e) {
+            $this->logger->error('Unable to set ttl [' . $e->getMessage() . '] for case' . $uuid);
+        }
+    }
 }

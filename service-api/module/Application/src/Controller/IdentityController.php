@@ -774,6 +774,7 @@ class IdentityController extends AbstractActionController
             "time" => $this->clock->now()->format('c'),
             "state" => UpdateStatus::Exit->value,
         ]);
+        $this->setCaseExpiry();
 
         return new JsonModel();
     }
@@ -796,6 +797,17 @@ class IdentityController extends AbstractActionController
             "lpaUids" => $caseData->lpas,
             "state" => UpdateStatus::CopStarted->value,
         ]);
+
+        return new JsonModel();
+    }
+
+    public function setCaseExpiry(): JsonModel
+    {
+        $uuid = $this->params()->fromRoute('uuid');
+        $ttl =  $this->clock->now();
+        $ttl->modify('+30 days'); // this bit isn't working!!
+
+        $this->dataHandler->setTTL($uuid, $ttl->format('U'));
 
         return new JsonModel();
     }
