@@ -116,7 +116,7 @@ class SiriusDataProcessorHelper
             if ($data['opg.poas.lpastore'] === null) {
                 throw new HttpException(
                     400,
-                    'ID check has has status: draft and cannot be started',
+                    'ID check has status: draft and cannot be started',
                 );
             }
 
