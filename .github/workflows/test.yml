@@ -38,7 +38,7 @@ jobs:
       matrix:
         service: [api, front]
         suite: [phpcs, psalm, unit-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     name: Run ${{ matrix.service }} "${{ matrix.suite }}" tests
     steps:
       - uses: actions/checkout@v4
@@ -48,6 +48,11 @@ jobs:
         with:
           name: image-${{ matrix.service }}-test
           path: /tmp/images
+      - name: Set up Docker
+        run: |
+          echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker run --privileged --rm tonistiigi/binfmt --install all
       - name: Load Image
         run: |
           docker load -i /tmp/images/${{ matrix.service }}-test.tar
@@ -91,7 +96,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs: test
     steps:
       - uses: actions/checkout@v4
