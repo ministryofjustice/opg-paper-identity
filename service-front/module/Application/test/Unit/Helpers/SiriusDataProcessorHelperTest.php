@@ -54,6 +54,7 @@ class SiriusDataProcessorHelperTest extends TestCase
                         'dateOfBirth' => '1975-05-05',
                     ],
                 ],
+                'status' => 'in-progress',
                 'certificateProvider' => [
                     'firstNames' => 'Mickey',
                     'lastName' => 'Goldmill',
