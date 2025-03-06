@@ -63,7 +63,7 @@ class LpaFormHelper
             if (
                 array_key_exists('opg.poas.sirius', $siriusCheck) &&
                 (! array_key_exists('opg.poas.lpastore', $siriusCheck) ||
-                empty($siriusCheck['opg.poas.lpastore']))
+                    empty($siriusCheck['opg.poas.lpastore']))
             ) {
                 $data = [
                     "case_uuid" => $uuid,
@@ -197,7 +197,9 @@ class LpaFormHelper
 
         $response['status'] = $statusCheck->getStatus();
 
-        if (strtolower($response['status']) === 'in-progress') {
+        $response['status'] = $statusCheck->getStatus();
+
+        if ($response['status'] === 'in-progress') {
             return $response;
         }
 
