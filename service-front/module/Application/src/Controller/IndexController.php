@@ -9,6 +9,7 @@ use Application\Controller\Trait\FormBuilder;
 use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
 use Application\Helpers\LpaFormHelper;
+use Application\Helpers\LpaStatusTypeHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
@@ -69,7 +70,7 @@ class IndexController extends AbstractActionController
             throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
         }
 
-        $this->ensureIdentityCheckHasNotAlreadyBeenPerformed($type, $lpas[0]);
+        $this->checkStatusOfLpaIsStartable($type, $lpas[0]);
 
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
@@ -87,17 +88,20 @@ class IndexController extends AbstractActionController
      * @return void
      * @throws HttpException
      */
-    private function ensureIdentityCheckHasNotAlreadyBeenPerformed(string $type, array $lpaData): void
+    private function checkStatusOfLpaIsStartable(string $type, array $lpaData): void
     {
-        if ($type === 'donor' && isset($lpaData['opg.poas.lpastore']['donor']['identityCheck'])) {
-            throw new HttpException(400, "ID check has already been completed");
-        }
+        try {
+            $lpaStatusCheck = new LpaStatusTypeHelper($lpaData, $type);
 
-        if (
-            $type === 'certificateProvider'
-            && isset($lpaData['opg.poas.lpastore']['certificateProvider']['identityCheck'])
-        ) {
-            throw new HttpException(400, "ID check has already been completed");
+            if (! $lpaStatusCheck->isStartable()) {
+                $errorMessage = $lpaStatusCheck->getStatus() === 'registered' ?
+                    "ID check has already been completed" :
+                    "ID check has status: " . $lpaStatusCheck->getStatus() . " and cannot be started";
+
+                throw new HttpException(400, $errorMessage);
+            }
+        } catch (\Exception $exception) {
+            throw new HttpException(400, $exception->getMessage());
         }
     }
 

@@ -83,11 +83,13 @@
 
                 <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}" id="idMethodOptions">
 
-                    <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
+                    {% if service_availability.data.EXPERIAN %}
+                        <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
 
-                    <p class="govuk-body">
-                        Which method will you use to ID over the phone?
-                    </p>
+                        <p class="govuk-body">
+                            Which method will you use to ID over the phone?
+                        </p>
+                    {% endif %}
 
                     {% if form.get('id_method').messages %}
                         <p id="id_method-error" class="govuk-error-message">
@@ -281,7 +283,7 @@
                                     value="POST_OFFICE"
                                     {{ (form.get('id_method').value == 'POST_OFFICE') ? 'checked' : '' }}
                                 >
-                                <label class="govuk-label govuk-radios__label" for="PostOffice">
+                                <label class="govuk-label govuk-radios__label" for="POST_OFFICE">
                                     Post Office
                                     <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0">
                                         <summary class="govuk-details__summary">
@@ -333,7 +335,7 @@
                                         value="OnBehalf"
                                         {{ (form.get('id_method').value == 'OnBehalf') ? 'checked' : '' }}
                                     >
-                                    <label class="govuk-label govuk-radios__label" for="OnBehalf">
+                                    <label class="govuk-label govuk-radios__label" for="ON_BEHALF">
                                         Have someone vouch for the identity of the donor
                                     </label>
                                 </div>
@@ -348,7 +350,7 @@
                                         value="cpr"
                                         {{ (form.get('id_method').value == 'cpr') ? 'checked' : '' }}
                                     >
-                                    <label class="govuk-label govuk-radios__label" for="CourtOfProtection">
+                                    <label class="govuk-label govuk-radios__label" for="COURT_OF_PROTECTION">
                                         The donor cannot do any of the above (Court of Protection)</label>
                                 </div>
                             {% endif %}
