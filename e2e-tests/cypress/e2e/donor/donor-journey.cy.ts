@@ -331,4 +331,34 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Finish and return to Sirius");
   });
 
+  it("lets you choose the vouching route", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+    cy.contains("How will you confirm your identity?");
+    cy.contains("Have someone vouch for the identity of the donor").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("What is Vouching?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("There is a problem");
+    cy.contains("Please select Yes or No");
+
+    cy.contains("No, choose a different method").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("How will you confirm your identity?");
+    cy.contains("Have someone vouch for the identity of the donor").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Yes, send the letter about vouching to the donor").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+
+    cy.get(".govuk-button").contains("Finish and return to Sirius");
+
+    cy.contains("What happens next?");
+    cy.get(".govuk-button").contains("Finish and return to Sirius").click();
+  });
+
 });
