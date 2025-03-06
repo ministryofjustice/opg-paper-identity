@@ -10,6 +10,8 @@ use SoapClient;
  * Should not be used directly. Use WaspService instead.
  *
  * @see Application\Experian\IIQ\WaspService
+ *
+ * @method LoginWithCertificate(array $request): object{LoginWithCertificateResult: string}
  */
 class WaspClient extends SoapClient
 {

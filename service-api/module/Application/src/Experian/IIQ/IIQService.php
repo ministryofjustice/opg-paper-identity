@@ -181,7 +181,7 @@ class IIQService
 
             $ret = ['result' => (array)$request->RTQResult->Results];
 
-            if (isset($request?->RTQResult?->Questions?->Question)) {
+            if (isset($request->RTQResult?->Questions?->Question)) {
                 $question = $request->RTQResult->Questions->Question;
 
                 $ret['questions'] = is_array($question) ? $question : [$question];

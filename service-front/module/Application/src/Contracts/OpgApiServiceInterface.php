@@ -70,7 +70,7 @@ interface OpgApiServiceInterface
     /**
      * @return CaseData
      */
-    public function getDetailsData(string $uuid, bool $skipIdCheckPerformedCheck = false): array;
+    public function getDetailsData(string $uuid): array;
 
     public function checkNinoValidity(string $uuid, string $nino): string;
 
@@ -186,4 +186,6 @@ interface OpgApiServiceInterface
     public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
 
     public function abandonFlow(string $uuid): void;
+
+    public function startCourtOfProtection(string $uuid): void;
 }
