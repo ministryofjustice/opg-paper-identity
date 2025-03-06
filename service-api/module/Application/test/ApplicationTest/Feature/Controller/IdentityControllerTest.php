@@ -1052,4 +1052,51 @@ class IdentityControllerTest extends TestCase
 
         $this->assertEquals('Case not found', $body['title']);
     }
+
+    public function testSendVouchStartedAction(): void
+    {
+        $eventSenderMock = $this->createMock(EventSender::class);
+        $frozenClock = new FrozenClock(new DateTimeImmutable('2024-05-12T13:45:56Z'));
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(EventSender::class, $eventSenderMock);
+        $serviceManager->setService(ClockInterface::class, $frozenClock);
+
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+
+        $caseData = CaseData::fromArray([
+            'id' => $uuid,
+            'personType' => 'donor',
+            'lpas' => [
+                'M-XYXY-YAGA-35G3',
+                'M-VGAS-OAGA-34G9',
+            ],
+        ]);
+
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->with($uuid)
+            ->willReturn($caseData);
+
+        $eventSenderMock
+            ->expects($this->once())
+            ->method('send')
+            ->with(
+                'identity-check-updated',
+                [
+                    'time' => '2024-05-12T13:45:56+00:00',
+                    'actorType' => $caseData->personType,
+                    'lpaUids' => $caseData->lpas,
+                    'state' => 'VOUCH_STARTED',
+                ]
+            );
+
+        $this->dispatchJSON(
+            '/cases/' . $uuid . '/send-vouch-started',
+            'POST'
+        );
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
+    }
 }
