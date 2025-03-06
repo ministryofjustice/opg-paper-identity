@@ -38,7 +38,7 @@ jobs:
       matrix:
         service: [api, front]
         suite: [phpcs, psalm, unit-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     name: Run ${{ matrix.service }} "${{ matrix.suite }}" tests
     steps:
       - uses: actions/checkout@v4
@@ -96,7 +96,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs: test
     steps:
       - uses: actions/checkout@v4
