@@ -43,15 +43,8 @@ class DonorFlowController extends AbstractActionController
         if ($this->getRequest()->isPost()) {
             $formData = $this->getRequest()->getPost()->toArray();
             if ($formData['confirm_vouching'] == 'yes') {
-                $pdf = $this->siriusApiService->sendDocument(
-                    $detailsData,
-                    SiriusDocument::VouchInvitation,
-                    $this->getRequest()
-                );
-                // if any other status then error will be raised by framework and error page displayed
-                if ($pdf['status'] === 201) {
-                    return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
-                }
+                $this->opgApiService->sendVouchStarted($uuid);
+                return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
             } else {
                 return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);
             }

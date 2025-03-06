@@ -471,4 +471,15 @@ class OpgApiService implements OpgApiServiceInterface
             throw new OpgApiException($exception->getMessage());
         }
     }
+
+    public function sendVouchStarted(string $uuid): void
+    {
+        $url = sprintf("/cases/%s/send-vouch-started", $uuid);
+
+        try {
+            $this->makeApiRequest($url, 'POST');
+        } catch (\Exception $exception) {
+            throw new OpgApiException($exception->getMessage());
+        }
+    }
 }
