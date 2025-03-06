@@ -20,7 +20,7 @@ describe("Identify a Donor", () => {
         cy.contains(".moj-banner", "Identity check passed");
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor has already confirmed their identity. The donor has already completed an ID check for this LPA");
+        cy.contains("The identity check has already been completed");
         cy.contains("Post Office verification is not presently available");
 
 
@@ -86,7 +86,7 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor cannot prove their identity over the phone because they have tried before and their details did not match the document provided.");
+        cy.contains("The donor cannot ID over the phone or have someone vouch for them due to a lack of available information from Experian or a failure to answer the security questions correctly on a previous occasion.");
         cy.contains('Preferred: ID over the phone').should('not.exist');
     });
 

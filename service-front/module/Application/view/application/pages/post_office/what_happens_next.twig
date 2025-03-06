@@ -12,47 +12,37 @@
         {% endblock %}
         </h1>
 
-        <div class="govuk-body ">
-            {% if details_data.personType == 'donor' %}
-                <p>
-                    We will send the donor a letter with the details discussed today. It’s important that they wait for the
-                    letter and take it with them to the Post Office along with their chosen identity document.
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Read the following to the caller:
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                <p class="govuk-body">
+                    We will send you a letter to take to the Post Office with your chosen identity document. Wait until
+                    you receive the letter before going, and please go within 28 days - the final date will be on the letter.
                 </p>
-                <p>
-                    If they haven’t already, they must return their paper LPA by post to OPG.
-                </p>
-                <p>
-                    The Post Office expect to receive the application within 28 days.
-                </p>
-                <p>
-                    They must complete their ID check within 6 months of signing their LPA or the LPA cannot be registered
-                    and the payment will be not be refunded.
-                </p>
-            {% elseif details_data.personType == 'certificateProvider' %}
-                <p>
-                    We will send the certificate provider a letter with the details discussed today. It’s important that they
-                    wait for the letter and take it with them to the Post Office along with their chosen identity document.
-                </p>
-                <p>
-                    If they haven’t already, they must return their signed ‘certificate’ by post to OPG.
-                </p>
-                <p>
-                    The Post Office expect to receive the application within 28 days.
-                </p>
-                <p>
-                    They must complete their ID check within 6 months of the donor signing the LPA or the LPA cannot be
-                    registered and the payment will be not be refunded.
-                </p>
-            {% elseif details_data.personType == 'voucher' %}
-                <p>
-                    We will send you a letter with the details discussed today. It’s important to wait for the letter and
-                    take it with you to the Post Office along with your identity document.
-                </p>
-                <p>
-                    The Post Office expect to receive the application within 28 days.
-                </p>
-            {% endif %}
 
+                <p class="govuk-body">
+                    If you miss this date then you'll need to call us again to get a new letter.
+                </p>
+
+                {% if details_data.personType == 'donor' %}
+                    <p class="govuk-body">
+                        You must complete your ID check within 6 months of signing the LPA, or the LPA cannot be registered
+                        and your payment will not be refunded.
+                    </p>
+
+                    <p class="govuk-body">
+                        If you haven't already, please return your signed LPA.
+                    </p>
+                {% elseif details_data.personType == 'certificateProvider' %}
+                    <p class="govuk-body">
+                        If you haven't already, please return your signed certificate.
+                    </p>
+                {% endif %}
+            </div>
         </div>
 
         <a href="{{ sirius_url }}" class="govuk-button govuk-!-margin-top-3">Finish and return to Sirius</a>

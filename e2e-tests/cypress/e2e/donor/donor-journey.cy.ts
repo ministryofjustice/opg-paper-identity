@@ -301,7 +301,34 @@ describe("Identify a Donor", () => {
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-    cy.contains("We will send the donor a letter with the details discussed today.");
+    cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
+    cy.contains("If you haven't already, please return your signed LPA.");
+  });
+
+  it("lets you identify using court of protection", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+    cy.contains("How will you confirm your identity?");
+
+    cy.contains("The donor cannot do any of the above (Court of Protection)").click();
+
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Register your LPA through the Court of Protection");
+
+    cy.get(".govuk-button").contains("Apply to the Court of Protection").click();
+
+    cy.contains("There is a problem");
+
+    cy.contains("Check the box to continue");
+
+    cy.contains("I understand that if I do not confirm my identity within 6-months of signing the LPA, and I choose to register the LPA with the Court of Protection, I will have to pay an additional fee and wait several months.").click();
+
+    cy.get(".govuk-button").contains("Apply to the Court of Protection").click();
+
+    cy.contains("Court of Protection decision has been recorded");
+
+    cy.get(".govuk-button").contains("Finish and return to Sirius");
   });
 
 });
