@@ -118,6 +118,22 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->with($this->uuid, 'NATIONAL_INSURANCE_NUMBER');
         }
 
+        if ($validity === 'PASS') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
+        }
+
+        if ($validity === 'FAIL') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::never())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
+        }
+
         $this->dispatch("/$this->uuid/national-insurance-number", 'POST', [
             'nino' => 'NP 11 22 33 C',
         ]);
@@ -240,6 +256,22 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->expects(self::once())
                 ->method('updateCaseSetDocumentComplete')
                 ->with($this->uuid, 'DRIVING_LICENCE');
+        }
+
+        if ($validity === 'PASS') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
+        }
+
+        if ($validity === 'FAIL') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::never())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
         }
 
         $this->dispatch("/$this->uuid/driving-licence-number", 'POST', [
@@ -382,6 +414,22 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->with($this->uuid, 'PASSPORT');
         }
 
+        if ($validity === 'PASS') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::once())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
+        }
+
+        if ($validity === 'FAIL') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::never())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
+        }
+
         $this->dispatch("/$this->uuid/passport-number", 'POST', [
             'passport' => '123456785',
             'inDate' => 'yes',
@@ -391,8 +439,8 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     public static function passportNumberData(): array
     {
         return [
-            ['pass'],
-            ['fail'],
+            ['PASS'],
+            ['FAIL'],
         ];
     }
 
