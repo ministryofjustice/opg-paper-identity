@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ApplicationTest\Helpers;
+namespace ApplicationTest\Unit\Helpers;
 
 use Application\Exceptions\LpaTypeException;
 use Application\Helpers\LpaFormHelper;
