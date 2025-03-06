@@ -59,6 +59,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.checkout_tag }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.10.0
       - name: Build ${{ matrix.ecr_repository }} Image
         id: build_image
         run: |
