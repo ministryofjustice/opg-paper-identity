@@ -116,7 +116,7 @@ class SiriusDataProcessorHelper
             if ($data['opg.poas.lpastore'] === null) {
                 throw new HttpException(
                     400,
-                    'Cannot ID check this certificate provider as the LPA has not yet been submitted',
+                    'ID check has status: draft and cannot be started',
                 );
             }
 
