@@ -42,7 +42,7 @@ class IndexController extends AbstractActionController
         return new ViewModel();
     }
 
-    public function startAction(): Response
+    public function startAction(): Response|ViewModel
     {
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
@@ -67,10 +67,31 @@ class IndexController extends AbstractActionController
                 'certificateProvider' => "Certificate Providers",
                 'voucher' => "Vouchers"
             ];
-            throw new HttpException(400, "These LPAs are for different {$personTypeDescription[$type]}");
+            throw new HttpException(
+                400,
+                "These LPAs are for different {$personTypeDescription[$type]}"
+            );
         }
 
-        $this->checkStatusOfLpaIsStartable($type, $lpas[0]);
+        try {
+            $lpaStatusCheck = new LpaStatusTypeHelper($lpas[0], $type);
+
+            if (! $lpaStatusCheck->isStartable()) {
+                $lpaStatusTypeCheck = $lpaStatusCheck->getStatus() === 'registered' ?
+                    "The identity check has already been completed" :
+                    "ID check has status: " . $lpaStatusCheck->getStatus() . " and cannot be started";
+
+                $view = new ViewModel();
+                $view->setVariables([
+                    'message' => $lpaStatusTypeCheck,
+                    'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                    'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $type)
+                ]);
+                return $view->setTemplate('application/pages/cannot_start');
+            }
+        } catch (\Exception $exception) {
+            throw new HttpException(400, $exception->getMessage());
+        }
 
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
 
@@ -82,27 +103,18 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute($redirect, ['uuid' => $case['uuid']]);
     }
 
-    /**
-     * @param string $type
-     * @psalm-param Lpa $lpaData
-     * @return void
-     * @throws HttpException
-     */
-    private function checkStatusOfLpaIsStartable(string $type, array $lpaData): void
+    private function constructDetailsDataBeforeCreatedCase(array $lpa, string $personType): array
     {
-        try {
-            $lpaStatusCheck = new LpaStatusTypeHelper($lpaData, $type);
+        $processed = $this->siriusDataProcessorHelper->processLpaResponse(
+            $personType,
+            $lpa
+        );
 
-            if (! $lpaStatusCheck->isStartable()) {
-                $errorMessage = $lpaStatusCheck->getStatus() === 'registered' ?
-                    "ID check has already been completed" :
-                    "ID check has status: " . $lpaStatusCheck->getStatus() . " and cannot be started";
-
-                throw new HttpException(400, $errorMessage);
-            }
-        } catch (\Exception $exception) {
-            throw new HttpException(400, $exception->getMessage());
-        }
+        return [
+            'personType' => $personType,
+            'firstName' => $processed['first_name'],
+            'lastName' => $processed['last_name'],
+        ];
     }
 
     public function abandonFlowAction(): ViewModel|Response
