@@ -29,6 +29,7 @@ namespace Application\Contracts;
  *   dob: string,
  *   address: Address,
  *   professionalAddress?: Address,
+ *   identityCheckPassed?: bool|null,
  *   idMethodIncludingNation?: array{
  *     id_country?: string,
  *     id_method?: string,

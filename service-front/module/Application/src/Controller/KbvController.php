@@ -32,10 +32,8 @@ class KbvController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        /**
-         * @psalm-suppress InvalidArrayOffset
-         */
-        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+
+        if (isset($detailsData['identityCheckPassed'])) {
             $view->setVariable('message', 'The identity check has already been completed');
             return $view->setTemplate('application/pages/cannot_start');
         }

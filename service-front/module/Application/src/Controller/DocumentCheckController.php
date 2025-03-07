@@ -43,10 +43,7 @@ class DocumentCheckController extends AbstractActionController
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        /**
-         * @psalm-suppress InvalidArrayOffset
-         */
-        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+        if (isset($detailsData['identityCheckPassed'])) {
             $view->setVariable('message', 'The identity check has already been completed');
             return $view->setTemplate('application/pages/cannot_start');
         }
@@ -94,10 +91,7 @@ class DocumentCheckController extends AbstractActionController
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        /**
-         * @psalm-suppress InvalidArrayOffset
-         */
-        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+        if (isset($detailsData['identityCheckPassed'])) {
             $view->setVariable('message', 'The identity check has already been completed');
             return $view->setTemplate('application/pages/cannot_start');
         }
@@ -146,10 +140,7 @@ class DocumentCheckController extends AbstractActionController
         $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        /**
-         * @psalm-suppress InvalidArrayOffset
-         */
-        if (isset($detailsData['identityCheckPassed']) && $detailsData['identityCheckPassed'] !== null) {
+        if (isset($detailsData['identityCheckPassed'])) {
             $view->setVariable('message', 'The identity check has already been completed');
             return $view->setTemplate('application/pages/cannot_start');
         }
