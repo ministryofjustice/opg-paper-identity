@@ -10,6 +10,7 @@ use Application\Exceptions\HttpException;
 use Application\Services\SiriusApiService;
 use DateTime;
 use Laminas\Http\Request;
+use Laminas\Stdlib\RequestInterface;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
@@ -137,7 +138,7 @@ class SiriusDataProcessorHelper
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    public function createLpaDetailsArray(array $detailsData, $request): array
+    public function createLpaDetailsArray(array $detailsData,  Request|RequestInterface $request): array
     {
         $lpaDetails = [];
 
