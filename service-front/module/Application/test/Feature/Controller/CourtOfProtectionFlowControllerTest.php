@@ -47,21 +47,21 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             "lpas" => ["LP-12345"]
         ];
     }
+//
+//    private function returnSiriusLpaResponse(): array
+//    {
+//        return [
+//            "opg.poas.lpastore" => [
+//                "donor" => [
+//                    "firstNames" => "John",
+//                    "lastName" => "Doe",
+//                ],
+//                "lpaType" => "property-and-affairs" // Ensuring this value is set to prevent null issues
+//            ]
+//        ];
+//    }
 
-    private function returnSiriusLpaResponse(): array
-    {
-        return [
-            "opg.poas.lpastore" => [
-                "donor" => [
-                    "firstNames" => "John",
-                    "lastName" => "Doe",
-                ],
-                "lpaType" => "property-and-affairs" // Ensuring this value is set to prevent null issues
-            ]
-        ];
-    }
-
-    private function returnMockLpaArray()
+    private function returnMockLpaArray(): array
     {
         return [
             "M-0000-0000-0000" => [

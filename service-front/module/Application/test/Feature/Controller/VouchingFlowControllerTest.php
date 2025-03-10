@@ -71,7 +71,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         return $this->fakeAddress;
     }
 
-    private function returnMockLpaArray()
+    private function returnMockLpaArray(): array
     {
         return [
             "M-XYXY-YAGA-35G3" => [

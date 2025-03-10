@@ -38,7 +38,6 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly DocumentTypeRepository $documentTypeRepository,
-        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly string $siriusPublicUrl,
         private readonly array $config,
     ) {
