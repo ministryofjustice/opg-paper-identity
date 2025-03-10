@@ -12,6 +12,8 @@ awslocal dynamodb create-table \
 
 sleep 5
 
+awslocal dynamodb update-time-to-live --table-name identity-verify --time-to-live-specification "Enabled=true, AttributeName=ttl"
+
 awslocal dynamodb update-table \
     --table-name identity-verify \
     --attribute-definitions AttributeName=yotiSessionId,AttributeType=S \
@@ -19,6 +21,7 @@ awslocal dynamodb update-table \
         "[{\"Create\":{\"IndexName\": \"yotiSessionId-index\",\"KeySchema\":[{\"AttributeName\":\"yotiSessionId\",\"KeyType\":\"HASH\"}], \
         \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 20, \"WriteCapacityUnits\": 10 }, \
         \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
+
 
 awslocal secretsmanager create-secret --name local/paper-identity/yoti/certificate \
     --description "PEM certificate for authentication with Yoti API" \

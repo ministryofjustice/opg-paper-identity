@@ -21,6 +21,7 @@ class DataWriteHandlerTest extends TestCase
     private DynamoDbClient|MockObject $dynamoDbClientMock;
     private LoggerInterface|MockObject $loggerMock;
     private DataWriteHandler $sut;
+    private string $tableName;
 
     public function setUp(): void
     {
@@ -29,8 +30,9 @@ class DataWriteHandlerTest extends TestCase
         // Mocking the DynamoDB client and logger
         $this->dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
+        $this->tableName = 'cases';
         // Create an instance of SUT with mocked dependencies
-        $this->sut = new DataWriteHandler($this->dynamoDbClientMock, 'cases', $this->loggerMock);
+        $this->sut = new DataWriteHandler($this->dynamoDbClientMock, $this->tableName, $this->loggerMock);
     }
 
     /**
@@ -266,5 +268,34 @@ class DataWriteHandlerTest extends TestCase
             'documentComplete',
             'an invalid value'
         );
+    }
+
+    /**
+     * @psalm-suppress UndefinedMagicMethod
+     */
+    public function testSetTTL(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050491';
+        $ttl = '1741597200';
+
+        // Stubbing the putItem method of DynamoDB client
+        $this->dynamoDbClientMock->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) use ($uuid, $ttl) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => $uuid]], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(['#H' => 'ttl'], $input['ExpressionAttributeNames']);
+                    $this->assertEquals([':h' => ['N' => $ttl]], $input['ExpressionAttributeValues']);
+
+                    return true;
+                })
+            );
+
+        // Call the updateCaseData method with test data
+        $this->sut->setTTL($uuid, $ttl);
     }
 }
