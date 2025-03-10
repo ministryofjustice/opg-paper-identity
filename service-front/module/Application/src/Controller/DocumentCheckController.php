@@ -22,10 +22,15 @@ class DocumentCheckController extends AbstractActionController
 
     protected $plugins;
 
+    private const COMPLETE_MESSAGE = 'The identity check has already been completed';
+
+    private const CANNOT_START = "application/pages/cannot_start";
+
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly array $config,
+        private readonly string $siriusPublicUrl
     ) {
     }
 
@@ -42,6 +47,12 @@ class DocumentCheckController extends AbstractActionController
 
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (isset($detailsData['identityCheckPassed'])) {
+            $view->setVariable('message', self::COMPLETE_MESSAGE);
+            $view->setVariable('sirius_url', $this->siriusPublicUrl);
+            return $view->setTemplate(self::CANNOT_START);
+        }
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
@@ -86,6 +97,11 @@ class DocumentCheckController extends AbstractActionController
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        if (isset($detailsData['identityCheckPassed'])) {
+            $view->setVariable('message', self::COMPLETE_MESSAGE);
+            return $view->setTemplate(self::CANNOT_START);
+        }
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
 
@@ -129,6 +145,11 @@ class DocumentCheckController extends AbstractActionController
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (isset($detailsData['identityCheckPassed'])) {
+            $view->setVariable('message', self::COMPLETE_MESSAGE);
+            return $view->setTemplate(self::CANNOT_START);
+        }
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('formattedDob', DateProcessorHelper::formatDate($detailsData['dob']));
