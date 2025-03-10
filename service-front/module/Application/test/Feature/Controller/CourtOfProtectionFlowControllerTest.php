@@ -47,19 +47,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             "lpas" => ["LP-12345"]
         ];
     }
-//
-//    private function returnSiriusLpaResponse(): array
-//    {
-//        return [
-//            "opg.poas.lpastore" => [
-//                "donor" => [
-//                    "firstNames" => "John",
-//                    "lastName" => "Doe",
-//                ],
-//                "lpaType" => "property-and-affairs" // Ensuring this value is set to prevent null issues
-//            ]
-//        ];
-//    }
 
     private function returnMockLpaArray(): array
     {
@@ -80,12 +67,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseData);
-
-//        $mockSiriusLpaData = $this->returnSiriusLpaResponse();
-//        $this->siriusApiServiceMock
-//            ->expects(self::once())
-//            ->method('getLpaByUid')
-//            ->willReturn($mockSiriusLpaData);
 
         $this->siriusDataProcessorHelper
             ->expects(self::once())
