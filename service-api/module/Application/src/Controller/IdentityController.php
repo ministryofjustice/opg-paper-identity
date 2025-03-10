@@ -15,6 +15,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\ExpireCase;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
@@ -45,6 +46,7 @@ class IdentityController extends AbstractActionController
         private readonly DwpApiService $dwpApiService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataWriteHandler $dataHandler,
+        private readonly ExpireCase $expireCase,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
@@ -774,7 +776,7 @@ class IdentityController extends AbstractActionController
             "time" => $this->clock->now()->format('c'),
             "state" => UpdateStatus::Exit->value,
         ]);
-        $this->setCaseExpiry();
+        $this->expireCase->setCaseExpiry($uuid);
 
         return new JsonModel();
     }
@@ -797,17 +799,6 @@ class IdentityController extends AbstractActionController
             "lpaUids" => $caseData->lpas,
             "state" => UpdateStatus::CopStarted->value,
         ]);
-
-        return new JsonModel();
-    }
-
-    public function setCaseExpiry(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        $ttl =  $this->clock->now();
-        $ttl->modify('+30 days'); // this bit isn't working!!
-
-        $this->dataHandler->setTTL($uuid, $ttl->format('U'));
 
         return new JsonModel();
     }
