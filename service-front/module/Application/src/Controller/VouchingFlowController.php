@@ -13,6 +13,7 @@ use Application\Forms\VoucherBirthDate;
 use Application\Forms\ConfirmVouching;
 use Application\Forms\VoucherName;
 use Application\Forms\AddDonor;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Model\Entity\CaseData;
 use Application\Services\SiriusApiService;
 use Application\Helpers\AddressProcessorHelper;
@@ -46,6 +47,7 @@ class VouchingFlowController extends AbstractActionController
         private readonly VoucherMatchLpaActorHelper $voucherMatchLpaActorHelper,
         private readonly AddressProcessorHelper $addressProcessorHelper,
         private readonly AddDonorFormHelper $addDonorFormHelper,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly string $siriusPublicUrl,
     ) {
     }
@@ -379,25 +381,13 @@ class VouchingFlowController extends AbstractActionController
             }
         }
 
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            $lpaData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-
-            $donorName = AddDonorFormHelper::getDonorNameFromSiriusResponse($lpaData);
-            $type = LpaTypes::fromName(
-                $lpaData['opg.poas.lpastore']['lpaType'] ?? $lpaData['opg.poas.sirius']['caseSubtype']
-            );
-
-            $lpaDetails[$lpa] = [
-                'name' => $donorName,
-                'type' => $type,
-            ];
-        }
-
         $view = new ViewModel();
         $view->setVariable('lpa_count', count($detailsData['lpas']));
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('lpa_details', $lpaDetails);
+        $view->setVariable(
+            'lpa_details',
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+        );
         $view->setVariable('case_uuid', $uuid);
 
         return $view->setTemplate('application/pages/vouching/confirm_donors');
