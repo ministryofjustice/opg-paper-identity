@@ -475,6 +475,16 @@ return [
                     ],
                 ],
             ],
+            'send_vouch_started' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/send-vouch-started',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'sendVouchStarted',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [

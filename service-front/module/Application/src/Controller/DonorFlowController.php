@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\IdMethod;
+use Application\Forms\ChooseVouching;
 use Application\Forms\FinishIDCheck;
 use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
@@ -38,24 +39,20 @@ class DonorFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+        $form = $this->createForm(ChooseVouching::class);
         $view->setVariable('details_data', $detailsData);
 
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->getRequest()->getPost()->toArray();
-            if ($formData['confirm_vouching'] == 'yes') {
-                $pdf = $this->siriusApiService->sendDocument(
-                    $detailsData,
-                    SiriusDocument::VouchInvitation,
-                    $this->getRequest()
-                );
-                // if any other status then error will be raised by framework and error page displayed
-                if ($pdf['status'] === 201) {
-                    return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
-                }
+            if ($formData['chooseVouching'] == 'yes') {
+                $this->opgApiService->sendVouchStarted($uuid);
+                return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
             } else {
                 return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
+
+        $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/what_is_vouching');
     }

@@ -157,37 +157,42 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
-
-    public function testWhatIsVouchingPageOptNo(): void
+    public function testWhatIsVouchingPage(): void
     {
-
-        $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
-            'confirm_vouching' => 'No',
-        ]);
+        $this->dispatch("/$this->uuid/what-is-vouching");
         $this->assertModuleName('application');
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/what_is_vouching');
+        $this->assertResponseStatusCode(200);
+    }
+
+    public function testWhatIsVouchingPageError(): void
+    {
+        $this->dispatch("/$this->uuid/what-is-vouching", "POST", []);
+        $this->assertQuery("#chooseVouching-error");
+    }
+
+    public function testWhatIsVouchingPageOptNo(): void
+    {
+        $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+            'chooseVouching' => 'No',
+        ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/how-will-you-confirm");
     }
 
     public function testWhatIsVouchingPageOptYes(): void
     {
-        $sendDocumentResponse = [
-            'status' => 201,
-            'body' => ''
-        ];
-
         $this
-            ->siriusApiService
+            ->opgApiServiceMock
             ->expects(self::once())
-            ->method('sendDocument')
-            ->willReturn($sendDocumentResponse);
+            ->method('sendVouchStarted')
+            ->with($this->uuid);
 
             $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
-                'confirm_vouching' => 'yes',
-             ]);
+                'chooseVouching' => 'yes',
+            ]);
             $this->assertResponseStatusCode(302);
             $this->assertRedirectTo(sprintf('/%s/vouching-what-happens-next', $this->uuid));
     }
