@@ -23,7 +23,11 @@ class ExpireCase
         $ttlDays = getenv("AWS_DYNAMODB_TTL_DAYS");
         $ttl = $this->clock->now()->modify("+{$ttlDays} days");
 
-        $this->logger->info("Setting case {$uuid} to expire in {$ttlDays} days");
+        echo("---------------------------------------------------------------");
+        echo($ttlDays);
+        echo("---------------------------------------------------------------");
+
+        $this->logger->info("Setting case {$uuid} to expire after {$ttl->format('c')}");
         $this->dataHandler->setTTL($uuid, $ttl->format('U'));
     }
 }

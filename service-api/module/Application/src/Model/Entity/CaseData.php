@@ -114,6 +114,8 @@ class CaseData implements JsonSerializable
                 $instance->caseAssistance = CaseAssistance::fromArray($value);
             } elseif ($key === 'identityIQ') {
                 $instance->identityIQ = IdentityIQ::fromArray($value);
+            } elseif ($key === 'ttl') {
+                // avoid throwing error if a ttl has been set on the record
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {

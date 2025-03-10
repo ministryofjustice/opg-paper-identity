@@ -6,6 +6,7 @@ namespace Application\Helpers;
 
 use Application\Model\Entity\CaseData;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\ExpireCase;
 use Application\Sirius\EventSender;
 use Application\Sirius\UpdateStatus;
 use Psr\Log\LoggerInterface;
@@ -16,6 +17,7 @@ class CaseOutcomeCalculator
         private readonly DataWriteHandler $dataHandler,
         private readonly LoggerInterface $logger,
         private readonly EventSender $eventSender,
+        private readonly ExpireCase $expireCase,
     ) {
     }
 
@@ -36,5 +38,7 @@ class CaseOutcomeCalculator
             "time" => $time,
             "state" => ($caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure)->value,
         ]);
+
+        $this->expireCase->setCaseExpiry($caseData->id);
     }
 }

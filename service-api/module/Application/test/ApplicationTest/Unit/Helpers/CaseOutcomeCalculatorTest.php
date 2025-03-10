@@ -7,6 +7,7 @@ namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
+use Application\Helpers\ExpireCase;
 use Application\Sirius\EventSender;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +18,7 @@ class CaseOutcomeCalculatorTest extends TestCase
     private DataWriteHandler&MockObject $dataHandlerMock;
     private LoggerInterface&MockObject $loggerMock;
     private EventSender&MockObject $eventSenderMock;
+    private ExpireCase&MockObject $expireCaseMock;
     private CaseOutcomeCalculator $sut;
 
     public function setUp(): void
@@ -24,11 +26,13 @@ class CaseOutcomeCalculatorTest extends TestCase
         $this->dataHandlerMock = $this->createMock(DataWriteHandler::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
         $this->eventSenderMock = $this->createMock(EventSender::class);
+        $this->expireCaseMock = $this->createMock(ExpireCase::class);
 
         $this->sut = new CaseOutcomeCalculator(
             $this->dataHandlerMock,
             $this->loggerMock,
             $this->eventSenderMock,
+            $this->expireCaseMock,
         );
     }
 
@@ -73,6 +77,10 @@ class CaseOutcomeCalculatorTest extends TestCase
                 "time" => 'some timestamp',
                 "state" => 'SUCCESS',
             ]);
+
+        $this->expireCaseMock->expects($this->once())
+            ->method('setCaseExpiry')
+            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
 
         $this->sut->updateSendIdentityCheck($caseData, 'some timestamp');
     }

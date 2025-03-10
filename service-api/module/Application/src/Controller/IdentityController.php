@@ -799,6 +799,7 @@ class IdentityController extends AbstractActionController
             "lpaUids" => $caseData->lpas,
             "state" => UpdateStatus::CopStarted->value,
         ]);
+        $this->expireCase->setCaseExpiry($uuid);
 
         return new JsonModel();
     }

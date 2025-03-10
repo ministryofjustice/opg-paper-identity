@@ -32,7 +32,7 @@ class ExpireCaseTest extends TestCase
 
         $this->loggerMock->expects($this->once())
         ->method('info')
-        ->with("Setting case a9bc8ab8-389c-4367-8a9b-762ab3050999 to expire in 30 days");
+        ->with("Setting case a9bc8ab8-389c-4367-8a9b-762ab3050999 to expire after 2025-04-09T09:00:00+00:00");
 
         $this->dataHandlerMock->expects($this->once())
             ->method('setTTL')
