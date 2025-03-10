@@ -7,6 +7,7 @@ namespace Application\Controller\Factory;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
 use Application\Helpers\AddressProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\FormProcessorHelper;
@@ -36,6 +37,7 @@ class VouchingFlowControllerFactory implements FactoryInterface
             $container->get(VoucherMatchLpaActorHelper::class),
             $container->get(AddressProcessorHelper::class),
             $container->get(AddDonorFormHelper::class),
+            $container->get(SiriusDataProcessorHelper::class),
             $siriusPublicUrl,
         );
     }
