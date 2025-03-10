@@ -138,6 +138,16 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    private function returnMockLpaArray()
+    {
+        return [
+            "M-0000-0000-0000" => [
+                "name" => "John Doe",
+                "type" => "property-and-affairs"
+            ]
+        ];
+    }
+
     public function testNameMatchesIDPageWithData(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -174,13 +184,13 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockResponseDataSiriusLpa = $this->returnSiriusLpaResponse();
+//        $mockResponseDataSiriusLpa = $this->returnSiriusLpaResponse();
 
         $this
-            ->siriusApiService
+            ->siriusDataProcessorHelperMock
             ->expects(self::once())
-            ->method('getLpaByUid')
-            ->willReturn($mockResponseDataSiriusLpa);
+            ->method('createLpaDetailsArray')
+            ->willReturn($this->returnMockLpaArray());
 
         $this->dispatch("/$this->uuid/cp/confirm-lpas", 'GET');
         $this->assertResponseStatusCode(200);

@@ -386,7 +386,7 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable(
             'lpa_details',
-            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request, true)
         );
         $view->setVariable('case_uuid', $uuid);
 

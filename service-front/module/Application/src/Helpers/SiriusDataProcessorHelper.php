@@ -138,23 +138,23 @@ class SiriusDataProcessorHelper
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
     }
 
-    public function createLpaDetailsArray(array $detailsData,  Request|RequestInterface $request): array
+    public function createLpaDetailsArray(array $detailsData, Request|RequestInterface $request, $sirius = false): array
     {
         $lpaDetails = [];
 
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
 
-            if (! empty($lpasData['opg.poas.lpastore'])) {
-                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-            } else {
+            if (empty($lpasData['opg.poas.lpastore'] || $sirius)) {
                 $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
                     $lpasData['opg.poas.sirius']['donor']['surname'];
 
                 $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            } else {
+                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
+
+                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
             }
 
             $lpaDetails[$lpa] = [
