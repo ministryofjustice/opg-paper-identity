@@ -54,9 +54,9 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
 
         $this
-            ->siriusApiService
+            ->siriusDataProcessorHelperMock
             ->expects(self::once())
-            ->method('getLpaByUid')
+            ->method('createLpaDetailsArray')
             ->willReturn($mockSiriusData);
 
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
