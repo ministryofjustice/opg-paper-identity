@@ -10,6 +10,7 @@ use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\ExpireCase;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
 use Application\Sirius\EventSender;
@@ -30,6 +31,7 @@ class IdentityControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private DataWriteHandler&MockObject $dataImportHandler;
+    private ExpireCase&MockObject $expireCaseMock;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
     private FraudApiService&MockObject $experianCrosscoreFraudApiService;
@@ -50,6 +52,7 @@ class IdentityControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
+        $this->expireCaseMock = $this->createMock(ExpireCase::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
@@ -61,6 +64,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
+        $serviceManager->setService(ExpireCase::class, $this->expireCaseMock);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
@@ -955,6 +959,11 @@ class IdentityControllerTest extends TestCase
                     'state' => 'EXIT',
                 ]
             );
+
+        $this->expireCaseMock
+            ->expects($this->once())
+            ->method('setCaseExpiry')
+            ->with($uuid);
 
         $this->dispatchJSON(
             '/cases/' . $uuid . '/abandon',
