@@ -189,4 +189,6 @@ interface OpgApiServiceInterface
     public function abandonFlow(string $uuid): void;
 
     public function startCourtOfProtection(string $uuid): void;
+
+    public function sendVouchStarted(string $uuid): void;
 }
