@@ -46,20 +46,34 @@ class IndexController extends AbstractActionController
     {
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
+        /** @var string $type */
+        $type = $this->params()->fromQuery("personType");
 
         $lpas = [];
         foreach ($lpasQuery as $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data;
+
+            if (array_key_exists('error', $data)) {
+                $view = new ViewModel();
+                $view->setVariables([
+                    'message' => $data['error'],
+                    'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                    'details_data' => [
+                        'personType' => $type,
+                        'firstName' => '',
+                        'lastName' => '',
+                    ]
+                ]);
+                return $view->setTemplate('application/pages/cannot_start');
+            } else {
+                $lpas[] = $data;
+            }
         }
 
         if (empty($lpas)) {
             $lpsString = implode(", ", $lpasQuery);
             throw new HttpException(404, "LPAs not found for {$lpsString}");
         }
-
-        /** @var string $type */
-        $type = $this->params()->fromQuery("personType");
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
             $personTypeDescription = [
