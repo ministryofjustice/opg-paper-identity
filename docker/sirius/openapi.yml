@@ -146,7 +146,7 @@ paths:
       operationId: postCreateDocumentRequest
       summary: Send letter data
       description: Send data to create letter
-      tags: [ poa ]
+      tags: [poa]
       requestBody:
         description: Sirius LPA document data
         content:
@@ -218,7 +218,7 @@ components:
     User:
       type: object
       properties:
-        id: int
+        email: string
     CombinedLpa:
       type: object
       required:

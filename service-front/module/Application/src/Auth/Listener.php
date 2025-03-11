@@ -25,10 +25,6 @@ class Listener extends AbstractListenerAggregate
      */
     public function attach(EventManagerInterface $events, $priority = -200): void
     {
-        if (getenv('DISABLE_AUTH_LISTENER') === "1") {
-            return;
-        }
-
         $this->listeners[] = $events->attach(
             MvcEvent::EVENT_ROUTE,
             [$this, 'checkAuth'],
