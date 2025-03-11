@@ -16,6 +16,7 @@ use Application\Forms\PassportDate;
 use Application\Forms\PostOfficeSelect;
 use Application\Forms\PostOfficeSearch;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
@@ -36,6 +37,7 @@ class PostOfficeFlowController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
         private readonly SiriusApiService $siriusApiService,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly DocumentTypeRepository $documentTypeRepository,
         private readonly string $siriusPublicUrl,
         private readonly array $config,
@@ -262,22 +264,11 @@ class PostOfficeFlowController extends AbstractActionController
 
             $this->opgApiService->addSelectedPostOffice($uuid, $formArray['postoffice']['fad_code']);
 
-            $lpaDetails = [];
-            foreach ($detailsData['lpas'] as $lpa) {
-                $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
-
-                if (! empty($lpasData['opg.poas.lpastore'])) {
-                    $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-                } else {
-                    $lpaDetails[$lpa] = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
-                }
-            }
-
             $postOfficeAddress = array_map('trim', explode(',', $formArray['postoffice']['address']));
             $postOfficeAddress[] = $formArray['postoffice']['post_code'];
 
             $view->setVariables([
-                'lpa_details' => $lpaDetails,
+                'lpa_details' => $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request),
                 'formatted_dob' => (new DateTime($detailsData['dob']))->format("d F Y"),
                 'deadline' => (new DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d F Y"),
                 'display_id_method' => $this->getIdMethodForDisplay(
