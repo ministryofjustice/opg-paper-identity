@@ -222,5 +222,5 @@ resources:
   - path: "/api/v1/digital-lpas/*"
     method: get
     response:
-      statusCode: 404
+      statusCode: 200
       file: data/lpa404.json
