@@ -98,8 +98,8 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock
             ->expects(self::once())
-            ->method('startCourtOfProtection')
-            ->with($this->uuid);
+            ->method('sendSiriusEvent')
+            ->with($this->uuid, 'cop-started');
 
         $this->dispatch("/{$this->uuid}/court-of-protection", 'POST', ['confirmation' => true]);
         $this->assertResponseStatusCode(302);

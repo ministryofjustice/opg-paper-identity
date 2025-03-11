@@ -443,34 +443,10 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function abandonFlow(string $uuid): void
+    public function sendSiriusEvent(string $uuid, string $status): void
     {
-        $url = sprintf("/cases/%s/abandon", $uuid);
-
         try {
-            $this->makeApiRequest($url, 'POST');
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
-
-    public function startCourtOfProtection(string $uuid): void
-    {
-        $url = sprintf("/cases/%s/start-court-of-protection", $uuid);
-
-        try {
-            $this->makeApiRequest($url, 'POST');
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
-
-    public function sendVouchStarted(string $uuid): void
-    {
-        $url = sprintf("/cases/%s/send-vouch-started", $uuid);
-
-        try {
-            $this->makeApiRequest($url, 'POST');
+            $this->makeApiRequest("/cases/{$uuid}/send-sirius-event/{$status}", 'POST');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

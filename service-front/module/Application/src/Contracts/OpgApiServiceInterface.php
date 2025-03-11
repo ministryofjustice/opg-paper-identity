@@ -186,9 +186,5 @@ interface OpgApiServiceInterface
      */
     public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
 
-    public function abandonFlow(string $uuid): void;
-
-    public function startCourtOfProtection(string $uuid): void;
-
-    public function sendVouchStarted(string $uuid): void;
+    public function sendSiriusEvent(string $uuid, string $status): void;
 }

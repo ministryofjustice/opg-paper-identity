@@ -15,7 +15,6 @@ use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
-use Application\Helpers\ExpireCase;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
@@ -46,7 +45,6 @@ class IdentityController extends AbstractActionController
         private readonly DwpApiService $dwpApiService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataWriteHandler $dataHandler,
-        private readonly ExpireCase $expireCase,
         private readonly LicenseValidatorInterface $licenseValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
@@ -757,9 +755,22 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function abandonCaseAction(): JsonModel
+    public function sendSiriusEventAction(): JsonModel
     {
+        $statusLookup = [
+            'abandon-case' => UpdateStatus::Exit->value,
+            'cop-started' => UpdateStatus::CopStarted->value,
+            'vouch-started' => UpdateStatus::VouchStarted->value
+        ];
+
         $uuid = $this->params()->fromRoute('uuid');
+        $status = $this->params()->fromRoute('status');
+
+        if (! array_key_exists($status, $statusLookup)) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+
+            return new JsonModel(new Problem('Invalid case status'));
+        }
 
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
 
@@ -774,54 +785,10 @@ class IdentityController extends AbstractActionController
             "actorType" => $caseData->personType,
             "lpaUids" => $caseData->lpas,
             "time" => $this->clock->now()->format('c'),
-            "state" => UpdateStatus::Exit->value,
+            "state" => $statusLookup[$status],
         ]);
-        $this->expireCase->setCaseExpiry($uuid);
 
-        return new JsonModel();
-    }
-
-    public function startCourtOfProtectionAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-
-        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
-
-        if (! $caseData) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-
-            return new JsonModel(new Problem('Case not found'));
-        }
-
-        $this->eventSender->send("identity-check-updated", [
-            "time" => $this->clock->now()->format('c'),
-            "actorType" => $caseData->personType,
-            "lpaUids" => $caseData->lpas,
-            "state" => UpdateStatus::CopStarted->value,
-        ]);
-        $this->expireCase->setCaseExpiry($uuid);
-
-        return new JsonModel();
-    }
-
-    public function sendVouchStartedAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-
-        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
-
-        if (! $caseData) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-
-            return new JsonModel(new Problem('Case not found'));
-        }
-
-        $this->eventSender->send("identity-check-updated", [
-            "time" => $this->clock->now()->format('c'),
-            "actorType" => $caseData->personType,
-            "lpaUids" => $caseData->lpas,
-            "state" => UpdateStatus::VouchStarted->value,
-        ]);
+        $this->dataHandler->setTTL($uuid);
 
         return new JsonModel();
     }

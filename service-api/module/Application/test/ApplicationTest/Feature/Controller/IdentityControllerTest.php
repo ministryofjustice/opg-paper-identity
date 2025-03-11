@@ -10,10 +10,10 @@ use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
-use Application\Helpers\ExpireCase;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
 use Application\Sirius\EventSender;
+use Application\Sirius\UpdateStatus;
 use Application\Yoti\SessionConfig;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
@@ -31,7 +31,6 @@ class IdentityControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private DataWriteHandler&MockObject $dataImportHandler;
-    private ExpireCase&MockObject $expireCaseMock;
     private YotiService&MockObject $yotiServiceMock;
     private SessionConfig&MockObject $sessionConfigMock;
     private FraudApiService&MockObject $experianCrosscoreFraudApiService;
@@ -52,7 +51,6 @@ class IdentityControllerTest extends TestCase
 
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->dataImportHandler = $this->createMock(DataWriteHandler::class);
-        $this->expireCaseMock = $this->createMock(ExpireCase::class);
         $this->yotiServiceMock = $this->createMock(YotiService::class);
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
@@ -64,7 +62,6 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(DataWriteHandler::class, $this->dataImportHandler);
-        $serviceManager->setService(ExpireCase::class, $this->expireCaseMock);
         $serviceManager->setService(YotiServiceInterface::class, $this->yotiServiceMock);
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
@@ -920,7 +917,10 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-    public function testAbandonCaseAction(): void
+    /**
+     * @dataProvider sendSiriusEventData
+     */
+    public function testSendSiriusEventAction(string $status, string $expectedState): void
     {
         $eventSenderMock = $this->createMock(EventSender::class);
         $frozenClock = new FrozenClock(new DateTimeImmutable('2024-05-12T13:45:56Z'));
@@ -956,24 +956,40 @@ class IdentityControllerTest extends TestCase
                     'actorType' => $caseData->personType,
                     'lpaUids' => $caseData->lpas,
                     'time' => '2024-05-12T13:45:56+00:00',
-                    'state' => 'EXIT',
+                    'state' => $expectedState,
                 ]
             );
 
-        $this->expireCaseMock
+        $this->dataImportHandler
             ->expects($this->once())
-            ->method('setCaseExpiry')
+            ->method('setTTL')
             ->with($uuid);
 
-        $this->dispatchJSON(
-            '/cases/' . $uuid . '/abandon',
-            'POST'
-        );
-
+        $this->dispatchJSON("/cases/{$uuid}/send-sirius-event/{$status}", 'POST');
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
     }
 
-    public function testAbandonCaseActionWithMissingCase(): void
+    public static function sendSiriusEventData(): array
+    {
+        return [
+            ['abandon-case', UpdateStatus::Exit->value],
+            ['cop-started', UpdateStatus::CopStarted->value],
+            ['vouch-started', UpdateStatus::VouchStarted->value]
+        ];
+    }
+
+    public function testSendSiriusEventActionWithInvalidStatus(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+        $this->dispatchJSON("/cases/{$uuid}/send-sirius-event/invalid-status", 'POST');
+
+        $this->assertResponseStatusCode(Response::STATUS_CODE_400);
+        $body = json_decode($this->getResponse()->getContent(), true);
+
+        $this->assertEquals('Invalid case status', $body['title']);
+    }
+
+    public function testSendSiriusEventActionWithMissingCase(): void
     {
         $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
 
@@ -983,129 +999,11 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn(null);
 
-        $this->dispatchJSON(
-            '/cases/' . $uuid . '/abandon',
-            'POST'
-        );
+        $this->dispatchJSON("/cases/{$uuid}/send-sirius-event/abandon-case", 'POST');
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_404);
         $body = json_decode($this->getResponse()->getContent(), true);
 
         $this->assertEquals('Case not found', $body['title']);
-    }
-
-    public function testStartCourtOfProtectionAction(): void
-    {
-        $eventSenderMock = $this->createMock(EventSender::class);
-        $frozenClock = new FrozenClock(new DateTimeImmutable('2024-05-12T13:45:56Z'));
-        $serviceManager = $this->getApplicationServiceLocator();
-        $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(EventSender::class, $eventSenderMock);
-        $serviceManager->setService(ClockInterface::class, $frozenClock);
-
-        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
-
-        $caseData = CaseData::fromArray([
-            'id' => $uuid,
-            'personType' => 'donor',
-            'lpas' => [
-                'M-XYXY-YAGA-35G3',
-                'M-VGAS-OAGA-34G9',
-            ],
-        ]);
-
-        $this->dataQueryHandlerMock
-            ->expects($this->once())
-            ->method('getCaseByUUID')
-            ->with($uuid)
-            ->willReturn($caseData);
-
-        $eventSenderMock
-            ->expects($this->once())
-            ->method('send')
-            ->with(
-                'identity-check-updated',
-                [
-                    'time' => '2024-05-12T13:45:56+00:00',
-                    'actorType' => $caseData->personType,
-                    'lpaUids' => $caseData->lpas,
-                    'state' => 'COP_STARTED',
-                ]
-            );
-
-        $this->dispatchJSON(
-            '/cases/' . $uuid . '/start-court-of-protection',
-            'POST'
-        );
-
-        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
-    }
-
-    public function testStartCourtOfProtectionActionWithMissingCase(): void
-    {
-        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
-
-        $this->dataQueryHandlerMock
-            ->expects($this->once())
-            ->method('getCaseByUUID')
-            ->with($uuid)
-            ->willReturn(null);
-
-        $this->dispatchJSON(
-            '/cases/' . $uuid . '/start-court-of-protection',
-            'POST'
-        );
-
-        $this->assertResponseStatusCode(Response::STATUS_CODE_404);
-        $body = json_decode($this->getResponse()->getContent(), true);
-
-        $this->assertEquals('Case not found', $body['title']);
-    }
-
-    public function testSendVouchStartedAction(): void
-    {
-        $eventSenderMock = $this->createMock(EventSender::class);
-        $frozenClock = new FrozenClock(new DateTimeImmutable('2024-05-12T13:45:56Z'));
-        $serviceManager = $this->getApplicationServiceLocator();
-        $serviceManager->setAllowOverride(true);
-        $serviceManager->setService(EventSender::class, $eventSenderMock);
-        $serviceManager->setService(ClockInterface::class, $frozenClock);
-
-        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
-
-        $caseData = CaseData::fromArray([
-            'id' => $uuid,
-            'personType' => 'donor',
-            'lpas' => [
-                'M-XYXY-YAGA-35G3',
-                'M-VGAS-OAGA-34G9',
-            ],
-        ]);
-
-        $this->dataQueryHandlerMock
-            ->expects($this->once())
-            ->method('getCaseByUUID')
-            ->with($uuid)
-            ->willReturn($caseData);
-
-        $eventSenderMock
-            ->expects($this->once())
-            ->method('send')
-            ->with(
-                'identity-check-updated',
-                [
-                    'time' => '2024-05-12T13:45:56+00:00',
-                    'actorType' => $caseData->personType,
-                    'lpaUids' => $caseData->lpas,
-                    'state' => 'VOUCH_STARTED',
-                ]
-            );
-
-        $this->dispatchJSON(
-            '/cases/' . $uuid . '/send-vouch-started',
-            'POST'
-        );
-
-        $this->assertResponseStatusCode(Response::STATUS_CODE_200);
     }
 }

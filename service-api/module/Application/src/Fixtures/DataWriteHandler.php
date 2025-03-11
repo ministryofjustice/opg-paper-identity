@@ -13,6 +13,7 @@ use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\InputFilter\InputFilterInterface;
 use Laminas\InputFilter\InputInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Clock\ClockInterface;
 
 class DataWriteHandler
 {
@@ -20,6 +21,7 @@ class DataWriteHandler
         private readonly DynamoDbClient $dynamoDbClient,
         private readonly string $tableName,
         private readonly LoggerInterface $logger,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -108,8 +110,11 @@ class DataWriteHandler
         }
     }
 
-    public function setTTL(string $uuid, string $ttl): void
+    public function setTTL(string $uuid): void
     {
+
+        $ttlDays = getenv("AWS_DYNAMODB_TTL_DAYS");
+        $ttl = $this->clock->now()->modify("+{$ttlDays} days");
 
         $idKey = [
             'key' => [
@@ -120,6 +125,7 @@ class DataWriteHandler
         ];
 
         try {
+            $this->logger->info("Setting case {$uuid} to expire after {$ttl->format('c')}");
             $this->dynamoDbClient->updateItem([
                 'Key' => $idKey['key'],
                 'TableName' => $this->tableName,
@@ -129,12 +135,37 @@ class DataWriteHandler
                 ],
                 'ExpressionAttributeValues' => [
                     ':h' => [
-                        'N' => $ttl
+                        'N' => $ttl->format('U')
                     ]
                 ]
             ]);
         } catch (AwsException $e) {
             $this->logger->error('Unable to set ttl [' . $e->getMessage() . '] for case' . $uuid);
+        }
+    }
+
+    public function unsetTTL(string $uuid): void
+    {
+        $idKey = [
+            'key' => [
+                'id' => [
+                    'S' => $uuid,
+                ],
+            ],
+        ];
+
+        try {
+            $this->logger->info("Removing expiry from case {$uuid} if present");
+            $this->dynamoDbClient->updateItem([
+                'Key' => $idKey['key'],
+                'TableName' => $this->tableName,
+                'UpdateExpression' => "REMOVE #H",
+                'ExpressionAttributeNames' => [
+                    '#H' => 'ttl'
+                ]
+            ]);
+        } catch (AwsException $e) {
+            $this->logger->error('Unable to unset ttl [' . $e->getMessage() . '] for case' . $uuid);
         }
     }
 }
