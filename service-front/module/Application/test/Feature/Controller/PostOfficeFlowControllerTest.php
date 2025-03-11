@@ -94,6 +94,20 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
+    private function returnMockLpaArray(): array
+    {
+        return [
+            "M-0000-0000-0001" => [
+                "name" => "firstname surname",
+                "type" => "PW"
+            ],
+            "M-0000-0000-0002" => [
+                "name" => "another name",
+                "type" => "PA"
+            ]
+        ];
+    }
+
     public function getListPostofficeResponse(): array
     {
         return self::$listPostOfficeResponse;
@@ -401,19 +415,10 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                 ->with($this->uuid, '1234567');
 
             $this
-                ->siriusApiService
-                ->expects($this->exactly(2))
-                ->method('getLpaByUid')
-                ->willReturnCallback(fn (string $lpa) => match (true) {
-                    $lpa === 'M-0000-0000-0001' => [
-                        'opg.poas.lpastore' => ['lpaType' => 'personal-welfare']
-                    ],
-                    $lpa === 'M-0000-0000-0002' => [
-                        'opg.poas.sirius' => [
-                            'caseSubtype' => 'property-and-affairs'
-                        ],
-                    ],
-                });
+                ->siriusDataProcessorHelperMock
+                ->expects($this->once())
+                ->method('createLpaDetailsArray')
+                ->willReturn($this->returnMockLpaArray());
 
             $this
                 ->opgApiServiceMock
