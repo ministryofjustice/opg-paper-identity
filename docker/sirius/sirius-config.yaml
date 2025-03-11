@@ -10,6 +10,12 @@ resources:
       statusCode: 200
       file: data/addressResponse.json
 
+  - path: "/api/v1/users/current"
+    method: get
+    response:
+      statusCode: 200
+      file: data/currentUser.json
+
   - path: "/api/v1/reference-data/country"
     method: get
     response:
