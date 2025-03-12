@@ -44,19 +44,20 @@ class IndexController extends AbstractActionController
 
     public function startAction(): Response|ViewModel
     {
+        $view = new ViewModel();
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
 
         $lpas = [];
+        $unfoundLpas = [];
         foreach ($lpasQuery as $key => $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
 
             if (array_key_exists('error', $data)) {
-                $view = new ViewModel();
+                $unfoundLpas[] = $lpaUid;
                 $view->setVariables([
-                    'message' => $data['error'],
                     'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
                     'details_data' => [
                         'personType' => $type,
@@ -73,12 +74,9 @@ class IndexController extends AbstractActionController
         $lpasQuery = array_values($lpasQuery);
 
         if (empty($lpas)) {
+            $lpsString = implode(", ", $unfoundLpas);
+            $view->setVariable('message', 'LPAs not found for ' . $lpsString);
             return $view->setTemplate('application/pages/cannot_start');
-        }
-
-        if (empty($lpas)) {
-            $lpsString = implode(", ", $lpasQuery);
-            throw new HttpException(404, "LPAs not found for {$lpsString}");
         }
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
