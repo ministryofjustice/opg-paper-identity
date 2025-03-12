@@ -465,6 +465,26 @@ return [
                     ],
                 ],
             ],
+            'start_court_of_protection' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/start-court-of-protection',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'startCourtOfProtection',
+                    ],
+                ],
+            ],
+            'send_vouch_started' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/cases/:uuid/send-vouch-started',
+                    'defaults' => [
+                        'controller' => Controller\IdentityController::class,
+                        'action' => 'sendVouchStarted',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
@@ -537,17 +557,20 @@ return [
             'EXPERIAN' => 'Experian',
         ],
         'banner_messages' => [
-            'NODECISION' => 'The %s cannot ID over the phone due to a lack of ' .
-                'available security questions or failure to answer them correctly on a previous occasion.',
-            'STOP' => 'The %s cannot ID over the phone or have someone vouch for them due to a lack of ' .
+            'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security questions ' .
+                'or failure to answer them correctly on a previous occasion.',
+            'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                 'available information from Experian or a failure to answer the security questions correctly ' .
                 'on a previous occasion.',
+            'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available information ' .
+                'from Experian or a failure to answer the security questions correctly on a previous occasion.',
+            'VOUCHER_STOP' => 'The person vouching cannot ID over the phone due to a lack of available information ' .
+                'from Experian or a failure to answer the security questions correctly on a previous occasion.',
             'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the ' .
                 'phone with a valid document',
             'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
                 'and their details did not match the document provided.',
-            'LOCKED_SUCCESS' => 'The %s has already confirmed their identity. The donor has already ' .
-                'completed an ID check for this LPA',
+            'LOCKED_SUCCESS' => 'The identity check has already been completed',
         ],
         'person_type_labels' => [
             'donor' => 'donor',

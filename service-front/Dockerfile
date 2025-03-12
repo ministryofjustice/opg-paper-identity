@@ -28,7 +28,6 @@ RUN apk upgrade --no-cache openssl curl libcurl
 WORKDIR /var/www
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY docker/php/memory_limit.ini /usr/local/etc/php/conf.d/memory-limit.ini
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 

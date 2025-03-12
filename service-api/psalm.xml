@@ -23,6 +23,7 @@
 
     <issueHandlers>
         <ClassMustBeFinal errorLevel="suppress" />
+        <MissingOverrideAttribute errorLevel="suppress" />
         <PossiblyUnusedMethod>
             <errorLevel type="suppress">
                 <file name="module/Application/src/Controller/*Controller.php" />

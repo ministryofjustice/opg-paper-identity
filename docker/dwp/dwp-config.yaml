@@ -4,18 +4,9 @@ specFile: openapi.yml
 resources:
   - path: "/citizen-information/oauth2/token"
     method: post
-    requestBody:
-      operator: Contains
-      value: clientsecret
     response:
       statusCode: 200
       file: data/tokenResponse.json
-
-  - path: "/citizen-information/oauth2/token"
-    method: post
-    response:
-      statusCode: 401
-      file: data/tokenResponse401.json
 
   - path: "/capi/v2/citizens/match"
     method: post

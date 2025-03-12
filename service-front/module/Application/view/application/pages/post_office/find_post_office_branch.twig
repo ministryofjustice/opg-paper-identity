@@ -7,14 +7,15 @@
 {% block content %}
     <h1 class="govuk-heading-xl">
         {% block title %}
-            Find a Post Office
+            Post Office branch finder
         {% endblock %}
     </h1>
     <p class="govuk-body govuk-!-width-two-thirds">
-        Not all Post Offices provide this service, confirm the preferred postcode and find the nearest Post Office that supports document verification.
+        Not all Post Office branches offer identity verification. We will include your preferred post office on the letter
+        we send to you, but you can go to any branch that provide the service.
     </p>
 
-    <h2 class="govuk-heading-m govuk-!-width-two-thirds">Enter postcode</h2>
+    <h2 class="govuk-heading-m govuk-!-width-two-thirds">Search for a Post Office</h2>
     <form method="POST">
         <div class="govuk-form-group {% if search_form.get('searchString').messages %}govuk-form-group--error{% endif %}">
             <h1 class="govuk-label-wrapper">
@@ -30,7 +31,11 @@
                 </p>
             {% endif %}
             <input class="govuk-input govuk-!-width-one-third" id="searchString" name="searchString" type="text" value="{{ searchString }}">
-            <input type="submit" class="govuk-button govuk-button--secondary" value="Search"/>
+            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-left-3 govuk-!-margin-bottom-1" value="Search for a Post Office"/>
+        </div>
+        <h2 class="govuk-heading-m govuk-!-width-two-thirds">Select a preferred Post Office</h2>
+        <div id="post-office-results-hint" class="govuk-hint">
+            Search results are in order of distance, starting with the nearest branch
         </div>
         <div class="govuk-form-group {% if form.get('postoffice').messages %}govuk-form-group--error{% endif %}">
             {% if form.get('postoffice').messages %}
@@ -50,7 +55,7 @@
                             value="{{ item|json_encode }}"
                             data-aria-controls="default"
                         >
-                        <label class="govuk-label govuk-radios__label" for="{{ fad }}">
+                        <label class="govuk-label govuk-radios__label" for="postoffice-{{ fad }}">
                             {{ item.name }}<br>
                             <span id="poAddress-{{ fad }}">{{ item.address }}, {{ item.post_code }}</span>
                         </label>

@@ -6,6 +6,26 @@
 
 {% block content %}
     <div class="govuk-!-width-two-thirds">
+
+        {% if form.get('chooseVouching').messages %}
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+                <div role="alert">
+                    <h2 class="govuk-error-summary__title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            {% for message in form.get('chooseVouching').messages %}
+                                <li>
+                                    <a href="#chooseVouching">{{message}}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <h1 class="govuk-heading-xl">{% block title %}What is Vouching?{% endblock %}</h1>
         <div class="govuk-form-group">
             <p class="govuk-body">
@@ -40,19 +60,24 @@
     </div>
 
     <form method="POST" class="govuk-!-width-two-thirds">
-        <div class="govuk-form-group">
+        <div class="govuk-form-group {% if form.get('chooseVouching').messages %}govuk-form-group--error{% endif %}">
             <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h2 class="govuk-heading-m">Choose someone else to vouch for the donor's identity?</h2>
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="confirm_vouching_yes" name="confirm_vouching" type="radio" value="yes">
-                        <label class="govuk-label govuk-radios__label" for="confirm_vouching_yes">Yes, send the letter about vouching to the donor</label>
-                    </div>
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="confirm_vouching_no" name="confirm_vouching" type="radio" value="no">
-                        <label class="govuk-label govuk-radios__label" for="confirm_vouching_no">No, choose a different method</label>
-                    </div>
+                    <h2 class="govuk-heading-m" id="chooseVouching">Choose someone else to vouch for the donor's identity?</h2>
                 </legend>
+                {% if form.get('chooseVouching').messages %}
+                <p id="chooseVouching-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>{{ form.get('chooseVouching').messages | join(', ', ' and ') }}
+                </p>
+                {% endif %}
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="chooseVouching-yes" name="chooseVouching" type="radio" value="yes">
+                    <label class="govuk-label govuk-radios__label" for="chooseVouching-yes">Yes, send the letter about vouching to the donor</label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="chooseVouching-no" name="chooseVouching" type="radio" value="no">
+                    <label class="govuk-label govuk-radios__label" for="chooseVouching-no">No, choose a different method</label>
+                </div>
             </fieldset>
         </div>
 

@@ -27,6 +27,19 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
 
         return [
             new TwigFilter('basepath', fn (string $str) => $prefix . $str),
+            new TwigFilter('format_status', fn (string $status) => match ($status) {
+                'draft' => 'Draft',
+                'in-progress' => 'In progress',
+                'statutory-waiting-period' => 'Statutory waiting period',
+                'do-not-register' => 'Do not register',
+                'expired' => 'Expired',
+                'registered' => 'Registered',
+                'cannot-register' => 'Cannot register',
+                'cancelled' => 'Cancelled',
+                'de-registered' => 'De-registered',
+                'suspended' => 'Suspended',
+                default => $status,
+            })
         ];
     }
 

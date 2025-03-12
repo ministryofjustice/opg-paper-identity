@@ -457,7 +457,7 @@ class VouchingFlowController extends AbstractActionController
     public function identityCheckPassedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost()) {
             $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
@@ -472,7 +472,7 @@ class VouchingFlowController extends AbstractActionController
     public function identityCheckFailedAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid, true);
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view = new ViewModel();
         $view->setVariable('details_data', $detailsData);

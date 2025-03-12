@@ -10,6 +10,12 @@ resources:
       statusCode: 200
       file: data/addressResponse.json
 
+  - path: "/api/v1/users/current"
+    method: get
+    response:
+      statusCode: 200
+      file: data/currentUser.json
+
   - path: "/api/v1/reference-data/country"
     method: get
     response:
@@ -171,14 +177,50 @@ resources:
       statusCode: 200
       file: data/cpEmpty.json
 
-  - path: "/api/v1/digital-lpas/M-COMP-LETE-CPG3"
-    method: get
-    response:
-      statusCode: 200
-      file: data/cpComplete.json
-
   - path: "/api/v1/digital-lpas/M-INPR-OGRE-CPG3"
     method: get
     response:
       statusCode: 200
       file: data/cpInProgress.json
+
+  - path: "/api/v1/digital-lpas/M-CANC-ELLE-DPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpCancelled.json
+
+  - path: "/api/v1/digital-lpas/M-NOTR-EGIS-RPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpCannotRegister.json
+
+  - path: "/api/v1/digital-lpas/M-DERE-GIST-RPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpDeRegistered.json
+
+  - path: "/api/v1/digital-lpas/M-DNOT-REGI-RPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpDoNotRegister.json
+
+  - path: "/api/v1/digital-lpas/M-EXPI-REDQ-RPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpExpired.json
+
+  - path: "/api/v1/digital-lpas/M-STAT-WAIT-RPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpStatWaitPeriod.json
+
+  - path: "/api/v1/digital-lpas/M-SUSP-ENDE-DPG3"
+    method: get
+    response:
+      statusCode: 200
+      file: data/cpSuspended.json

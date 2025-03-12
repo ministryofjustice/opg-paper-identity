@@ -7,10 +7,16 @@ namespace Application\Yoti;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiException;
 use DateTime;
-use Ramsey\Uuid\Uuid;
+use DateTimeImmutable;
+use Psr\Clock\ClockInterface;
 
 class SessionConfig
 {
+    public function __construct(
+        private readonly ClockInterface $clock
+    ) {
+    }
+
     public function build(CaseData $case, string $uuid): array
     {
         $sessionConfig = [];
@@ -105,29 +111,27 @@ class SessionConfig
 
     public function getResourceTtl(): int
     {
-        $deadlineTime = strtotime($this->deadlineDate());
-        if ($deadlineTime === false) {
-            throw new YotiException("Invalid deadline date");
-        }
+        $now = $this->clock->now();
+        $TenPm = $now->setTime(22, 0, 0);
+        $timeTill10PM = $TenPm->getTimestamp() - $now->getTimestamp();
 
-        $deadlineSeconds = $deadlineTime - time();
+        $resourceTtlDays = (int)getenv("YOTI_SESSION_RESOURCE_TTL") ? : 35;
 
-        return $deadlineSeconds + 86400;
+        return (60 * 60 * 24 * $resourceTtlDays) + $timeTill10PM;
     }
 
     public function deadlineDate(): string
     {
-        $currentDate = new DateTime();
+        $now = $this->clock->now();
 
         // Add number of days for session dateline as loaded via env
-        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '30';
+        $deadlineSet = (string)getenv("YOTI_SESSION_DEADLINE") ? : '28';
         $modifierString = '+' . $deadlineSet . ' days';
-        $currentDate->modify($modifierString);
-
+        $deadline = $now->modify($modifierString);
         // Set the time to 22:00
-        $currentDate->setTime(22, 0, 0);
+        $deadline = $deadline->setTime(22, 0, 0);
         // Format the date to ISO 8601 string
-        return $currentDate->format(DateTime::ATOM);
+        return $deadline->format(DateTime::ATOM);
     }
 
     /**

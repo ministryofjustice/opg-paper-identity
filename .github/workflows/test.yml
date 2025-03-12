@@ -15,6 +15,9 @@ on:
       pact_broker_password:
         description: 'Password for central OPG pact broker'
         required: true
+      codecov_token:
+          description: 'token to upload to codecov'
+          required: true
 
 defaults:
   run:
@@ -77,6 +80,15 @@ jobs:
           files: service-${{ matrix.service }}/build/*.xml
           test_file_prefix: +service-${{ matrix.service }}/
           check_name: ${{ matrix.service }} ${{ matrix.suite }} tests
+      - name: service ${{ matrix.service }} codecov upload
+        uses: codecov/codecov-action@v5
+        if: matrix.suite == 'unit-test'
+        with:
+          name: paper-id-${{ matrix.service }}
+          directory: ./service-${{ matrix.service }}/build
+          fail_ci_if_error: false
+          flags: paper-id-${{ matrix.service }}
+          token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
     runs-on: ubuntu-latest

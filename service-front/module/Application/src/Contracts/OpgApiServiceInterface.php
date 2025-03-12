@@ -29,6 +29,7 @@ namespace Application\Contracts;
  *   dob: string,
  *   address: Address,
  *   professionalAddress?: Address,
+ *   identityCheckPassed?: bool|null,
  *   idMethodIncludingNation?: array{
  *     id_country?: string,
  *     id_method?: string,
@@ -70,7 +71,7 @@ interface OpgApiServiceInterface
     /**
      * @return CaseData
      */
-    public function getDetailsData(string $uuid, bool $skipIdCheckPerformedCheck = false): array;
+    public function getDetailsData(string $uuid): array;
 
     public function checkNinoValidity(string $uuid, string $nino): string;
 
@@ -186,4 +187,8 @@ interface OpgApiServiceInterface
     public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
 
     public function abandonFlow(string $uuid): void;
+
+    public function startCourtOfProtection(string $uuid): void;
+
+    public function sendVouchStarted(string $uuid): void;
 }

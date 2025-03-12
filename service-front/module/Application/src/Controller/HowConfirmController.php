@@ -114,6 +114,9 @@ class HowConfirmController extends AbstractActionController
         } elseif ($formData['id_method'] == IdMethod::OnBehalf->value) {
             $data = ['id_route' => IdMethod::OnBehalf->value];
             $returnRoute = "root/what_is_vouching";
+        } elseif ($formData['id_method'] == IdMethod::CourtOfProtection->value) {
+            $data = ['id_route' => IdMethod::CourtOfProtection->value];
+            $returnRoute = "root/court_of_protection";
         } else {
             $data = [
                 'id_route' => 'TELEPHONE',

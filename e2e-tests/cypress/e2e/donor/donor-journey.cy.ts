@@ -8,7 +8,7 @@ describe("Identify a Donor", () => {
 
     cy.contains("Do the details match the ID document?");
 
-    cy.contains("Edit the donor's details in Sirius").should('have.attr', 'href').and('include', 'lpa_details')
+    cy.contains("Edit the donor's details in Sirius").should('have.attr', 'href').and('include', 'lpa-details')
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("LPAs included in this identity check");
@@ -275,6 +275,90 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("National insurance number");
+  });
+
+  it("lets you choose the post-office route", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35F0");
+
+    cy.get("input#POST_OFFICE").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.get("[id=PASSPORT]").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Do the details match the ID document?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("LPAs included in this identity check");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.get('input[name=postoffice]').first().click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Confirm Post Office route");
+    cy.contains("Passport");
+    cy.contains("St. Neots");
+    cy.contains("Submission deadline");
+    cy.get(".govuk-button").contains("Confirm and send letter").click();
+
+    cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
+    cy.contains("If you haven't already, please return your signed LPA.");
+  });
+
+  it("lets you identify using court of protection", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+    cy.contains("How will you confirm your identity?");
+
+    cy.contains("The donor cannot do any of the above (Court of Protection)").click();
+
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Register your LPA through the Court of Protection");
+
+    cy.get(".govuk-button").contains("Apply to the Court of Protection").click();
+
+    cy.contains("There is a problem");
+
+    cy.contains("Check the box to continue");
+
+    cy.contains("I understand that if I do not confirm my identity within 6-months of signing the LPA, and I choose to register the LPA with the Court of Protection, I will have to pay an additional fee and wait several months.").click();
+
+    cy.get(".govuk-button").contains("Apply to the Court of Protection").click();
+
+    cy.contains("Court of Protection decision has been recorded");
+
+    cy.get(".govuk-button").contains("Finish and return to Sirius");
+  });
+
+  it("lets you choose the vouching route", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-XYXY-YAGB-35G3");
+
+    cy.contains("How will you confirm your identity?");
+    cy.contains("Have someone vouch for the identity of the donor").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("What is Vouching?");
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("There is a problem");
+    cy.contains("Please select Yes or No");
+
+    cy.contains("No, choose a different method").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("How will you confirm your identity?");
+    cy.contains("Have someone vouch for the identity of the donor").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+    cy.contains("Yes, send the letter about vouching to the donor").click();
+    cy.get(".govuk-button").contains("Continue").click();
+
+
+    cy.get(".govuk-button").contains("Finish and return to Sirius");
+
+    cy.contains("What happens next?");
+    cy.get(".govuk-button").contains("Finish and return to Sirius").click();
   });
 
 });

@@ -41,7 +41,7 @@
     <form method="POST">
         <div class="govuk-form-group govuk-!-width-two-thirds {% if form.get('lpa').messages %}govuk-form-group--error{% endif %}">
             <h1 class="govuk-label-wrapper">
-                <label class="govuk-label govuk-label--l" for="event-name">
+                <label class="govuk-label govuk-label--l" for="lpa-number">
                 What is the LPA number?
                 </label>
             </h1>
@@ -163,7 +163,7 @@
                             <div class="govuk-checkboxes__item">
                                 <input class="govuk-checkboxes__input" id="declaration_confirmed" name="declaration" type="checkbox" value="declaration_confirmed"
                                 {% if form.get('declaration').value == "declaration_confirmed" %}checked{% endif %}>
-                                <label class="govuk-label govuk-checkboxes__label" for="declaration">
+                                <label class="govuk-label govuk-checkboxes__label" for="declaration_confirmed">
                                 To the best of your knowledge, the person who asked you to vouch for them is {{ lpa_response['donorName'] }} and you have known them for at least 2 years.
                                 </label>
                             </div>

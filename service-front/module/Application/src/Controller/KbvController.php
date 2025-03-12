@@ -32,6 +32,12 @@ class KbvController extends AbstractActionController
         $view->setVariable('uuid', $uuid);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (isset($detailsData['identityCheckPassed'])) {
+            $view->setVariable('message', 'The identity check has already been completed');
+            return $view->setTemplate('application/pages/cannot_start');
+        }
+
         if ($detailsData['personType'] == 'certificateProvider') {
             $passRoute = "root/cp_identity_check_passed";
             $failRoute = "root/cp_identity_check_failed";
@@ -46,6 +52,12 @@ class KbvController extends AbstractActionController
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
+        /**
+         * @psalm-suppress PossiblyInvalidArrayAccess
+         */
+        $firstQuestion = $questionsData[0]['question'];
+        $view->setVariable('first_question', $firstQuestion);
+
         if ($questionsData === false) {
             throw new HttpException(500, 'Could not load KBV questions');
         }
@@ -57,6 +69,7 @@ class KbvController extends AbstractActionController
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
 
         $form = new Form();
+
         foreach ($questionsData as $question) {
             $form->add(new Element($question['externalId']));
         }

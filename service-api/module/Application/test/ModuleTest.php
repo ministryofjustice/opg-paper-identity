@@ -7,9 +7,6 @@ namespace ApplicationTest;
 use Application\Module;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Application\Module;
- */
 class ModuleTest extends TestCase
 {
     public function testProvidesConfig(): void

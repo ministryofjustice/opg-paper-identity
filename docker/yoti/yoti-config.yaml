@@ -39,3 +39,9 @@ resources:
     response:
       statusCode: 200
       scriptFile: mediaRetrieval.groovy
+
+  - path: "/idverify/v1/sessions/{sessionId}/instructions/pdf"
+    method: get
+    response:
+      statusCode: 200
+      scriptFile: pdfFile.groovy

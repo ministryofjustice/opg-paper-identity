@@ -82,8 +82,14 @@ class DataQueryHandler
             if (! is_array($value)) {
                 throw new InvalidJsonException("Key value must be an array.");
             }
-            $keyConditionExpression .= "#" . array_key_first($value) . " = :v$index AND ";
-            $expressionAttributeNames["#" . array_key_first($value)] = array_key_first($value);
+
+            $keyName = array_key_first($value);
+            if (! is_string($keyName)) {
+                throw new InvalidJsonException("Could not extract key name");
+            }
+
+            $keyConditionExpression .= "#" . $keyName . " = :v$index AND ";
+            $expressionAttributeNames["#" . $keyName] = $keyName;
 
             /** @var array $hold */
             $hold = array_pop($value);

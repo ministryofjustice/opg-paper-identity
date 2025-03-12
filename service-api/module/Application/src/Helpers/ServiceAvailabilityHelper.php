@@ -124,12 +124,29 @@ class ServiceAvailabilityHelper
 
     private function parseBannerText(string $configMessage): string
     {
-        $labels = $this->config['opg_settings']['person_type_labels'];
+        if ($configMessage === 'STOP') {
+            switch ($this->case->personType) {
+                case 'donor':
+                    $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_STOP'];
+                    break;
+                case 'certificateProvider':
+                    $bannerText = $this->config['opg_settings']['banner_messages']['CP_STOP'];
+                    break;
+                case 'voucher':
+                    $bannerText = $this->config['opg_settings']['banner_messages']['VOUCHER_STOP'];
+                    break;
+            }
+        } else {
+            $labels = $this->config['opg_settings']['person_type_labels'];
 
-        return sprintf(
-            $this->config['opg_settings']['banner_messages'][$configMessage],
-            $labels[$this->case->personType]
-        );
+            $bannerText = str_replace(
+                "%s",
+                $labels[$this->case->personType],
+                $this->config['opg_settings']['banner_messages'][$configMessage]
+            );
+        }
+        /** @psalm-suppress InvalidReturnStatement */
+        return $bannerText;
     }
 
     public function processServicesWithCaseData(): array
@@ -153,7 +170,7 @@ class ServiceAvailabilityHelper
 
         if ($this->case->identityCheckPassed === false) {
             $this->processedMessages['banner'] =
-                $this->parseBannerText(self::LOCKED);
+                $this->parseBannerText(self::DECISION_STOP);
 
             $this->setServiceFlags(false);
 

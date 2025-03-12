@@ -24,7 +24,10 @@ class CaseOutcomeCalculator
         $this->dataHandler->insertUpdateData($caseData);
 
         // add to logs
-        $this->logger->info("Update for CaseId " . $caseData->id . "- Result: " . $caseData->identityCheckPassed);
+        $this->logger->info(
+            "Update for CaseId " . $caseData->id . "- Result: " .
+            ($caseData->identityCheckPassed ? 'Passed' : 'Failed')
+        );
 
         $this->eventSender->send("identity-check-updated", [
             "reference" => "opg:" . $caseData->id,

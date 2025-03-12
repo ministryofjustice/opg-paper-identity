@@ -23,7 +23,7 @@ class LpaUidValidator extends AbstractValidator
             return false;
         }
 
-        $this->setValue(strtoupper($value));
+        $this->setValue($value);
 
         if (! $this->lpaValidity()) {
             $this->error(self::LPA);
@@ -35,6 +35,6 @@ class LpaUidValidator extends AbstractValidator
 
     private function lpaValidity(): bool
     {
-        return 1 === preg_match('/M(-([0-9A-Z]){4}){3}/', $this->value);
+        return 1 === preg_match('/^M(-([0-9A-Z]){4}){3}$/', $this->value);
     }
 }

@@ -22,13 +22,16 @@ class DocumentCheckControllerFactory implements FactoryInterface
         $requestedName,
         array $options = null
     ): DocumentCheckController {
-        /** @var string $siriusPublicUrl */
+
         $config = $container->get('Config');
+        /** @var string $siriusPublicUrl */
+        $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
 
         return new DocumentCheckController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(FormProcessorHelper::class),
             $config,
+            $siriusPublicUrl
         );
     }
 }

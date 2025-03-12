@@ -6,6 +6,7 @@ namespace Application;
 
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
+use Application\Controller\Factory\CourtOfProtectionFlowControllerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\HowConfirmControllerFactory;
@@ -202,6 +203,26 @@ return [
                             'defaults' => [
                                 'controller' => Controller\PostOfficeFlowController::class,
                                 'action' => 'postOfficeDocuments',
+                            ],
+                        ],
+                    ],
+                    'court_of_protection' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/court-of-protection',
+                            'defaults' => [
+                                'controller' => Controller\CourtOfProtectionFlowController::class,
+                                'action' => 'register',
+                            ],
+                        ],
+                    ],
+                    'court_of_protection_what_next' => [
+                        'type' => Segment::class,
+                        'options' => [
+                            'route' => '/:uuid/court-of-protection-what-next',
+                            'defaults' => [
+                                'controller' => Controller\CourtOfProtectionFlowController::class,
+                                'action' => 'whatNext',
                             ],
                         ],
                     ],
@@ -529,6 +550,7 @@ return [
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
+            Controller\CourtOfProtectionFlowController::class => CourtOfProtectionFlowControllerFactory::class,
         ],
     ],
     'listeners' => [
@@ -613,21 +635,21 @@ return [
         'template_options' => [
             'NATIONAL_INSURANCE_NUMBER' => [
                 'default' => 'application/pages/national_insurance_number',
-                'success' => 'application/pages/national_insurance_number_success',
+                'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/national_insurance_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
                 'fraud' => 'application/pages/fraud_failure'
             ],
             'PASSPORT' => [
                 'default' => 'application/pages/passport_number',
-                'success' => 'application/pages/passport_number_success',
+                'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/passport_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
                 'fraud' => 'application/pages/fraud_failure'
             ],
             'DRIVING_LICENCE' => [
                 'default' => 'application/pages/driving_licence_number',
-                'success' => 'application/pages/driving_licence_number_success',
+                'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/driving_licence_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
                 'fraud' => 'application/pages/fraud_failure'

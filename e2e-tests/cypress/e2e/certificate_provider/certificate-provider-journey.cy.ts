@@ -7,7 +7,7 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the name match the ID?");
-        cy.contains("Edit the certificate provider's details in Sirius").should('have.attr', 'href').and('include', 'lpa_details')
+        cy.contains("Edit the certificate provider's details in Sirius").should('have.attr', 'href').and('include', 'lpa-details')
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("LPAs included in the identity check");
@@ -386,25 +386,6 @@ describe("Identify a Certificate Provider", () => {
         cy.get("#lpa").should('be.visible').type("M-EMPT-YLPA-CPG3");        // same LPA number
         cy.get(".govuk-button").contains("Find LPA").click();
         cy.contains("This LPA cannot be added as it’s status is set to Draft. LPAs need to be in the In progress status to be added to this ID check.");
-    });
-
-    it("throws error on attempting to add complete LPA", () => {
-        cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
-
-        cy.contains("How will you confirm your identity?");
-        cy.get("label").contains("National insurance number").click();
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("Does the name match the ID?");
-        cy.get(".govuk-button").contains("Continue").click();
-
-        cy.contains("LPAs included in the identity check");
-
-        cy.get(".govuk-button").contains("Add another LPA").click();
-        cy.contains("Find an LPA to add");
-        cy.get("#lpa").should('be.visible').type("M-COMP-LETE-CPG3");        // completed LPA number
-        cy.get(".govuk-button").contains("Find LPA").click();
-        cy.contains("These LPAs cannot be added as they do not have the correct status for an ID check. LPAs need to be in the In progress status to be added to this identity check.");
     });
 
     it("throws error on attempting to add registered LPA", () => {

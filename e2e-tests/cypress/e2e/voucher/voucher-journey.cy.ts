@@ -194,9 +194,8 @@ describe("Voucher journey", () => {
         cy.contains("Passport");
         cy.contains("St. Neots");
         cy.contains("Submission deadline");
-        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Confirm and send letter").click();
 
-        cy.contains("We will send you a letter.");
-        cy.contains("Please do this by the deadline stated.");
+        cy.contains("We will send you a letter to take to the Post Office with your chosen identity document.");
     });
 });

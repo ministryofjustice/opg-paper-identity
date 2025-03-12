@@ -84,6 +84,7 @@ use Psr\Log\LoggerInterface;
  *      },
  *    },
  *    attorneys: Attorney[],
+ *    status: string
  *  },
  * }
  */
@@ -117,10 +118,6 @@ class SiriusApiService
     {
         try {
             $headers = $this->getAuthHeaders($request);
-
-            if ($headers === null) {
-                return false;
-            }
 
             $this->client->get('/api/v1/users/current', [
                 'headers' => $headers,

@@ -400,6 +400,11 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
         400:
           $ref: "#/components/responses/400"
         401:
