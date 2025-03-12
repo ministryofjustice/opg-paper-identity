@@ -143,15 +143,14 @@ class SiriusDataProcessorHelper
 
     public function createLpaDetailsArray(
         array $detailsData,
-        Request|RequestInterface $request,
-        bool $sirius = false
+        Request|RequestInterface $request
     ): array {
         $lpaDetails = [];
 
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
 
-            if (empty($lpasData['opg.poas.lpastore']) || $sirius) {
+            if (empty($lpasData['opg.poas.lpastore'])) {
                 $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
                     $lpasData['opg.poas.sirius']['donor']['surname'];
                 $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
