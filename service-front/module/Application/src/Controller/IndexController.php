@@ -50,7 +50,7 @@ class IndexController extends AbstractActionController
         $type = $this->params()->fromQuery("personType");
 
         $lpas = [];
-        foreach ($lpasQuery as $lpaUid) {
+        foreach ($lpasQuery as $key => $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
 
             if (array_key_exists('error', $data)) {
@@ -64,10 +64,16 @@ class IndexController extends AbstractActionController
                         'lastName' => '',
                     ]
                 ]);
-                return $view->setTemplate('application/pages/cannot_start');
+                unset($lpasQuery[$key]);
             } else {
                 $lpas[] = $data;
             }
+        }
+
+        $lpasQuery = array_values($lpasQuery);
+
+        if (empty($lpas)) {
+            return $view->setTemplate('application/pages/cannot_start');
         }
 
         if (empty($lpas)) {
