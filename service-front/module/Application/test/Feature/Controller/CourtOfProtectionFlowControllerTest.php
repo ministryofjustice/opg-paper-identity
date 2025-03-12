@@ -6,6 +6,7 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CourtOfProtectionFlowController;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -14,6 +15,8 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiServiceMock;
+
+    private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelper;
     private string $uuid;
 
     public function setUp(): void
@@ -24,6 +27,7 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiServiceMock = $this->createMock(SiriusApiService::class);
+        $this->siriusDataProcessorHelper = $this->createMock(SiriusDataProcessorHelper::class);
 
         parent::setUp();
 
@@ -31,6 +35,7 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiServiceMock);
+        $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelper);
     }
 
     private function returnOpgResponseData(): array
@@ -43,15 +48,12 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    private function returnSiriusLpaResponse(): array
+    private function returnMockLpaArray(): array
     {
         return [
-            "opg.poas.lpastore" => [
-                "donor" => [
-                    "firstNames" => "John",
-                    "lastName" => "Doe",
-                ],
-                "lpaType" => "property-and-affairs" // Ensuring this value is set to prevent null issues
+            "M-0000-0000-0000" => [
+                "name" => "John Doe",
+                "type" => "property-and-affairs"
             ]
         ];
     }
@@ -66,11 +68,10 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseData);
 
-        $mockSiriusLpaData = $this->returnSiriusLpaResponse();
-        $this->siriusApiServiceMock
+        $this->siriusDataProcessorHelper
             ->expects(self::once())
-            ->method('getLpaByUid')
-            ->willReturn($mockSiriusLpaData);
+            ->method('createLpaDetailsArray')
+            ->willReturn($this->returnMockLpaArray());
 
         $this->dispatch("/{$this->uuid}/court-of-protection", 'GET');
         $this->assertResponseStatusCode(200);
@@ -90,11 +91,10 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseData);
 
-        $mockSiriusLpaData = $this->returnSiriusLpaResponse();
-        $this->siriusApiServiceMock
+        $this->siriusDataProcessorHelper
             ->expects(self::once())
-            ->method('getLpaByUid')
-            ->willReturn($mockSiriusLpaData);
+            ->method('createLpaDetailsArray')
+            ->willReturn($this->returnMockLpaArray());
 
         $this->opgApiServiceMock
             ->expects(self::once())

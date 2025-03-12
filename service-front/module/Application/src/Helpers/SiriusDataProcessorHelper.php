@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\LpaTypes;
 use Application\Exceptions\HttpException;
 use Application\Services\SiriusApiService;
 use DateTime;
 use Laminas\Http\Request;
+use Laminas\Stdlib\RequestInterface;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
@@ -109,7 +111,10 @@ class SiriusDataProcessorHelper
             return [
                 'first_name' => $data['opg.poas.sirius']['donor']['firstname'],
                 'last_name' => $data['opg.poas.sirius']['donor']['surname'],
-                'dob' => DateTime::createFromFormat('d/m/Y', $data['opg.poas.sirius']['donor']['dob'])->format("Y-m-d"),
+                'dob' => DateTime::createFromFormat(
+                    'd/m/Y',
+                    $data['opg.poas.sirius']['donor']['dob']
+                )->format("Y-m-d"),
                 'address' => $address,
             ];
         } elseif ($type === 'certificateProvider') {
@@ -134,5 +139,32 @@ class SiriusDataProcessorHelper
         }
 
         throw new HttpException(400, 'Person type "' . $type . '" is not valid');
+    }
+
+    public function createLpaDetailsArray(
+        array $detailsData,
+        Request|RequestInterface $request
+    ): array {
+        $lpaDetails = [];
+
+        foreach ($detailsData['lpas'] as $lpa) {
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
+
+            if (empty($lpasData['opg.poas.lpastore'])) {
+                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
+                    $lpasData['opg.poas.sirius']['donor']['surname'];
+                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
+            } else {
+                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
+                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
+                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
+            }
+
+            $lpaDetails[$lpa] = [
+                'name' => $name,
+                'type' => $type
+            ];
+        }
+        return $lpaDetails;
     }
 }

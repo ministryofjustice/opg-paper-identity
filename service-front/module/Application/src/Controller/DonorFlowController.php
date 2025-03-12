@@ -101,35 +101,16 @@ class DonorFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $lpaDetails = [];
         $view = new ViewModel();
 
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('lpas', $detailsData['lpas']);
         $view->setVariable('lpa_count', count($detailsData['lpas']));
 
-        foreach ($detailsData['lpas'] as $lpa) {
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-
-            if (! empty($lpasData['opg.poas.lpastore'])) {
-                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-            } else {
-                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
-                    $lpasData['opg.poas.sirius']['donor']['surname'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
-            }
-
-            $lpaDetails[$lpa] = [
-                'name' => $name,
-                'type' => $type
-            ];
-        }
-
-        $view->setVariable('lpa_details', $lpaDetails);
+        $view->setVariable(
+            'lpa_details',
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+        );
 
         if (count($this->getRequest()->getPost())) {
 //            $data = $this->getRequest()->getPost();
