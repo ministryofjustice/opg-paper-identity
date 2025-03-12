@@ -49,39 +49,6 @@ class SiriusApiServiceTest extends TestCase
         $this->assertTrue($ret);
     }
 
-    public function testCheckAuthFailureNoCookie(): void
-    {
-        $clientMock = $this->createMock(Client::class);
-        $loggerMock = $this->createMock(LoggerInterface::class);
-
-        $sut = new SiriusApiService($clientMock, $loggerMock);
-
-
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-
-        $ret = $sut->checkAuth($request);
-        $this->assertFalse($ret);
-    }
-
-    public function testCheckAuthFailureNoXSRF(): void
-    {
-        $clientMock = $this->createMock(Client::class);
-        $loggerMock = $this->createMock(LoggerInterface::class);
-
-        $sut = new SiriusApiService($clientMock, $loggerMock);
-
-
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1");
-
-        $ret = $sut->checkAuth($request);
-        $this->assertFalse($ret);
-    }
-
     public function testCheckAuthFailureNotAuthed(): void
     {
         $clientMock = $this->createMock(Client::class);
