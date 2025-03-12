@@ -15,7 +15,7 @@ class CaseOutcomeCalculator
     public function __construct(
         private readonly DataWriteHandler $dataHandler,
         private readonly LoggerInterface $logger,
-        private readonly EventSender $eventSender,
+        private readonly EventSender $eventSender
     ) {
     }
 
@@ -36,5 +36,7 @@ class CaseOutcomeCalculator
             "time" => $time,
             "state" => ($caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure)->value,
         ]);
+
+        $this->dataHandler->setTTL($caseData->id);
     }
 }

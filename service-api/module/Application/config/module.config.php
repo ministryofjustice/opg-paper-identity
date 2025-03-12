@@ -455,33 +455,13 @@ return [
                     ],
                 ],
             ],
-            'abandon' => [
+            'send_sirius_event' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/abandon',
+                    'route' => '/cases/:uuid/send-sirius-event/:status',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'abandonCase',
-                    ],
-                ],
-            ],
-            'start_court_of_protection' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/start-court-of-protection',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'startCourtOfProtection',
-                    ],
-                ],
-            ],
-            'send_vouch_started' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/cases/:uuid/send-vouch-started',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'sendVouchStarted',
+                        'action' => 'sendSiriusEvent',
                     ],
                 ],
             ],
@@ -513,7 +493,8 @@ return [
             DataWriteHandler::class => fn (ServiceLocatorInterface $serviceLocator) => new DataWriteHandler(
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
-                $serviceLocator->get(LoggerInterface::class)
+                $serviceLocator->get(LoggerInterface::class),
+                $serviceLocator->get(ClockInterface::class)
             ),
             LoggerInterface::class => LoggerFactory::class,
             LicenseInterface::class => LicenseFactory::class,

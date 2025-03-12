@@ -154,6 +154,7 @@ services:
       - "./scripts/localstack/wait:/scripts/wait"
     environment:
       AWS_DEFAULT_REGION: eu-west-1
+      DYNAMODB_REMOVE_EXPIRED_ITEMS: 1
     healthcheck:
       test: bash /scripts/wait/healthcheck.sh
       interval: 20s
