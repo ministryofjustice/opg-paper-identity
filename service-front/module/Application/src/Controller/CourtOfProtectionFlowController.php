@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
 use Application\Forms\ConfirmCourtOfProtection;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -21,7 +22,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
+        private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly string $siriusPublicUrl,
     ) {
     }
@@ -40,29 +41,10 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
         $view->setVariable('has_fraud_marker', $hasFraudMarker);
 
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-
-            if (isset($lpasData['opg.poas.lpastore'])) {
-                $name = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                    $lpasData['opg.poas.lpastore']['donor']['lastName'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.lpastore']['lpaType']);
-            } else {
-                $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .
-                    $lpasData['opg.poas.sirius']['donor']['surname'];
-
-                $type = LpaTypes::fromName($lpasData['opg.poas.sirius']['caseSubtype']);
-            }
-
-            $lpaDetails[$lpa] = [
-                'name' => $name,
-                'type' => $type
-            ];
-        }
-
-        $view->setVariable('lpa_details', $lpaDetails);
+        $view->setVariable(
+            'lpa_details',
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+        );
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $this->opgApiService->startCourtOfProtection($uuid);
