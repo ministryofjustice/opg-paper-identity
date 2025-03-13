@@ -34,4 +34,15 @@ class JwtGeneratorTest extends TestCase
         $this->assertEquals('2022-06-18T10:28:45+00:00', $token->claims()->get('iat')->format('c'));
         $this->assertEquals('2022-06-18T10:29:15+00:00', $token->claims()->get('exp')->format('c'));
     }
+
+    public function testWillNotIssueWithoutSub()
+    {
+        $clock = new FrozenClock(new DateTimeImmutable('2022-06-18T10:28:45Z'));
+
+        $generator = new JwtGenerator($clock, 'alongstringthatcouldbeusedasapassphrase');
+
+        $this->expectExceptionMessage('Could not determine user sub');
+
+        $generator->issueToken();
+    }
 }
