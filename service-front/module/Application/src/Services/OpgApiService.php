@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Auth\JwtGenerator;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
@@ -30,8 +31,10 @@ class OpgApiService implements OpgApiServiceInterface
      */
     protected array $responseData;
 
-    public function __construct(private Client $httpClient)
-    {
+    public function __construct(
+        private Client $httpClient,
+        private JwtGenerator $jwtGenerator,
+    ) {
     }
 
     public function healthCheck(): bool
@@ -42,6 +45,7 @@ class OpgApiService implements OpgApiServiceInterface
                 'GET',
                 ['Content-Type' => self::TYPE_HEADER]
             );
+
             return true;
         } catch (\Exception $exception) {
             return false;
@@ -50,6 +54,8 @@ class OpgApiService implements OpgApiServiceInterface
 
     private function makeApiRequest(string $uri, string $verb = 'get', array $data = [], array $headers = []): array
     {
+        $headers['Authorization'] = 'Bearer ' . $this->jwtGenerator->issueToken();
+
         try {
             $response = $this->httpClient->request($verb, $uri, [
                 'headers' => $headers,
@@ -191,7 +197,7 @@ class OpgApiService implements OpgApiServiceInterface
                 'vouchingFor' => [
                     'firstName' => $firstname,
                     'lastName' => $lastname,
-                ]
+                ],
             ];
         } else {
             $data = [
@@ -202,7 +208,7 @@ class OpgApiService implements OpgApiServiceInterface
                     'address' => $address,
                 ],
                 'personType' => $personType,
-                'lpas' => $lpas
+                'lpas' => $lpas,
             ];
         }
 
@@ -213,8 +219,8 @@ class OpgApiService implements OpgApiServiceInterface
     {
         $this->makeApiRequest("/cases/update/$uuid", 'PATCH', [
             'claimedIdentity' => [
-                'address' => $address
-            ]
+                'address' => $address,
+            ],
         ]);
     }
 
@@ -299,7 +305,7 @@ class OpgApiService implements OpgApiServiceInterface
 
         $data = [
             'idDocument' => $idDocument,
-            'state' => $state
+            'state' => $state,
         ];
 
         try {
@@ -433,7 +439,7 @@ class OpgApiService implements OpgApiServiceInterface
 
         $data = [
             'assistance' => $assistance === 'yes' ? true : false,
-            'details' => $details
+            'details' => $details,
         ];
 
         try {
