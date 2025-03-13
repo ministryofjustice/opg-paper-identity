@@ -66,3 +66,9 @@ clean-junit-output:
 
 cypress:
 	docker compose run --rm cypress
+
+scan: scan-api scan-front 
+scan-api:
+	docker compose run --rm trivy image --format table paper-identity/api:latest
+scan-front:
+	docker compose run --rm trivy image --format table paper-identity/front:latest
