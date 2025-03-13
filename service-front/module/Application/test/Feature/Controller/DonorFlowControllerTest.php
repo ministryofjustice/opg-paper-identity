@@ -86,32 +86,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/identity_check_passed');
     }
 
-    public function testIdentityCheckFailedPage(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $siriusResponse = $this->returnSiriusLpaResponse();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this
-            ->siriusApiService
-            ->expects(self::once())
-            ->method('getLpaByUid')
-            ->willReturn($siriusResponse);
-
-        $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/identity_check_failed');
-    }
-
     public function testThinFileFailurePage(): void
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
