@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Auth\JwtGenerator;
+use Application\Enums\SiriusDocument;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\PostcodeInvalidException;
-use Application\Helpers\AddressProcessorHelper;
-use Application\Enums\SiriusDocument;
-use Application\Validators\LpaUidValidator;
 use Application\Exceptions\UidInvalidException;
+use Application\Helpers\AddressProcessorHelper;
+use Application\Validators\LpaUidValidator;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Header\Cookie;
 use Laminas\Http\Request;
 use Laminas\Stdlib\RequestInterface;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -92,7 +92,8 @@ class SiriusApiService
 {
     public function __construct(
         private readonly Client $client,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly JwtGenerator $jwtGenerator,
     ) {
     }
 
@@ -119,9 +120,13 @@ class SiriusApiService
         try {
             $headers = $this->getAuthHeaders($request);
 
-            $this->client->get('/api/v1/users/current', [
+            $response = $this->client->get('/api/v1/users/current', [
                 'headers' => $headers,
             ]);
+
+            $user = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+
+            $this->jwtGenerator->setSub($user['email']);
         } catch (GuzzleException $e) {
             return false;
         }
@@ -141,7 +146,7 @@ class SiriusApiService
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
         $response = $this->client->get('/api/v1/digital-lpas/' . urlencode($uid), [
-            'headers' => $authHeaders
+            'headers' => $authHeaders,
         ]);
 
         $responseArray = json_decode(strval($response->getBody()), true);
@@ -160,12 +165,14 @@ class SiriusApiService
     public function getAllLinkedLpasByUid(string $uid, Request $request): array
     {
         $responseArray = [];
+
         try {
             $response = $this->getLpaByUid($uid, $request);
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();
             if ($response->getStatusCode() === 404) {
                 $this->logger->info("uid: {$uid} not found");
+
                 return $responseArray;
             } else {
                 throw $clientException;
@@ -191,6 +198,7 @@ class SiriusApiService
                 }
             }
         }
+
         return $responseArray;
     }
 
@@ -207,11 +215,12 @@ class SiriusApiService
     {
         try {
             $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
-                'headers' => $this->getAuthHeaders($request)
+                'headers' => $this->getAuthHeaders($request),
             ]);
         } catch (ClientException $e) {
             if ($e->getResponse()->getStatusCode() === 400) {
                 $errorMessage = sprintf('Bad Request error returned from postcode lookup: %s', $e->getMessage());
+
                 throw new PostcodeInvalidException($errorMessage);
             }
 
@@ -242,7 +251,7 @@ class SiriusApiService
             $caseDetails["address"]["line3"] ?? "N/A",
             $caseDetails["address"]["town"],
             $caseDetails["address"]["country"],
-            $caseDetails["address"]["postcode"]
+            $caseDetails["address"]["postcode"],
         ];
 
         $data = [
@@ -250,7 +259,7 @@ class SiriusApiService
             "systemType" => $systemType,
             "content" => "",
             "correspondentName" => $caseDetails['firstName'] . ' ' . $caseDetails['lastName'],
-            "correspondentAddress" => $address
+            "correspondentAddress" => $address,
         ];
 
         if ($systemType === SiriusDocument::PostOfficeDocCheckVoucher) {
@@ -269,17 +278,17 @@ class SiriusApiService
         if (! $lpaId) {
             return [
                 'status' => 400,
-                'response' => 'LPA Id not found'
+                'response' => 'LPA Id not found',
             ];
         }
         $response = $this->client->post('/api/v1/lpas/' . $lpaId . '/documents', [
             'headers' => $this->getAuthHeaders($request),
-            'json' => $data
+            'json' => $data,
         ]);
 
         return [
             'status' => $response->getStatusCode(),
-            'response' => json_decode(strval($response->getBody()), true)
+            'response' => json_decode(strval($response->getBody()), true),
         ];
     }
 
@@ -307,12 +316,12 @@ class SiriusApiService
             "ownerType" => "case",
             "name" => $name,
             "type" => $type,
-            "description" => $description
+            "description" => $description,
         ];
 
         $this->client->post('/api/v1/persons/' . $donorId . '/notes', [
             'headers' => $this->getAuthHeaders($request),
-            'json' => $data
+            'json' => $data,
         ]);
     }
 
