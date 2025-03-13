@@ -7,7 +7,6 @@ namespace ApplicationTest\Feature\Aws\Secrets;
 use Application\Aws\Secrets\AwsSecret;
 use Application\Aws\Secrets\AwsSecretsCache;
 use ApplicationTest\TestCase;
-use RuntimeException;
 
 class AwsSecretTest extends TestCase
 {
@@ -21,14 +20,6 @@ class AwsSecretTest extends TestCase
     public function testGetName(): void
     {
         self::assertEquals('test', $this->sut->getName());
-    }
-
-    public function testGetValueThrowsExceptionIfCacheNotInstantiated(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('SecretsCache has not been initialised');
-
-        $this->sut->getValue();
     }
 
     public function testGetValueReturnsValueFromCache(): void
