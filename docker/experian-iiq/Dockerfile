@@ -1,4 +1,4 @@
-FROM outofcoffee/imposter:4.5.8
+FROM outofcoffee/imposter:4.6.0
 
 HEALTHCHECK --interval=15s --timeout=10s --start-period=5s --retries=3 \
     CMD ["imposter", "list", "-x" ]
