@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Services;
 
+use Application\Auth\JwtGenerator;
 use Application\Enums\SiriusDocument;
 use Application\Services\SiriusApiService;
 use GuzzleHttp\Client;
@@ -39,9 +40,11 @@ class SiriusApiServicePactTest extends TestCase
     private function buildService(): SiriusApiService
     {
         $this->loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
+
         $client = new Client(['base_uri' => $this->pactConfig->getBaseUri()]);
 
-        return new SiriusApiService($client, $this->loggerMock);
+        return new SiriusApiService($client, $this->loggerMock, $jwtGeneratorMock);
     }
 
     public function tearDown(): void
@@ -197,7 +200,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
         $details["lpas"][0] = "M-1234-9876-4567";
         $details["vouchingFor"] = [
             "firstName" => 'Jane',
-            "lastName" => 'Doe'
+            "lastName" => 'Doe',
         ];
 
         $suffix = base64_encode($this->getMinimalPdf());
@@ -238,8 +241,9 @@ trailer\n<<\n/Root 3 0 R\n>>\n
 
         $client = new Client(['base_uri' => $this->pactConfig->getBaseUri()]);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $service = new class ($client, $loggerMock) extends SiriusApiService {
+        $service = new class ($client, $loggerMock, $jwtGeneratorMock) extends SiriusApiService {
             /**
              * @return Lpa
              */
@@ -256,7 +260,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
                         'addressLine1' => 'Vandammeplein 8',
                         'town' => 'Hernezele',
                         'country' => 'BE',
-                    ]
+                    ],
                 ], 'opg.poas.lpastore' => null];
             }
         };
