@@ -11,7 +11,6 @@ use Application\Forms\ChooseVouching;
 use Application\Forms\FinishIDCheck;
 use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -27,7 +26,6 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly LoggerInterface $logger,
