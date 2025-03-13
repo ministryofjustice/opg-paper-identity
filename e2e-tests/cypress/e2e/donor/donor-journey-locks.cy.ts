@@ -68,6 +68,24 @@ describe("Identify a Donor", () => {
 
     });
 
+    it("shows document warning banner on start page when no KBV questions are available" , () => {
+        cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G5");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.getInputByLabel("National Insurance number").type("NP112233C");
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.jumpToPage("how-will-you-confirm");
+        cy.contains("The donor cannot ID over the phone due to a lack of available security questions or failure to answer them correctly on a previous occasion.");
+        cy.contains('Preferred: ID over the phone').should('not.exist');
+
+    });
+
     it("shows document fail banner on start page after KBV fail" , () => {
         cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
