@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Auth\JwtGenerator;
+use Application\Auth\JwtGeneratorFactory;
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CourtOfProtectionFlowControllerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
+use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\HowConfirmControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
-use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\IdMethod;
@@ -24,9 +26,12 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
+use Exception;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
+use Lcobucci\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Twig\Extension\DebugExtension;
 
@@ -559,6 +564,8 @@ return [
         ],
         'factories' => [
             AuthListener::class => AuthListenerFactory::class,
+            ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
+            JwtGenerator::class => JwtGeneratorFactory::class,
             LoggerInterface::class => LoggerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
@@ -610,7 +617,7 @@ return [
             IdMethod::NationalInsuranceNumber->value,
             IdMethod::PassportNumber->value,
             IdMethod::DrivingLicenseNumber->value,
-            IdMethod::PostOffice->value
+            IdMethod::PostOffice->value,
         ],
         'template_options' => [
             'NATIONAL_INSURANCE_NUMBER' => [
@@ -618,21 +625,21 @@ return [
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/national_insurance_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
-                'fraud' => 'application/pages/fraud_failure'
+                'fraud' => 'application/pages/fraud_failure',
             ],
             'PASSPORT' => [
                 'default' => 'application/pages/passport_number',
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/passport_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
-                'fraud' => 'application/pages/fraud_failure'
+                'fraud' => 'application/pages/fraud_failure',
             ],
             'DRIVING_LICENCE' => [
                 'default' => 'application/pages/driving_licence_number',
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/driving_licence_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
-                'fraud' => 'application/pages/fraud_failure'
+                'fraud' => 'application/pages/fraud_failure',
             ],
         ],
         'yoti_supported_documents' => json_decode(

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Factories;
 
+use Application\Auth\JwtGenerator;
 use Application\Services\SiriusApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use RuntimeException;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class SiriusApiServiceFactory implements FactoryInterface
 {
@@ -26,11 +27,11 @@ class SiriusApiServiceFactory implements FactoryInterface
         }
 
         $client = new Client(['base_uri' => $baseUri]);
-        $logger = $container->get(LoggerInterface::class);
 
         return new SiriusApiService(
             $client,
-            $logger
+            $container->get(LoggerInterface::class),
+            $container->get(JwtGenerator::class)
         );
     }
 }

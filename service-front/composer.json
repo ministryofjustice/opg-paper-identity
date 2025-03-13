@@ -25,6 +25,8 @@
         "laminas/laminas-mvc-plugins": "^1.2.0",
         "laminas/laminas-session": "^2.16.0",
         "laminas/laminas-skeleton-installer": "^1.3.0",
+        "lcobucci/clock": "^3.3",
+        "lcobucci/jwt": "^5.5",
         "monolog/monolog": "^3.5",
         "open-telemetry/contrib-aws": "^1.0@beta",
         "open-telemetry/exporter-otlp": "^1.0",
