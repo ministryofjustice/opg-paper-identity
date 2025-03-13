@@ -21,3 +21,4 @@ build
 # vendor files
 node_modules
 yarn-error.log
+.trivy-cache
