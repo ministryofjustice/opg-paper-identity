@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Factories;
 
+use Application\Auth\JwtGenerator;
+use Application\Services\OpgApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Application\Services\OpgApiService;
 use RuntimeException;
 
 class OpgApiServiceFactory implements FactoryInterface
@@ -26,6 +27,9 @@ class OpgApiServiceFactory implements FactoryInterface
 
         $guzzleClient = new Client(['base_uri' => $baseUri]);
 
-        return new OpgApiService($guzzleClient);
+        return new OpgApiService(
+            $guzzleClient,
+            $container->get(JwtGenerator::class),
+        );
     }
 }
