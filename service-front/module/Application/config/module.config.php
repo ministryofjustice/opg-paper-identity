@@ -171,7 +171,7 @@ return [
                         'options' => [
                             'route' => '/:uuid/identity-check-failed',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
+                                'controller' => Controller\KbvController::class,
                                 'action' => 'identityCheckFailed',
                             ],
                         ],
@@ -313,16 +313,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\CPFlowController::class,
                                 'action' => 'identityCheckPassed',
-                            ],
-                        ],
-                    ],
-                    'cp_identity_check_failed' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/identity-check-failed',
-                            'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'identityCheckFailed',
                             ],
                         ],
                     ],
@@ -523,16 +513,6 @@ return [
                             'defaults' => [
                                 'controller' => Controller\VouchingFlowController::class,
                                 'action' => 'identityCheckPassed',
-                            ],
-                        ],
-                    ],
-                    'voucher_identity_check_failed' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/identity-check-failed',
-                            'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'identityCheckFailed',
                             ],
                         ],
                     ],
