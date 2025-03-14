@@ -8,6 +8,7 @@ use Application\Aws\Secrets\AwsSecret;
 use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
 use Application\DWP\DwpApi\DwpApiException;
 use Application\DWP\DwpApi\DwpApiService;
+use Application\Enums\IdMethod;
 use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
@@ -181,15 +182,24 @@ class IdentityController extends AbstractActionController
 
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-            if ($this->dwpApiService->validateNino($caseData, $data['nino'], $correlationUuid)) {
-                return new JsonModel([
-                    'result' => 'PASS',
-                ]);
-            } else {
-                return new JsonModel([
-                    'result' => 'NO_MATCH',
-                ]);
+            $dwpResponse = $this->dwpApiService->validateNino($caseData, $data['nino'], $correlationUuid);
+
+            if ($dwpResponse === 'MULTIPLE_MATCH') {
+                $this->logger->info($dwpResponse);
+                $caseProgress = $caseData->caseProgress ?? new CaseProgress();
+
+                $caseProgress->restrictedMethods[] = IdMethod::NationalInsuranceNumber->value;
+
+                $this->dataHandler->updateCaseData(
+                    $uuid,
+                    'caseProgress',
+                    $caseProgress,
+                );
             }
+
+            return new JsonModel([
+                'result' => $dwpResponse,
+            ]);
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
             return new JsonModel(new Problem($exception->getMessage()));
