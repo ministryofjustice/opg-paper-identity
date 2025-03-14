@@ -164,6 +164,23 @@ class ServiceAvailabilityHelperTest extends TestCase
             ]
         ];
 
+        $expectedKbvEmpty = [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => false,
+            ],
+            'messages' => [
+                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly ' .
+                    'on a previous occasion.',
+            ]
+        ];
+
         $expectedDocSuccess = [
             'data' => [
                 'PASSPORT' => false,
@@ -249,6 +266,17 @@ class ServiceAvailabilityHelperTest extends TestCase
             ]
         ]);
 
+        $caseKbvEmpty = array_merge($case, [
+            "identityIQ" => [
+                "kbvQuestions" => [],
+                "iiqControl" => [
+                    "urn" => "******",
+                    "authRefNo" => "********"
+                ],
+                "thinfile" => true
+            ]
+        ]);
+
         $caseDocChecked = array_merge($case, [
             "caseProgress" => [
                 "abandonedFlow" => null,
@@ -292,6 +320,12 @@ class ServiceAvailabilityHelperTest extends TestCase
             ],
             [
                 $config,
+                $caseKbvEmpty,
+                $services,
+                $expectedKbvEmpty
+            ],
+            [
+                $config,
                 $caseDocChecked,
                 $services,
                 $expectedDocSuccess
@@ -328,7 +362,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                     ],
                     'messages' => [
                         'service_status' =>
-                        'Online identity verification is not presently available',
+                            'Online identity verification is not presently available',
                     ]
                 ]
             ],
@@ -348,7 +382,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                     ],
                     'messages' => [
                         'service_status' =>
-                        'Some identity verification methods are not presently available',
+                            'Some identity verification methods are not presently available',
                     ]
                 ]
             ]

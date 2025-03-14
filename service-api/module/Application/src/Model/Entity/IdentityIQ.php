@@ -6,6 +6,7 @@ namespace Application\Model\Entity;
 
 use Laminas\Form\Annotation;
 use Exception;
+use Laminas\Validator\NotEmpty;
 
 class IdentityIQ extends Entity
 {
@@ -16,6 +17,10 @@ class IdentityIQ extends Entity
     public array $kbvQuestions = [];
 
     public ?IIQControl $iiqControl = null;
+
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?bool $thinfile = null;
 
     /**
      * @param array<string, mixed> $data
