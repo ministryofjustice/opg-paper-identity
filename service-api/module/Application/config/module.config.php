@@ -455,13 +455,13 @@ return [
                     ],
                 ],
             ],
-            'send_sirius_event' => [
+            'send_identity_check' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/send-sirius-event/:status',
+                    'route' => '/cases/:uuid/send-identity-check',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'sendSiriusEvent',
+                        'action' => 'sendIdentityCheck',
                     ],
                 ],
             ],

@@ -65,7 +65,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
         $view->setVariable('lpa_details', $lpaDetails);
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            $this->opgApiService->sendSiriusEvent($uuid, 'cop-started');
+            $this->opgApiService->sendIdentityCheck($uuid);
             return $this->redirect()->toRoute("root/court_of_protection_what_next", ['uuid' => $uuid]);
         }
 

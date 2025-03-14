@@ -8,6 +8,7 @@ use Application\Model\Entity\CaseData;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Exception\AwsException;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\InputFilter\InputFilterInterface;
@@ -110,11 +111,15 @@ class DataWriteHandler
         }
     }
 
-    public function setTTL(string $uuid): void
+    public function setTTL(string $uuid, ?DateTimeImmutable $timestamp = null): void
     {
 
+        if (is_null($timestamp)) {
+            $timestamp = $this->clock->now();
+        }
+
         $ttlDays = getenv("AWS_DYNAMODB_TTL_DAYS");
-        $ttl = $this->clock->now()->modify("+{$ttlDays} days");
+        $ttl = $timestamp->modify("+{$ttlDays} days");
 
         $idKey = [
             'key' => [

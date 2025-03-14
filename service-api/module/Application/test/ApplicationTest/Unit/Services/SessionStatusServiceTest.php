@@ -14,6 +14,8 @@ use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Lcobucci\Clock\FrozenClock;
+use DateTimeImmutable;
 
 /**
  * @psalm-suppress PossiblyNullPropertyAssignment
@@ -35,6 +37,7 @@ class SessionStatusServiceTest extends TestCase
             $this->yotiService,
             $this->caseOutcomeCalculator,
             $this->logger,
+            new FrozenClock(new DateTimeImmutable('2025-03-17T11:00:00Z')),
         );
     }
 
@@ -115,7 +118,7 @@ class SessionStatusServiceTest extends TestCase
         $this->caseOutcomeCalculator
             ->expects($this->once())
             ->method('updateSendIdentityCheck')
-            ->with($caseData, '2019-04-18T14:08:18Z');
+            ->with($caseData);
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);
@@ -165,7 +168,7 @@ class SessionStatusServiceTest extends TestCase
         $this->caseOutcomeCalculator
             ->expects($this->once())
             ->method('updateSendIdentityCheck')
-            ->with($caseData, '2019-04-18T14:08:18Z');
+            ->with($caseData, DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s\Z', '2019-04-18T14:08:18Z'));
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);

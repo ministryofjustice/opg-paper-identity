@@ -85,7 +85,7 @@ class KbvControllerTest extends TestCase
                 }
                 $this->caseOutcomeCalculatorMock->expects($this->once())
                     ->method('updateSendIdentityCheck')
-                    ->with($caseData, '2024-11-06T13:49:30+00:00');
+                    ->with($caseData);
             }
         }
 

@@ -265,10 +265,6 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $lastPage = '/case-uuid/national-insurance-number';
 
-        $opgApiService->expects($this->once())
-            ->method('updateCaseProgress')
-            ->with('case-uuid', $this->callback(fn ($data) => $data['abandonedFlow']['last_page'] === $lastPage));
-
         $this->dispatch(sprintf('/case-uuid/abandon-flow?last_page=%s', $lastPage), 'GET');
         $this->assertResponseStatusCode(200);
 
@@ -305,8 +301,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())
-            ->method('sendSiriusEvent')
-            ->with($caseUuid, 'abandon-case');
+            ->method('sendIdentityCheck')
+            ->with($caseUuid);
 
         $siriusApiService->expects($this->once())
             ->method('addNote')

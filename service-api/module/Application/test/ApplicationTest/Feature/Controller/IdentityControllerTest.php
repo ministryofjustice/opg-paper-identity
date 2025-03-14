@@ -10,6 +10,7 @@ use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
 use Application\Sirius\EventSender;
@@ -35,6 +36,7 @@ class IdentityControllerTest extends TestCase
     private SessionConfig&MockObject $sessionConfigMock;
     private FraudApiService&MockObject $experianCrosscoreFraudApiService;
     private DwpApiService&MockObject $dwpServiceMock;
+    private CaseOutcomeCalculator&MockObject $caseCalcMock;
 
     public function setUp(): void
     {
@@ -55,6 +57,7 @@ class IdentityControllerTest extends TestCase
         $this->sessionConfigMock = $this->createMock(SessionConfig::class);
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
         $this->dwpServiceMock = $this->createMock(DwpApiService::class);
+        $this->caseCalcMock = $this->createMock(CaseOutcomeCalculator::class);
 
         parent::setUp();
 
@@ -66,6 +69,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
         $serviceManager->setService(DwpApiService::class, $this->dwpServiceMock);
+        $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseCalcMock);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -601,14 +605,14 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider saveCaseProgressData
-     */
-    public function testSaveCaseProgress(
-        string $uuid,
-        array $data,
-        array $response
-    ): void {
+    public function testSaveCaseProgress(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
+        $data = [
+            "thingOne" => "something",
+            "thingTwo" => "somethingElse"
+        ];
+        $response = ['result' => "Progress recorded for {$uuid}"];
 
         $this->dataImportHandler
             ->expects($this->once())
@@ -619,14 +623,7 @@ class IdentityControllerTest extends TestCase
                 $data,
             );
 
-        $path = sprintf('/cases/%s/save-case-progress', $uuid);
-
-        $this->dispatchJSON(
-            $path,
-            'PUT',
-            $data
-        );
-
+        $this->dispatchJSON("/cases/{$uuid}/save-case-progress", 'PUT', $data);
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
         $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
         $this->assertModuleName('application');
@@ -634,25 +631,6 @@ class IdentityControllerTest extends TestCase
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('save_case_progress/put');
     }
-
-    public static function saveCaseProgressData(): array
-    {
-        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
-        $data = [
-            "last_page" => "name-match-check",
-            "timestamp" => "2024-09-12T13:45:56Z"
-        ];
-        $response = json_decode('{"result":"Progress recorded at ' . $uuid . '/' . $data['last_page'] . '"}', true);
-
-        return [
-            [
-                $uuid,
-                $data,
-                $response,
-            ],
-        ];
-    }
-
 
     /**
      * @dataProvider requestFraudCheckData
@@ -917,17 +895,12 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider sendSiriusEventData
-     */
-    public function testSendSiriusEventAction(string $status, string $expectedState): void
+    public function testSendIdentityCheckAction(): void
     {
         $eventSenderMock = $this->createMock(EventSender::class);
-        $frozenClock = new FrozenClock(new DateTimeImmutable('2024-05-12T13:45:56Z'));
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(EventSender::class, $eventSenderMock);
-        $serviceManager->setService(ClockInterface::class, $frozenClock);
 
         $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
 
@@ -946,47 +919,13 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn($caseData);
 
-        $eventSenderMock
+        $this->caseCalcMock
             ->expects($this->once())
-            ->method('send')
-            ->with(
-                'identity-check-updated',
-                [
-                    'reference' => 'opg:' . $caseData->id,
-                    'actorType' => $caseData->personType,
-                    'lpaUids' => $caseData->lpas,
-                    'time' => '2024-05-12T13:45:56+00:00',
-                    'state' => $expectedState,
-                ]
-            );
+            ->method('updateSendIdentityCheck')
+            ->with($caseData);
 
-        $this->dataImportHandler
-            ->expects($this->once())
-            ->method('setTTL')
-            ->with($uuid);
-
-        $this->dispatchJSON("/cases/{$uuid}/send-sirius-event/{$status}", 'POST');
+        $this->dispatchJSON("/cases/{$uuid}/send-identity-check", 'POST');
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
-    }
-
-    public static function sendSiriusEventData(): array
-    {
-        return [
-            ['abandon-case', UpdateStatus::Exit->value],
-            ['cop-started', UpdateStatus::CopStarted->value],
-            ['vouch-started', UpdateStatus::VouchStarted->value]
-        ];
-    }
-
-    public function testSendSiriusEventActionWithInvalidStatus(): void
-    {
-        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
-        $this->dispatchJSON("/cases/{$uuid}/send-sirius-event/invalid-status", 'POST');
-
-        $this->assertResponseStatusCode(Response::STATUS_CODE_400);
-        $body = json_decode($this->getResponse()->getContent(), true);
-
-        $this->assertEquals('Invalid case status', $body['title']);
     }
 
     public function testSendSiriusEventActionWithMissingCase(): void
@@ -999,7 +938,7 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn(null);
 
-        $this->dispatchJSON("/cases/{$uuid}/send-sirius-event/abandon-case", 'POST');
+        $this->dispatchJSON("/cases/{$uuid}/send-identity-check", 'POST');
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_404);
         $body = json_decode($this->getResponse()->getContent(), true);

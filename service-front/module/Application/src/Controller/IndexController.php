@@ -122,22 +122,23 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
+        $request = $this->getRequest();
+
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $caseProgressData = $detailsData['caseProgress'] ?? [];
-
-        $caseProgressData['abandonedFlow'] = [
-            'last_page' => $this->getRequest()->getQuery('last_page'),
-            'timestamp' => date("Y-m-d\TH:i:s\Z", time()),
-        ];
-
-        $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
+        $lastPage = $request->getQuery('last_page');
 
         $form = $this->createForm(AbandonFlow::class);
 
-        $request = $this->getRequest();
-
         if ($request->isPost() && $form->isValid()) {
-            $this->opgApiService->sendSiriusEvent($uuid, 'abandon-case');
+            $caseProgressData = $detailsData['caseProgress'] ?? [];
+
+            $caseProgressData['abandonedFlow'] = [
+                'last_page' => $lastPage,
+                'timestamp' => date("Y-m-d\TH:i:s\Z", time()),
+            ];
+
+            $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
+            $this->opgApiService->sendIdentityCheck($uuid);
 
             $postData = $request->getPost()->toArray();
             $noteDescription = "Reason: " . $this->mapReason($postData['reason']);
@@ -159,7 +160,7 @@ class IndexController extends AbstractActionController
         }
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('last_page', $caseProgressData['abandonedFlow']['last_page']);
+        $view->setVariable('last_page', $lastPage);
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/abandoned_flow');

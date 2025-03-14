@@ -29,7 +29,7 @@ class CaseData implements JsonSerializable
     public string $id;
 
     /**
-     * @var "TELEPHONE"|"POSTOFFICE"|"VOUCHING"
+     * @var "TELEPHONE"|"POST_OFFICE"|"OnBehalf"|"cpr"
      */
     #[Annotation\Required(false)]
     public ?string $idRoute = null;
@@ -129,7 +129,7 @@ class CaseData implements JsonSerializable
     /**
      * @return array{
      *     id: string,
-     *     idRoute: "TELEPHONE"|"POSTOFFICE"|"VOUCHING"|null,
+     *     idRoute: "TELEPHONE"|"POST_OFFICE"|"OnBehalf"|"cpr"|null,
      *     personType: "donor"|"certificateProvider"|"voucher",
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],

@@ -443,10 +443,10 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function sendSiriusEvent(string $uuid, string $status): void
+    public function sendIdentityCheck(string $uuid): void
     {
         try {
-            $this->makeApiRequest("/cases/{$uuid}/send-sirius-event/{$status}", 'POST');
+            $this->makeApiRequest("/cases/{$uuid}/send-identity-check", 'POST');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

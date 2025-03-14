@@ -186,5 +186,5 @@ interface OpgApiServiceInterface
      */
     public function updateCaseAssistance(string $uuid, string $assistance, string $details = null): void;
 
-    public function sendSiriusEvent(string $uuid, string $status): void;
+    public function sendIdentityCheck(string $uuid): void;
 }
