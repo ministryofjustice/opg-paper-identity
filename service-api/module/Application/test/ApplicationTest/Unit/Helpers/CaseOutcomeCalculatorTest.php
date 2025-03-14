@@ -74,6 +74,10 @@ class CaseOutcomeCalculatorTest extends TestCase
                 "state" => 'SUCCESS',
             ]);
 
+        $this->dataHandlerMock->expects($this->once())
+            ->method('setTTL')
+            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+
         $this->sut->updateSendIdentityCheck($caseData, 'some timestamp');
     }
 }

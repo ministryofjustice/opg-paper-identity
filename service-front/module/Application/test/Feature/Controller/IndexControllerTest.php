@@ -305,8 +305,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())
-            ->method('abandonFlow')
-            ->with($caseUuid);
+            ->method('sendSiriusEvent')
+            ->with($caseUuid, 'abandon-case');
 
         $siriusApiService->expects($this->once())
             ->method('addNote')

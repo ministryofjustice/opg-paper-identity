@@ -925,12 +925,12 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    public function testAbandonCase(): void
+    public function testSendSiriusEvent(): void
     {
         $successMock = new MockHandler([
             function (Request $request) {
                 $this->assertEquals('POST', $request->getMethod());
-                $this->assertEquals('/cases/case-uuid/abandon', strval($request->getUri()));
+                $this->assertEquals('/cases/case-uuid/send-sirius-event/status', strval($request->getUri()));
 
                 return new Response(200, [], '');
             },
@@ -940,7 +940,7 @@ class OpgApiServiceTest extends TestCase
 
         $sut = new OpgApiService($client, $this->jwtGenerator);
 
-        $sut->abandonFlow('case-uuid');
+        $sut->sendSiriusEvent('case-uuid', 'status');
     }
 
     public function testAbandonCaseFailure(): void
@@ -948,7 +948,7 @@ class OpgApiServiceTest extends TestCase
         $successMock = new MockHandler([
             function (Request $request) {
                 $this->assertEquals('POST', $request->getMethod());
-                $this->assertEquals('/cases/case-uuid/abandon', strval($request->getUri()));
+                $this->assertEquals('/cases/case-uuid/send-sirius-event/status', strval($request->getUri()));
 
                 return new Response(404, [], '');
             },
@@ -960,6 +960,6 @@ class OpgApiServiceTest extends TestCase
 
         $this->expectException(OpgApiException::class);
 
-        $sut->abandonFlow('case-uuid');
+        $sut->sendSiriusEvent('case-uuid', 'status');
     }
 }
