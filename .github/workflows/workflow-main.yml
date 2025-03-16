@@ -22,18 +22,18 @@ jobs:
   # generate a branch name
   branch_name:
     name: "Generate a safe branch name"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-branch-name.yml@v3.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-branch-name.yml@v3.8.0
 
   # generate workspace name
   workspace_name:
     name: "Generate the workspace name"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v3.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-workspace.yml@v3.8.0
 
   # generate tag
   semver_tag:
     needs: [branch_name]
     name: "Generate the semver tag value"
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v3.6.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/data-parse-semver-tag.yml@v3.8.0
     with:
       branch_name: ${{ needs.branch_name.outputs.safe }}
     secrets: inherit
