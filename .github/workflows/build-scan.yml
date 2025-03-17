@@ -38,19 +38,19 @@ jobs:
             - ecr_repository: paper-identity/api
               service_name: api
               context: service-api
-              target: production
+              build_options: --target production
             - ecr_repository: paper-identity/front
               service_name: front
               context: service-front
-              target: production
+              build_options: --target production
             - ecr_repository: paper-identity/api-test
               service_name: api-test
               context: service-api
-              target: development
+              build_options: --target development
             - ecr_repository: paper-identity/front-test
               service_name: front-test
               context: service-front
-              target: development
+              build_options: --target development
             - ecr_repository: paper-identity/dwp-mock
               service_name: dwp-mock
               context: docker/dwp
@@ -67,12 +67,13 @@ jobs:
               service_name: yoti-mock
               context: docker/yoti
     name: Build ${{ matrix.service_name }}
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@SP-2661
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@v3.10.0
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/${{ matrix.ecr_repository }}
       artifact_name: ${{ matrix.service_name }}-multi-arch
       job_name: Build ${{ matrix.service_name }} Image
       build_path: ${{ matrix.context }}
+      build_options: ${{ matrix.build_options }}
 
   trivy_scan:
     needs: [docker_build]
