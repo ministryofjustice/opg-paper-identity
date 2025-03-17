@@ -9,14 +9,14 @@ services:
       - ./docker/sirius:/opt/imposter/config
 
   experian-crosscore-mock:
-    image: paper-identity/experian-crosscore-mock
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/experian-crosscore-mock
     build:
       context: docker/experian-crosscore
       dockerfile: Dockerfile
     restart: unless-stopped
 
   experian-crosscore-auth-mock:
-    image: paper-identity/experian-crosscore-auth-mock
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/experian-crosscore-auth-mock
     build:
       context: docker/experian-crosscore-auth
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
       - "./docker/experian-crosscore-auth/openapi.yml:/usr/src/prism/openapi.yml"
 
   dwp-mock:
-    image: paper-identity/dwp-mock
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/dwp-mock
     build:
       context: docker/dwp
       dockerfile: Dockerfile
@@ -39,7 +39,7 @@ services:
       - ./docker/dwp:/opt/imposter/config
 
   yoti-mock:
-    image: paper-identity/yoti-mock
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/yoti-mock
     build:
       context: docker/yoti
       dockerfile: Dockerfile
@@ -48,7 +48,7 @@ services:
       - ./docker/yoti:/opt/imposter/config
 
   experian-iiq-mock:
-    image: paper-identity/experian-iiq-mock
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/experian-iiq-mock
     build:
       context: docker/experian-iiq
       dockerfile: Dockerfile
@@ -59,7 +59,7 @@ services:
       - 8335:8080
 
   api:
-    image: paper-identity/api
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/api
     build:
       context: service-api
       dockerfile: Dockerfile
@@ -80,7 +80,7 @@ services:
     env_file: ./service-api/docker-compose.env
 
   api-test:
-    image: paper-identity/api-test
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/api-test
     build:
       context: service-api
       dockerfile: Dockerfile
@@ -97,7 +97,7 @@ services:
       - ./service-api/build:/var/www/build
 
   front:
-    image: paper-identity/front
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/front
     build:
       context: service-front
       dockerfile: Dockerfile
@@ -111,7 +111,7 @@ services:
       - static-content:/var/www/public
 
   front-test:
-    image: paper-identity/front-test
+    image: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/paper-identity/front-test
     build:
       context: service-front
       dockerfile: Dockerfile

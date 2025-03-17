@@ -36,24 +36,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [api, front]
+        service_name: [api, front]
         suite: [phpcs, psalm, unit-test]
     runs-on: ubuntu-latest
-    name: Run ${{ matrix.service }} "${{ matrix.suite }}" tests
+    name: Run ${{ matrix.service_name }} "${{ matrix.suite }}" tests
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.checkout_tag }}
+      - name: Set up Docker
+        run: |
+          echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker run --privileged --rm tonistiigi/binfmt --install all
       - uses: actions/download-artifact@v4
         with:
-          name: image-${{ matrix.service }}-test
           path: /tmp/images
-      - name: Load Image
+          name: ${{ matrix.service_name }}-test-multi-arch
+      - name: Load ${{ matrix.service_name }} Test Image
         run: |
-          docker load -i /tmp/images/${{ matrix.service }}-test.tar
+          docker load -i /tmp/images/${{ matrix.service_name }}-test-multi-arch.tar
       - name: Create test output dir
         run: |
-          mkdir -m 0777 service-${{ matrix.service }}/build
+          mkdir -m 0777 service-${{ matrix.service_name }}/build
       - name: Set version env var
         run: |
           if [ "${{ github.head_ref }}" == "" ]; then
@@ -67,7 +72,7 @@ jobs:
           PACT_CONSUMER_TAG: ${{ inputs.tag }}
           PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
         run: |
-          make ${{ matrix.service }}-${{ matrix.suite }}
+          make ${{ matrix.service_name }}-${{ matrix.suite }}
       - name: Clean JUnit output
         if: always()
         run: |
@@ -77,17 +82,17 @@ jobs:
         if: always()
         with:
           comment_mode: off
-          files: service-${{ matrix.service }}/build/*.xml
-          test_file_prefix: +service-${{ matrix.service }}/
-          check_name: ${{ matrix.service }} ${{ matrix.suite }} tests
-      - name: service ${{ matrix.service }} codecov upload
+          files: service-${{ matrix.service_name }}/build/*.xml
+          test_file_prefix: +service-${{ matrix.service_name }}/
+          check_name: ${{ matrix.service_name }} ${{ matrix.suite }} tests
+      - name: service ${{ matrix.service_name }} codecov upload
         uses: codecov/codecov-action@v5
         if: matrix.suite == 'unit-test'
         with:
-          name: paper-id-${{ matrix.service }}
-          directory: ./service-${{ matrix.service }}/build
+          name: paper-id-${{ matrix.service_name }}
+          directory: ./service-${{ matrix.service_name }}/build
           fail_ci_if_error: false
-          flags: paper-id-${{ matrix.service }}
+          flags: paper-id-${{ matrix.service_name }}
           token: ${{ secrets.CODECOV_TOKEN }}
   cypress:
     name: Cypress Tests
@@ -95,28 +100,58 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker
+        run: |
+          echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker run --privileged --rm tonistiigi/binfmt --install all
       - uses: actions/download-artifact@v4
         with:
-          name: image-api
+          name: api-multi-arch
           path: /tmp/images
       - uses: actions/download-artifact@v4
         with:
-          name: image-front
+          name: front-multi-arch
           path: /tmp/images
       - uses: actions/download-artifact@v4
         with:
-          name: image-api-test
+          name: api-test-multi-arch
           path: /tmp/images
       - uses: actions/download-artifact@v4
         with:
-          name: image-front-test
+          name: front-test-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: dwp-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: experian-crosscore-auth-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: experian-crosscore-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: experian-iiq-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: yoti-mock-multi-arch
           path: /tmp/images
       - name: Load Images
         run: |
-          docker load -i /tmp/images/api-test.tar
-          docker load -i /tmp/images/front-test.tar
-          docker load -i /tmp/images/api.tar
-          docker load -i /tmp/images/front.tar
+          docker load -i /tmp/images/api-test-multi-arch.tar
+          docker load -i /tmp/images/front-test-multi-arch.tar
+          docker load -i /tmp/images/api-multi-arch.tar
+          docker load -i /tmp/images/front-multi-arch.tar
+          docker load -i /tmp/imagesdwp-mock-multi-arch.tar
+          docker load -i /tmp/imagesexperian-crosscore-auth-mock-multi-arch.tar
+          docker load -i /tmp/imagesexperian-crosscore-mock-multi-arch.tar
+          docker load -i /tmp/imagesexperian-iiq-mock-multi-arch.tar
+          docker load -i /tmp/imagesyoti-mock-multi-arch.tar
       - name: Run cypress
         run: make cypress
       - name: Store screenshots
