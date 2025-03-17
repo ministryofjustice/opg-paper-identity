@@ -147,11 +147,11 @@ jobs:
           docker load -i /tmp/images/front-test-multi-arch.tar
           docker load -i /tmp/images/api-multi-arch.tar
           docker load -i /tmp/images/front-multi-arch.tar
-          docker load -i /tmp/imagesdwp-mock-multi-arch.tar
-          docker load -i /tmp/imagesexperian-crosscore-auth-mock-multi-arch.tar
-          docker load -i /tmp/imagesexperian-crosscore-mock-multi-arch.tar
-          docker load -i /tmp/imagesexperian-iiq-mock-multi-arch.tar
-          docker load -i /tmp/imagesyoti-mock-multi-arch.tar
+          docker load -i /tmp/images/dwp-mock-multi-arch.tar
+          docker load -i /tmp/images/experian-crosscore-auth-mock-multi-arch.tar
+          docker load -i /tmp/images/experian-crosscore-mock-multi-arch.tar
+          docker load -i /tmp/images/experian-iiq-mock-multi-arch.tar
+          docker load -i /tmp/images/yoti-mock-multi-arch.tar
       - name: Run cypress
         run: make cypress
       - name: Store screenshots

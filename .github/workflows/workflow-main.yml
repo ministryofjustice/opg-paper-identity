@@ -129,8 +129,10 @@ jobs:
           if ${{ github.ref == 'refs/heads/main' }}; then
             docker tag ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:main-${{ env.SEMVER_TAG }}
             docker tag ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:main-${{ env.SEMVER_TAG }}-${{ env.TIMESTAMP }}
+            docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+          else
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVER_TAG }}
           fi
-          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
 
   push-tags:
     runs-on: ubuntu-latest
