@@ -121,12 +121,37 @@ jobs:
         with:
           name: front-test-multi-arch
           path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: dwp-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: experian-crosscore-auth-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: experian-crosscore-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: experian-iiq-mock-multi-arch
+          path: /tmp/images
+      - uses: actions/download-artifact@v4
+        with:
+          name: yoti-mock-multi-arch
+          path: /tmp/images
       - name: Load Images
         run: |
           docker load -i /tmp/images/api-test-multi-arch.tar
           docker load -i /tmp/images/front-test-multi-arch.tar
           docker load -i /tmp/images/api-multi-arch.tar
           docker load -i /tmp/images/front-multi-arch.tar
+          docker load -i /tmp/imagesdwp-mock-multi-arch.tar
+          docker load -i /tmp/imagesexperian-crosscore-auth-mock-multi-arch.tar
+          docker load -i /tmp/imagesexperian-crosscore-mock-multi-arch.tar
+          docker load -i /tmp/imagesexperian-iiq-mock-multi-arch.tar
+          docker load -i /tmp/imagesyoti-mock-multi-arch.tar
       - name: Run cypress
         run: make cypress
       - name: Store screenshots
