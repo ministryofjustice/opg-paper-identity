@@ -38,7 +38,7 @@ class HowConfirmController extends AbstractActionController
         $form = $this->createForm(IdMethodForm::class);
 
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-
+        echo json_encode($serviceAvailability);
         $identityDocs = [];
         foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
             if ($serviceAvailability['data'][$key] === true) {
@@ -63,7 +63,7 @@ class HowConfirmController extends AbstractActionController
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        echo json_encode($detailsData);
+//        echo json_encode($detailsData);
 
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);

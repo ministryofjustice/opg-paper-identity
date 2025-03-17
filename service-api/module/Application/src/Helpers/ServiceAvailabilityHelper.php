@@ -14,8 +14,8 @@ class ServiceAvailabilityHelper
     public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
     public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
     protected array $availableServices = [];
-
     protected array $processedMessages = [];
+    protected array $additionalMessages = [];
 
     public function __construct(
         protected array $services,
@@ -23,6 +23,7 @@ class ServiceAvailabilityHelper
         protected array $config
     ) {
         $this->processGlobalServicesSettings();
+        $this->processAdditionalMessages();
         $this->mergeServices($this->config);
     }
 
@@ -86,7 +87,8 @@ class ServiceAvailabilityHelper
     {
         return [
             'data' => $this->getProcessGlobalServicesSettings(),
-            'messages' => $this->getProcessedMessage()
+            'messages' => $this->getProcessedMessage(),
+            'additional_restriction_messages' => $this->processAdditionalMessages()
         ];
     }
 
@@ -211,6 +213,28 @@ class ServiceAvailabilityHelper
             }
         }
 
+        if (!empty($this->case?->caseProgress?->restrictedMethods)) {
+            foreach ($this->case?->caseProgress?->restrictedMethods as $method) {
+                $this->availableServices[$method] = false;
+            }
+        }
+
         return $this->toArray();
+    }
+
+    public function processAdditionalMessages(): array
+    {
+        $messages = [];
+
+        $map = [
+            'NATIONAL_INSURANCE_NUMBER' => 'National insurance number',
+            'PASSPORT' => 'Passport',
+            'DRIVING_LICENCE' => 'Driving licence'
+        ];
+
+        foreach ($this->case?->caseProgress?->restrictedMethods as $restrictedOption) {
+            $messages[] = sprintf($this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'], $map[$restrictedOption]);
+        }
+        return $messages;
     }
 }

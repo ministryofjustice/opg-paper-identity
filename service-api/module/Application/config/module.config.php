@@ -567,6 +567,7 @@ return [
             'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
                 'and their details did not match the document provided.',
             'LOCKED_SUCCESS' => 'The identity check has already been completed',
+            'RESTRICTED_OPTIONS' => '%s could not be verified over the phone, choose an alternate ID method below.'
         ],
         'person_type_labels' => [
             'donor' => 'donor',
