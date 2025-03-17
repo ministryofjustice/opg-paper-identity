@@ -210,13 +210,40 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             [
                 'personType' => 'certificateProvider',
                 'outcome' => ['complete' => true, 'passed' => false],
-                'expectedRedirect' => '/%s/cp/identity-check-failed',
+                'expectedRedirect' => '/%s/identity-check-failed',
             ],
             [
                 'personType' => 'certificateProvider',
                 'outcome' => ['complete' => true, 'passed' => true],
                 'expectedRedirect' => '/%s/cp/identity-check-passed',
             ],
+            [
+                'personType' => 'voucher',
+                'outcome' => ['complete' => true, 'passed' => true],
+                'expectedRedirect' => '/%s/vouching/identity-check-passed',
+            ],
         ];
+    }
+
+    public function testIdentityCheckFailedPage(): void
+    {
+        $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($uuid)
+            ->willReturn([
+                'id' => $uuid,
+                'personType' => 'donor'
+            ]);
+
+        $this->dispatch("/$uuid/identity-check-failed", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertModuleName('application');
+        $this->assertControllerName(KbvController::class);
+        $this->assertControllerClass('KbvController');
+        $this->assertMatchedRouteName('root/identity_check_failed');
     }
 }

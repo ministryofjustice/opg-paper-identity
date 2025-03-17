@@ -46,8 +46,8 @@
                             LPA Number(s)
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            {% for lpa, type in lpa_details %}
-                                <span class="app-type-text-colour--{{ type }}" id="lpaType">{{ type }}</span>
+                            {% for lpa, details in lpa_details %}
+                                <span class="app-type-text-colour--{{ details.type }}" id="lpaType">{{ details.type }}</span>
                                 <span id="lpaId">{{ lpa }}</span><br>
                             {% endfor %}
                         </dd>

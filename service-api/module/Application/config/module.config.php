@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Auth\Listener as AuthListener;
+use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Aws\DynamoDbClientFactory;
 use Application\Aws\EventBridgeClientFactory;
 use Application\Aws\Secrets\AwsSecretsCache;
@@ -99,16 +101,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'details',
-                    ],
-                ],
-            ],
-            'testdata' => [
-                'type' => Literal::class,
-                'options' => [
-                    'route' => '/identity/testdata',
-                    'defaults' => [
-                        'controller' => Controller\IdentityController::class,
-                        'action' => 'testdata',
                     ],
                 ],
             ],
@@ -510,8 +502,12 @@ return [
             AuthManager::class => AuthManagerFactory::class,
             ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
             DwpAuthApiService::class => DwpAuthApiServiceFactory::class,
-            DwpApiService::class => DwpApiServiceFactory::class
+            DwpApiService::class => DwpApiServiceFactory::class,
+            AuthListener::class => AuthListenerFactory::class,
         ],
+    ],
+    'listeners' => [
+        AuthListener::class,
     ],
     'view_manager' => [
         'template_map' => [

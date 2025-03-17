@@ -44,22 +44,40 @@ class IndexController extends AbstractActionController
 
     public function startAction(): Response|ViewModel
     {
+        $view = new ViewModel();
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
-
-        $lpas = [];
-        foreach ($lpasQuery as $lpaUid) {
-            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
-            $lpas[] = $data;
-        }
-
-        if (empty($lpas)) {
-            $lpsString = implode(", ", $lpasQuery);
-            throw new HttpException(404, "LPAs not found for {$lpsString}");
-        }
-
         /** @var string $type */
         $type = $this->params()->fromQuery("personType");
+
+        $lpas = [];
+        $unfoundLpas = [];
+        foreach ($lpasQuery as $key => $lpaUid) {
+            $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
+
+            if (array_key_exists('error', $data)) {
+                $unfoundLpas[] = $lpaUid;
+                $view->setVariables([
+                    'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                    'details_data' => [
+                        'personType' => $type,
+                        'firstName' => '',
+                        'lastName' => '',
+                    ]
+                ]);
+                unset($lpasQuery[$key]);
+            } else {
+                $lpas[] = $data;
+            }
+        }
+
+        $lpasQuery = array_values($lpasQuery);
+
+        if (empty($lpas)) {
+            $lpsString = implode(", ", $unfoundLpas);
+            $view->setVariable('message', 'LPAs not found for ' . $lpsString);
+            return $view->setTemplate('application/pages/cannot_start');
+        }
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
             $personTypeDescription = [
