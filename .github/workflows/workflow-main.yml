@@ -70,34 +70,39 @@ jobs:
   push:
     name: "ECR push"
     runs-on: ubuntu-latest
-    needs: [test, workspace_name, semver_tag, timestamp]
+    needs: [build, test, workspace_name, semver_tag, timestamp]
     strategy:
       fail-fast: true
       matrix:
         include:
-          - image_app_name: paper-identity/api
+          - ecr_repository: paper-identity/api
             service_name: api
-          - image_app_name: paper-identity/front
+          - ecr_repository: paper-identity/front
             service_name: front
-          - image_app_name: paper-identity/dwp-mock
+          - ecr_repository: paper-identity/dwp-mock
             service_name: dwp-mock
-          - image_app_name: paper-identity/experian-crosscore-auth-mock
+          - ecr_repository: paper-identity/experian-crosscore-auth-mock
             service_name: experian-crosscore-auth-mock
-          - image_app_name: paper-identity/experian-crosscore-mock
+          - ecr_repository: paper-identity/experian-crosscore-mock
             service_name: experian-crosscore-mock
-          - image_app_name: paper-identity/experian-iiq-mock
+          - ecr_repository: paper-identity/experian-iiq-mock
             service_name: experian-iiq-mock
-          - image_app_name: paper-identity/yoti-mock
+          - ecr_repository: paper-identity/yoti-mock
             service_name: yoti-mock
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker
+        run: |
+          echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker run --privileged --rm tonistiigi/binfmt --install all
       - uses: actions/download-artifact@v4
         with:
-          name: image-${{ matrix.service_name }}
           path: /tmp/images
-      - name: Load Image
+          name: ${{ matrix.service_name }}-multi-arch
+      - name: Load ${{ matrix.ecr_repository }} Image
         run: |
-          docker load -i /tmp/images/${{ matrix.service_name }}.tar
+          docker load -i /tmp/images/${{ matrix.service_name }}-multi-arch.tar
       - uses: unfor19/install-aws-cli-action@v1
       - name: Configure AWS Credentials With Assumed Role to Management
         uses: aws-actions/configure-aws-credentials@v4.1.0
@@ -113,20 +118,21 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2.0.1
         with:
           registries: 311462405659
-      - name: Push Container
+      - name: Push & Tag
         env:
           SEMVER_TAG: ${{ needs.semver_tag.outputs.tag }}
           TIMESTAMP: ${{ needs.timestamp.outputs.timestamp }}
           ECR_REGISTRY: ${{ steps.login_ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ matrix.image_app_name }}
+          ECR_REPOSITORY: ${{ matrix.ecr_repository }}
         run: |
-          docker tag ${{ matrix.image_app_name }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVER_TAG }}
+          docker tag ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVER_TAG }}
           if ${{ github.ref == 'refs/heads/main' }}; then
-            docker tag ${{ matrix.image_app_name }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
-            docker tag ${{ matrix.image_app_name }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:main-${{ env.SEMVER_TAG }}
-            docker tag ${{ matrix.image_app_name }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:main-${{ env.SEMVER_TAG }}-${{ env.TIMESTAMP }}
+            docker tag ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:main-${{ env.SEMVER_TAG }}
+            docker tag ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest $ECR_REGISTRY/$ECR_REPOSITORY:main-${{ env.SEMVER_TAG }}-${{ env.TIMESTAMP }}
+            docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+          else
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ env.SEMVER_TAG }}
           fi
-          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
 
   push-tags:
     runs-on: ubuntu-latest
