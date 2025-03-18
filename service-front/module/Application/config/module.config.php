@@ -624,6 +624,7 @@ return [
                 'default' => 'application/pages/national_insurance_number',
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/national_insurance_number_fail',
+                'amb_fail' => 'application/pages/national_insurance_number_ambiguous_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
                 'fraud' => 'application/pages/fraud_failure',
             ],

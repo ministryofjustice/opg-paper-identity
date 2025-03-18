@@ -66,7 +66,7 @@ class DwpApiService
             );
 
             if ($matchResponseDTO instanceof AmbiguousCitizenResponseDTO) {
-               return "MULTIPLE_MATCH";
+                return "MULTIPLE_MATCH";
             }
 
             $detailsResponseDTO = $this->makeCitizenDetailsRequest(
@@ -79,7 +79,7 @@ class DwpApiService
                 $detailsResponseDTO,
                 $matchResponseDTO,
                 $nino
-            ) ? "PASS": "NO_MATCH";
+            ) ? "PASS" : "NO_MATCH";
         } catch (\Exception $exception) {
             $this->logger->error('DwpApiException: ' . "($this->correlationUuid) " . $exception->getMessage());
             throw new DwpApiException($exception->getMessage());

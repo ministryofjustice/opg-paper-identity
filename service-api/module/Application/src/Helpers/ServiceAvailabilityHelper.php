@@ -213,7 +213,7 @@ class ServiceAvailabilityHelper
             }
         }
 
-        if (!empty($this->case?->caseProgress?->restrictedMethods)) {
+        if (! empty($this->case?->caseProgress?->restrictedMethods)) {
             foreach ($this->case?->caseProgress?->restrictedMethods as $method) {
                 $this->availableServices[$method] = false;
             }
