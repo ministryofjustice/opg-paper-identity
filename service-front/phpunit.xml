@@ -33,6 +33,7 @@
 
     <php>
         <env name="API_BASE_URI" value="API_BASE_URI" />
+        <env name="API_JWT_KEY" value="API_JWT_KEY" />
         <env name="SIRIUS_BASE_URL" value="SIRIUS_BASE_URL" />
         <env name="SIRIUS_PUBLIC_URL" value="SIRIUS_PUBLIC_URL" />
         <env name="DISABLE_AUTH_LISTENER" value="1"/>

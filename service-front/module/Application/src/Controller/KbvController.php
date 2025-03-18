@@ -38,16 +38,12 @@ class KbvController extends AbstractActionController
             return $view->setTemplate('application/pages/cannot_start');
         }
 
-        if ($detailsData['personType'] == 'certificateProvider') {
-            $passRoute = "root/cp_identity_check_passed";
-            $failRoute = "root/cp_identity_check_failed";
-        } elseif ($detailsData['personType'] == 'voucher') {
-            $passRoute = "root/voucher_identity_check_passed";
-            $failRoute = "root/voucher_identity_check_failed";
-        } else {
-            $passRoute = "root/identity_check_passed";
-            $failRoute = "root/identity_check_failed";
-        }
+        $failRoute = "root/identity_check_failed";
+        $passRoute = [
+            'donor' => "root/identity_check_passed",
+            'certificateProvider' => "root/cp_identity_check_passed",
+            'voucher' => "root/voucher_identity_check_passed"
+        ];
         $view->setVariable('details_data', $detailsData);
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
@@ -95,7 +91,7 @@ class KbvController extends AbstractActionController
                     ];
                     $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
 
-                    return $this->redirect()->toRoute($passRoute, ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
                 }
 
                 return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
@@ -121,5 +117,16 @@ class KbvController extends AbstractActionController
         }
 
         return null;
+    }
+
+    public function identityCheckFailedAction(): ViewModel
+    {
+        $uuid = $this->params()->fromRoute("uuid");
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        $view = new ViewModel();
+        $view->setVariable('details_data', $detailsData);
+
+        return $view->setTemplate('application/pages/identity_check_failed');
     }
 }

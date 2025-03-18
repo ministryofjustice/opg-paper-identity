@@ -11,7 +11,6 @@ use Application\Forms\ChooseVouching;
 use Application\Forms\FinishIDCheck;
 use Application\Helpers\DateProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
@@ -27,7 +26,6 @@ class DonorFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly LoggerInterface $logger,
@@ -167,28 +165,6 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/identity_check_passed');
-    }
-
-    public function identityCheckFailedAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $lpaDetails = [];
-        foreach ($detailsData['lpas'] as $lpa) {
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->request);
-            /**
-             * @psalm-suppress PossiblyNullArrayAccess
-             */
-            $lpaDetails[$lpa] = $lpasData['opg.poas.lpastore']['donor']['firstNames'] . " " .
-                $lpasData['opg.poas.lpastore']['donor']['lastName'];
-        }
-
-        $view = new ViewModel();
-
-        $view->setVariable('lpas_data', $lpaDetails);
-        $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/identity_check_failed');
     }
 
     public function thinFileFailureAction(): ViewModel

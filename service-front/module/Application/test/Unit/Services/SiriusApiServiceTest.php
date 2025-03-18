@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Services;
 
+use Application\Auth\JwtGenerator;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Exceptions\UidInvalidException;
 use Application\Services\SiriusApiService;
@@ -27,8 +28,9 @@ class SiriusApiServiceTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -43,7 +45,13 @@ class SiriusApiServiceTest extends TestCase
                     'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
                     'X-XSRF-TOKEN' => 'abcd',
                 ],
-            ]);
+            ])
+            ->willReturn(new Response(200, [], '{"email":"myemail@opg.example"}'));
+
+        $jwtGeneratorMock
+            ->expects($this->once())
+            ->method('setSub')
+            ->with('myemail@opg.example');
 
         $ret = $sut->checkAuth($request);
         $this->assertTrue($ret);
@@ -53,8 +61,9 @@ class SiriusApiServiceTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
 
         $request = new Request();
@@ -83,8 +92,9 @@ class SiriusApiServiceTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
 
         $request = new Request();
@@ -123,8 +133,9 @@ class SiriusApiServiceTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
 
         $request = new Request();
@@ -156,8 +167,9 @@ class SiriusApiServiceTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
 
         $request = new Request();
@@ -189,8 +201,9 @@ class SiriusApiServiceTest extends TestCase
 
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -219,8 +232,9 @@ class SiriusApiServiceTest extends TestCase
 
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
         $request = new Request();
 
@@ -236,9 +250,9 @@ class SiriusApiServiceTest extends TestCase
                 'opg.poas.sirius' => [
                     'linkedDigitalLpas' => [
                         ['uId' => 'M-0000-0000-0001'],
-                        ['uId' => 'M-0000-0000-0002']
-                    ]
-                ]
+                        ['uId' => 'M-0000-0000-0002'],
+                    ],
+                ],
             ],
             'M-0000-0000-0001' => ['lpa1'],
             'M-0000-0000-0002' => ['lpa2'],
@@ -246,8 +260,9 @@ class SiriusApiServiceTest extends TestCase
 
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
 
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
         $request = new Request();
         $headers = $request->getHeaders();
@@ -282,7 +297,8 @@ class SiriusApiServiceTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
         $loggerMock = $this->createMock(LoggerInterface::class);
-        $sut = new SiriusApiService($clientMock, $loggerMock);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
         $request = new Request();
         $uid = 'M-0000-0000-0000';
@@ -294,7 +310,7 @@ class SiriusApiServiceTest extends TestCase
             'opg.poas.sirius' => [
                 'id' => 1234,
                 'donor' => ['id' => 5678],
-            ]
+            ],
         ];
 
         /** @psalm-suppress PossiblyFalseArgument */
@@ -315,7 +331,7 @@ class SiriusApiServiceTest extends TestCase
                         'name' => $name,
                         'type' => $type,
                         'description' => $description,
-                    ]
+                    ],
                 ]
             )
             ->willReturn(new Response(201));

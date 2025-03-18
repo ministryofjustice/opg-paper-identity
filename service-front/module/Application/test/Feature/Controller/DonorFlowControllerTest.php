@@ -8,14 +8,12 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
-    private SiriusApiService&MockObject $siriusApiService;
     private FormProcessorHelper&MockObject $formProcessorService;
     private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
@@ -27,7 +25,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
-        $this->siriusApiService = $this->createMock(SiriusApiService::class);
         $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
         $this->siriusDataProcessorHelperMock = $this->createMock(SiriusDataProcessorHelper::class);
 
@@ -36,7 +33,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
-        $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
         $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
@@ -84,32 +80,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(DonorFlowController::class);
         $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/identity_check_passed');
-    }
-
-    public function testIdentityCheckFailedPage(): void
-    {
-        $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $siriusResponse = $this->returnSiriusLpaResponse();
-
-        $this
-            ->opgApiServiceMock
-            ->expects(self::once())
-            ->method('getDetailsData')
-            ->with($this->uuid)
-            ->willReturn($mockResponseDataIdDetails);
-
-        $this
-            ->siriusApiService
-            ->expects(self::once())
-            ->method('getLpaByUid')
-            ->willReturn($siriusResponse);
-
-        $this->dispatch("/$this->uuid/identity-check-failed", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/identity_check_failed');
     }
 
     public function testThinFileFailurePage(): void
