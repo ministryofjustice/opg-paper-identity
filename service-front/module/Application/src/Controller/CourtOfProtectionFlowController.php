@@ -47,7 +47,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
         );
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
-            $this->opgApiService->startCourtOfProtection($uuid);
+            $this->opgApiService->sendIdentityCheck($uuid);
             return $this->redirect()->toRoute("root/court_of_protection_what_next", ['uuid' => $uuid]);
         }
 
