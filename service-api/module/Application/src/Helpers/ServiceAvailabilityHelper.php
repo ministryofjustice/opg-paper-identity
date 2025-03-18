@@ -232,9 +232,12 @@ class ServiceAvailabilityHelper
             'DRIVING_LICENCE' => 'Driving licence'
         ];
 
-        foreach ($this->case?->caseProgress?->restrictedMethods as $restrictedOption) {
-            $messages[] = sprintf($this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'], $map[$restrictedOption]);
+        if($this->case?->caseProgress?->restrictedMethods) {
+            foreach ($this->case?->caseProgress?->restrictedMethods as $restrictedOption) {
+                $messages[] = sprintf($this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'], $map[$restrictedOption]);
+            }
         }
+
         return $messages;
     }
 }
