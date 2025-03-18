@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddDonorFormHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -19,6 +20,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     private SiriusApiService&MockObject $siriusApiServiceMock;
     private AddDonorFormHelper&MockObject $addDonorFormHelperMock;
     private VoucherMatchLpaActorHelper&MockObject $voucherMatchMock;
+    private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelper;
     private string $uuid;
     private array $routes;
 
@@ -51,6 +53,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->siriusApiServiceMock = $this->createMock(SiriusApiService::class);
         $this->addDonorFormHelperMock = $this->createMock(AddDonorFormHelper::class);
         $this->voucherMatchMock = $this->createMock(VoucherMatchLpaActorHelper::class);
+        $this->siriusDataProcessorHelper = $this->createMock(SiriusDataProcessorHelper::class);
 
         parent::setUp();
 
@@ -60,11 +63,26 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiServiceMock);
         $serviceManager->setService(AddDonorFormHelper::class, $this->addDonorFormHelperMock);
         $serviceManager->setService(VoucherMatchLpaActorHelper::class, $this->voucherMatchMock);
+        $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelper);
     }
 
     public function getFakeAddress(): array
     {
         return $this->fakeAddress;
+    }
+
+    private function returnMockLpaArray(): array
+    {
+        return [
+            "M-XYXY-YAGA-35G3" => [
+                "name" => "firstname surname",
+                "type" => "PW"
+            ],
+            "M-AAAA-1234-5678" => [
+                "name" => "another name",
+                "type" => "PA"
+            ]
+        ];
     }
 
     public function returnOpgResponseData(array $overwrite = []): array
@@ -256,6 +274,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     public function testVoucherNameMatchWarning(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
 
         $this
             ->opgApiServiceMock
@@ -857,22 +876,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $this
-            ->siriusApiServiceMock
-            ->expects($this->exactly(2))
-            ->method("getLpaByUid")
-            ->willReturnCallback(fn (string $lpa) => match (true) {
-                $lpa === 'M-XYXY-YAGA-35G3' => [
-                    'opg.poas.sirius' => ['donor' => ['firstname' => 'firstname', 'surname' => 'surname']],
-                    'opg.poas.lpastore' => ['lpaType' => 'personal-welfare']
-                ],
-                $lpa === 'M-AAAA-1234-5678' => [
-                    'opg.poas.sirius' => [
-                        'donor' => ['firstname' => 'another', 'surname' => 'name'],
-                        'caseSubtype' => 'property-and-affairs'
-                    ],
-                ],
-            });
+        $this->siriusDataProcessorHelper
+            ->expects(self::once())
+            ->method('createLpaDetailsArray')
+            ->willReturn($this->returnMockLpaArray());
 
         $this->dispatch("/$this->uuid/{$this->routes['confirmDonors']}", 'GET');
         $this->assertResponseStatusCode(200);
@@ -886,7 +893,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('span[id=lpaType]', 'PA');
         $this->assertQueryContentContains('span[id=lpaId]', 'M-AAAA-1234-5678');
     }
-
 
     /**
      * @dataProvider confirmDonorsRedirectData

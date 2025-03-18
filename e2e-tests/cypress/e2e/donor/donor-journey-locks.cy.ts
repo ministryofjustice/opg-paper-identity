@@ -90,4 +90,16 @@ describe("Identify a Donor", () => {
         cy.contains('Preferred: ID over the phone').should('not.exist');
     });
 
+    it("shows no LPA found on Sirius returns not found" , () => {
+        cy.visit("/start?personType=donor&lpas[]=M-1234-5678-90AB");
+
+        cy.contains("LPAs not found for M-1234-5678-90AB");
+    });
+
+    it("shows how confirm page if at least one LPA is found" , () => {
+        cy.visit("/start?personType=donor&lpas[]=M-1234-5678-90AB&lpas[]=M-XYXY-YAGA-35G3");
+
+        cy.contains("How will you confirm your identity?");
+    });
+
 });

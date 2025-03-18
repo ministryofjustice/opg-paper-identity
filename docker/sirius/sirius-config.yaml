@@ -224,3 +224,9 @@ resources:
     response:
       statusCode: 200
       file: data/cpSuspended.json
+
+  - path: "/api/v1/digital-lpas/*"
+    method: get
+    response:
+      statusCode: 200
+      file: data/lpa404.json
