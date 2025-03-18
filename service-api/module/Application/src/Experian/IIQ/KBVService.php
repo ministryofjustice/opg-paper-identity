@@ -78,6 +78,10 @@ class KBVService implements KBVServiceInterface
             ]
         ];
 
+        if (empty($questions['questions'])) {
+            $identityIQ['thinfile'] = true;
+        }
+
         $this->writeHandler->updateCaseData(
             $caseData->id,
             'identityIQ',
