@@ -15,6 +15,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiException;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
@@ -22,14 +23,12 @@ use Application\Model\Entity\FraudScore;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
-use Application\Sirius\EventSender;
 use Application\Sirius\UpdateStatus;
 use Application\View\JsonModel;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -49,8 +48,7 @@ class IdentityController extends AbstractActionController
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
         private readonly FraudApiService $experianCrosscoreFraudApiService,
-        private readonly EventSender $eventSender,
-        private readonly ClockInterface $clock,
+        private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
     ) {
     }
 
@@ -652,7 +650,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['last_page'];
+        $response['result'] = "Progress recorded for {$uuid}";
 
         return new JsonModel($response);
     }
@@ -750,74 +748,22 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Progress recorded at " . $uuid . '/' . $data['last_page'];
+        $response['result'] = "Case Assistance recorded for {$uuid}";
 
         return new JsonModel($response);
     }
 
-    public function abandonCaseAction(): JsonModel
+    public function sendIdentityCheckAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
 
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
-
         if (! $caseData) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-
             return new JsonModel(new Problem('Case not found'));
         }
 
-        $this->eventSender->send("identity-check-updated", [
-            "reference" => "opg:" . $caseData->id,
-            "actorType" => $caseData->personType,
-            "lpaUids" => $caseData->lpas,
-            "time" => $this->clock->now()->format('c'),
-            "state" => UpdateStatus::Exit->value,
-        ]);
-
-        return new JsonModel();
-    }
-
-    public function startCourtOfProtectionAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-
-        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
-
-        if (! $caseData) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-
-            return new JsonModel(new Problem('Case not found'));
-        }
-
-        $this->eventSender->send("identity-check-updated", [
-            "time" => $this->clock->now()->format('c'),
-            "actorType" => $caseData->personType,
-            "lpaUids" => $caseData->lpas,
-            "state" => UpdateStatus::CopStarted->value,
-        ]);
-
-        return new JsonModel();
-    }
-
-    public function sendVouchStartedAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-
-        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid ?? '');
-
-        if (! $caseData) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
-
-            return new JsonModel(new Problem('Case not found'));
-        }
-
-        $this->eventSender->send("identity-check-updated", [
-            "time" => $this->clock->now()->format('c'),
-            "actorType" => $caseData->personType,
-            "lpaUids" => $caseData->lpas,
-            "state" => UpdateStatus::VouchStarted->value,
-        ]);
+        $this->caseOutcomeCalculator->updateSendIdentityCheck($caseData);
 
         return new JsonModel();
     }

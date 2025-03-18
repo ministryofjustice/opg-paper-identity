@@ -12,6 +12,8 @@ awslocal dynamodb create-table \
 
 sleep 5
 
+awslocal dynamodb update-time-to-live --table-name identity-verify --time-to-live-specification "Enabled=true, AttributeName=ttl"
+
 awslocal dynamodb update-table \
     --table-name identity-verify \
     --attribute-definitions AttributeName=yotiSessionId,AttributeType=S \

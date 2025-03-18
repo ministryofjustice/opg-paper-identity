@@ -95,6 +95,7 @@ class YotiController extends AbstractActionController
 
         try {
             $result = $this->yotiService->createSession($sessionData, $nonce, $timestamp);
+            $this->dataHandler->unsetTTL($uuid);
             $yotiSessionId = $result["data"]["session_id"];
             $case->yotiSessionId = $yotiSessionId;
 
