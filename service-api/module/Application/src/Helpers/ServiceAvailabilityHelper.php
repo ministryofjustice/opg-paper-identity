@@ -168,10 +168,6 @@ class ServiceAvailabilityHelper
             return $this->toArray();
         }
 
-//        die(json_encode(
-//            $this->case->identityIQ
-//        ));
-
         if ($this->case->identityIQ?->thinfile === true) {
             $this->processedMessages['banner'] =
                 $this->parseBannerText(self::DECISION_NODECISION);
