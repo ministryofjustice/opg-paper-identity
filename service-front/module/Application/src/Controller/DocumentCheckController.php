@@ -64,13 +64,14 @@ class DocumentCheckController extends AbstractActionController
                 $form,
                 $templates
             );
-            $view->setVariables($formProcessorResponseDto->getVariables());
+            $gotVariables = $formProcessorResponseDto->getVariables();
+            $view->setVariables($gotVariables);
 
-            if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+            if ($gotVariables['validity'] === 'PASS') {
                 $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
                 $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
-            } elseif ($formProcessorResponseDto->getVariables()['validity'] === 'MULTIPLE_MATCH') {
+            } elseif ($gotVariables['validity'] === 'MULTIPLE_MATCH') {
                 $template = $templates['amb_fail'];
             } else {
                 $template = $templates['fail'];

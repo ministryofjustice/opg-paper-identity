@@ -99,7 +99,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockProcessed);
 
         $mockProcessed
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getVariables')
             ->willReturn(["validity" => $validity]);
 
