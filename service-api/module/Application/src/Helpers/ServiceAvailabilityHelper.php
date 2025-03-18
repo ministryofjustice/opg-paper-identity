@@ -168,6 +168,15 @@ class ServiceAvailabilityHelper
             return $this->toArray();
         }
 
+        if ($this->case->identityIQ?->thinfile === true) {
+            $this->processedMessages['banner'] =
+                $this->parseBannerText(self::DECISION_NODECISION);
+
+            $this->setServiceFlags(false);
+
+            return $this->toArray();
+        }
+
         if ($this->case->identityCheckPassed === false) {
             $this->processedMessages['banner'] =
                 $this->parseBannerText(self::DECISION_STOP);
