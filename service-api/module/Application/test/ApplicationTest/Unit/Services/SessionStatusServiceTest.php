@@ -168,7 +168,7 @@ class SessionStatusServiceTest extends TestCase
         $this->caseOutcomeCalculator
             ->expects($this->once())
             ->method('updateSendIdentityCheck')
-            ->with($caseData, DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s\Z', '2019-04-18T14:08:18Z'));
+            ->with($caseData, new DateTimeImmutable('2019-04-18T14:08:18Z'));
 
         $result = $this->sut->getSessionStatus($caseData);
         $this->assertInstanceOf(CounterService::class, $result);

@@ -63,12 +63,8 @@ class SessionStatusService
             $caseData->counterService->result = $finalResult;
             $caseData->identityCheckPassed = $finalResult;
 
-            //TODO: does this actually work?
             if (isset($response['resources']['id_documents'][0]['created_at'])) {
-                $createdAt = DateTimeImmutable::createFromFormat(
-                    'Y-m-d\TH:i:s\Z',
-                    $response['resources']['id_documents'][0]['created_at']
-                );
+                $createdAt = new DateTimeImmutable($response['resources']['id_documents'][0]['created_at']);
             }
             $this->caseOutcomeCalculator->updateSendIdentityCheck($caseData, $createdAt ?? null);
         } catch (YotiException $e) {

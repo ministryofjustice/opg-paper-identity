@@ -22,7 +22,6 @@ awslocal dynamodb update-table \
         \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 20, \"WriteCapacityUnits\": 10 }, \
         \"Projection\":{\"ProjectionType\":\"ALL\"}}}]"
 
-
 awslocal secretsmanager create-secret --name local/paper-identity/yoti/certificate \
     --description "PEM certificate for authentication with Yoti API" \
     --secret-string "$(openssl genpkey -algorithm RSA -out - -pkeyopt rsa_keygen_bits:2048 -quiet)"

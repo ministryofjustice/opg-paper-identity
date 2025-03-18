@@ -486,7 +486,7 @@ return [
                 $serviceLocator->get(DynamoDbClient::class),
                 $tableName,
                 $serviceLocator->get(LoggerInterface::class),
-                $serviceLocator->get(ClockInterface::class)
+                $serviceLocator->get(ClockInterface::class),
             ),
             LoggerInterface::class => LoggerFactory::class,
             LicenseInterface::class => LicenseFactory::class,

@@ -762,7 +762,7 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
             return new JsonModel(new Problem('Case not found'));
         }
-        // TODO: should wrap this in a try/catch...
+
         $this->caseOutcomeCalculator->updateSendIdentityCheck($caseData);
 
         return new JsonModel();
