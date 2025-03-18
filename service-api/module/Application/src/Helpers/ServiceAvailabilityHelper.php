@@ -15,7 +15,6 @@ class ServiceAvailabilityHelper
     public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
     protected array $availableServices = [];
     protected array $processedMessages = [];
-    protected array $additionalMessages = [];
 
     public function __construct(
         protected array $services,
@@ -213,9 +212,13 @@ class ServiceAvailabilityHelper
             }
         }
 
-        if (! empty($this->case?->caseProgress?->restrictedMethods)) {
-            foreach ($this->case?->caseProgress?->restrictedMethods as $method) {
-                $this->availableServices[$method] = false;
+        if (is_array($this->case->caseProgress?->restrictedMethods)) {
+            /**
+             * @psalm-suppress PossiblyNullPropertyFetch
+             * @psalm-suppress PossiblyNullIterator
+             */
+            foreach ($this->case->caseProgress->restrictedMethods as $restrictedOption) {
+                $this->availableServices[$restrictedOption] = false;
             }
         }
 
@@ -232,9 +235,16 @@ class ServiceAvailabilityHelper
             'DRIVING_LICENCE' => 'Driving licence'
         ];
 
-        if($this->case?->caseProgress?->restrictedMethods) {
-            foreach ($this->case?->caseProgress?->restrictedMethods as $restrictedOption) {
-                $messages[] = sprintf($this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'], $map[$restrictedOption]);
+        if (is_array($this->case->caseProgress?->restrictedMethods)) {
+            /**
+             * @psalm-suppress PossiblyNullPropertyFetch
+             * @psalm-suppress PossiblyNullIterator
+             */
+            foreach ($this->case->caseProgress->restrictedMethods as $restrictedOption) {
+                $messages[] = sprintf(
+                    $this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'],
+                    $map[$restrictedOption]
+                );
             }
         }
 

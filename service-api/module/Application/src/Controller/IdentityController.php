@@ -188,7 +188,8 @@ class IdentityController extends AbstractActionController
                 $this->logger->info($dwpResponse);
                 $caseProgress = $caseData->caseProgress ?? new CaseProgress();
 
-                $caseProgress->restrictedMethods[] = IdMethod::NationalInsuranceNumber->value;
+                $caseProgress->restrictedMethods[IdMethod::NationalInsuranceNumber->value] =
+                    IdMethod::NationalInsuranceNumber->value;
 
                 $this->dataHandler->updateCaseData(
                     $uuid,

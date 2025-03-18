@@ -23,6 +23,10 @@ class AmbiguousCitizenResponseDTO
         return $this->errors;
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     * @return array[]
+     */
     public function toArray(): array
     {
         return [
