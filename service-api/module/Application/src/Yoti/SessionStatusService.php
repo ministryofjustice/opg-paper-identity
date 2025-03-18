@@ -10,8 +10,10 @@ use Application\Model\Entity\CounterService;
 use Application\Yoti\Http\Exception\YotiException;
 use Application\Helpers\CaseOutcomeCalculator;
 use DateTime;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Psr\Clock\ClockInterface;
 use Ramsey\Uuid\Uuid;
 
 class SessionStatusService
@@ -20,6 +22,7 @@ class SessionStatusService
         private readonly YotiServiceInterface $yotiService,
         private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
         private readonly LoggerInterface $logger,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -45,7 +48,7 @@ class SessionStatusService
     private function handleSessionCompletion(CaseData $caseData): ?CounterService
     {
         $nonce = strval(Uuid::uuid4());
-        $timestamp = (new DateTime())->getTimestamp();
+        $timestamp = $this->clock->now()->getTimestamp();
 
         try {
             $response = $this->yotiService->retrieveResults($caseData->yotiSessionId, $nonce, $timestamp);
@@ -60,10 +63,14 @@ class SessionStatusService
             $caseData->counterService->result = $finalResult;
             $caseData->identityCheckPassed = $finalResult;
 
-            $this->caseOutcomeCalculator->updateSendIdentityCheck(
-                $caseData,
-                $response['resources']['id_documents'][0]['created_at'] ?? (new DateTime())->format('c')
-            );
+            //TODO: does this actually work?
+            if (isset($response['resources']['id_documents'][0]['created_at'])) {
+                $createdAt = DateTimeImmutable::createFromFormat(
+                    'Y-m-d\TH:i:s\Z',
+                    $response['resources']['id_documents'][0]['created_at']
+                );
+            }
+            $this->caseOutcomeCalculator->updateSendIdentityCheck($caseData, $createdAt ?? null);
         } catch (YotiException $e) {
             $this->logger->error('Yoti result error: ' . $e->getMessage());
         } catch (InvalidArgumentException $exception) {
