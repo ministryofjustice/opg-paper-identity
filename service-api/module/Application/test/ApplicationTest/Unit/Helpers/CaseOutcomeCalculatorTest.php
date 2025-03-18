@@ -42,8 +42,8 @@ class CaseOutcomeCalculatorTest extends TestCase
     public function testCalculateStatus(CaseData $caseData, UpdateStatus $expectedStatus): void
     {
         $this->assertEquals(
+            $expectedStatus,
             $this->sut->calculatestatus($caseData),
-            $expectedStatus
         );
     }
 
