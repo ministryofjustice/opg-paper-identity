@@ -12,6 +12,7 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Laminas\Validator\IsArray;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
@@ -614,6 +615,57 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(VouchingFlowController::class);
         $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_enter_postcode');
+    }
+
+    /**
+     * @dataProvider enterPostcodeData
+    */
+    public function testEnterPostcodePageAdjustsContentCorrectly(array $detailsData, array $expectedContent): void
+    {
+        $detailsData = array_merge($this->returnOpgResponseData(), $detailsData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($detailsData);
+
+        $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'GET');
+
+        foreach ($expectedContent as $q) {
+            $this->assertQuery($q);
+        }
+    }
+
+    public static function enterPostcodeData(): array
+    {
+        return [
+            'not post-office route' => [
+                [],
+                [],
+            ],
+            'post office non UK driving-license id' => [
+                [
+                    'idRoute' => 'POST_OFFICE',
+                    'idMethodIncludingNation' => [
+                        'id_method' => 'DRIVING_LICENCE',
+                        'id_country' => 'AUS'
+                    ]
+                ],
+                ['p#PO_NON_GBR_DL']
+            ],
+            'post office UK driving license' => [
+                [
+                    'idRoute' => 'POST_OFFICE',
+                    'idMethodIncludingNation' => [
+                        'id_method' => 'DRIVING_LICENCE',
+                        'id_country' => 'GBR'
+                    ]
+                ],
+                ['p#PO_GBR_DL']
+            ]
+        ];
     }
 
     public function testEnterPostcodeError(): void
