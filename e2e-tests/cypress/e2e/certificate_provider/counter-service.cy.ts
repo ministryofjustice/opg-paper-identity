@@ -26,7 +26,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.getInputByLabel("Year").type("1999");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Does the address on the ID document match the address in Sirius?");
+    cy.contains("Post Office letter");
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -77,7 +77,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.getInputByLabel("Year").type("1999");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Does the address on the ID document match the address in Sirius?");
+    cy.contains(" Post Office letter");
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -106,7 +106,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.contains("There is a problem");
     cy.contains("Please select an option");
 
-    cy.contains("UK passport (up to 18 months expired)").click();
+    cy.contains("UK photocard driving licence (must be current)").click();
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Does the name match the ID?");
@@ -122,7 +122,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.getInputByLabel("Year").type("1999");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Does the address on the ID document match the address in Sirius?");
+    cy.contains("Does the address on the driving licence match the address in Sirius?");
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
@@ -133,7 +133,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get('.govuk-heading-xl').contains("Confirm Post Office route");
     cy.get('span#lpaId').contains("M-XYXY-YAGA-35G3");
     cy.get('span#lpaId').contains("M-XYXY-YAGB-35G3");
-    cy.get('dd#displayIdMethod').contains("UK Passport (current or expired in the last 18 months)");
+    cy.get('dd#displayIdMethod').contains("UK driving licence (must be current)");
     cy.get('span#poAddressLine').contains("St. Neots");
     cy.contains("Submission deadline");
     cy.get(".govuk-button").contains("Confirm and send letter").click();
@@ -169,7 +169,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.getInputByLabel("Year").type("1999");
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Does the address on the ID document match the address in Sirius?");
+    cy.contains("Post Office letter");
     cy.contains("label", "Yes").click();
     cy.get(".govuk-button").contains("Continue").click();
 
