@@ -12,6 +12,7 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Laminas\Validator\IsArray;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
@@ -642,7 +643,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             'not post-office route' => [
                 [],
-                ['h1#HOME_ADDRESS_HEADING']
+                [],
             ],
             'post office non UK driving-license id' => [
                 [
@@ -652,7 +653,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                         'id_country' => 'AUS'
                     ]
                 ],
-                ['h1#HOME_ADDRESS_HEADING', 'p#PO_NON_GBR_DL']
+                ['p#PO_NON_GBR_DL']
             ],
             'post office UK driving license' => [
                 [
@@ -662,7 +663,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                         'id_country' => 'GBR'
                     ]
                 ],
-                ['h1#DL_ADDRESS_HEADING', 'p#PO_GBR_DL']
+                ['p#PO_GBR_DL']
             ]
         ];
     }

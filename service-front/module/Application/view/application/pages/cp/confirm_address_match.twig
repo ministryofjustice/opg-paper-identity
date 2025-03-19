@@ -7,12 +7,27 @@
 {% block content %}
     <form method="POST" class="govuk-!-width-two-thirds">
 
-
+        <h1 class="govuk-heading-xl">
+            {% block title %}
+                    {% if details_data.idRoute == 'POST_OFFICE' %}
+                        {% if
+                            details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
+                            details_data.idMethodIncludingNation.id_country == 'GBR'
+                        %}
+                            Does the address on the driving licence match the address in Sirius?
+                        {% else %}
+                            Post Office letter
+                        {% endif %}
+                    {% else %}
+                        Does the address on the ID document match the address in Sirius?
+                    {% endif %}
+            {% endblock %}
+        </h1>
         {% if details_data.idRoute == 'POST_OFFICE' %}
-            {% if details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and  details_data.idMethodIncludingNation.id_country == 'GBR' %}
-                <h1 class="govuk-heading-xl" id="DL_MATCH_HEADING">
-                    Does the address on the driving licence match the address in Sirius?
-                </h1>
+            {% if
+                details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
+                details_data.idMethodIncludingNation.id_country == 'GBR'
+            %}
                 <p class="govuk-body" id="PO_GBR_DL">
                     The address on their driving licence must be the same on the letter they take to the Post Office, or the ID check will fail.
                 </p>
@@ -23,9 +38,6 @@
                     We need to either confirm the Sirius record is their driving licence address or capture it on the next page. Alternately, <a href="./post-office-documents" class="govuk-link govuk-link--no-visited-state">choose a different ID document to take to the Post Office</a>.
                 </p>
             {% else %}
-                <h1 class="govuk-heading-xl" id="PO_LETTER_HEADING">
-                    Post Office letter
-                </h1>
                 <p class="govuk-body" id="PO_NON_GBR_DL">
                     In the role of certificate provider, they might have registered a business or professional address with us.
                 </p>
@@ -34,9 +46,6 @@
                 </p>
             {% endif %}
         {% else %}
-            <h1 class="govuk-heading-xl" id="SIRIUS_MATCH_HEADING">
-                Does the address on the ID document match the address in Sirius?
-            </h1>
             <p class="govuk-body" id="NOT_PO">
                 To perform the fraud and identity checks, a check is made against the certificate provider’s home
                 address.

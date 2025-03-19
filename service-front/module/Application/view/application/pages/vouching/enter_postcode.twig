@@ -5,56 +5,56 @@
 {% endblock %}
 
 {% block content %}
-    {% block title %}
-        {% if
-            details_data.idRoute == 'POST_OFFICE' and
-            details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
-            details_data.idMethodIncludingNation.id_country == 'GBR'
-        %}
-            <h1 class="govuk-heading-xl" id="DL_ADDRESS_HEADING">
+    <div class="govuk-!-width-two-thirds">
+        <h1 class="govuk-heading-xl" id="pageHeading">
+        {% block title %}
+            {% if
+                details_data.idRoute == 'POST_OFFICE' and
+                details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
+                details_data.idMethodIncludingNation.id_country == 'GBR'
+            %}
                 What is the address on the driving licence?
-            </h1>
-        {% else %}
-            <h1 class="govuk-heading-xl" id="HOME_ADDRESS_HEADING">
+            {% else %}
                 What is your home address?
-            </h1>
-        {% endif %}
-    {% endblock %}
+            {% endif %}
+        {% endblock %}
+        </h1>
 
-    {% if details_data.idRoute == 'POST_OFFICE' %}
-        {% if details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and details_data.idMethodIncludingNation.id_country == 'GBR' %}
-            <p class="govuk-body" id="PO_GBR_DL">
-                The address on the driving licence must be the same as the address on the letter they take to the Post Office, or the ID check will fail.
-            </p>
-            <p class="govuk-body">
-                If the address on the driving licence is out of date, <a href="../post-office-documents" class="govuk-link govuk-link--no-visited-state">choose a different ID document to take to the Post Office</a>.
-            </p>
-        {% else %}
-            <p class="govuk-body" id="PO_NON_GBR_DL">
-                We will send you a letter to take with you to the Post Office.
-            </p>
-        {% endif %}
-    {% endif %}
-    <form method="POST" target="">
-        <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
-            {% if form.get('postcode').messages %}
-                <p id="postcode-error" class="govuk-error-message">
-                    <span class="govuk-visually-hidden">Error:</span> {{ form.get('postcode').messages | join(', ', ' and ') }}
+        {% if details_data.idRoute == 'POST_OFFICE' %}
+            {% if details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and details_data.idMethodIncludingNation.id_country == 'GBR' %}
+                <p class="govuk-body" id="PO_GBR_DL">
+                    The address on the driving licence must be the same as the address on the letter they take to the Post Office, or the ID check will fail.
+                </p>
+                <p class="govuk-body">
+                    If the address on the driving licence is out of date, <a href="../post-office-documents" class="govuk-link govuk-link--no-visited-state">choose a different ID document to take to the Post Office</a>.
+                </p>
+            {% else %}
+                <p class="govuk-body" id="PO_NON_GBR_DL">
+                    We will send you a letter to take with you to the Post Office.
                 </p>
             {% endif %}
-            <label for="postcode" class="govuk-label">Enter postcode</label>
-            <input
-                    class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
-                    id="postcode" name="postcode" type="text"
-                    value="{{ form.get('postcode').value }}"
-                    aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
-            />
-            <p id="different-method-link" class="govuk-hint govuk-!-width-two-thirds">
-                <a href="./enter-address-manual" class="govuk-link">
-                    Enter address manually or an address outside the UK
-                </a>
-            </p>
-        </div>
-        <button class="govuk-button" data-module="govuk-button">Continue</button>
-    </form>
+        {% endif %}
+        <form method="POST" target="">
+            <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
+                {% if form.get('postcode').messages %}
+                    <p id="postcode-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> {{ form.get('postcode').messages | join(', ', ' and ') }}
+                    </p>
+                {% endif %}
+                <label for="postcode" class="govuk-label">Enter postcode</label>
+                <input
+                        class="govuk-input govuk-!-width-one-third {% if form.get('postcode').messages %}govuk-input--error{% endif %}"
+                        id="postcode" name="postcode" type="text"
+                        value="{{ form.get('postcode').value }}"
+                        aria-describedby="postcode-hint {% if form.get('postcode').messages %}postcode-error{% endif %}"
+                />
+                <p id="different-method-link" class="govuk-hint">
+                    <a href="./enter-address-manual" class="govuk-link">
+                        Enter address manually or an address outside the UK
+                    </a>
+                </p>
+            </div>
+            <button class="govuk-button" data-module="govuk-button">Continue</button>
+        </form>
+    </div>
 {% endblock %}

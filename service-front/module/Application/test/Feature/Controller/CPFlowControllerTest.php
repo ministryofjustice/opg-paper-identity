@@ -200,7 +200,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             'not post-office route' => [
                 [],
-                ['h1#SIRIUS_MATCH_HEADING', 'p#NOT_PO']
+                ['p#NOT_PO']
             ],
             'post office non UK driving-license id' => [
                 [
@@ -211,7 +211,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                         'id_route' => 'POST_OFFICE'
                     ]
                 ],
-                ['h1#PO_LETTER_HEADING', 'p#PO_NON_GBR_DL']
+                ['p#PO_NON_GBR_DL']
             ],
             'post office UK driving license' => [
                 [
@@ -222,7 +222,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                         'id_route' => 'POST_OFFICE'
                     ]
                 ],
-                ['h1#DL_MATCH_HEADING', 'p#PO_GBR_DL']
+                ['p#PO_GBR_DL']
             ]
         ];
     }
