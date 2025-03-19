@@ -42,7 +42,7 @@ describe("Identify a Certificate Provider", () => {
         cy.selectKBVAnswer({ correct: true });
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains(".moj-banner", "Identity check passed");
+        cy.contains(".moj-alert", "Identity check passed");
     });
 
     it("Passport - throws out of date error", () => {
@@ -305,7 +305,7 @@ describe("Identify a Certificate Provider", () => {
         cy.selectKBVAnswer({ correct: true });
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains(".moj-banner", "Identity check passed");
+        cy.contains(".moj-alert", "Identity check passed");
     });
 
     it("handles 2 LPAs", () => {

@@ -6,11 +6,11 @@
 
 {% block content %}
     {% if form.get('lpa').messages %}
-        <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+        <div class="moj-alert moj-alert--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
             <p class="govuk-body">
                 <b>There is a problem</b>
             </p>
-            <div class="moj-banner__message">
+            <div class="moj-alert__message">
                 Not a valid LPA number. Enter an LPA number to continue.
             </div>
         </div>
@@ -20,11 +20,11 @@
 
             {% for key,message in lpa_response['messages'] %}
 
-                <div class="moj-banner moj-banner--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
+                <div class="moj-alert moj-alert--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
                     <p class="govuk-body">
                         <b>There is a problem</b>
                     </p>
-                    <div class="moj-banner__message">
+                    <div class="moj-alert__message">
                         {{ message|raw }}
 
                         {% if lpa_response['additionalData'][key] %}
