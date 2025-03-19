@@ -127,6 +127,56 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
+    /**
+     * @dataProvider donorDetailsMatchData
+    */
+    public function testDonorDetailsMatchPageAdjustsContentCorrectly(array $detailsData, string $expectedContent): void
+    {
+        $detailsData = array_merge($this->returnOpgResponseData(), $detailsData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($detailsData);
+
+        $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
+
+        $this->assertQuery("p#{$expectedContent}");
+    }
+
+    public static function donorDetailsMatchData(): array
+    {
+        return [
+            'not post-office route' => [
+                [],
+                'NOT_PO'
+            ],
+            'post office non UK driving-license id' => [
+                [
+                    'idRoute' => 'POST_OFFICE',
+                    'idMethodIncludingNation' => [
+                        'id_method' => 'DRIVING_LICENCE',
+                        'id_country' => 'AUS'
+                    ]
+                ],
+                'PO_NON_GBR_DL'
+            ],
+            'post office UK driving license' => [
+                [
+                    'idRoute' => 'POST_OFFICE',
+                    'idMethodIncludingNation' => [
+                        'id_method' => 'DRIVING_LICENCE',
+                        'id_country' => 'GBR'
+                    ]
+                ],
+                'PO_GBR_DL'
+            ]
+        ];
+    }
+
+
     public function testWhatIsVouchingPage(): void
     {
         $this->dispatch("/$this->uuid/what-is-vouching");
@@ -210,7 +260,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "id_country" => "GBR",
                 "id_method" => "DRIVING_LICENCE",
                 'id_route' => 'TELEPHONE'
-            ]
+            ],
+            "idRoute" => "TELEPHONE",
         ];
     }
 
