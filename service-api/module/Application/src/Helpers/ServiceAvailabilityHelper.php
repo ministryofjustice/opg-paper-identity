@@ -230,7 +230,7 @@ class ServiceAvailabilityHelper
         $messages = [];
 
         $map = [
-            'NATIONAL_INSURANCE_NUMBER' => 'National insurance number',
+            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
             'PASSPORT' => 'Passport',
             'DRIVING_LICENCE' => 'Driving licence'
         ];

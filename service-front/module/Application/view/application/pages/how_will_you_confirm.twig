@@ -6,12 +6,11 @@
 
 {% block content %}
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% if form.get('id_method').messages %}
+        {% if form.get('id_method').messages %}
             <div class="govuk-error-summary" data-module="govuk-error-summary">
                 <div role="alert">
                     <h2 class="govuk-error-summary__title">
-                    There is a problem
+                        There is a problem
                     </h2>
                     <div class="govuk-error-summary__body">
                         <ul class="govuk-list govuk-error-summary__list">
@@ -24,40 +23,42 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-            {% if service_availability.messages.banner %}
-                <div class="govuk-notification-banner" data-module="govuk-notification-banner">
-                    <div class="govuk-notification-banner__content">
-                        <div class="govuk-warning-text">
-                    <span
-                        class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
-                        aria-hidden="true">!
-                    </span>
-                            <strong class="govuk-warning-text__text">
-                                <span class="govuk-visually-hidden">Warning</span>
-                                <span id="serviceAvailabilityBanner">{{ service_availability.messages.banner }}</span>
-                            </strong>
-                        </div>
-                    </div>
-                </div>
-            {% elseif service_availability.additional_restriction_messages|length > 0 %}
-                {%  for value in service_availability.additional_restriction_messages %}
-                    <div class="govuk-notification-banner" data-module="govuk-notification-banner">
-                        <div class="govuk-notification-banner__content">
-                            <div class="govuk-warning-text">
+        {% endif %}
+        {% if service_availability.messages.banner %}
+            <div class="govuk-notification-banner" data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__content">
+                    <div class="govuk-warning-text">
                     <span
                             class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue"
                             aria-hidden="true">!
                     </span>
-                                <strong class="govuk-warning-text__text">
-                                    <span class="govuk-visually-hidden">Warning</span>
-                                    <span id="serviceAvailabilityBanner">{{ value }}</span>
-                                </strong>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            <span id="serviceAvailabilityBanner">{{ service_availability.messages.banner }}</span>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        {% elseif service_availability.additional_restriction_messages|length > 0 %}
+            {%  for value in service_availability.additional_restriction_messages %}
+                <div class="govuk-notification-banner" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__content">
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon moj-ticket-panel__content--blue moj-tag--blue" aria-hidden="true">
+                                !
+                            </span>
+                            <div class="govuk-warning-text__text">
+                                <span class="govuk-visually-hidden">Warning</span>
+                                <span id="serviceAvailabilityBanner" class="govuk-body-m govuk-!-width-full">
+                                    National Insurance number could not be verified over the phone, choose an alternate ID method below.
+                                </span>
                             </div>
                         </div>
                     </div>
-                {%  endfor %}
-            {% endif %}
+                </div>
+            {%  endfor %}
+        {% endif %}
+        <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl">{% block title %}How will you confirm your identity?{% endblock %}</h1>
         </div>
     </div>
