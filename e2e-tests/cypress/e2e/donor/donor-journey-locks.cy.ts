@@ -68,7 +68,7 @@ describe("Identify a Donor", () => {
 
     });
 
-    it("shows document warning banner on start page when no KBV questions are available" , () => {
+    it("shows document warning banner on start page when no KBV questions are available (thin file)" , () => {
         cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G5");
 
         cy.contains("How will you confirm your identity?");
