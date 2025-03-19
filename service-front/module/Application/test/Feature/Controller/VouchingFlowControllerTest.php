@@ -632,10 +632,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'GET');
 
-        foreach($expectedContent as $q) {
+        foreach ($expectedContent as $q) {
             $this->assertQuery($q);
         }
-
     }
 
     public static function enterPostcodeData(): array
