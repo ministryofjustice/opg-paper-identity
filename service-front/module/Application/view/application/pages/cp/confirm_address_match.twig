@@ -5,26 +5,53 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST">
-        <h1 class="govuk-heading-xl govuk-!-width-two-thirds">
-            {% block title %}
+    <form method="POST" class="govuk-!-width-two-thirds">
+
+
+        {% if details_data.idRoute == 'POST_OFFICE' %}
+            {% if details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and  details_data.idMethodIncludingNation.id_country == 'GBR' %}
+                <h1 class="govuk-heading-xl" id="DL_MATCH_HEADING">
+                    Does the address on the driving licence match the address in Sirius?
+                </h1>
+                <p class="govuk-body" id="PO_GBR_DL">
+                    The address on their driving licence must be the same on the letter they take to the Post Office, or the ID check will fail at the Post Office.
+                </p>
+                <p class="govuk-body">
+                    In the role of certificate provider, they might have registered a business or professional address with us.
+                </p>
+                <p class="govuk-body">
+                    We need to either confirm the Sirius record is their driving licence address or capture it on the next page. Alternately, <a href="./post-office-documents" class="govuk-link govuk-link--no-visited-state">choose a different ID document to take to the Post Office</a>.
+                </p>
+            {% else %}
+                <h1 class="govuk-heading-xl" id="PO_LETTER_HEADING">
+                    Post Office letter
+                </h1>
+                <p class="govuk-body" id="PO_NON_GBR_DL">
+                    In the role of certificate provider, they might have registered a business or professional address with us.
+                </p>
+                <p class="govuk-body">
+                    We need to either confirm the Sirius record is where we should send the letter of capture another address on the next page.
+                </p>
+            {% endif %}
+        {% else %}
+            <h1 class="govuk-heading-xl" id="SIRIUS_MATCH_HEADING">
                 Does the address on the ID document match the address in Sirius?
-            {% endblock %}
-        </h1>
-        <p class="govuk-body govuk-!-width-two-thirds">
-            To perform the fraud and identity checks, a check is made against the certificate provider’s home
-            address.
-        </p>
-        <p class="govuk-body govuk-!-width-two-thirds">
-            In the role of certificate provider, they might have registered a business or professional address with
-            us.
-        </p>
-        <p class="govuk-body govuk-!-width-two-thirds">
-            We need to either confirm the Sirius record is their home address or capture it on the next page.
-        </p>
+            </h1>
+            <p class="govuk-body" id="NOT_PO">
+                To perform the fraud and identity checks, a check is made against the certificate provider’s home
+                address.
+            </p>
+            <p class="govuk-body">
+                In the role of certificate provider, they might have registered a business or professional address with
+                us.
+            </p>
+            <p class="govuk-body">
+                We need to either confirm the Sirius record is their home address or capture it on the next page.
+            </p>
+        {% endif %}
 
         {% if details_data.professionalAddress %}
-            <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
+            <div class="govuk-inset-text app-inset-text-blue">
                 <h2 class="govuk-heading-m">Sirius record</h2>
                 <h3 class="govuk-heading-s">Address</h3>
 
@@ -36,7 +63,7 @@
                     {% endfor %}
                 </p>
             </div>
-            <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
+            <div class="govuk-inset-text app-inset-text-blue">
                 <h2 class="govuk-heading-m">Address for identity check</h2>
 
                 <p class="govuk-body">
@@ -52,7 +79,7 @@
                 <input type="hidden" name="confirm_alt" value="confirmed">
             </div>
         {% else %}
-            <div class="govuk-inset-text app-inset-text-blue govuk-!-width-two-thirds">
+            <div class="govuk-inset-text app-inset-text-blue">
                 <h2 class="govuk-heading-m">Sirius record</h2>
                 <h3 class="govuk-heading-s">Address</h3>
 
@@ -64,7 +91,7 @@
                     {% endfor %}
                 </p>
             </div>
-            <div class="govuk-form-group govuk-!-width-two-thirds">
+            <div class="govuk-form-group">
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h3 class="govuk-fieldset__heading">
