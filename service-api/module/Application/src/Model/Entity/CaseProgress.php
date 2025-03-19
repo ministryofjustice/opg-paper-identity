@@ -33,6 +33,10 @@ class CaseProgress extends Entity
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?FraudScore $fraudScore = null;
 
+    #[Annotation\Required(false)]
+    #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
+    public ?array $restrictedMethods = [];
+
     public static function fromArray(mixed $data): self
     {
         $instance = new self();

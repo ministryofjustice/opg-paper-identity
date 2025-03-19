@@ -102,4 +102,23 @@ describe("Identify a Donor", () => {
         cy.contains("How will you confirm your identity?");
     });
 
+    it("shows document partial fail banner on start page once ID verification throw ambiguous match" , () => {
+        cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.getInputByLabel("National Insurance number").type("NP 123123 C");
+        cy.get(".govuk-button").contains("Continue").click();
+
+        cy.jumpToPage("how-will-you-confirm");
+        cy.contains("National insurance number could not be verified over the phone, choose an alternate ID method below.");
+
+
+
+    });
+
 });
