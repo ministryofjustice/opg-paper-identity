@@ -8,18 +8,41 @@
     <form method="POST">
         <h1 class="govuk-heading-xl govuk-!-width-two-thirds">{% block title %}Do the details match the ID document?{% endblock %}</h1>
 
-        <p class="govuk-body">
-            The donor’s name and date of birth recorded in Sirius should be identical to
-            how they are presented on the ID document they have chosen to prove their
-            identity with.
-        </p>
-        <p class="govuk-body">
-            The donor’s address recorded in Sirius should be their home address as this is
-            used for the identity check.
-        </p>
-        <p class="govuk-body">
-            If there is a mis-match, amend in Sirius as appropriate.
-        </p>
+        {% if details_data.idRoute == 'POST_OFFICE' %}
+            {% if details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and  details_data.idMethodIncludingNation.id_country == 'GBR' %}
+                <p class="govuk-body" id="PO_GBR_DL">
+                    The donor’s name, date of birth and the address on the driving licence must be the same as recorded
+                    in Sirius or the ID check will fail at the Post Office.
+                </p>
+                <p class="govuk-body">
+                    If there is a mis-match, amend in Sirius as appropriate.
+                </p>
+                <p class="govuk-body">
+                    Alternately, <a href="./how-will-you-confirm" class="govuk-link govuk-link--no-visited-state">choose a different ID document to take to the Post Office</a>.
+                </p>
+            {% else %}
+                <p class="govuk-body" id="PO_NON_GBR_DL">
+                    The donor’s name and date of birth on the ID document must be the same as recorded in Sirius
+                    or the the ID check will fail at the Post Office.
+                </p>
+                <p class="govuk-body">
+                    If there is a mis-match, amend in Sirius as appropriate.
+                </p>
+            {% endif %}
+        {% else %}
+            <p class="govuk-body" id="NOT_PO">
+                The donor’s name and date of birth recorded in Sirius should be identical to
+                how they are presented on the ID document they have chosen to prove their
+                identity with.
+            </p>
+            <p class="govuk-body">
+                The donor’s address recorded in Sirius should be their home address as this is
+                used for the identity check.
+            </p>
+            <p class="govuk-body">
+                If there is a mis-match, amend in Sirius as appropriate.
+            </p>
+        {% endif %}
 
         <div class="app-inset-text-blue">
             <h2 class="govuk-heading-l">Sirius record</h2>
@@ -43,7 +66,7 @@
 
             <a href="{{ sirius_edit_url }}/lpa-details" class="govuk-link" target="_blank">Edit the donor's details in Sirius</a> (Opens in a new window)<br><br>
 
-            <a href="./donor-details-match-check" class="govuk-link">Update this page</a> (if you've changed the record
+            <a href="./donor-details-match-check" class="govuk-link govuk-link--no-visited-state">Update this page</a> (if you've changed the record
             in Sirius)
         </div>
 
