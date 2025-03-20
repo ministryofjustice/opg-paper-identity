@@ -12,14 +12,11 @@
     </h1>
     <form method="POST" target="">
         <div class="govuk-form-group {% if form.get('postcode').messages %}govuk-form-group--error{% endif %}">
-            <p id="postcode-hint" class="govuk-body govuk-!-width-two-thirds govuk-hint">
-                This information is required to check their identity and protect against fraud.
-            </p>
             <div class="govuk-warning-text govuk-!-width-two-thirds">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
-                    Note: this address is only used for this identity check and is not stored in Sirius.
+                    Note: This address is only used for the identity check and will not replace the address stored in Sirius.
                 </strong>
             </div>
             {% if form.get('postcode').messages %}
