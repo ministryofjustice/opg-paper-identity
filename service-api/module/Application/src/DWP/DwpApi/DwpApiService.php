@@ -64,14 +64,10 @@ class DwpApiService
                 new CitizenRequestDTO($caseData, $nino)
             );
 
-            $this->logger->info('DwpMatchResponse: ' . "($this->correlationUuid) ", $citizenResponseDTO->toArray());
-
             $detailsResponseDTO = $this->makeCitizenDetailsRequest(
                 new DetailsRequestDTO($citizenResponseDTO->id()),
                 $nino
             );
-
-            $this->logger->info('DwpDetailsResponse: ' . "($this->correlationUuid) ", $detailsResponseDTO->toArray());
 
             return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO, $nino);
         } catch (\Exception $exception) {
