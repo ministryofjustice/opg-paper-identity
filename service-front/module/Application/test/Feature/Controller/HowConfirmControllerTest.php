@@ -182,7 +182,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
 
     public function testHowWillYouConfirmShowsServiceAvailabilityMessages(): void
     {
-        $message = 'This is a serivce availability message';
+        $message = 'This is a service availability message';
         $mockServiceAvailability = [
             'data' => [
                 'PASSPORT' => false,
@@ -208,8 +208,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockServiceAvailability);
 
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'GET');
-
-        $this->assertQueryContentContains('span#serviceAvailabilityBanner', $message);
+        $this->assertResponseStatusCode(200);
+        $this->assertControllerClass('HowConfirmController');
+        $this->assertQueryContentContains('div#serviceAvailabilityBanner', $message);
     }
 
     /**
