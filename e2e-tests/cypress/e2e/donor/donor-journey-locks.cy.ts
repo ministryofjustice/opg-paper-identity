@@ -115,10 +115,6 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("National insurance number could not be verified over the phone, choose an alternate ID method below.");
-
-
-
+        cy.contains("National Insurance number could not be verified over the phone, choose an alternate ID method below.");
     });
-
 });
