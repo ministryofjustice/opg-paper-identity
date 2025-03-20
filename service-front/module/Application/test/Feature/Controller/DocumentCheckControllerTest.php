@@ -99,7 +99,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockProcessed);
 
         $mockProcessed
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(1))
             ->method('getVariables')
             ->willReturn(["validity" => $validity]);
 
@@ -134,6 +134,14 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->with($this->uuid);
         }
 
+        if ($validity === 'MULTIPLE_MATCH') {
+            $this
+                ->opgApiServiceMock
+                ->expects(self::never())
+                ->method('requestFraudCheck')
+                ->with($this->uuid);
+        }
+
         $this->dispatch("/$this->uuid/national-insurance-number", 'POST', [
             'nino' => 'NP 11 22 33 C',
         ]);
@@ -143,7 +151,8 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             ["PASS"],
-            ["FAIL"]
+            ["NO_MATCH"],
+            ["MULTIPLE_MATCH"],
         ];
     }
 
