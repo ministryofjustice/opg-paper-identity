@@ -6,13 +6,22 @@
 
 {% block content %}
     <div class="moj-banner__message moj-hidden">{% block title %}National insurance number{% endblock %}</div>
-    <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
-        <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
-             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-            <path d="M18.1777 0.5H7.82233L0.5 7.82233V18.1777L7.82233 25.5H18.1777L25.5 18.1777V7.82233L18.1777 0.5ZM8.91549 6.87769L13.0001 10.9623L17.0847 6.87771L19.1224 8.91537L15.0378 13L19.1224 17.0846L17.0847 19.1222L13.0001 15.0376L8.91547 19.1223L6.87782 17.0846L10.9624 13L6.87783 8.91534L8.91549 6.87769Z"/>
-        </svg>
-        <div class="moj-banner__message">Unable to verify National Insurance number.<br/><br/>Try a different method.</div>
+    <div role="region" class="moj-alert moj-alert--error" aria-label="Error" data-module="moj-alert">
+        <div>
+            <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 30 30" height="30" width="30">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M20.1777 2.5H9.82233L2.5 9.82233V20.1777L9.82233 27.5H20.1777L27.5 20.1777V9.82233L20.1777 2.5ZM10.9155 8.87769L15.0001 12.9623L19.0847 8.87771L21.1224 10.9154L17.0378 15L21.1224 19.0846L19.0847 21.1222L15.0001 17.0376L10.9155 21.1223L8.87782 19.0846L12.9624 15L8.87783 10.9153L10.9155 8.87769Z"
+                      fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="moj-alert__content">Unable to verify National Insurance number.<br/><br/>Try a different method.
+        </div>
+        <div class="moj-alert__action">
+            <button class="moj-alert__dismiss" hidden>Dismiss</button>
+        </div>
     </div>
+    
     <h3 class="govuk-heading-m">Name</h3>
     <p class="govuk-body">
         {{ details_data.firstName }} {{ details_data.lastName }}
@@ -27,7 +36,7 @@
     </p>
     <div class="govuk-button-group">
         <a href="./how-will-you-confirm" role="button" draggable="false"
-            class="govuk-button govuk-button--secondary" data-module="govuk-button">
+           class="govuk-button govuk-button--secondary" data-module="govuk-button">
             Try a different method
         </a>
     </div>
