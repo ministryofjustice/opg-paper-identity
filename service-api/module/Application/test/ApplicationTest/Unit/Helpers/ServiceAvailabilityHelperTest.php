@@ -168,6 +168,24 @@ class ServiceAvailabilityHelperTest extends TestCase
             'additional_restriction_messages' => [],
         ];
 
+        $expectedKbvEmpty = [
+            'data' => [
+                'PASSPORT' => false,
+                'DRIVING_LICENCE' => false,
+                'NATIONAL_INSURANCE_NUMBER' => false,
+                'POST_OFFICE' => true,
+                'VOUCHING' => true,
+                'COURT_OF_PROTECTION' => true,
+                'EXPERIAN' => false,
+            ],
+            'messages' => [
+                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
+                    'available security questions or failure to answer them correctly ' .
+                    'on a previous occasion.',
+            ],
+            'additional_restriction_messages' => [],
+        ];
+
         $expectedDocSuccess = [
             'data' => [
                 'PASSPORT' => false,
@@ -254,6 +272,17 @@ class ServiceAvailabilityHelperTest extends TestCase
             ]
         ]);
 
+        $caseKbvEmpty = array_merge($case, [
+            "identityIQ" => [
+                "kbvQuestions" => [],
+                "iiqControl" => [
+                    "urn" => "******",
+                    "authRefNo" => "********"
+                ],
+                "thinfile" => true
+            ]
+        ]);
+
         $caseDocChecked = array_merge($case, [
             "caseProgress" => [
                 "abandonedFlow" => null,
@@ -294,6 +323,12 @@ class ServiceAvailabilityHelperTest extends TestCase
                 $caseKbvFail,
                 $services,
                 $expectedKbvFail
+            ],
+            [
+                $config,
+                $caseKbvEmpty,
+                $services,
+                $expectedKbvEmpty
             ],
             [
                 $config,
