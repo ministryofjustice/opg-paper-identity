@@ -63,6 +63,7 @@ class DwpApiService
             $citizenResponseDTO = $this->makeCitizenMatchRequest(
                 new CitizenRequestDTO($caseData, $nino)
             );
+
             $detailsResponseDTO = $this->makeCitizenDetailsRequest(
                 new DetailsRequestDTO($citizenResponseDTO->id()),
                 $nino
