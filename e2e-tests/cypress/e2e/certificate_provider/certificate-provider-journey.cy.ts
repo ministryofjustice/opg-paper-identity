@@ -266,18 +266,18 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("No").click();
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.contains("What is the address on the ID document?");
+        cy.contains("What is the address?");
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("Enter a postcode");
         cy.get("#postcode").type("SW1A 1AA");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains("What is the address on the ID document?");
+        cy.contains("What is the address?");
         cy.contains("Select address");
         cy.screenshot();
         cy.contains("The address is not in the list");
         cy.contains("The address is not in the list").click();
 
-        cy.contains("What is the address on the ID document?");
+        cy.contains("What is the address?");
         cy.get("#line1").type("1 Street");
         cy.get("#town").type("London");
         cy.get("#postcode").type("SW1A 1AA");
