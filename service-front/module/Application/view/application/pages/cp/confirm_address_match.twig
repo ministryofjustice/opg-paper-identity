@@ -104,7 +104,18 @@
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h3 class="govuk-fieldset__heading">
-                            Is this the address for the chosen ID document?
+                            {% if details_data.idRoute == 'POST_OFFICE' %}
+                                {% if
+                                    details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
+                                    details_data.idMethodIncludingNation.id_country == 'GBR'
+                                %}
+                                    Is this the address on the driving licence?
+                                {% else %}
+                                    Send the letter to this address?
+                                {% endif %}
+                            {% else %}
+                                Is this the address for the chosen ID document?
+                            {% endif %}
                         </h3>
                     </legend>
                     {% if form.get('chosenAddress').messages %}
