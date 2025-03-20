@@ -174,6 +174,59 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/cp_confirm_address');
     }
 
+        /**
+     * @dataProvider confirmAddressData
+    */
+    public function testConfirmAddressPageAdjustsContentCorrectly(array $detailsData, array $expectedContent): void
+    {
+        $detailsData = array_merge($this->returnOpgResponseData(), $detailsData);
+
+        $this
+            ->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($this->uuid)
+            ->willReturn($detailsData);
+
+        $this->dispatch("/$this->uuid/cp/confirm-address", 'GET');
+
+        foreach ($expectedContent as $q) {
+            $this->assertQuery($q);
+        }
+    }
+
+    public static function confirmAddressData(): array
+    {
+        return [
+            'not post-office route' => [
+                [],
+                ['p#NOT_PO']
+            ],
+            'post office non UK driving-license id' => [
+                [
+                    'idRoute' => 'POST_OFFICE',
+                    'idMethodIncludingNation' => [
+                        'id_method' => 'DRIVING_LICENCE',
+                        'id_country' => 'AUS',
+                        'id_route' => 'POST_OFFICE'
+                    ]
+                ],
+                ['p#PO_NON_GBR_DL']
+            ],
+            'post office UK driving license' => [
+                [
+                    'idRoute' => 'POST_OFFICE',
+                    'idMethodIncludingNation' => [
+                        'id_method' => 'DRIVING_LICENCE',
+                        'id_country' => 'GBR',
+                        'id_route' => 'POST_OFFICE'
+                    ]
+                ],
+                ['p#PO_GBR_DL']
+            ]
+        ];
+    }
+
     public function testEnterPostcodeAddsValidationMessageWhenPostcodeInvalidExceptionThrown(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
