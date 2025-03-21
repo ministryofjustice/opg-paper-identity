@@ -29,7 +29,7 @@ class CaseData implements JsonSerializable
     public string $id;
 
     /**
-     * @var "TELEPHONE"|"POSTOFFICE"|"VOUCHING"
+     * @var "TELEPHONE"|"POST_OFFICE"|"OnBehalf"|"cpr"
      */
     #[Annotation\Required(false)]
     public ?string $idRoute = null;
@@ -114,6 +114,8 @@ class CaseData implements JsonSerializable
                 $instance->caseAssistance = CaseAssistance::fromArray($value);
             } elseif ($key === 'identityIQ') {
                 $instance->identityIQ = IdentityIQ::fromArray($value);
+            } elseif ($key === 'ttl') {
+                // avoid throwing error if a ttl has been set on the record
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -127,7 +129,7 @@ class CaseData implements JsonSerializable
     /**
      * @return array{
      *     id: string,
-     *     idRoute: "TELEPHONE"|"POSTOFFICE"|"VOUCHING"|null,
+     *     idRoute: "TELEPHONE"|"POST_OFFICE"|"OnBehalf"|"cpr"|null,
      *     personType: "donor"|"certificateProvider"|"voucher",
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],

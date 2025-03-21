@@ -15,12 +15,15 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Lcobucci\Clock\FrozenClock;
+use DateTimeImmutable;
 
 class DataWriteHandlerTest extends TestCase
 {
     private DynamoDbClient|MockObject $dynamoDbClientMock;
     private LoggerInterface|MockObject $loggerMock;
     private DataWriteHandler $sut;
+    private string $tableName;
 
     public function setUp(): void
     {
@@ -29,8 +32,14 @@ class DataWriteHandlerTest extends TestCase
         // Mocking the DynamoDB client and logger
         $this->dynamoDbClientMock = $this->createMock(DynamoDbClient::class);
         $this->loggerMock = $this->createMock(LoggerInterface::class);
+        $this->tableName = 'cases';
         // Create an instance of SUT with mocked dependencies
-        $this->sut = new DataWriteHandler($this->dynamoDbClientMock, 'cases', $this->loggerMock);
+        $this->sut = new DataWriteHandler(
+            $this->dynamoDbClientMock,
+            $this->tableName,
+            $this->loggerMock,
+            new FrozenClock(new DateTimeImmutable('2025-03-10T09:00:00Z'))
+        );
     }
 
     /**
@@ -266,5 +275,73 @@ class DataWriteHandlerTest extends TestCase
             'documentComplete',
             'an invalid value'
         );
+    }
+
+    /**
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testSetTTL(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050491';
+        $ttl = '1744189200';  // 2025-04-09 09:00:00
+
+        // Stubbing the putItem method of DynamoDB client
+        $this->dynamoDbClientMock
+            ->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) use ($uuid, $ttl) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => $uuid]], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(['#H' => 'ttl'], $input['ExpressionAttributeNames']);
+                    $this->assertEquals([':h' => ['N' => $ttl]], $input['ExpressionAttributeValues']);
+
+                    return true;
+                })
+            );
+
+        $this->loggerMock
+            ->expects($this->once())
+            ->method('info')
+            ->with("Setting case {$uuid} to expire after 2025-04-09T09:00:00+00:00");
+
+        $this->sut->setTTL($uuid);
+    }
+
+    /**
+     * @psalm-suppress UndefinedMagicMethod
+     * @psalm-suppress PossiblyUndefinedMethod
+     */
+    public function testUnsetTTL(): void
+    {
+        $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050491';
+
+        // Stubbing the putItem method of DynamoDB client
+        $this->dynamoDbClientMock
+            ->expects($this->once())
+            ->method('__call')
+            ->with(
+                'updateItem',
+                $this->callback(function ($params) use ($uuid) {
+                    // Ensure correct parameters passed to updateItem
+                    $input = $params[0];
+                    $this->assertEquals(['id' => ['S' => $uuid]], $input['Key']);
+                    $this->assertArrayHasKey('UpdateExpression', $input);
+                    $this->assertEquals(['#H' => 'ttl'], $input['ExpressionAttributeNames']);
+
+                    return true;
+                })
+            );
+
+        $this->loggerMock
+            ->expects($this->once())
+            ->method('info')
+            ->with("Removing expiry from case {$uuid} if present");
+
+        $this->sut->unsetTTL($uuid);
     }
 }

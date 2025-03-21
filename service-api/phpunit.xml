@@ -43,6 +43,7 @@
         <env name="SECRETS_MANAGER_ENDPOINT" value="http://localstack:4566" />
         <env name="AWS_DYNAMODB_ENDPOINT" value="http://localstack:4566" />
         <env name="AWS_DYNAMODB_TABLE_NAME" value="cases" />
+        <env name="AWS_DYNAMODB_TTL_DAYS" value="30" />
         <env name="MOCK_KBV_API" value="true" />
         <env name="EXPERIAN_BASE_URL" value="EXPERIAN_BASE_URL" />
         <env name="YOTI_BASE_URL" value="http://yoti-mock:8080" />

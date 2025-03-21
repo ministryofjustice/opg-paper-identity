@@ -157,7 +157,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('sendVouchStarted')
+            ->method('sendIdentityCheck')
             ->with($this->uuid);
 
             $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
