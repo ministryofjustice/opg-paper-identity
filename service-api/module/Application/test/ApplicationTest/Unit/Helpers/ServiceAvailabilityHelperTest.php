@@ -111,7 +111,8 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'VOUCHING' => true,
                 'COURT_OF_PROTECTION' => true,
             ],
-            'messages' => []
+            'messages' => [],
+            'additional_restriction_messages' => [],
         ];
 
         $expectedNoDec = [
@@ -127,7 +128,8 @@ class ServiceAvailabilityHelperTest extends TestCase
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .
                     'available security questions or failure to answer them correctly on a previous occasion.',
-            ]
+            ],
+            'additional_restriction_messages' => [],
         ];
 
         $expectedStop = [
@@ -144,7 +146,8 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                     'available information from Experian or a failure to answer the security questions correctly ' .
                     'on a previous occasion.'
-            ]
+            ],
+            'additional_restriction_messages' => [],
         ];
 
         $expectedKbvFail = [
@@ -161,7 +164,8 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                     'available information from Experian or a failure to answer the security questions correctly ' .
                     'on a previous occasion.',
-            ]
+            ],
+            'additional_restriction_messages' => [],
         ];
 
         $expectedKbvEmpty = [
@@ -178,7 +182,8 @@ class ServiceAvailabilityHelperTest extends TestCase
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .
                     'available security questions or failure to answer them correctly ' .
                     'on a previous occasion.',
-            ]
+            ],
+            'additional_restriction_messages' => [],
         ];
 
         $expectedDocSuccess = [
@@ -194,7 +199,8 @@ class ServiceAvailabilityHelperTest extends TestCase
             'messages' => [
                 'banner' => 'The donor has already proved their identity over the ' .
                     'phone with a valid document',
-            ]
+            ],
+            'additional_restriction_messages' => [],
         ];
 
         $case = [
@@ -362,8 +368,9 @@ class ServiceAvailabilityHelperTest extends TestCase
                     ],
                     'messages' => [
                         'service_status' =>
-                            'Online identity verification is not presently available',
-                    ]
+                        'Online identity verification is not presently available',
+                    ],
+                    'additional_restriction_messages' => [],
                 ]
             ],
             [
@@ -382,8 +389,9 @@ class ServiceAvailabilityHelperTest extends TestCase
                     ],
                     'messages' => [
                         'service_status' =>
-                            'Some identity verification methods are not presently available',
-                    ]
+                        'Some identity verification methods are not presently available',
+                    ],
+                    'additional_restriction_messages' => [],
                 ]
             ]
         ];
