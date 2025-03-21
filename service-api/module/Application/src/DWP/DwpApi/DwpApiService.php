@@ -6,6 +6,7 @@ namespace Application\DWP\DwpApi;
 
 use Application\DWP\AuthApi\AuthApiException;
 use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\DwpApi\DTO\AmbiguousCitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
@@ -55,21 +56,30 @@ class DwpApiService
         ], $optionalHeaders);
     }
 
-    public function validateNino(CaseData $caseData, string $nino, string $correlationUuid): bool
+    public function validateNino(CaseData $caseData, string $nino, string $correlationUuid): string
     {
         $this->correlationUuid = $correlationUuid;
 
         try {
-            $citizenResponseDTO = $this->makeCitizenMatchRequest(
+            $matchResponseDTO = $this->makeCitizenMatchRequest(
                 new CitizenRequestDTO($caseData, $nino)
             );
 
+            if ($matchResponseDTO instanceof AmbiguousCitizenResponseDTO) {
+                return "MULTIPLE_MATCH";
+            }
+
             $detailsResponseDTO = $this->makeCitizenDetailsRequest(
-                new DetailsRequestDTO($citizenResponseDTO->id()),
+                new DetailsRequestDTO($matchResponseDTO->id()),
                 $nino
             );
 
-            return $this->compareRecords($caseData, $detailsResponseDTO, $citizenResponseDTO, $nino);
+            return $this->compareRecords(
+                $caseData,
+                $detailsResponseDTO,
+                $matchResponseDTO,
+                $nino
+            ) ? "PASS" : "NO_MATCH";
         } catch (\Exception $exception) {
             $this->logger->error('DwpApiException: ' . "($this->correlationUuid) " . $exception->getMessage());
             throw new DwpApiException($exception->getMessage());
@@ -123,7 +133,7 @@ class DwpApiService
      */
     public function makeCitizenMatchRequest(
         CitizenRequestDTO $citizenRequestDTO,
-    ): CitizenResponseDTO {
+    ): CitizenResponseDTO|AmbiguousCitizenResponseDTO {
         $this->authCount++;
         try {
             $response = $this->guzzleClient->request(
@@ -142,6 +152,10 @@ class DwpApiService
             ) {
                 $this->authApiService->authenticate();
                 $responseArray = $this->makeCitizenMatchRequest($citizenRequestDTO);
+            } elseif ($clientException->getResponse()->getStatusCode() == Response::STATUS_CODE_422) {
+                return new AmbiguousCitizenResponseDTO(
+                    json_decode($clientException->getResponse()->getBody()->getContents(), true)
+                );
             } else {
                 $response = $clientException->getResponse();
                 $responseBodyAsString = $response->getBody()->getContents();
