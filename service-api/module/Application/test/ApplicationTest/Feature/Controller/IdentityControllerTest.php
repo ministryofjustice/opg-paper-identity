@@ -274,7 +274,7 @@ class IdentityControllerTest extends TestCase
      */
     public function testNino(
         string $nino,
-        bool $result,
+        string $result,
         array $response,
         int $status
     ): void {
@@ -337,7 +337,7 @@ class IdentityControllerTest extends TestCase
         return [
             [
                 'AA112233A',
-                true,
+                'PASS',
                 [
                     'result' => 'PASS',
                 ],
@@ -345,9 +345,17 @@ class IdentityControllerTest extends TestCase
             ],
             [
                 'AA112233E',
-                false,
+                'NO_MATCH',
                 [
                     'result' => 'NO_MATCH',
+                ],
+                Response::STATUS_CODE_200
+            ],
+            [
+                'NP123123C',
+                'MULTIPLE_MATCH',
+                [
+                    'result' => 'MULTIPLE_MATCH',
                 ],
                 Response::STATUS_CODE_200
             ],
