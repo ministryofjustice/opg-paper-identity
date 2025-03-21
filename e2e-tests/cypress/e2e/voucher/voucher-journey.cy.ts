@@ -151,7 +151,7 @@ describe("Voucher journey", () => {
         cy.get("[id=nino]").type("NP112233C");
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.get(".moj-banner--success").contains("Identity document verified");
+        cy.get(".moj-alert--success").contains("Identity document verified");
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Select answer");
@@ -168,7 +168,7 @@ describe("Voucher journey", () => {
         cy.selectKBVAnswer({ correct: true });
         cy.get(".govuk-button").contains("Continue").click();
 
-        cy.get(".moj-banner--success").contains("Identity check passed");
+        cy.get(".moj-alert--success").contains("Identity check passed");
     });
 
     it("lets you vouch via the post-office route", () => {
