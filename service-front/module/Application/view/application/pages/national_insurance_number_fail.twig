@@ -5,13 +5,13 @@
 {% endblock %}
 
 {% block content %}
-    <div class="moj-banner__message moj-hidden">{% block title %}National insurance number{% endblock %}</div>
-    <div class="moj-banner moj-banner--warning" role="region" aria-label="Warning">
-        <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false"
+    <div class="moj-alert__content moj-hidden">{% block title %}National insurance number{% endblock %}</div>
+    <div class="moj-alert moj-alert--warning" role="region" aria-label="Warning">
+        <svg class="moj-alert__icon" fill="currentColor" role="presentation" focusable="false"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
             <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
         </svg>
-        <div class="moj-banner__message">Unable to verify National Insurance number details. <br/><br/> Try a different method.</div>
+        <div class="moj-alert__content">Unable to verify national insurance number. Check again or try a different method.</div>
     </div>
     <h3 class="govuk-heading-m">Name</h3>
     <p class="govuk-body">
