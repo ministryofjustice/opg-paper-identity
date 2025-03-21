@@ -1385,8 +1385,8 @@
             "type": "library",
             "extra": {
                 "laminas": {
-                    "config-provider": "Laminas\\Diactoros\\ConfigProvider",
-                    "module": "Laminas\\Diactoros"
+                    "module": "Laminas\\Diactoros",
+                    "config-provider": "Laminas\\Diactoros\\ConfigProvider"
                 }
             },
             "autoload": {
@@ -2436,16 +2436,16 @@
         },
         {
             "name": "laminas/laminas-mvc-middleware",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-mvc-middleware.git",
-                "reference": "49a21367272e0f455082c320b385004cec43300b"
+                "reference": "db543d3489b8a83e094c29c02c903c23d4acacbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-mvc-middleware/zipball/49a21367272e0f455082c320b385004cec43300b",
-                "reference": "49a21367272e0f455082c320b385004cec43300b",
+                "url": "https://api.github.com/repos/laminas/laminas-mvc-middleware/zipball/db543d3489b8a83e094c29c02c903c23d4acacbd",
+                "reference": "db543d3489b8a83e094c29c02c903c23d4acacbd",
                 "shasum": ""
             },
             "require": {
@@ -2453,19 +2453,19 @@
                 "laminas/laminas-psr7bridge": "^1.10",
                 "laminas/laminas-servicemanager": "^3.4",
                 "laminas/laminas-stratigility": "^3.3",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
                 "psr/http-server-handler": "^1.0.2",
                 "psr/http-server-middleware": "^1.0.2",
                 "webmozart/assert": "^1.9"
             },
             "require-dev": {
-                "brick/varexporter": "^0.4.0",
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "laminas/laminas-diactoros": "^2.25.2 || ^3.0",
-                "laminas/laminas-router": "^3.10",
-                "phpunit/phpunit": "^10.4",
-                "psalm/plugin-phpunit": "^0.18.3",
-                "vimeo/psalm": "^5.15"
+                "brick/varexporter": "^0.5",
+                "laminas/laminas-coding-standard": "~3.0.1",
+                "laminas/laminas-diactoros": "^2.25.2 || ^3.5",
+                "laminas/laminas-router": "^3.14",
+                "phpunit/phpunit": "^10.5.45",
+                "psalm/plugin-phpunit": "^0.19.2",
+                "vimeo/psalm": "^6.9.1"
             },
             "type": "library",
             "extra": {
@@ -2506,7 +2506,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2023-11-20T18:25:17+00:00"
+            "time": "2025-03-17T09:44:47+00:00"
         },
         {
             "name": "laminas/laminas-mvc-plugin-fileprg",
@@ -11130,16 +11130,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.8.9",
+            "version": "6.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "e856423a5dc38d65e56b5792750c557277afe393"
+                "reference": "81c8a77c0793d450fee40265cfe68891df11d505"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/e856423a5dc38d65e56b5792750c557277afe393",
-                "reference": "e856423a5dc38d65e56b5792750c557277afe393",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/81c8a77c0793d450fee40265cfe68891df11d505",
+                "reference": "81c8a77c0793d450fee40265cfe68891df11d505",
                 "shasum": ""
             },
             "require": {
@@ -11244,7 +11244,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2025-03-10T13:29:13+00:00"
+            "time": "2025-03-17T09:40:52+00:00"
         }
     ],
     "aliases": [],
