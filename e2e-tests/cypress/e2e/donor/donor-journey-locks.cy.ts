@@ -17,7 +17,7 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.selectKBVAnswer({correct: true});
         cy.get(".govuk-button").contains("Continue").click();
-        cy.contains(".moj-banner", "Identity check passed");
+        cy.contains(".moj-alert", "Identity check passed");
 
         cy.jumpToPage("how-will-you-confirm");
         cy.contains("The identity check has already been completed");

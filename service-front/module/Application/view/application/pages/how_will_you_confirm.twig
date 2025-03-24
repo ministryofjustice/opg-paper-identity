@@ -5,57 +5,64 @@
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-        {% if form.get('id_method').messages %}
-            <div class="govuk-error-summary" data-module="govuk-error-summary">
-                <div role="alert">
-                    <h2 class="govuk-error-summary__title">
-                        There is a problem
-                    </h2>
-                    <div class="govuk-error-summary__body">
-                        <ul class="govuk-list govuk-error-summary__list">
-                            {% for message in form.get('id_method').messages %}
-                                <li>
-                                    <a href="#idMethodOptions">{{ message }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+    {% if form.get('id_method').messages %}
+        <div class="govuk-error-summary" data-module="govuk-error-summary">
+            <div role="alert">
+                <h2 class="govuk-error-summary__title">
+                    There is a problem
+                </h2>
+                <div class="govuk-error-summary__body">
+                    <ul class="govuk-list govuk-error-summary__list">
+                        {% for message in form.get('id_method').messages %}
+                            <li>
+                                <a href="#idMethodOptions">{{ message }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
-        {% endif %}
-        {% if service_availability.messages.banner %}
-            <div role="region" class="moj-alert moj-alert--information" aria-label="information: {{ service_availability.messages.banner }}" data-module="moj-alert">
+        </div>
+    {% endif %}
+    {% if service_availability.messages.banner %}
+        <div role="region" class="moj-alert moj-alert--information"
+             aria-label="information: {{ service_availability.messages.banner }}" data-module="moj-alert">
+            <div>
+                <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 30 30" height="30" width="30">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M10.2165 3.45151C11.733 2.82332 13.3585 2.5 15 2.5C16.6415 2.5 18.267 2.82332 19.7835 3.45151C21.3001 4.07969 22.6781 5.00043 23.8388 6.16117C24.9996 7.3219 25.9203 8.69989 26.5485 10.2165C27.1767 11.733 27.5 13.3585 27.5 15C27.5 18.3152 26.183 21.4946 23.8388 23.8388C21.4946 26.183 18.3152 27.5 15 27.5C13.3585 27.5 11.733 27.1767 10.2165 26.5485C8.69989 25.9203 7.3219 24.9996 6.16117 23.8388C3.81696 21.4946 2.5 18.3152 2.5 15C2.5 11.6848 3.81696 8.50537 6.16117 6.16117C7.3219 5.00043 8.69989 4.07969 10.2165 3.45151ZM16.3574 22.4121H13.6621V12.95H16.3574V22.4121ZM13.3789 9.20898C13.3789 8.98763 13.4212 8.7793 13.5059 8.58398C13.5905 8.38216 13.7044 8.20964 13.8477 8.06641C13.9974 7.91667 14.1699 7.79948 14.3652 7.71484C14.5605 7.63021 14.7721 7.58789 15 7.58789C15.2214 7.58789 15.4297 7.63021 15.625 7.71484C15.8268 7.79948 15.9993 7.91667 16.1426 8.06641C16.2923 8.20964 16.4095 8.38216 16.4941 8.58398C16.5788 8.7793 16.6211 8.98763 16.6211 9.20898C16.6211 9.43685 16.5788 9.64844 16.4941 9.84375C16.4095 10.0391 16.2923 10.2116 16.1426 10.3613C15.9993 10.5046 15.8268 10.6185 15.625 10.7031C15.4297 10.7878 15.2214 10.8301 15 10.8301C14.7721 10.8301 14.5605 10.7878 14.3652 10.7031C14.1699 10.6185 13.9974 10.5046 13.8477 10.3613C13.7044 10.2116 13.5905 10.0391 13.5059 9.84375C13.4212 9.64844 13.3789 9.43685 13.3789 9.20898Z"
+                          fill="currentColor"/>
+                </svg>
+            </div>
+            <div class="moj-alert__content"
+                 id="serviceAvailabilityBanner">{{ service_availability.messages.banner }}</div>
+
+            <div class="moj-alert__action">
+                <button class="moj-alert__dismiss" hidden>Dismiss</button>
+            </div>
+        </div>
+    {% elseif service_availability.additional_restriction_messages|length > 0 %}
+        {% for message in service_availability.additional_restriction_messages %}
+            <div role="region" class="moj-alert moj-alert--information" aria-label="information: {{ message }}"
+                 data-module="moj-alert">
                 <div>
-                    <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10.2165 3.45151C11.733 2.82332 13.3585 2.5 15 2.5C16.6415 2.5 18.267 2.82332 19.7835 3.45151C21.3001 4.07969 22.6781 5.00043 23.8388 6.16117C24.9996 7.3219 25.9203 8.69989 26.5485 10.2165C27.1767 11.733 27.5 13.3585 27.5 15C27.5 18.3152 26.183 21.4946 23.8388 23.8388C21.4946 26.183 18.3152 27.5 15 27.5C13.3585 27.5 11.733 27.1767 10.2165 26.5485C8.69989 25.9203 7.3219 24.9996 6.16117 23.8388C3.81696 21.4946 2.5 18.3152 2.5 15C2.5 11.6848 3.81696 8.50537 6.16117 6.16117C7.3219 5.00043 8.69989 4.07969 10.2165 3.45151ZM16.3574 22.4121H13.6621V12.95H16.3574V22.4121ZM13.3789 9.20898C13.3789 8.98763 13.4212 8.7793 13.5059 8.58398C13.5905 8.38216 13.7044 8.20964 13.8477 8.06641C13.9974 7.91667 14.1699 7.79948 14.3652 7.71484C14.5605 7.63021 14.7721 7.58789 15 7.58789C15.2214 7.58789 15.4297 7.63021 15.625 7.71484C15.8268 7.79948 15.9993 7.91667 16.1426 8.06641C16.2923 8.20964 16.4095 8.38216 16.4941 8.58398C16.5788 8.7793 16.6211 8.98763 16.6211 9.20898C16.6211 9.43685 16.5788 9.64844 16.4941 9.84375C16.4095 10.0391 16.2923 10.2116 16.1426 10.3613C15.9993 10.5046 15.8268 10.6185 15.625 10.7031C15.4297 10.7878 15.2214 10.8301 15 10.8301C14.7721 10.8301 14.5605 10.7878 14.3652 10.7031C14.1699 10.6185 13.9974 10.5046 13.8477 10.3613C13.7044 10.2116 13.5905 10.0391 13.5059 9.84375C13.4212 9.64844 13.3789 9.43685 13.3789 9.20898Z" fill="currentColor" />
+                    <svg class="moj-alert__icon" role="presentation" focusable="false"
+                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                              d="M10.2165 3.45151C11.733 2.82332 13.3585 2.5 15 2.5C16.6415 2.5 18.267 2.82332 19.7835 3.45151C21.3001 4.07969 22.6781 5.00043 23.8388 6.16117C24.9996 7.3219 25.9203 8.69989 26.5485 10.2165C27.1767 11.733 27.5 13.3585 27.5 15C27.5 18.3152 26.183 21.4946 23.8388 23.8388C21.4946 26.183 18.3152 27.5 15 27.5C13.3585 27.5 11.733 27.1767 10.2165 26.5485C8.69989 25.9203 7.3219 24.9996 6.16117 23.8388C3.81696 21.4946 2.5 18.3152 2.5 15C2.5 11.6848 3.81696 8.50537 6.16117 6.16117C7.3219 5.00043 8.69989 4.07969 10.2165 3.45151ZM16.3574 22.4121H13.6621V12.95H16.3574V22.4121ZM13.3789 9.20898C13.3789 8.98763 13.4212 8.7793 13.5059 8.58398C13.5905 8.38216 13.7044 8.20964 13.8477 8.06641C13.9974 7.91667 14.1699 7.79948 14.3652 7.71484C14.5605 7.63021 14.7721 7.58789 15 7.58789C15.2214 7.58789 15.4297 7.63021 15.625 7.71484C15.8268 7.79948 15.9993 7.91667 16.1426 8.06641C16.2923 8.20964 16.4095 8.38216 16.4941 8.58398C16.5788 8.7793 16.6211 8.98763 16.6211 9.20898C16.6211 9.43685 16.5788 9.64844 16.4941 9.84375C16.4095 10.0391 16.2923 10.2116 16.1426 10.3613C15.9993 10.5046 15.8268 10.6185 15.625 10.7031C15.4297 10.7878 15.2214 10.8301 15 10.8301C14.7721 10.8301 14.5605 10.7878 14.3652 10.7031C14.1699 10.6185 13.9974 10.5046 13.8477 10.3613C13.7044 10.2116 13.5905 10.0391 13.5059 9.84375C13.4212 9.64844 13.3789 9.43685 13.3789 9.20898Z"
+                              fill="currentColor"/>
                     </svg>
                 </div>
-                <div class="moj-alert__content" id="serviceAvailabilityBanner">{{ service_availability.messages.banner }}</div>
+                <div class="moj-alert__content">{{ message }}</div>
 
                 <div class="moj-alert__action">
                     <button class="moj-alert__dismiss" hidden>Dismiss</button>
                 </div>
             </div>
-        {% elseif service_availability.additional_restriction_messages|length > 0 %}
-            {%  for message in service_availability.additional_restriction_messages %}
-                <div role="region" class="moj-alert moj-alert--information" aria-label="information: {{ message }}" data-module="moj-alert">
-                    <div>
-                        <svg class="moj-alert__icon" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" height="30" width="30">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.2165 3.45151C11.733 2.82332 13.3585 2.5 15 2.5C16.6415 2.5 18.267 2.82332 19.7835 3.45151C21.3001 4.07969 22.6781 5.00043 23.8388 6.16117C24.9996 7.3219 25.9203 8.69989 26.5485 10.2165C27.1767 11.733 27.5 13.3585 27.5 15C27.5 18.3152 26.183 21.4946 23.8388 23.8388C21.4946 26.183 18.3152 27.5 15 27.5C13.3585 27.5 11.733 27.1767 10.2165 26.5485C8.69989 25.9203 7.3219 24.9996 6.16117 23.8388C3.81696 21.4946 2.5 18.3152 2.5 15C2.5 11.6848 3.81696 8.50537 6.16117 6.16117C7.3219 5.00043 8.69989 4.07969 10.2165 3.45151ZM16.3574 22.4121H13.6621V12.95H16.3574V22.4121ZM13.3789 9.20898C13.3789 8.98763 13.4212 8.7793 13.5059 8.58398C13.5905 8.38216 13.7044 8.20964 13.8477 8.06641C13.9974 7.91667 14.1699 7.79948 14.3652 7.71484C14.5605 7.63021 14.7721 7.58789 15 7.58789C15.2214 7.58789 15.4297 7.63021 15.625 7.71484C15.8268 7.79948 15.9993 7.91667 16.1426 8.06641C16.2923 8.20964 16.4095 8.38216 16.4941 8.58398C16.5788 8.7793 16.6211 8.98763 16.6211 9.20898C16.6211 9.43685 16.5788 9.64844 16.4941 9.84375C16.4095 10.0391 16.2923 10.2116 16.1426 10.3613C15.9993 10.5046 15.8268 10.6185 15.625 10.7031C15.4297 10.7878 15.2214 10.8301 15 10.8301C14.7721 10.8301 14.5605 10.7878 14.3652 10.7031C14.1699 10.6185 13.9974 10.5046 13.8477 10.3613C13.7044 10.2116 13.5905 10.0391 13.5059 9.84375C13.4212 9.64844 13.3789 9.43685 13.3789 9.20898Z" fill="currentColor" />
-                        </svg>
-                    </div>
-                    <div class="moj-alert__content">{{ message }}</div>
-
-                    <div class="moj-alert__action">
-                        <button class="moj-alert__dismiss" hidden>Dismiss</button>
-                    </div>
-                </div>
-            {%  endfor %}
-        {% endif %}
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">{% block title %}How will you confirm your identity?{% endblock %}</h1>
-        </div>
+        {% endfor %}
+    {% endif %}
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">{% block title %}How will you confirm your identity?{% endblock %}</h1>
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -71,19 +78,24 @@
                             </div>
                             <div class="govuk-summary-card__content">
                                 <p class="govuk-body">
-                                    Confirming your identity over the phone is the quickest and easiest option - you will need an National Insurance number, passport or driving licence.
+                                    Confirming your identity over the phone is the quickest and easiest option - you
+                                    will need an National Insurance number, passport or driving licence.
                                 </p>
 
                                 <p class="govuk-body">
-                                    We will check your identity, using the details you provide. We will also check your name, address and date of birth against a fraud database.
+                                    We will check your identity, using the details you provide. We will also check your
+                                    name, address and date of birth against a fraud database.
                                 </p>
 
                                 <p class="govuk-body">
-                                    We’ll then ask you some security questions that only you should know the answer to. We use these to stop anyone who might have your ID document details from pretending to be you.
+                                    We’ll then ask you some security questions that only you should know the answer to.
+                                    We use these to stop anyone who might have your ID document details from pretending
+                                    to be you.
                                 </p>
 
                                 <p class="govuk-body">
-                                    We use another organisation to generate these security questions and check your answers against information they have access to.
+                                    We use another organisation to generate these security questions and check your
+                                    answers against information they have access to.
                                 </p>
 
                                 <p class="govuk-body">
@@ -94,7 +106,8 @@
                     </div>
                 {% endif %}
 
-                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}" id="idMethodOptions">
+                <div class="govuk-form-group {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}"
+                     id="idMethodOptions">
 
                     {% if service_availability.data.EXPERIAN %}
                         <h2 class="govuk-heading-m">Preferred: ID over the phone</h2>
@@ -115,12 +128,12 @@
 
                         <div class="govuk-radios__item {% if not service_availability.data.NATIONAL_INSURANCE_NUMBER %}moj-hidden{% endif %}">
                             <input
-                                class="govuk-radios__input"
-                                id="NATIONAL_INSURANCE_NUMBER"
-                                name="id_method"
-                                type="radio"
-                                value="NATIONAL_INSURANCE_NUMBER"
-                                {{ (form.get('id_method').value == 'NATIONAL_INSURANCE_NUMBER') ? 'checked' : '' }}
+                                    class="govuk-radios__input"
+                                    id="NATIONAL_INSURANCE_NUMBER"
+                                    name="id_method"
+                                    type="radio"
+                                    value="NATIONAL_INSURANCE_NUMBER"
+                                    {{ (form.get('id_method').value == 'NATIONAL_INSURANCE_NUMBER') ? 'checked' : '' }}
                             >
                             <label class="govuk-label govuk-radios__label" for="NATIONAL_INSURANCE_NUMBER">
                                 National insurance number
@@ -129,17 +142,18 @@
 
                         <div class="govuk-radios__item {% if not service_availability.data.PASSPORT %}moj-hidden{% endif %}">
                             <input
-                                class="govuk-radios__input"
-                                id="PASSPORT"
-                                name="id_method"
-                                type="radio"
-                                value="PASSPORT"
-                                {{ (form.get('id_method').value == 'PASSPORT') ? 'checked' : '' }}
+                                    class="govuk-radios__input"
+                                    id="PASSPORT"
+                                    name="id_method"
+                                    type="radio"
+                                    value="PASSPORT"
+                                    {{ (form.get('id_method').value == 'PASSPORT') ? 'checked' : '' }}
                             >
                             <label class="govuk-label govuk-radios__label" for="PASSPORT">
                                 UK Passport (current or expired in the last 18 months)
 
-                                <details class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
+                                <details
+                                        class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
                                     <summary class="govuk-details__summary">
                                         <span class="govuk-details__summary-text">
                                             Check if you're able to use an expired passport
@@ -150,49 +164,53 @@
                                         <div class="govuk-date-input" id="passport-issued">
                                             <div class="govuk-date-input__item">
                                                 <div class="govuk-form-group">
-                                                    <label class="govuk-label govuk-date-input__label" for="passport-issued-day">
+                                                    <label class="govuk-label govuk-date-input__label"
+                                                           for="passport-issued-day">
                                                         Day
                                                     </label>
                                                     <input
-                                                        class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                                        id="passport-issued-day"
-                                                        name="passport_issued_day"
-                                                        type="text"
-                                                        inputmode="numeric"
-                                                        value="{{ date_sub_form.get('passport_issued_day').value }}"
+                                                            class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                                            id="passport-issued-day"
+                                                            name="passport_issued_day"
+                                                            type="text"
+                                                            inputmode="numeric"
+                                                            value="{{ date_sub_form.get('passport_issued_day').value }}"
                                                     >
                                                 </div>
                                             </div>
                                             <div class="govuk-date-input__item">
                                                 <div class="govuk-form-group">
-                                                    <label class="govuk-label govuk-date-input__label" for="passport-issued-month">
+                                                    <label class="govuk-label govuk-date-input__label"
+                                                           for="passport-issued-month">
                                                         Month
                                                     </label>
                                                     <input
-                                                        class="govuk-input govuk-date-input__input govuk-input--width-2"
-                                                        name="passport_issued_month" id="passport-issued-month"
-                                                        type="text"
-                                                        inputmode="numeric"
-                                                        value="{{ date_sub_form.get('passport_issued_month').value }}"
+                                                            class="govuk-input govuk-date-input__input govuk-input--width-2"
+                                                            name="passport_issued_month" id="passport-issued-month"
+                                                            type="text"
+                                                            inputmode="numeric"
+                                                            value="{{ date_sub_form.get('passport_issued_month').value }}"
                                                     >
                                                 </div>
                                             </div>
                                             <div class="govuk-date-input__item">
                                                 <div class="govuk-form-group">
-                                                    <label class="govuk-label govuk-date-input__label" for="passport-issued-year">
+                                                    <label class="govuk-label govuk-date-input__label"
+                                                           for="passport-issued-year">
                                                         Year
                                                     </label>
                                                     <input
-                                                        class="govuk-input govuk-date-input__input govuk-input--width-4"
-                                                        name="passport_issued_year" id="passport-issued-year"
-                                                        type="text"
-                                                        inputmode="numeric"
-                                                        value="{{ date_sub_form.get('passport_issued_year').value }}"
+                                                            class="govuk-input govuk-date-input__input govuk-input--width-4"
+                                                            name="passport_issued_year" id="passport-issued-year"
+                                                            type="text"
+                                                            inputmode="numeric"
+                                                            value="{{ date_sub_form.get('passport_issued_year').value }}"
                                                     >
                                                 </div>
                                             </div>
                                             <div class="govuk-date-input__item">
-                                                <button class="app-button--align-baseline govuk-button govuk-button--secondary" name="check_button">
+                                                <button class="app-button--align-baseline govuk-button govuk-button--secondary"
+                                                        name="check_button">
                                                     Check
                                                 </button>
                                             </div>
@@ -200,24 +218,24 @@
                                             {% if invalid_date %}
                                                 <div class="govuk-date-input__item">
                                                     <div
-                                                        class="moj-banner moj-banner--warning moj-banner--date app-moj-banner"
-                                                        role="region"
-                                                        aria-label="Warning"
-                                                        id="invalidDateMessage"
+                                                            class="moj-alert moj-alert--warning moj-alert--date app-moj-alert"
+                                                            role="region"
+                                                            aria-label="Warning"
+                                                            id="invalidDateMessage"
                                                     >
                                                         <svg
-                                                            class="moj-banner__icon"
-                                                            fill="currentColor"
-                                                            role="presentation"
-                                                            focusable="false"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            viewBox="0 0 25 25"
-                                                            height="25"
-                                                            width="25"
+                                                                class="moj-alert__icon"
+                                                                fill="currentColor"
+                                                                role="presentation"
+                                                                focusable="false"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 25 25"
+                                                                height="25"
+                                                                width="25"
                                                         >
                                                             <path d="M13.6,15.4h-2.3v-4.5h2.3V15.4z M13.6,19.8h-2.3v-2.2h2.3V19.8z M0,23.2h25L12.5,2L0,23.2z"/>
                                                         </svg>
-                                                        <div class="moj-banner__message">
+                                                        <div class="moj-alert__content">
                                                             Out of date
                                                         </div>
                                                     </div>
@@ -227,24 +245,24 @@
                                             {% if valid_date %}
                                                 <div class="govuk-date-input__item">
                                                     <div
-                                                        class="moj-banner moj-banner--success moj-banner--date app-moj-banner"
-                                                        role="region"
-                                                        aria-label="Success"
-                                                        id="validDateMessage"
+                                                            class="moj-alert moj-alert--success moj-alert--date app-moj-alert"
+                                                            role="region"
+                                                            aria-label="Success"
+                                                            id="validDateMessage"
                                                     >
                                                         <svg
-                                                            class="moj-banner__icon"
-                                                            fill="currentColor"
-                                                            role="presentation"
-                                                            focusable="false"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            viewBox="0 0 25 25"
-                                                            height="25"
-                                                            width="25"
+                                                                class="moj-alert__icon"
+                                                                fill="currentColor"
+                                                                role="presentation"
+                                                                focusable="false"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 25 25"
+                                                                height="25"
+                                                                width="25"
                                                         >
                                                             <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z"/>
                                                         </svg>
-                                                        <div class="moj-banner__message">
+                                                        <div class="moj-alert__content">
                                                             In date
                                                         </div>
                                                     </div>
@@ -259,12 +277,12 @@
 
                         <div class="govuk-radios__item {% if not service_availability.data.DRIVING_LICENCE %}moj-hidden{% endif %}">
                             <input
-                                class="govuk-radios__input"
-                                id="DRIVING_LICENCE"
-                                name="id_method"
-                                type="radio"
-                                value="DRIVING_LICENCE"
-                                {{ (form.get('id_method').value == 'DRIVING_LICENCE') ? 'checked' : '' }}
+                                    class="govuk-radios__input"
+                                    id="DRIVING_LICENCE"
+                                    name="id_method"
+                                    type="radio"
+                                    value="DRIVING_LICENCE"
+                                    {{ (form.get('id_method').value == 'DRIVING_LICENCE') ? 'checked' : '' }}
                             >
                             <label class="govuk-label govuk-radios__label" for="DRIVING_LICENCE">
                                 UK driving licence (must be current)
@@ -283,18 +301,19 @@
 
                         <p class="govuk-body">
                             Alternatively, you can take one of the identity documents listed below to a Post Office -
-                            this will take longer as we will need to send you a letter to take to the Post Office with your chosen ID.
+                            this will take longer as we will need to send you a letter to take to the Post Office with
+                            your chosen ID.
                         </p>
 
                         {% if service_availability.data.POST_OFFICE %}
                             <div class="govuk-radios__item">
                                 <input
-                                    class="govuk-radios__input"
-                                    id="POST_OFFICE"
-                                    name="id_method"
-                                    type="radio"
-                                    value="POST_OFFICE"
-                                    {{ (form.get('id_method').value == 'POST_OFFICE') ? 'checked' : '' }}
+                                        class="govuk-radios__input"
+                                        id="POST_OFFICE"
+                                        name="id_method"
+                                        type="radio"
+                                        value="POST_OFFICE"
+                                        {{ (form.get('id_method').value == 'POST_OFFICE') ? 'checked' : '' }}
                                 >
                                 <label class="govuk-label govuk-radios__label" for="POST_OFFICE">
                                     Post Office
@@ -307,7 +326,9 @@
                                         <div class="govuk-details__text">
                                             <ul class="govuk-list govuk-list--bullet govuk-hint">
                                                 <li>UK passport (up to 18 months expired)</li>
-                                                <li>UK photocard driving licence (the Post Office letter must be sent to the address on the licence)</li>
+                                                <li>UK photocard driving licence (the Post Office letter must be sent to
+                                                    the address on the licence)
+                                                </li>
                                                 <li class="govuk-!-padding-bottom-4">UK biometric residence permit</li>
                                                 <li>International passport</li>
                                                 <li>EU/EEA photocard driving licence</li>
@@ -329,47 +350,48 @@
                         {% endif %}
                     </div>
 
-                {% if details_data.personType == 'donor' and (methods_data.VOUCHING or methods_data.COURT_OF_PROTECTION) %}
-                    <div class="govuk-radios govuk-!-margin-top-6" data-module="govuk-radios" name="otherMethods">
-                        <h2 class="govuk-heading-m">Other methods</h2>
+                    {% if details_data.personType == 'donor' and (methods_data.VOUCHING or methods_data.COURT_OF_PROTECTION) %}
+                        <div class="govuk-radios govuk-!-margin-top-6" data-module="govuk-radios" name="otherMethods">
+                            <h2 class="govuk-heading-m">Other methods</h2>
 
-                        <p class="govuk-hint">
-                            Only discuss these if the donor does not have, or cannot obtain, an appropriate ID document.
-                        </p>
+                            <p class="govuk-hint">
+                                Only discuss these if the donor does not have, or cannot obtain, an appropriate ID
+                                document.
+                            </p>
 
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            {% if methods_data.VOUCHING %}
-                                <div class="govuk-radios__item">
-                                    <input
-                                        class="govuk-radios__input"
-                                        id="ON_BEHALF"
-                                        name="id_method"
-                                        type="radio"
-                                        value="OnBehalf"
-                                        {{ (form.get('id_method').value == 'OnBehalf') ? 'checked' : '' }}
-                                    >
-                                    <label class="govuk-label govuk-radios__label" for="ON_BEHALF">
-                                        Have someone vouch for the identity of the donor
-                                    </label>
-                                </div>
-                            {% endif %}
-                            {% if methods_data.COURT_OF_PROTECTION %}
-                                <div class="govuk-radios__item">
-                                    <input
-                                        class="govuk-radios__input"
-                                        id="COURT_OF_PROTECTION"
-                                        name="id_method"
-                                        type="radio"
-                                        value="cpr"
-                                        {{ (form.get('id_method').value == 'cpr') ? 'checked' : '' }}
-                                    >
-                                    <label class="govuk-label govuk-radios__label" for="COURT_OF_PROTECTION">
-                                        The donor cannot do any of the above (Court of Protection)</label>
-                                </div>
-                            {% endif %}
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                {% if methods_data.VOUCHING %}
+                                    <div class="govuk-radios__item">
+                                        <input
+                                                class="govuk-radios__input"
+                                                id="ON_BEHALF"
+                                                name="id_method"
+                                                type="radio"
+                                                value="OnBehalf"
+                                                {{ (form.get('id_method').value == 'OnBehalf') ? 'checked' : '' }}
+                                        >
+                                        <label class="govuk-label govuk-radios__label" for="ON_BEHALF">
+                                            Have someone vouch for the identity of the donor
+                                        </label>
+                                    </div>
+                                {% endif %}
+                                {% if methods_data.COURT_OF_PROTECTION %}
+                                    <div class="govuk-radios__item">
+                                        <input
+                                                class="govuk-radios__input"
+                                                id="COURT_OF_PROTECTION"
+                                                name="id_method"
+                                                type="radio"
+                                                value="cpr"
+                                                {{ (form.get('id_method').value == 'cpr') ? 'checked' : '' }}
+                                        >
+                                        <label class="govuk-label govuk-radios__label" for="COURT_OF_PROTECTION">
+                                            The donor cannot do any of the above (Court of Protection)</label>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
                 </div>
                 <input type="submit" class="govuk-button" value="Continue">
             </form>
@@ -379,7 +401,7 @@
             <h2 class="govuk-heading-m">Related content</h2>
             <p class="govuk-body">
                 <a href="https://www.gov.uk/find-national-insurance-number" class="govuk-link" target="_blank"
-                    rel="noopener">
+                   rel="noopener">
                     Find a lost National Insurance number (opens in a new tab)
                 </a>
             </p>
@@ -390,7 +412,7 @@
             </p>
             <p class="govuk-body">
                 <a href="https://www.gov.uk/replace-a-driving-licence" class="govuk-link" target="_blank"
-                    rel="noopener">
+                   rel="noopener">
                     Replace a lost, stolen, damaged or destroyed driving licence (opens in a new tab)
                 </a>
             </p>
