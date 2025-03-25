@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="govuk-!-width-two-thirds">
+    <section class="govuk-!-width-full">
         <div class="moj-alert moj-alert--success" role="region" aria-label="Success">
             <svg class="moj-alert__icon" fill="currentColor" role="presentation" focusable="false"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -17,7 +17,8 @@
                 {% endblock %}
             </div>
         </div>
-
+    </section>
+    <section class="govuk-!-width-two-thirds">
         <p class="govuk-body">
         <h2 class="govuk-heading-l">
             What happens next?
@@ -31,5 +32,5 @@
         <form method="post">
             <button class="govuk-button" name="return_to_sirius">Finish and return to Sirius</button>
         </form>
-    </div>
+    </section>
 {% endblock %}

@@ -5,13 +5,17 @@
 {% endblock %}
 
 {% block content %}
+    <section class="govuk-!-width-full">
     {% if form.get('lpa').messages %}
-        <div class="moj-alert moj-alert--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
-            <p class="govuk-body">
-                <b>There is a problem</b>
-            </p>
+        <div class="moj-alert moj-alert--error" role="region" aria-label="Warning">
+            <div></div>
             <div class="moj-alert__content">
-                Not a valid LPA number. Enter an LPA number to continue.
+                <p class="govuk-body">
+                    <b>There is a problem</b>
+                </p>
+                <p>
+                    Not a valid LPA number. Enter an LPA number to continue.
+                </p>
             </div>
         </div>
     {% endif %}
@@ -20,11 +24,12 @@
 
             {% for key,message in lpa_response['messages'] %}
 
-                <div class="moj-alert moj-alert--warning govuk-!-width-two-thirds" role="region" aria-label="Warning">
-                    <p class="govuk-body">
-                        <b>There is a problem</b>
-                    </p>
+                <div class="moj-alert moj-alert--error" role="region" aria-label="Warning">
+                    <div></div>
                     <div class="moj-alert__content">
+                        <p class="govuk-body">
+                            <b>There is a problem</b>
+                        </p>
                         {{ message|raw }}
 
                         {% if lpa_response['additionalData'][key] %}
@@ -54,7 +59,7 @@
             {% endfor %}
         {% endif %}
     {% endif %}
-
+    </section>
     <h1 class="govuk-heading-xl">{% block title %}Find an LPA to add{% endblock %}</h1>
 
     <p class="govuk-body govuk-hint">
