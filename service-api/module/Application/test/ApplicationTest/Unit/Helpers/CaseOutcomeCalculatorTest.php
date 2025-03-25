@@ -8,9 +8,12 @@ use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Sirius\EventSender;
+use Application\Sirius\UpdateStatus;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Lcobucci\Clock\FrozenClock;
+use DateTimeImmutable;
 
 class CaseOutcomeCalculatorTest extends TestCase
 {
@@ -29,30 +32,77 @@ class CaseOutcomeCalculatorTest extends TestCase
             $this->dataHandlerMock,
             $this->loggerMock,
             $this->eventSenderMock,
+            new FrozenClock(new DateTimeImmutable('2025-03-17T11:00:00Z')),
         );
     }
 
-    public function testUpdateSendIdentityCheck(): void
+    /**
+     * @dataProvider statusData
+     */
+    public function testCalculateStatus(CaseData $caseData, UpdateStatus $expectedStatus): void
+    {
+        $this->assertEquals(
+            $expectedStatus,
+            $this->sut->calculatestatus($caseData),
+        );
+    }
+
+    public static function statusData(): array
+    {
+        $uuid = '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc';
+
+        return [
+            [
+                CaseData::fromArray([
+                    'id' => $uuid,
+                    'idRoute' => 'OnBehalf'
+                ]),
+                UpdateStatus::VouchStarted
+            ],
+            [
+                CaseData::fromArray([
+                    'id' => $uuid,
+                    'idRoute' => 'TELEPHONE',
+                    'identityCheckPassed' => false
+                ]),
+                UpdateStatus::Failure
+            ],
+            [
+                CaseData::fromArray([
+                    'id' => $uuid,
+                    'idRoute' => 'TELEPHONE',
+                    'identityCheckPassed' => true
+                ]),
+                UpdateStatus::Success
+            ],
+            [
+                CaseData::fromArray([
+                    'id' => $uuid,
+                    'caseProgress' => [
+                        'abandonedFlow' => [
+                            'last_page' => 'the/last/page',
+                            'timestamp' => 'some timestamp'
+                        ]
+                    ]
+                ]),
+                UpdateStatus::Exit
+            ],
+
+
+        ];
+    }
+
+    /**
+     * @dataProvider sendIdCheckData
+     */
+    public function testUpdateSendIdentityCheck(?DateTimeImmutable $inputTimestamp, string $expectedTimestamp): void
     {
 
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'claimedIdentity' => [
-                'firstName' => 'Maria',
-                'lastName' => 'Williams'
-            ],
             'personType' => 'donor',
-            'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
-            'counterService' => [
-                'selectedPostOffice' => '29348729',
-                'notificationsAuthToken' => '00000000-0000-0000-0000-000000000000',
-                'notificationState' => '',
-                'state' => '',
-                'result' => false
-            ],
-            'lpas' => [
-                'M-9387-2843-3891'
-            ],
+            'lpas' => ['M-9387-2843-3891'],
+            'idRoute' => 'TELEPHONE',
             'identityCheckPassed' => true,
         ]);
 
@@ -62,7 +112,9 @@ class CaseOutcomeCalculatorTest extends TestCase
 
         $this->loggerMock->expects($this->once())
             ->method('info')
-            ->with("Update for CaseId 2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc- Result: Passed");
+            ->with(
+                "Sending identity check to sirius for CaseId: 2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc - Status: SUCCESS"
+            );
 
         $this->eventSenderMock->expects($this->once())
             ->method('send')
@@ -70,10 +122,28 @@ class CaseOutcomeCalculatorTest extends TestCase
                 "reference" => "opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc",
                 "actorType" => "donor",
                 "lpaUids" => ['M-9387-2843-3891'],
-                "time" => 'some timestamp',
+                "time" => $expectedTimestamp,
                 "state" => 'SUCCESS',
             ]);
 
-        $this->sut->updateSendIdentityCheck($caseData, 'some timestamp');
+        $this->dataHandlerMock->expects($this->once())
+            ->method('setTTL')
+            ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc');
+
+        $this->sut->updateSendIdentityCheck($caseData, $inputTimestamp);
+    }
+
+    public static function sendIdCheckData(): array
+    {
+        return [
+            'default timestamp' => [
+                null,
+                '2025-03-17T11:00:00+00:00'
+            ],
+            'custom timestamp' => [
+                new DateTimeImmutable('2025-03-16T09:00:00Z'),
+                '2025-03-16T09:00:00+00:00'
+            ],
+        ];
     }
 }
