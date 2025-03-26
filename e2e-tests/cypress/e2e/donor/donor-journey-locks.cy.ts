@@ -111,7 +111,7 @@ describe("Identify a Donor", () => {
     it("shows no LPA found on Sirius returns not found" , () => {
         cy.visit("/start?personType=donor&lpas[]=M-1234-5678-90AB");
 
-        cy.contains("LPAs not found for M-1234-5678-90AB");
+        cy.contains("LPA not found for M-1234-5678-90AB");
     });
 
     it("shows how confirm page if at least one LPA is found" , () => {
