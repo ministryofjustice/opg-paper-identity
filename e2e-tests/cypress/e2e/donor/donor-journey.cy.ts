@@ -40,7 +40,7 @@ describe("Identify a Donor", () => {
     cy.selectKBVAnswer({ correct: true });
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains(".moj-banner", "Identity check passed");
+    cy.contains(".moj-alert", "Identity check passed");
   });
 
   it("lets you identify with Passport", () => {
@@ -185,7 +185,7 @@ describe("Identify a Donor", () => {
     cy.selectKBVAnswer({ correct: false });
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains(".moj-banner", "Identity check was not successful.");
+    cy.contains(".moj-alert", "Identity check was not successful.");
   });
 
   it("passes on STOP or REFER if you get four out of four KBVs right", () => {
@@ -222,7 +222,7 @@ describe("Identify a Donor", () => {
     cy.selectKBVAnswer({ correct: true });
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains(".moj-banner", "Identity check passed");
+    cy.contains(".moj-alert", "Identity check passed");
   });
 
   it("fails on STOP or REFER if you get any KBV wrong", () => {
@@ -253,7 +253,7 @@ describe("Identify a Donor", () => {
     cy.selectKBVAnswer({ correct: true });
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains(".moj-banner", "Identity check was not successful.");
+    cy.contains(".moj-alert", "Identity check was not successful.");
   });
 
   it("handles 2 LPAs", () => {
