@@ -19,35 +19,24 @@
                 {% endif %}
 
                 {% if date_error %}
-                    <div></div>
                     <div class="moj-alert__content">
                         <span class="govuk-visually-hidden">Error:</span>
-                        <div class="moj-alert__content" name="donor_underage_warning"><strong>{{ date_error }}</strong>
-                        </div>
+                        <div class="moj-alert__content" name="donor_underage_warning"><strong>{{ date_error }}</strong></div>
                     </div>
                 {% elseif match['type'] == 'donor' %}
-                    <div></div>
-                    <div class="moj-alert__content" name="donor_warning"><strong>The person vouching cannot have the
-                            same name and date of birth as the donor.</strong></div>
+                    <div class="moj-alert__content" name="donor_warning"><strong>The person vouching cannot have the same name and date of birth as the donor.</strong></div>
                 {% elseif match['type'] == 'certificate provider' %}
-                    <div></div>
-                    <div class="moj-alert__content" name="cp_warning"><strong>The person vouching cannot have the same
-                            name and date of birth as the certificate provider.</strong></div>
+                    <div class="moj-alert__content" name="cp_warning"><strong>The person vouching cannot have the same name and date of birth as the certificate provider.</strong></div>
                 {% elseif match['type'] == 'attorney' %}
-                    <div></div>
-                    <div class="moj-alert__content" name="attorney_warning"><strong>The person vouching cannot have the
-                            same name and date of birth as an attorney.</strong></div>
+                    <div class="moj-alert__content" name="attorney_warning"><strong>The person vouching cannot have the same name and date of birth as an attorney.</strong></div>
                 {% elseif match['type'] == 'replacement attorney' %}
-                    <div></div>
-                    <div class="moj-alert__content" ,name="ra_warning"><strong>The person vouching cannot have the same
-                            name and date of birth as a replacement attorney.</strong></div>
+                    <div class="moj-alert__content" ,name="ra_warning"><strong>The person vouching cannot have the same name and date of birth as a replacement attorney.</strong></div>
                 {% else %}
                     <div></div>
                     <div class="moj-alert__content">
                         <h2 class="govuk-heading-m">There is a problem</h2>
                         {% for problem in date_problem %}
-                            <div class="govuk-error-message" name="date_problem"><span class="govuk-visually-hidden">Error:</span><u>{{ problem }}</u>
-                            </div>
+                            <div class="govuk-error-message" name="date_problem"><span class="govuk-visually-hidden">Error:</span><u>{{ problem }}</u></div>
                         {% endfor %}
                     </div>
                 {% endif %}
