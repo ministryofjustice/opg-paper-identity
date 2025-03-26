@@ -1,3 +1,6 @@
 {
-    "error": "LPA Not found"
+    "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+    "title": "Not Found",
+    "status": 404,
+    "detail": "Case with ID \"00000000000\" was not found"
 }
