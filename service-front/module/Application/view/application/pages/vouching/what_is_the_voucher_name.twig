@@ -34,24 +34,26 @@
         </div>
     </fieldset>
     {% if match %}
-        <div class="moj-alert moj-alert--information govuk-!-width-two-thirds" role="region" aria-label="information">
-            <svg class="moj-alert__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
-                <path d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8
-                C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z" />
-            </svg>
+        <section class="govuk-!-width-two-thirds">
+            <div class="moj-alert moj-alert--information" role="region" aria-label="information">
+                <svg class="moj-alert__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+                    <path d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8
+                    C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z" />
+                </svg>
 
-            <div class="moj-alert__content">
-                {% if match['type'] == 'donor' %}
-                    <h2 class="govuk-heading-m" name="donor_warning">The donor is also called {{ matched_name }}. Confirm that these are two different people with the same name.</h2>
-                {% elseif match['type'] == 'certificate provider' %}
-                    <h2 class="govuk-heading-m" name="cp_warning">There is a certificate provider called {{ matched_name }} named on this LPA. A certificate provider vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
-                {% elseif match['type'] == 'attorney' %}
-                    <h2 class="govuk-heading-m" name="attorney_warning">There is an attorney called {{ matched_name }} named on this LPA. An attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
-                {% elseif match['type'] == 'replacement attorney' %}
-                    <h2 class="govuk-heading-m",name="ra_warning">There is a replacement attorney called {{ matched_name }} named on this LPA. A replacement attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
-                {% endif %}
+                <div class="moj-alert__content">
+                    {% if match['type'] == 'donor' %}
+                        <h2 class="govuk-heading-m" name="donor_warning">The donor is also called {{ matched_name }}. Confirm that these are two different people with the same name.</h2>
+                    {% elseif match['type'] == 'certificate provider' %}
+                        <h2 class="govuk-heading-m" name="cp_warning">There is a certificate provider called {{ matched_name }} named on this LPA. A certificate provider vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
+                    {% elseif match['type'] == 'attorney' %}
+                        <h2 class="govuk-heading-m" name="attorney_warning">There is an attorney called {{ matched_name }} named on this LPA. An attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
+                    {% elseif match['type'] == 'replacement attorney' %}
+                        <h2 class="govuk-heading-m",name="ra_warning">There is a replacement attorney called {{ matched_name }} named on this LPA. A replacement attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+        </section>
         <div class="govuk-button-group">
             <input type="submit" class="govuk-button" value="Continue", name="continue-after-warning">
         </div>
