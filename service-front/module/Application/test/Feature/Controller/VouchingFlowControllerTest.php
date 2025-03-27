@@ -195,7 +195,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'tryDifferent' => "Try a different method",
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/start?personType=donor&lpas%5B%5D=M-AAAA-BBBB-CCCC&lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678");
+        $this->assertRedirectTo(
+            '/start?personType=donor&lpas%5B%5D=M-AAAA-BBBB-CCCC&' .
+            'lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678'
+        );
     }
 
     public function testVoucherNamePage(): void

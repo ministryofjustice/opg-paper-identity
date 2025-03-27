@@ -227,7 +227,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         );
     }
 
-    public function testStartActionLpaNotFound(): void {
+    public function testStartActionLpaNotFound(): void
+    {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setService(SiriusApiService::class, $siriusApiService);
