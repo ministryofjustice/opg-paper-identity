@@ -227,6 +227,20 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         );
     }
 
+    public function testStartActionLpaNotFound(): void {
+        $siriusApiService = $this->createMock(SiriusApiService::class);
+        $serviceManager = $this->getApplicationServiceLocator();
+        $serviceManager->setService(SiriusApiService::class, $siriusApiService);
+
+        $siriusApiService->expects($this->once())
+        ->method('getLpaByUid')
+        ->willReturn(null);
+
+        $this->dispatch('/start?personType=donor&lpas[]=M-AAAA-BBBB-CCCC', 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertQueryContentContains('h4', 'LPA not found for M-AAAA-BBBB-CCCC');
+    }
+
     public function testHealthCheckAction(): void
     {
         $this->dispatch('/health-check', 'GET');

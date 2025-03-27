@@ -34,7 +34,7 @@ class LpaFormHelper
     public function findLpa(
         string $uuid,
         FormInterface $form,
-        array $siriusCheck,
+        ?array $siriusCheck,
         array $detailsData,
     ): LpaFormHelperResponseDto {
         $result = [
@@ -45,13 +45,7 @@ class LpaFormHelper
         if ($form->isValid()) {
             $formData = $form->getData(FormInterface::VALUES_AS_ARRAY);
 
-            if (
-                empty($siriusCheck) ||
-                (
-                    array_key_exists('status', $siriusCheck) &&
-                    $siriusCheck['status'] == 404
-                )
-            ) {
+            if (is_null($siriusCheck)) {
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,

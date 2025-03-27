@@ -226,6 +226,45 @@ class SiriusApiServiceTest extends TestCase
         $this->assertEquals($lpa, $result);
     }
 
+    public function testGetLpaByUidReturnsNullWhenLpaNotFound(): void
+    {
+        $uId = 'M-0000-0000-0000';
+        $lpaNotFound = ['lpa not found'];
+
+        $clientMock = $this->createMock(Client::class);
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
+
+        $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
+
+        $request = new Request();
+        $headers = $request->getHeaders();
+        assert($headers instanceof Headers);
+        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+
+        $response = new Response(404, [], json_encode($lpaNotFound, JSON_THROW_ON_ERROR));
+
+        $exception = $this->createMock(ClientException::class);
+        $exception
+            ->method('getResponse')
+            ->willReturn($response);
+
+        $clientMock
+            ->expects($this->once())
+            ->method("get")
+            ->with("/api/v1/digital-lpas/$uId", [
+                'headers' => [
+                    'Cookie' => 'mycookie=1; XSRF-TOKEN=abcd',
+                    'X-XSRF-TOKEN' => 'abcd',
+                ],
+            ])
+            ->willThrowException($exception);
+
+        $result = $sut->getLpaByUid($uId, $request);
+
+        $this->assertNull($result);
+    }
+
     public function testGetLpaByUidThrowsValidationException(): void
     {
         $uId = 'invalid-uid';
