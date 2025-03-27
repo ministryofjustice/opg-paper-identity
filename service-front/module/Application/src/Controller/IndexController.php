@@ -55,7 +55,7 @@ class IndexController extends AbstractActionController
         foreach ($lpasQuery as $key => $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
 
-            if (array_key_exists('error', $data)) {
+            if (array_key_exists('status', $data) && $data['status'] == '404') {
                 $unfoundLpas[] = $lpaUid;
                 $view->setVariables([
                     'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
@@ -75,7 +75,7 @@ class IndexController extends AbstractActionController
 
         if (empty($lpas)) {
             $lpsString = implode(", ", $unfoundLpas);
-            $view->setVariable('message', 'LPAs not found for ' . $lpsString);
+            $view->setVariable('message', 'LPA not found for ' . $lpsString);
             return $view->setTemplate('application/pages/cannot_start');
         }
 
@@ -140,22 +140,23 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
+        $request = $this->getRequest();
+
         $detailsData = $this->opgApiService->getDetailsData($uuid);
-        $caseProgressData = $detailsData['caseProgress'] ?? [];
-
-        $caseProgressData['abandonedFlow'] = [
-            'last_page' => $this->getRequest()->getQuery('last_page'),
-            'timestamp' => date("Y-m-d\TH:i:s\Z", time()),
-        ];
-
-        $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
+        $lastPage = $request->getQuery('last_page');
 
         $form = $this->createForm(AbandonFlow::class);
 
-        $request = $this->getRequest();
-
         if ($request->isPost() && $form->isValid()) {
-            $this->opgApiService->abandonFlow($uuid);
+            $caseProgressData = $detailsData['caseProgress'] ?? [];
+
+            $caseProgressData['abandonedFlow'] = [
+                'last_page' => $lastPage,
+                'timestamp' => date("Y-m-d\TH:i:s\Z", time()),
+            ];
+
+            $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
+            $this->opgApiService->sendIdentityCheck($uuid);
 
             $postData = $request->getPost()->toArray();
             $noteDescription = "Reason: " . $this->mapReason($postData['reason']);
@@ -177,7 +178,7 @@ class IndexController extends AbstractActionController
         }
 
         $view->setVariable('details_data', $detailsData);
-        $view->setVariable('last_page', $caseProgressData['abandonedFlow']['last_page']);
+        $view->setVariable('last_page', $lastPage);
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/abandoned_flow');

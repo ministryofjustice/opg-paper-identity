@@ -82,6 +82,7 @@
         </form>
 
         {% if lpa_response %}
+            {%  if lpa_response.status != 'Not Found' %}
             <div class="govuk-form-group">
                 <table class="govuk-table govuk-!-width-two-thirds">
                     <caption class="govuk-table__caption govuk-table__caption--m">Results</caption>
@@ -172,6 +173,7 @@
                     </tbody>
                 </table>
             </div>
+            {% endif %}
         {% endif %}
     </div>
     {% if lpa_response %}
