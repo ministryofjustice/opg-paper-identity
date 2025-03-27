@@ -55,7 +55,7 @@ class IndexController extends AbstractActionController
         foreach ($lpasQuery as $key => $lpaUid) {
             $data = $this->siriusApiService->getLpaByUid($lpaUid, $this->getRequest());
 
-            if (array_key_exists('status', $data) && $data['status'] == '404') {
+            if (empty($data)) {
                 $unfoundLpas[] = $lpaUid;
                 $view->setVariables([
                     'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],

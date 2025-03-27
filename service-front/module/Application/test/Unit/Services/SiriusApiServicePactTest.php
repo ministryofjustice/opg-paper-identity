@@ -144,6 +144,8 @@ class SiriusApiServicePactTest extends TestCase
 
         $lpa = $this->buildService()->getLpaByUid('M-1234-9876-4567', new Request());
 
+        $this->assertNotNull($lpa);
+
         $this->assertEquals('18 Leith Road', $lpa['opg.poas.sirius']['donor']['addressLine1']);
 
         $this->assertEquals('Erma', $lpa['opg.poas.sirius']['donor']['firstname']);

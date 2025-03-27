@@ -136,11 +136,6 @@ resources:
       statusCode: 200
       file: data/voucherAddDonorLinkedStatus.json
 
-  - path: "/api/v1/digital-lpas/M-0000-0000-XXXX"
-    method: get
-    response:
-      statusCode: 404
-
   - path: "/api/v1/digital-lpas/M-DRAF-TLPA-35G3"
     method: get
     response:
@@ -228,5 +223,5 @@ resources:
   - path: "/api/v1/digital-lpas/*"
     method: get
     response:
-      statusCode: 200
+      statusCode: 404
       file: data/lpa404.json

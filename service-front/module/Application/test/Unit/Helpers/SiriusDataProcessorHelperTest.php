@@ -6,6 +6,7 @@ namespace ApplicationTest\Unit\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
+use Application\Exceptions\LpaNotFoundException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
@@ -182,6 +183,33 @@ class SiriusDataProcessorHelperTest extends TestCase
             ->expects(self::once())
             ->method('updateCaseAddress')
             ->with($uuid, $processedData['address']);
+
+        $this->helper->updatePaperIdCaseFromSirius($uuid, $request);
+    }
+
+    public function testUpdatePaperIdCaseFromSiriusThrowsExceptionWhenLpaNotFound(): void
+    {
+        $uuid = 'abcd-1234-abcd-1234-abcd-1234';
+        $request = $this->createMock(Request::class);
+        $detailsData = [
+            'lpas' => ['LPA123'],
+            'personType' => 'donor'
+        ];
+
+        $this->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($uuid)
+            ->willReturn($detailsData);
+
+        $this->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('getLpaByUid')
+            ->with('LPA123', $request)
+            ->willReturn(null);
+
+        $this->expectException(LpaNotFoundException::class);
+        $this->expectExceptionMessage('LPA not found: LPA123');
 
         $this->helper->updatePaperIdCaseFromSirius($uuid, $request);
     }

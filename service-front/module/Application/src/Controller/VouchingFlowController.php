@@ -97,6 +97,9 @@ class VouchingFlowController extends AbstractActionController
                 $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                    if (empty($lpasData)) {
+                        continue;
+                    }
                     $match = $this->voucherMatchLpaActorHelper->checkMatch(
                         $lpasData,
                         $formData["firstName"],
@@ -134,6 +137,9 @@ class VouchingFlowController extends AbstractActionController
         $match = false;
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+            if (empty($lpasData)) {
+                continue;
+            }
             $match = $this->voucherMatchLpaActorHelper->checkMatch(
                 $lpasData,
                 $detailsData["firstName"],
@@ -326,6 +332,9 @@ class VouchingFlowController extends AbstractActionController
                 $addressMatch = false;
                 foreach ($detailsData['lpas'] as $lpa) {
                     $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                    if (empty($lpasData)) {
+                        continue;
+                    }
                     $addressMatch = $addressMatch || $this->voucherMatchLpaActorHelper->checkAddressDonorMatch(
                         $lpasData,
                         $this->formToArray($form)

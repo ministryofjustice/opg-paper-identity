@@ -7,6 +7,7 @@ namespace Application\Helpers;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
 use Application\Exceptions\HttpException;
+use Application\Exceptions\LpaNotFoundException;
 use Application\Services\SiriusApiService;
 use DateTime;
 use Laminas\Http\Request;
@@ -56,6 +57,9 @@ class SiriusDataProcessorHelper
 
         $lpaUid = $detailsData['lpas'][0];
         $lpaData = $this->siriusApiService->getLpaByUid($lpaUid, $request);
+        if (is_null($lpaData)) {
+            throw new LpaNotFoundException("LPA not found: {$lpaUid}");
+        }
         $processedData = $this->processLpaResponse($detailsData['personType'], $lpaData);
 
         $this->opgApiService->updateCaseSetName(
@@ -149,6 +153,10 @@ class SiriusDataProcessorHelper
 
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
+
+            if (is_null($lpasData)) {
+                continue;
+            }
 
             if (empty($lpasData['opg.poas.lpastore'])) {
                 $name = $lpasData['opg.poas.sirius']['donor']['firstname'] . " " .

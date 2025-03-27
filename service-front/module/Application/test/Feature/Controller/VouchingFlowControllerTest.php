@@ -100,6 +100,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 "lastName" => "lastName",
             ],
             "lpas" => [
+                "M-AAAA-BBBB-CCCC",
                 "M-XYXY-YAGA-35G3",
                 "M-AAAA-1234-5678",
             ],
@@ -194,7 +195,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'tryDifferent' => "Try a different method",
         ]);
         $this->assertResponseStatusCode(302);
-        $this->assertRedirectTo("/start?personType=donor&lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678");
+        $this->assertRedirectTo(
+            '/start?personType=donor&lpas%5B%5D=M-AAAA-BBBB-CCCC&' .
+            'lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678'
+        );
     }
 
     public function testVoucherNamePage(): void
@@ -248,11 +252,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
                 $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
                 $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+                $lpa === 'M-AAAA-BBBB-CCCC' => null,
             });
 
         $this
@@ -276,7 +281,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
 
-
         $this
             ->opgApiServiceMock
             ->expects(self::once())
@@ -286,11 +290,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
                 $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
                 $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+                $lpa === 'M-AAAA-BBBB-CCCC' => null,
             });
 
         $this
@@ -332,11 +337,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
                 $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
                 $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+                $lpa === 'M-AAAA-BBBB-CCCC' => null,
             });
 
         $this
@@ -422,11 +428,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
                 $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
                 $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+                $lpa === 'M-AAAA-BBBB-CCCC' => null,
             });
 
         $this
@@ -490,11 +497,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
                 $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
                 $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+                $lpa === 'M-AAAA-BBBB-CCCC' => null,
             });
 
         $this
@@ -835,9 +843,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
-            ->willReturnOnConsecutiveCalls(["lpaData" => "one"], ["lpaData" => "two"]);
+            ->willReturnOnConsecutiveCalls(["lpaData" => "one"], ["lpaData" => "two"], null);
 
         $this
             ->voucherMatchMock
@@ -890,11 +898,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this
             ->siriusApiServiceMock
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("getLpaByUid")
             ->willReturnCallback(fn (string $lpa) => match (true) {
                 $lpa === 'M-XYXY-YAGA-35G3' => ["lpaData" => "one"],
                 $lpa === 'M-AAAA-1234-5678' => ["lpaData" => "two"],
+                $lpa === 'M-AAAA-BBBB-CCCC' => null,
             });
 
         $this

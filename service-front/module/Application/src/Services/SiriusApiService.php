@@ -7,6 +7,7 @@ namespace Application\Services;
 use Application\Auth\JwtGenerator;
 use Application\Enums\SiriusDocument;
 use Application\Exceptions\HttpException;
+use Application\Exceptions\LpaNotFoundException;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Exceptions\UidInvalidException;
 use Application\Helpers\AddressProcessorHelper;
@@ -135,9 +136,9 @@ class SiriusApiService
     }
 
     /**
-     * @return Lpa
+     * @return ?Lpa
      */
-    public function getLpaByUid(string $uid, Request|RequestInterface $request): array
+    public function getLpaByUid(string $uid, Request|RequestInterface $request): ?array
     {
         $validator = new LpaUidValidator();
         if (! $validator->isValid($uid)) {
@@ -145,9 +146,20 @@ class SiriusApiService
         }
         $authHeaders = $this->getAuthHeaders($request) ?? [];
 
-        $response = $this->client->get('/api/v1/digital-lpas/' . urlencode($uid), [
-            'headers' => $authHeaders,
-        ]);
+        try {
+            $response = $this->client->get('/api/v1/digital-lpas/' . urlencode($uid), [
+                'headers' => $authHeaders,
+            ]);
+        } catch (ClientException $clientException) {
+            $response = $clientException->getResponse();
+            if ($response->getStatusCode() === 404) {
+                $this->logger->info("uid: {$uid} not found");
+
+                return null;
+            } else {
+                throw $clientException;
+            }
+        }
 
         $responseArray = json_decode(strval($response->getBody()), true);
 
@@ -166,36 +178,23 @@ class SiriusApiService
     {
         $responseArray = [];
 
-        try {
-            $response = $this->getLpaByUid($uid, $request);
-        } catch (ClientException $clientException) {
-            $response = $clientException->getResponse();
-            if ($response->getStatusCode() === 404) {
-                $this->logger->info("uid: {$uid} not found");
+        $lpa = $this->getLpaByUid($uid, $request);
 
-                return $responseArray;
-            } else {
-                throw $clientException;
-            }
+        if (empty($lpa)) {
+            return $responseArray;
         }
 
-        $linkedUids = $response['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
-        $responseArray[$uid] = $response;
+        $responseArray[$uid] = $lpa;
+
+        $linkedUids = $lpa['opg.poas.sirius']['linkedDigitalLpas'] ?? [];
         if ($linkedUids === []) {
             return $responseArray;
         }
 
         foreach ($linkedUids as $lpaId) {
-            try {
-                $response = $this->getLpaByUid($lpaId["uId"], $request);
-                $responseArray[$lpaId["uId"]] = $response;
-            } catch (ClientException $clientException) {
-                $response = $clientException->getResponse();
-                if ($response->getStatusCode() === 404) {
-                    $this->logger->info("uid: {$uid} not found");
-                } else {
-                    throw $clientException;
-                }
+            $lpa = $this->getLpaByUid($lpaId["uId"], $request);
+            if (! empty($lpa)) {
+                $responseArray[$lpaId["uId"]] = $lpa;
             }
         }
 
@@ -273,6 +272,9 @@ class SiriusApiService
         $lpa = $caseDetails['lpas'][0];
 
         $lpaDetails = $this->getLpaByUid($lpa, $request);
+        if (is_null($lpaDetails)) {
+            throw new LpaNotFoundException("LPA not found: {$lpa}");
+        }
         $lpaId = $lpaDetails["opg.poas.sirius"]["id"];
 
         if (! $lpaId) {
@@ -300,6 +302,9 @@ class SiriusApiService
         string $description
     ): void {
         $lpaDetails = $this->getLpaByUid($uid, $request);
+        if (is_null($lpaDetails)) {
+            throw new LpaNotFoundException("LPA not found: {$uid}");
+        }
         $caseId = $lpaDetails["opg.poas.sirius"]["id"] ?? null;
         $donorId = $lpaDetails["opg.poas.sirius"]["donor"]["id"] ?? null;
 
