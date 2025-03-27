@@ -21,7 +21,7 @@ class LpaFormHelperTest extends TestCase
         array $responseData,
         Parameters $formData,
         FormInterface $form,
-        array $siriusLpaResponse,
+        ?array $siriusLpaResponse,
         array $opgCaseResponse,
     ): void {
         $lpaFormHelper = new LpaFormHelper();
@@ -63,7 +63,7 @@ class LpaFormHelperTest extends TestCase
         $alreadyAddedLpa = "M-XYXY-YAGA-35G3";
 
         $notFoundLpa = "M-0000-0000-0002";
-        $slrNotFound = self::nullSiriusLpaResponse($notFoundLpa);
+        $slrNotFound = null;
 
         $cancelledLpa = "M-0000-0000-0004";
         $slrComplete = $slr;
@@ -294,6 +294,17 @@ class LpaFormHelperTest extends TestCase
                 $slrRegistered,
                 $olr,
             ],
+            "no lpa found" => [
+                $caseUuid,
+                [
+                    "message" => ["No LPA found."],
+                    "status" => 'Not Found',
+                ],
+                new Parameters(['lpa' => 'M-AAAA-BBBB-CCCC']),
+                $form,
+                null,
+                $olr,
+            ],
         ];
     }
 
@@ -427,17 +438,6 @@ class LpaFormHelperTest extends TestCase
                 "id" => 72757966,
                 "uId" => "M-5P78-MEPH-8L4F"
             ]
-        ];
-    }
-
-    private static function nullSiriusLpaResponse(string $lpa = null): array
-    {
-        $lpaRef = $lpa ?? "M-NC49-MV4M-E7P8";
-        return [
-            "type" => "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
-            "title" => "Not Found",
-            "status" => 404,
-            "detail" => "Unable to load DigitalLpa with identifier: " . $lpaRef
         ];
     }
 
