@@ -216,14 +216,13 @@ class CPFlowController extends AbstractActionController
             ]);
         }
 
-
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('include_fraud_id_check_info', true);
-        $view->setVariable(
-            'warning_message',
-            'By continuing, you confirm that the certificate provider is more than 100 years old. 
-            If not, please change the date.'
-        );
+        $view->setVariables([
+            'form' => $form,
+            'details_data' => $detailsData,
+            'include_fraud_id_check_info' => true,
+            'warning_message' => 'By continuing, you confirm that the certificate provider is more than 100 years old. 
+            If not, please change the date.',
+        ]);
         return $view->setTemplate($templates['default']);
     }
 
@@ -232,6 +231,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
 
         $form = $this->createForm(ConfirmAddress::class);
 
