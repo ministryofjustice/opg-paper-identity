@@ -101,6 +101,7 @@ services:
     build:
       context: service-front
       dockerfile: Dockerfile
+      target: production
     depends_on:
       api-web:
         condition: service_healthy
@@ -157,9 +158,10 @@ services:
       DYNAMODB_REMOVE_EXPIRED_ITEMS: 1
     healthcheck:
       test: bash /scripts/wait/healthcheck.sh
-      interval: 20s
-      timeout: 30s
-      retries: 50
+      start_period: 10s
+      interval: 5s
+      timeout: 10s
+      retries: 100
     restart: unless-stopped
 
   cypress:

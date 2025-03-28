@@ -28,8 +28,8 @@ RUN apk upgrade --no-cache openssl curl libcurl libxml2
 WORKDIR /var/www
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=www-data:www-data  docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY --chown=www-data:www-data  docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 RUN mkdir /tmp/cache &&\
     chown -R www-data /tmp/cache &&\
@@ -48,24 +48,27 @@ ENV OTEL_METRICS_EXPORTER=none
 ENV OTEL_LOGS_EXPORTER=none
 ENV OTEL_PROPAGATORS=xray
 
-USER "www-data"
-VOLUME ["/var/www/public"]
-
-COPY --from=composer /usr/bin/composer /usr/bin/
-COPY composer.json composer.json
-COPY composer.lock composer.lock
+COPY --chown=www-data:www-data  --from=composer /usr/bin/composer /usr/bin/
+COPY --chown=www-data:www-data  composer.json composer.json
+COPY --chown=www-data:www-data  composer.lock composer.lock
 
 RUN composer check-platform-reqs &&\
     composer install --prefer-dist --no-dev --no-interaction --no-scripts &&\
     composer dumpautoload -o
 
-COPY public public
-COPY --from=asset-env /app/public public
-COPY config/autoload config/autoload
-COPY config/*.php config/
-COPY module module
+VOLUME ["/var/www/public"]
+COPY --chown=www-data:www-data public public
+COPY --chown=www-data:www-data --from=asset-env /app/public public
+COPY --chown=www-data:www-data config/autoload config/autoload
+COPY --chown=www-data:www-data config/*.php config/
+COPY --chown=www-data:www-data module module
 
 COPY --from=asset-env /app/yoti-supported-documents.json module/Application/config/yoti-supported-documents.json
+
+FROM app AS production
+COPY docker/scripts/harden.sh /harden.sh
+RUN /harden.sh www-data && rm /harden.sh
+USER "www-data"
 
 HEALTHCHECK --interval=15s --timeout=10s --start-period=30s --retries=3 \
     CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
@@ -74,14 +77,14 @@ STOPSIGNAL SIGQUIT
 
 FROM app AS development
 USER "root"
+RUN apk add git
 RUN pecl install pcov && docker-php-ext-enable pcov;
 
-USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
     composer dumpautoload -o
 
+USER "www-data"
 COPY phpcs.xml phpcs.xml
 COPY phpunit.xml phpunit.xml
 COPY psalm.xml psalm.xml
 
-FROM app AS production
