@@ -73,7 +73,7 @@ class SiriusDataProcessorHelper
      * @return array{
      *   first_name: string,
      *   last_name: string,
-     *   dob: string,
+     *   dob: string|null,
      *   address: array{
      *     line1: string,
      *     line2: string,
@@ -133,7 +133,7 @@ class SiriusDataProcessorHelper
             return [
                 'first_name' => $data['opg.poas.lpastore']['certificateProvider']['firstNames'],
                 'last_name' => $data['opg.poas.lpastore']['certificateProvider']['lastName'],
-                'dob' => '1000-01-01', //temp setting should be null in prod
+                'dob' => null,
                 'address' => $address,
             ];
         }

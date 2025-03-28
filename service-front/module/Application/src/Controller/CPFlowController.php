@@ -206,6 +206,17 @@ class CPFlowController extends AbstractActionController
         }
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
+        if (! is_null($detailsData['dob'])) {
+            $dob = \DateTime::createFromFormat('Y-m-d', $detailsData['dob']);
+            $form->setData([
+                'dob_day' => date_format($dob, 'd'),
+                'dob_month' => date_format($dob, 'm'),
+                'dob_year' => date_format($dob, 'Y')
+            ]);
+        }
+
+
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('include_fraud_id_check_info', true);
         $view->setVariable(
@@ -221,6 +232,7 @@ class CPFlowController extends AbstractActionController
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
+
         $form = $this->createForm(ConfirmAddress::class);
 
         $routes = [

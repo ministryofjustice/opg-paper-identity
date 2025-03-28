@@ -124,7 +124,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'certificateProvider',
                 [
-                    'x', 'x', '1000-01-01', 'certificateProvider', ['M-1234-5678-90AB'],
+                    'x', 'x', null, 'certificateProvider', ['M-1234-5678-90AB'],
                     [
                         'line1' => '16a Avenida Lucana',
                         'line2' => 'Cordón',
