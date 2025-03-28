@@ -17,12 +17,11 @@ RUN chmod 0644 /etc/ssl/cert.pem
 WORKDIR /var/www/
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
-
-COPY docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
-COPY docker/scripts /usr/local/bin/scripts
+COPY --chown=www-data:www-data docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY --chown=www-data:www-data docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=www-data:www-data docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
+COPY --chown=www-data:www-data docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
+COPY --chown=www-data:www-data docker/scripts /usr/local/bin/scripts
 
 RUN chmod +x /usr/local/bin/opg-paper-identity-entrypoint
 
@@ -45,38 +44,42 @@ ENV OTEL_METRICS_EXPORTER=none
 ENV OTEL_LOGS_EXPORTER=none
 ENV OTEL_PROPAGATORS=xray
 
-USER "www-data"
-
-COPY --from=composer /usr/bin/composer /usr/bin/
-COPY composer.json composer.json
-COPY composer.lock composer.lock
+COPY --chown=www-data:www-data --from=composer /usr/bin/composer /usr/bin/
+COPY --chown=www-data:www-data composer.json composer.json
+COPY --chown=www-data:www-data composer.lock composer.lock
 
 RUN composer check-platform-reqs &&\
   composer install --prefer-dist --no-dev --no-interaction --no-scripts &&\
   composer dumpautoload -o
 
-COPY public public
-COPY config/autoload config/autoload
-COPY config/*.php config/
-COPY module module
+COPY --chown=www-data:www-data public public
+COPY --chown=www-data:www-data config/autoload config/autoload
+COPY --chown=www-data:www-data config/*.php config/
+COPY --chown=www-data:www-data module module
 STOPSIGNAL SIGQUIT
 
-HEALTHCHECK --interval=15s --timeout=10s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=5s --timeout=10s --start-period=5s --retries=5 \
   CMD SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000
+
+FROM app AS production
+
+COPY docker/scripts/harden.sh /harden.sh
+RUN /harden.sh www-data && rm /harden.sh
+USER "www-data"
 
 ENTRYPOINT ["/usr/local/bin/opg-paper-identity-entrypoint"]
 CMD ["php-fpm"]
 
 FROM app AS development
 USER "root"
+RUN apk add git
 RUN pecl install pcov && docker-php-ext-enable pcov;
 
-USER "www-data"
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
   composer dumpautoload -o
 
+USER "www-data"
 COPY phpcs.xml phpcs.xml
 COPY phpunit.xml phpunit.xml
 COPY psalm.xml psalm.xml
 
-FROM app AS production
