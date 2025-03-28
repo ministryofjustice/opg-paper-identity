@@ -17,11 +17,11 @@ RUN chmod 0644 /etc/ssl/cert.pem
 WORKDIR /var/www/
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY --chown=www-data:www-data docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY --chown=www-data:www-data docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY --chown=www-data:www-data docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
-COPY --chown=www-data:www-data docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
-COPY --chown=www-data:www-data docker/scripts /usr/local/bin/scripts
+COPY --chown=www-data:www-data --chmod=755 docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY --chown=www-data:www-data --chmod=755 docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=www-data:www-data --chmod=755 docker/php/apcu.ini /usr/local/etc/php/conf.d/apcu.ini
+COPY --chown=www-data:www-data --chmod=755 docker/php-entrypoint /usr/local/bin/opg-paper-identity-entrypoint
+COPY --chown=www-data:www-data --chmod=755 docker/scripts /usr/local/bin/scripts
 
 RUN chmod +x /usr/local/bin/opg-paper-identity-entrypoint
 
@@ -44,18 +44,18 @@ ENV OTEL_METRICS_EXPORTER=none
 ENV OTEL_LOGS_EXPORTER=none
 ENV OTEL_PROPAGATORS=xray
 
-COPY --chown=www-data:www-data --from=composer /usr/bin/composer /usr/bin/
-COPY --chown=www-data:www-data composer.json composer.json
-COPY --chown=www-data:www-data composer.lock composer.lock
+COPY --chown=www-data:www-data --chmod=755 --from=composer /usr/bin/composer /usr/bin/
+COPY --chown=www-data:www-data --chmod=755 composer.json composer.json
+COPY --chown=www-data:www-data --chmod=755 composer.lock composer.lock
 
 RUN composer check-platform-reqs &&\
   composer install --prefer-dist --no-dev --no-interaction --no-scripts &&\
   composer dumpautoload -o
 
-COPY --chown=www-data:www-data public public
-COPY --chown=www-data:www-data config/autoload config/autoload
-COPY --chown=www-data:www-data config/*.php config/
-COPY --chown=www-data:www-data module module
+COPY --chown=www-data:www-data --chmod=755 public public
+COPY --chown=www-data:www-data --chmod=755 config/autoload config/autoload
+COPY --chown=www-data:www-data --chmod=755 config/*.php config/
+COPY --chown=www-data:www-data --chmod=755 module module
 STOPSIGNAL SIGQUIT
 
 HEALTHCHECK --interval=5s --timeout=10s --start-period=5s --retries=5 \
