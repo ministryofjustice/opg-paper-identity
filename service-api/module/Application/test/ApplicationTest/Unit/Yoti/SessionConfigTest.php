@@ -68,7 +68,7 @@ class SessionConfigTest extends TestCase
         ]);
         $this->caseMock->idMethodIncludingNation = $idIncludingNation;
 
-        $expectedConfig = $this->sessionConfigExpected();
+        $expectedConfig = $this->sessionConfigExpected(false);
         $expectedConfig["required_documents"][0]["filter"]["documents"][0]["country_codes"][0] = "ITA";
         $expectedConfig["required_documents"][0]["filter"]["documents"][0]["document_types"][0] = "DRIVING_LICENCE";
 
@@ -78,7 +78,7 @@ class SessionConfigTest extends TestCase
     }
 
 
-    public function sessionConfigExpected(): array
+    public function sessionConfigExpected(bool $allowExpiredPassport = true): array
     {
         $sessionConfig = [];
         $sessionConfig["session_deadline"] = '2025-03-20T22:00:00+00:00';
@@ -149,7 +149,8 @@ class SessionConfigTest extends TestCase
                             "country_codes" => ["GBR"],
                             "document_types" => ["PASSPORT"]
                         ]
-                    ]
+                    ],
+                    "allow_expired_documents" => $allowExpiredPassport
                 ]
             ]
         ];
