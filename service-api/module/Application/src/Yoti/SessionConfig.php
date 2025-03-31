@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
+use Application\Enums\IdMethod;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiException;
 use DateTime;
@@ -21,6 +22,13 @@ class SessionConfig
     {
         $sessionConfig = [];
         $authToken = $uuid;
+
+        try {
+            $allowExpiredUkPassport = $case->idMethodIncludingNation?->id_country === "GBR" &&
+                $case->idMethodIncludingNation?->id_method === IdMethod::PassportNumber->value;
+        } catch (\Exception $exception) {
+            $allowExpiredUkPassport = false;
+        }
 
         $sessionConfig["session_deadline"] = $this->deadlineDate();
         $sessionConfig["resources_ttl"] = $this->getResourceTtl();
@@ -90,7 +98,8 @@ class SessionConfig
                             "country_codes" => [$this->getIDCountry($case)],
                             "document_types" => [$this->getDocType($case)]
                         ]
-                    ]
+                    ],
+                    "allow_expired_documents" => $allowExpiredUkPassport
                 ]
             ]
         ];
