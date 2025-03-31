@@ -26,7 +26,7 @@ namespace Application\Contracts;
  *   personType: "donor"|"certificateProvider"|"voucher",
  *   firstName: string,
  *   lastName: string,
- *   dob: string,
+ *   dob: string|null,
  *   address: Address,
  *   professionalAddress?: Address,
  *   identityCheckPassed?: bool|null,
@@ -95,7 +95,7 @@ interface OpgApiServiceInterface
     public function createCase(
         string $firstname,
         string $lastname,
-        string $dob,
+        string|null $dob,
         string $personType,
         array $lpas,
         array $address,
@@ -130,7 +130,7 @@ interface OpgApiServiceInterface
 
     public function updateCaseSetDocumentComplete(string $uuid, string $idDocument, bool $state = true): void;
 
-    public function updateCaseSetDob(string $uuid, string $dob): void;
+    public function updateCaseSetDob(string $uuid, string|null $dob): void;
 
     public function updateCaseSetName(string $uuid, string $firstName, string $lastName): void;
 

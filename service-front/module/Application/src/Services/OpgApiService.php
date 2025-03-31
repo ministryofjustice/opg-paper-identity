@@ -315,11 +315,13 @@ class OpgApiService implements OpgApiServiceInterface
         }
     }
 
-    public function updateCaseSetDob(string $uuid, string $dob): void
+    public function updateCaseSetDob(string $uuid, string|null $dob = null): void
     {
-        $url = sprintf("/cases/%s/update-dob/%s", $uuid, $dob);
-
         try {
+            /**
+             * @psalm-suppress PossiblyNullArgument
+             */
+            $url = sprintf("/cases/%s/update-dob/%s", $uuid, $dob);
             $this->makeApiRequest($url, 'PUT');
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
