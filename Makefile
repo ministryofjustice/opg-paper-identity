@@ -1,6 +1,8 @@
 SHELL = '/bin/bash'
 .PHONY: build
 
+all: front-psalm api-psalm front-phpcs api-phpcs api-unit-test front-unit-test build scan cypress down
+
 help:
 	@grep --no-filename -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
