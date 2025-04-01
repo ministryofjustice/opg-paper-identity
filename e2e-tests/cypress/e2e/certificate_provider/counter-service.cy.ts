@@ -57,11 +57,11 @@ describe("Counter service certificateProvider journey", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Choose country");
-    cy.getInputByLabel("Choose country").type("Austria");
+    cy.get("input#id_country").type("Austria");
     cy.contains("Austria").click();
     cy.get(".govuk-button").contains("Continue").click();
 
-    cy.contains("Choose document");
+    cy.contains("Choose ID document for Austria");
     cy.contains("National ID").click();
     cy.get(".govuk-button").contains("Continue").click();
 
