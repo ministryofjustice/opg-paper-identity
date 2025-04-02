@@ -12,6 +12,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
+use Laminas\InputFilter\InputFilter;
 
 /**
  * @psalm-import-type Question from OpgApiServiceInterface
@@ -65,18 +66,34 @@ class KbvController extends AbstractActionController
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
 
         $form = new Form();
+        $inputFilter = new InputFilter();
+        $form->setInputFilter($inputFilter);
 
         foreach ($questionsData as $question) {
             $form->add(new Element($question['externalId']));
+
+            $inputFilter->add([
+                'name' => $question['externalId'],
+                'required' => true,
+            ]);
+
+            echo json_encode($inputFilter->getRawValues());
         }
 
         $view->setVariable('questions_data', $questionsData);
 
         $formData = $this->getRequest()->getPost();
+        echo json_encode($formData->toArray());
         $nextQuestion = $this->getNextQuestion($questionsData, $formData);
+//        echo $nextQuestion['externalId'];
+
         $view->setVariable('question', $nextQuestion);
 
         if (count($formData) > 0) {
+            $form->setData($formData);
+            $form->isValid();
+//            echo json_encode($form->getMessages($question['externalId']));
+
             if ($nextQuestion === null) {
                 $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
@@ -96,7 +113,6 @@ class KbvController extends AbstractActionController
 
                 return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
             }
-            $form->setData($formData);
         }
         $view->setVariable('form', $form);
 

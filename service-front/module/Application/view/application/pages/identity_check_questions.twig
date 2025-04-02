@@ -51,7 +51,14 @@
                                     Select answer
                                 </h2>
                             </legend>
-                            <div class="govuk-radios" data-module="govuk-radios">
+                            {{ questionBlock.externalId }}
+                            {% if form.get(questionBlock.externalId).messages %}
+                                <p id="kbv-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    {{ form.get(questionBlock.externalId).messages | join(', ', ' and ') }}
+                                </p>
+                            {% endif %}
+                            <div class="govuk-radios {% if form.get(question.externalId).messages %}govuk-form-group--error{% endif %}" data-module="govuk-radios">
                                 {% for datum in questionBlock.prompts %}
                                     <div class="govuk-radios__item">
                                         <input
