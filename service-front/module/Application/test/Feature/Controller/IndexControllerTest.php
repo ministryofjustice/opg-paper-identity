@@ -239,7 +239,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch('/start?personType=donor&lpas[]=M-AAAA-BBBB-CCCC', 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertQueryContentContains('h4', 'LPA not found for M-AAAA-BBBB-CCCC');
+
+        $this->assertStringContainsString(
+            'LPA not found for M-AAAA-BBBB-CCCC',
+            $this->getResponse()->getBody()
+        );
     }
 
     public function testHealthCheckAction(): void
