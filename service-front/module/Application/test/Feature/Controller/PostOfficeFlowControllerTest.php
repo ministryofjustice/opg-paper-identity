@@ -465,7 +465,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                     ['dd#name', 'Mary Anne Chapman'],
                     ['dd#dob', '01 May 1943'],
                     ['dd#submissionDeadline', '01 January 2025'],
-                    ['dd#displayIdMethod', 'Driving licence (Austria)'],
+                    ['dd#displayIdMethod', 'Photocard driving licence (Austria)'],
                     ['span#poAddressLine', '1 Fake Street'],
                     ['span#poAddressLine', 'Faketown'],
                     ['span#poAddressLine', 'FA1 2KE']

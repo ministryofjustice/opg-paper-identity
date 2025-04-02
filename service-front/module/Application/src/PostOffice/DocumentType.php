@@ -14,7 +14,7 @@ enum DocumentType: string
     public function translate(): string
     {
         return match ($this) {
-            self::DrivingLicence => 'Driving licence',
+            self::DrivingLicence => 'Photocard driving licence',
             self::NationalId => 'National ID',
             self::Passport => 'Passport',
             self::ResidencePermit => 'UK biometric residence permit',
