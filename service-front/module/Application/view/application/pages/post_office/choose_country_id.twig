@@ -7,15 +7,17 @@
 {% block content %}
     <form method="POST">
         <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset" role="group">
+            <fieldset class="govuk-fieldset govuk-!-width-two-thirds" role="group">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                     <h1 class="govuk-fieldset__heading">
                         {% block title %}
-                            Choose document
+                            Choose ID document for {{ countryName }}
                         {% endblock %}
                     </h1>
                 </legend>
-                <h2 class="govuk-heading-m">Choose from documents accepted for {{ countryName }}</h2>
+                <p class="govuk-body">
+                    If the ID document has an address, the Post Office letter must be sent to the same address, or the ID check will fail at the Post Office
+                </p>
                 {% if form.get('id_method').messages %}
                     <p class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
@@ -46,6 +48,7 @@
             </fieldset>
         </div>
         <input type="submit" class="govuk-button" value="Continue">
+        <a href="./po-choose-country" class="govuk-button govuk-button--secondary govuk-!-static-margin-left-4">Cancel</a>
     </form>
 {% endblock %}
 
