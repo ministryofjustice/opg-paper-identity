@@ -653,7 +653,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 [],
                 [],
             ],
-            'post office non UK driving-license id' => [
+            'post office non UK driving-se id' => [
                 [
                     'idRoute' => 'POST_OFFICE',
                     'idMethodIncludingNation' => [
@@ -663,7 +663,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 ],
                 ['p#PO_NON_GBR_DL']
             ],
-            'post office UK driving license' => [
+            'post office UK driving licence' => [
                 [
                     'idRoute' => 'POST_OFFICE',
                     'idMethodIncludingNation' => [

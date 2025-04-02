@@ -616,7 +616,7 @@ return [
             'EXPERIAN',
             IdMethod::NationalInsuranceNumber->value,
             IdMethod::PassportNumber->value,
-            IdMethod::DrivingLicenseNumber->value,
+            IdMethod::DrivingLicenceNumber->value,
             IdMethod::PostOffice->value,
         ],
         'template_options' => [

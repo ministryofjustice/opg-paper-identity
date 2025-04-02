@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\DrivingLicense\ValidatorInterface as LicenseValidatorInterface;
+use Application\DrivingLicence\ValidatorInterface as LicenceValidatorInterface;
 use Application\DWP\DwpApi\DwpApiException;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\Enums\IdMethod;
@@ -45,7 +45,7 @@ class IdentityController extends AbstractActionController
         private readonly DwpApiService $dwpApiService,
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataWriteHandler $dataHandler,
-        private readonly LicenseValidatorInterface $licenseValidator,
+        private readonly LicenceValidatorInterface $licenceValidator,
         private readonly PassportValidator $passportService,
         private readonly LoggerInterface $logger,
         private readonly FraudApiService $experianCrosscoreFraudApiService,
@@ -208,10 +208,10 @@ class IdentityController extends AbstractActionController
     public function validateDrivingLicenceAction(): JsonModel
     {
         $data = json_decode($this->getRequest()->getContent(), true);
-        $licenseStatus = $this->licenseValidator->validateDrivingLicense($data['dln']);
+        $licenceStatus = $this->licenceValidator->validateDrivingLicence($data['dln']);
 
         $response = [
-            'status' => $licenseStatus,
+            'status' => $licenceStatus,
         ];
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
