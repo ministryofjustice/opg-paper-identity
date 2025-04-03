@@ -653,7 +653,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 [],
                 [],
             ],
-            'post office non UK driving-se id' => [
+            'post office non UK driving-licence id' => [
                 [
                     'idRoute' => 'POST_OFFICE',
                     'idMethodIncludingNation' => [
