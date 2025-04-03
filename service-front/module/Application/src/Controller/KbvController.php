@@ -64,6 +64,7 @@ class KbvController extends AbstractActionController
         }
 
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
+echo json_encode($questionsData);
 
         $form = new Form();
         $inputFilter = new InputFilter();
@@ -77,21 +78,25 @@ class KbvController extends AbstractActionController
                 'required' => true,
             ]);
 
-            echo json_encode($inputFilter->getRawValues());
+//            echo json_encode($inputFilter->getRawValues());
         }
 
         $view->setVariable('questions_data', $questionsData);
 
         $formData = $this->getRequest()->getPost();
-        echo json_encode($formData->toArray());
+//        echo json_encode($formData->toArray());
         $nextQuestion = $this->getNextQuestion($questionsData, $formData);
 //        echo $nextQuestion['externalId'];
 
         $view->setVariable('question', $nextQuestion);
 
+        if ($this->getRequest()->isGet()) {
+            $view->setVariable('form_valid', true);
+        }
+
         if (count($formData) > 0) {
             $form->setData($formData);
-            $form->isValid();
+            $view->setVariable('form_valid', $form->isValid());
 //            echo json_encode($form->getMessages($question['externalId']));
 
             if ($nextQuestion === null) {
