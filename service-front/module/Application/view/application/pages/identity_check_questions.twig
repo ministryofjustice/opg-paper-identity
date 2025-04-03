@@ -6,8 +6,8 @@
 
 {% block content %}
     <div class="moj-alert__content moj-hidden">{% block title %}Identity check questions{% endblock %}</div>
-
     <form method="post" target="">
+
         {% for questionBlock in questions_data %}
 
             {% if first_question == questionBlock.question and questionBlock.externalId == question.externalId %}
@@ -43,6 +43,7 @@
                 />
             {% else %}
                 <div class="govuk-form-group">
+
                     <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
@@ -51,7 +52,13 @@
                                     Select answer
                                 </h2>
                             </legend>
-                            <div class="govuk-radios" data-module="govuk-radios">
+                            {% if not form_valid %}
+                                <p id="kbv-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                        Please select an option
+                                </p>
+                            {% endif %}
+                            <div class="govuk-radios {% if not form_valid %}govuk-form-group--error{% endif %}" data-module="govuk-radios">
                                 {% for datum in questionBlock.prompts %}
                                     <div class="govuk-radios__item">
                                         <input
@@ -77,7 +84,9 @@
                     <div class="govuk-form-group">
                         <input class="govuk-button" type="submit" value="Continue">
                     </div>
+
                 </div>
+
             {% endif %}
         {% endfor %}
     </form>

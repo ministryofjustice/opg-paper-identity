@@ -135,4 +135,31 @@ describe("Identify a Donor", () => {
         cy.jumpToPage("how-will-you-confirm");
         cy.contains("National Insurance number could not be verified over the phone, choose an alternate ID method below.");
     });
+
+    it("form validation on KBV pages throw error on every non-selection", () => {
+        cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+
+        cy.contains("How will you confirm your identity?");
+        cy.get("label").contains("National insurance number").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.getInputByLabel("National Insurance number").type("NP 112233 C");
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.contains("Please select an option");
+        cy.selectKBVAnswer({correct: true});
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.contains("Please select an option");
+        cy.selectKBVAnswer({correct: true});
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.contains("Please select an option");
+        cy.selectKBVAnswer({correct: true});
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.contains(".moj-alert", "Identity check passed");
+    });
 });

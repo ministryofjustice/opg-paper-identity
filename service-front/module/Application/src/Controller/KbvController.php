@@ -12,6 +12,7 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
+use Laminas\InputFilter\InputFilter;
 
 /**
  * @psalm-import-type Question from OpgApiServiceInterface
@@ -51,8 +52,8 @@ class KbvController extends AbstractActionController
         /**
          * @psalm-suppress PossiblyInvalidArrayAccess
          */
-        $firstQuestion = $questionsData[0]['question'];
-        $view->setVariable('first_question', $firstQuestion);
+        $firstQuestion = $questionsData[0];
+        $view->setVariable('first_question', $firstQuestion['question']);
 
         if ($questionsData === false) {
             throw new HttpException(500, 'Could not load KBV questions');
@@ -65,19 +66,45 @@ class KbvController extends AbstractActionController
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
 
         $form = new Form();
+        $inputFilter = new InputFilter();
+        $form->setInputFilter($inputFilter);
 
         foreach ($questionsData as $question) {
             $form->add(new Element($question['externalId']));
+
+            $inputFilter->add([
+                'name' => $question['externalId'],
+                'required' => true,
+            ]);
         }
 
         $view->setVariable('questions_data', $questionsData);
 
         $formData = $this->getRequest()->getPost();
+        $form->setData($formData);
+
+        /** @psalm-suppress InvalidArgument */
         $nextQuestion = $this->getNextQuestion($questionsData, $formData);
+        $view->setVariable('form_valid', $form->isValid());
         $view->setVariable('question', $nextQuestion);
 
+        if ($this->getRequest()->isGet()) {
+            $view->setVariable('form_valid', true);
+        }
+
+        // this check look weird, but it works for preventing a spurious form error on page 2
+        foreach ($formData as $postVar) {
+            if (is_null($nextQuestion) || $firstQuestion['question'] !== $nextQuestion['question']) {
+                if ($postVar === "") {
+                    $view->setVariable('form_valid', true);
+                }
+            }
+        }
+
+        /** @psalm-suppress InvalidArgument */
         if (count($formData) > 0) {
             if ($nextQuestion === null) {
+                /** @psalm-suppress InvalidMethodCall */
                 $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
                 if (! $check['complete']) {
@@ -96,7 +123,6 @@ class KbvController extends AbstractActionController
 
                 return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
             }
-            $form->setData($formData);
         }
         $view->setVariable('form', $form);
 
