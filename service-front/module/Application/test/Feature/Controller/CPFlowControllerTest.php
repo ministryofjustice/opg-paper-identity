@@ -202,7 +202,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                 [],
                 ['p#NOT_PO']
             ],
-            'post office non UK driving-license id' => [
+            'post office non UK driving-licence id' => [
                 [
                     'idRoute' => 'POST_OFFICE',
                     'idMethodIncludingNation' => [
@@ -213,7 +213,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                 ],
                 ['p#PO_NON_GBR_DL']
             ],
-            'post office UK driving license' => [
+            'post office UK driving licence' => [
                 [
                     'idRoute' => 'POST_OFFICE',
                     'idMethodIncludingNation' => [

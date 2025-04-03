@@ -14,8 +14,8 @@ use Application\Aws\SsmClientFactory;
 use Application\Aws\SsmHandler;
 use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
-use Application\DrivingLicense\ValidatorFactory as LicenseFactory;
-use Application\DrivingLicense\ValidatorInterface as LicenseInterface;
+use Application\DrivingLicence\ValidatorFactory as LicenceFactory;
+use Application\DrivingLicence\ValidatorInterface as LicenceInterface;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\DWP\Factories\DwpApiServiceFactory;
 use Application\DWP\Factories\DwpAuthApiServiceFactory;
@@ -489,7 +489,7 @@ return [
                 $serviceLocator->get(ClockInterface::class),
             ),
             LoggerInterface::class => LoggerFactory::class,
-            LicenseInterface::class => LicenseFactory::class,
+            LicenceInterface::class => LicenceFactory::class,
             PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,

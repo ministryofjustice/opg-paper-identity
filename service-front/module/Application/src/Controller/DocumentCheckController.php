@@ -121,11 +121,11 @@ class DocumentCheckController extends AbstractActionController
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                 $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenseNumber->value);
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenceNumber->value);
             } else {
                 $this->opgApiService->updateCaseSetDocumentComplete(
                     $uuid,
-                    IdMethod::DrivingLicenseNumber->value,
+                    IdMethod::DrivingLicenceNumber->value,
                     false
                 );
                 $template = $templates['fail'];

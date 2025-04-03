@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\DrivingLicense;
+namespace Application\DrivingLicence;
 
-use Application\DrivingLicense\ValidatorInterface;
-use Application\DrivingLicense\Validator;
-use Application\Mock\DrivingLicense\Validator as MockValidator;
+use Application\DrivingLicence\ValidatorInterface;
+use Application\DrivingLicence\Validator;
+use Application\Mock\DrivingLicence\Validator as MockValidator;
 use GuzzleHttp\Client;
 use RuntimeException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
