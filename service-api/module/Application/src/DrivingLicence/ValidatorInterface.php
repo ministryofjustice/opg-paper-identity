@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\DrivingLicense;
+namespace Application\DrivingLicence;
 
 interface ValidatorInterface
 {
@@ -10,5 +10,5 @@ interface ValidatorInterface
     public const NOT_ENOUGH_DETAILS = 'NOT_ENOUGH_DETAILS';
     public const PASS = 'PASS';
 
-    public function validateDrivingLicense(string $license): string;
+    public function validateDrivingLicence(string $licence): string;
 }

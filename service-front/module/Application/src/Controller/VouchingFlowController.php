@@ -373,7 +373,7 @@ class VouchingFlowController extends AbstractActionController
                     case IdMethodEnum::PassportNumber->value:
                         $redirect = "root/passport_number";
                         break;
-                    case IdMethodEnum::DrivingLicenseNumber->value:
+                    case IdMethodEnum::DrivingLicenceNumber->value:
                         $redirect = "root/driving_licence_number";
                         break;
                     case IdMethodEnum::NationalInsuranceNumber->value:

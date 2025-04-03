@@ -43,9 +43,9 @@ M-XYXY-YAGA-0002 - certificate provider that will fail Experian's Fraudscore wit
 
 When sending a completed ID check or document to Sirius, it will always return a 2xx response as long as the request shape matches the API specification.
 
-### Passport, driving license and national insurance number lookup
+### Passport, driving licence and national insurance number lookup
 
-When checking if the caller's details match the **passport** or **driving license** number given, the mock will return "not enough details" if the number ends with 9, "no match" if it ends with 8 and "pass" for all other numbers.
+When checking if the caller's details match the **passport** or **driving licence** number given, the mock will return "not enough details" if the number ends with 9, "no match" if it ends with 8 and "pass" for all other numbers.
 
 When checking if the caller's details match the national insurance number given, the mock will return "not enough details" if the national insurance number ends with "D", "no match" if it ends with "C" and "pass" for all other values.
 
