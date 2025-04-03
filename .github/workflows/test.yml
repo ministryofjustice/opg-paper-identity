@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run ${{ matrix.service_name }} "${{ matrix.suite }}" tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
         with:
           ref: ${{ inputs.checkout_tag }}
       - name: Set up Docker
@@ -49,7 +49,7 @@ jobs:
           echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
           sudo systemctl restart docker
           docker run --privileged --rm tonistiigi/binfmt --install all
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           path: /tmp/images
           name: ${{ matrix.service_name }}-test-multi-arch
@@ -78,7 +78,7 @@ jobs:
         run: |
           make -i clean-junit-output
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2.19.0
         if: always()
         with:
           comment_mode: off
@@ -86,7 +86,7 @@ jobs:
           test_file_prefix: +service-${{ matrix.service_name }}/
           check_name: ${{ matrix.service_name }} ${{ matrix.suite }} tests
       - name: service ${{ matrix.service_name }} codecov upload
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v5.4.0
         if: matrix.suite == 'unit-test'
         with:
           name: paper-id-${{ matrix.service_name }}
@@ -99,45 +99,45 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
       - name: Set up Docker
         run: |
           echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
           sudo systemctl restart docker
           docker run --privileged --rm tonistiigi/binfmt --install all
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: api-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: front-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: api-test-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: front-test-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: dwp-mock-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: experian-crosscore-auth-mock-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: experian-crosscore-mock-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: experian-iiq-mock-multi-arch
           path: /tmp/images
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4.2.1
         with:
           name: yoti-mock-multi-arch
           path: /tmp/images
@@ -155,7 +155,7 @@ jobs:
       - name: Run cypress
         run: make cypress
       - name: Store screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: failure()
         with:
           name: cypress-screenshots
@@ -164,7 +164,7 @@ jobs:
         if: failure()
         run: docker compose logs > test.log
       - name: Store logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: failure()
         with:
           name: logs
