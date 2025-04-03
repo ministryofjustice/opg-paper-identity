@@ -52,8 +52,8 @@ class KbvController extends AbstractActionController
         /**
          * @psalm-suppress PossiblyInvalidArrayAccess
          */
-        $firstQuestion = $questionsData[0]['question'];
-        $view->setVariable('first_question', $firstQuestion);
+        $firstQuestion = $questionsData[0];
+        $view->setVariable('first_question', $firstQuestion['question']);
 
         if ($questionsData === false) {
             throw new HttpException(500, 'Could not load KBV questions');
@@ -64,7 +64,6 @@ class KbvController extends AbstractActionController
         }
 
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
-echo json_encode($questionsData);
 
         $form = new Form();
         $inputFilter = new InputFilter();
@@ -77,29 +76,35 @@ echo json_encode($questionsData);
                 'name' => $question['externalId'],
                 'required' => true,
             ]);
-
-//            echo json_encode($inputFilter->getRawValues());
         }
 
         $view->setVariable('questions_data', $questionsData);
 
         $formData = $this->getRequest()->getPost();
-//        echo json_encode($formData->toArray());
-        $nextQuestion = $this->getNextQuestion($questionsData, $formData);
-//        echo $nextQuestion['externalId'];
+        $form->setData($formData);
 
+        /** @psalm-suppress InvalidArgument */
+        $nextQuestion = $this->getNextQuestion($questionsData, $formData);
+        $view->setVariable('form_valid', $form->isValid());
         $view->setVariable('question', $nextQuestion);
 
         if ($this->getRequest()->isGet()) {
             $view->setVariable('form_valid', true);
         }
 
-        if (count($formData) > 0) {
-            $form->setData($formData);
-            $view->setVariable('form_valid', $form->isValid());
-//            echo json_encode($form->getMessages($question['externalId']));
+        // this check look weird, but it works for preventing a spurious form error on page 2
+        foreach ($formData as $postVar) {
+            if (is_null($nextQuestion) || $firstQuestion['question'] !== $nextQuestion['question']) {
+                if ($postVar === "") {
+                    $view->setVariable('form_valid', true);
+                }
+            }
+        }
 
+        /** @psalm-suppress InvalidArgument */
+        if (count($formData) > 0) {
             if ($nextQuestion === null) {
+                /** @psalm-suppress InvalidMethodCall */
                 $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
                 if (! $check['complete']) {

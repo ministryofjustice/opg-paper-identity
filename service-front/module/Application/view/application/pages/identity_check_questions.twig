@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="moj-alert__content moj-hidden">{% block title %}Identity check questions{% endblock %}</div>
-
+    <form method="post" target="">
 
         {% for questionBlock in questions_data %}
 
@@ -43,7 +43,7 @@
                 />
             {% else %}
                 <div class="govuk-form-group">
-                    <form method="post" target="">
+
                     <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
@@ -84,10 +84,10 @@
                     <div class="govuk-form-group">
                         <input class="govuk-button" type="submit" value="Continue">
                     </div>
-                    </form>
+
                 </div>
 
             {% endif %}
         {% endfor %}
-
+    </form>
 {% endblock %}
