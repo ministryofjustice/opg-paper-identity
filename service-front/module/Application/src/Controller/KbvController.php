@@ -94,35 +94,34 @@ class KbvController extends AbstractActionController
 
         // this check look weird, but it works for preventing a spurious form error on page 2
         foreach ($formData as $postVar) {
-            if (is_null($nextQuestion) || $firstQuestion['question'] !== $nextQuestion['question']) {
-                if ($postVar === "") {
-                    $view->setVariable('form_valid', true);
-                }
+            if (
+                (is_null($nextQuestion) || $firstQuestion['question'] !== $nextQuestion['question']) &&
+                    $postVar === ""
+            ) {
+                $view->setVariable('form_valid', true);
             }
         }
 
         /** @psalm-suppress InvalidArgument */
-        if (count($formData) > 0) {
-            if ($nextQuestion === null) {
-                /** @psalm-suppress InvalidMethodCall */
-                $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
+        if (count($formData) > 0 && $nextQuestion === null) {
+            /** @psalm-suppress InvalidMethodCall */
+            $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
 
-                if (! $check['complete']) {
-                    return $this->redirect()->refresh();
-                }
-
-                if ($check['passed'] === true) {
-                    $caseProgressData = $detailsData['caseProgress'] ?? [];
-                    $caseProgressData['kbvs'] = [
-                        'result' => true
-                    ];
-                    $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
-
-                    return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
-                }
-
-                return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
+            if (! $check['complete']) {
+                return $this->redirect()->refresh();
             }
+
+            if ($check['passed'] === true) {
+                $caseProgressData = $detailsData['caseProgress'] ?? [];
+                $caseProgressData['kbvs'] = [
+                    'result' => true
+                ];
+                $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
+
+                return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
+            }
+
+            return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
         }
         $view->setVariable('form', $form);
 
