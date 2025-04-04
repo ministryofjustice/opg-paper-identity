@@ -9,10 +9,10 @@
 
         <h1 class="govuk-heading-xl">
             {% block title %}
-                    {% if details_data.idRoute == 'POST_OFFICE' %}
+                    {% if details_data.idMethod.id_route == 'POST_OFFICE' %}
                         {% if
-                            details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
-                            details_data.idMethodIncludingNation.id_country == 'GBR'
+                            details_data.idMethod.doc_type == 'DRIVING_LICENCE' and
+                            details_data.idMethod.id_country == 'GBR'
                         %}
                             Does the address on the driving licence match the address in Sirius?
                         {% else %}
@@ -23,10 +23,10 @@
                     {% endif %}
             {% endblock %}
         </h1>
-        {% if details_data.idRoute == 'POST_OFFICE' %}
+        {% if details_data.idMethod.id_route == 'POST_OFFICE' %}
             {% if
-                details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
-                details_data.idMethodIncludingNation.id_country == 'GBR'
+                details_data.idMethod.doc_type == 'DRIVING_LICENCE' and
+                details_data.idMethod.id_country == 'GBR'
             %}
                 <p class="govuk-body" id="PO_GBR_DL">
                     The address on their driving licence must be the same on the letter they take to the Post Office, or the ID check will fail.
@@ -104,10 +104,10 @@
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h3 class="govuk-fieldset__heading">
-                            {% if details_data.idRoute == 'POST_OFFICE' %}
+                            {% if details_data.idMethod.id_route == 'POST_OFFICE' %}
                                 {% if
-                                    details_data.idMethodIncludingNation.id_method == 'DRIVING_LICENCE' and
-                                    details_data.idMethodIncludingNation.id_country == 'GBR'
+                                    details_data.idMethod.doc_type == 'DRIVING_LICENCE' and
+                                    details_data.idMethod.id_country == 'GBR'
                                 %}
                                     Is this the address on the driving licence?
                                 {% else %}

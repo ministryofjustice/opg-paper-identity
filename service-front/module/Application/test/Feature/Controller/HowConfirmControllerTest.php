@@ -106,7 +106,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         ];
         $postOffice = ['POST_OFFICE'];
         $otherMethodRadios = [
-            'ON_BEHALF',
+            'VOUCHING',
             'COURT_OF_PROTECTION'
         ];
 
@@ -308,7 +308,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('updateIdMethodWithCountry')
+            ->method('updateIdMethod')
             ->with($this->uuid, $expectedDataToSave);
 
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'POST', ['id_method' => $idChoice]);
@@ -328,8 +328,8 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ],
             'donor choosing vouching route' => [
                 'donor',
-                'OnBehalf',
-                ['id_route' => 'OnBehalf'],
+                'VOUCHING',
+                ['id_route' => 'VOUCHING'],
                 'what-is-vouching'
             ],
             'donor with passport' => [

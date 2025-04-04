@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiException;
 use DateTime;
@@ -24,8 +24,8 @@ class SessionConfig
         $authToken = $uuid;
 
         try {
-            $allowExpiredUkPassport = $case->idMethodIncludingNation?->id_country === "GBR" &&
-                $case->idMethodIncludingNation?->id_method === IdMethod::PassportNumber->value;
+            $allowExpiredUkPassport = $case->idMethod?->id_country === "GBR" &&
+                $case->idMethod?->doc_type === DocumentType::Passport->value;
         } catch (\Exception $exception) {
             $allowExpiredUkPassport = false;
         }
@@ -149,7 +149,7 @@ class SessionConfig
      */
     public static function getIDCountry(CaseData $case): string
     {
-        $nonUKIDs = $case->idMethodIncludingNation;
+        $nonUKIDs = $case->idMethod;
         if (isset($nonUKIDs->id_country)) {
             return $nonUKIDs->id_country;
         }
@@ -163,12 +163,12 @@ class SessionConfig
      */
     public static function getDocType(CaseData $case): string
     {
-        $nonUKIDs = $case->idMethodIncludingNation;
+        $nonUKIDs = $case->idMethod;
 
-        if (isset($nonUKIDs->id_method)) {
-            return $nonUKIDs->id_method;
+        if (isset($nonUKIDs->doc_type)) {
+            return $nonUKIDs->doc_type;
         }
-        return "PASSPORT";
+        return DocumentType::Passport->value;
     }
 
     /**

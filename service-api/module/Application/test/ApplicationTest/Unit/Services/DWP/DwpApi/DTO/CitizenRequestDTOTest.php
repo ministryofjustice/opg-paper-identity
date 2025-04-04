@@ -23,8 +23,8 @@ class CitizenRequestDTOTest extends TestCase
         "documentComplete" => false,
         "identityCheckPassed" => null,
         "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-        "idMethodIncludingNation" => [
-            "id_method" => "NATIONAL_INSURANCE_NUMBER",
+        "idMethod" => [
+            "doc_type" => "NATIONAL_INSURANCE_NUMBER",
             "id_route" => "TELEPHONE",
             "id_country" => "GBR",
             "id_value" => "NP112233C"
@@ -72,8 +72,8 @@ class CitizenRequestDTOTest extends TestCase
             "documentComplete" => false,
             "identityCheckPassed" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_method" => "NATIONAL_INSURANCE_NUMBER",
+            "idMethod" => [
+                "doc_type" => "NATIONAL_INSURANCE_NUMBER",
                 "id_route" => "TELEPHONE",
                 "id_country" => "GBR"
             ],

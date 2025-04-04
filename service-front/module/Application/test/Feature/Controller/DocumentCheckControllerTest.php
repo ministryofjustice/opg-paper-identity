@@ -559,9 +559,9 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethodIncludingNation" => [
+            "idMethod" => [
                 "id_country" => "GBR",
-                "id_method" => "DRIVING_LICENCE",
+                "doc_type" => "DRIVING_LICENCE",
                 'id_route' => 'TELEPHONE'
             ]
         ];

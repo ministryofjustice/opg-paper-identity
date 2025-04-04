@@ -55,7 +55,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idRoute' => 'OnBehalf'
+                    'idRoute' => 'VOUCHING'
                 ]),
                 UpdateStatus::VouchStarted
             ],

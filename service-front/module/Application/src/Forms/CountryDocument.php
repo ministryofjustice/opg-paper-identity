@@ -25,5 +25,5 @@ class CountryDocument implements FormTemplate
             NotEmpty::IS_EMPTY  => "Please choose a type of document"
         ]
     ])]
-    public mixed $id_method;
+    public mixed $doc_type;
 }

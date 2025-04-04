@@ -86,9 +86,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             "counterService" => null,
             "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
+            "idMethod" => [
                 "id_country" => "AUT",
-                "id_method" => "DRIVING_LICENCE",
+                "doc_type" => "DRIVING_LICENCE",
                 'id_route' => 'POST_OFFICE'
             ]
         ];
@@ -334,7 +334,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('updateIdMethodWithCountry')
+            ->method('updateIdMethod')
             ->with($this->uuid, ['id_method' => 'PASSPORT']);
 
         $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
@@ -391,13 +391,13 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public function testfindPostOfficeBranchSelect(
         array $post,
         bool $valid,
-        ?array $idMethodIncludingNation,
+        ?array $idMethod,
         ?string $searchString,
         array $queries = [],
     ): void {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-        if (isset($idMethodIncludingNation)) {
-            $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+        if (isset($idMethod)) {
+            $mockResponseDataIdDetails['idMethod'] = $idMethod;
         }
 
         $this

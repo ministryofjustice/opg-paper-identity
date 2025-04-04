@@ -205,13 +205,13 @@ return [
                     ],
                 ],
             ],
-            'update_case_method' => [
+            'update_id_method' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/cases/:uuid/update-method',
+                    'route' => '/cases/:uuid/update-id-method',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
-                        'action' => 'updatedMethod',
+                        'action' => 'updateIdMethod',
                     ],
                 ],
             ],
@@ -364,26 +364,6 @@ return [
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'updateName',
-                    ],
-                ],
-            ],
-            'update_cp_po_id' => [
-                'type' => Segment::class,
-                'verb' => 'put',
-                'options' => [
-                    'route' => '/cases/:uuid/update-cp-po-id',
-                ],
-                'child_routes' => [
-                    'put' => [
-                        'type' => Method::class,
-                        'options' => [
-                            'verb' => 'put',
-                            'defaults' => [
-                                'controller' => Controller\IdentityController::class,
-                                'action' => 'updateCpPoId',
-                            ],
-                        ],
-                        'may_terminate' => true,
                     ],
                 ],
             ],

@@ -156,8 +156,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             'post office non UK driving-licence id' => [
                 [
                     'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
+                    'idMethod' => [
+                        'doc_type' => 'DRIVING_LICENCE',
                         'id_country' => 'AUS'
                     ]
                 ],
@@ -166,8 +166,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             'post office UK driving licence' => [
                 [
                     'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
+                    'idMethod' => [
+                        'doc_type' => 'DRIVING_LICENCE',
                         'id_country' => 'GBR'
                     ]
                 ],
@@ -256,9 +256,9 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethodIncludingNation" => [
+            "idMethod" => [
                 "id_country" => "GBR",
-                "id_method" => "DRIVING_LICENCE",
+                "doc_type" => "DRIVING_LICENCE",
                 'id_route' => 'TELEPHONE'
             ],
             "idRoute" => "TELEPHONE",

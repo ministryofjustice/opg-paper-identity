@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Unit\Services;
 
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
-use Application\Model\Entity\IdMethodIncludingNation;
+use Application\Model\Entity\IdMethod;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use InvalidArgumentException;
@@ -16,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Lcobucci\Clock\FrozenClock;
 use DateTimeImmutable;
+use Dom\Document;
 
 /**
  * @psalm-suppress PossiblyNullPropertyAssignment
@@ -227,10 +230,10 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
-        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
-            'id_method' => "PASSPORT",
+        $caseData->idMethod = IdMethod::fromArray([
+            'doc_type' => DocumentType::Passport,
             'id_country' => "GBR",
-            'id_route' => "POST_OFFICE",
+            'id_route' => IdRoute::POST_OFFICE,
             'dwp_id_correlation' => null,
         ]);
 
@@ -277,10 +280,10 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
-        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
-            'id_method' => "PASSPORT",
+        $caseData->idMethod = IdMethod::fromArray([
+            'doc_type' => DocumentType::Passport,
             'id_country' => "GBR",
-            'id_route' => "POST_OFFICE",
+            'id_route' => IdRoute::POST_OFFICE,
             'dwp_id_correlation' => null,
         ]);
 
@@ -327,8 +330,8 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
-        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
-            'id_method' => "PASSPORT",
+        $caseData->idMethod = IdMethod::fromArray([
+            'doc_type' => DocumentType::Passport,
             'id_country' => "",
             'id_route' => "",
             'dwp_id_correlation' => null,

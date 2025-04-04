@@ -212,8 +212,8 @@ class ServiceAvailabilityHelperTest extends TestCase
             ],
             "documentComplete" => false,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_method" => "DRIVING_LICENCE",
+            "idMethod" => [
+                "doc_type" => "DRIVING_LICENCE",
                 "id_route" => "TELEPHONE",
                 "id_country" => "GBR"
             ],

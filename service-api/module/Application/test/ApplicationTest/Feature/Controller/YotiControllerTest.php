@@ -164,8 +164,8 @@ class YotiControllerTest extends TestCase
                 ],
             ],
             'personType' => 'donor',
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
+            "idMethod" => [
+                'doc_type' => "PASSPORT",
                 'id_country' => "GBR",
                 'id_route' => "TELEPHONE",
             ],

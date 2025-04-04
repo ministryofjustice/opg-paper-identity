@@ -306,8 +306,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "NATIONAL_INSURANCE_NUMBER",
+            "idMethod" => [
+                'doc_type' => "NATIONAL_INSURANCE_NUMBER",
                 'id_country' => "GBR",
                 'id_route' => "TELEPHONE",
             ],
@@ -500,8 +500,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
+            "idMethod" => [
+                'doc_type' => "",
                 'id_country' => "",
                 'id_route' => "",
             ],
@@ -588,8 +588,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
+            "idMethod" => [
+                'doc_type' => "",
                 'id_country' => "",
                 'id_route' => "",
             ],
@@ -701,8 +701,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
+            "idMethod" => [
+                'doc_type' => "",
                 'id_country' => "",
                 'id_route' => "",
             ],

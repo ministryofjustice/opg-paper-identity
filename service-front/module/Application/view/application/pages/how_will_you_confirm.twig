@@ -364,13 +364,13 @@
                                     <div class="govuk-radios__item">
                                         <input
                                                 class="govuk-radios__input"
-                                                id="ON_BEHALF"
+                                                id="VOUCHING"
                                                 name="id_method"
                                                 type="radio"
-                                                value="OnBehalf"
-                                                {{ (form.get('id_method').value == 'OnBehalf') ? 'checked' : '' }}
+                                                value="VOUCHING"
+                                                {{ (form.get('id_method').value == 'VOUCHING') ? 'checked' : '' }}
                                         >
-                                        <label class="govuk-label govuk-radios__label" for="ON_BEHALF">
+                                        <label class="govuk-label govuk-radios__label" for="VOUCHING">
                                             Have someone vouch for the identity of the donor
                                         </label>
                                     </div>
@@ -382,8 +382,8 @@
                                                 id="COURT_OF_PROTECTION"
                                                 name="id_method"
                                                 type="radio"
-                                                value="cpr"
-                                                {{ (form.get('id_method').value == 'cpr') ? 'checked' : '' }}
+                                                value="COURT_OF_PROTECTION"
+                                                {{ (form.get('id_method').value == 'COURT_OF_PROTECTION') ? 'checked' : '' }}
                                         >
                                         <label class="govuk-label govuk-radios__label" for="COURT_OF_PROTECTION">
                                             The donor cannot do any of the above (Court of Protection)</label>

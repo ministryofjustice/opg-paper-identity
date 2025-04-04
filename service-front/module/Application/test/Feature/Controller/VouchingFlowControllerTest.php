@@ -110,9 +110,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "selectedPostOffice" => null,
             "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
+            "idMethod" => [
                 "id_country" => "AUT",
-                "id_method" => "DRIVING_LICENCE",
+                "doc_type" => "DRIVING_LICENCE",
                 'id_route' => 'POST_OFFICE'
             ]
         ];
@@ -656,8 +656,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'post office non UK driving-licence id' => [
                 [
                     'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
+                    'idMethod' => [
+                        'doc_type' => 'DRIVING_LICENCE',
                         'id_country' => 'AUS'
                     ]
                 ],
@@ -666,8 +666,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'post office UK driving licence' => [
                 [
                     'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
+                    'idMethod' => [
+                        'doc_type' => 'DRIVING_LICENCE',
                         'id_country' => 'GBR'
                     ]
                 ],
@@ -958,10 +958,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider confirmDonorsRedirectData
      */
-    public function testConfirmDonorsRedirect(array $idMethodIncludingNation, string $expectedRedirect): void
+    public function testConfirmDonorsRedirect(array $idMethod, string $expectedRedirect): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+        $mockResponseDataIdDetails['idMethod'] = $idMethod;
 
         $this
             ->opgApiServiceMock

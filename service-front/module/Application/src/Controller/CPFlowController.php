@@ -244,10 +244,10 @@ class CPFlowController extends AbstractActionController
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
-        if ($detailsData['idMethodIncludingNation']['id_route'] != 'TELEPHONE') {
+        if ($detailsData['idMethod']['id_route'] != 'TELEPHONE') {
             $nextRoute = 'root/find_post_office_branch';
         } else {
-            $nextRoute = $routes[$detailsData['idMethodIncludingNation']['id_method']];
+            $nextRoute = $routes[$detailsData['idMethod']['doc_type']];
         }
 
         $view->setVariables([
