@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\DrivingLicense;
+namespace Application\DrivingLicence;
 
-use Application\DrivingLicense\ValidatorInterface;
+use Application\DrivingLicence\ValidatorInterface;
 use GuzzleHttp\Client;
 
 /**
@@ -18,7 +18,7 @@ class Validator implements ValidatorInterface
     ) {
     }
 
-    public function validateDrivingLicense(string $license): string
+    public function validateDrivingLicence(string $licence): string
     {
         return self::PASS;
     }

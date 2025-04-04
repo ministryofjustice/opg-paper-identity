@@ -884,7 +884,7 @@ class OpgApiServiceTest extends TestCase
                 200,
                 ['X-Foo' => 'Bar'],
                 json_encode([
-                    IdMethod::DrivingLicenseNumber->value => true,
+                    IdMethod::DrivingLicenceNumber->value => true,
                     IdMethod::PassportNumber->value => true,
                     IdMethod::NationalInsuranceNumber->value => true,
                     IdMethod::PostOffice->value => true,
