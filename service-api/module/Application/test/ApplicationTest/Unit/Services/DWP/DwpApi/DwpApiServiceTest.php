@@ -10,6 +10,8 @@ use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
 use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiService;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Model\Entity\CaseData;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -37,15 +39,15 @@ class DwpApiServiceTest extends TestCase
         "identityCheckPassed" => null,
         "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
         "idMethod" => [
-            "doc_type" => "NATIONAL_INSURANCE_NUMBER",
-            "id_route" => "TELEPHONE",
+            "doc_type" => DocumentType::NationalInsuranceNumber->value,
+            "id_route" => IdRoute::TELEPHONE->value,
             "id_country" => "GBR",
             "id_value" => "NP112233C"
         ],
         "caseProgress" => [
             "abandonedFlow" => null,
             "docCheck" => [
-                "idDocument" => "NATIONAL_INSURANCE_NUMBER",
+                "idDocument" => DocumentType::NationalInsuranceNumber->value,
                 "state" => true
             ],
             "kbvs" => null,

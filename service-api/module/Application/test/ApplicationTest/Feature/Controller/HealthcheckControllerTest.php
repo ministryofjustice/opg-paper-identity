@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Aws\SsmHandler;
 use Application\Controller\HealthcheckController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
@@ -130,9 +132,9 @@ class HealthcheckControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => "DRIVING_LICENCE",
+                'doc_type' => DocumentType::DrivingLicence->value,
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => IdRoute::TELEPHONE->value,
             ],
             "caseProgress" => [
                 "fraudScore" => [
@@ -165,9 +167,9 @@ class HealthcheckControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => "DRIVING_LICENCE",
+                'doc_type' => DocumentType::DrivingLicence->value,
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => IdRoute::TELEPHONE->value,
             ],
             "caseProgress" => [
                 "fraudScore" => [
@@ -178,22 +180,22 @@ class HealthcheckControllerTest extends TestCase
         ];
 
         $services = [
-            "EXPERIAN" => true,
-            "NATIONAL_INSURANCE_NUMBER" => true,
-            "DRIVING_LICENCE" => true,
-            "PASSPORT" => true,
-            "POST_OFFICE" => true,
+            IdRoute::TELEPHONE->value => true,
+            DocumentType::NationalInsuranceNumber->value => true,
+            DocumentType::DrivingLicence->value => true,
+            DocumentType::Passport->value => true,
+            IdRoute::POST_OFFICE->value => true,
         ];
 
         $response = [
             'data' => [
-                'PASSPORT' => true,
-                'DRIVING_LICENCE' => true,
-                'NATIONAL_INSURANCE_NUMBER' => true,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => true,
+                DocumentType::Passport->value => true,
+                DocumentType::DrivingLicence->value => true,
+                DocumentType::NationalInsuranceNumber->value => true,
+                IdRoute::POST_OFFICE->value => true,
+                IdRoute::VOUCHING->value => true,
+                IdRoute::COURT_OF_PROTECTION->value => true,
+                IdRoute::TELEPHONE->value => true,
             ],
             'messages' => [],
             'additional_restriction_messages' => [],
@@ -202,13 +204,13 @@ class HealthcheckControllerTest extends TestCase
 
         $responseNoDec = [
             'data' => [
-                "EXPERIAN" => false,
-                "NATIONAL_INSURANCE_NUMBER" => false,
-                "DRIVING_LICENCE" => false,
-                "PASSPORT" => false,
-                "POST_OFFICE" => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true
+                IdRoute::TELEPHONE->value => false,
+                DocumentType::NationalInsuranceNumber->value => false,
+                DocumentType::DrivingLicence->value => false,
+                DocumentType::Passport->value => false,
+                IdRoute::POST_OFFICE->value => true,
+                IdRoute::VOUCHING->value => true,
+                IdRoute::COURT_OF_PROTECTION->value => true
             ],
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .

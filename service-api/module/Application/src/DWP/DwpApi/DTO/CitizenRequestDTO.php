@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\DWP\DwpApi\DTO;
 
 use Application\DWP\DwpApi\DwpApiException;
+use Application\Enums\DocumentType;
 use Application\Model\Entity\CaseData;
 
 class CitizenRequestDTO
@@ -20,7 +21,7 @@ class CitizenRequestDTO
         private string $nino
     ) {
         try {
-            if ($this->caseData->idMethod?->doc_type !== 'NATIONAL_INSURANCE_NUMBER') {
+            if ($this->caseData->idMethod?->doc_type !== DocumentType::NationalInsuranceNumber->value) {
                 throw new DwpApiException('Identity method is not a national insurance number');
             }
 

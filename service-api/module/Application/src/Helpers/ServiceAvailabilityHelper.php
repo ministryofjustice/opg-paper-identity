@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Model\Entity\CaseData;
 
 class ServiceAvailabilityHelper
@@ -30,12 +32,12 @@ class ServiceAvailabilityHelper
     {
         $processedGlobalServices = [];
 
-        if (($this->services['EXPERIAN'] ?? false) !== true) {
-            $processedGlobalServices['EXPERIAN'] = false;
-            $processedGlobalServices['DRIVING_LICENCE'] = false;
-            $processedGlobalServices['PASSPORT'] = false;
-            $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] = false;
-            $processedGlobalServices['POST_OFFICE'] = $this->services['POST_OFFICE'];
+        if (($this->services[IdRoute::TELEPHONE->value] ?? false) !== true) {
+            $processedGlobalServices[IdRoute::TELEPHONE->value] = false;
+            $processedGlobalServices[DocumentType::DrivingLicence->value] = false;
+            $processedGlobalServices[DocumentType::Passport->value] = false;
+            $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] = false;
+            $processedGlobalServices[IdRoute::POST_OFFICE->value] = $this->services[IdRoute::POST_OFFICE->value];
         } else {
             foreach ($this->services as $key => $value) {
                 $processedGlobalServices[$key] = $value;
@@ -43,20 +45,20 @@ class ServiceAvailabilityHelper
         }
 
         if (
-            $processedGlobalServices['DRIVING_LICENCE'] === false ||
-            $processedGlobalServices['PASSPORT'] === false ||
-            $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
+            $processedGlobalServices[DocumentType::DrivingLicence->value] === false ||
+            $processedGlobalServices[DocumentType::Passport->value] === false ||
+            $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] === false
         ) {
             $this->processedMessages['service_status'] =
                 "Some identity verification methods are not presently available";
         }
 
         if (
-            $processedGlobalServices['DRIVING_LICENCE'] === false &&
-            $processedGlobalServices['PASSPORT'] === false &&
-            $processedGlobalServices['NATIONAL_INSURANCE_NUMBER'] === false
+            $processedGlobalServices[DocumentType::DrivingLicence->value] === false &&
+            $processedGlobalServices[DocumentType::Passport->value] === false &&
+            $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] === false
         ) {
-            $processedGlobalServices['EXPERIAN'] = false;
+            $processedGlobalServices[IdRoute::TELEPHONE->value] = false;
             $this->processedMessages['service_status'] = "Online identity verification is not presently available";
         }
 
@@ -96,7 +98,7 @@ class ServiceAvailabilityHelper
     ): void {
         $configServices = array_merge(
             $config['opg_settings']['identity_documents'] ?? [],
-            $config['opg_settings']['identity_methods'] ?? [],
+            $config['opg_settings']['identity_routes'] ?? [],
             $config['opg_settings']['identity_services'] ?? [],
         );
 
@@ -113,10 +115,10 @@ class ServiceAvailabilityHelper
 
     private function setServiceFlags(bool $flag, array $options = []): void
     {
-        $this->availableServices['NATIONAL_INSURANCE_NUMBER'] = $flag;
-        $this->availableServices['DRIVING_LICENCE'] = $flag;
-        $this->availableServices['PASSPORT'] = $flag;
-        $this->availableServices['EXPERIAN'] = $flag;
+        $this->availableServices[DocumentType::NationalInsuranceNumber->value] = $flag;
+        $this->availableServices[DocumentType::DrivingLicence->value] = $flag;
+        $this->availableServices[DocumentType::Passport->value] = $flag;
+        $this->availableServices[IdRoute::TELEPHONE->value] = $flag;
 
         foreach ($options as $service) {
             $this->availableServices[$service] = $flag;
@@ -157,13 +159,13 @@ class ServiceAvailabilityHelper
                 $this->parseBannerText(self::LOCKED_SUCCESS);
 
             $this->setServiceFlags(false, [
-                'NATIONAL_INSURANCE_NUMBER',
-                'DRIVING_LICENCE',
-                'PASSPORT',
-                'POST_OFFICE',
-                'EXPERIAN',
-                'VOUCHING',
-                'COURT_OF_PROTECTION'
+                DocumentType::NationalInsuranceNumber->value,
+                DocumentType::DrivingLicence->value,
+                DocumentType::Passport->value,
+                IdRoute::POST_OFFICE->value,
+                IdRoute::TELEPHONE->value,
+                IdRoute::VOUCHING->value,
+                IdRoute::COURT_OF_PROTECTION->value,
             ]);
 
             return $this->toArray();
@@ -212,7 +214,7 @@ class ServiceAvailabilityHelper
             $this->setServiceFlags(false);
 
             if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
-                $this->availableServices['VOUCHING'] = false;
+                $this->availableServices[IdRoute::VOUCHING->value] = false;
                 $this->processedMessages['banner'] =
                     $this->parseBannerText(self::DECISION_STOP);
             } else {
@@ -239,9 +241,9 @@ class ServiceAvailabilityHelper
         $messages = [];
 
         $map = [
-            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
-            'PASSPORT' => 'Passport',
-            'DRIVING_LICENCE' => 'Driving licence'
+            DocumentType::NationalInsuranceNumber->value => 'National Insurance number',
+            DocumentType::Passport->value => 'Passport',
+            DocumentType::DrivingLicence->value => 'Driving licence',
         ];
 
         if (is_array($this->case->caseProgress?->restrictedMethods)) {

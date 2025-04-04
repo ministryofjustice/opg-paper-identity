@@ -20,7 +20,7 @@ use Application\Validators\Enum;
 class IdMethod extends Entity
 {
     #[Annotation\Required(false)]
-    #[Annotation\Validator(Enum::class, options: ['enum' => DocumentType::class])]
+    #[Annotation\Validator(Enum::class, options: [DocumentType::class])]
     public ?string $doc_type;
 
     #[Annotation\Required(false)]

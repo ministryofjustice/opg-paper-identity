@@ -64,7 +64,7 @@ class CaseDataTest extends TestCase
                     'idMethod' => [
                         'doc_type' => DocumentType::Passport,
                         'id_country' => "GBR",
-                        'id_route' => IdRoute::POST_OFFICE,
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ]), true
             ],
@@ -73,7 +73,7 @@ class CaseDataTest extends TestCase
                     'idMethod' => [
                         'doc_type' => DocumentType::Passport,
                         'id_country' => "AUT",
-                        'id_route' => IdRoute::POST_OFFICE,
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ]), true
             ],
@@ -82,7 +82,7 @@ class CaseDataTest extends TestCase
                     'idMethod' => [
                         'doc_type' => DocumentType::Passport,
                         'id_country' => "GBR",
-                        'id_route' => IdRoute::VOUCHING,
+                        'id_route' => IdRoute::VOUCHING->value,
                     ]
                 ]), true
             ],

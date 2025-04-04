@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
+use Application\Enums\IdRoute;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
@@ -55,14 +56,14 @@ class CaseOutcomeCalculatorTest extends TestCase
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idMethod' => ['id_route' => 'VOUCHING']
+                    'idMethod' => ['id_route' => IdRoute::VOUCHING->value]
                 ]),
                 UpdateStatus::VouchStarted
             ],
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idMethod' => ['id_route' => 'TELEPHONE'],
+                    'idMethod' => ['id_route' => IdRoute::TELEPHONE->value],
                     'identityCheckPassed' => false
                 ]),
                 UpdateStatus::Failure
@@ -70,7 +71,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idMethod' => ['id_route' => 'TELEPHONE'],
+                    'idMethod' => ['id_route' => IdRoute::TELEPHONE->value],
                     'identityCheckPassed' => true
                 ]),
                 UpdateStatus::Success
@@ -102,7 +103,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'personType' => 'donor',
             'lpas' => ['M-9387-2843-3891'],
-            'idMethod' => ['id_route' => 'TELEPHONE'],
+            'idMethod' => ['id_route' => IdRoute::TELEPHONE->value],
             'identityCheckPassed' => true,
         ]);
 

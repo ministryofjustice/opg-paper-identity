@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\IdentityController;
 use Application\DWP\DwpApi\DwpApiService;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
@@ -307,9 +309,9 @@ class IdentityControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => "NATIONAL_INSURANCE_NUMBER",
+                'doc_type' => DocumentType::NationalInsuranceNumber->value,
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => IdRoute::TELEPHONE->value,
             ],
         ];
 
