@@ -55,14 +55,14 @@ class CaseOutcomeCalculatorTest extends TestCase
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idRoute' => 'VOUCHING'
+                    'idMethod' => ['id_route' => 'VOUCHING']
                 ]),
                 UpdateStatus::VouchStarted
             ],
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idRoute' => 'TELEPHONE',
+                    'idMethod' => ['id_route' => 'TELEPHONE'],
                     'identityCheckPassed' => false
                 ]),
                 UpdateStatus::Failure
@@ -70,7 +70,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             [
                 CaseData::fromArray([
                     'id' => $uuid,
-                    'idRoute' => 'TELEPHONE',
+                    'idMethod' => ['id_route' => 'TELEPHONE'],
                     'identityCheckPassed' => true
                 ]),
                 UpdateStatus::Success
@@ -102,7 +102,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
             'personType' => 'donor',
             'lpas' => ['M-9387-2843-3891'],
-            'idRoute' => 'TELEPHONE',
+            'idMethod' => ['id_route' => 'TELEPHONE'],
             'identityCheckPassed' => true,
         ]);
 

@@ -64,12 +64,11 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "id_country" => "AUT",
                 "doc_type" => "DRIVING_LICENCE",
-                'id_route' => 'POST_OFFICE'
+                'id_route' => 'TELEPHONE'
             ]
         ];
     }
@@ -204,7 +203,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             'post office non UK driving-licence id' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
                     'idMethod' => [
                         'doc_type' => 'DRIVING_LICENCE',
                         'id_country' => 'AUS',
@@ -215,7 +213,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             'post office UK driving licence' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
                     'idMethod' => [
                         'doc_type' => 'DRIVING_LICENCE',
                         'id_country' => 'GBR',

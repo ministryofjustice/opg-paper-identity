@@ -338,7 +338,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 [
                     'id_route' => 'TELEPHONE',
                     'id_country' => Country::GBR->value,
-                    'id_method' => 'PASSPORT'
+                    'doc_type' => 'PASSPORT'
                 ],
                 'donor-details-match-check'
             ],
@@ -348,7 +348,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 [
                     'id_route' => 'TELEPHONE',
                     'id_country' => Country::GBR->value,
-                    'id_method' => 'NATIONAL_INSURANCE_NUMBER'
+                    'doc_type' => 'NATIONAL_INSURANCE_NUMBER'
                 ],
                 'cp/name-match-check'
             ],
@@ -358,7 +358,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 [
                     'id_route' => 'TELEPHONE',
                     'id_country' => Country::GBR->value,
-                    'id_method' => 'DRIVING_LICENCE'
+                    'doc_type' => 'DRIVING_LICENCE'
                 ],
                 'vouching/voucher-name'
             ],

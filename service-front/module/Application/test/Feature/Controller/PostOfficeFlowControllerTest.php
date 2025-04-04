@@ -6,11 +6,11 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
+use Application\Enums\DocumentType;
 use Application\Enums\SiriusDocument;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
-use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
@@ -84,7 +84,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "counterService" => null,
-            "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "id_country" => "AUT",
@@ -303,7 +302,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch(
             "/$this->uuid/po-choose-country-id",
             'POST',
-            ['id_method' => 'PASSPOT']
+            ['doc_type' => 'NOT_A_DOCUMENT_TYPE']
         );
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -335,9 +334,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('updateIdMethod')
-            ->with($this->uuid, ['id_method' => 'PASSPORT']);
+            ->with($this->uuid, ['doc_type' => 'PASSPORT']);
 
-        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
+        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['doc_type' => 'PASSPORT']);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/{$this->uuid}/$expectedRedirect");
     }
@@ -450,7 +449,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
 
         $ukPassport = [
-            'id_method' => 'PASSPORT',
+            'doc_type' => 'PASSPORT',
             'id_country' => PostOfficeCountry::GBR->value
         ];
 

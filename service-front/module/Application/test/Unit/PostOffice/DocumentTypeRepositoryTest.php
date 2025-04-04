@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\PostOffice;
 
+use Application\Enums\DocumentType;
 use Application\PostOffice\Country;
-use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use PHPUnit\Framework\TestCase;
 

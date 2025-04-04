@@ -37,8 +37,8 @@ class CaseOutcomeCalculator
             IdRoute::TELEPHONE->value => $caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure
         ];
 
-        if (is_null($caseData->idMethod->id_route)) {
-            throw new IdMethodNotSet("id-route not set: {$caseData->id}");
+        if (is_null($caseData->idMethod)) {
+            throw new IdMethodNotSet("idMethod not set: {$caseData->id}");
         }
 
         return $routeToStatus[$caseData->idMethod->id_route];

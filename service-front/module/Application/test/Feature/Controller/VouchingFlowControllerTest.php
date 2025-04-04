@@ -108,12 +108,11 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "id_country" => "AUT",
                 "doc_type" => "DRIVING_LICENCE",
-                'id_route' => 'POST_OFFICE'
+                'id_route' => 'TELEPHONE'
             ]
         ];
         return array_merge($base, $overwrite);
@@ -655,20 +654,20 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             'post office non UK driving-licence id' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
                     'idMethod' => [
                         'doc_type' => 'DRIVING_LICENCE',
-                        'id_country' => 'AUS'
+                        'id_country' => 'AUS',
+                        'id_route' => 'POST_OFFICE',
                     ]
                 ],
                 ['p#PO_NON_GBR_DL']
             ],
             'post office UK driving licence' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
                     'idMethod' => [
                         'doc_type' => 'DRIVING_LICENCE',
-                        'id_country' => 'GBR'
+                        'id_country' => 'GBR',
+                        'id_route' => 'POST_OFFICE',
                     ]
                 ],
                 ['p#PO_GBR_DL']
@@ -981,7 +980,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             [
                 [
                     "id_country" => "AUT",
-                    "id_method" => "DRIVING_LICENCE",
+                    "doc_type" => "DRIVING_LICENCE",
                     'id_route' => 'POST_OFFICE'
                 ],
                 'find-post-office-branch'

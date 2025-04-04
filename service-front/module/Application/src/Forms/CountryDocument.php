@@ -11,7 +11,7 @@ use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
- * @implements FormTemplate<array{id_method: string}>
+ * @implements FormTemplate<array{doc_type: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class CountryDocument implements FormTemplate

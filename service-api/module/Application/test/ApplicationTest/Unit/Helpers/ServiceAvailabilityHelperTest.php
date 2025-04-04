@@ -205,7 +205,6 @@ class ServiceAvailabilityHelperTest extends TestCase
 
         $case = [
             "id" => "4d41c926-d11c-4341-8500-b36a666a35dd",
-            "idRoute" => "TELEPHONE",
             "personType" => "donor",
             "lpas" => [
                 "M-XYXY-YAGA-35G3"

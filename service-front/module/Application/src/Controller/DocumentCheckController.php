@@ -70,7 +70,10 @@ class DocumentCheckController extends AbstractActionController
             if ($gotVariables['validity'] === 'PASS') {
                 $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid, DocumentType::NationalInsuranceNumber->value);
+                $this->opgApiService->updateCaseSetDocumentComplete(
+                    $uuid,
+                    DocumentType::NationalInsuranceNumber->value
+                );
             } elseif ($gotVariables['validity'] === 'MULTIPLE_MATCH') {
                 $template = $templates['amb_fail'];
             } else {
