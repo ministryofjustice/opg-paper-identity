@@ -136,7 +136,7 @@ describe("Identify a Donor", () => {
         cy.contains("National Insurance number could not be verified over the phone, choose an alternate ID method below.");
     });
 
-    it("form validation on KBV pages throws error on every non-selection", () => {
+    it("form validation on KBV pages throws error on every non-selection attempt", () => {
         cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
         cy.contains("How will you confirm your identity?");
