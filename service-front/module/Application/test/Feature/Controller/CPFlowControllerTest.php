@@ -70,7 +70,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "idMethod" => [
                 "id_country" => "AUT",
                 "doc_type" => DocumentType::DrivingLicence->value,
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ]
         ];
     }

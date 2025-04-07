@@ -27,7 +27,7 @@ class CitizenRequestDTOTest extends TestCase
         "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
         "idMethod" => [
             "doc_type" => DocumentType::NationalInsuranceNumber->value,
-            "id_route" => IdRoute::TELEPHONE->value,
+            "id_route" => IdRoute::KBV->value,
             "id_country" => "GBR",
             "id_value" => "NP112233C"
         ],
@@ -76,7 +76,7 @@ class CitizenRequestDTOTest extends TestCase
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "doc_type" => DocumentType::NationalInsuranceNumber->value,
-                "id_route" => IdRoute::TELEPHONE->value,
+                "id_route" => IdRoute::KBV->value,
                 "id_country" => "GBR"
             ],
             "caseProgress" => [

@@ -564,7 +564,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             "idMethod" => [
                 "id_country" => "GBR",
                 "doc_type" => DocumentType::DrivingLicence->value,
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ]
         ];
     }
@@ -579,7 +579,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 IdRoute::POST_OFFICE->value => true,
                 IdRoute::VOUCHING->value => true,
                 IdRoute::COURT_OF_PROTECTION->value => true,
-                IdRoute::TELEPHONE->value => false,
+                IdRoute::KBV->value => false,
             ],
             'messages' => []
         ];

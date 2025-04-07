@@ -513,7 +513,7 @@ return [
             IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
         ],
         'identity_services' => [
-            IdRoute::TELEPHONE->value => 'Experian',
+            IdRoute::KBV->value => 'Experian',
         ],
         'banner_messages' => [
             'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security questions ' .

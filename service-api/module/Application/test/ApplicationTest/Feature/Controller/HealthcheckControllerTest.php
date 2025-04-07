@@ -134,7 +134,7 @@ class HealthcheckControllerTest extends TestCase
             "idMethod" => [
                 'doc_type' => DocumentType::DrivingLicence->value,
                 'id_country' => "GBR",
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ],
             "caseProgress" => [
                 "fraudScore" => [
@@ -169,7 +169,7 @@ class HealthcheckControllerTest extends TestCase
             "idMethod" => [
                 'doc_type' => DocumentType::DrivingLicence->value,
                 'id_country' => "GBR",
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ],
             "caseProgress" => [
                 "fraudScore" => [
@@ -180,7 +180,7 @@ class HealthcheckControllerTest extends TestCase
         ];
 
         $services = [
-            IdRoute::TELEPHONE->value => true,
+            IdRoute::KBV->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::Passport->value => true,
@@ -195,7 +195,7 @@ class HealthcheckControllerTest extends TestCase
                 IdRoute::POST_OFFICE->value => true,
                 IdRoute::VOUCHING->value => true,
                 IdRoute::COURT_OF_PROTECTION->value => true,
-                IdRoute::TELEPHONE->value => true,
+                IdRoute::KBV->value => true,
             ],
             'messages' => [],
             'additional_restriction_messages' => [],
@@ -204,7 +204,7 @@ class HealthcheckControllerTest extends TestCase
 
         $responseNoDec = [
             'data' => [
-                IdRoute::TELEPHONE->value => false,
+                IdRoute::KBV->value => false,
                 DocumentType::NationalInsuranceNumber->value => false,
                 DocumentType::DrivingLicence->value => false,
                 DocumentType::Passport->value => false,

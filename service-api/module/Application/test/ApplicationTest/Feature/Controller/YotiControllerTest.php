@@ -169,7 +169,7 @@ class YotiControllerTest extends TestCase
             "idMethod" => [
                 'doc_type' => DocumentType::Passport->value,
                 'id_country' => "GBR",
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ],
             'counterService' => [
                 'selectedPostOffice' => '29348729'

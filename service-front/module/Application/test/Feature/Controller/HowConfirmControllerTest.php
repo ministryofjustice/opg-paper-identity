@@ -338,7 +338,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'donor',
                 DocumentType::Passport->value,
                 [
-                    'id_route' => IdRoute::TELEPHONE->value,
+                    'id_route' => IdRoute::KBV->value,
                     'id_country' => Country::GBR->value,
                     'doc_type' => DocumentType::Passport->value
                 ],
@@ -348,7 +348,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'certificateProvider',
                 DocumentType::NationalInsuranceNumber->value,
                 [
-                    'id_route' => IdRoute::TELEPHONE->value,
+                    'id_route' => IdRoute::KBV->value,
                     'id_country' => Country::GBR->value,
                     'doc_type' => DocumentType::NationalInsuranceNumber->value
                 ],
@@ -358,7 +358,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'voucher',
                 DocumentType::DrivingLicence->value,
                 [
-                    'id_route' => IdRoute::TELEPHONE->value,
+                    'id_route' => IdRoute::KBV->value,
                     'id_country' => Country::GBR->value,
                     'doc_type' => DocumentType::DrivingLicence->value
                 ],

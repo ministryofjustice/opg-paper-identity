@@ -45,7 +45,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                     IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
                 ],
                 'identity_services' => [
-                    IdRoute::TELEPHONE->value => 'Experian',
+                    IdRoute::KBV->value => 'Experian',
                 ],
                 'banner_messages' => [
                     'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security ' .
@@ -75,7 +75,7 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $services = [
-            IdRoute::TELEPHONE->value => true,
+            IdRoute::KBV->value => true,
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
@@ -89,7 +89,7 @@ class ServiceAvailabilityHelperTest extends TestCase
 
         $servicesExperianDown = array_merge(
             $services,
-            [IdRoute::TELEPHONE->value => false]
+            [IdRoute::KBV->value => false]
         );
 
         $servicesPassportDown = array_merge(
@@ -98,7 +98,7 @@ class ServiceAvailabilityHelperTest extends TestCase
         );
 
         $allTrue = [
-            IdRoute::TELEPHONE->value => true,
+            IdRoute::KBV->value => true,
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
@@ -108,7 +108,7 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $allFalse = [
-            IdRoute::TELEPHONE->value => false,
+            IdRoute::KBV->value => false,
             DocumentType::Passport->value => false,
             DocumentType::DrivingLicence->value => false,
             DocumentType::NationalInsuranceNumber->value => false,
@@ -215,7 +215,7 @@ class ServiceAvailabilityHelperTest extends TestCase
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "doc_type" => DocumentType::DrivingLicence->value,
-                "id_route" => IdRoute::TELEPHONE->value,
+                "id_route" => IdRoute::KBV->value,
                 "id_country" => "GBR"
             ],
             "claimedIdentity" => [

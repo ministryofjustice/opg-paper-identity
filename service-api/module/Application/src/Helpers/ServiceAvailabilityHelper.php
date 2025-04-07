@@ -32,8 +32,8 @@ class ServiceAvailabilityHelper
     {
         $processedGlobalServices = [];
 
-        if (($this->services[IdRoute::TELEPHONE->value] ?? false) !== true) {
-            $processedGlobalServices[IdRoute::TELEPHONE->value] = false;
+        if (($this->services[IdRoute::KBV->value] ?? false) !== true) {
+            $processedGlobalServices[IdRoute::KBV->value] = false;
             $processedGlobalServices[DocumentType::DrivingLicence->value] = false;
             $processedGlobalServices[DocumentType::Passport->value] = false;
             $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] = false;
@@ -58,7 +58,7 @@ class ServiceAvailabilityHelper
             $processedGlobalServices[DocumentType::Passport->value] === false &&
             $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] === false
         ) {
-            $processedGlobalServices[IdRoute::TELEPHONE->value] = false;
+            $processedGlobalServices[IdRoute::KBV->value] = false;
             $this->processedMessages['service_status'] = "Online identity verification is not presently available";
         }
 
@@ -118,7 +118,7 @@ class ServiceAvailabilityHelper
         $this->availableServices[DocumentType::NationalInsuranceNumber->value] = $flag;
         $this->availableServices[DocumentType::DrivingLicence->value] = $flag;
         $this->availableServices[DocumentType::Passport->value] = $flag;
-        $this->availableServices[IdRoute::TELEPHONE->value] = $flag;
+        $this->availableServices[IdRoute::KBV->value] = $flag;
 
         foreach ($options as $service) {
             $this->availableServices[$service] = $flag;
@@ -163,7 +163,7 @@ class ServiceAvailabilityHelper
                 DocumentType::DrivingLicence->value,
                 DocumentType::Passport->value,
                 IdRoute::POST_OFFICE->value,
-                IdRoute::TELEPHONE->value,
+                IdRoute::KBV->value,
                 IdRoute::VOUCHING->value,
                 IdRoute::COURT_OF_PROTECTION->value,
             ]);

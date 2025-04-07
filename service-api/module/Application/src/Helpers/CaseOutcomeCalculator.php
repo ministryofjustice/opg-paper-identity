@@ -34,7 +34,7 @@ class CaseOutcomeCalculator
             IdRoute::VOUCHING->value => UpdateStatus::VouchStarted,
             IdRoute::COURT_OF_PROTECTION->value => UpdateStatus::CopStarted,
             IdRoute::POST_OFFICE->value => UpdateStatus::CounterServiceStarted,
-            IdRoute::TELEPHONE->value => $caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure
+            IdRoute::KBV->value => $caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure
         ];
 
         if (is_null($caseData->idMethod)) {

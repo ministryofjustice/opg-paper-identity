@@ -261,7 +261,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "idMethod" => [
                 "id_country" => "GBR",
                 "doc_type" => DocumentType::DrivingLicence->value,
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ],
         ];
     }

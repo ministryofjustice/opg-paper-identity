@@ -889,7 +889,7 @@ class OpgApiServiceTest extends TestCase
                     DocumentType::Passport->value => true,
                     DocumentType::NationalInsuranceNumber->value => true,
                     IdRoute::POST_OFFICE->value => true,
-                    IdRoute::TELEPHONE->value => false,
+                    IdRoute::KBV->value => false,
                 ], JSON_THROW_ON_ERROR),
             ),
         ]);
@@ -910,7 +910,7 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 [
-                    IdRoute::TELEPHONE->value  => false,
+                    IdRoute::KBV->value  => false,
                     DocumentType::NationalInsuranceNumber->value => true,
                     DocumentType::DrivingLicence->value => true,
                     DocumentType::Passport->value => true,

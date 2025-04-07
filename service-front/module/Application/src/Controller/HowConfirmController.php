@@ -119,7 +119,7 @@ class HowConfirmController extends AbstractActionController
             $returnRoute = "root/court_of_protection";
         } else {
             $idMethod = [
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
                 'id_country' => Country::GBR->value,
                 'doc_type' => $formData['id_method']
             ];

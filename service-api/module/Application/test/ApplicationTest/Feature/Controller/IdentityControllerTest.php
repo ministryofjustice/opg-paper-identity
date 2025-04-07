@@ -311,7 +311,7 @@ class IdentityControllerTest extends TestCase
             "idMethod" => [
                 'doc_type' => DocumentType::NationalInsuranceNumber->value,
                 'id_country' => "GBR",
-                'id_route' => IdRoute::TELEPHONE->value,
+                'id_route' => IdRoute::KBV->value,
             ],
         ];
 
