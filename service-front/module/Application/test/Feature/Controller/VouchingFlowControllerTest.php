@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
@@ -111,8 +113,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "id_country" => "AUT",
-                "doc_type" => "DRIVING_LICENCE",
-                'id_route' => 'TELEPHONE'
+                "doc_type" => DocumentType::DrivingLicence->value,
+                'id_route' => IdRoute::TELEPHONE->value,
             ]
         ];
         return array_merge($base, $overwrite);
@@ -655,9 +657,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'post office non UK driving-licence id' => [
                 [
                     'idMethod' => [
-                        'doc_type' => 'DRIVING_LICENCE',
+                        'doc_type' => DocumentType::DrivingLicence->value,
                         'id_country' => 'AUS',
-                        'id_route' => 'POST_OFFICE',
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_NON_GBR_DL']
@@ -665,9 +667,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'post office UK driving licence' => [
                 [
                     'idMethod' => [
-                        'doc_type' => 'DRIVING_LICENCE',
+                        'doc_type' => DocumentType::DrivingLicence->value,
                         'id_country' => 'GBR',
-                        'id_route' => 'POST_OFFICE',
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_GBR_DL']
@@ -980,8 +982,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             [
                 [
                     "id_country" => "AUT",
-                    "doc_type" => "DRIVING_LICENCE",
-                    'id_route' => 'POST_OFFICE'
+                    "doc_type" => DocumentType::DrivingLicence->value,
+                    'id_route' => IdRoute::POST_OFFICE->value,
                 ],
                 'find-post-office-branch'
             ],

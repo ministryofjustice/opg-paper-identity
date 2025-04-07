@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Forms\ChooseVouching;
 use Application\Forms\FinishIDCheck;
 use Application\Helpers\DateProcessorHelper;
@@ -118,7 +119,7 @@ class DonorFlowController extends AbstractActionController
             /**
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
-            if ($detailsData['idMethod']['id_route'] == 'POST_OFFICE') {
+            if ($detailsData['idMethod']['id_route'] == IdRoute::POST_OFFICE->value) {
                 $this->redirect()
                     ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             } else {

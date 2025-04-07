@@ -39,7 +39,7 @@ class DocumentCheckController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
-        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
+        $templates = $this->config['opg_settings']['template_options'][DocumentType::NationalInsuranceNumber->value];
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
@@ -94,7 +94,7 @@ class DocumentCheckController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
-        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
+        $templates = $this->config['opg_settings']['template_options'][DocumentType::DrivingLicence->value];
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
@@ -140,7 +140,7 @@ class DocumentCheckController extends AbstractActionController
 
     public function passportNumberAction(): ViewModel
     {
-        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
+        $templates = $this->config['opg_settings']['template_options'][DocumentType::Passport->value];
         $template = $templates['default'];
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);

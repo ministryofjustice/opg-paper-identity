@@ -7,6 +7,7 @@ namespace ApplicationTest\Feature\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
 use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Enums\SiriusDocument;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
@@ -87,8 +88,8 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
                 "id_country" => "AUT",
-                "doc_type" => "DRIVING_LICENCE",
-                'id_route' => 'POST_OFFICE'
+                "doc_type" => DocumentType::DrivingLicence->value,
+                'id_route' => IdRoute::POST_OFFICE->value,
             ]
         ];
     }
@@ -158,9 +159,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public static function postOfficeDocumnentsRedirectData(): array
     {
         return [
-            ['PASSPORT', 'donor', 'donor-details-match-check'],
-            ['PASSPORT', 'certificateProvider', 'cp/name-match-check'],
-            ['PASSPORT', 'voucher', 'vouching/voucher-name'],
+            [DocumentType::Passport->value, 'donor', 'donor-details-match-check'],
+            [DocumentType::Passport->value, 'certificateProvider', 'cp/name-match-check'],
+            [DocumentType::Passport->value, 'voucher', 'vouching/voucher-name'],
             ['NONUKID', 'certificateProvider', 'po-choose-country'],
             ['NONUKID', 'voucher', 'po-choose-country'],
         ];
@@ -334,9 +335,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('updateIdMethod')
-            ->with($this->uuid, ['doc_type' => 'PASSPORT']);
+            ->with($this->uuid, ['doc_type' => DocumentType::Passport->value]);
 
-        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['doc_type' => 'PASSPORT']);
+        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['doc_type' => DocumentType::Passport->value]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/{$this->uuid}/$expectedRedirect");
     }
@@ -449,7 +450,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
 
         $ukPassport = [
-            'doc_type' => 'PASSPORT',
+            'doc_type' => DocumentType::Passport->value,
             'id_country' => PostOfficeCountry::GBR->value
         ];
 

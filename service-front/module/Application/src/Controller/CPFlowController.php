@@ -25,6 +25,8 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
 use Application\Controller\Trait\DobOver100WarningTrait;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 
 class CPFlowController extends AbstractActionController
 {
@@ -236,15 +238,15 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(ConfirmAddress::class);
 
         $routes = [
-            'NATIONAL_INSURANCE_NUMBER' => 'root/national_insurance_number',
-            'DRIVING_LICENCE' => 'root/driving_licence_number',
-            'PASSPORT' => 'root/passport_number',
+            DocumentType::NationalInsuranceNumber->value => 'root/national_insurance_number',
+            DocumentType::DrivingLicence->value  => 'root/driving_licence_number',
+            DocumentType::Passport->value  => 'root/passport_number',
         ];
 
         /**
          * @psalm-suppress PossiblyUndefinedArrayOffset
          */
-        if ($detailsData['idMethod']['id_route'] != 'TELEPHONE') {
+        if ($detailsData['idMethod']['id_route'] != IdRoute::TELEPHONE->value) {
             $nextRoute = 'root/find_post_office_branch';
         } else {
             $nextRoute = $routes[$detailsData['idMethod']['doc_type']];

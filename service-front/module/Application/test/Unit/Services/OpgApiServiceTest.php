@@ -677,7 +677,7 @@ class OpgApiServiceTest extends TestCase
     {
         $data = [];
         $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
-        $data['method'] = ['id_route' => 'POST_OFFICE'];
+        $data['method'] = ['id_route' => IdRoute::POST_OFFICE->value,];
 
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], ''),
@@ -889,7 +889,7 @@ class OpgApiServiceTest extends TestCase
                     DocumentType::Passport->value => true,
                     DocumentType::NationalInsuranceNumber->value => true,
                     IdRoute::POST_OFFICE->value => true,
-                    'EXPERIAN' => false,
+                    IdRoute::TELEPHONE->value => false,
                 ], JSON_THROW_ON_ERROR),
             ),
         ]);
@@ -910,11 +910,11 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 [
-                    "EXPERIAN" => false,
-                    "NATIONAL_INSURANCE_NUMBER" => true,
-                    "DRIVING_LICENCE" => true,
-                    "PASSPORT" => true,
-                    "POST_OFFICE" => true,
+                    IdRoute::TELEPHONE->value  => false,
+                    DocumentType::NationalInsuranceNumber->value => true,
+                    DocumentType::DrivingLicence->value => true,
+                    DocumentType::Passport->value => true,
+                    IdRoute::POST_OFFICE->value  => true,
                 ],
                 false,
             ],

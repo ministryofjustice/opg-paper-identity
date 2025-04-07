@@ -28,6 +28,7 @@ use Laminas\View\Model\ViewModel;
 use Application\Enums\DocumentType;
 use DateTime;
 use Application\Controller\Trait\DobOver100WarningTrait;
+use Application\Enums\IdRoute;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -366,7 +367,7 @@ class VouchingFlowController extends AbstractActionController
                 $docType = $detailsData['idMethod']['doc_type'] ?? '';
             }
             $redirect = false;
-            if ($idRoute === 'POST_OFFICE') {
+            if ($idRoute === IdRoute::POST_OFFICE->value) {
                 $redirect = "root/find_post_office_branch";
             } else {
                 switch ($docType) {

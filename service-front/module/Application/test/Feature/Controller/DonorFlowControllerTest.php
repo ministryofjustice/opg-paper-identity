@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -156,9 +158,9 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             'post office non UK driving-licence id' => [
                 [
                     'idMethod' => [
-                        'doc_type' => 'DRIVING_LICENCE',
+                        'doc_type' => DocumentType::DrivingLicence->value,
                         'id_country' => 'AUS',
-                        'id_route' => 'POST_OFFICE',
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 'PO_NON_GBR_DL'
@@ -166,9 +168,9 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             'post office UK driving licence' => [
                 [
                     'idMethod' => [
-                        'doc_type' => 'DRIVING_LICENCE',
+                        'doc_type' => DocumentType::DrivingLicence->value,
                         'id_country' => 'GBR',
-                        'id_route' => 'POST_OFFICE',
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 'PO_GBR_DL'
@@ -258,8 +260,8 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "selectedPostOffice" => null,
             "idMethod" => [
                 "id_country" => "GBR",
-                "doc_type" => "DRIVING_LICENCE",
-                'id_route' => 'TELEPHONE'
+                "doc_type" => DocumentType::DrivingLicence->value,
+                'id_route' => IdRoute::TELEPHONE->value,
             ],
         ];
     }
