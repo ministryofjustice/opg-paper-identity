@@ -92,16 +92,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/thin_file_failure');
     }
 
-    public function testProvingIdentityPage(): void
-    {
-        $this->dispatch("/$this->uuid/proving-identity", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
-        $this->assertMatchedRouteName('root/proving_identity');
-    }
-
     public function testDonorIdMatchPage(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();

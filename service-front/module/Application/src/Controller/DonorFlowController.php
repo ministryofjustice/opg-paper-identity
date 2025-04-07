@@ -110,11 +110,7 @@ class DonorFlowController extends AbstractActionController
             $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
         );
 
-        if (count($this->getRequest()->getPost())) {
-//            $data = $this->getRequest()->getPost();
-            // not yet implemented
-//          $response =  $this->opgApiService->saveLpaRefsToIdCheck();
-
+        if ($this->getRequest()->isPost()) {
             /**
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
@@ -177,18 +173,6 @@ class DonorFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
 
         return $view->setTemplate('application/pages/thin_file_failure');
-    }
-
-    public function provingIdentityAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view = new ViewModel();
-
-        $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/proving_identity');
     }
 
     public function removeLpaAction(): Response
