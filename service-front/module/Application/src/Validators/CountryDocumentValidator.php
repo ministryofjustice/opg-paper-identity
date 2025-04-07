@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Validators;
 
-use Application\PostOffice\DocumentType;
+use Application\Enums\DocumentType;
 use Laminas\Validator\AbstractValidator;
 
 class CountryDocumentValidator extends AbstractValidator

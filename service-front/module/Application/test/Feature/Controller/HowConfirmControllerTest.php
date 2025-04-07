@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\HowConfirmController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
@@ -87,27 +89,27 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
     public static function howWillYouConfirmRenderData(): array
     {
         $serviceAvailabilityAll = [
-            'PASSPORT' => true,
-            'DRIVING_LICENCE' => true,
-            'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => true
+            DocumentType::Passport->value => true,
+            DocumentType::DrivingLicence->value => true,
+            DocumentType::NationalInsuranceNumber->value => true,
+            IdRoute::POST_OFFICE->value => true
         ];
         $serviceAvailabilityNone = [
-            'PASSPORT' => false,
-            'DRIVING_LICENCE' => false,
-            'NATIONAL_INSURANCE_NUMBER' => false,
-            'POST_OFFICE' => false
+            DocumentType::Passport->value => false,
+            DocumentType::DrivingLicence->value => false,
+            DocumentType::NationalInsuranceNumber->value => false,
+            IdRoute::POST_OFFICE->value => false
         ];
 
         $coreRadios = [
-            'NATIONAL_INSURANCE_NUMBER',
-            'PASSPORT',
-            'DRIVING_LICENCE',
+            DocumentType::NationalInsuranceNumber->value,
+            DocumentType::Passport->value,
+            DocumentType::DrivingLicence->value,
         ];
-        $postOffice = ['POST_OFFICE'];
+        $postOffice = [IdRoute::POST_OFFICE->value];
         $otherMethodRadios = [
-            'ON_BEHALF',
-            'COURT_OF_PROTECTION'
+            IdRoute::VOUCHING->value,
+            IdRoute::COURT_OF_PROTECTION->value
         ];
 
         return [
@@ -167,14 +169,14 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ],
             'donor passport unavailable' => [
                 'donor',
-                array_merge($serviceAvailabilityAll, ['PASSPORT' => false]),
+                array_merge($serviceAvailabilityAll, [DocumentType::Passport->value => false]),
                 [
                     'available' => array_diff(
                         array_merge($coreRadios, $postOffice, $otherMethodRadios),
-                        ['PASSPORT']
+                        [DocumentType::Passport->value]
                     ),
                     'unavailable' => [],
-                    'hidden' => ['PASSPORT'],
+                    'hidden' => [DocumentType::Passport->value],
                 ]
             ],
         ];
@@ -185,10 +187,10 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $message = 'This is a service availability message';
         $mockServiceAvailability = [
             'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => false
+                DocumentType::Passport->value => false,
+                DocumentType::DrivingLicence->value => false,
+                DocumentType::NationalInsuranceNumber->value => false,
+                IdRoute::POST_OFFICE->value => false
             ],
             'messages' => ['banner' => $message]
         ];
@@ -234,10 +236,10 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn([
                 'data' => [
-                    'PASSPORT' => true,
-                    'DRIVING_LICENCE' => true,
-                    'NATIONAL_INSURANCE_NUMBER' => true,
-                    'POST_OFFICE' => true
+                    DocumentType::Passport->value => true,
+                    DocumentType::DrivingLicence->value => true,
+                    DocumentType::NationalInsuranceNumber->value => true,
+                    IdRoute::POST_OFFICE->value => true
                 ],
                 'messages' => []
             ]);
@@ -297,10 +299,10 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn([
                 'data' => [
-                    'PASSPORT' => true,
-                    'DRIVING_LICENCE' => true,
-                    'NATIONAL_INSURANCE_NUMBER' => true,
-                    'POST_OFFICE' => true
+                    DocumentType::Passport->value => true,
+                    DocumentType::DrivingLicence->value => true,
+                    DocumentType::NationalInsuranceNumber->value => true,
+                    IdRoute::POST_OFFICE->value => true
                 ],
                 'messages' => []
             ]);
@@ -308,7 +310,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('updateIdMethodWithCountry')
+            ->method('updateIdMethod')
             ->with($this->uuid, $expectedDataToSave);
 
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'POST', ['id_method' => $idChoice]);
@@ -322,43 +324,43 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         return [
             'donor via post-office' => [
                 'donor',
-                'POST_OFFICE',
-                ['id_route' => 'POST_OFFICE'],
+                IdRoute::POST_OFFICE->value,
+                ['id_route' => IdRoute::POST_OFFICE->value],
                 'post-office-documents'
             ],
             'donor choosing vouching route' => [
                 'donor',
-                'OnBehalf',
-                ['id_route' => 'OnBehalf'],
+                IdRoute::VOUCHING->value,
+                ['id_route' => IdRoute::VOUCHING->value],
                 'what-is-vouching'
             ],
             'donor with passport' => [
                 'donor',
-                'PASSPORT',
+                DocumentType::Passport->value,
                 [
-                    'id_route' => 'TELEPHONE',
+                    'id_route' => IdRoute::KBV->value,
                     'id_country' => Country::GBR->value,
-                    'id_method' => 'PASSPORT'
+                    'doc_type' => DocumentType::Passport->value
                 ],
                 'donor-details-match-check'
             ],
             'certificate provider with nino' => [
                 'certificateProvider',
-                'NATIONAL_INSURANCE_NUMBER',
+                DocumentType::NationalInsuranceNumber->value,
                 [
-                    'id_route' => 'TELEPHONE',
+                    'id_route' => IdRoute::KBV->value,
                     'id_country' => Country::GBR->value,
-                    'id_method' => 'NATIONAL_INSURANCE_NUMBER'
+                    'doc_type' => DocumentType::NationalInsuranceNumber->value
                 ],
                 'cp/name-match-check'
             ],
             'voucher with driving licence' => [
                 'voucher',
-                'DRIVING_LICENCE',
+                DocumentType::DrivingLicence->value,
                 [
-                    'id_route' => 'TELEPHONE',
+                    'id_route' => IdRoute::KBV->value,
                     'id_country' => Country::GBR->value,
-                    'id_method' => 'DRIVING_LICENCE'
+                    'doc_type' => DocumentType::DrivingLicence->value
                 ],
                 'vouching/voucher-name'
             ],

@@ -25,9 +25,10 @@ use Application\Forms\AddressJson;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Application\Enums\IdMethod as IdMethodEnum;
+use Application\Enums\DocumentType;
 use DateTime;
 use Application\Controller\Trait\DobOver100WarningTrait;
+use Application\Enums\IdRoute;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -360,23 +361,23 @@ class VouchingFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost()) {
             $idRoute = '';
-            $idMethod = '';
-            if (isset($detailsData['idMethodIncludingNation'])) {
-                $idRoute = $detailsData['idMethodIncludingNation']['id_route'] ?? '';
-                $idMethod = $detailsData['idMethodIncludingNation']['id_method'] ?? '';
+            $docType = '';
+            if (isset($detailsData['idMethod'])) {
+                $idRoute = $detailsData['idMethod']['id_route'] ?? '';
+                $docType = $detailsData['idMethod']['doc_type'] ?? '';
             }
             $redirect = false;
-            if ($idRoute === 'POST_OFFICE') {
+            if ($idRoute === IdRoute::POST_OFFICE->value) {
                 $redirect = "root/find_post_office_branch";
             } else {
-                switch ($idMethod) {
-                    case IdMethodEnum::PassportNumber->value:
+                switch ($docType) {
+                    case DocumentType::Passport->value:
                         $redirect = "root/passport_number";
                         break;
-                    case IdMethodEnum::DrivingLicenceNumber->value:
+                    case DocumentType::DrivingLicence->value:
                         $redirect = "root/driving_licence_number";
                         break;
-                    case IdMethodEnum::NationalInsuranceNumber->value:
+                    case DocumentType::NationalInsuranceNumber->value:
                         $redirect = "root/national_insurance_number";
                         break;
                     default:

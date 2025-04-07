@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Unit\Services;
 
 use Application\Aws\Secrets\AwsSecret;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiApiException;
 use Application\Yoti\Http\Exception\YotiException;
@@ -217,10 +219,10 @@ class YotiServiceTest extends TestCase
                 ]
             ],
             'personType' => 'donor',
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
+            "idMethod" => [
+                'doc_type' => DocumentType::Passport->value,
                 'id_country' => "GBR",
-                'id_route' => "POST_OFFICE",
+                'id_route' => IdRoute::POST_OFFICE->value,
             ],
             'counterService' => [
                 'selectedPostOffice' => '29348729'
@@ -245,7 +247,7 @@ class YotiServiceTest extends TestCase
                 "document" => [
                     "type" => "ID_DOCUMENT",
                     "country_code" => "GBR",
-                    "document_type" => "PASSPORT"
+                    "document_type" => DocumentType::Passport->value
                 ]
             ]
         ];

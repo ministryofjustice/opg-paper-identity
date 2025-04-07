@@ -6,7 +6,8 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Forms\ChooseVouching;
 use Application\Forms\FinishIDCheck;
 use Application\Helpers\DateProcessorHelper;
@@ -118,22 +119,22 @@ class DonorFlowController extends AbstractActionController
             /**
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
-            if ($detailsData['idMethodIncludingNation']['id_route'] == 'POST_OFFICE') {
+            if ($detailsData['idMethod']['id_route'] == IdRoute::POST_OFFICE->value) {
                 $this->redirect()
                     ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             } else {
-                switch ($detailsData['idMethodIncludingNation']['id_method']) {
-                    case IdMethod::PassportNumber->value:
+                switch ($detailsData['idMethod']['doc_type']) {
+                    case DocumentType::Passport->value:
                         $this->redirect()
                             ->toRoute("root/passport_number", ['uuid' => $uuid]);
                         break;
 
-                    case IdMethod::DrivingLicenceNumber->value:
+                    case DocumentType::DrivingLicence->value:
                         $this->redirect()
                             ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
                         break;
 
-                    case IdMethod::NationalInsuranceNumber->value:
+                    case DocumentType::NationalInsuranceNumber->value:
                         $this->redirect()
                             ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
                         break;

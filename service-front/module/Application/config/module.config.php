@@ -16,7 +16,8 @@ use Application\Controller\Factory\HowConfirmControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
-use Application\Enums\IdMethod;
+use Application\Enums\IdRoute;
+use Application\Enums\DocumentType;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
@@ -26,6 +27,7 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
+use Dom\Document;
 use Exception;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Router\Http\Literal;
@@ -584,43 +586,17 @@ return [
     ],
     'opg_settings' => [
         'identity_documents' => [
-            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
-            'PASSPORT' => "UK Passport (current or expired in the last 18 months)",
-            'DRIVING_LICENCE' => 'UK driving licence (must be current)',
-        ],
-        'identity_methods' => [
-            'POST_OFFICE' => 'Post Office',
-            'VOUCHING' => 'Have someone vouch for the identity of the donor',
-            'COURT_OF_PROTECTION' => 'Court of protection',
+            DocumentType::NationalInsuranceNumber->value => 'National Insurance number',
+            DocumentType::Passport->value => "UK Passport (current or expired in the last 18 months)",
+            DocumentType::DrivingLicence->value => 'UK driving licence (must be current)',
         ],
         'identity_routes' => [
-            'TELEPHONE' => 'Telephone',
-            'POST_OFFICE' => 'Post Office',
-        ],
-        'identity_labels' => [
-            'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
-            'PASSPORT' => 'UK Passport (current or expired in the last 18 months)',
-            'DRIVING_LICENCE' => 'UK driving licence (must be current) ',
-        ],
-        'post_office_identity_documents' => [
-            'PASSPORT' => 'UK passport (up to 18 months expired)',
-            'po_eup' => 'EU passport (must be current)',
-            'po_inp' => 'International passport (must be current)',
-            'DRIVING_LICENCE' => 'UK Driving licence (must be current)',
-            'po_eud' => 'EU Driving licence (must be current)',
-            'po_ind' => 'International driving licence (must be current)',
-            'RESIDENCE_PERMIT' => 'UK Biometric Residence Permit',
-            'po_n' => 'None of the above',
-        ],
-        'active_dependencies' => [
-            'EXPERIAN',
-            IdMethod::NationalInsuranceNumber->value,
-            IdMethod::PassportNumber->value,
-            IdMethod::DrivingLicenceNumber->value,
-            IdMethod::PostOffice->value,
+            IdRoute::POST_OFFICE->value => 'Post Office',
+            IdRoute::VOUCHING->value => 'Have someone vouch for the identity of the donor',
+            IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
         ],
         'template_options' => [
-            'NATIONAL_INSURANCE_NUMBER' => [
+            DocumentType::NationalInsuranceNumber->value => [
                 'default' => 'application/pages/national_insurance_number',
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/national_insurance_number_fail',
@@ -628,14 +604,14 @@ return [
                 'thin_file' => 'application/pages/thin_file_failure',
                 'fraud' => 'application/pages/fraud_failure',
             ],
-            'PASSPORT' => [
+            DocumentType::Passport->value => [
                 'default' => 'application/pages/passport_number',
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/passport_number_fail',
                 'thin_file' => 'application/pages/thin_file_failure',
                 'fraud' => 'application/pages/fraud_failure',
             ],
-            'DRIVING_LICENCE' => [
+            DocumentType::DrivingLicence->value => [
                 'default' => 'application/pages/driving_licence_number',
                 'success' => 'application/pages/document_success',
                 'fail' => 'application/pages/driving_licence_number_fail',

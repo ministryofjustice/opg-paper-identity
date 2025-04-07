@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\IdentityController;
 use Application\DWP\DwpApi\DwpApiService;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
@@ -306,10 +308,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "NATIONAL_INSURANCE_NUMBER",
+            "idMethod" => [
+                'doc_type' => DocumentType::NationalInsuranceNumber->value,
                 'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+                'id_route' => IdRoute::KBV->value,
             ],
         ];
 
@@ -500,8 +502,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
+            "idMethod" => [
+                'doc_type' => "",
                 'id_country' => "",
                 'id_route' => "",
             ],
@@ -588,8 +590,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
+            "idMethod" => [
+                'doc_type' => "",
                 'id_country' => "",
                 'id_route' => "",
             ],
@@ -701,8 +703,8 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
+            "idMethod" => [
+                'doc_type' => "",
                 'id_country' => "",
                 'id_route' => "",
             ],

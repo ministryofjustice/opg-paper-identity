@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DocumentCheckController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
@@ -115,7 +117,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->opgApiServiceMock
                 ->expects(self::once())
                 ->method('updateCaseSetDocumentComplete')
-                ->with($this->uuid, 'NATIONAL_INSURANCE_NUMBER');
+                ->with($this->uuid, DocumentType::NationalInsuranceNumber->value);
         }
 
         if ($validity === 'PASS') {
@@ -264,7 +266,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->opgApiServiceMock
                 ->expects(self::once())
                 ->method('updateCaseSetDocumentComplete')
-                ->with($this->uuid, 'DRIVING_LICENCE');
+                ->with($this->uuid, DocumentType::DrivingLicence->value);
         }
 
         if ($validity === 'PASS') {
@@ -420,7 +422,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 ->opgApiServiceMock
                 ->expects(self::once())
                 ->method('updateCaseSetDocumentComplete')
-                ->with($this->uuid, 'PASSPORT');
+                ->with($this->uuid, DocumentType::Passport->value);
         }
 
         if ($validity === 'PASS') {
@@ -559,10 +561,10 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethodIncludingNation" => [
+            "idMethod" => [
                 "id_country" => "GBR",
-                "id_method" => "DRIVING_LICENCE",
-                'id_route' => 'TELEPHONE'
+                "doc_type" => DocumentType::DrivingLicence->value,
+                'id_route' => IdRoute::KBV->value,
             ]
         ];
     }
@@ -571,13 +573,13 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
+                DocumentType::Passport->value => false,
+                DocumentType::DrivingLicence->value  => false,
+                DocumentType::NationalInsuranceNumber->value  => false,
+                IdRoute::POST_OFFICE->value => true,
+                IdRoute::VOUCHING->value => true,
+                IdRoute::COURT_OF_PROTECTION->value => true,
+                IdRoute::KBV->value => false,
             ],
             'messages' => []
         ];

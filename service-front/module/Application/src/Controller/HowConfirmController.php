@@ -6,8 +6,8 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
-use Application\Enums\IdMethod;
-use Application\Forms\IdMethod as IdMethodForm;
+use Application\Enums\IdRoute;
+use Application\Forms\IdMethod;
 use Application\Forms\PassportDate;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
@@ -35,7 +35,7 @@ class HowConfirmController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $view = new ViewModel();
         $dateSubForm = $this->createForm(PassportDate::class);
-        $form = $this->createForm(IdMethodForm::class);
+        $form = $this->createForm(IdMethod::class);
 
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
@@ -47,7 +47,7 @@ class HowConfirmController extends AbstractActionController
         }
 
         $methods = [];
-        foreach (array_keys($this->config['opg_settings']['identity_methods']) as $key) {
+        foreach (array_keys($this->config['opg_settings']['identity_routes']) as $key) {
             if (array_key_exists($key, $serviceAvailability['data'])) {
                 /**
                 * @psalm-suppress InvalidArrayOffset
@@ -108,27 +108,24 @@ class HowConfirmController extends AbstractActionController
             return null;
         }
 
-        if ($formData['id_method'] == IdMethod::PostOffice->value) {
-            $data = ['id_route' => IdMethod::PostOffice->value];
+        if ($formData['id_method'] == IdRoute::POST_OFFICE->value) {
+            $idMethod = ['id_route' => IdRoute::POST_OFFICE->value];
             $returnRoute = 'root/post_office_documents';
-        } elseif ($formData['id_method'] == IdMethod::OnBehalf->value) {
-            $data = ['id_route' => IdMethod::OnBehalf->value];
+        } elseif ($formData['id_method'] == IdRoute::VOUCHING->value) {
+            $idMethod = ['id_route' => IdRoute::VOUCHING->value];
             $returnRoute = "root/what_is_vouching";
-        } elseif ($formData['id_method'] == IdMethod::CourtOfProtection->value) {
-            $data = ['id_route' => IdMethod::CourtOfProtection->value];
+        } elseif ($formData['id_method'] == IdRoute::COURT_OF_PROTECTION->value) {
+            $idMethod = ['id_route' => IdRoute::COURT_OF_PROTECTION->value];
             $returnRoute = "root/court_of_protection";
         } else {
-            $data = [
-                'id_route' => 'TELEPHONE',
+            $idMethod = [
+                'id_route' => IdRoute::KBV->value,
                 'id_country' => Country::GBR->value,
-                'id_method' => $formData['id_method']
+                'doc_type' => $formData['id_method']
             ];
             $returnRoute = $routes[$personType];
         }
-        $this->opgApiService->updateIdMethodWithCountry(
-            $uuid,
-            $data
-        );
+        $this->opgApiService->updateIdMethod($uuid, $idMethod);
         return $this->redirect()->toRoute($returnRoute, ['uuid' => $uuid]);
     }
 

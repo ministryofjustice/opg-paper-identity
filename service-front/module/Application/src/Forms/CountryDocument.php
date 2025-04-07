@@ -11,7 +11,7 @@ use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
- * @implements FormTemplate<array{id_method: string}>
+ * @implements FormTemplate<array{doc_type: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class CountryDocument implements FormTemplate
@@ -25,5 +25,5 @@ class CountryDocument implements FormTemplate
             NotEmpty::IS_EMPTY  => "Please choose a type of document"
         ]
     ])]
-    public mixed $id_method;
+    public mixed $doc_type;
 }

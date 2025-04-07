@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Model\Entity;
 
 use Application\Model\Entity\CaseData;
-use Application\Model\IdMethod;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Laminas\Form\Annotation\AttributeBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -60,28 +61,28 @@ class CaseDataTest extends TestCase
             [array_merge($validData, ['documentComplete' => 'grergiro']), false],
             [
                 array_merge($validData, [
-                    'idMethodIncludingNation' => [
-                        'id_method' => IdMethod::PassportNumber,
+                    'idMethod' => [
+                        'doc_type' => DocumentType::Passport,
                         'id_country' => "GBR",
-                        'id_route' => "POST_OFFICE",
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ]), true
             ],
             [
                 array_merge($validData, [
-                    'idMethodIncludingNation' => [
-                        'id_method' => IdMethod::PassportNumber,
+                    'idMethod' => [
+                        'doc_type' => DocumentType::Passport,
                         'id_country' => "AUT",
-                        'id_route' => "POST_OFFICE",
+                        'id_route' => IdRoute::POST_OFFICE->value,
                     ]
                 ]), true
             ],
             [
                 array_merge($validData, [
-                    'idMethodIncludingNation' => [
-                        'id_method' => IdMethod::OnBehalf,
+                    'idMethod' => [
+                        'doc_type' => DocumentType::Passport,
                         'id_country' => "GBR",
-                        'id_route' => "POST_OFFICE",
+                        'id_route' => IdRoute::VOUCHING->value,
                     ]
                 ]), true
             ],

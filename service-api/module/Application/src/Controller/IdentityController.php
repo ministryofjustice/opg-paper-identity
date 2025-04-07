@@ -8,7 +8,7 @@ use Application\Aws\Secrets\AwsSecret;
 use Application\DrivingLicence\ValidatorInterface as LicenceValidatorInterface;
 use Application\DWP\DwpApi\DwpApiException;
 use Application\DWP\DwpApi\DwpApiService;
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
 use Application\Exceptions\NotImplementedException;
 use Application\Experian\Crosscore\FraudApi\DTO\AddressDTO;
 use Application\Experian\Crosscore\FraudApi\DTO\RequestDTO;
@@ -21,6 +21,7 @@ use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
 use Application\Model\Entity\FraudScore;
+use Application\Model\Entity\IdMethod;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
 use Application\Passport\ValidatorInterface as PassportValidator;
@@ -169,12 +170,12 @@ class IdentityController extends AbstractActionController
 
         try {
             $correlationUuid = Uuid::uuid4()->toString();
-            $idMethodData = $caseData?->idMethodIncludingNation?->jsonSerialize();
+            $idMethodData = $caseData?->idMethod?->jsonSerialize();
             $idMethodData['dwp_id_correlation'] = $correlationUuid;
 
             $this->dataHandler->updateCaseData(
                 $uuid,
-                'idMethodIncludingNation',
+                'idMethod',
                 $idMethodData
             );
 
@@ -186,8 +187,8 @@ class IdentityController extends AbstractActionController
                 $this->logger->info($dwpResponse);
                 $caseProgress = $caseData->caseProgress ?? new CaseProgress();
 
-                $caseProgress->restrictedMethods[IdMethod::NationalInsuranceNumber->value] =
-                    IdMethod::NationalInsuranceNumber->value;
+                $caseProgress->restrictedMethods[DocumentType::NationalInsuranceNumber->value] =
+                    DocumentType::NationalInsuranceNumber->value;
 
                 $this->dataHandler->updateCaseData(
                     $uuid,
@@ -231,7 +232,7 @@ class IdentityController extends AbstractActionController
         return new JsonModel($response);
     }
 
-    public function updatedMethodAction(): JsonModel
+    public function updateIdMethodAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
@@ -243,11 +244,13 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem("Missing UUID"));
         }
 
+        $idMethod = IdMethod::fromArray($data);
+
         try {
             $this->dataHandler->updateCaseData(
                 $uuid,
                 'idMethod',
-                $data['idMethod']
+                $idMethod
             );
         } catch (\Exception $exception) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
@@ -256,7 +259,7 @@ class IdentityController extends AbstractActionController
         }
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        $response['result'] = "Updated";
+        $response['result'] = "Updated idMethod";
 
         return new JsonModel($response);
     }
@@ -589,43 +592,6 @@ class IdentityController extends AbstractActionController
             $this->getResponse()->setStatusCode($status);
             $response['result'] = "Updated";
         }
-
-        return new JsonModel($response);
-    }
-
-    public function updateCpPoIdAction(): JsonModel
-    {
-        $uuid = $this->params()->fromRoute('uuid');
-        $data = json_decode($this->getRequest()->getContent(), true);
-        $response = [];
-        $status = Response::STATUS_CODE_200;
-
-        if (! $uuid) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-
-            return new JsonModel(new Problem("Missing UUID"));
-        }
-
-        try {
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'idMethodIncludingNation',
-                $data,
-            );
-            $this->dataHandler->updateCaseData(
-                $uuid,
-                'idRoute',
-                $data['id_route'],
-            );
-        } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage());
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
-
-            return new JsonModel(new Problem($exception->getMessage()));
-        }
-
-        $this->getResponse()->setStatusCode($status);
-        $response['result'] = "Updated";
 
         return new JsonModel($response);
     }
