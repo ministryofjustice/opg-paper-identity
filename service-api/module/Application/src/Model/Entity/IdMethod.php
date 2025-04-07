@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
-use Exception;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\NotEmpty;
 use Application\Validators\Enum;
-use Application\Enums\IdMethod;
 
 /**
  * DTO for holding ID method data
@@ -18,23 +17,23 @@ use Application\Enums\IdMethod;
  * Needed here due to false positive from Laminas’s uninitialised properties
  * @psalm-suppress UnusedProperty
  */
-class IdMethodIncludingNation extends Entity
+class IdMethod extends Entity
 {
     #[Annotation\Required(false)]
-    #[Annotation\Validator(Enum::class, options: ['enum' => IdMethod::class])]
-    public string $id_method;
+    #[Annotation\Validator(Enum::class, options: [DocumentType::class])]
+    public ?string $docType;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Enum::class, options: [IdRoute::class])]
-    public string $id_route;
+    public string $idRoute;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public string $id_country;
+    public string $idCountry;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?string $dwp_id_correlation;
+    public ?string $dwpIdCorrelation;
 
     /**
      * @param properties-of<self> $data

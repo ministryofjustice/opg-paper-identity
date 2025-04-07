@@ -6,11 +6,12 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Enums\SiriusDocument;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
-use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
@@ -84,12 +85,11 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "counterService" => null,
-            "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_country" => "AUT",
-                "id_method" => "DRIVING_LICENCE",
-                'id_route' => 'POST_OFFICE'
+            "idMethod" => [
+                "idCountry" => "AUT",
+                "docType" => DocumentType::DrivingLicence->value,
+                'idRoute' => IdRoute::POST_OFFICE->value,
             ]
         ];
     }
@@ -159,9 +159,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public static function postOfficeDocumnentsRedirectData(): array
     {
         return [
-            ['PASSPORT', 'donor', 'donor-details-match-check'],
-            ['PASSPORT', 'certificateProvider', 'cp/name-match-check'],
-            ['PASSPORT', 'voucher', 'vouching/voucher-name'],
+            [DocumentType::Passport->value, 'donor', 'donor-details-match-check'],
+            [DocumentType::Passport->value, 'certificateProvider', 'cp/name-match-check'],
+            [DocumentType::Passport->value, 'voucher', 'vouching/voucher-name'],
             ['NONUKID', 'certificateProvider', 'po-choose-country'],
             ['NONUKID', 'voucher', 'po-choose-country'],
         ];
@@ -223,8 +223,8 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_choose_country');
 
-        $this->assertQueryContentContains('[name="id_country"] > option[value="AUT"]', 'Austria');
-        $this->assertNotQuery('[name="id_country"] > option[value="GBR"]');
+        $this->assertQueryContentContains('[name="idCountry"] > option[value="AUT"]', 'Austria');
+        $this->assertNotQuery('[name="idCountry"] > option[value="GBR"]');
     }
 
     public function testPostOfficeCountriesIdPage(): void
@@ -303,7 +303,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch(
             "/$this->uuid/po-choose-country-id",
             'POST',
-            ['id_method' => 'PASSPOT']
+            ['docType' => 'NOT_A_DOCUMENT_TYPE']
         );
         $this->assertResponseStatusCode(200);
         $this->assertModuleName('application');
@@ -334,10 +334,10 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('updateIdMethodWithCountry')
-            ->with($this->uuid, ['id_method' => 'PASSPORT']);
+            ->method('updateIdMethod')
+            ->with($this->uuid, ['docType' => DocumentType::Passport->value]);
 
-        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['id_method' => 'PASSPORT']);
+        $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', ['docType' => DocumentType::Passport->value]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/{$this->uuid}/$expectedRedirect");
     }
@@ -391,13 +391,13 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public function testfindPostOfficeBranchSelect(
         array $post,
         bool $valid,
-        ?array $idMethodIncludingNation,
+        ?array $idMethod,
         ?string $searchString,
         array $queries = [],
     ): void {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
-        if (isset($idMethodIncludingNation)) {
-            $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+        if (isset($idMethod)) {
+            $mockResponseDataIdDetails['idMethod'] = $idMethod;
         }
 
         $this
@@ -450,8 +450,8 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
 
         $ukPassport = [
-            'id_method' => 'PASSPORT',
-            'id_country' => PostOfficeCountry::GBR->value
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => PostOfficeCountry::GBR->value
         ];
 
         return [

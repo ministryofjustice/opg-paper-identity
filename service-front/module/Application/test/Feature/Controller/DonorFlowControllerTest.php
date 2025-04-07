@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\DonorFlowController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -155,20 +157,20 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             'post office non UK driving-licence id' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
-                        'id_country' => 'AUS'
+                    'idMethod' => [
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'AUS',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 'PO_NON_GBR_DL'
             ],
             'post office UK driving licence' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
-                        'id_country' => 'GBR'
+                    'idMethod' => [
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'GBR',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 'PO_GBR_DL'
@@ -256,12 +258,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethodIncludingNation" => [
-                "id_country" => "GBR",
-                "id_method" => "DRIVING_LICENCE",
-                'id_route' => 'TELEPHONE'
+            "idMethod" => [
+                "idCountry" => "GBR",
+                "docType" => DocumentType::DrivingLicence->value,
+                'idRoute' => IdRoute::KBV->value,
             ],
-            "idRoute" => "TELEPHONE",
         ];
     }
 

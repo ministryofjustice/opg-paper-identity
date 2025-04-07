@@ -6,7 +6,7 @@ namespace ApplicationTest\ApplicationTest\Unit\Fixtures;
 
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
-use Application\Model\IdMethod;
+use Application\Enums\DocumentType;
 use Aws\CommandInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
@@ -236,7 +236,7 @@ class DataWriteHandlerTest extends TestCase
                     $input = $params[0];
                     $this->assertEquals(['id' => ['S' => 'a9bc8ab8-389c-4367-8a9b-762ab3050491']], $input['Key']);
                     $this->assertArrayHasKey('UpdateExpression', $input);
-                    $this->assertEquals(['#AT0' => 'idMethodIncludingNation'], $input['ExpressionAttributeNames']);
+                    $this->assertEquals(['#AT0' => 'idMethod'], $input['ExpressionAttributeNames']);
 
                     return true;
                 })
@@ -248,8 +248,8 @@ class DataWriteHandlerTest extends TestCase
         // Call the updateCaseData method with test data
         $this->sut->updateCaseData(
             'a9bc8ab8-389c-4367-8a9b-762ab3050491',
-            'idMethodIncludingNation',
-            IdMethod::PassportNumber->value
+            'idMethod',
+            DocumentType::Passport->value
         );
     }
 

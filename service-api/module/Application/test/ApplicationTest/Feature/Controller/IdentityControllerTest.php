@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\IdentityController;
 use Application\DWP\DwpApi\DwpApiService;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
@@ -306,10 +308,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "NATIONAL_INSURANCE_NUMBER",
-                'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+            "idMethod" => [
+                'docType' => DocumentType::NationalInsuranceNumber->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
         ];
 
@@ -500,10 +502,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+            "idMethod" => [
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 
@@ -588,10 +590,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+            "idMethod" => [
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 
@@ -701,10 +703,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+            "idMethod" => [
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 

@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CPFlowController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Exceptions\PostcodeInvalidException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
@@ -64,12 +66,11 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_country" => "AUT",
-                "id_method" => "DRIVING_LICENCE",
-                'id_route' => 'POST_OFFICE'
+            "idMethod" => [
+                "idCountry" => "AUT",
+                "docType" => DocumentType::DrivingLicence->value,
+                'idRoute' => IdRoute::KBV->value,
             ]
         ];
     }
@@ -204,22 +205,20 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             'post office non UK driving-licence id' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
-                        'id_country' => 'AUS',
-                        'id_route' => 'POST_OFFICE'
+                    'idMethod' => [
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'AUS',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_NON_GBR_DL']
             ],
             'post office UK driving licence' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
-                        'id_country' => 'GBR',
-                        'id_route' => 'POST_OFFICE'
+                    'idMethod' => [
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'GBR',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_GBR_DL']

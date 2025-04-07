@@ -29,12 +29,6 @@ class CaseData implements JsonSerializable
     public string $id;
 
     /**
-     * @var "TELEPHONE"|"POST_OFFICE"|"OnBehalf"|"cpr"
-     */
-    #[Annotation\Required(false)]
-    public ?string $idRoute = null;
-
-    /**
      * @var "donor"|"certificateProvider"|"voucher"
      */
     #[Validator(NotEmpty::class)]
@@ -82,10 +76,10 @@ class CaseData implements JsonSerializable
     public ?CounterService $counterService = null;
 
     /**
-     * @var ?IdMethodIncludingNation
+     * @var ?IdMethod
      */
     #[Annotation\Required(false)]
-    public ?IdMethodIncludingNation $idMethodIncludingNation = null;
+    public ?IdMethod $idMethod = null;
 
     #[Annotation\Required(false)]
     public ?CaseProgress $caseProgress = null;
@@ -104,8 +98,8 @@ class CaseData implements JsonSerializable
                 $instance->counterService = CounterService::fromArray($value);
             } elseif ($key === 'caseProgress') {
                 $instance->caseProgress = CaseProgress::fromArray($value);
-            } elseif ($key === 'idMethodIncludingNation') {
-                $instance->idMethodIncludingNation = IdMethodIncludingNation::fromArray($value);
+            } elseif ($key === 'idMethod') {
+                $instance->idMethod = IdMethod::fromArray($value);
             } elseif ($key === 'vouchingFor') {
                 $instance->vouchingFor = VouchingFor::fromArray($value);
             } elseif ($key === 'claimedIdentity') {
@@ -129,7 +123,6 @@ class CaseData implements JsonSerializable
     /**
      * @return array{
      *     id: string,
-     *     idRoute: "TELEPHONE"|"POST_OFFICE"|"OnBehalf"|"cpr"|null,
      *     personType: "donor"|"certificateProvider"|"voucher",
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],
@@ -137,7 +130,7 @@ class CaseData implements JsonSerializable
      *     identityCheckPassed: ?bool,
      *     yotiSessionId: string,
      *     counterService?: CounterService,
-     *     idMethodIncludingNation?: IdMethodIncludingNation,
+     *     idMethod?: IdMethod,
      *     caseProgress?: CaseProgress,
      *     caseAssistance?: CaseAssistance,
      *     claimedIdentity?: ClaimedIdentity
@@ -147,7 +140,6 @@ class CaseData implements JsonSerializable
     {
         $arr = [
             'id' => $this->id,
-            'idRoute' => $this->idRoute,
             'personType' => $this->personType,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
@@ -155,8 +147,8 @@ class CaseData implements JsonSerializable
             'yotiSessionId' => $this->yotiSessionId,
         ];
 
-        if ($this->idMethodIncludingNation !== null) {
-            $arr['idMethodIncludingNation'] = $this->idMethodIncludingNation;
+        if ($this->idMethod !== null) {
+            $arr['idMethod'] = $this->idMethod;
         }
 
         if ($this->counterService !== null) {
@@ -193,8 +185,8 @@ class CaseData implements JsonSerializable
                 throw new NotImplementedException('kbvQuestions update function not yet implemented');
             } elseif ($key === 'iiqControl') {
                 throw new NotImplementedException('iiqControl update function not yet implemented');
-            } elseif ($key === 'idMethodIncludingNation') {
-                throw new NotImplementedException('idMethodIncludingNation update function not yet implemented');
+            } elseif ($key === 'idMethod') {
+                throw new NotImplementedException('idMethod update function not yet implemented');
             } elseif ($key === 'vouchingFor') {
                 throw new NotImplementedException('vouchingFor update function not yet implemented');
             } elseif ($key === 'claimedIdentity') {
