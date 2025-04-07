@@ -71,7 +71,8 @@ class SessionConfigTest extends TestCase
 
         $expectedConfig = $this->sessionConfigExpected(false);
         $expectedConfig["required_documents"][0]["filter"]["documents"][0]["country_codes"][0] = "ITA";
-        $expectedConfig["required_documents"][0]["filter"]["documents"][0]["document_types"][0] = DocumentType::DrivingLicence->value;
+        $expectedConfig["required_documents"][0]["filter"]["documents"][0]["document_types"][0] =
+            DocumentType::DrivingLicence->value;
 
         $sessionConfig = $this->sut->build($this->caseMock, $this->uuid);
 
