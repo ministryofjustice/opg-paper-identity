@@ -562,9 +562,9 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ],
             "selectedPostOffice" => null,
             "idMethod" => [
-                "id_country" => "GBR",
-                "doc_type" => DocumentType::DrivingLicence->value,
-                'id_route' => IdRoute::KBV->value,
+                "idCountry" => "GBR",
+                "docType" => DocumentType::DrivingLicence->value,
+                'idRoute' => IdRoute::KBV->value,
             ]
         ];
     }

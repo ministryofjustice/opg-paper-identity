@@ -119,11 +119,11 @@ class DonorFlowController extends AbstractActionController
             /**
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
-            if ($detailsData['idMethod']['id_route'] == IdRoute::POST_OFFICE->value) {
+            if ($detailsData['idMethod']['idRoute'] == IdRoute::POST_OFFICE->value) {
                 $this->redirect()
                     ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             } else {
-                switch ($detailsData['idMethod']['doc_type']) {
+                switch ($detailsData['idMethod']['docType']) {
                     case DocumentType::Passport->value:
                         $this->redirect()
                             ->toRoute("root/passport_number", ['uuid' => $uuid]);

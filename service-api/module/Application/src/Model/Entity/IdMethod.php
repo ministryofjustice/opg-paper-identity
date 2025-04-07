@@ -21,19 +21,19 @@ class IdMethod extends Entity
 {
     #[Annotation\Required(false)]
     #[Annotation\Validator(Enum::class, options: [DocumentType::class])]
-    public ?string $doc_type;
+    public ?string $docType;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(Enum::class, options: [IdRoute::class])]
-    public string $id_route;
+    public string $idRoute;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public string $id_country;
+    public string $idCountry;
 
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public ?string $dwp_id_correlation;
+    public ?string $dwpIdCorrelation;
 
     /**
      * @param properties-of<self> $data

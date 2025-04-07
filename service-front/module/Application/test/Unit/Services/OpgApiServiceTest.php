@@ -677,7 +677,7 @@ class OpgApiServiceTest extends TestCase
     {
         $data = [];
         $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
-        $data['method'] = ['id_route' => IdRoute::POST_OFFICE->value,];
+        $data['method'] = ['idRoute' => IdRoute::POST_OFFICE->value,];
 
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], ''),

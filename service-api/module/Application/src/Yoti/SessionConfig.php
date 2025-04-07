@@ -24,8 +24,8 @@ class SessionConfig
         $authToken = $uuid;
 
         try {
-            $allowExpiredUkPassport = $case->idMethod?->id_country === "GBR" &&
-                $case->idMethod?->doc_type === DocumentType::Passport->value;
+            $allowExpiredUkPassport = $case->idMethod?->idCountry === "GBR" &&
+                $case->idMethod?->docType === DocumentType::Passport->value;
         } catch (\Exception $exception) {
             $allowExpiredUkPassport = false;
         }
@@ -150,8 +150,8 @@ class SessionConfig
     public static function getIDCountry(CaseData $case): string
     {
         $nonUKIDs = $case->idMethod;
-        if (isset($nonUKIDs->id_country)) {
-            return $nonUKIDs->id_country;
+        if (isset($nonUKIDs->idCountry)) {
+            return $nonUKIDs->idCountry;
         }
 
         return 'GBR';
@@ -165,8 +165,8 @@ class SessionConfig
     {
         $nonUKIDs = $case->idMethod;
 
-        if (isset($nonUKIDs->doc_type)) {
-            return $nonUKIDs->doc_type;
+        if (isset($nonUKIDs->docType)) {
+            return $nonUKIDs->docType;
         }
         return DocumentType::Passport->value;
     }

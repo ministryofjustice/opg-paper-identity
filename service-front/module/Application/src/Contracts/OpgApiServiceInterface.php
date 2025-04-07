@@ -31,9 +31,9 @@ namespace Application\Contracts;
  *   professionalAddress?: Address,
  *   identityCheckPassed?: bool|null,
  *   idMethod?: array{
- *     id_country?: string,
- *     doc_type?: string,
- *     id_route?: string,
+ *     idCountry?: string,
+ *     docType?: string,
+ *     idRoute?: string,
  *   },
  *   counterService?: array{
  *     selectedPostOffice: string,
@@ -134,9 +134,9 @@ interface OpgApiServiceInterface
 
     /**
      * @param array{
-     *   id_country?: string,
-     *   doc_type?: string,
-     *   id_route?: string,
+     *   idCountry?: string,
+     *   docType?: string,
+     *   idRoute?: string,
      * } $data
      */
     public function updateIdMethod(string $uuid, array $data): void;

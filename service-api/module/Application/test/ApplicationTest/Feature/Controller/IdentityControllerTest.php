@@ -309,9 +309,9 @@ class IdentityControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => DocumentType::NationalInsuranceNumber->value,
-                'id_country' => "GBR",
-                'id_route' => IdRoute::KBV->value,
+                'docType' => DocumentType::NationalInsuranceNumber->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
         ];
 
@@ -503,9 +503,9 @@ class IdentityControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => "",
-                'id_country' => "",
-                'id_route' => "",
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 
@@ -591,9 +591,9 @@ class IdentityControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => "",
-                'id_country' => "",
-                'id_route' => "",
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 
@@ -704,9 +704,9 @@ class IdentityControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => "",
-                'id_country' => "",
-                'id_route' => "",
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 

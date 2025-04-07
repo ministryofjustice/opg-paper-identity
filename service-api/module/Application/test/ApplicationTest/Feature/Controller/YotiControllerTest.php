@@ -167,9 +167,9 @@ class YotiControllerTest extends TestCase
             ],
             'personType' => 'donor',
             "idMethod" => [
-                'doc_type' => DocumentType::Passport->value,
-                'id_country' => "GBR",
-                'id_route' => IdRoute::KBV->value,
+                'docType' => DocumentType::Passport->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
             'counterService' => [
                 'selectedPostOffice' => '29348729'

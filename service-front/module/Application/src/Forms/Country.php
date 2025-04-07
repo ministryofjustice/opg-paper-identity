@@ -11,7 +11,7 @@ use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
- * @implements FormTemplate<array{id_country: string}>
+ * @implements FormTemplate<array{idCountry: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class Country implements FormTemplate
@@ -21,5 +21,5 @@ class Country implements FormTemplate
      */
     #[Annotation\Validator(CountryValidator::class)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
-    public mixed $id_country;
+    public mixed $idCountry;
 }

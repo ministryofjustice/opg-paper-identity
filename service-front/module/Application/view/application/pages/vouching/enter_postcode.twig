@@ -9,9 +9,9 @@
         <h1 class="govuk-heading-xl" id="pageHeading">
         {% block title %}
             {% if
-                details_data.idMethod.id_route == 'POST_OFFICE' and
-                details_data.idMethod.doc_type == 'DRIVING_LICENCE' and
-                details_data.idMethod.id_country == 'GBR'
+                details_data.idMethod.idRoute == 'POST_OFFICE' and
+                details_data.idMethod.docType == 'DRIVING_LICENCE' and
+                details_data.idMethod.idCountry == 'GBR'
             %}
                 What is the address on the driving licence?
             {% else %}
@@ -20,8 +20,8 @@
         {% endblock %}
         </h1>
 
-        {% if details_data.idMethod.id_route == 'POST_OFFICE' %}
-            {% if details_data.idMethod.doc_type == 'DRIVING_LICENCE' and details_data.idMethod.id_country == 'GBR' %}
+        {% if details_data.idMethod.idRoute == 'POST_OFFICE' %}
+            {% if details_data.idMethod.docType == 'DRIVING_LICENCE' and details_data.idMethod.idCountry == 'GBR' %}
                 <p class="govuk-body" id="PO_GBR_DL">
                     The address on the driving licence must be the same as the address on the letter they take to the Post Office, or the ID check will fail.
                 </p>

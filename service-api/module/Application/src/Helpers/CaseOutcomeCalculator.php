@@ -41,7 +41,7 @@ class CaseOutcomeCalculator
             throw new IdMethodNotSet("idMethod not set: {$caseData->id}");
         }
 
-        return $routeToStatus[$caseData->idMethod->id_route];
+        return $routeToStatus[$caseData->idMethod->idRoute];
     }
 
     public function updateSendIdentityCheck(CaseData $caseData, ?DateTimeImmutable $timestamp = null): void

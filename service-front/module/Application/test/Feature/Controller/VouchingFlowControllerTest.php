@@ -112,9 +112,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "selectedPostOffice" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
-                "id_country" => "AUT",
-                "doc_type" => DocumentType::DrivingLicence->value,
-                'id_route' => IdRoute::KBV->value,
+                "idCountry" => "AUT",
+                "docType" => DocumentType::DrivingLicence->value,
+                'idRoute' => IdRoute::KBV->value,
             ]
         ];
         return array_merge($base, $overwrite);
@@ -657,9 +657,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'post office non UK driving-licence id' => [
                 [
                     'idMethod' => [
-                        'doc_type' => DocumentType::DrivingLicence->value,
-                        'id_country' => 'AUS',
-                        'id_route' => IdRoute::POST_OFFICE->value,
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'AUS',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_NON_GBR_DL']
@@ -667,9 +667,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             'post office UK driving licence' => [
                 [
                     'idMethod' => [
-                        'doc_type' => DocumentType::DrivingLicence->value,
-                        'id_country' => 'GBR',
-                        'id_route' => IdRoute::POST_OFFICE->value,
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'GBR',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_GBR_DL']
@@ -981,9 +981,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             [
                 [
-                    "id_country" => "AUT",
-                    "doc_type" => DocumentType::DrivingLicence->value,
-                    'id_route' => IdRoute::POST_OFFICE->value,
+                    "idCountry" => "AUT",
+                    "docType" => DocumentType::DrivingLicence->value,
+                    'idRoute' => IdRoute::POST_OFFICE->value,
                 ],
                 'find-post-office-branch'
             ],

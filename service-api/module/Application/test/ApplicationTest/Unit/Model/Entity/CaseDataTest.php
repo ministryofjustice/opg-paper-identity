@@ -62,27 +62,27 @@ class CaseDataTest extends TestCase
             [
                 array_merge($validData, [
                     'idMethod' => [
-                        'doc_type' => DocumentType::Passport,
-                        'id_country' => "GBR",
-                        'id_route' => IdRoute::POST_OFFICE->value,
+                        'docType' => DocumentType::Passport,
+                        'idCountry' => "GBR",
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ]), true
             ],
             [
                 array_merge($validData, [
                     'idMethod' => [
-                        'doc_type' => DocumentType::Passport,
-                        'id_country' => "AUT",
-                        'id_route' => IdRoute::POST_OFFICE->value,
+                        'docType' => DocumentType::Passport,
+                        'idCountry' => "AUT",
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ]), true
             ],
             [
                 array_merge($validData, [
                     'idMethod' => [
-                        'doc_type' => DocumentType::Passport,
-                        'id_country' => "GBR",
-                        'id_route' => IdRoute::VOUCHING->value,
+                        'docType' => DocumentType::Passport,
+                        'idCountry' => "GBR",
+                        'idRoute' => IdRoute::VOUCHING->value,
                     ]
                 ]), true
             ],

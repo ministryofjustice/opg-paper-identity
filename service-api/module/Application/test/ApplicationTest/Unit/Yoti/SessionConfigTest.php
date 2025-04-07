@@ -39,10 +39,10 @@ class SessionConfigTest extends TestCase
                 ]
             ],
             "idMethod" => [
-                'doc_type' => DocumentType::Passport->value,
-                'id_country' => "GBR",
-                'id_route' => IdRoute::POST_OFFICE->value,
-                'dwp_id_correlation' => ""
+                'docType' => DocumentType::Passport->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::POST_OFFICE->value,
+                'dwpIdCorrelation' => ""
             ],
             'lpas' => []
         ]);
@@ -62,10 +62,10 @@ class SessionConfigTest extends TestCase
     public function testSessionWithForeignId(): void
     {
         $idMethod = IdMethod::fromArray([
-            "id_country" => "ITA",
-            "doc_type" => DocumentType::DrivingLicence->value,
-            "id_route" => IdRoute::POST_OFFICE->value,
-            'dwp_id_correlation' => ""
+            "idCountry" => "ITA",
+            "docType" => DocumentType::DrivingLicence->value,
+            "idRoute" => IdRoute::POST_OFFICE->value,
+            'dwpIdCorrelation' => ""
         ]);
         $this->caseMock->idMethod = $idMethod;
 

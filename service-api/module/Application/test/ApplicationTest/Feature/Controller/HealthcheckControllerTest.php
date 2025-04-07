@@ -132,9 +132,9 @@ class HealthcheckControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => DocumentType::DrivingLicence->value,
-                'id_country' => "GBR",
-                'id_route' => IdRoute::KBV->value,
+                'docType' => DocumentType::DrivingLicence->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
             "caseProgress" => [
                 "fraudScore" => [
@@ -167,9 +167,9 @@ class HealthcheckControllerTest extends TestCase
             ],
             "documentComplete" => false,
             "idMethod" => [
-                'doc_type' => DocumentType::DrivingLicence->value,
-                'id_country' => "GBR",
-                'id_route' => IdRoute::KBV->value,
+                'docType' => DocumentType::DrivingLicence->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
             "caseProgress" => [
                 "fraudScore" => [

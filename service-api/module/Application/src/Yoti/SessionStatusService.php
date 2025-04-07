@@ -101,8 +101,8 @@ class SessionStatusService
          */
         if (
             is_string($mediaId) &&
-            $caseData->idMethod->doc_type === DocumentType::Passport->value &&
-            $caseData->idMethod->id_country === "GBR"
+            $caseData->idMethod->docType === DocumentType::Passport->value &&
+            $caseData->idMethod->idCountry === "GBR"
         ) {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
 

@@ -171,7 +171,7 @@ class IdentityController extends AbstractActionController
         try {
             $correlationUuid = Uuid::uuid4()->toString();
             $idMethodData = $caseData?->idMethod?->jsonSerialize();
-            $idMethodData['dwp_id_correlation'] = $correlationUuid;
+            $idMethodData['dwpIdCorrelation'] = $correlationUuid;
 
             $this->dataHandler->updateCaseData(
                 $uuid,

@@ -325,22 +325,22 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             'donor via post-office' => [
                 'donor',
                 IdRoute::POST_OFFICE->value,
-                ['id_route' => IdRoute::POST_OFFICE->value],
+                ['idRoute' => IdRoute::POST_OFFICE->value],
                 'post-office-documents'
             ],
             'donor choosing vouching route' => [
                 'donor',
                 IdRoute::VOUCHING->value,
-                ['id_route' => IdRoute::VOUCHING->value],
+                ['idRoute' => IdRoute::VOUCHING->value],
                 'what-is-vouching'
             ],
             'donor with passport' => [
                 'donor',
                 DocumentType::Passport->value,
                 [
-                    'id_route' => IdRoute::KBV->value,
-                    'id_country' => Country::GBR->value,
-                    'doc_type' => DocumentType::Passport->value
+                    'idRoute' => IdRoute::KBV->value,
+                    'idCountry' => Country::GBR->value,
+                    'docType' => DocumentType::Passport->value
                 ],
                 'donor-details-match-check'
             ],
@@ -348,9 +348,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'certificateProvider',
                 DocumentType::NationalInsuranceNumber->value,
                 [
-                    'id_route' => IdRoute::KBV->value,
-                    'id_country' => Country::GBR->value,
-                    'doc_type' => DocumentType::NationalInsuranceNumber->value
+                    'idRoute' => IdRoute::KBV->value,
+                    'idCountry' => Country::GBR->value,
+                    'docType' => DocumentType::NationalInsuranceNumber->value
                 ],
                 'cp/name-match-check'
             ],
@@ -358,9 +358,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'voucher',
                 DocumentType::DrivingLicence->value,
                 [
-                    'id_route' => IdRoute::KBV->value,
-                    'id_country' => Country::GBR->value,
-                    'doc_type' => DocumentType::DrivingLicence->value
+                    'idRoute' => IdRoute::KBV->value,
+                    'idCountry' => Country::GBR->value,
+                    'docType' => DocumentType::DrivingLicence->value
                 ],
                 'vouching/voucher-name'
             ],

@@ -363,8 +363,8 @@ class VouchingFlowController extends AbstractActionController
             $idRoute = '';
             $docType = '';
             if (isset($detailsData['idMethod'])) {
-                $idRoute = $detailsData['idMethod']['id_route'] ?? '';
-                $docType = $detailsData['idMethod']['doc_type'] ?? '';
+                $idRoute = $detailsData['idMethod']['idRoute'] ?? '';
+                $docType = $detailsData['idMethod']['docType'] ?? '';
             }
             $redirect = false;
             if ($idRoute === IdRoute::POST_OFFICE->value) {

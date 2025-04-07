@@ -26,9 +26,9 @@ class CitizenRequestDTOTest extends TestCase
         "identityCheckPassed" => null,
         "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
         "idMethod" => [
-            "doc_type" => DocumentType::NationalInsuranceNumber->value,
-            "id_route" => IdRoute::KBV->value,
-            "id_country" => "GBR",
+            "docType" => DocumentType::NationalInsuranceNumber->value,
+            "idRoute" => IdRoute::KBV->value,
+            "idCountry" => "GBR",
             "id_value" => "NP112233C"
         ],
         "caseProgress" => [
@@ -75,9 +75,9 @@ class CitizenRequestDTOTest extends TestCase
             "identityCheckPassed" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
-                "doc_type" => DocumentType::NationalInsuranceNumber->value,
-                "id_route" => IdRoute::KBV->value,
-                "id_country" => "GBR"
+                "docType" => DocumentType::NationalInsuranceNumber->value,
+                "idRoute" => IdRoute::KBV->value,
+                "idCountry" => "GBR"
             ],
             "caseProgress" => [
                 "abandonedFlow" => null,

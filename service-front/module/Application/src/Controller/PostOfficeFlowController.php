@@ -74,8 +74,8 @@ class PostOfficeFlowController extends AbstractActionController
                         $redirect = "root/po_choose_country";
                     } else {
                         $this->opgApiService->updateIdMethod($uuid, [
-                            'doc_type' => $formData['id_method'],
-                            'id_country' => PostOfficeCountry::GBR->value,
+                            'docType' => $formData['id_method'],
+                            'idCountry' => PostOfficeCountry::GBR->value,
                         ]);
                         switch ($detailsData["personType"]) {
                             case "voucher":
@@ -134,11 +134,11 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (! isset($detailsData['idMethod']['id_country'])) {
+        if (! isset($detailsData['idMethod']['idCountry'])) {
             throw new \Exception("Country for document list has not been set.");
         }
 
-        $country = PostOfficeCountry::from($detailsData['idMethod']['id_country']);
+        $country = PostOfficeCountry::from($detailsData['idMethod']['idCountry']);
 
         $docs = $this->documentTypeRepository->getByCountry($country);
 
@@ -293,13 +293,13 @@ class PostOfficeFlowController extends AbstractActionController
     private static function getIdMethodForDisplay(array $options, array $idMethodArray): string
     {
         if (
-            array_key_exists($idMethodArray['doc_type'], $options) &&
-            $idMethodArray['id_country'] === PostOfficeCountry::GBR->value
+            array_key_exists($idMethodArray['docType'], $options) &&
+            $idMethodArray['idCountry'] === PostOfficeCountry::GBR->value
         ) {
-            return $options[$idMethodArray['doc_type']];
+            return $options[$idMethodArray['docType']];
         } else {
-            $country = PostOfficeCountry::from($idMethodArray['id_country'] ?? '');
-            $idMethod = DocumentType::from($idMethodArray['doc_type'] ?? '');
+            $country = PostOfficeCountry::from($idMethodArray['idCountry'] ?? '');
+            $idMethod = DocumentType::from($idMethodArray['docType'] ?? '');
             return sprintf('%s (%s)', $idMethod->translate(), $country->translate());
         }
     }

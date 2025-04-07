@@ -109,19 +109,19 @@ class HowConfirmController extends AbstractActionController
         }
 
         if ($formData['id_method'] == IdRoute::POST_OFFICE->value) {
-            $idMethod = ['id_route' => IdRoute::POST_OFFICE->value];
+            $idMethod = ['idRoute' => IdRoute::POST_OFFICE->value];
             $returnRoute = 'root/post_office_documents';
         } elseif ($formData['id_method'] == IdRoute::VOUCHING->value) {
-            $idMethod = ['id_route' => IdRoute::VOUCHING->value];
+            $idMethod = ['idRoute' => IdRoute::VOUCHING->value];
             $returnRoute = "root/what_is_vouching";
         } elseif ($formData['id_method'] == IdRoute::COURT_OF_PROTECTION->value) {
-            $idMethod = ['id_route' => IdRoute::COURT_OF_PROTECTION->value];
+            $idMethod = ['idRoute' => IdRoute::COURT_OF_PROTECTION->value];
             $returnRoute = "root/court_of_protection";
         } else {
             $idMethod = [
-                'id_route' => IdRoute::KBV->value,
-                'id_country' => Country::GBR->value,
-                'doc_type' => $formData['id_method']
+                'idRoute' => IdRoute::KBV->value,
+                'idCountry' => Country::GBR->value,
+                'docType' => $formData['id_method']
             ];
             $returnRoute = $routes[$personType];
         }

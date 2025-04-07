@@ -231,10 +231,10 @@ class SessionStatusServiceTest extends TestCase
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
         $caseData->idMethod = IdMethod::fromArray([
-            'doc_type' => DocumentType::Passport->value,
-            'id_country' => "GBR",
-            'id_route' => IdRoute::POST_OFFICE->value,
-            'dwp_id_correlation' => null,
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => "GBR",
+            'idRoute' => IdRoute::POST_OFFICE->value,
+            'dwpIdCorrelation' => null,
         ]);
 
         $response = [
@@ -281,10 +281,10 @@ class SessionStatusServiceTest extends TestCase
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
         $caseData->idMethod = IdMethod::fromArray([
-            'doc_type' => DocumentType::Passport->value,
-            'id_country' => "GBR",
-            'id_route' => IdRoute::POST_OFFICE->value,
-            'dwp_id_correlation' => null,
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => "GBR",
+            'idRoute' => IdRoute::POST_OFFICE->value,
+            'dwpIdCorrelation' => null,
         ]);
 
         $response = [
@@ -331,10 +331,10 @@ class SessionStatusServiceTest extends TestCase
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
         $caseData->idMethod = IdMethod::fromArray([
-            'doc_type' => DocumentType::Passport->value,
-            'id_country' => "",
-            'id_route' => "",
-            'dwp_id_correlation' => null,
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => "",
+            'idRoute' => "",
+            'dwpIdCorrelation' => null,
         ]);
 
         $response = [

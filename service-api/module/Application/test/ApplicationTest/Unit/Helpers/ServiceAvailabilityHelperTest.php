@@ -214,9 +214,9 @@ class ServiceAvailabilityHelperTest extends TestCase
             "documentComplete" => false,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
             "idMethod" => [
-                "doc_type" => DocumentType::DrivingLicence->value,
-                "id_route" => IdRoute::KBV->value,
-                "id_country" => "GBR"
+                "docType" => DocumentType::DrivingLicence->value,
+                "idRoute" => IdRoute::KBV->value,
+                "idCountry" => "GBR"
             ],
             "claimedIdentity" => [
                 "dob" => "1986-09-03",
