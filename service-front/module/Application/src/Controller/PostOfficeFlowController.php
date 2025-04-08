@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
+use Application\Enums\DocumentType;
 use Application\Enums\SiriusDocument;
 use Application\Enums\LpaTypes;
 use Application\Exceptions\SiriusApiException;
@@ -18,7 +19,6 @@ use Application\Forms\PostOfficeSearch;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
-use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
@@ -71,12 +71,11 @@ class PostOfficeFlowController extends AbstractActionController
                     $formData = $this->formToArray($form);
 
                     if ($formData['id_method'] == 'NONUKID') {
-                        $this->opgApiService->updateIdMethodWithCountry($uuid, ['id_method' => $formData['id_method']]);
                         $redirect = "root/po_choose_country";
                     } else {
-                        $this->opgApiService->updateIdMethodWithCountry($uuid, [
-                            'id_method' => $formData['id_method'],
-                            'id_country' => PostOfficeCountry::GBR->value,
+                        $this->opgApiService->updateIdMethod($uuid, [
+                            'docType' => $formData['id_method'],
+                            'idCountry' => PostOfficeCountry::GBR->value,
                         ]);
                         switch ($detailsData["personType"]) {
                             case "voucher":
@@ -110,7 +109,7 @@ class PostOfficeFlowController extends AbstractActionController
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->formToArray($form);
 
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            $this->opgApiService->updateIdMethod($uuid, $formData);
 
             return $this->redirect()->toRoute("root/po_choose_country_id", ['uuid' => $uuid]);
         }
@@ -135,11 +134,11 @@ class PostOfficeFlowController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (! isset($detailsData['idMethodIncludingNation']['id_country'])) {
+        if (! isset($detailsData['idMethod']['idCountry'])) {
             throw new \Exception("Country for document list has not been set.");
         }
 
-        $country = PostOfficeCountry::from($detailsData['idMethodIncludingNation']['id_country']);
+        $country = PostOfficeCountry::from($detailsData['idMethod']['idCountry']);
 
         $docs = $this->documentTypeRepository->getByCountry($country);
 
@@ -147,7 +146,7 @@ class PostOfficeFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $formData = $this->formToArray($form);
-            $this->opgApiService->updateIdMethodWithCountry($uuid, $formData);
+            $this->opgApiService->updateIdMethod($uuid, $formData);
 
             switch ($detailsData["personType"]) {
                 case "voucher":
@@ -273,7 +272,7 @@ class PostOfficeFlowController extends AbstractActionController
                 'deadline' => (new DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d F Y"),
                 'display_id_method' => $this->getIdMethodForDisplay(
                     $this->config['opg_settings']['identity_documents'],
-                    $detailsData['idMethodIncludingNation']
+                    $detailsData['idMethod']
                 ),
                 'post_office_address' => $postOfficeAddress,
             ]);
@@ -294,13 +293,13 @@ class PostOfficeFlowController extends AbstractActionController
     private static function getIdMethodForDisplay(array $options, array $idMethodArray): string
     {
         if (
-            array_key_exists($idMethodArray['id_method'], $options) &&
-            $idMethodArray['id_country'] === PostOfficeCountry::GBR->value
+            array_key_exists($idMethodArray['docType'], $options) &&
+            $idMethodArray['idCountry'] === PostOfficeCountry::GBR->value
         ) {
-            return $options[$idMethodArray['id_method']];
+            return $options[$idMethodArray['docType']];
         } else {
-            $country = PostOfficeCountry::from($idMethodArray['id_country'] ?? '');
-            $idMethod = DocumentType::from($idMethodArray['id_method'] ?? '');
+            $country = PostOfficeCountry::from($idMethodArray['idCountry'] ?? '');
+            $idMethod = DocumentType::from($idMethodArray['docType'] ?? '');
             return sprintf('%s (%s)', $idMethod->translate(), $country->translate());
         }
     }

@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\ServiceAvailabilityHelper;
 use Application\Model\Entity\CaseData;
+use Dom\Document;
+use LanguageServerProtocol\DocumentRangeFormattingClientCapabilities;
+use PhpParser\Comment\Doc;
 use PHPUnit\Framework\TestCase;
 
 class ServiceAvailabilityHelperTest extends TestCase
@@ -30,17 +35,17 @@ class ServiceAvailabilityHelperTest extends TestCase
         $config = [
             'opg_settings' => [
                 'identity_documents' => [
-                    'PASSPORT' => "Passport",
-                    'DRIVING_LICENCE' => 'Driving licence',
-                    'NATIONAL_INSURANCE_NUMBER' => 'National Insurance number',
+                    DocumentType::Passport->value => "Passport",
+                    DocumentType::DrivingLicence->value => 'Driving licence',
+                    DocumentType::NationalInsuranceNumber->value => 'National Insurance number',
                 ],
-                'identity_methods' => [
-                    'POST_OFFICE' => 'Post Office',
-                    'VOUCHING' => 'Have someone vouch for the identity of the donor',
-                    'COURT_OF_PROTECTION' => 'Court of protection',
+                'identity_routes' => [
+                    IdRoute::POST_OFFICE->value => 'Post Office',
+                    IdRoute::VOUCHING->value => 'Have someone vouch for the identity of the donor',
+                    IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
                 ],
                 'identity_services' => [
-                    'EXPERIAN' => 'Experian',
+                    IdRoute::KBV->value => 'Experian',
                 ],
                 'banner_messages' => [
                     'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security ' .
@@ -70,61 +75,63 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $services = [
-            'EXPERIAN' => true,
-            'PASSPORT' => true,
-            'DRIVING_LICENCE' => true,
-            'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => true
+            IdRoute::KBV->value => true,
+            DocumentType::Passport->value => true,
+            DocumentType::DrivingLicence->value => true,
+            DocumentType::NationalInsuranceNumber->value => true,
+            IdRoute::POST_OFFICE->value => true
         ];
 
-        $servicesPostOfficeDown = [
-            'EXPERIAN' => true,
-            'PASSPORT' => true,
-            'DRIVING_LICENCE' => true,
-            'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => false
+        $servicesPostOfficeDown = array_merge(
+            $services,
+            [IdRoute::POST_OFFICE->value => false]
+        );
+
+        $servicesExperianDown = array_merge(
+            $services,
+            [IdRoute::KBV->value => false]
+        );
+
+        $servicesPassportDown = array_merge(
+            $services,
+            [DocumentType::Passport->value => false]
+        );
+
+        $allTrue = [
+            IdRoute::KBV->value => true,
+            DocumentType::Passport->value => true,
+            DocumentType::DrivingLicence->value => true,
+            DocumentType::NationalInsuranceNumber->value => true,
+            IdRoute::POST_OFFICE->value => true,
+            IdRoute::VOUCHING->value => true,
+            IdRoute::COURT_OF_PROTECTION->value => true,
         ];
 
-        $servicesExperianDown = [
-            'EXPERIAN' => false,
-            'PASSPORT' => true,
-            'DRIVING_LICENCE' => true,
-            'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => true
-        ];
-
-        $servicesPassportDown = [
-            'EXPERIAN' => true,
-            'PASSPORT' => false,
-            'DRIVING_LICENCE' => true,
-            'NATIONAL_INSURANCE_NUMBER' => true,
-            'POST_OFFICE' => true
+        $allFalse = [
+            IdRoute::KBV->value => false,
+            DocumentType::Passport->value => false,
+            DocumentType::DrivingLicence->value => false,
+            DocumentType::NationalInsuranceNumber->value => false,
+            IdRoute::POST_OFFICE->value => false,
+            IdRoute::VOUCHING->value => false,
+            IdRoute::COURT_OF_PROTECTION->value => false,
         ];
 
         $expected = [
-            'data' => [
-                'EXPERIAN' => true,
-                'PASSPORT' => true,
-                'DRIVING_LICENCE' => true,
-                'NATIONAL_INSURANCE_NUMBER' => true,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-            ],
+            'data' => $allTrue,
             'messages' => [],
             'additional_restriction_messages' => [],
         ];
 
         $expectedNoDec = [
-            'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
-            ],
+            'data' => array_merge(
+                $allFalse,
+                [
+                    IdRoute::POST_OFFICE->value => true,
+                    IdRoute::VOUCHING->value => true,
+                    IdRoute::COURT_OF_PROTECTION->value => true,
+                ]
+            ),
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .
                     'available security questions or failure to answer them correctly on a previous occasion.',
@@ -133,15 +140,13 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $expectedStop = [
-            'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => false,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
-            ],
+            'data' => array_merge(
+                $allFalse,
+                [
+                    IdRoute::POST_OFFICE->value => true,
+                    IdRoute::COURT_OF_PROTECTION->value => true,
+                ]
+            ),
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                     'available information from Experian or a failure to answer the security questions correctly ' .
@@ -151,15 +156,14 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $expectedKbvFail = [
-            'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
-            ],
+            'data' => array_merge(
+                $allFalse,
+                [
+                    IdRoute::POST_OFFICE->value => true,
+                    IdRoute::VOUCHING->value => true,
+                    IdRoute::COURT_OF_PROTECTION->value => true,
+                ]
+            ),
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                     'available information from Experian or a failure to answer the security questions correctly ' .
@@ -169,15 +173,14 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $expectedKbvEmpty = [
-            'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
-            ],
+            'data' => array_merge(
+                $allFalse,
+                [
+                    IdRoute::POST_OFFICE->value => true,
+                    IdRoute::VOUCHING->value => true,
+                    IdRoute::COURT_OF_PROTECTION->value => true,
+                ]
+            ),
             'messages' => [
                 'banner' => 'The donor cannot ID over the phone due to a lack of ' .
                     'available security questions or failure to answer them correctly ' .
@@ -187,15 +190,14 @@ class ServiceAvailabilityHelperTest extends TestCase
         ];
 
         $expectedDocSuccess = [
-            'data' => [
-                'PASSPORT' => false,
-                'DRIVING_LICENCE' => false,
-                'NATIONAL_INSURANCE_NUMBER' => false,
-                'POST_OFFICE' => true,
-                'VOUCHING' => true,
-                'COURT_OF_PROTECTION' => true,
-                'EXPERIAN' => false,
-            ],
+            'data' => array_merge(
+                $allFalse,
+                [
+                    IdRoute::POST_OFFICE->value => true,
+                    IdRoute::VOUCHING->value => true,
+                    IdRoute::COURT_OF_PROTECTION->value => true,
+                ]
+            ),
             'messages' => [
                 'banner' => 'The donor has already proved their identity over the ' .
                     'phone with a valid document',
@@ -205,30 +207,17 @@ class ServiceAvailabilityHelperTest extends TestCase
 
         $case = [
             "id" => "4d41c926-d11c-4341-8500-b36a666a35dd",
-            "idRoute" => "TELEPHONE",
             "personType" => "donor",
             "lpas" => [
                 "M-XYXY-YAGA-35G3"
             ],
             "documentComplete" => false,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_method" => "DRIVING_LICENCE",
-                "id_route" => "TELEPHONE",
-                "id_country" => "GBR"
+            "idMethod" => [
+                "docType" => DocumentType::DrivingLicence->value,
+                "idRoute" => IdRoute::KBV->value,
+                "idCountry" => "GBR"
             ],
-//            "caseProgress" => [
-//                "abandonedFlow" => null,
-//                "docCheck" => [
-//                    "idDocument" => "DRIVING_LICENCE",
-//                    "state" => null
-//                ],
-//                "kbvs" => null,
-//                "fraudScore" => [
-//                    "decision" => "ACCEPT",
-//                    "score" => 265
-//                ]
-//            ],
             "claimedIdentity" => [
                 "dob" => "1986-09-03",
                 "firstName" => "Lee",
@@ -287,7 +276,7 @@ class ServiceAvailabilityHelperTest extends TestCase
             "caseProgress" => [
                 "abandonedFlow" => null,
                 "docCheck" => [
-                    "idDocument" => "DRIVING_LICENCE",
+                    "idDocument" => DocumentType::DrivingLicence->value,
                     "state" => true
                 ],
                 "kbvs" => null,
@@ -340,32 +329,24 @@ class ServiceAvailabilityHelperTest extends TestCase
                 $config,
                 $case,
                 $servicesPostOfficeDown,
-                array_merge($expected, [
-                    'data' => [
-                        'PASSPORT' => true,
-                        'DRIVING_LICENCE' => true,
-                        'NATIONAL_INSURANCE_NUMBER' => true,
-                        'POST_OFFICE' => false,
-                        'VOUCHING' => true,
-                        'COURT_OF_PROTECTION' => true,
-                        'EXPERIAN' => true,
-                    ]
-                ])
+                array_merge(
+                    $expected,
+                    ['data' => array_merge($allTrue, [IdRoute::POST_OFFICE->value => false])]
+                )
             ],
             [
                 $config,
                 $case,
                 $servicesExperianDown,
                 [
-                    'data' => [
-                        'PASSPORT' => false,
-                        'DRIVING_LICENCE' => false,
-                        'NATIONAL_INSURANCE_NUMBER' => false,
-                        'POST_OFFICE' => true,
-                        'VOUCHING' => true,
-                        'COURT_OF_PROTECTION' => true,
-                        'EXPERIAN' => false,
-                    ],
+                    'data' => array_merge(
+                        $allFalse,
+                        [
+                            IdRoute::POST_OFFICE->value => true,
+                            IdRoute::VOUCHING->value => true,
+                            IdRoute::COURT_OF_PROTECTION->value => true,
+                        ]
+                    ),
                     'messages' => [
                         'service_status' =>
                         'Online identity verification is not presently available',
@@ -378,15 +359,7 @@ class ServiceAvailabilityHelperTest extends TestCase
                 $case,
                 $servicesPassportDown,
                 [
-                    'data' => [
-                        'PASSPORT' => false,
-                        'DRIVING_LICENCE' => true,
-                        'NATIONAL_INSURANCE_NUMBER' => true,
-                        'POST_OFFICE' => true,
-                        'VOUCHING' => true,
-                        'COURT_OF_PROTECTION' => true,
-                        'EXPERIAN' => true,
-                    ],
+                    'data' => array_merge($allTrue, [DocumentType::Passport->value => false]),
                     'messages' => [
                         'service_status' =>
                         'Some identity verification methods are not presently available',

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\PostOffice;
 
+use Application\Enums\DocumentType;
 use Application\PostOffice\Country;
-use Application\PostOffice\DocumentType;
 use Application\PostOffice\DocumentTypeRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -17,29 +17,29 @@ class DocumentTypeRepositoryTest extends TestCase
             [
                 'code' => 'AUS',
                 'supported_documents' => [
-                    ['type' => 'PASSPORT',],
-                    ['type' => 'NATIONAL_ID'],
+                    ['type' => DocumentType::Passport->value,],
+                    ['type' => DocumentType::NationalId->value],
                 ],
             ],
             [
                 'code' => 'NGA',
                 'supported_documents' => [
-                    ['type' => 'DRIVING_LICENCE'],
+                    ['type' => DocumentType::DrivingLicence->value],
                 ],
             ],
             [
                 'code' => 'AUT',
                 'supported_documents' => [
-                    ['type' => 'PASSPORT'],
-                    ['type' => 'DRIVING_LICENCE'],
-                    ['type' => 'NATIONAL_ID'],
-                    ['type' => 'RESIDENCE_PERMIT'],
+                    ['type' => DocumentType::Passport->value],
+                    ['type' => DocumentType::DrivingLicence->value],
+                    ['type' => DocumentType::NationalId->value],
+                    ['type' => DocumentType::ResidencePermit->value],
                 ],
             ],
             [
                 'code' => 'FRA',
                 'supported_documents' => [
-                    ['type' => 'NATIONAL_ID'],
+                    ['type' => DocumentType::NationalId->value],
                     ['type' => 'TRAVEL_DOCUMENT'],
                 ],
             ],

@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\IdentityController;
 use Application\DWP\DwpApi\DwpApiService;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
@@ -13,6 +15,7 @@ use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
+use Application\Model\Entity\IdMethod;
 use Application\Sirius\EventSender;
 use Application\Sirius\UpdateStatus;
 use Application\Yoti\SessionConfig;
@@ -306,10 +309,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "NATIONAL_INSURANCE_NUMBER",
-                'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+            "idMethod" => [
+                'docType' => DocumentType::NationalInsuranceNumber->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
         ];
 
@@ -424,6 +427,61 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider idMethodData
+     */
+    public function testUpdateIdMethodAction(CaseData $case, array $idMethod, IdMethod $expectedUpdate): void
+    {
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->willReturn($case);
+
+        $this->dataImportHandler
+            ->expects($this->once())
+            ->method('updateCaseData')
+            ->with($case->id, 'idMethod', $expectedUpdate);
+
+        $this->dispatchJSON(
+            "/cases/{$case->id}/update-id-method",
+            'POST',
+            $idMethod
+        );
+    }
+
+    public static function idMethodData(): array
+    {
+        $baseCase = [
+            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+            'personType' => 'donor',
+            'lpas' => ['M-XYXY-YAGA-35G3',],
+        ];
+
+        $idMethod = [
+            'idRoute' => IdRoute::KBV->value,
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => 'GBR'
+        ];
+
+        $updateSingleValue = ['docType' => DocumentType::NationalInsuranceNumber->value];
+
+        return [
+            [
+                CaseData::fromArray($baseCase),
+                $idMethod,
+                IdMethod::fromArray($idMethod),
+                false
+            ],
+            [
+                CaseData::fromArray(array_merge($baseCase, ['idMethod' => $idMethod])),
+                $updateSingleValue,
+                IdMethod::fromArray(array_merge($idMethod, $updateSingleValue)),
+                false
+            ],
+        ];
+    }
+
+
     public function dispatchJSON(string $path, string $method, mixed $data = null): void
     {
         $headers = new Headers();
@@ -500,10 +558,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+            "idMethod" => [
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 
@@ -588,10 +646,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9",
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+            "idMethod" => [
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 
@@ -701,10 +759,10 @@ class IdentityControllerTest extends TestCase
                 "M-VGAS-OAGA-34G9"
             ],
             "documentComplete" => false,
-            "idMethodIncludingNation" => [
-                'id_method' => "",
-                'id_country' => "",
-                'id_route' => "",
+            "idMethod" => [
+                'docType' => "",
+                'idCountry' => "",
+                'idRoute' => "",
             ],
         ];
 

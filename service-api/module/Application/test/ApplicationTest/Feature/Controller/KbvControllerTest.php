@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\KbvController;
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
 use Application\Fixtures\DataQueryHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\KBV\AnswersOutcome;
@@ -179,7 +179,7 @@ class KbvControllerTest extends TestCase
 
         $caseData->caseProgress = CaseProgress::fromArray([
             'docCheck' => [
-                'idDocument' => IdMethod::NationalInsuranceNumber->value,
+                'idDocument' => DocumentType::NationalInsuranceNumber->value,
                 'state' => true
             ]
         ]);

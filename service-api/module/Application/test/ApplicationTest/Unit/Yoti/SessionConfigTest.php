@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Unit\Yoti;
 
 use Application\Model\Entity\CaseData;
-use Application\Model\Entity\IdMethodIncludingNation;
+use Application\Model\Entity\IdMethod;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Yoti\SessionConfig;
 use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
@@ -36,11 +38,11 @@ class SessionConfigTest extends TestCase
                     'country' => 'England'
                 ]
             ],
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
-                'id_country' => "GBR",
-                'id_route' => "POST_OFFICE",
-                'dwp_id_correlation' => ""
+            "idMethod" => [
+                'docType' => DocumentType::Passport->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::POST_OFFICE->value,
+                'dwpIdCorrelation' => ""
             ],
             'lpas' => []
         ]);
@@ -59,18 +61,18 @@ class SessionConfigTest extends TestCase
 
     public function testSessionWithForeignId(): void
     {
-        $idIncludingNation = IdMethodIncludingNation::fromArray([
-            "id_country" => "ITA",
-            "id_method" => "DRIVING_LICENCE",
-            "id_route" => 'POST_OFFICE',
-            "id_value" => 'AA112233C',
-            'dwp_id_correlation' => ""
+        $idMethod = IdMethod::fromArray([
+            "idCountry" => "ITA",
+            "docType" => DocumentType::DrivingLicence->value,
+            "idRoute" => IdRoute::POST_OFFICE->value,
+            'dwpIdCorrelation' => ""
         ]);
-        $this->caseMock->idMethodIncludingNation = $idIncludingNation;
+        $this->caseMock->idMethod = $idMethod;
 
         $expectedConfig = $this->sessionConfigExpected(false);
         $expectedConfig["required_documents"][0]["filter"]["documents"][0]["country_codes"][0] = "ITA";
-        $expectedConfig["required_documents"][0]["filter"]["documents"][0]["document_types"][0] = "DRIVING_LICENCE";
+        $expectedConfig["required_documents"][0]["filter"]["documents"][0]["document_types"][0] =
+            DocumentType::DrivingLicence->value;
 
         $sessionConfig = $this->sut->build($this->caseMock, $this->uuid);
 
@@ -147,7 +149,7 @@ class SessionConfigTest extends TestCase
                     "documents" => [
                         [
                             "country_codes" => ["GBR"],
-                            "document_types" => ["PASSPORT"]
+                            "document_types" => [DocumentType::Passport->value]
                         ]
                     ],
                     "allow_expired_documents" => $allowExpiredPassport

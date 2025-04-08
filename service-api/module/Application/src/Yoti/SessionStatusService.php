@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Yoti;
 
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
 use Application\Yoti\Http\Exception\YotiException;
@@ -101,8 +101,8 @@ class SessionStatusService
          */
         if (
             is_string($mediaId) &&
-            $caseData->idMethodIncludingNation->id_method === IdMethod::PassportNumber->value &&
-            $caseData->idMethodIncludingNation->id_country === "GBR"
+            $caseData->idMethod->docType === DocumentType::Passport->value &&
+            $caseData->idMethod->idCountry === "GBR"
         ) {
             $documentScanned = $this->getDocumentScanned($mediaId, $caseData->yotiSessionId);
 

@@ -18,29 +18,29 @@
                 <p class="govuk-body">
                     If the ID document has an address, the Post Office letter must be sent to the same address, or the ID check will fail at the Post Office
                 </p>
-                {% if form.get('id_method').messages %}
+                {% if form.get('docType').messages %}
                     <p class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
-                        {{ form.get('id_method').messages | join(', ', ' and ') }}
+                        {{ form.get('docType').messages | join(', ', ' and ') }}
                     </p>
                 {% endif %}
                 <div class="govuk-form-group">
                     <div
                             class="govuk-radios
-                        {% if form.get('id_method').messages %}govuk-form-group--error{% endif %}"
+                        {% if form.get('docType').messages %}govuk-form-group--error{% endif %}"
                             data-module="govuk-radios"
                     >
                         {% for doc in supported_docs %}
                             <div class="govuk-radios__item">
                                 <input
                                         class="govuk-radios__input"
-                                        id="f-id_method-{{ doc.value }}"
-                                        name="id_method"
+                                        id="f-docType-{{ doc.value }}"
+                                        name="docType"
                                         type="radio"
                                         value="{{ doc.value }}"
-                                        {% if form.get('id_method').value == doc.value %}checked{% endif %}
+                                        {% if form.get('docType').value == doc.value %}checked{% endif %}
                                 >
-                                <label class="govuk-label govuk-radios__label" for="f-id_method-{{ doc.value }}">{{ doc.translate() }}</label>
+                                <label class="govuk-label govuk-radios__label" for="f-docType-{{ doc.value }}">{{ doc.translate() }}</label>
                             </div>
                         {% endfor %}
                     </div>

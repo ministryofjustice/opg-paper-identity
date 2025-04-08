@@ -224,19 +224,6 @@ class OpgApiService implements OpgApiServiceInterface
         ]);
     }
 
-    public function updateIdMethod(string $uuid, string $method): void
-    {
-        $data = [
-            'idMethod' => $method,
-        ];
-
-        try {
-            $this->makeApiRequest("/cases/$uuid/update-method", 'POST', $data);
-        } catch (\Exception $exception) {
-            throw new OpgApiException($exception->getMessage());
-        }
-    }
-
     public function updateCaseWithLpa(string $uuid, string $lpa, bool $remove = false): void
     {
         $verb = $remove ? 'DELETE' : 'PUT';
@@ -342,23 +329,12 @@ class OpgApiService implements OpgApiServiceInterface
     /**
      * @throws OpgApiException
      */
-    public function updateIdMethodWithCountry(string $uuid, array $data): void
+    public function updateIdMethod(string $uuid, array $data): void
     {
-        $url = sprintf("/cases/%s/update-cp-po-id", $uuid);
-
-        $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
-        $methodData = [];
-
-        if (array_key_exists('idMethodIncludingNation', $response)) {
-            $methodData = $response['idMethodIncludingNation'];
-        }
-
-        foreach ($data as $key => $value) {
-            $methodData[$key] = $value;
-        }
+        $url = sprintf("/cases/%s/update-id-method", $uuid);
 
         try {
-            $this->makeApiRequest($url, 'PUT', $methodData);
+            $this->makeApiRequest($url, 'PUT', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

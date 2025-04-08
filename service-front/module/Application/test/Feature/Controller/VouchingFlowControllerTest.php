@@ -6,6 +6,8 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\VouchingFlowController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
@@ -108,12 +110,11 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "alternateAddress" => [
             ],
             "selectedPostOffice" => null,
-            "idMethod" => "nin",
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_country" => "AUT",
-                "id_method" => "DRIVING_LICENCE",
-                'id_route' => 'POST_OFFICE'
+            "idMethod" => [
+                "idCountry" => "AUT",
+                "docType" => DocumentType::DrivingLicence->value,
+                'idRoute' => IdRoute::KBV->value,
             ]
         ];
         return array_merge($base, $overwrite);
@@ -655,20 +656,20 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ],
             'post office non UK driving-licence id' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
-                        'id_country' => 'AUS'
+                    'idMethod' => [
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'AUS',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_NON_GBR_DL']
             ],
             'post office UK driving licence' => [
                 [
-                    'idRoute' => 'POST_OFFICE',
-                    'idMethodIncludingNation' => [
-                        'id_method' => 'DRIVING_LICENCE',
-                        'id_country' => 'GBR'
+                    'idMethod' => [
+                        'docType' => DocumentType::DrivingLicence->value,
+                        'idCountry' => 'GBR',
+                        'idRoute' => IdRoute::POST_OFFICE->value,
                     ]
                 ],
                 ['p#PO_GBR_DL']
@@ -958,10 +959,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider confirmDonorsRedirectData
      */
-    public function testConfirmDonorsRedirect(array $idMethodIncludingNation, string $expectedRedirect): void
+    public function testConfirmDonorsRedirect(array $idMethod, string $expectedRedirect): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
-        $mockResponseDataIdDetails['idMethodIncludingNation'] = $idMethodIncludingNation;
+        $mockResponseDataIdDetails['idMethod'] = $idMethod;
 
         $this
             ->opgApiServiceMock
@@ -980,9 +981,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             [
                 [
-                    "id_country" => "AUT",
-                    "id_method" => "DRIVING_LICENCE",
-                    'id_route' => 'POST_OFFICE'
+                    "idCountry" => "AUT",
+                    "docType" => DocumentType::DrivingLicence->value,
+                    'idRoute' => IdRoute::POST_OFFICE->value,
                 ],
                 'find-post-office-branch'
             ],
