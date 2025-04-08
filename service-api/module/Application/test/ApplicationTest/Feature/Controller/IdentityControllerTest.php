@@ -460,7 +460,8 @@ class IdentityControllerTest extends TestCase
         $idMethod = [
             'idRoute' => IdRoute::KBV->value,
             'docType' => DocumentType::Passport->value,
-            'idCountry' => 'GBR'
+            'idCountry' => 'GBR',
+            'dwpIdCorrelation' => null
         ];
 
         $updateSingleValue = ['docType' => DocumentType::NationalInsuranceNumber->value];

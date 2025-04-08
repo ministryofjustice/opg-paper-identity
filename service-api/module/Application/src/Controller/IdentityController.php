@@ -255,6 +255,11 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem($exception->getMessage()));
         }
 
+        if (is_null($case)) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+            return new JsonModel(new Problem('Case not found'));
+        }
+
         if (! is_null($case->idMethod)) {
             $idMethod = $case->idMethod;
         } else {
