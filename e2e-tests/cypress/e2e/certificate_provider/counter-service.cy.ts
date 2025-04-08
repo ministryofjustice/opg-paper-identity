@@ -57,7 +57,7 @@ describe("Counter service certificateProvider journey", () => {
     cy.get(".govuk-button").contains("Continue").click();
 
     cy.contains("Choose country");
-    cy.get("input#id_country").type("Austria");
+    cy.get("input#idCountry").type("Austria");
     cy.contains("Austria").click();
     cy.get(".govuk-button").contains("Continue").click();
 

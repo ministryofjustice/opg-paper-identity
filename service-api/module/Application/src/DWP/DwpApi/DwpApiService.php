@@ -92,7 +92,7 @@ class DwpApiService
         CitizenResponseDTO $citizenResponseDTO,
         string $nino
     ): bool {
-        if ($caseData->idMethodIncludingNation) {
+        if ($caseData->idMethod) {
             /** @psalm-suppress PossiblyNullArgument */
             $submittedNino = strtoupper(
                 preg_replace(

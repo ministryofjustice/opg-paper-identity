@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Model\Entity\CaseData;
+use Application\Enums\IdRoute;
 use Application\Exceptions\IdMethodNotSet;
 use Application\Fixtures\DataWriteHandler;
 use Application\Sirius\EventSender;
@@ -30,17 +31,17 @@ class CaseOutcomeCalculator
         }
 
         $routeToStatus = [
-            'OnBehalf' => UpdateStatus::VouchStarted,
-            'cpr' => UpdateStatus::CopStarted,
-            'POST_OFFICE' => UpdateStatus::CounterServiceStarted,
-            'TELEPHONE' => $caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure
+            IdRoute::VOUCHING->value => UpdateStatus::VouchStarted,
+            IdRoute::COURT_OF_PROTECTION->value => UpdateStatus::CopStarted,
+            IdRoute::POST_OFFICE->value => UpdateStatus::CounterServiceStarted,
+            IdRoute::KBV->value => $caseData->identityCheckPassed ? UpdateStatus::Success : UpdateStatus::Failure
         ];
 
-        if (is_null($caseData->idRoute)) {
-            throw new IdMethodNotSet("id-route not set: {$caseData->id}");
+        if (is_null($caseData->idMethod)) {
+            throw new IdMethodNotSet("idMethod not set: {$caseData->id}");
         }
 
-        return $routeToStatus[$caseData->idRoute];
+        return $routeToStatus[$caseData->idMethod->idRoute];
     }
 
     public function updateSendIdentityCheck(CaseData $caseData, ?DateTimeImmutable $timestamp = null): void
