@@ -15,6 +15,7 @@ use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
+use Application\Model\Entity\IdMethod;
 use Application\Sirius\EventSender;
 use Application\Sirius\UpdateStatus;
 use Application\Yoti\SessionConfig;
@@ -425,6 +426,61 @@ class IdentityControllerTest extends TestCase
             [123456784, 'PASS', Response::STATUS_CODE_200],
         ];
     }
+
+    /**
+     * @dataProvider idMethodData
+     */
+    public function testUpdateIdMethodAction(CaseData $case, array $idMethod, IdMethod $expectedUpdate): void
+    {
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->willReturn($case);
+
+        $this->dataImportHandler
+            ->expects($this->once())
+            ->method('updateCaseData')
+            ->with($case->id, 'idMethod', $expectedUpdate);
+
+        $this->dispatchJSON(
+            "/cases/{$case->id}/update-id-method",
+            'POST',
+            $idMethod
+        );
+    }
+
+    public static function idMethodData(): array
+    {
+        $baseCase = [
+            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+            'personType' => 'donor',
+            'lpas' => ['M-XYXY-YAGA-35G3',],
+        ];
+
+        $idMethod = [
+            'idRoute' => IdRoute::KBV->value,
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => 'GBR'
+        ];
+
+        $updateSingleValue = ['docType' => DocumentType::NationalInsuranceNumber->value];
+
+        return [
+            [
+                CaseData::fromArray($baseCase),
+                $idMethod,
+                IdMethod::fromArray($idMethod),
+                false
+            ],
+            [
+                CaseData::fromArray(array_merge($baseCase, ['idMethod' => $idMethod])),
+                $updateSingleValue,
+                IdMethod::fromArray(array_merge($idMethod, $updateSingleValue)),
+                false
+            ],
+        ];
+    }
+
 
     public function dispatchJSON(string $path, string $method, mixed $data = null): void
     {

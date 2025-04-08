@@ -6,6 +6,7 @@ namespace Application\Model\Entity;
 
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Exceptions\PropertyMatchException;
 use Laminas\Form\Annotation;
 use Laminas\Form\Annotation\Validator;
 use Laminas\Validator\NotEmpty;
@@ -57,5 +58,21 @@ class IdMethod extends Entity
     public function jsonSerialize(): array
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * @param properties-of<self> $data
+     */
+    public function update(mixed $data): self
+    {
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            } else {
+                throw new PropertyMatchException(sprintf('%s does not have property "%s"', $this::class, $key));
+            }
+        }
+
+        return $this;
     }
 }

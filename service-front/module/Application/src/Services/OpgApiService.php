@@ -333,19 +333,8 @@ class OpgApiService implements OpgApiServiceInterface
     {
         $url = sprintf("/cases/%s/update-id-method", $uuid);
 
-        $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
-        $methodData = [];
-
-        if (array_key_exists('idMethod', $response)) {
-            $methodData = $response['idMethod'];
-        }
-
-        foreach ($data as $key => $value) {
-            $methodData[$key] = $value;
-        }
-
         try {
-            $this->makeApiRequest($url, 'PUT', $methodData);
+            $this->makeApiRequest($url, 'PUT', $data);
         } catch (\Exception $exception) {
             throw new OpgApiException($exception->getMessage());
         }

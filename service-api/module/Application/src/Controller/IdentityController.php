@@ -34,6 +34,8 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
+use function PHPUnit\Framework\isNull;
+
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
@@ -235,6 +237,7 @@ class IdentityController extends AbstractActionController
     public function updateIdMethodAction(): JsonModel
     {
         $uuid = $this->params()->fromRoute('uuid');
+
         $data = json_decode($this->getRequest()->getContent(), true);
         $response = [];
 
@@ -244,7 +247,21 @@ class IdentityController extends AbstractActionController
             return new JsonModel(new Problem("Missing UUID"));
         }
 
-        $idMethod = IdMethod::fromArray($data);
+        try {
+            $case = $this->dataQueryHandler->getCaseByUUID($uuid);
+        } catch (\Exception $exception) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+
+            return new JsonModel(new Problem($exception->getMessage()));
+        }
+
+        if (! is_null($case->idMethod)) {
+            $idMethod = $case->idMethod;
+        } else {
+            $idMethod = new IdMethod();
+        }
+
+        $idMethod->update($data);
 
         try {
             $this->dataHandler->updateCaseData(
