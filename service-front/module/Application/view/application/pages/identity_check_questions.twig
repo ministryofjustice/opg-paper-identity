@@ -6,88 +6,87 @@
 
 {% block content %}
     <div class="moj-alert__content moj-hidden">{% block title %}Identity check questions{% endblock %}</div>
-    <form method="post" target="">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post" target="">
 
-        {% for questionBlock in questions_data %}
+                {% for questionBlock in questions_data %}
 
-            {% if first_question == questionBlock.question and questionBlock.externalId == question.externalId %}
-                <div class="govuk-summary-card govuk-!-width-two-thirds">
-                    <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">
-                            You must read the following to the caller:
-                        </h2>
-                    </div>
-                    <div class="govuk-summary-card__content">
-                        <p class="govuk-body">
-                            Thank you - we have confirmed your identity document is valid.
-                        </p>
-                        <p class="govuk-body">
-                            As mentioned earlier, I will now ask you a few security questions that only you would know the answer to.
-                        </p>
-                        <p class="govuk-body">
-                            I will read the question to you and then read you a choice of answers. Take your time to answer them,
-                            if you need to look at any documents to help you answer the question that is fine.
-                        </p>
-                        <p class="govuk-body">
-                            I can read you a choice of answers and you can pick your answer, or if you'd prefer you can just tell me the answer after the question.
-                        </p>
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if questionBlock.externalId != question.externalId %}
-                <input
-                    type="hidden"
-                    value="{{ form.get(questionBlock.externalId).value }}"
-                    name="{{ questionBlock.externalId }}"
-                />
-            {% else %}
-                <div class="govuk-form-group">
-
-                    <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
-                    <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                                <h2 class="govuk-fieldset__heading">
-                                    Select answer
+                    {% if first_question == questionBlock.question and questionBlock.externalId == question.externalId %}
+                        <div class="govuk-summary-card">
+                            <div class="govuk-summary-card__title-wrapper">
+                                <h2 class="govuk-summary-card__title">
+                                    You must read the following to the caller:
                                 </h2>
-                            </legend>
-                            {% if not form_valid %}
-                                <p id="kbv-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span>
-                                        Select an answer
-                                </p>
-                            {% endif %}
-                            <div class="govuk-radios {% if not form_valid %}govuk-form-group--error{% endif %}" data-module="govuk-radios">
-                                {% for datum in questionBlock.prompts %}
-                                    <div class="govuk-radios__item">
-                                        <input
-                                                class="govuk-radios__input"
-                                                id="{{ datum }}"
-                                                name="{{ questionBlock.externalId }}"
-                                                type="radio"
-                                                value="{{ datum }}"
-                                                {% if form.get(questionBlock.externalId).value == datum %}checked{% endif %}
-                                        >
-                                        <label class="govuk-label govuk-radios__label"
-                                                for="{{ datum }}">{{ datum }}</label>
-                                    </div>
-                                {% endfor %}
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="dontknow" name="{{ questionBlock.externalId }}" type="radio"
-                                            value="dontknow">
-                                    <label class="govuk-label govuk-radios__label" for="dontknow">I don't know</label>
-                                </div>
                             </div>
-                        </fieldset>
-                    </div>
-                    <div class="govuk-form-group">
-                        <input class="govuk-button" type="submit" value="Continue">
-                    </div>
+                            <div class="govuk-summary-card__content">
+                                <p class="govuk-body">
+                                    Thank you - we have confirmed your identity document is valid.
+                                </p>
+                                <p class="govuk-body">
+                                    As mentioned earlier, I will now ask you a few security questions that only you would know the answer to.
+                                </p>
+                                <p class="govuk-body">
+                                    I will read the question to you and then read you a choice of answers. Take your time to answer them,
+                                    if you need to look at any documents to help you answer the question that is fine.
+                                </p>
+                                <p class="govuk-body">
+                                    I can read you a choice of answers and you can pick your answer, or if you'd prefer you can just tell me the answer after the question.
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
 
-                </div>
+                    {% if questionBlock.externalId != question.externalId %}
+                        <input
+                            type="hidden"
+                            value="{{ form.get(questionBlock.externalId).value }}"
+                            name="{{ questionBlock.externalId }}"
+                        />
+                    {% else %}
+                        <div class="govuk-form-group">
 
-            {% endif %}
-        {% endfor %}
-    </form>
+                            <h1 class="govuk-heading-xl">{{ questionBlock.question }}</h1>
+                            <div class="govuk-form-group">
+                                <fieldset class="govuk-fieldset">
+                                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                        <h2 class="govuk-fieldset__heading">
+                                            Select answer
+                                        </h2>
+                                    </legend>
+                                    {% if not form_valid %}
+                                        <p id="kbv-error" class="govuk-error-message">
+                                            <span class="govuk-visually-hidden">Error:</span>
+                                                Select an answer
+                                        </p>
+                                    {% endif %}
+                                    <div class="govuk-radios {% if not form_valid %}govuk-form-group--error{% endif %}" data-module="govuk-radios">
+                                        {% for datum in questionBlock.prompts %}
+                                            <div class="govuk-radios__item">
+                                                <input
+                                                        class="govuk-radios__input"
+                                                        id="{{ datum }}"
+                                                        name="{{ questionBlock.externalId }}"
+                                                        type="radio"
+                                                        value="{{ datum }}"
+                                                        {% if form.get(questionBlock.externalId).value == datum %}checked{% endif %}
+                                                >
+                                                <label class="govuk-label govuk-radios__label"
+                                                        for="{{ datum }}">{{ datum }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="govuk-form-group">
+                                <input class="govuk-button" type="submit" value="Continue">
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+                {% endfor %}
+            </form>
+        </div>
+    </div>
 {% endblock %}
