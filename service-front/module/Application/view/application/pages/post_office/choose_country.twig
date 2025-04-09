@@ -24,24 +24,24 @@
                         </strong>
                     </div>
                 </div>
-                <label for="id_country" class="govuk-heading-m"></label>
+                <label for="idCountry" class="govuk-heading-m"></label>
                 <div id="country-hint" class="govuk-hint">
                     Start typing or choose from the list
                 </div>
-                {% if form.get('id_country').messages %}
+                {% if form.get('idCountry').messages %}
                     <p id="lpa-error" class="govuk-error-message">
                         <span class="govuk-visually-hidden">Error:</span>
-                        {{ form.get('id_country').messages | join(', ', ' and ') }}
+                        {{ form.get('idCountry').messages | join(', ', ' and ') }}
                     </p>
                 {% endif %}
                 <div class="govuk-form-group govuk-body govuk-!-width-one-half" id="choose-country">
-                    <select class="govuk-select" id="id_country" name="id_country" data-module="app-natural-autocomplete">
+                    <select class="govuk-select" id="idCountry" name="idCountry" data-module="app-natural-autocomplete">
                         <option value=""></option>
                         <option value="0">The issuing country is not listed</option>
                         {% for country in countries_data %}
                             <option
                                     value="{{ country.value }}"
-                                    {% if form.get('id_country').value == country.value %}selected{% endif %}
+                                    {% if form.get('idCountry').value == country.value %}selected{% endif %}
                             >
                                 {{- country.translate() -}}
                             </option>

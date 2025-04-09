@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Unit\Services;
 
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
-use Application\Model\Entity\IdMethodIncludingNation;
+use Application\Model\Entity\IdMethod;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use InvalidArgumentException;
@@ -227,11 +229,11 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
-        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
-            'id_method' => "PASSPORT",
-            'id_country' => "GBR",
-            'id_route' => "POST_OFFICE",
-            'dwp_id_correlation' => null,
+        $caseData->idMethod = IdMethod::fromArray([
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => "GBR",
+            'idRoute' => IdRoute::POST_OFFICE->value,
+            'dwpIdCorrelation' => null,
         ]);
 
         $response = [
@@ -277,11 +279,11 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
-        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
-            'id_method' => "PASSPORT",
-            'id_country' => "GBR",
-            'id_route' => "POST_OFFICE",
-            'dwp_id_correlation' => null,
+        $caseData->idMethod = IdMethod::fromArray([
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => "GBR",
+            'idRoute' => IdRoute::POST_OFFICE->value,
+            'dwpIdCorrelation' => null,
         ]);
 
         $response = [
@@ -327,11 +329,11 @@ class SessionStatusServiceTest extends TestCase
     {
         $caseData = $this->getCaseData();
         $caseData->counterService->notificationState = 'session_completion';
-        $caseData->idMethodIncludingNation = IdMethodIncludingNation::fromArray([
-            'id_method' => "PASSPORT",
-            'id_country' => "",
-            'id_route' => "",
-            'dwp_id_correlation' => null,
+        $caseData->idMethod = IdMethod::fromArray([
+            'docType' => DocumentType::Passport->value,
+            'idCountry' => "",
+            'idRoute' => "",
+            'dwpIdCorrelation' => null,
         ]);
 
         $response = [

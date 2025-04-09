@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Services\DWP\DwpApi\DTO;
 
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\TestCase;
@@ -23,16 +25,16 @@ class CitizenRequestDTOTest extends TestCase
         "documentComplete" => false,
         "identityCheckPassed" => null,
         "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-        "idMethodIncludingNation" => [
-            "id_method" => "NATIONAL_INSURANCE_NUMBER",
-            "id_route" => "TELEPHONE",
-            "id_country" => "GBR",
+        "idMethod" => [
+            "docType" => DocumentType::NationalInsuranceNumber->value,
+            "idRoute" => IdRoute::KBV->value,
+            "idCountry" => "GBR",
             "id_value" => "NP112233C"
         ],
         "caseProgress" => [
             "abandonedFlow" => null,
             "docCheck" => [
-                "idDocument" => "NATIONAL_INSURANCE_NUMBER",
+                "idDocument" => DocumentType::NationalInsuranceNumber->value,
                 "state" => true
             ],
             "kbvs" => null,
@@ -72,15 +74,15 @@ class CitizenRequestDTOTest extends TestCase
             "documentComplete" => false,
             "identityCheckPassed" => null,
             "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethodIncludingNation" => [
-                "id_method" => "NATIONAL_INSURANCE_NUMBER",
-                "id_route" => "TELEPHONE",
-                "id_country" => "GBR"
+            "idMethod" => [
+                "docType" => DocumentType::NationalInsuranceNumber->value,
+                "idRoute" => IdRoute::KBV->value,
+                "idCountry" => "GBR"
             ],
             "caseProgress" => [
                 "abandonedFlow" => null,
                 "docCheck" => [
-                    "idDocument" => "NATIONAL_INSURANCE_NUMBER",
+                    "idDocument" => DocumentType::NationalInsuranceNumber->value,
                     "state" => true
                 ],
                 "kbvs" => null,
