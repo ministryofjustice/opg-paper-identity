@@ -9,7 +9,7 @@ use Laminas\Validator\AbstractValidator;
 
 class CountryValidator extends AbstractValidator
 {
-    public const INVALID_COUNTRY = 'invalidCountry';
+    public const INVALID_COUNTRY = 'invalid_country';
     public const EMPTY_COUNTRY = 'empty_country';
     protected array $messageTemplates = [
         self::INVALID_COUNTRY => "This country code is not recognised",

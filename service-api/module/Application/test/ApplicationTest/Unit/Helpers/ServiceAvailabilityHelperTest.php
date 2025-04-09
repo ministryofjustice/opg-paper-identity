@@ -8,9 +8,6 @@ use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Helpers\ServiceAvailabilityHelper;
 use Application\Model\Entity\CaseData;
-use Dom\Document;
-use LanguageServerProtocol\DocumentRangeFormattingClientCapabilities;
-use PhpParser\Comment\Doc;
 use PHPUnit\Framework\TestCase;
 
 class ServiceAvailabilityHelperTest extends TestCase

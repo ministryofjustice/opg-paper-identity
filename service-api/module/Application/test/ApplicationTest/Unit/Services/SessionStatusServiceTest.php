@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Lcobucci\Clock\FrozenClock;
 use DateTimeImmutable;
-use Dom\Document;
 
 /**
  * @psalm-suppress PossiblyNullPropertyAssignment

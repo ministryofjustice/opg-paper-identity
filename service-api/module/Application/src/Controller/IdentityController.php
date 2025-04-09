@@ -34,8 +34,6 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-use function PHPUnit\Framework\isNull;
-
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  * Needed here due to false positive from Laminas’s uninitialised properties
