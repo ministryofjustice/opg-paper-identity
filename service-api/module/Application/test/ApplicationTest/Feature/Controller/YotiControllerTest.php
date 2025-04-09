@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\YotiController;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
@@ -164,10 +166,10 @@ class YotiControllerTest extends TestCase
                 ],
             ],
             'personType' => 'donor',
-            "idMethodIncludingNation" => [
-                'id_method' => "PASSPORT",
-                'id_country' => "GBR",
-                'id_route' => "TELEPHONE",
+            "idMethod" => [
+                'docType' => DocumentType::Passport->value,
+                'idCountry' => "GBR",
+                'idRoute' => IdRoute::KBV->value,
             ],
             'counterService' => [
                 'selectedPostOffice' => '29348729'
@@ -444,7 +446,7 @@ class YotiControllerTest extends TestCase
                     "documents" => [
                         [
                             "country_codes" => ["GBR"],
-                            "document_types" => ["PASSPORT"]
+                            "document_types" => [DocumentType::Passport->value]
                         ]
                     ]
                 ]

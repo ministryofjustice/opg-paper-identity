@@ -6,7 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
 use Application\Forms\DrivingLicenceNumber;
 use Application\Forms\NationalInsuranceNumber;
 use Application\Forms\PassportDate;
@@ -39,7 +39,7 @@ class DocumentCheckController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
-        $templates = $this->config['opg_settings']['template_options']['NATIONAL_INSURANCE_NUMBER'];
+        $templates = $this->config['opg_settings']['template_options'][DocumentType::NationalInsuranceNumber->value];
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
@@ -70,14 +70,17 @@ class DocumentCheckController extends AbstractActionController
             if ($gotVariables['validity'] === 'PASS') {
                 $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::NationalInsuranceNumber->value);
+                $this->opgApiService->updateCaseSetDocumentComplete(
+                    $uuid,
+                    DocumentType::NationalInsuranceNumber->value
+                );
             } elseif ($gotVariables['validity'] === 'MULTIPLE_MATCH') {
                 $template = $templates['amb_fail'];
             } else {
                 $template = $templates['fail'];
                 $this->opgApiService->updateCaseSetDocumentComplete(
                     $uuid,
-                    IdMethod::NationalInsuranceNumber->value,
+                    DocumentType::NationalInsuranceNumber->value,
                     false
                 );
             }
@@ -91,7 +94,7 @@ class DocumentCheckController extends AbstractActionController
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
 
-        $templates = $this->config['opg_settings']['template_options']['DRIVING_LICENCE'];
+        $templates = $this->config['opg_settings']['template_options'][DocumentType::DrivingLicence->value];
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
@@ -121,11 +124,11 @@ class DocumentCheckController extends AbstractActionController
             if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                 $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                 $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-                $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::DrivingLicenceNumber->value);
+                $this->opgApiService->updateCaseSetDocumentComplete($uuid, DocumentType::DrivingLicence->value);
             } else {
                 $this->opgApiService->updateCaseSetDocumentComplete(
                     $uuid,
-                    IdMethod::DrivingLicenceNumber->value,
+                    DocumentType::DrivingLicence->value,
                     false
                 );
                 $template = $templates['fail'];
@@ -137,7 +140,7 @@ class DocumentCheckController extends AbstractActionController
 
     public function passportNumberAction(): ViewModel
     {
-        $templates = $this->config['opg_settings']['template_options']['PASSPORT'];
+        $templates = $this->config['opg_settings']['template_options'][DocumentType::Passport->value];
         $template = $templates['default'];
         $uuid = $this->params()->fromRoute("uuid");
         $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
@@ -190,11 +193,11 @@ class DocumentCheckController extends AbstractActionController
                     if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
                         $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                         $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
-                        $this->opgApiService->updateCaseSetDocumentComplete($uuid, IdMethod::PassportNumber->value);
+                        $this->opgApiService->updateCaseSetDocumentComplete($uuid, DocumentType::Passport->value);
                     } else {
                         $this->opgApiService->updateCaseSetDocumentComplete(
                             $uuid,
-                            IdMethod::PassportNumber->value,
+                            DocumentType::Passport->value,
                             false
                         );
                         $template = $templates['fail'];

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Services;
 
 use Application\Auth\JwtGenerator;
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
@@ -676,7 +677,7 @@ class OpgApiServiceTest extends TestCase
     {
         $data = [];
         $data['uuid'] = '49895f88-501b-4491-8381-e8aeeaef177d';
-        $data['method'] = "nin";
+        $data['method'] = ['idRoute' => IdRoute::POST_OFFICE->value,];
 
         $successMock = new MockHandler([
             new Response(200, ['X-Foo' => 'Bar'], ''),
@@ -721,7 +722,7 @@ class OpgApiServiceTest extends TestCase
 
         $opgApiService = new OpgApiService($client, $this->jwtGenerator);
 
-        $opgApiService->updateCaseSetDocumentComplete($data['uuid'], IdMethod::NationalInsuranceNumber->value);
+        $opgApiService->updateCaseSetDocumentComplete($data['uuid'], DocumentType::NationalInsuranceNumber->value);
     }
 
     public static function setDocumentCompleteData(): array
@@ -884,11 +885,11 @@ class OpgApiServiceTest extends TestCase
                 200,
                 ['X-Foo' => 'Bar'],
                 json_encode([
-                    IdMethod::DrivingLicenceNumber->value => true,
-                    IdMethod::PassportNumber->value => true,
-                    IdMethod::NationalInsuranceNumber->value => true,
-                    IdMethod::PostOffice->value => true,
-                    'EXPERIAN' => false,
+                    DocumentType::DrivingLicence->value => true,
+                    DocumentType::Passport->value => true,
+                    DocumentType::NationalInsuranceNumber->value => true,
+                    IdRoute::POST_OFFICE->value => true,
+                    IdRoute::KBV->value => false,
                 ], JSON_THROW_ON_ERROR),
             ),
         ]);
@@ -909,11 +910,11 @@ class OpgApiServiceTest extends TestCase
             [
                 $successClient,
                 [
-                    "EXPERIAN" => false,
-                    "NATIONAL_INSURANCE_NUMBER" => true,
-                    "DRIVING_LICENCE" => true,
-                    "PASSPORT" => true,
-                    "POST_OFFICE" => true,
+                    IdRoute::KBV->value  => false,
+                    DocumentType::NationalInsuranceNumber->value => true,
+                    DocumentType::DrivingLicence->value => true,
+                    DocumentType::Passport->value => true,
+                    IdRoute::POST_OFFICE->value  => true,
                 ],
                 false,
             ],
