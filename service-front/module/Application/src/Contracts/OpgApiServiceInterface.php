@@ -30,10 +30,10 @@ namespace Application\Contracts;
  *   address: Address,
  *   professionalAddress?: Address,
  *   identityCheckPassed?: bool|null,
- *   idMethodIncludingNation?: array{
- *     id_country?: string,
- *     id_method?: string,
- *     id_route?: string,
+ *   idMethod?: array{
+ *     idCountry?: string,
+ *     docType?: string,
+ *     idRoute?: string,
  *   },
  *   counterService?: array{
  *     selectedPostOffice: string,
@@ -103,8 +103,6 @@ interface OpgApiServiceInterface
 
     public function updateCaseAddress(string $uuid, array $address): void;
 
-    public function updateIdMethod(string $uuid, string $method): void;
-
     /**
      * @return array<string, array{
      *   name: string,
@@ -136,12 +134,12 @@ interface OpgApiServiceInterface
 
     /**
      * @param array{
-     *   id_country?: string,
-     *   id_method?: string,
-     *   id_route?: string,
+     *   idCountry?: string,
+     *   docType?: string,
+     *   idRoute?: string,
      * } $data
      */
-    public function updateIdMethodWithCountry(string $uuid, array $data): void;
+    public function updateIdMethod(string $uuid, array $data): void;
 
     /**
      * @param array{

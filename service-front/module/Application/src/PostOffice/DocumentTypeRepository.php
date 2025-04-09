@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\PostOffice;
 
-use Application\Enums\IdMethod;
+use Application\Enums\DocumentType;
 
 /**
  * @psalm-type CountryDocumentConfig
@@ -45,7 +45,7 @@ class DocumentTypeRepository
                     $docType = DocumentType::tryFrom($supportedDoc['type']);
 
                     if (! is_null($docType) && in_array($docType, $allowed)) {
-                        if ($docType->value === IdMethod::PassportNumber->value) {
+                        if ($docType->value === DocumentType::Passport->value) {
                             $available = array_merge([0 => $docType], $available);
                         } else {
                             $available[] = $docType;
