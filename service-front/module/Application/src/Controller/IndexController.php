@@ -37,11 +37,6 @@ class IndexController extends AbstractActionController
     ) {
     }
 
-    public function indexAction()
-    {
-        return new ViewModel();
-    }
-
     public function startAction(): Response|ViewModel
     {
         $view = new ViewModel();
