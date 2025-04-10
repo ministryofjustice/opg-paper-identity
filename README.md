@@ -30,7 +30,7 @@ To build the service locally you will need to have the following installed
 After cloning the repo, you will need to install the php dependencies in the api and front services before building the application.
 1. `cd` into `service-api` and run `composer install`.
 2. `cd` into `service-front` and run `composer install`.
-3. build and start the applicationby running `make build up`.
+3. build and start the application by running `make build up`.
 4. the service will then be available on `http://localhost:8080`.
 
 ## Entrypoint
@@ -60,7 +60,7 @@ When requesting an LPA from Sirius, only certain LPA numbers are supported by th
 The LPAs are as follows:
 
 | LPA UID        | Experian FraudScore Response |
-|----------------|------------------------------|****
+|----------------|------------------------------|
 |M-XYXY-YAGA-35G3| donor that will pass with an `ACCEPT` response |
 |M-XYXY-YAGA-35G4| donor that will fail with a `NODECISION` response (ie person cannot be identified) |
 |M-XYXY-YAGA-35G0| donor that will fail with a `STOP` response (ie person has been identified and is high risk) |
