@@ -30,7 +30,7 @@ To build the service locally you will need to have the following installed
 After cloning the repo, you will need to install the php dependencies in the api and front services before building the application.
 1. `cd` into `service-api` and run `composer install`.
 2. `cd` into `service-front` and run `composer install`.
-3. build and start the applicationby running `make build up`.
+3. build and start the application by running `make build up`.
 4. the service will then be available on `http://localhost:8080`.
 
 ## Entrypoint
@@ -41,13 +41,13 @@ You can start an ID check by directly accessing the landing page URL, for exampl
 - Certificate provider: `http://localhost:8080/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000`
 - Voucher: `http://localhost:8080/start?personType=voucher&lpas[]=M-XYXY-YAGA-35G3`
 
-In local development the LPA UID(s) you use will impact the behaviour of the application (see[Mocks](#mocks) below for more information).
+In local development the LPA UID(s) you use will impact the behaviour of the application (see [Mocks](#mocks) below for more information).
 
 ## Tests
 
-A number of `make` commands exist to simplify the running of tests and static-code-analysis. `make api-test` and `make front-test` can be used to dun unit and integration tests, alongside Psalm and PHPCS. There are more specific commands for each available, which you can find by running `make help`. Reports from these tests, including code-coverage can be found in the `build/` dir for each service.
+A number of `make` commands exist to simplify the running of tests and static-code-analysis. `make api-test` and `make front-test` can be used to run unit and integration tests, alongside Psalm and PHPCS. There are more specific commands for each available, which you can find by running `make help`. Reports from these tests, including code-coverage can be found in the `build/` dir for each service.
 
-End-to-end tests for the serivce have been written with cypress and live in `e2e-tests/cypress/`, these can be run with `make cypress`. If you wish to run an individual e2e-test, this can be achieved by running `npm install` followed by `npm test` from within the `e2e-tests/` folder.
+End-to-end tests for the service have been written with cypress and live in `e2e-tests/cypress/`, these can be run with `make cypress`. If you wish to run an individual e2e-test, this can be achieved by running `npm install` followed by `npm test` from within the `e2e-tests/` folder.
 
 ## Mocks
 
@@ -60,7 +60,7 @@ When requesting an LPA from Sirius, only certain LPA numbers are supported by th
 The LPAs are as follows:
 
 | LPA UID        | Experian FraudScore Response |
-|----------------|------------------------------|****
+|----------------|------------------------------|
 |M-XYXY-YAGA-35G3| donor that will pass with an `ACCEPT` response |
 |M-XYXY-YAGA-35G4| donor that will fail with a `NODECISION` response (ie person cannot be identified) |
 |M-XYXY-YAGA-35G0| donor that will fail with a `STOP` response (ie person has been identified and is high risk) |
