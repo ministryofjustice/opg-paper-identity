@@ -299,7 +299,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                     $this->anything(),
                     $this->anything(),
                     "ID check failed over the phone",
-                    "ID check incomplete",
+                    "ID Check Incomplete",
                     $this->stringContains($expectedDescription),
                 );
         } else {

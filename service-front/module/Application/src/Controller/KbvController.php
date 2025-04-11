@@ -145,7 +145,7 @@ class KbvController extends AbstractActionController
                     $request,
                     $lpa,
                     "ID check failed over the phone",
-                    "ID check incomplete",
+                    "ID Check Incomplete",
                     $description
                 );
             }
