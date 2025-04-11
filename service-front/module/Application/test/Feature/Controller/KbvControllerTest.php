@@ -6,24 +6,28 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\KbvController;
+use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class KbvControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
+    private SiriusApiService&MockObject $siriusApiServiceMock;
 
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
+        $this->siriusApiServiceMock = $this->createMock(siriusApiService::class);
 
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
+        $serviceManager->setService(siriusApiService::class, $this->siriusApiServiceMock);
     }
 
     /**
@@ -147,6 +151,8 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ->with($uuid)
             ->willReturn([
                 'personType' => $personType,
+                'caseProgress' => ['fraudScore' => ['decision' => 'ACCEPT']],
+                'lpas' => ['lpa1']
             ]);
 
         $this
@@ -245,5 +251,85 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $this->assertControllerName(KbvController::class);
         $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('root/identity_check_failed');
+    }
+
+    /**
+     * @dataProvider addNoteData
+     */
+    public function testAddSiriusNoteWhenKBVsFailedAndDonor(
+        string $personType,
+        string $fraudOutcome,
+        ?string $expectedDescription
+    ): void {
+        $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';
+
+        $this
+            ->opgApiServiceMock
+            ->method('getDetailsData')
+            ->willReturn([
+                'id' => $uuid,
+                'personType' => $personType,
+                'caseProgress' => ['fraudScore' => ['decision' => $fraudOutcome]],
+                'lpas' => ['lpa1', 'lpa2']
+                ]);
+
+        $this
+            ->opgApiServiceMock
+            ->method('getIdCheckQuestions')
+            ->willReturn([
+                [
+                    'externalId' => 'Q1',
+                    'question' => 'Question?',
+                    'prompts' => ['Whittaker', 'Broadway'],
+                    'answered' => false,
+                ],
+            ]);
+
+        $this
+            ->opgApiServiceMock
+            ->method('checkIdCheckAnswers')
+            ->willReturn(['complete' => true, 'passed' => false]);
+
+        if (! is_null($expectedDescription)) {
+            $this
+                ->siriusApiServiceMock
+                ->expects($this->exactly(2))
+                ->method('addNote')
+                ->with(
+                    $this->anything(),
+                    $this->anything(),
+                    "ID check failed over the phone",
+                    "ID check incomplete",
+                    $this->stringContains($expectedDescription),
+                );
+        } else {
+            $this
+            ->siriusApiServiceMock
+            ->expects($this->never())
+            ->method('addNote');
+        }
+
+        $this->dispatch('/' . $uuid . '/id-verify-questions', 'POST', [
+            'Q1' => 'Whittaker',
+            'Q2' => '27',
+        ]);
+    }
+
+    public static function addNoteData(): array
+    {
+        return [
+            "not donor so no note" => [
+                'voucher', 'ACCEPT', null
+            ],
+            "donor passed fraud" => [
+                'donor', 'ACCEPT', 'choose someone to vouch'
+            ],
+            "donor failed fraud" => [
+                'donor', 'STOP', 'They cannot use the vouching route to ID.'
+            ],
+            "donor referred for fraud" => [
+                'donor', 'REFER', 'They cannot use the vouching route to ID.'
+            ]
+        ];
     }
 }
