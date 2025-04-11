@@ -81,7 +81,7 @@ class KbvControllerTest extends TestCase
                 ->willReturn($result);
 
             if ($result->isComplete() && $caseData !== null) {
-                assert (! is_null($caseData->caseProgress));
+                assert(! is_null($caseData->caseProgress));
                 if ($result->isPass()) {
                     $caseData->identityCheckPassed = true;
                     $caseData->caseProgress->kbvs = Kbvs::fromArray(['result' => true]);

@@ -256,8 +256,11 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider addNoteData
      */
-    public function testAddSiriusNoteWhenKBVsFailedAndDonor(string $personType, string $fraudOutcome, ?string $expectedDescription): void
-    {
+    public function testAddSiriusNoteWhenKBVsFailedAndDonor(
+        string $personType,
+        string $fraudOutcome,
+        ?string $expectedDescription
+    ): void {
         $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';
 
         $this
@@ -270,48 +273,46 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 'lpas' => ['lpa1', 'lpa2']
                 ]);
 
-            $this
-                ->opgApiServiceMock
-                ->method('getIdCheckQuestions')
-                ->willReturn([
-                    [
-                        'externalId' => 'Q1',
-                        'question' => 'Question?',
-                        'prompts' => ['Whittaker', 'Broadway'],
-                        'answered' => false,
-                    ],
-                ]);
-
-            $this
-                ->opgApiServiceMock
-                ->method('checkIdCheckAnswers')
-                ->willReturn(['complete' => true, 'passed' => false]);
-
-
-            if (! is_null($expectedDescription)) {
-                $this
-                    ->siriusApiServiceMock
-                    ->expects($this->exactly(2))
-                    ->method('addNote')
-                    ->with(
-                        $this->anything(),
-                        $this->anything(),
-                        "ID check failed over the phone",
-                        "ID check incomplete",
-                        $this->stringContains($expectedDescription),
-                    );
-            } else {
-                $this
-                ->siriusApiServiceMock
-                ->expects($this->never())
-                ->method('addNote');
-            }
-
-            $this->dispatch('/' . $uuid . '/id-verify-questions', 'POST', [
-                'Q1' => 'Whittaker',
-                'Q2' => '27',
+        $this
+            ->opgApiServiceMock
+            ->method('getIdCheckQuestions')
+            ->willReturn([
+                [
+                    'externalId' => 'Q1',
+                    'question' => 'Question?',
+                    'prompts' => ['Whittaker', 'Broadway'],
+                    'answered' => false,
+                ],
             ]);
 
+        $this
+            ->opgApiServiceMock
+            ->method('checkIdCheckAnswers')
+            ->willReturn(['complete' => true, 'passed' => false]);
+
+        if (! is_null($expectedDescription)) {
+            $this
+                ->siriusApiServiceMock
+                ->expects($this->exactly(2))
+                ->method('addNote')
+                ->with(
+                    $this->anything(),
+                    $this->anything(),
+                    "ID check failed over the phone",
+                    "ID check incomplete",
+                    $this->stringContains($expectedDescription),
+                );
+        } else {
+            $this
+            ->siriusApiServiceMock
+            ->expects($this->never())
+            ->method('addNote');
+        }
+
+        $this->dispatch('/' . $uuid . '/id-verify-questions', 'POST', [
+            'Q1' => 'Whittaker',
+            'Q2' => '27',
+        ]);
     }
 
     public static function addNoteData(): array
