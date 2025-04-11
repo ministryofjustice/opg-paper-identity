@@ -132,3 +132,23 @@ When requesting the nearest Post Office to a postcode there are 2 sets of 3 Post
 
 
 When creating a session with the Post Office, the mock will always return a 2xx response as long as the request shape matches the API specification.
+
+
+## Debugging
+
+When running the application locally and debugging, it can be useful to know the state of a case in DynamoBB. To access this you can exec into the localstack docker-container by running `docker exec -it opg-paper-identity-localstack-1 bash`. It is then possible to query dynomoDB via the CLI.
+
+Here are some useful commands:
+
+```bash
+# return everything in the table
+awslocal dynamodb scan --table-name identity-verify
+
+# return the caseData for a given case UUID
+awslocal dynamodb get-item --table-name identity-verify --key '{"id": {"S": $UUID}}'
+
+# return a sub-section (KEY) of caseData for a given case UUID
+awslocal dynamodb get-item --table-name identity-verify --key '{"id": {"S": $UUID}}' --projection-expression "#T" --expression-attribute-names '{"#T": $KEY}'
+```
+
+further documentation on querying dynamoDB can be found [here](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/).
