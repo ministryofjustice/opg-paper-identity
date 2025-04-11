@@ -256,7 +256,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider addNoteData
      */
-    public function testAddSiriusNoteWhenKBVsFailedAndDonor(string $personType, string $fraudOutcome, ?string $expectedNoteType): void
+    public function testAddSiriusNoteWhenKBVsFailedAndDonor(string $personType, string $fraudOutcome, ?string $expectedDescription): void
     {
         $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';
 
@@ -288,7 +288,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 ->willReturn(['complete' => true, 'passed' => false]);
 
 
-            if (! is_null($expectedNoteType)) {
+            if (! is_null($expectedDescription)) {
                 $this
                     ->siriusApiServiceMock
                     ->expects($this->exactly(2))
@@ -296,9 +296,9 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                     ->with(
                         $this->anything(),
                         $this->anything(),
-                        "Identity Check previously failed over the phone",
-                        $expectedNoteType,
-                        $this->anything(),
+                        "ID check failed over the phone",
+                        "ID check incomplete",
+                        $this->stringContains($expectedDescription),
                     );
             } else {
                 $this
@@ -321,10 +321,13 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
                 'voucher', 'ACCEPT', null
             ],
             "donor passed fraud" => [
-                'donor', 'ACCEPT', 'No fraud risk identified'
+                'donor', 'ACCEPT', 'choose someone to vouch'
             ],
             "donor failed fraud" => [
-                'donor', 'STOP', 'High fraud risk identified'
+                'donor', 'STOP', 'They cannot use the vouching route to ID.'
+            ],
+            "donor referred for fraud" => [
+                'donor', 'REFER', 'They cannot use the vouching route to ID.'
             ]
         ];
     }

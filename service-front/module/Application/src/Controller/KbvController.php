@@ -129,20 +129,19 @@ class KbvController extends AbstractActionController
         }
 
         if ($detailsData['personType'] == 'donor') {
-            if ($detailsData["caseProgress"]["fraudScore"]["decision"] === "STOP") {
-                $type = "High fraud risk identified";
-                $description = "The donor on the LPA has tried and failed to ID over the phone. This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. They cannot use the vouching route to ID.";
-            } else {
-                $type = "No fraud risk identified";
+            if ($detailsData["caseProgress"]["fraudScore"]["decision"] === "ACCEPT") {
                 $description = "The donor on the LPA has tried and failed to ID over the phone. This donor can use the Post Office, choose someone to vouch for them or ask the Court of Protection to register their LPA.";
+            } else {
+                $description = "The donor on the LPA has tried and failed to ID over the phone. This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. They cannot use the vouching route to ID.";
+
             }
 
             foreach ($detailsData['lpas'] as $lpa) {
                 $this->siriusApiService->addNote(
                     $request,
                     $lpa,
-                    "Identity Check previously failed over the phone",
-                    $type,
+                    "ID check failed over the phone",
+                    "ID check incomplete",
                     $description
                 );
             }
