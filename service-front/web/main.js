@@ -1,5 +1,5 @@
 import * as GOVUKFrontend from "govuk-frontend";
-import MOJFrontend from "@ministryofjustice/frontend/moj/all.js";
+import * as MOJFrontend from "@ministryofjustice/frontend";
 import accessibleAutocomplete from "accessible-autocomplete";
 
 GOVUKFrontend.initAll();
