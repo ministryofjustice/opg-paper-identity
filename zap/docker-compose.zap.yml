@@ -1,0 +1,19 @@
+---
+services:
+  cypress:
+    environment:
+      HTTP_PROXY: http://zap-proxy:8080
+    depends_on:
+      zap-proxy:
+        condition: service_healthy
+
+  zap-proxy:
+    image: zaproxy/zap-bare
+    environment:
+      ACTIVE_SCAN: ${ACTIVE_SCAN:-false}
+      ACTIVE_SCAN_TIMEOUT: ${ACTIVE_SCAN_TIMEOUT:-300}
+      SCAN_URL: ${SCAN_URL}
+      SERVICE_NAME: ${SERVICE_NAME:-MyService}
+    volumes:
+      - "./zap/:/zap/wrk/"
+    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true

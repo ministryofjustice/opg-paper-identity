@@ -74,3 +74,13 @@ scan-api:
 	docker compose run --rm trivy image --format table paper-identity/api:latest
 scan-front:
 	docker compose run --rm trivy image --format table paper-identity/front:latest
+
+export ACTIVE_SCAN ?= true
+export ACTIVE_SCAN_TIMEOUT ?= 600
+export SERVICE_NAME ?= PaperIdentity
+export SCAN_URL ?= http://front-web
+cypress-zap:
+	docker compose -f docker-compose.yml -f zap/docker-compose.zap.yml run --rm cypress
+	docker compose -f docker-compose.yml -f zap/docker-compose.zap.yml exec -u root zap-proxy bash -c "apk add --no-cache jq"
+	docker compose -f docker-compose.yml -f zap/docker-compose.zap.yml exec zap-proxy bash -c "/zap/wrk/scan.sh"
+	docker compose -f docker-compose.yml -f zap/docker-compose.zap.yml down
