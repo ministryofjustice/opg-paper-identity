@@ -129,16 +129,16 @@ class KbvController extends AbstractActionController
         }
 
         if ($detailsData['personType'] == 'donor') {
-            if ($detailsData["caseProgress"]["fraudScore"]["decision"] === "ACCEPT") {
-                $description =
+            $description = match ($detailsData["caseProgress"]["fraudScore"]["decision"]) {
+                "ACCEPT", "CONTINUE" =>
                     "The donor on the LPA has tried and failed to ID over the phone. " .
                     "This donor can use the Post Office, choose someone to vouch for them " .
-                    "or ask the Court of Protection to register their LPA.";
-            } else {
-                $description = "The donor on the LPA has tried and failed to ID over the phone. " .
-                "This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. " .
-                "They cannot use the vouching route to ID.";
-            }
+                    "or ask the Court of Protection to register their LPA.",
+                default =>
+                    "The donor on the LPA has tried and failed to ID over the phone. " .
+                    "This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. " .
+                    "They cannot use the vouching route to ID."
+            };
 
             foreach ($detailsData['lpas'] as $lpa) {
                 $this->siriusApiService->addNote(
