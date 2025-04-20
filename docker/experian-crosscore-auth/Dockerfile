@@ -1,4 +1,4 @@
-FROM stoplight/prism:5.12.1
+FROM stoplight/prism:5.14.2
 
 COPY ./openapi.yml /usr/src/prism/openapi.yml
 
