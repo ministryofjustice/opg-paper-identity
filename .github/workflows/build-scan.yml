@@ -67,7 +67,7 @@ jobs:
               service_name: yoti-mock
               context: docker/yoti
     name: Build ${{ matrix.service_name }}
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@ce7e03453712dee1e56accf0a83a4349b1a97c42 # v3.10.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@6bc0246b5cca2f4c85d06986c82a9a42643f6851 # v3.13.0
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/${{ matrix.ecr_repository }}
       artifact_name: ${{ matrix.service_name }}-multi-arch
