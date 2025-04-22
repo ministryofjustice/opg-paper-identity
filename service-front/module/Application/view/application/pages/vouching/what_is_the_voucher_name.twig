@@ -18,7 +18,7 @@
             <label class="govuk-label" for="voucher-first-name">
             First names, including any middle names
             </label>
-            <input class="govuk-input" id="voucher-first-name" name="firstName" type="text", value= {{ form.get('firstName').value }}>
+            <input class="govuk-input" id="voucher-first-name" name="firstName" type="text" value="{{ form.get('firstName').value }}">
         </div>
         <div class="govuk-form-group {% if form.get('lastName').messages %}govuk-form-group--error{% endif %}">
             {% if form.get('lastName').messages %}
@@ -30,7 +30,7 @@
             <label class="govuk-label" for="voucher-last-name">
             Last name
             </label>
-            <input class="govuk-input" id="voucher-last-name" name="lastName" type="text" value= {{ form.get('lastName').value }}>
+            <input class="govuk-input" id="voucher-last-name" name="lastName" type="text" value="{{ form.get('lastName').value }}">
         </div>
     </fieldset>
     {% if match %}
