@@ -105,7 +105,7 @@ class HealthcheckController extends AbstractActionController
      */
     public function serviceAvailabilityAction(): JsonModel
     {
-        $services = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
+        $externalServices = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
 
         try {
             $uuid = $this->getRequest()->getQuery('uuid');
@@ -114,17 +114,18 @@ class HealthcheckController extends AbstractActionController
 
                 if (! is_null($case)) {
                     $helper = new ServiceAvailabilityHelper(
-                        $services,
-                        $case,
+                        $externalServices,
                         $this->config
                     );
-                    return new JsonModel($helper->processServicesWithCaseData());
+                    return new JsonModel($helper->processCase($case));
                 }
             }
         } catch (\Exception $exception) {
+            // TODO: what does fraudscore error have to do with this????
+            //      and what do we actually want to happen if theres an error? push it up the stack??
             $this->logger->error('Unable to parse Fraudscore data ' . $exception->getMessage());
-            return new JsonModel($services);
+            return new JsonModel($externalServices);
         }
-        return new JsonModel($services);
+        return new JsonModel($externalServices);
     }
 }

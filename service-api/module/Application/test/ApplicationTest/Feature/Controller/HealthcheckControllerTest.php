@@ -198,8 +198,6 @@ class HealthcheckControllerTest extends TestCase
                 IdRoute::KBV->value => true,
             ],
             'messages' => [],
-            'additional_restriction_messages' => [],
-
         ];
 
         $responseNoDec = [
@@ -213,11 +211,9 @@ class HealthcheckControllerTest extends TestCase
                 IdRoute::COURT_OF_PROTECTION->value => true
             ],
             'messages' => [
-                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
-                    'available security questions or failure to answer them correctly on a previous occasion.',
+                'The donor cannot ID over the phone due to a lack of ' .
+                'available security questions or failure to answer them correctly on a previous occasion.',
             ],
-            'additional_restriction_messages' => [],
-
         ];
 
         return [

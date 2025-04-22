@@ -503,22 +503,23 @@ return [
     ],
     'opg_settings' => [
         'identity_documents' => [
-            DocumentType::Passport->value => "Passport",
+            DocumentType::Passport->value => 'Passport',
             DocumentType::DrivingLicence->value => 'Driving licence',
             DocumentType::NationalInsuranceNumber->value => 'National Insurance number',
         ],
         'identity_routes' => [
+            IdRoute::KBV->value => 'Experian',
             IdRoute::POST_OFFICE->value => 'Post Office',
             IdRoute::VOUCHING->value => 'Have someone vouch for the identity of the donor',
             IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
-        ],
-        'identity_services' => [
-            IdRoute::KBV->value => 'Experian',
         ],
         'banner_messages' => [
             'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security questions ' .
                 'or failure to answer them correctly on a previous occasion.',
             'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
+                'available information from Experian or a failure to answer the security questions correctly ' .
+                'on a previous occasion.',
+            'DONOR_STOP_VOUCH_AVAILABLE' => 'The donor cannot ID over the phone due to a lack of ' .
                 'available information from Experian or a failure to answer the security questions correctly ' .
                 'on a previous occasion.',
             'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available information ' .

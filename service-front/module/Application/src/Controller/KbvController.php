@@ -130,7 +130,7 @@ class KbvController extends AbstractActionController
 
         if ($detailsData['personType'] == 'donor') {
             $description = match ($detailsData["caseProgress"]["fraudScore"]["decision"]) {
-                "ACCEPT", "CONTINUE" =>
+                "ACCEPT", "CONTINUE", "NODECISION" => // TODO: how are we treating NODECISION in this circumstance???
                     "The donor on the LPA has tried and failed to ID over the phone. " .
                     "This donor can use the Post Office, choose someone to vouch for them " .
                     "or ask the Court of Protection to register their LPA.",

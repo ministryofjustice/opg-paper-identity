@@ -25,7 +25,6 @@ class HowConfirmController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
-        private readonly array $config,
     ) {
     }
 
@@ -37,37 +36,13 @@ class HowConfirmController extends AbstractActionController
         $dateSubForm = $this->createForm(PassportDate::class);
         $form = $this->createForm(IdMethod::class);
 
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
-
-        $identityDocs = [];
-        foreach ($this->config['opg_settings']['identity_documents'] as $key => $value) {
-            if ($serviceAvailability['data'][$key] === true) {
-                $identityDocs[$key] = $value;
-            }
-        }
-
-        $methods = [];
-        foreach (array_keys($this->config['opg_settings']['identity_routes']) as $key) {
-            if (array_key_exists($key, $serviceAvailability['data'])) {
-                /**
-                * @psalm-suppress InvalidArrayOffset
-                */
-                $methods[$key] = $serviceAvailability['data'][$key];
-            } else {
-                /**
-                * @psalm-suppress InvalidArrayOffset
-                */
-                $methods[$key] = true;
-            }
-        }
+        $routeAvailability = $this->opgApiService->getRouteAvailability($uuid);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
-        $view->setVariable('options_data', $identityDocs);
-        $view->setVariable('methods_data', $methods);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $routeAvailability);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
