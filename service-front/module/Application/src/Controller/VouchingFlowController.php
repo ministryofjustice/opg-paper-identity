@@ -224,7 +224,7 @@ class VouchingFlowController extends AbstractActionController
         }
         $view->setVariable(
             'warning_message',
-            'By continuing, you confirm that the person vouching is more than 100 years old. 
+            'By continuing, you confirm that the person vouching is more than 100 years old.
             If not, please change the date.'
         );
         return $view->setTemplate('application/pages/confirm_dob');
@@ -458,7 +458,7 @@ class VouchingFlowController extends AbstractActionController
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         if ($this->getRequest()->isPost()) {
-            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
+            return $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
         }
 
         $view = new ViewModel();
