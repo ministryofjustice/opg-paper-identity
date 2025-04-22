@@ -96,7 +96,7 @@ class DonorFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/donor_details_match_check');
     }
 
-    public function donorLpaCheckAction(): ViewModel
+    public function donorLpaCheckAction(): ViewModel|Response
     {
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -116,22 +116,22 @@ class DonorFlowController extends AbstractActionController
              * @psalm-suppress PossiblyUndefinedArrayOffset
              */
             if ($detailsData['idMethod']['idRoute'] == IdRoute::POST_OFFICE->value) {
-                $this->redirect()
+                return $this->redirect()
                     ->toRoute("root/find_post_office_branch", ['uuid' => $uuid]);
             } else {
                 switch ($detailsData['idMethod']['docType']) {
                     case DocumentType::Passport->value:
-                        $this->redirect()
+                        return $this->redirect()
                             ->toRoute("root/passport_number", ['uuid' => $uuid]);
                         break;
 
                     case DocumentType::DrivingLicence->value:
-                        $this->redirect()
+                        return $this->redirect()
                             ->toRoute("root/driving_licence_number", ['uuid' => $uuid]);
                         break;
 
                     case DocumentType::NationalInsuranceNumber->value:
-                        $this->redirect()
+                        return $this->redirect()
                             ->toRoute("root/national_insurance_number", ['uuid' => $uuid]);
                         break;
 
@@ -154,7 +154,7 @@ class DonorFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             $this->opgApiService->updateCaseAssistance($uuid, $formData['assistance'], $formData['details']);
-            $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
+            return $this->redirect()->toUrl($this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]);
         }
 
         $view = new ViewModel();
