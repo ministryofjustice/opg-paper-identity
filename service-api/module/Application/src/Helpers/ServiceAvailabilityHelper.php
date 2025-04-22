@@ -15,122 +15,73 @@ class ServiceAvailabilityHelper
     public const LOCKED = 'LOCKED';
     public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
     public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
-    protected array $availableServices = [];
-    protected array $processedMessages = [];
+    public const KBV_FALSE = [
+        DocumentType::NationalInsuranceNumber->value => false,
+        DocumentType::DrivingLicence->value => false,
+        DocumentType::Passport->value => false,
+        IdRoute::KBV->value => false,
+    ];
+    protected array $availableRoutes = [];
+    protected array $messages = [];
 
     public function __construct(
-        protected array $services,
-        protected CaseData $case,
+        array $externalServices,
         protected array $config
     ) {
-        $this->processGlobalServicesSettings();
-        $this->processAdditionalMessages();
-        $this->mergeServices($this->config);
+        $this->initAvailableRoutes();
+        $this->processExternalServices($externalServices);
     }
 
-    private function processGlobalServicesSettings(): void
+    private function initAvailableRoutes(): void
     {
-        $processedGlobalServices = [];
+        $routes = array_merge(
+            array_keys($this->config['opg_settings']['identity_documents']),
+            array_keys($this->config['opg_settings']['identity_routes']),
+        );
+        $this->availableRoutes = array_fill_keys($routes, false);
+        $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = true;
+    }
 
-        if (($this->services[IdRoute::KBV->value] ?? false) !== true) {
-            $processedGlobalServices[IdRoute::KBV->value] = false;
-            $processedGlobalServices[DocumentType::DrivingLicence->value] = false;
-            $processedGlobalServices[DocumentType::Passport->value] = false;
-            $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] = false;
-            $processedGlobalServices[IdRoute::POST_OFFICE->value] = $this->services[IdRoute::POST_OFFICE->value];
-        } else {
-            foreach ($this->services as $key => $value) {
-                $processedGlobalServices[$key] = $value;
+    private function processExternalServices(array $externalServices): void
+    {
+        if (($externalServices[IdRoute::KBV->value] ?? false) === true) {
+            $this->availableRoutes = array_merge($this->availableRoutes, $externalServices);
+            // TODO: do we actually need these messages???? Not in figma
+            if (
+                ! $externalServices[DocumentType::NationalInsuranceNumber->value] ||
+                ! $externalServices[DocumentType::Passport->value] ||
+                ! $externalServices[DocumentType::DrivingLicence->value]
+            ) {
+                $this->messages[] = 'Some identity verification methods are not presently available';
             }
+        } else {
+            $this->availableRoutes = array_merge($this->availableRoutes, $externalServices, self::KBV_FALSE);
+            $this->messages[] = 'Online identity verification is not presently available';
         }
-
-        if (
-            $processedGlobalServices[DocumentType::DrivingLicence->value] === false ||
-            $processedGlobalServices[DocumentType::Passport->value] === false ||
-            $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] === false
-        ) {
-            $this->processedMessages['service_status'] =
-                "Some identity verification methods are not presently available";
-        }
-
-        if (
-            $processedGlobalServices[DocumentType::DrivingLicence->value] === false &&
-            $processedGlobalServices[DocumentType::Passport->value] === false &&
-            $processedGlobalServices[DocumentType::NationalInsuranceNumber->value] === false
-        ) {
-            $processedGlobalServices[IdRoute::KBV->value] = false;
-            $this->processedMessages['service_status'] = "Online identity verification is not presently available";
-        }
-
-        if (array_key_exists('message', $this->services)) {
-            $this->processedMessages[] = $this->services['message'];
-        }
-
-        $this->services = $processedGlobalServices;
-    }
-    /**
-     * @return array<string, string>
-     */
-    public function getProcessGlobalServicesSettings(): array
-    {
-        return $this->availableServices;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getProcessedMessage(): array
-    {
-        return $this->processedMessages;
-    }
-
-    final public function toArray(): array
+    public function toArray(): array
     {
         return [
-            'data' => $this->getProcessGlobalServicesSettings(),
-            'messages' => $this->getProcessedMessage(),
-            'additional_restriction_messages' => $this->processAdditionalMessages()
+            'data' => $this->availableRoutes,
+            'messages' => $this->messages,
         ];
     }
 
-    private function mergeServices(
-        array $config
-    ): void {
-        $configServices = array_merge(
-            $config['opg_settings']['identity_documents'] ?? [],
-            $config['opg_settings']['identity_routes'] ?? [],
-            $config['opg_settings']['identity_services'] ?? [],
-        );
-
-        $keys = array_keys($configServices);
-
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $this->services)) {
-                $this->availableServices[$key] = $this->services[$key];
-            } else {
-                $this->availableServices[$key] = true;
-            }
-        }
-    }
-
-    private function setServiceFlags(bool $flag, array $options = []): void
+    private function parseBannerText(CaseData $case, string $configMessage): string
     {
-        $this->availableServices[DocumentType::NationalInsuranceNumber->value] = $flag;
-        $this->availableServices[DocumentType::DrivingLicence->value] = $flag;
-        $this->availableServices[DocumentType::Passport->value] = $flag;
-        $this->availableServices[IdRoute::KBV->value] = $flag;
-
-        foreach ($options as $service) {
-            $this->availableServices[$service] = $flag;
-        }
-    }
-
-    private function parseBannerText(string $configMessage): string
-    {
-        if ($configMessage === 'STOP') {
-            switch ($this->case->personType) {
+        if ($configMessage === self::DECISION_STOP) {
+            switch ($case->personType) {
                 case 'donor':
-                    $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_STOP'];
+                    if (
+                        is_null($case->caseProgress) ||
+                        is_null($case->caseProgress->fraudScore) ||
+                        in_array($case->caseProgress->fraudScore->decision, ["ACCEPT", "CONTINUE", "NODECISION"])
+                    ) {
+                        $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_STOP_VOUCH_AVAILABLE'];
+                    } else {
+                        $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_STOP'];
+                    }
                     break;
                 case 'certificateProvider':
                     $bannerText = $this->config['opg_settings']['banner_messages']['CP_STOP'];
@@ -144,7 +95,7 @@ class ServiceAvailabilityHelper
 
             $bannerText = str_replace(
                 "%s",
-                $labels[$this->case->personType],
+                $labels[$case->personType],
                 $this->config['opg_settings']['banner_messages'][$configMessage]
             );
         }
@@ -152,113 +103,59 @@ class ServiceAvailabilityHelper
         return $bannerText;
     }
 
-    public function processServicesWithCaseData(): array
+    public function processCase(CaseData $case): array
     {
-        if ($this->case->caseProgress?->kbvs?->result === true) {
-            $this->processedMessages['banner'] =
-                $this->parseBannerText(self::LOCKED_SUCCESS);
 
-            $this->setServiceFlags(false, [
-                DocumentType::NationalInsuranceNumber->value,
-                DocumentType::DrivingLicence->value,
-                DocumentType::Passport->value,
-                IdRoute::POST_OFFICE->value,
-                IdRoute::KBV->value,
-                IdRoute::VOUCHING->value,
-                IdRoute::COURT_OF_PROTECTION->value,
-            ]);
+        // vouching is only available for donors and only if they have not yet had a fraud-check, or passed one
+        $this->availableRoutes[IdRoute::VOUCHING->value] = (
+            $case->personType === 'donor' &&
+            (
+                is_null($case->caseProgress) ||
+                is_null($case->caseProgress->fraudScore) ||
+                in_array($case->caseProgress->fraudScore->decision, ["ACCEPT", "CONTINUE", "NODECISION"])
+            )
+        );
 
+        if ($case->caseProgress?->kbvs?->result === true) {
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_SUCCESS));
+            $this->availableRoutes = array_fill_keys(array_keys($this->availableRoutes), false);
             return $this->toArray();
         }
 
-        if ($this->case->identityIQ?->thinfile === true) {
-            $this->processedMessages['banner'] =
-                $this->parseBannerText(self::DECISION_NODECISION);
-
-            $this->setServiceFlags(false);
-
+        if ($case->identityIQ?->thinfile === true || $case->caseProgress?->fraudScore?->decision === 'NODECISION') {
+            array_unshift($this->messages, $this->parseBannerText($case, self::DECISION_NODECISION));
+            $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
         }
 
-        if ($this->case->identityCheckPassed === false) {
-            $this->processedMessages['banner'] =
-                $this->parseBannerText(self::DECISION_STOP);
-
-            $this->setServiceFlags(false);
-
+        if ($case->caseProgress?->kbvs?->result === false) {
+            array_unshift($this->messages, $this->parseBannerText($case, self::DECISION_STOP));
+            $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
         }
 
-        if ($this->case->caseProgress?->docCheck?->state === false) {
-            $this->processedMessages['banner'] =
-                $this->parseBannerText(self::LOCKED);
-
-            $this->setServiceFlags(false);
-
+        if ($case->caseProgress?->docCheck?->state === false) {
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED));
+            $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
         }
 
-        if ($this->case->caseProgress?->docCheck?->state === true) {
-            $this->processedMessages['banner'] =
-                $this->parseBannerText(self::LOCKED_ID_SUCCESS);
-
-            $this->setServiceFlags(false);
-
+        if ($case->caseProgress?->docCheck?->state === true) {
+            // TODO: is this actually a thing?? I can't see it in figma anywhere and it doesn't make sense to me
+            // blocking off KBVs if they've passed a doc-check in that session?
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_SUCCESS));
+            $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
         }
 
-        if (
-            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_STOP ||
-            $this->case->caseProgress?->fraudScore?->decision === self::DECISION_NODECISION
-        ) {
-            $this->setServiceFlags(false);
-
-            if ($this->case->caseProgress?->fraudScore?->decision === 'STOP') {
-                $this->availableServices[IdRoute::VOUCHING->value] = false;
-                $this->processedMessages['banner'] =
-                    $this->parseBannerText(self::DECISION_STOP);
-            } else {
-                $this->processedMessages['banner'] =
-                    $this->parseBannerText(self::DECISION_NODECISION);
-            }
-        }
-
-        if (is_array($this->case->caseProgress?->restrictedMethods)) {
-            /**
-             * @psalm-suppress PossiblyNullPropertyFetch
-             * @psalm-suppress PossiblyNullIterator
-             */
-            foreach ($this->case->caseProgress->restrictedMethods as $restrictedOption) {
-                $this->availableServices[$restrictedOption] = false;
-            }
+        foreach ($case->caseProgress->restrictedMethods ?? [] as $restrictedOption) {
+            $this->availableRoutes[$restrictedOption] = false;
+            $this->messages[] = sprintf(
+                $this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'],
+                $this->config['opg_settings']['identity_documents'][$restrictedOption]
+            );
         }
 
         return $this->toArray();
-    }
-
-    public function processAdditionalMessages(): array
-    {
-        $messages = [];
-
-        $map = [
-            DocumentType::NationalInsuranceNumber->value => 'National Insurance number',
-            DocumentType::Passport->value => 'Passport',
-            DocumentType::DrivingLicence->value => 'Driving licence',
-        ];
-
-        if (is_array($this->case->caseProgress?->restrictedMethods)) {
-            /**
-             * @psalm-suppress PossiblyNullPropertyFetch
-             * @psalm-suppress PossiblyNullIterator
-             */
-            foreach ($this->case->caseProgress->restrictedMethods as $restrictedOption) {
-                $messages[] = sprintf(
-                    $this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'],
-                    $map[$restrictedOption]
-                );
-            }
-        }
-
-        return $messages;
     }
 }

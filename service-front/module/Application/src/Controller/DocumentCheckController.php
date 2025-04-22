@@ -37,13 +37,13 @@ class DocumentCheckController extends AbstractActionController
     public function nationalInsuranceNumberAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
+        $routeAvailability = $this->opgApiService->getRouteAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options'][DocumentType::NationalInsuranceNumber->value];
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $routeAvailability);
 
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -92,13 +92,13 @@ class DocumentCheckController extends AbstractActionController
     public function drivingLicenceNumberAction(): ViewModel
     {
         $uuid = $this->params()->fromRoute("uuid");
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
+        $routeAvailability = $this->opgApiService->getRouteAvailability($uuid);
 
         $templates = $this->config['opg_settings']['template_options'][DocumentType::DrivingLicence->value];
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $routeAvailability);
 
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -143,10 +143,10 @@ class DocumentCheckController extends AbstractActionController
         $templates = $this->config['opg_settings']['template_options'][DocumentType::Passport->value];
         $template = $templates['default'];
         $uuid = $this->params()->fromRoute("uuid");
-        $serviceAvailability = $this->opgApiService->getServiceAvailability($uuid);
+        $routeAvailability = $this->opgApiService->getRouteAvailability($uuid);
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $serviceAvailability);
+        $view->setVariable('service_availability', $routeAvailability);
 
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);
