@@ -183,7 +183,7 @@
                 </fieldset>
                 <input type="hidden" name="lpa" value="{{ form.get('lpa').value }}">
                 {% for lpa in lpa_response['lpas'] %}
-                    <input type="hidden" name="lpas[]" value={{ lpa['uId'] }}>
+                    <input type="hidden" name="lpas[]" value="{{ lpa['uId'] }}">
                 {% endfor %}
                 <input type="submit" class="govuk-button govuk-!-margin-right-2" value="Add this donor to identity check">
                 <a href="./confirm-donors" class="govuk-button govuk-button--secondary">Return to donor list</a>
