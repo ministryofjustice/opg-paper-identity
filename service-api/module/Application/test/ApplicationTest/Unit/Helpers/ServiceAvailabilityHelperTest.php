@@ -15,16 +15,15 @@ class ServiceAvailabilityHelperTest extends TestCase
     /**
      * @dataProvider data
      */
-    public function testProcessServicesWithCaseData(
+    public function testProcessCase(
         array $config,
         array $caseData,
-        array $services,
+        array $externalServices,
         array $expected
     ): void {
         $case = CaseData::fromArray($caseData);
-        $helper = new ServiceAvailabilityHelper($services, $case, $config);
-
-        $this->assertEquals($expected, $helper->processServicesWithCaseData());
+        $helper = new ServiceAvailabilityHelper($externalServices, $config);
+        $this->assertEquals($expected, $helper->processCase($case));
     }
 
     public static function data(): array
@@ -32,36 +31,26 @@ class ServiceAvailabilityHelperTest extends TestCase
         $config = [
             'opg_settings' => [
                 'identity_documents' => [
-                    DocumentType::Passport->value => "Passport",
+                    DocumentType::Passport->value => 'Passport',
                     DocumentType::DrivingLicence->value => 'Driving licence',
                     DocumentType::NationalInsuranceNumber->value => 'National Insurance number',
                 ],
                 'identity_routes' => [
+                    IdRoute::KBV->value => 'Experian',
                     IdRoute::POST_OFFICE->value => 'Post Office',
                     IdRoute::VOUCHING->value => 'Have someone vouch for the identity of the donor',
                     IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
                 ],
-                'identity_services' => [
-                    IdRoute::KBV->value => 'Experian',
-                ],
                 'banner_messages' => [
-                    'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security ' .
-                        'questions or failure to answer them correctly on a previous occasion.',
-                    'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack ' .
-                        'of available information from Experian or a failure to answer the security questions ' .
-                        'correctly on a previous occasion.',
-                    'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available ' .
-                        'information from Experian or a failure to answer the security questions correctly on a ' .
-                        'previous occasion.',
-                    'VOUCHER_STOP' => 'The person vouching cannot ID over the phone due to a lack of available ' .
-                        'information from Experian or a failure to answer the security questions correctly ' .
-                        'on a previous occasion.',
-                    'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the ' .
-                        'phone with a valid document',
-                    'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
-                        'and their details did not match the document provided.',
-                    'LOCKED_SUCCESS' => 'The %s has already confirmed their identity. The %s has already ' .
-                        'completed an ID check for this LPA',
+                    'NODECISION' => 'no-decision-message',
+                    'DONOR_STOP' => 'donor-stop-message',
+                    'DONOR_STOP_VOUCH_AVAILABLE' => 'donor-stop-vouching-available-message',
+                    'CP_STOP' => 'cp-stop-message',
+                    'VOUCHER_STOP' => 'voucher-stop-message',
+                    'LOCKED_ID_SUCCESS' => 'The %s has already passed doc-check',
+                    'LOCKED' => 'The %s failed doc-check',
+                    'LOCKED_SUCCESS' => 'The identity check has already been completed',
+                    'RESTRICTED_OPTIONS' => '%s could not be verified over the phone...'
                 ],
                 'person_type_labels' => [
                     'donor' => 'donor',
@@ -71,7 +60,7 @@ class ServiceAvailabilityHelperTest extends TestCase
             ]
         ];
 
-        $services = [
+        $externalServices = [
             IdRoute::KBV->value => true,
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
@@ -79,32 +68,33 @@ class ServiceAvailabilityHelperTest extends TestCase
             IdRoute::POST_OFFICE->value => true
         ];
 
-        $servicesPostOfficeDown = array_merge(
-            $services,
-            [IdRoute::POST_OFFICE->value => false]
+        $experianUnavailable = array_merge($externalServices, [IdRoute::KBV->value => false]);
+        $postOfficeUnavailable = array_merge($externalServices, [IdRoute::POST_OFFICE->value => false]);
+        $ninoUnavailable = array_merge($externalServices, [DocumentType::NationalInsuranceNumber->value => false]);
+        $passportUnavailable = array_merge($externalServices, [DocumentType::Passport->value => false]);
+        $drivingLicenceUnavailable = array_merge($externalServices, [DocumentType::DrivingLicence->value => false]);
+        $allDocsUnavailable = array_merge(
+            $externalServices,
+            [
+                DocumentType::NationalInsuranceNumber->value => false,
+                DocumentType::Passport->value => false,
+                DocumentType::DrivingLicence->value => false
+            ]
         );
 
-        $servicesExperianDown = array_merge(
-            $services,
-            [IdRoute::KBV->value => false]
-        );
-
-        $servicesPassportDown = array_merge(
-            $services,
-            [DocumentType::Passport->value => false]
-        );
-
-        $allTrue = [
+        $allRoutesAvailable = [
             IdRoute::KBV->value => true,
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
             IdRoute::POST_OFFICE->value => true,
-            IdRoute::VOUCHING->value => true,
+            IdRoute::VOUCHING->value => false,  // set to false as only available for donor so easier to add back in.
             IdRoute::COURT_OF_PROTECTION->value => true,
         ];
 
-        $allFalse = [
+        $vouchingAvailable = [IdRoute::VOUCHING->value => true];
+
+        $allRoutesUnavailable = [
             IdRoute::KBV->value => false,
             DocumentType::Passport->value => false,
             DocumentType::DrivingLicence->value => false,
@@ -114,151 +104,79 @@ class ServiceAvailabilityHelperTest extends TestCase
             IdRoute::COURT_OF_PROTECTION->value => false,
         ];
 
-        $expected = [
-            'data' => $allTrue,
-            'messages' => [],
-            'additional_restriction_messages' => [],
-        ];
-
-        $expectedNoDec = [
-            'data' => array_merge(
-                $allFalse,
-                [
-                    IdRoute::POST_OFFICE->value => true,
-                    IdRoute::VOUCHING->value => true,
-                    IdRoute::COURT_OF_PROTECTION->value => true,
-                ]
-            ),
-            'messages' => [
-                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
-                    'available security questions or failure to answer them correctly on a previous occasion.',
-            ],
-            'additional_restriction_messages' => [],
-        ];
-
-        $expectedStop = [
-            'data' => array_merge(
-                $allFalse,
-                [
-                    IdRoute::POST_OFFICE->value => true,
-                    IdRoute::COURT_OF_PROTECTION->value => true,
-                ]
-            ),
-            'messages' => [
-                'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
-                    'available information from Experian or a failure to answer the security questions correctly ' .
-                    'on a previous occasion.'
-            ],
-            'additional_restriction_messages' => [],
-        ];
-
-        $expectedKbvFail = [
-            'data' => array_merge(
-                $allFalse,
-                [
-                    IdRoute::POST_OFFICE->value => true,
-                    IdRoute::VOUCHING->value => true,
-                    IdRoute::COURT_OF_PROTECTION->value => true,
-                ]
-            ),
-            'messages' => [
-                'banner' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
-                    'available information from Experian or a failure to answer the security questions correctly ' .
-                    'on a previous occasion.',
-            ],
-            'additional_restriction_messages' => [],
-        ];
-
-        $expectedKbvEmpty = [
-            'data' => array_merge(
-                $allFalse,
-                [
-                    IdRoute::POST_OFFICE->value => true,
-                    IdRoute::VOUCHING->value => true,
-                    IdRoute::COURT_OF_PROTECTION->value => true,
-                ]
-            ),
-            'messages' => [
-                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
-                    'available security questions or failure to answer them correctly ' .
-                    'on a previous occasion.',
-            ],
-            'additional_restriction_messages' => [],
-        ];
-
-        $expectedDocSuccess = [
-            'data' => array_merge(
-                $allFalse,
-                [
-                    IdRoute::POST_OFFICE->value => true,
-                    IdRoute::VOUCHING->value => true,
-                    IdRoute::COURT_OF_PROTECTION->value => true,
-                ]
-            ),
-            'messages' => [
-                'banner' => 'The donor has already proved their identity over the ' .
-                    'phone with a valid document',
-            ],
-            'additional_restriction_messages' => [],
-        ];
-
-        $case = [
-            "id" => "4d41c926-d11c-4341-8500-b36a666a35dd",
-            "personType" => "donor",
-            "lpas" => [
-                "M-XYXY-YAGA-35G3"
-            ],
-            "documentComplete" => false,
-            "yotiSessionId" => "00000000-0000-0000-0000-000000000000",
-            "idMethod" => [
-                "docType" => DocumentType::DrivingLicence->value,
-                "idRoute" => IdRoute::KBV->value,
-                "idCountry" => "GBR"
-            ],
-            "claimedIdentity" => [
-                "dob" => "1986-09-03",
-                "firstName" => "Lee",
-                "lastName" => "Manthrope",
-                "address" => [
-                    "postcode" => "SO15 3AA",
-                    "country" => "GB",
-                    "line3" => "",
-                    "town" => "Southamption",
-                    "line2" => "",
-                    "line1" => "18 BOURNE COURT"
-                ],
-                "professionalAddress" => null
+        $offlineRoutesOnly = array_merge(
+            $allRoutesUnavailable,
+            [
+                IdRoute::POST_OFFICE->value => true,
+                IdRoute::COURT_OF_PROTECTION->value => true,
             ]
-        ];
+        );
 
-        $caseNoDecision = array_merge($case, [
+
+        $donor = ["personType" => "donor"];
+        $certificateProvider = ["personType" => "certificateProvider"];
+        $voucher = ["personType" => "voucher"];
+
+        $noDecision = [
             "caseProgress" => [
                 "fraudScore" => [
                     "decision" => "NODECISION",
                     "score" => 0
                 ]
             ]
-        ]);
+        ];
 
-        $caseStop = array_merge($case, [
+        $kbvsPassed = [
+            "caseProgress" => [
+                "kbvs" => [
+                    "result" => true
+                ]
+            ]
+        ];
+
+        $docCheckedFailed = [
+            "caseProgress" => [
+                "docCheck" => [
+                    "idDocument" => DocumentType::DrivingLicence->value,
+                    "state" => false
+                ],
+            ]
+        ];
+
+        $docCheckedPassed = [
+            "caseProgress" => [
+                "docCheck" => [
+                    "idDocument" => DocumentType::DrivingLicence->value,
+                    "state" => true
+                ],
+            ]
+        ];
+
+        $stopFailedKbvs = [
             "caseProgress" => [
                 "fraudScore" => [
                     "decision" => "STOP",
                     "score" => 999
-                ]
-            ]
-        ]);
-
-        $caseKbvFail = array_merge($case, [
-            "identityCheckPassed" => false,
-            "caseProgress" => [
+                ],
                 "kbvs" => [
                     "result" => false
                 ]
             ]
-        ]);
+        ];
 
-        $caseKbvEmpty = array_merge($case, [
+        $continueFailedKbvs = [
+            "caseProgress" => [
+                "fraudScore" => [
+                    "decision" => "CONTINUE",
+                    "score" => 200,
+                ],
+                "kbvs" => [
+                    "result" => false
+                ]
+            ]
+        ];
+
+        $thinfile = [
             "identityIQ" => [
                 "kbvQuestions" => [],
                 "iiqControl" => [
@@ -267,103 +185,347 @@ class ServiceAvailabilityHelperTest extends TestCase
                 ],
                 "thinfile" => true
             ]
-        ]);
+        ];
 
-        $caseDocChecked = array_merge($case, [
+        $ninoRestricted = [
             "caseProgress" => [
-                "abandonedFlow" => null,
-                "docCheck" => [
-                    "idDocument" => DocumentType::DrivingLicence->value,
-                    "state" => true
-                ],
-                "kbvs" => null,
-                "fraudScore" => [
-                    "decision" => "ACCEPT",
-                    "score" => 265
-                ]
-            ],
-        ]);
-
+                "restrictedMethods" => [DocumentType::NationalInsuranceNumber->value]
+            ]
+        ];
 
         return [
-            [
+            "fresh donor case - all routes available" => [
                 $config,
-                $case,
-                $services,
-                $expected
+                $donor,
+                $externalServices,
+                [
+                    'data' => array_merge($allRoutesAvailable, $vouchingAvailable),
+                    'messages' => [],
+                ],
             ],
-            [
+            "fresh certificate-provider case - all but vouching available" => [
                 $config,
-                $caseNoDecision,
-                $services,
-                $expectedNoDec
+                $certificateProvider,
+                $externalServices,
+                [
+                    'data' => $allRoutesAvailable,
+                    'messages' => [],
+                ],
             ],
-            [
+            "fresh voucher case - all but vouching available" => [
                 $config,
-                $caseStop,
-                $services,
-                $expectedStop
+                $voucher,
+                $externalServices,
+                [
+                    'data' => $allRoutesAvailable,
+                    'messages' => [],
+                ],
             ],
-            [
+            "already passed the ID check" => [
                 $config,
-                $caseKbvFail,
-                $services,
-                $expectedKbvFail
+                array_merge($donor, $kbvsPassed),
+                $externalServices,
+                [
+                    'data' => $allRoutesUnavailable,
+                    'messages' => ['The identity check has already been completed']
+                ]
             ],
-            [
+            "donor failed a doc-check" => [
                 $config,
-                $caseKbvEmpty,
-                $services,
-                $expectedKbvEmpty
+                array_merge($donor, $docCheckedFailed),
+                $externalServices,
+                [
+                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'messages' => ['The donor failed doc-check']
+                ]
             ],
-            [
+            "certificate-provider failed a doc-check" => [
                 $config,
-                $caseDocChecked,
-                $services,
-                $expectedDocSuccess
+                array_merge($certificateProvider, $docCheckedFailed),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['The certificate provider failed doc-check']
+                ]
             ],
-            [
+            "voucher failed a doc-check" => [
                 $config,
-                $case,
-                $servicesPostOfficeDown,
-                array_merge(
-                    $expected,
-                    ['data' => array_merge($allTrue, [IdRoute::POST_OFFICE->value => false])]
-                )
+                array_merge($voucher, $docCheckedFailed),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['The person vouching failed doc-check']
+                ]
             ],
-            [
+            // TODO: is this actually the correct behaviour??
+            "donor doc has already been checked - close off experian routes" => [
                 $config,
-                $case,
-                $servicesExperianDown,
+                array_merge($donor, $docCheckedPassed),
+                $externalServices,
+                [
+                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'messages' => ['The donor has already passed doc-check']
+                ]
+            ],
+            "certificate-provider doc has already been checked - close off experian routes" => [
+                $config,
+                array_merge($certificateProvider, $docCheckedPassed),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['The certificate provider has already passed doc-check']
+                ]
+            ],
+            "voucher doc has already been checked - close off experian routes" => [
+                $config,
+                array_merge($voucher, $docCheckedPassed),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['The person vouching has already passed doc-check']
+                ]
+            ],
+            "donor with NODECISION fraudscore - ???" => [
+                $config,
+                array_merge($certificateProvider, $noDecision),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['no-decision-message']
+                ]
+            ],
+            "certificate-provider with NODECISION fraudscore - ???" => [
+                $config,
+                array_merge($certificateProvider, $noDecision),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                ]
+            ],
+            "voucher with NODECISION fraudscore - ???" => [
+                $config,
+                array_merge($voucher, $noDecision),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                ]
+            ],
+            "donor with a thinfile (empty KBVs) - offline only" => [
+                $config,
+                array_merge($donor, $thinfile),
+                $externalServices,
+                [
+                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'messages' => ['no-decision-message']
+                ]
+            ],
+            "certificate-provider with a thinfile (empty KBVs) - offline only" => [
+                $config,
+                array_merge($certificateProvider, $thinfile),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                ]
+            ],
+            "voucher with a thinfile (empty KBVs) - offline only" => [
+                $config,
+                array_merge($voucher, $thinfile),
+                $externalServices,
+                [
+                    'data' => $offlineRoutesOnly,
+                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                ]
+            ],
+
+            "donor with STOP fraudscore and failed KBVs - only post-office and CoP available" => [
+                $config,
+                array_merge($donor, $stopFailedKbvs),
+                $externalServices,
                 [
                     'data' => array_merge(
-                        $allFalse,
+                        $allRoutesUnavailable,
+                        [
+                            IdRoute::POST_OFFICE->value => true,
+                            IdRoute::COURT_OF_PROTECTION->value => true,
+                        ]
+                    ),
+                    'messages' => ['donor-stop-message'],
+                ]
+            ],
+            "donor with CONTINUE fraudscore and failed KBVs - post-office, vouching and CoP available" => [
+                $config,
+                array_merge($donor, $continueFailedKbvs),
+                $externalServices,
+                [
+                    'data' => array_merge(
+                        $allRoutesUnavailable,
                         [
                             IdRoute::POST_OFFICE->value => true,
                             IdRoute::VOUCHING->value => true,
                             IdRoute::COURT_OF_PROTECTION->value => true,
                         ]
                     ),
-                    'messages' => [
-                        'service_status' =>
-                        'Online identity verification is not presently available',
-                    ],
-                    'additional_restriction_messages' => [],
+                    'messages' => ['donor-stop-vouching-available-message'],
                 ]
             ],
-            [
+            "certificate-provider with failed KBVs - only post-office and CoP available" => [
                 $config,
-                $case,
-                $servicesPassportDown,
+                array_merge($certificateProvider, $stopFailedKbvs),
+                $externalServices,
                 [
-                    'data' => array_merge($allTrue, [DocumentType::Passport->value => false]),
-                    'messages' => [
-                        'service_status' =>
-                        'Some identity verification methods are not presently available',
-                    ],
-                    'additional_restriction_messages' => [],
+                    'data' => array_merge(
+                        $allRoutesUnavailable,
+                        [
+                            IdRoute::POST_OFFICE->value => true,
+                            IdRoute::COURT_OF_PROTECTION->value => true,
+                        ]
+                    ),
+                    'messages' => ['cp-stop-message'],
                 ]
-            ]
+            ],
+            "voucher with failed KBVs - only post-office and CoP available" => [
+                $config,
+                array_merge($voucher, $stopFailedKbvs),
+                $externalServices,
+                [
+                    'data' => array_merge(
+                        $allRoutesUnavailable,
+                        [
+                            IdRoute::POST_OFFICE->value => true,
+                            IdRoute::COURT_OF_PROTECTION->value => true,
+                        ]
+                    ),
+                    'messages' => ['voucher-stop-message'],
+                ]
+            ],
+            "post-office route is unavailable" => [
+                $config,
+                $donor,
+                $postOfficeUnavailable,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [IdRoute::POST_OFFICE->value => false]
+                    ),
+                    'messages' => []  //TODO: is it not a bit strange that their isn't a message here???
+                ]
+            ],
+            "experian route is unavailable" => [
+                $config,
+                $donor,
+                $experianUnavailable,
+                [
+                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    //TODO: is this the message we want?
+                    'messages' => ['Online identity verification is not presently available']
+                ],
+            ],
+            "national-insurance-number route is unavailable" => [
+                $config,
+                $donor,
+                $ninoUnavailable,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [DocumentType::NationalInsuranceNumber->value => false]
+                    ),
+                    //TODO: is this the message we want?
+                    'messages' => ['Some identity verification methods are not presently available']
+                ]
+            ],
+            "passport route is unavailable" => [
+                $config,
+                $donor,
+                $passportUnavailable,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [DocumentType::Passport->value => false]
+                    ),
+                    //TODO: is this the message we want?
+                    'messages' => ['Some identity verification methods are not presently available']
+                ]
+            ],
+            "driving-licence route is unavailable" => [
+                $config,
+                $donor,
+                $drivingLicenceUnavailable,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [DocumentType::DrivingLicence->value => false]
+                    ),
+                    //TODO: is this the message we want?
+                    'messages' => ['Some identity verification methods are not presently available']
+                ]
+            ],
+            "nino, pp and dk routes all unavailable" => [
+                $config,
+                $donor,
+                $allDocsUnavailable,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [
+                            DocumentType::NationalInsuranceNumber->value => false,
+                            DocumentType::Passport->value => false,
+                            DocumentType::DrivingLicence->value => false,]
+                    ),
+                    //TODO: is this the message we want?
+                    'messages' => ['Some identity verification methods are not presently available']
+                ]
+            ],
+            "donor had NINO restricted" => [
+                $config,
+                array_merge($donor, $ninoRestricted),
+                $externalServices,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [DocumentType::NationalInsuranceNumber->value => false]
+                    ),
+                    //TODO: is this the message we want?
+                    'messages' => ['National Insurance number could not be verified over the phone...']
+                ]
+            ],
+            "donor has fraudscore STOP, has failed KBVs and post-office is not available" => [
+                $config,
+                array_merge($donor, $stopFailedKbvs),
+                $postOfficeUnavailable,
+                [
+                    'data' => array_merge($allRoutesUnavailable, [IdRoute::COURT_OF_PROTECTION->value => true]),
+                    'messages' => ['donor-stop-message']
+                ]
+            ],
+            //TODO: is this the behaviour we want?
+            "donor has NINO restricted and passport-service is not available" => [
+                $config,
+                array_merge($donor, $ninoRestricted),
+                $passportUnavailable,
+                [
+                    'data' => array_merge(
+                        $allRoutesAvailable,
+                        $vouchingAvailable,
+                        [
+                            DocumentType::NationalInsuranceNumber->value => false,
+                            DocumentType::Passport->value => false
+                        ]
+                    ),
+                    'messages' => [
+                        'Some identity verification methods are not presently available',
+                        'National Insurance number could not be verified over the phone...'
+                    ]
+                ],
+            ],
         ];
     }
 }

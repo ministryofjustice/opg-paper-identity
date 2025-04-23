@@ -104,7 +104,7 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor cannot ID over the phone or have someone vouch for them due to a lack of available information from Experian or a failure to answer the security questions correctly on a previous occasion.");
+        cy.contains("The donor cannot ID over the phone due to a lack of available information from Experian or a failure to answer the security questions correctly on a previous occasion.");
         cy.contains('Preferred: ID over the phone').should('not.exist');
     });
 
