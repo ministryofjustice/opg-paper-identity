@@ -377,7 +377,7 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['deadline'];
     }
 
-    public function getServiceAvailability(string $uuid = null): array
+    public function getRouteAvailability(string $uuid = null): array
     {
         $url = is_null($uuid) ? "/service-availability" : "/service-availability?uuid=$uuid";
 

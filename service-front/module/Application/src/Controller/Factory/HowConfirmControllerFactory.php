@@ -22,7 +22,6 @@ class HowConfirmControllerFactory implements FactoryInterface
         return new HowConfirmController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(FormProcessorHelper::class),
-            $container->get('Config'),
         );
     }
 }

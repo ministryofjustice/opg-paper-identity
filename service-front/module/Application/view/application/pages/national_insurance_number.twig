@@ -35,7 +35,7 @@
                 </p>
             {% endif %}
 
-            {% if service_availability.data.NATIONAL_INSURANCE_NUMBER %}
+            {% if route_availability.data.NATIONAL_INSURANCE_NUMBER %}
                 <input
                         class="govuk-input govuk-!-width-one-third {% if form.get('nino').messages %}govuk-input--error{% endif %}"
                         id="nino" name="nino" type="text" autocomplete="off"

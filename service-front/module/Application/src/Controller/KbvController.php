@@ -6,9 +6,11 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
+use Application\Services\SiriusApiService;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Laminas\Http\Response;
+use Laminas\Http\Request;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
@@ -23,6 +25,7 @@ class KbvController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
+        private readonly SiriusApiService $siriusApiService,
     ) {
     }
 
@@ -39,12 +42,6 @@ class KbvController extends AbstractActionController
             return $view->setTemplate('application/pages/cannot_start');
         }
 
-        $failRoute = "root/identity_check_failed";
-        $passRoute = [
-            'donor' => "root/identity_check_passed",
-            'certificateProvider' => "root/cp_identity_check_passed",
-            'voucher' => "root/voucher_identity_check_passed"
-        ];
         $view->setVariable('details_data', $detailsData);
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
@@ -111,21 +108,50 @@ class KbvController extends AbstractActionController
                 return $this->redirect()->refresh();
             }
 
-            if ($check['passed'] === true) {
-                $caseProgressData = $detailsData['caseProgress'] ?? [];
-                $caseProgressData['kbvs'] = [
-                    'result' => true
-                ];
-                $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
-
-                return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
-            }
-
-            return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
+            return $this->handleComplete($check, $detailsData, $uuid, $this->getRequest());
         }
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/identity_check_questions');
+    }
+
+    private function handleComplete(array $check, array $detailsData, string $uuid, Request $request): Response
+    {
+        $failRoute = "root/identity_check_failed";
+        $passRoute = [
+            'donor' => "root/identity_check_passed",
+            'certificateProvider' => "root/cp_identity_check_passed",
+            'voucher' => "root/voucher_identity_check_passed"
+        ];
+
+        if ($check['passed'] === true) {
+            return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
+        }
+
+        if ($detailsData['personType'] == 'donor') {
+            $description = match ($detailsData["caseProgress"]["fraudScore"]["decision"]) {
+                "ACCEPT", "CONTINUE", "NODECISION" => // TODO: how are we treating NODECISION in this circumstance???
+                    "The donor on the LPA has tried and failed to ID over the phone. " .
+                    "This donor can use the Post Office, choose someone to vouch for them " .
+                    "or ask the Court of Protection to register their LPA.",
+                default =>
+                    "The donor on the LPA has tried and failed to ID over the phone. " .
+                    "This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. " .
+                    "They cannot use the vouching route to ID."
+            };
+
+            foreach ($detailsData['lpas'] as $lpa) {
+                $this->siriusApiService->addNote(
+                    $request,
+                    $lpa,
+                    "ID check failed over the phone",
+                    "ID Check Incomplete",
+                    $description
+                );
+            }
+        }
+
+        return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
     }
 
     /**
