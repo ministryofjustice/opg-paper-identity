@@ -6,11 +6,11 @@ namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
-use Application\Helpers\ServiceAvailabilityHelper;
+use Application\Helpers\RouteAvailabilityHelper;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\TestCase;
 
-class ServiceAvailabilityHelperTest extends TestCase
+class RouteAvailabilityHelperTest extends TestCase
 {
     /**
      * @dataProvider data
@@ -22,7 +22,7 @@ class ServiceAvailabilityHelperTest extends TestCase
         array $expected
     ): void {
         $case = CaseData::fromArray($caseData);
-        $helper = new ServiceAvailabilityHelper($externalServices, $config);
+        $helper = new RouteAvailabilityHelper($externalServices, $config);
         $this->assertEquals($expected, $helper->processCase($case));
     }
 

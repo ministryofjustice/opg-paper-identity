@@ -33,8 +33,6 @@ class CaseProgress extends Entity
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?FraudScore $fraudScore = null;
 
-
-    // TODO: can we get round the need for this??
     #[Annotation\Required(false)]
     #[Annotation\Validator(NotEmpty::class, options: [NotEmpty::NULL])]
     public ?array $restrictedMethods = [];

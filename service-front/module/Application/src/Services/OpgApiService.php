@@ -379,7 +379,7 @@ class OpgApiService implements OpgApiServiceInterface
 
     public function getRouteAvailability(string $uuid = null): array
     {
-        $url = is_null($uuid) ? "/service-availability" : "/service-availability?uuid=$uuid";
+        $url = is_null($uuid) ? "/route-availability" : "/route-availability?uuid=$uuid";
 
         try {
             $this->makeApiRequest($url, 'GET');

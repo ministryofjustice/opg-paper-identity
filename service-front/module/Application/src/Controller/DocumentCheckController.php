@@ -43,7 +43,7 @@ class DocumentCheckController extends AbstractActionController
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $routeAvailability);
+        $view->setVariable('route_availability', $routeAvailability);
 
         $form = $this->createForm(NationalInsuranceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -98,7 +98,7 @@ class DocumentCheckController extends AbstractActionController
         $template = $templates['default'];
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $routeAvailability);
+        $view->setVariable('route_availability', $routeAvailability);
 
         $form = $this->createForm(DrivingLicenceNumber::class);
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -146,7 +146,7 @@ class DocumentCheckController extends AbstractActionController
         $routeAvailability = $this->opgApiService->getRouteAvailability($uuid);
         $view = new ViewModel();
         $view->setVariable('uuid', $uuid);
-        $view->setVariable('service_availability', $routeAvailability);
+        $view->setVariable('route_availability', $routeAvailability);
 
         $form = $this->createForm(PassportNumber::class);
         $dateSubForm = $this->createForm(PassportDate::class);
