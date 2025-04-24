@@ -11,6 +11,7 @@ use Application\Enums\IdRoute;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
+use Dom\Document;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -40,14 +41,13 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
     /**
      * @dataProvider howWillYouConfirmRenderData
      */
-    public function testHowWillYouConfirmRendersCorrectRadioButtonsGivenPersonTypeAndServiceAvailability(
-        string $personType,
-        array $ServiceAvailability,
+    public function testHowWillYouConfirmRendersCorrectRadioButtonsGivenPersonTypeAndrouteAvailability(
+        array $routeAvailability,
         array $expectedRadios
     ): void {
-        $mockResponseData = ['personType' => $personType];
-        $mockServiceAvailability = [
-            'data' => $ServiceAvailability,
+        $mockResponseData = ['personType' => 'donor'];
+        $mockrouteAvailability = [
+            'data' => $routeAvailability,
             'messages' => []
         ];
 
@@ -61,9 +61,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->with($this->uuid)
-            ->willReturn($mockServiceAvailability);
+            ->willReturn($mockrouteAvailability);
 
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'GET');
 
@@ -88,17 +88,23 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
 
     public static function howWillYouConfirmRenderData(): array
     {
-        $serviceAvailabilityAll = [
+        $routeAvailabilityAll = [
+            IdRoute::KBV->value => true,
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
-            IdRoute::POST_OFFICE->value => true
+            IdRoute::POST_OFFICE->value => true,
+            IdRoute::VOUCHING->value => true,
+            IdRoute::COURT_OF_PROTECTION->value => true
         ];
-        $serviceAvailabilityNone = [
+        $routeAvailabilityNone = [
+            IdRoute::KBV->value => true,
             DocumentType::Passport->value => false,
             DocumentType::DrivingLicence->value => false,
             DocumentType::NationalInsuranceNumber->value => false,
-            IdRoute::POST_OFFICE->value => false
+            IdRoute::POST_OFFICE->value => false,
+            IdRoute::VOUCHING->value => false,
+            IdRoute::COURT_OF_PROTECTION->value => false
         ];
 
         $coreRadios = [
@@ -113,86 +119,83 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         ];
 
         return [
-            'donor all available' => [
-                'donor',
-                $serviceAvailabilityAll,
+            'all available' => [
+                $routeAvailabilityAll,
                 [
                     'available' => array_merge($coreRadios, $postOffice, $otherMethodRadios),
                     'unavailable' => [],
                     'hidden' => [],
                 ]
             ],
-            'cp all available' => [
-                'certificateProvider',
-                $serviceAvailabilityAll,
-                [
-                    'available' => array_merge($coreRadios, $postOffice),
-                    'unavailable' => $otherMethodRadios,
-                    'hidden' => [],
-                ]
-            ],
-            'voucher all available' => [
-                'voucher',
-                $serviceAvailabilityAll,
-                [
-                    'available' => array_merge($coreRadios, $postOffice),
-                    'unavailable' => $otherMethodRadios,
-                    'hidden' => [],
-                ]
-            ],
-            'donor all unavailable' => [
-                'donor',
-                $serviceAvailabilityNone,
-                [
-                    'available' => $otherMethodRadios,
-                    'unavailable' => $postOffice,
-                    'hidden' => $coreRadios,
-                ]
-            ],
-            'cp all unavailable' => [
-                'certificateProvider',
-                $serviceAvailabilityNone,
+            'none available' => [
+                $routeAvailabilityNone,
                 [
                     'available' => [],
                     'unavailable' => array_merge($otherMethodRadios, $postOffice),
                     'hidden' => $coreRadios,
                 ]
             ],
-            'voucher all unavailable' => [
-                'voucher',
-                $serviceAvailabilityNone,
+            'KBVs unavailable' => [
+                array_merge(
+                    $routeAvailabilityAll,
+                    [
+                        IdRoute::KBV->value => false,
+                        DocumentType::NationalInsuranceNumber->value => false,
+                        DocumentType::Passport->value => false,
+                        DocumentType::DrivingLicence->value => false,
+                    ]
+                ),
                 [
-                    'available' => [],
-                    'unavailable' => array_merge($otherMethodRadios, $postOffice),
+                    'available' => array_merge($postOffice, $otherMethodRadios),
+                    'unavailable' => [],
                     'hidden' => $coreRadios,
                 ]
             ],
-            'donor passport unavailable' => [
-                'donor',
-                array_merge($serviceAvailabilityAll, [DocumentType::Passport->value => false]),
+            'passport unavailable' => [
+                array_merge($routeAvailabilityAll, [DocumentType::Passport->value => false]),
                 [
-                    'available' => array_diff(
-                        array_merge($coreRadios, $postOffice, $otherMethodRadios),
-                        [DocumentType::Passport->value]
+                    'available' => array_merge(
+                        $postOffice,
+                        $otherMethodRadios,
+                        [
+                            DocumentType::NationalInsuranceNumber->value,
+                            DocumentType::DrivingLicence->value,
+                        ]
                     ),
                     'unavailable' => [],
                     'hidden' => [DocumentType::Passport->value],
                 ]
             ],
+            'post office unavailable' => [
+                array_merge($routeAvailabilityAll, [IdRoute::POST_OFFICE->value => false]),
+                [
+                    'available' => array_merge($coreRadios, $otherMethodRadios),
+                    'unavailable' => $postOffice,
+                    'hidden' => [],
+                ]
+            ],
+            'vouching unavailable' => [
+                array_merge($routeAvailabilityAll, [IdRoute::VOUCHING->value => false]),
+                [
+                    'available' => array_merge($coreRadios, $postOffice, [IdRoute::COURT_OF_PROTECTION->value]),
+                    'unavailable' => [IdRoute::VOUCHING->value],
+                    'hidden' => [],
+                ]
+            ],
         ];
     }
 
-    public function testHowWillYouConfirmShowsServiceAvailabilityMessages(): void
+    public function testHowWillYouConfirmShowsrouteAvailabilityMessages(): void
     {
         $message = 'This is a service availability message';
-        $mockServiceAvailability = [
+        $mockrouteAvailability = [
             'data' => [
                 DocumentType::Passport->value => false,
                 DocumentType::DrivingLicence->value => false,
                 DocumentType::NationalInsuranceNumber->value => false,
                 IdRoute::POST_OFFICE->value => false
             ],
-            'messages' => ['banner' => $message]
+            'messages' => [$message]
         ];
 
         $this
@@ -205,14 +208,14 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->with($this->uuid)
-            ->willReturn($mockServiceAvailability);
+            ->willReturn($mockrouteAvailability);
 
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertControllerClass('HowConfirmController');
-        $this->assertQueryContentContains('div#serviceAvailabilityBanner', $message);
+        $this->assertQueryContentContains('div#routeAvailabilityBanner', $message);
     }
 
     /**
@@ -232,7 +235,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->with($this->uuid)
             ->willReturn([
                 'data' => [
@@ -295,7 +298,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->with($this->uuid)
             ->willReturn([
                 'data' => [
