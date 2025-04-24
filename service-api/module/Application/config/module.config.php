@@ -399,13 +399,13 @@ return [
                     ],
                 ],
             ],
-            'service_availability' => [
+            'route_availability' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/service-availability',
+                    'route' => '/route-availability',
                     'defaults' => [
                         'controller' => Controller\HealthcheckController::class,
-                        'action' => 'serviceAvailability',
+                        'action' => 'routeAvailability',
                     ],
                 ],
             ],

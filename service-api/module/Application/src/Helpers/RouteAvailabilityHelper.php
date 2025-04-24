@@ -8,7 +8,7 @@ use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Model\Entity\CaseData;
 
-class ServiceAvailabilityHelper
+class RouteAvailabilityHelper
 {
     public const DECISION_STOP = 'STOP';
     public const DECISION_NODECISION = 'NODECISION';
