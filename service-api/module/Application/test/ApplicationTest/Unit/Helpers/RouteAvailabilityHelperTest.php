@@ -257,7 +257,6 @@ class RouteAvailabilityHelperTest extends TestCase
                     'messages' => ['The person vouching failed doc-check']
                 ]
             ],
-            // TODO: is this actually the correct behaviour??
             "donor doc has already been checked - close off experian routes" => [
                 $config,
                 array_merge($donor, $docCheckedPassed),
@@ -300,7 +299,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $offlineRoutesOnly,
-                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                    'messages' => ['no-decision-message']
                 ]
             ],
             "voucher with NODECISION fraudscore - ???" => [
@@ -309,7 +308,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $offlineRoutesOnly,
-                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                    'messages' => ['no-decision-message']
                 ]
             ],
             "donor with a thinfile (empty KBVs) - offline only" => [
@@ -327,7 +326,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $offlineRoutesOnly,
-                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                    'messages' => ['no-decision-message']
                 ]
             ],
             "voucher with a thinfile (empty KBVs) - offline only" => [
@@ -336,7 +335,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $offlineRoutesOnly,
-                    'messages' => ['no-decision-message']  // TODO: deffo not right as mentions 'donor'
+                    'messages' => ['no-decision-message']
                 ]
             ],
 
@@ -420,7 +419,6 @@ class RouteAvailabilityHelperTest extends TestCase
                 $experianUnavailable,
                 [
                     'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
-                    //TODO: is this the message we want?
                     'messages' => ['Online identity verification is not presently available']
                 ],
             ],
@@ -434,7 +432,6 @@ class RouteAvailabilityHelperTest extends TestCase
                         $vouchingAvailable,
                         [DocumentType::NationalInsuranceNumber->value => false]
                     ),
-                    //TODO: is this the message we want?
                     'messages' => ['Some identity verification methods are not presently available']
                 ]
             ],
@@ -448,7 +445,6 @@ class RouteAvailabilityHelperTest extends TestCase
                         $vouchingAvailable,
                         [DocumentType::Passport->value => false]
                     ),
-                    //TODO: is this the message we want?
                     'messages' => ['Some identity verification methods are not presently available']
                 ]
             ],
@@ -462,7 +458,6 @@ class RouteAvailabilityHelperTest extends TestCase
                         $vouchingAvailable,
                         [DocumentType::DrivingLicence->value => false]
                     ),
-                    //TODO: is this the message we want?
                     'messages' => ['Some identity verification methods are not presently available']
                 ]
             ],
@@ -479,7 +474,6 @@ class RouteAvailabilityHelperTest extends TestCase
                             DocumentType::Passport->value => false,
                             DocumentType::DrivingLicence->value => false,]
                     ),
-                    //TODO: is this the message we want?
                     'messages' => ['Some identity verification methods are not presently available']
                 ]
             ],
@@ -493,7 +487,6 @@ class RouteAvailabilityHelperTest extends TestCase
                         $vouchingAvailable,
                         [DocumentType::NationalInsuranceNumber->value => false]
                     ),
-                    //TODO: is this the message we want?
                     'messages' => ['National Insurance number could not be verified over the phone...']
                 ]
             ],
@@ -506,7 +499,6 @@ class RouteAvailabilityHelperTest extends TestCase
                     'messages' => ['donor-stop-message']
                 ]
             ],
-            //TODO: is this the behaviour we want?
             "donor has NINO restricted and passport-service is not available" => [
                 $config,
                 array_merge($donor, $ninoRestricted),
@@ -520,6 +512,7 @@ class RouteAvailabilityHelperTest extends TestCase
                             DocumentType::Passport->value => false
                         ]
                     ),
+                    //TODO: is this the behaviour we want?
                     'messages' => [
                         'Some identity verification methods are not presently available',
                         'National Insurance number could not be verified over the phone...'
