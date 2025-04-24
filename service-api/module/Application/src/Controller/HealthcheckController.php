@@ -121,8 +121,6 @@ class HealthcheckController extends AbstractActionController
                 }
             }
         } catch (\Exception $exception) {
-            // TODO: what does fraudscore error have to do with this????
-            //      and what do we actually want to happen if theres an error? push it up the stack??
             $this->logger->error('Unable to parse Fraudscore data ' . $exception->getMessage());
             return new JsonModel($externalServices);
         }

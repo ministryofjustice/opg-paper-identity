@@ -44,9 +44,9 @@ class RouteAvailabilityHelper
 
     private function processExternalServices(array $externalServices): void
     {
+        // TODO: are the messages we set here correct?
         if (($externalServices[IdRoute::KBV->value] ?? false) === true) {
             $this->availableRoutes = array_merge($this->availableRoutes, $externalServices);
-            // TODO: do we actually need these messages???? Not in figma
             if (
                 ! $externalServices[DocumentType::NationalInsuranceNumber->value] ||
                 ! $externalServices[DocumentType::Passport->value] ||
@@ -141,8 +141,7 @@ class RouteAvailabilityHelper
         }
 
         if ($case->caseProgress?->docCheck?->state === true) {
-            // TODO: is this actually a thing?? I can't see it in figma anywhere and it doesn't make sense to me
-            // blocking off KBVs if they've passed a doc-check in that session?
+            // TODO: is this actually the behaviour we want?
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_SUCCESS));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
