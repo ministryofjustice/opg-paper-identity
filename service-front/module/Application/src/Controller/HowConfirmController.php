@@ -42,7 +42,7 @@ class HowConfirmController extends AbstractActionController
 
         $view->setVariable('date_sub_form', $dateSubForm);
         $view->setVariable('form', $form);
-        $view->setVariable('service_availability', $routeAvailability);
+        $view->setVariable('route_availability', $routeAvailability);
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
