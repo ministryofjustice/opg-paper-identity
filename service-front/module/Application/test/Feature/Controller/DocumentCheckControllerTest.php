@@ -55,11 +55,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
@@ -87,11 +87,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this
@@ -171,11 +171,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/national-insurance-number", 'POST', $post);
@@ -205,11 +205,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
@@ -235,11 +235,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this
@@ -312,11 +312,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/driving-licence-number", 'POST', $post);
@@ -359,11 +359,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/passport-number", 'GET');
@@ -391,11 +391,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this
@@ -465,11 +465,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this
@@ -495,11 +495,11 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-        $mockServiceResponse = $this->returnServiceAvailabilityResponseData();
+        $mockServiceResponse = $this->returnrouteAvailabilityResponseData();
         $this
             ->opgApiServiceMock
             ->expects(self::once())
-            ->method('getServiceAvailability')
+            ->method('getRouteAvailability')
             ->willReturn($mockServiceResponse);
 
         $this->dispatch("/$this->uuid/passport-number", 'POST', $post);
@@ -569,7 +569,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    public static function returnServiceAvailabilityResponseData(): array
+    public static function returnrouteAvailabilityResponseData(): array
     {
         return [
             'data' => [
