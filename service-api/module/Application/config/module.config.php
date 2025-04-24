@@ -514,6 +514,8 @@ return [
             IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
         ],
         'banner_messages' => [
+            // TODO: i think we need to vary no-decision message based on personType
+            // TODO: why the tiny discrepancy in content between no-decision and STOP messages???
             'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security questions ' .
                 'or failure to answer them correctly on a previous occasion.',
             'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
@@ -531,6 +533,7 @@ return [
             'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
                 'and their details did not match the document provided.',
             'LOCKED_SUCCESS' => 'The identity check has already been completed',
+            // TODO: verify this message.
             'RESTRICTED_OPTIONS' => '%s could not be verified over the phone, choose an alternate ID method below.'
         ],
         'person_type_labels' => [
