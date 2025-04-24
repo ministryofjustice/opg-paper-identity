@@ -361,4 +361,31 @@ describe("Identify a Donor", () => {
     cy.get(".govuk-button").contains("Finish and return to Sirius").click();
   });
 
+  it("form validation on KBV pages throws error on every non-selection attempt", () => {
+    cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
+
+    cy.contains("How will you confirm your identity?");
+    cy.get("label").contains("National insurance number").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.getInputByLabel("National Insurance number").type("NP 112233 C");
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.contains("Select an answer");
+    cy.selectKBVAnswer({correct: true});
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.contains("Select an answer");
+    cy.selectKBVAnswer({correct: true});
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.contains("Select an answer");
+    cy.selectKBVAnswer({correct: true});
+    cy.get(".govuk-button").contains("Continue").click();
+    cy.contains(".moj-alert", "Identity check passed");
+  });
+
 });
