@@ -15,6 +15,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -51,9 +52,9 @@ class OpgApiServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider detailsData
      * @param class-string<Throwable>|null $expectedException
      */
+    #[DataProvider('detailsData')]
     public function testGetDetailsData(
         Client $client,
         ?array $responseData,
@@ -209,9 +210,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testValidateNino(string $nino, Client $client, array $responseData): void
     {
         $opgApiService = new OpgApiService($client, $this->jwtGenerator);
@@ -271,9 +270,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dlnData
-     */
+    #[DataProvider('dlnData')]
     public function testValidateDln(string $dln, Client $client, string $responseData, bool $exception): void
     {
         if ($exception) {
@@ -354,9 +351,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider passportData
-     */
+    #[DataProvider('passportData')]
     public function testValidatePassport(string $passport, Client $client, string $responseData, bool $exception): void
     {
         if ($exception) {
@@ -498,10 +493,7 @@ class OpgApiServiceTest extends TestCase
         $this->assertEquals($mockResponseData, $response);
     }
 
-    /**
-     * @dataProvider idCheckData
-     * @return void
-     */
+    #[DataProvider('idCheckData')]
     public function testCheckIdCheckAnswers(array $answers, Client $client, bool $passed, bool $exception): void
     {
         if ($exception) {
@@ -571,9 +563,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider caseData
-     */
+    #[DataProvider('caseData')]
     public function testGetCaseUuid(array $postData, Client $client, array $responseData, bool $exception): void
     {
         if ($exception) {
@@ -656,10 +646,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider updateIdMethodData
-     * @return void
-     */
+    #[DataProvider('updateIdMethodData')]
     public function testUpdateIdMethod(array $data, Client $client, bool $exception): void
     {
         if ($exception) {
@@ -705,10 +692,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider setDocumentCompleteData
-     * @return void
-     */
+    #[DataProvider('setDocumentCompleteData')]
     public function testSetDocumentCompleteMethod(
         array $data,
         Client $client,
@@ -757,10 +741,7 @@ class OpgApiServiceTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider setDobData
-     * @return void
-     */
+    #[DataProvider('setDobData')]
     public function testSetDobMethod(
         array $data,
         Client $client,
@@ -810,10 +791,7 @@ class OpgApiServiceTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider setAbandonCaseData
-     * @return void
-     */
+    #[DataProvider('setAbandonCaseData')]
     public function testAbandonCaseMethod(
         array $data,
         Client $client,
@@ -861,9 +839,7 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider serviceAvailabilityData
-     */
+    #[DataProvider('serviceAvailabilityData')]
     public function testServiceAvailability(
         Client $client,
         array $expected,

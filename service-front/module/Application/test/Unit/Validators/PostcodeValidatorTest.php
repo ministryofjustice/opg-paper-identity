@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\PostcodeValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PostcodeValidatorTest extends TestCase
@@ -18,9 +19,7 @@ class PostcodeValidatorTest extends TestCase
         $this->postcodeValidator = new PostcodeValidator();
     }
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testValidator(string $postcode, ?array $context, bool $expected): void
     {
         $this->assertEquals($expected, $this->postcodeValidator->isValid($postcode, $context));

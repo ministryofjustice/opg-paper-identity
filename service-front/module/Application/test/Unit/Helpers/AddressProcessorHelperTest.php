@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Helpers;
 
 use Application\Helpers\AddressProcessorHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class AddressProcessorHelperTest extends TestCase
 {
-    /**
-     * @dataProvider addressData
-     */
+    #[DataProvider('addressData')]
     public function testGetAddress(
         array $unprocessedAddress,
         array $expectedAddress
@@ -66,9 +65,7 @@ class AddressProcessorHelperTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider processAddressData
-     */
+    #[DataProvider('processAddressData')]
     public function testProcessAddressData(
         array $address,
         string $addressType,
@@ -124,9 +121,7 @@ class AddressProcessorHelperTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider stringifyddressesData
-     */
+    #[DataProvider('stringifyAddressesData')]
     public function testStringifyAddresses(
         array $addresses,
         array $expected,
@@ -139,7 +134,7 @@ class AddressProcessorHelperTest extends TestCase
         $this->assertEquals($expected[0], $response[$json]);
     }
 
-    public static function stringifyddressesData(): array
+    public static function stringifyAddressesData(): array
     {
         $address = [
             'line1' => "Park House",

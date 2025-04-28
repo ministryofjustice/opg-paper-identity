@@ -5,20 +5,13 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Helpers;
 
 use Application\Exceptions\LpaTypeException;
-use Application\Helpers\LpaFormHelper;
 use Application\Helpers\LpaStatusTypeHelper;
-use Laminas\Form\Annotation\AttributeBuilder;
-use Laminas\Form\FormInterface;
-use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Application\Forms\LpaReferenceNumber;
 
 class LpaStatusTypeHelperTest extends TestCase
 {
-    /**
-     * @dataProvider lpaStatusTypeHelperData
-     * @return void
-     */
+    #[DataProvider('lpaStatusTypeHelperData')]
     public function testLpaTypeHelper(
         array $lpa,
         string $personType,
@@ -81,112 +74,112 @@ class LpaStatusTypeHelperTest extends TestCase
                 'donor',
                 'draft',
                 true,
-                false
+                false,
             ],
             [
                 $draftLpa,
                 'invalidPersonType',
                 'draft',
                 false,
-                true
+                true,
             ],
             [
                 $emptyDraftLpa,
                 'donor',
                 'draft',
                 true,
-                false
+                false,
             ],
             [
                 $draftLpa,
                 'certificateProvider',
                 'draft',
                 false,
-                false
+                false,
             ],
             [
                 $draftLpa,
                 'voucher',
                 'draft',
                 false,
-                false
+                false,
             ],
             [
                 $registeredLpa,
                 'donor',
                 'registered',
                 false,
-                false
+                false,
             ],
             [
                 $registeredLpa2,
                 'donor',
                 'registered',
                 false,
-                false
+                false,
             ],
             [
                 $inProgressLpa,
                 'donor',
                 'in-progress',
                 true,
-                false
+                false,
             ],
             [
                 $statutoryWaitingPeriodLpa,
                 'donor',
                 'statutory-waiting-period',
                 true,
-                false
+                false,
             ],
             [
                 $doNotRegisterLpa,
                 'donor',
                 'do-not-register',
                 true,
-                false
+                false,
             ],
             [
                 $inProgressLpa,
                 'certificateProvider',
                 'in-progress',
                 true,
-                false
+                false,
             ],
             [
                 $statutoryWaitingPeriodLpa,
                 'certificateProvider',
                 'statutory-waiting-period',
                 true,
-                false
+                false,
             ],
             [
                 $doNotRegisterLpa,
                 'certificateProvider',
                 'do-not-register',
                 true,
-                false
+                false,
             ],
             [
                 $inProgressLpa,
                 'voucher',
                 'in-progress',
                 true,
-                false
+                false,
             ],
             [
                 $statutoryWaitingPeriodLpa,
                 'voucher',
                 'statutory-waiting-period',
                 true,
-                false
+                false,
             ],
             [
                 $doNotRegisterLpa,
                 'voucher',
                 'do-not-register',
                 true,
-                false
+                false,
             ],
 
             [
@@ -194,42 +187,42 @@ class LpaStatusTypeHelperTest extends TestCase
                 'donor',
                 'suspended',
                 false,
-                false
+                false,
             ],
             [
                 $expiredLpa,
                 'voucher',
                 'expired',
                 false,
-                false
+                false,
             ],
             [
                 $cannotRegisterLpa,
                 'voucher',
                 'cannot-register',
                 false,
-                false
+                false,
             ],
             [
                 $cancelledLpa,
                 'voucher',
                 'cancelled',
                 false,
-                false
+                false,
             ],
             [
                 $doRegisteredLpa,
                 'voucher',
                 'de-registered',
                 false,
-                false
+                false,
             ],
             [
                 $invalidLpa,
                 'donor',
                 'invalid',
                 false,
-                true
+                true,
             ],
         ];
     }
@@ -250,9 +243,9 @@ class LpaStatusTypeHelperTest extends TestCase
                             "line1" => "166 Alisha Overpass",
                             "country" => "AO",
                             "town" => "Dubuque",
-                            "line2" => "Jazmin Mission"
+                            "line2" => "Jazmin Mission",
                         ],
-                        "email" => "Jermey21@yahoo.com"
+                        "email" => "Jermey21@yahoo.com",
                     ],
                     [
                         "dateOfBirth" => "1916-08-26",
@@ -265,9 +258,9 @@ class LpaStatusTypeHelperTest extends TestCase
                             "line1" => "943 Kaci Mountain",
                             "country" => "MK",
                             "line3" => "Salem",
-                            "town" => "Country Club"
+                            "town" => "Country Club",
                         ],
-                        "email" => "Tressa_Brown41@hotmail.com"
+                        "email" => "Tressa_Brown41@hotmail.com",
                     ],
                     [
                         "dateOfBirth" => "1900-05-21",
@@ -280,10 +273,10 @@ class LpaStatusTypeHelperTest extends TestCase
                             "line1" => "629 America Street",
                             "country" => "MN",
                             "line3" => "The Villages",
-                            "line2" => "Shakira Roads"
+                            "line2" => "Shakira Roads",
                         ],
-                        "email" => "Stella.Jakubowski51@gmail.com"
-                    ]
+                        "email" => "Stella.Jakubowski51@gmail.com",
+                    ],
                 ],
                 "certificateProvider" => [
                     "address" => [
@@ -298,7 +291,7 @@ class LpaStatusTypeHelperTest extends TestCase
                     "firstNames" => "David",
                     "lastName" => "Smith",
                     "phone" => "cillum",
-                    "uid" => "db71d0ce-d680-88c2-fa59-3c76b0b43864"
+                    "uid" => "db71d0ce-d680-88c2-fa59-3c76b0b43864",
                 ],
                 "channel" => "paper",
                 "donor" => [
@@ -314,7 +307,7 @@ class LpaStatusTypeHelperTest extends TestCase
                     "firstNames" => "Esperanza",
                     "lastName" => "Walter",
                     "otherNamesKnownBy" => "Mrs. Laurie Schuppe",
-                    "uid" => "07aff050-2700-66ae-c3ce-b96e4bc6b7d2"
+                    "uid" => "07aff050-2700-66ae-c3ce-b96e4bc6b7d2",
                 ],
                 "howReplacementAttorneysMakeDecisionsDetails" => "enim eu",
                 "howReplacementAttorneysStepIn" => "another-way",
@@ -329,8 +322,8 @@ class LpaStatusTypeHelperTest extends TestCase
                             "line1" => "56713 Archibald Unions",
                             "country" => "PL",
                             "line2" => "Golda Mews",
-                            "line3" => "Thousand Oaks"
-                        ]
+                            "line3" => "Thousand Oaks",
+                        ],
                     ],
                     [
                         "uid" => "1cba68d2-3e93-8340-57a6-63aaf04f6e19",
@@ -340,16 +333,16 @@ class LpaStatusTypeHelperTest extends TestCase
                             "line1" => "4705 Ebony Cape",
                             "country" => "MR",
                             "postcode" => "GH1 4FZ",
-                            "line3" => "Nashua"
-                        ]
-                    ]
+                            "line3" => "Nashua",
+                        ],
+                    ],
                 ],
                 "registrationDate" => "1918-08-28",
                 "signedAt" => "1956-06-30T03:57:57.0Z",
                 "status" => "draft",
                 "uid" => "M-804C-XHAD-59UQ",
                 "updatedAt" => "1913-04-09T10:18:35.0Z",
-                "whenTheLpaCanBeUsed" => "when-capacity-lost"
+                "whenTheLpaCanBeUsed" => "when-capacity-lost",
             ],
             "opg.poas.sirius" => [
                 "caseSubtype" => "property-and-affairs",
@@ -359,11 +352,11 @@ class LpaStatusTypeHelperTest extends TestCase
                     "firstname" => "Kitty",
                     "postcode" => "JO2 5XI",
                     "surname" => "Jenkins",
-                    "town" => "Janesville"
+                    "town" => "Janesville",
                 ],
                 "id" => 72757966,
-                "uId" => "M-5P78-MEPH-8L4F"
-            ]
+                "uId" => "M-5P78-MEPH-8L4F",
+            ],
         ];
     }
 }

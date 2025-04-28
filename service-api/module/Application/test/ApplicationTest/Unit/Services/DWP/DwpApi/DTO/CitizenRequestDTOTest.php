@@ -8,6 +8,7 @@ use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\Model\Entity\CaseData;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CitizenRequestDTOTest extends TestCase
@@ -154,9 +155,7 @@ class CitizenRequestDTOTest extends TestCase
 
 
 
-    /**
-     * @dataProvider postcodeData
-     */
+    #[DataProvider('postcodeData')]
     public function testPostcodeFormatter(string $postcode, string $expected): void
     {
         $this->assertEquals($expected, $this->citizenRequestDTO->makeFormattedPostcode($postcode));
@@ -185,9 +184,7 @@ class CitizenRequestDTOTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testNinoFragment(string $nino, string $fragment): void
     {
         $this->assertEquals($fragment, $this->citizenRequestDTO->makeNinoFragment($nino));
@@ -215,9 +212,7 @@ class CitizenRequestDTOTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider requestBodyData
-     */
+    #[DataProvider('requestBodyData')]
     public function testConstructCitizenRequestBody(
         array $expected
     ): void {

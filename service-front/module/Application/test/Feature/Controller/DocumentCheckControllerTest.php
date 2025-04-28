@@ -13,6 +13,7 @@ use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
@@ -72,9 +73,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('p[id=nino_dob]', '01 May 1943');
     }
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testNationalInsuranceNumberPagePost(string $validity): void
     {
         $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
@@ -158,9 +157,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider ninoErrorsData
-     */
+    #[DataProvider('ninoErrorsData')]
     public function testNationalInsuranceNumberErrors(array $post): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -220,9 +217,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/driving_licence_number');
     }
 
-    /**
-     * @dataProvider drivingLicenceData
-     */
+    #[DataProvider('drivingLicenceData')]
     public function testDrivingLicenceNumberPagePost(string $validity): void
     {
         $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
@@ -299,9 +294,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider dlnErrorsData
-     */
+    #[DataProvider('dlnErrorsData')]
     public function testDrivingLicenceNumberErrors(array $post, array $expectedErrors): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -376,9 +369,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('p[id=passport_dob]', '01 May 1943');
     }
 
-    /**
-     * @dataProvider passportNumberData
-     */
+    #[DataProvider('passportNumberData')]
     public function testPassportNumberPost(string $validity): void
     {
         $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
@@ -482,9 +473,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         ]);
     }
 
-    /**
-     * @dataProvider passportNumberErrors
-     */
+    #[DataProvider('passportNumberErrors')]
     public function testPassportNumberErrors(array $post, array $expectedErrors): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();

@@ -12,6 +12,7 @@ use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class HowConfirmControllerTest extends AbstractHttpControllerTestCase
@@ -37,9 +38,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorMock);
     }
 
-    /**
-     * @dataProvider howWillYouConfirmRenderData
-     */
+    #[DataProvider('howWillYouConfirmRenderData')]
     public function testHowWillYouConfirmRendersCorrectRadioButtonsGivenPersonTypeAndServiceAvailability(
         string $personType,
         array $ServiceAvailability,
@@ -48,7 +47,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $mockResponseData = ['personType' => $personType];
         $mockServiceAvailability = [
             'data' => $ServiceAvailability,
-            'messages' => []
+            'messages' => [],
         ];
 
         $this
@@ -92,13 +91,13 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
-            IdRoute::POST_OFFICE->value => true
+            IdRoute::POST_OFFICE->value => true,
         ];
         $serviceAvailabilityNone = [
             DocumentType::Passport->value => false,
             DocumentType::DrivingLicence->value => false,
             DocumentType::NationalInsuranceNumber->value => false,
-            IdRoute::POST_OFFICE->value => false
+            IdRoute::POST_OFFICE->value => false,
         ];
 
         $coreRadios = [
@@ -109,7 +108,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $postOffice = [IdRoute::POST_OFFICE->value];
         $otherMethodRadios = [
             IdRoute::VOUCHING->value,
-            IdRoute::COURT_OF_PROTECTION->value
+            IdRoute::COURT_OF_PROTECTION->value,
         ];
 
         return [
@@ -120,7 +119,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     'available' => array_merge($coreRadios, $postOffice, $otherMethodRadios),
                     'unavailable' => [],
                     'hidden' => [],
-                ]
+                ],
             ],
             'cp all available' => [
                 'certificateProvider',
@@ -129,7 +128,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     'available' => array_merge($coreRadios, $postOffice),
                     'unavailable' => $otherMethodRadios,
                     'hidden' => [],
-                ]
+                ],
             ],
             'voucher all available' => [
                 'voucher',
@@ -138,7 +137,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     'available' => array_merge($coreRadios, $postOffice),
                     'unavailable' => $otherMethodRadios,
                     'hidden' => [],
-                ]
+                ],
             ],
             'donor all unavailable' => [
                 'donor',
@@ -147,7 +146,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     'available' => $otherMethodRadios,
                     'unavailable' => $postOffice,
                     'hidden' => $coreRadios,
-                ]
+                ],
             ],
             'cp all unavailable' => [
                 'certificateProvider',
@@ -156,7 +155,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     'available' => [],
                     'unavailable' => array_merge($otherMethodRadios, $postOffice),
                     'hidden' => $coreRadios,
-                ]
+                ],
             ],
             'voucher all unavailable' => [
                 'voucher',
@@ -165,7 +164,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     'available' => [],
                     'unavailable' => array_merge($otherMethodRadios, $postOffice),
                     'hidden' => $coreRadios,
-                ]
+                ],
             ],
             'donor passport unavailable' => [
                 'donor',
@@ -177,7 +176,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     ),
                     'unavailable' => [],
                     'hidden' => [DocumentType::Passport->value],
-                ]
+                ],
             ],
         ];
     }
@@ -190,9 +189,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 DocumentType::Passport->value => false,
                 DocumentType::DrivingLicence->value => false,
                 DocumentType::NationalInsuranceNumber->value => false,
-                IdRoute::POST_OFFICE->value => false
+                IdRoute::POST_OFFICE->value => false,
             ],
-            'messages' => ['banner' => $message]
+            'messages' => ['banner' => $message],
         ];
 
         $this
@@ -215,9 +214,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('div#serviceAvailabilityBanner', $message);
     }
 
-    /**
-     * @dataProvider passortDateCheckData
-     */
+    #[DataProvider('passportDateCheckData')]
     public function testHowWillYouConfirmChecksPassportDateWhenCheckButtonIsPosted(
         array $checkResult,
         string $expectedQuery
@@ -239,9 +236,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     DocumentType::Passport->value => true,
                     DocumentType::DrivingLicence->value => true,
                     DocumentType::NationalInsuranceNumber->value => true,
-                    IdRoute::POST_OFFICE->value => true
+                    IdRoute::POST_OFFICE->value => true,
                 ],
-                'messages' => []
+                'messages' => [],
             ]);
 
         $mockDto = $this->createMock(FormProcessorResponseDto::class);
@@ -262,23 +259,21 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this->assertQuery($expectedQuery);
     }
 
-    public static function passortDateCheckData(): array
+    public static function passportDateCheckData(): array
     {
         return [
             [
                 ['invalid_date' => true],
-                'div#invalidDateMessage'
+                'div#invalidDateMessage',
             ],
             [
                 ['valid_date' => true],
-                'div#validDateMessage'
+                'div#validDateMessage',
             ],
         ];
     }
 
-    /**
-     * @dataProvider idMethodData
-     */
+    #[DataProvider('idMethodData')]
     public function testHowWillYouConfirmReturnsCorrectRouteAndUpdatesIdMethod(
         string $personType,
         string $idChoice,
@@ -302,9 +297,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                     DocumentType::Passport->value => true,
                     DocumentType::DrivingLicence->value => true,
                     DocumentType::NationalInsuranceNumber->value => true,
-                    IdRoute::POST_OFFICE->value => true
+                    IdRoute::POST_OFFICE->value => true,
                 ],
-                'messages' => []
+                'messages' => [],
             ]);
 
         $this
@@ -326,13 +321,13 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'donor',
                 IdRoute::POST_OFFICE->value,
                 ['idRoute' => IdRoute::POST_OFFICE->value],
-                'post-office-documents'
+                'post-office-documents',
             ],
             'donor choosing vouching route' => [
                 'donor',
                 IdRoute::VOUCHING->value,
                 ['idRoute' => IdRoute::VOUCHING->value],
-                'what-is-vouching'
+                'what-is-vouching',
             ],
             'donor with passport' => [
                 'donor',
@@ -340,9 +335,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 [
                     'idRoute' => IdRoute::KBV->value,
                     'idCountry' => Country::GBR->value,
-                    'docType' => DocumentType::Passport->value
+                    'docType' => DocumentType::Passport->value,
                 ],
-                'donor-details-match-check'
+                'donor-details-match-check',
             ],
             'certificate provider with nino' => [
                 'certificateProvider',
@@ -350,9 +345,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 [
                     'idRoute' => IdRoute::KBV->value,
                     'idCountry' => Country::GBR->value,
-                    'docType' => DocumentType::NationalInsuranceNumber->value
+                    'docType' => DocumentType::NationalInsuranceNumber->value,
                 ],
-                'cp/name-match-check'
+                'cp/name-match-check',
             ],
             'voucher with driving licence' => [
                 'voucher',
@@ -360,9 +355,9 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 [
                     'idRoute' => IdRoute::KBV->value,
                     'idCountry' => Country::GBR->value,
-                    'docType' => DocumentType::DrivingLicence->value
+                    'docType' => DocumentType::DrivingLicence->value,
                 ],
-                'vouching/voucher-name'
+                'vouching/voucher-name',
             ],
         ];
     }

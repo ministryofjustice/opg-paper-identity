@@ -8,13 +8,12 @@ use Application\Model\Entity\CaseData;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Laminas\Form\Annotation\AttributeBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CaseDataTest extends TestCase
 {
-    /**
-     * @dataProvider isValidDataProvider
-     */
+    #[DataProvider('isValidDataProvider')]
     public function testIsValid(array $data, bool $expectedIsValidResult): void
     {
         $validator = (new AttributeBuilder())

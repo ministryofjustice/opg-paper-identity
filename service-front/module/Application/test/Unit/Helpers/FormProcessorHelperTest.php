@@ -14,13 +14,12 @@ use Application\Services\OpgApiService;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FormProcessorHelperTest extends TestCase
 {
-    /**
-     * @dataProvider dlnData
-     */
+    #[DataProvider('dlnData')]
     public function testProcessDrivingLicenceForm(
         string $caseUuid,
         array $responseData,
@@ -103,9 +102,7 @@ class FormProcessorHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testProcessNationalInsuranceNumberForm(
         string $caseUuid,
         array $responseData,
@@ -191,9 +188,7 @@ class FormProcessorHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider passportData
-     */
+    #[DataProvider('passportData')]
     public function testProcessPassportNumberForm(
         string $caseUuid,
         array $responseData,
@@ -279,9 +274,7 @@ class FormProcessorHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider passportDateData
-     */
+    #[DataProvider('passportDateData')]
     public function testProcessPassportDateForm(
         string $caseUuid,
         Parameters $formData,
@@ -363,9 +356,7 @@ class FormProcessorHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dateData
-     */
+    #[DataProvider('dateData')]
     public function testprocessDateForm(array $params, string $expected): void
     {
         $opgApiServiceMock = $this->createMock(OpgApiService::class);
@@ -438,9 +429,7 @@ class FormProcessorHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider processTemplateData
-     */
+    #[DataProvider('processTemplateData')]
     public function testProcessTemplate(
         bool $exception,
         array $templates,

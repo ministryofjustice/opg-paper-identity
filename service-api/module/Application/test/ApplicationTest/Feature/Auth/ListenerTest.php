@@ -15,6 +15,7 @@ use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ListenerTest extends AbstractControllerTestCase
 {
@@ -96,9 +97,7 @@ class ListenerTest extends AbstractControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidJwtProvider
-     */
+    #[DataProvider('invalidJwtProvider')]
     public function testInvalidJwts(?DateTimeImmutable $issuedAt, ?DateTimeImmutable $expiresAt): void
     {
         $token = $this->builder->relatedTo('system.admin@opg.example');

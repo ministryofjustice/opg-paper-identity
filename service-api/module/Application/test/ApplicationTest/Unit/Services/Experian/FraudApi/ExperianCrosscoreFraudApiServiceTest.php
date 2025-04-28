@@ -13,6 +13,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -39,9 +40,9 @@ class ExperianCrosscoreFraudApiServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider fraudScoreResponseData
      * @param class-string<Throwable>|null $expectedException
      */
+    #[DataProvider('fraudScoreResponseData')]
     public function testGetFraudScore(
         Client $client,
         RequestDTO $mockRequestDto,
