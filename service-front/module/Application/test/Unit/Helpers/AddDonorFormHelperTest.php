@@ -7,6 +7,7 @@ namespace ApplicationTest\Unit\Helpers;
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -107,9 +108,7 @@ class AddDonorFormHelperTest extends TestCase
         $this->assertEquals(self::$dobLongFmt, $response);
     }
 
-    /**
-     * @dataProvider statusData
-     */
+    #[DataProvider('statusData')]
     public function testCheckLpaStatus(?array $lpaStoreData, array $expectedResult): void
     {
         $lpaData = self::getLpa([
@@ -152,9 +151,7 @@ class AddDonorFormHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider idMatchData
-     */
+    #[DataProvider('idMatchData')]
     public function testCheckLpaIdMatch(
         array|bool $checkMatchReturn,
         mixed $checkAddressReturn,
@@ -255,9 +252,7 @@ class AddDonorFormHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider processLpasData
-     */
+    #[DataProvider('processLpasData')]
     public function testProcessLpas(
         array $lpasData,
         ?array $checkLpaStatusReturns,

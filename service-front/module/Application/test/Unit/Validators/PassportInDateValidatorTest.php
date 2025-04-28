@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\PassportInDateValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PassportInDateValidatorTest extends TestCase
@@ -18,9 +19,7 @@ class PassportInDateValidatorTest extends TestCase
         $this->passportDateValidator = new PassportInDateValidator();
     }
 
-    /**
-     * @dataProvider passportData
-     */
+    #[DataProvider('passportData')]
     public function testValidator(mixed $passport, ?string $error, bool $valid): void
     {
         $this->assertEquals($valid, $this->passportDateValidator->isValid($passport));

@@ -11,6 +11,7 @@ use Application\Enums\IdRoute;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class DonorFlowControllerTest extends AbstractHttpControllerTestCase
@@ -119,9 +120,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
-    /**
-     * @dataProvider donorDetailsMatchData
-    */
+    #[DataProvider('donorDetailsMatchData')]
     public function testDonorDetailsMatchPageAdjustsContentCorrectly(array $detailsData, string $expectedContent): void
     {
         $detailsData = array_merge($this->returnOpgResponseData(), $detailsData);
@@ -143,7 +142,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             'not post-office route' => [
                 [],
-                'NOT_PO'
+                'NOT_PO',
             ],
             'post office non UK driving-licence id' => [
                 [
@@ -151,9 +150,9 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                         'docType' => DocumentType::DrivingLicence->value,
                         'idCountry' => 'AUS',
                         'idRoute' => IdRoute::POST_OFFICE->value,
-                    ]
+                    ],
                 ],
-                'PO_NON_GBR_DL'
+                'PO_NON_GBR_DL',
             ],
             'post office UK driving licence' => [
                 [
@@ -161,10 +160,10 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                         'docType' => DocumentType::DrivingLicence->value,
                         'idCountry' => 'GBR',
                         'idRoute' => IdRoute::POST_OFFICE->value,
-                    ]
+                    ],
                 ],
-                'PO_GBR_DL'
-            ]
+                'PO_GBR_DL',
+            ],
         ];
     }
 
@@ -202,11 +201,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('sendIdentityCheck')
             ->with($this->uuid);
 
-            $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
-                'chooseVouching' => 'yes',
-            ]);
-            $this->assertResponseStatusCode(302);
-            $this->assertRedirectTo(sprintf('/%s/vouching-what-happens-next', $this->uuid));
+        $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
+            'chooseVouching' => 'yes',
+        ]);
+        $this->assertResponseStatusCode(302);
+        $this->assertRedirectTo(sprintf('/%s/vouching-what-happens-next', $this->uuid));
     }
 
     public function testVouchingWhatHappensNextPage(): void
@@ -266,18 +265,18 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                         "line1" => "93274 Goldner Club",
                         "line3" => "Oak Lawn",
                         "postcode" => "YG9 3RV",
-                        "town" => "Caguas"
+                        "town" => "Caguas",
                     ],
                     "channel" => "paper",
                     "firstNames" => "Wilma",
                     "identityCheck" => [
                         "checkedAt" => "1940-11-01T22:28:42.0Z",
-                        "type" => "one-login"
+                        "type" => "one-login",
                     ],
                     "lastName" => "Lynch",
                     "phone" => "proident elit dolor cupidatat ut",
                     "signedAt" => "1967-02-10T08:53:14.0Z",
-                    "uid" => "a72f52bd-1c26-e0ab-88a0-233e5611cd62"
+                    "uid" => "a72f52bd-1c26-e0ab-88a0-233e5611cd62",
                 ],
                 "channel" => "paper",
                 "donor" => [
@@ -286,7 +285,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                         "line1" => "9077 Bertrand Lane",
                         "line2" => "Grady Haven",
                         "line3" => "Hollywood",
-                        "postcode" => "XW0 6ZQ"
+                        "postcode" => "XW0 6ZQ",
                     ],
                     "contactLanguagePreference" => "en",
                     "dateOfBirth" => "1920-02-16",
@@ -294,7 +293,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstNames" => "Akeem",
                     "lastName" => "Wiegand",
                     "otherNamesKnownBy" => "Melba King",
-                    "uid" => "d4c3d084-303a-3cd3-eab0-e981618b1fe8"
+                    "uid" => "d4c3d084-303a-3cd3-eab0-e981618b1fe8",
                 ],
                 "howAttorneysMakeDecisions" => "jointly-for-some-severally-for-others",
                 "howReplacementAttorneysStepInDetails" => "in ut",
@@ -304,7 +303,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                 "status" => "registered",
                 "uid" => "M-X7BG-VMAO-1V2F",
                 "updatedAt" => "1906-03-13T01:06:58.0Z",
-                "whenTheLpaCanBeUsed" => "when-capacity-lost"
+                "whenTheLpaCanBeUsed" => "when-capacity-lost",
             ],
             "opg.poas.sirius" => [
                 "donor" => [
@@ -313,11 +312,11 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstname" => "Isai",
                     "postcode" => "WR5 4XT",
                     "surname" => "Spencer",
-                    "town" => "Galveston"
+                    "town" => "Galveston",
                 ],
                 "id" => 36902521,
-                "uId" => "M-F4JG-7IHS-STS5"
-            ]
+                "uId" => "M-F4JG-7IHS-STS5",
+            ],
         ];
     }
 }

@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -64,9 +65,9 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider tokenResponseData
      * @param class-string<Throwable>|null $expectedException
      */
+    #[DataProvider('tokenResponseData')]
     public function testAuthenticate(Client $client, ?array $responseData, ?string $expectedException): void
     {
         if ($expectedException !== null) {

@@ -18,6 +18,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -322,9 +323,7 @@ class DwpApiServiceTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider compareRecordsData
-     */
+    #[DataProvider('compareRecordsData')]
     public function testCompareRecords(
         bool $expected,
         CaseData $caseData,

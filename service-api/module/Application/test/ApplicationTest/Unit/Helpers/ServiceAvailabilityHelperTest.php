@@ -8,13 +8,12 @@ use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Helpers\ServiceAvailabilityHelper;
 use Application\Model\Entity\CaseData;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ServiceAvailabilityHelperTest extends TestCase
 {
-    /**
-     * @dataProvider data
-     */
+    #[DataProvider('data')]
     public function testProcessServicesWithCaseData(
         array $config,
         array $caseData,
