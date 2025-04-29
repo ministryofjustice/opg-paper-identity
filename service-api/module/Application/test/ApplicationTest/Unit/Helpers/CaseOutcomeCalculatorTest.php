@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Lcobucci\Clock\FrozenClock;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class CaseOutcomeCalculatorTest extends TestCase
 {
@@ -37,9 +38,7 @@ class CaseOutcomeCalculatorTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider statusData
-     */
+    #[DataProvider('statusData')]
     public function testCalculateStatus(CaseData $caseData, UpdateStatus $expectedStatus): void
     {
         $this->assertEquals(
@@ -93,9 +92,7 @@ class CaseOutcomeCalculatorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider sendIdCheckData
-     */
+    #[DataProvider('sendIdCheckData')]
     public function testUpdateSendIdentityCheck(?DateTimeImmutable $inputTimestamp, string $expectedTimestamp): void
     {
 

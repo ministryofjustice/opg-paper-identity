@@ -28,6 +28,7 @@ use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use Lcobucci\Clock\FrozenClock;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Clock\ClockInterface;
 
@@ -144,8 +145,8 @@ class IdentityControllerTest extends TestCase
      * @param array $case
      * @param int $status
      * @return void
-     * @dataProvider caseData
      */
+    #[DataProvider('caseData')]
     public function testCreate(array $case, int $status): void
     {
         $this->dispatchJSON(
@@ -219,9 +220,7 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider updateActionData
-     */
+    #[DataProvider('updateActionData')]
     public function testUpdateAction(
         string $uuid,
         array $inputData,
@@ -277,9 +276,7 @@ class IdentityControllerTest extends TestCase
         $this->assertMatchedRouteName('update_case');
     }
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testNino(
         string $nino,
         string $result,
@@ -370,9 +367,7 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider drivingLicenceData
-     */
+    #[DataProvider('drivingLicenceData')]
     public function testDrivingLicence(string $drivingLicenceNo, string $response, int $status): void
     {
         $this->dispatchJSON(
@@ -399,9 +394,7 @@ class IdentityControllerTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider passportData
-     */
+    #[DataProvider('passportData')]
     public function testPassportNumber(int $passportNumber, string $response, int $status): void
     {
         $this->dispatchJSON(
@@ -427,9 +420,7 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider idMethodData
-     */
+    #[DataProvider('idMethodData')]
     public function testUpdateIdMethodAction(CaseData $case, array $idMethod, IdMethod $expectedUpdate): void
     {
         $this->dataQueryHandlerMock
@@ -497,9 +488,7 @@ class IdentityControllerTest extends TestCase
         $this->dispatch($path, $method);
     }
 
-    /**
-     * @dataProvider lpaAddData
-     */
+    #[DataProvider('lpaAddData')]
     public function testAddLpaToCase(
         string $uuid,
         string $lpa,
@@ -585,9 +574,7 @@ class IdentityControllerTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider lpaRemoveData
-     */
+    #[DataProvider('lpaRemoveData')]
     public function testRemoveLpaFromCase(
         string $uuid,
         string $lpa,
@@ -699,9 +686,7 @@ class IdentityControllerTest extends TestCase
         $this->assertMatchedRouteName('save_case_progress/put');
     }
 
-    /**
-     * @dataProvider requestFraudCheckData
-     */
+    #[DataProvider('requestFraudCheckData')]
     public function testRequestFraudCheck(
         string $uuid,
         CaseData $modelResponse,

@@ -15,6 +15,7 @@ use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use Laminas\Validator\IsArray;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
@@ -413,9 +414,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertQuery('input#dob-year[value=1980]');
     }
 
-    /**
-     * @dataProvider voucherDobRedirectData
-     */
+    #[DataProvider('voucherDobRedirectData')]
     public function testVoucherDobRedirect(array $detailsData, string $expectedRedirect): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData($detailsData);
@@ -626,9 +625,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/voucher_enter_postcode');
     }
 
-    /**
-     * @dataProvider enterPostcodeData
-    */
+    #[DataProvider('enterPostcodeData')]
     public function testEnterPostcodePageAdjustsContentCorrectly(array $detailsData, array $expectedContent): void
     {
         $detailsData = array_merge($this->returnOpgResponseData(), $detailsData);
@@ -956,9 +953,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('span[id=lpaId]', 'M-AAAA-1234-5678');
     }
 
-    /**
-     * @dataProvider confirmDonorsRedirectData
-     */
+    #[DataProvider('confirmDonorsRedirectData')]
     public function testConfirmDonorsRedirect(array $idMethod, string $expectedRedirect): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -1009,9 +1004,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             $this->assertMatchedRouteName('root/voucher_add_donor');
     }
 
-    /**
-     * @dataProvider addDonorValidationErrorData
-     */
+    #[DataProvider('addDonorValidationErrorData')]
     public function testAddDonorPageLpaValidation(string $lpaId, string $validationMessage): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();
@@ -1035,9 +1028,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider addDonorPageLpaData
-     */
+    #[DataProvider('addDonorPageLpaData')]
     public function testAddDonorPageLpa(array $formData, array $processLpasResponse, array $queryAsserts): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData();

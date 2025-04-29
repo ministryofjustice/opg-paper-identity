@@ -14,6 +14,7 @@ use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class CPFlowControllerTest extends AbstractHttpControllerTestCase
@@ -175,9 +176,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/cp_confirm_address');
     }
 
-        /**
-     * @dataProvider confirmAddressData
-    */
+    #[DataProvider('confirmAddressData')]
     public function testConfirmAddressPageAdjustsContentCorrectly(array $detailsData, array $expectedContent): void
     {
         $detailsData = array_merge($this->returnOpgResponseData(), $detailsData);

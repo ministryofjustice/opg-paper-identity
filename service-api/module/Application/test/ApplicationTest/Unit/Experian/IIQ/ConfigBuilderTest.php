@@ -8,13 +8,12 @@ use Application\Experian\IIQ\ConfigBuilder;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\IdentityIQ;
 use Application\Model\Entity\IIQControl;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ConfigBuilderTest extends TestCase
 {
-    /**
-     * @dataProvider saaConfigData
-     */
+    #[DataProvider('saaConfigData')]
     public function testSAAFormat(array $case, array $expected): void
     {
         $caseData = CaseData::fromArray($case);

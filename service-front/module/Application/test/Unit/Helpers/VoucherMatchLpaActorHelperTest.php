@@ -6,13 +6,12 @@ namespace ApplicationTest\Unit\Helpers;
 
 use Application\Enums\LpaActorTypes;
 use Application\Helpers\VoucherMatchLpaActorHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class VoucherMatchLpaActorHelperTest extends TestCase
 {
-    /**
-     * @dataProvider nameDobLpaData
-     */
+    #[DataProvider('nameDobLpaData')]
     public function testCheckMatch(
         string $firstName,
         string $lastName,
@@ -25,9 +24,7 @@ class VoucherMatchLpaActorHelperTest extends TestCase
         $this->assertEqualsCanonicalizing($expected_result, $result);
     }
 
-    /**
-     * @dataProvider addressLpaData
-     */
+    #[DataProvider('addressLpaData')]
     public function testCheckAddressDonorMatch(array $lpasData, array $address, bool $expected_result): void
     {
         $matchLpaActor = new VoucherMatchLpaActorHelper();

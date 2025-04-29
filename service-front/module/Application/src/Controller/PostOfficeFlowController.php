@@ -89,7 +89,7 @@ class PostOfficeFlowController extends AbstractActionController
                                 break;
                         }
                     }
-                    $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
+                    return $this->redirect()->toRoute($redirect, ['uuid' => $uuid]);
                 }
             }
         }

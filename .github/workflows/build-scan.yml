@@ -67,7 +67,7 @@ jobs:
               service_name: yoti-mock
               context: docker/yoti
     name: Build ${{ matrix.service_name }}
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@ce7e03453712dee1e56accf0a83a4349b1a97c42 # v3.10.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@6bc0246b5cca2f4c85d06986c82a9a42643f6851 # v3.13.0
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/${{ matrix.ecr_repository }}
       artifact_name: ${{ matrix.service_name }}-multi-arch
@@ -110,7 +110,7 @@ jobs:
           echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
           sudo systemctl restart docker
           docker run --privileged --rm tonistiigi/binfmt --install all
-      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           path: /tmp/images
           name: ${{ matrix.service_name }}-multi-arch
@@ -145,7 +145,7 @@ jobs:
           vuln-type: 'os,library'
       - name: Upload Trivy scan results to GitHub Security tab for  ${{ matrix.service_name }}
         id: trivy_upload_sarif
-        uses: github/codeql-action/upload-sarif@1b549b9259bda1cb5ddde3b41741a82a2d15a841 # v3.28.13
+        uses: github/codeql-action/upload-sarif@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
         if: ${{ matrix.service_name != 'yoti-mock' && !cancelled() }}
         with:
           sarif_file: "trivy-results-${{ matrix.service_name }}.sarif"

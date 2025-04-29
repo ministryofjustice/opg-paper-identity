@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\PostOffice;
 
 use Application\PostOffice\Country;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CountryTest extends TestCase
 {
-    /**
-     * @dataProvider countryEUOrEEAProvider
-     */
+    #[DataProvider('countryEUOrEEAProvider')]
     public function testIsEUOrEEA(
         Country $country,
         bool $expectedEUOrEEA,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\LpaUidValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class LpaUidValidatorTest extends TestCase
@@ -18,9 +19,7 @@ class LpaUidValidatorTest extends TestCase
         $this->lpaValidator = new LpaUidValidator();
     }
 
-    /**
-     * @dataProvider lpaData
-     */
+    #[DataProvider('lpaData')]
     public function testValidator(string $lpa, bool $valid): void
     {
         $this->assertEquals($valid, $this->lpaValidator->isValid($lpa));

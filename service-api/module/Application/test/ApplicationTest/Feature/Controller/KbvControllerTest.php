@@ -18,6 +18,7 @@ use DateTimeImmutable;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
 use Lcobucci\Clock\FrozenClock;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Clock\ClockInterface;
@@ -57,9 +58,7 @@ class KbvControllerTest extends TestCase
         $serviceManager->setService(ClockInterface::class, $this->mockClock);
     }
 
-    /**
-     * @dataProvider kbvAnswersData
-     */
+    #[DataProvider('kbvAnswersData')]
     public function testKbvAnswers(
         string $uuid,
         array $provided,

@@ -16,6 +16,7 @@ use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
@@ -132,9 +133,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/post_office_documents');
     }
 
-    /**
-     * @dataProvider postOfficeDocumnentsRedirectData
-     */
+    #[DataProvider('postOfficeDocumnentsRedirectData')]
     public function testPostOfficeDocumentsRedirect(
         string $selectedOption,
         string $personType,
@@ -316,9 +315,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertStringContainsString('This document code is not recognised', $response);
     }
 
-    /**
-     * @dataProvider postOfficeCountriesIdRedirectData
-     */
+    #[DataProvider('postOfficeCountriesIdRedirectData')]
     public function testPostOfficeCountriesIdPostPage(string $personType, string $expectedRedirect): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
@@ -385,9 +382,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertQueryContentContains('span#poAddress-7654321', '2 Pretend Road, Pretendcity, PR3 2TN');
     }
 
-    /**
-     * @dataProvider selectPostOfficeData
-     */
+    #[DataProvider('selectPostOfficeData')]
     public function testfindPostOfficeBranchSelect(
         array $post,
         bool $valid,
@@ -498,9 +493,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider searchPostOfficeData
-     */
+    #[DataProvider('searchPostOfficeData')]
     public function testfindPostOfficeBranchSearch(
         array $post,
         bool $valid,
@@ -565,9 +558,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider confirmPostOfficeData
-     */
+    #[DataProvider('confirmPostOfficeData')]
     public function testfindPostOfficeBranchConfirm(string $personType, SiriusDocument $docType): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();

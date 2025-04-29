@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\KbvController;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class KbvControllerTest extends AbstractHttpControllerTestCase
@@ -30,9 +31,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(siriusApiService::class, $this->siriusApiServiceMock);
     }
 
-    /**
-     * @dataProvider personTypeDataProvider
-     */
+    #[DataProvider('personTypeDataProvider')]
     public function testKbvQuestionsFormRenders(string $personType): void
     {
         $mockResponseData = [];
@@ -137,9 +136,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
         ];
     }
 
-    /**
-     * @dataProvider kbvOutcomeProvider
-     */
+    #[DataProvider('kbvOutcomeProvider')]
     public function testKbvQuestionsResponses(string $personType, array $outcome, string $expectedRedirect): void
     {
         $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';

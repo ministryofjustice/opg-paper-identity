@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\Enum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 // phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
@@ -27,9 +28,7 @@ enum Face: string
 // phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
 class EnumTest extends TestCase
 {
-    /**
-     * @dataProvider provideIsValid
-     */
+    #[DataProvider('provideIsValid')]
     public function testIsValid(mixed $value, bool $expected, ?string $errorMessage): void
     {
         $sut = new Enum(['enum' => Suit::class]);

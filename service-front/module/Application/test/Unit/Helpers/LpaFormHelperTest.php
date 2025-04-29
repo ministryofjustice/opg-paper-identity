@@ -9,13 +9,12 @@ use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class LpaFormHelperTest extends TestCase
 {
-    /**
-     * @dataProvider lpaData
-     */
+    #[DataProvider('lpaData')]
     public function testFindLpa(
         string $caseUuid,
         array $responseData,
@@ -468,9 +467,7 @@ class LpaFormHelperTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider lpaIndexCheckData
-     */
+    #[DataProvider('lpaIndexCheckData')]
     public function testIndexLpaMatchCheck(array $lpas, string $personType, bool $pass): void
     {
         $lpaFormHelper = new LpaFormHelper();

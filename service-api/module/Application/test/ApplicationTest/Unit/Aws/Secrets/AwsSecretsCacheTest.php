@@ -8,6 +8,7 @@ use Application\Aws\Secrets\AwsSecretsCache;
 use Application\Aws\Secrets\Exceptions\InvalidSecretsResponseException;
 use Aws\SecretsManager\SecretsManagerClient;
 use Laminas\Cache\Storage\StorageInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -55,10 +56,10 @@ class AwsSecretsCacheTest extends TestCase
     }
 
     /**
-     * @dataProvider awsResponseProvider
      * @psalm-suppress PossiblyUndefinedMethod
      * @psalm-suppress UndefinedMagicMethod
      */
+    #[DataProvider('awsResponseProvider')]
     public function testGetUncachedSecretFromAws(array $awsResponse): void
     {
         $this->storage->expects(self::once())

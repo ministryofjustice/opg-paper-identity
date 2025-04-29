@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\BirthDateValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class BirthDateValidatorTest extends TestCase
@@ -18,9 +19,7 @@ class BirthDateValidatorTest extends TestCase
         $this->birthDateValidator = new BirthDateValidator();
     }
 
-    /**
-     * @dataProvider birthDateData
-     */
+    #[DataProvider('birthDateData')]
     public function testValidator(mixed $birthDate, bool $valid, string $expectedErrorKey = null): void
     {
         $this->assertEquals($valid, $this->birthDateValidator->isValid($birthDate));
