@@ -17,6 +17,7 @@ use Application\Forms\PassportDate;
 use Application\Forms\PostOfficeSelect;
 use Application\Forms\PostOfficeSearch;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentTypeRepository;
@@ -36,6 +37,7 @@ class PostOfficeFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly SendSiriusNoteHelper $sendNoteHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly DocumentTypeRepository $documentTypeRepository,
@@ -246,6 +248,7 @@ class PostOfficeFlowController extends AbstractActionController
         if ($pdf['status'] !== 201) {
             throw new SiriusApiException("Failed to send Post Office document.");
         }
+        $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
         return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
     }
 

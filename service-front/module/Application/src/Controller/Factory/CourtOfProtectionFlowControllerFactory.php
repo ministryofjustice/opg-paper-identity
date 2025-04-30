@@ -6,6 +6,7 @@ namespace Application\Controller\Factory;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CourtOfProtectionFlowController;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -27,6 +28,7 @@ class CourtOfProtectionFlowControllerFactory implements FactoryInterface
 
         return new CourtOfProtectionFlowController(
             $container->get(OpgApiServiceInterface::class),
+            $container->get(SendSiriusNoteHelper::class),
             $container->get(SiriusDataProcessorHelper::class),
             $siriusPublicUrl
         );

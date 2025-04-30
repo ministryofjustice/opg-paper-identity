@@ -128,29 +128,6 @@ class KbvController extends AbstractActionController
             return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
         }
 
-        if ($detailsData['personType'] == 'donor') {
-            $description = match ($detailsData["caseProgress"]["fraudScore"]["decision"]) {
-                "ACCEPT", "CONTINUE" =>
-                    "The donor on the LPA has tried and failed to ID over the phone. " .
-                    "This donor can use the Post Office, choose someone to vouch for them " .
-                    "or ask the Court of Protection to register their LPA.",
-                default =>
-                    "The donor on the LPA has tried and failed to ID over the phone. " .
-                    "This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. " .
-                    "They cannot use the vouching route to ID."
-            };
-
-            foreach ($detailsData['lpas'] as $lpa) {
-                $this->siriusApiService->addNote(
-                    $request,
-                    $lpa,
-                    "ID check failed over the phone",
-                    "ID Check Incomplete",
-                    $description
-                );
-            }
-        }
-
         return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
     }
 
