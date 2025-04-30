@@ -35,7 +35,7 @@ cypress-zap:
 ```
 
 ### Reports 
-Two reports will be generated in the `zap/` directory.
+Two reports will be generated in the `zap/reports/` directory.
 
 #### HTML Report
 Default report will be `ServiceReport.html` with supporting CSS/Images in a directory called `ServiceReport`.

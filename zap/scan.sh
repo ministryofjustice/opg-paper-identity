@@ -100,8 +100,9 @@ filter_false_positives() {
 # Run default reports -  HTML Plus for Humans and Sarif JSON for Machines
 run_reports() {
     echo "INFO - Running Reports for $SERVICE_NAME"
-    curl --fail "localhost:8080/JSON/reports/action/generate?title="$SERVICE_NAME"Report&reportFileName="$SERVICE_NAME"Report&template=traditional-html-plus&reportDir=/zap/wrk/&includedConfidences=Confirmed|High|Medium|Low"
-    curl --fail "localhost:8080/JSON/reports/action/generate?title="$SERVICE_NAME"Report&reportFileName="$SERVICE_NAME"Report&template=sarif-json&reportDir=/zap/wrk/&includedConfidences=Confirmed|High|Medium|Low"
+    mkdir -p /zap/wrk/reports/
+    curl --fail "localhost:8080/JSON/reports/action/generate?title="$SERVICE_NAME"Report&reportFileName="$SERVICE_NAME"Report&template=traditional-html-plus&reportDir=/zap/wrk/Reports/&includedConfidences=Confirmed|High|Medium|Low"
+    curl --fail "localhost:8080/JSON/reports/action/generate?title="$SERVICE_NAME"Report&reportFileName="$SERVICE_NAME"Report&template=sarif-json&reportDir=/zap/wrk/Reports/&includedConfidences=Confirmed|High|Medium|Low"
 }
 
 #######################
