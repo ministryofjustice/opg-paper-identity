@@ -1,0 +1,104 @@
+---
+env:
+  contexts:
+  - name: "PaperIdentity"
+    urls:
+    - "http://front-web/start"
+    includePaths:
+    - "http://front-web/.*"
+  parameters:
+    failOnError: false
+    failOnWarning: false
+    progressToStdout: true
+  vars: {}
+jobs:
+- parameters:
+    context: "PaperIdentity"
+    url: "http://front-web/start"
+    maxDepth: 10
+    maxParseSizeBytes: 26214400
+  name: "spider"
+  type: "spider"
+- parameters:
+    maxDuration: 10
+  name: "passiveScan-wait"
+  type: "passiveScan-wait"
+- parameters:
+    context: "PaperIdentity"
+    url: "http://front-web/start"
+    maxDuration: 0
+    maxCrawlDepth: 20
+    numberOfBrowsers: 2
+    eventWait: 5000
+    reloadWait: 5000
+  name: "spiderAjax"
+  type: "spiderAjax"
+- parameters:
+    maxDuration: 10
+  name: "passiveScan-wait"
+  type: "passiveScan-wait"
+- parameters:
+    context: "PaperIdentity"
+    threadPerHost: 5
+  policyDefinition:
+    defaultStrength: "Insane"
+    defaultThreshold: "Low"
+    rules: []
+  name: "activeScan"
+  type: "activeScan"
+- parameters:
+    maxDuration: 10
+  name: "passiveScan-wait"
+  type: "passiveScan-wait"
+- parameters:
+    template: "traditional-html-plus"
+    theme: "light"
+    reportDir: "/zap/wrk/PaperIdentityReport"
+    reportFile: "ZapReportExtended.html"
+    reportTitle: "Pper Identity ZAP Extended Report"
+    reportDescription: ""
+    displayReport: false
+  risks:
+  - "low"
+  - "medium"
+  - "high"
+  confidences:
+  - "low"
+  - "medium"
+  - "high"
+  - "confirmed"
+  sections:
+  - "passingrules"
+  - "instancecount"
+  - "alertdetails"
+  - "alertcount"
+  - "params"
+  - "chart"
+  - "statistics"
+  - "sequencedetails"
+  name: "Pper Identity ZAP Extended Report"
+  type: "report"
+- parameters:
+    template: "traditional-pdf"
+    reportDir: "/zap/wrk/"
+    reportFile: "PaperIdentityReport.pdf"
+    reportTitle: "PDF Report"
+    reportDescription: ""
+    displayReport: false
+  risks:
+  - "info"
+  - "low"
+  - "medium"
+  - "high"
+  confidences:
+  - "falsepositive"
+  - "low"
+  - "medium"
+  - "high"
+  - "confirmed"
+  sections:
+  - "instancecount"
+  - "alertdetails"
+  - "alertcount"
+  name: "PDF Report"
+  type: "report"
