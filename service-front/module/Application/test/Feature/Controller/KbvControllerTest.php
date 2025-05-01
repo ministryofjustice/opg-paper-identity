@@ -6,7 +6,6 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\KbvController;
-use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -14,21 +13,18 @@ use PHPUnit\Framework\MockObject\MockObject;
 class KbvControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
-    private SiriusApiService&MockObject $siriusApiServiceMock;
 
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
-        $this->siriusApiServiceMock = $this->createMock(siriusApiService::class);
 
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
-        $serviceManager->setService(siriusApiService::class, $this->siriusApiServiceMock);
     }
 
     #[DataProvider('personTypeDataProvider')]

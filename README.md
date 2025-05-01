@@ -152,6 +152,3 @@ awslocal dynamodb get-item --table-name identity-verify --key '{"id": {"S": $UUI
 ```
 
 further documentation on querying dynamoDB can be found [here](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/).
-
-
-awslocal dynamodb get-item --table-name identity-verify --key '{"id": {"S": "3f7db1ec-20a9-40bf-82c8-05aee9c5c9c4"}}' --projection-expression "#T" --expression-attribute-names '{"#T": "identityIQ"}

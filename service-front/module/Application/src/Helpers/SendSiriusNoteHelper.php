@@ -20,7 +20,14 @@ class SendSiriusNoteHelper {
     {
         $this->logger->info("in sendAbandonFlowNote");
 
-        $noteDescription = "Reason: " . $reason;
+        $verboseReason = match ($reason) {
+            'cd' => 'Call dropped',
+            'nc' => 'Caller not able to complete at this time',
+            'ot' => 'Other',
+            default => 'Unknown'
+        };
+
+        $noteDescription = "Reason: " . $verboseReason;
         $noteDescription .= "\n\n" . $notes;
 
         foreach ($lpas as $lpaUid) {
