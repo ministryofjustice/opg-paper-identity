@@ -108,11 +108,10 @@ class SendSiriusNoteHelperTest extends TestCase
         $noVouchingNote = 'They cannot use the vouching route to ID.';
 
         $testCases = [
-            'not donor so no note' => ['voucher', true, 'ACCEPT', null, null,],
             'donor with no docCheck, fraud or kbvs' => ['donor', null, null, null, null],
             'donor failed docCheck' => ['donor', false, null, null, $noVouchingNote,],
              // TODO: what do we actually want to happen?
-            'donor with a NODECISION fraud result' => ['donor', true, 'NODECISION', null, $withVouchingNote]
+            'donor with a NODECISION fraud result' => ['donor', true, 'NODECISION', null, $withVouchingNote],
         ];
 
         foreach (['ACCEPT', 'CONTINUE'] as $resp) {
@@ -133,6 +132,18 @@ class SendSiriusNoteHelperTest extends TestCase
             $testCases["donor failed fraud with {$resp} and failed kbvs"] = [
                 'donor', true, $resp, false, $noVouchingNote,
             ];
+        }
+
+        $msgLkup = [
+            'certificateProvider' => 'The certificate provider has failed to ID over the phone.',
+            'voucher' => 'The person vouching on the LPA has failed to ID over the phone.'
+        ];
+
+        foreach (['certificateProvider', 'voucher'] as $personType) {
+            $testCases["$personType with failed docCheck"] = [$personType, false, null, null, $msgLkup[$personType]];
+            $testCases["$personType passed kbvs"] = [$personType, true, 'ACCEPT', true, null];
+            $testCases["$personType abandoned kbvs"] = [$personType, true, 'ACCEPT', null, $msgLkup[$personType]];
+            $testCases["$personType failed kbvs"] = [$personType, true, 'ACCEPT', false, $msgLkup[$personType]];
         }
 
         return $testCases;
