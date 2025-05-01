@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
+use Application\Exceptions\CaseProgressNotSet;
 use Application\Fixtures\DataQueryHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\Problem;
+use Application\Model\Entity\Kbvs;
 use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -71,6 +73,10 @@ class KbvController extends AbstractActionController
 
         if ($result->isComplete()) {
             $case->identityCheckPassed = $result->isPass();
+            if (is_null($case->caseProgress)) {
+                throw new CaseProgressNotSet("caseProgress not set for case {$uuid}");
+            }
+            $case->caseProgress->kbvs = Kbvs::fromArray(['result' => $result->isPass()]);
             $this->caseOutcomeCalculator->updateSendIdentityCheck($case);
 
             $response = [
