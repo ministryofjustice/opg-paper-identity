@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Application\Helpers;
 
 use Application\Services\SiriusApiService;
-use Laminas\HTTP\Request;
+use Laminas\Http\Request;
 use Psr\Log\LoggerInterface;
 
-class SendSiriusNoteHelper {
-
+class SendSiriusNoteHelper
+{
     public function __construct(
         private readonly SiriusApiService $siriusApiService,
         private readonly LoggerInterface $logger,
@@ -61,7 +61,7 @@ class SendSiriusNoteHelper {
         $this->logger->info("in sendBlockedRoutesNote");
 
         $description = null;
-        if ( $personType === 'donor') {
+        if ($personType === 'donor') {
             if ($docCheck === false) {
                 $description = $noVouchingMessage;
             } elseif ($docCheck === true) {

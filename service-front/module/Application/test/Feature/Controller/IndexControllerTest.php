@@ -17,7 +17,6 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
-
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
