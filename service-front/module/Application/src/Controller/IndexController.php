@@ -10,6 +10,7 @@ use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
 use Application\Helpers\LpaFormHelper;
 use Application\Helpers\LpaStatusTypeHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
@@ -32,6 +33,7 @@ class IndexController extends AbstractActionController
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly SiriusApiService $siriusApiService,
         private readonly LpaFormHelper $lpaFormHelper,
+        private readonly SendSiriusNoteHelper $sendNoteHelper,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly string $siriusPublicUrl,
     ) {
@@ -154,20 +156,14 @@ class IndexController extends AbstractActionController
             $this->opgApiService->sendIdentityCheck($uuid);
 
             $postData = $request->getPost()->toArray();
-            $noteDescription = "Reason: " . $this->mapReason($postData['reason']);
-            $noteDescription .= "\n\n" . $postData['notes'];
 
-            $lpas = $detailsData["lpas"];
-            foreach ($lpas as $lpaUid) {
-                $this->siriusApiService->addNote(
-                    $request,
-                    $lpaUid,
-                    "ID Check Abandoned",
-                    "ID Check Incomplete",
-                    $noteDescription
-                );
-            }
-
+            $this->sendNoteHelper->sendAbandonFlowNote(
+                $postData['reason'],
+                $postData['notes'],
+                $detailsData['lpas'],
+                $this->getRequest()
+            );
+            $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
             $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
             return $this->redirect()->toUrl($siriusUrl);
         }
