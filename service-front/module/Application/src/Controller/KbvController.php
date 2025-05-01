@@ -6,7 +6,6 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Exceptions\HttpException;
-use Application\Services\SiriusApiService;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Laminas\Http\Response;
@@ -25,12 +24,18 @@ class KbvController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
-        private readonly SiriusApiService $siriusApiService,
     ) {
     }
 
     public function idVerifyQuestionsAction(): ViewModel|Response
     {
+        $failRoute = "root/identity_check_failed";
+        $passRoute = [
+            'donor' => "root/identity_check_passed",
+            'certificateProvider' => "root/cp_identity_check_passed",
+            'voucher' => "root/voucher_identity_check_passed"
+        ];
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -108,27 +113,15 @@ class KbvController extends AbstractActionController
                 return $this->redirect()->refresh();
             }
 
-            return $this->handleComplete($check, $detailsData, $uuid, $this->getRequest());
+            if ($check['passed'] === true) {
+                return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
+            }
+
+            return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
         }
         $view->setVariable('form', $form);
 
         return $view->setTemplate('application/pages/identity_check_questions');
-    }
-
-    private function handleComplete(array $check, array $detailsData, string $uuid, Request $request): Response
-    {
-        $failRoute = "root/identity_check_failed";
-        $passRoute = [
-            'donor' => "root/identity_check_passed",
-            'certificateProvider' => "root/cp_identity_check_passed",
-            'voucher' => "root/voucher_identity_check_passed"
-        ];
-
-        if ($check['passed'] === true) {
-            return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
-        }
-
-        return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
     }
 
     /**

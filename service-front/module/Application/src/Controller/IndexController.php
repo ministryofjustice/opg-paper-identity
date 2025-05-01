@@ -175,17 +175,6 @@ class IndexController extends AbstractActionController
         return $view->setTemplate('application/pages/abandoned_flow');
     }
 
-    private function mapReason(string $reason): string
-    {
-        $reasons = [
-            'cd' => 'Call dropped',
-            'nc' => 'Caller not able to complete at this time',
-            'ot' => 'Other'
-        ];
-
-        return $reasons[$reason] ?? 'Unknown';
-    }
-
     public function healthCheckAction(): ViewModel
     {
         $view = new ViewModel();
