@@ -36,24 +36,40 @@ class SendSiriusNoteHelper {
 
     public function sendBlockedRoutesNote(array $detailsData, Request $request): void
     {
+        $withVouchingMessage =
+            "The donor on the LPA has tried and failed to ID over the phone. " .
+            "This donor can use the Post Office, choose someone to vouch for them " .
+            "or ask the Court of Protection to register their LPA.";
+
+        $noVouchingMessage =
+            "The donor on the LPA has tried and failed to ID over the phone. " .
+            "This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. " .
+            "They cannot use the vouching route to ID.";
+
         $personType = $detailsData['personType'];
-        $kbvs = $detailsData['caseProgress']['kbvs'] ?? null;
+        $docCheck = $detailsData['caseProgress']['docCheck']['state'] ?? null;
+        $fraud = $detailsData['caseProgress']['fraudScore']['decision'] ?? null;
+        $kbvs = $detailsData['caseProgress']['kbvs']['result'] ?? null;
 
         $this->logger->info("in sendBlockedRoutesNote");
 
-        if ( $personType== 'donor' && ! is_null($kbvs) && $kbvs['result'] !== true ) {
-            $description = match ($detailsData["caseProgress"]["fraudScore"]["decision"]) {
-                "ACCEPT", "CONTINUE" =>
-                    "The donor on the LPA has tried and failed to ID over the phone. " .
-                    "This donor can use the Post Office, choose someone to vouch for them " .
-                    "or ask the Court of Protection to register their LPA.",
-                default =>
-                    "The donor on the LPA has tried and failed to ID over the phone. " .
-                    "This donor can use the Post Office to ID or ask the Court of Protection to register their LPA. " .
-                    "They cannot use the vouching route to ID."
-            };
+        $description = null;
+        if ( $personType === 'donor') {
+            if ($docCheck === false) {
+                $description = $noVouchingMessage;
+            } elseif ($docCheck === true) {
+                if ($kbvs !== true) {
+                    if (in_array($fraud, ['ACCEPT', 'CONTINUE', 'NODECISION'])) {
+                        $description = $withVouchingMessage;
+                    } else {
+                        $description = $noVouchingMessage;
+                    }
+                }
+            }
+        }
 
-            $this->logger->info("sending note to sirius");
+        if (! is_null($description)) {
+            $this->logger->info("sending note to sirius: {$description}");
             foreach ($detailsData['lpas'] as $lpa) {
                 $this->siriusApiService->addNote(
                     $request,

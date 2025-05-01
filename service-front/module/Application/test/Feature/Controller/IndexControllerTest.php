@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\IndexController;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -16,6 +17,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class IndexControllerTest extends AbstractHttpControllerTestCase
 {
+
     public function setUp(): void
     {
         $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
@@ -282,22 +284,26 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $opgApiService = $this->createMock(OpgApiService::class);
+        $siriusNoteMock = $this->createMock(SendSiriusNoteHelper::class);
 
         $serviceManager = $this->getApplicationServiceLocator();
         $serviceManager->setService(SiriusApiService::class, $siriusApiService);
         $serviceManager->setService(OpgApiService::class, $opgApiService);
+        $serviceManager->setService(SendSiriusNoteHelper::class, $siriusNoteMock);
 
         $lastPage = '/case-uuid/national-insurance-number';
         $caseUuid = 'case-uuid';
         $lpaUid = 'M-0000-0000-0000';
         $siriusPublicUrl = 'SIRIUS_PUBLIC_URL';
 
+        $mockDetailsData = [
+            'lpas' => [$lpaUid],
+        ];
+
         $opgApiService->expects($this->once())
             ->method('getDetailsData')
             ->with($caseUuid)
-            ->willReturn([
-                'lpas' => [$lpaUid],
-            ]);
+            ->willReturn($mockDetailsData);
 
         $opgApiService->expects($this->once())
             ->method('updateCaseProgress')
@@ -308,16 +314,15 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             ->method('sendIdentityCheck')
             ->with($caseUuid);
 
-        $siriusApiService->expects($this->once())
-            ->method('addNote')
-            ->with(
-                $this->callback(fn ($request) => $request !== null),
-                $lpaUid,
-                'ID Check Abandoned',
-                'ID Check Incomplete',
-                $this->callback(fn ($note) => str_contains($note, 'Reason: Call dropped')
-                    && str_contains($note, 'Custom notes'))
-            );
+        $siriusNoteMock
+            ->expects(self::once())
+            ->method('sendAbandonFlowNote')
+            ->with('cd', 'Custom notes', [$lpaUid], $this->getRequest());
+
+        $siriusNoteMock
+            ->expects(self::once())
+            ->method('sendBlockedRoutesNote')
+            ->with($mockDetailsData, $this->getRequest());
 
         $this->dispatch(sprintf('/%s/abandon-flow?last_page=%s', $caseUuid, $lastPage), 'POST', [
             'reason' => 'cd',
