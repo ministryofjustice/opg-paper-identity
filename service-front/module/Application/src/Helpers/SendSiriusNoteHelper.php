@@ -45,11 +45,12 @@ class SendSiriusNoteHelper
     {
         $personTypeLkup = [
             'certificateProvider' => 'certificate provider',
-            'voucher' => 'person vouching on the LPA',
+            'voucher' => 'person vouching',
             'donor' => null,
         ];
 
         $personType = $detailsData['personType'];
+        $name = $detailsData['firstName'] . " " . $detailsData['lastName'];
         $docCheck = $detailsData['caseProgress']['docCheck']['state'] ?? null;
         $fraud = $detailsData['caseProgress']['fraudScore']['decision'] ?? null;
         $kbvs = $detailsData['caseProgress']['kbvs']['result'] ?? null;
@@ -65,7 +66,7 @@ class SendSiriusNoteHelper
             "They cannot use the vouching route to ID.";
 
         $nonDonorMessage =
-            "The $personTypeLkup[$personType] has failed to ID over the phone. " .
+            "The $personTypeLkup[$personType] ($name) has failed to ID over the phone. " .
             "This person can only use the Post Office to ID";
 
         $this->logger->info("in sendBlockedRoutesNote");  //TODO: remove

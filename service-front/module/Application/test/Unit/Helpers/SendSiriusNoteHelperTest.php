@@ -81,6 +81,8 @@ class SendSiriusNoteHelperTest extends TestCase
         $kbvs = is_null($kbvs) ? null : ['result' => $kbvs];
 
         $detailsData = [
+            'firstName' => 'Lee',
+            'lastName' => 'Manthrope',
             'personType' => $personType,
             'caseProgress' => [
                 'fraudScore' => $fraudOutcome,
@@ -145,8 +147,8 @@ class SendSiriusNoteHelperTest extends TestCase
         }
 
         $msgLkup = [
-            'certificateProvider' => 'The certificate provider has failed to ID over the phone.',
-            'voucher' => 'The person vouching on the LPA has failed to ID over the phone.'
+            'certificateProvider' => 'The certificate provider (Lee Manthrope) has failed to ID over the phone.',
+            'voucher' => 'The person vouching (Lee Manthrope) has failed to ID over the phone.'
         ];
 
         foreach (['certificateProvider', 'voucher'] as $personType) {
