@@ -29,15 +29,15 @@ class SendSiriusNoteHelperTest extends TestCase
         );
     }
 
-    public function testSendAbandonFlowNote(): void
+    #[DataProvider('sendAbandonFlowNoteData')]
+    public function testSendAbandonFlowNote(string $reason, string $verboseReason): void
     {
         $request = $this->createMock(Request::class);
 
         $lpas = ['lpaOne', 'lpaTwo'];
 
-        $reason = "cd";
         $notes = "these are some notes";
-        $expectedDescription = "Reason: Call dropped\n\nthese are some notes";
+        $expectedDescription = "$verboseReason\n\n$notes";
 
         $expectedArgs = [
             [$request, 'lpaOne', "ID Check Abandoned", "ID Check Incomplete", $expectedDescription,],
@@ -54,6 +54,16 @@ class SendSiriusNoteHelperTest extends TestCase
             });
 
         $this->helper->sendAbandonFlowNote($reason, $notes, $lpas, $request);
+    }
+
+    public static function sendAbandonFlowNoteData(): array
+    {
+        return [
+            ['cd', 'Reason: Call dropped'],
+            ['nc', 'Reason: Caller not able to complete at this time'],
+            ['ot', 'Reason: Other'],
+            ['xx', 'Reason: Unknown'],
+        ];
     }
 
     #[DataProvider('sendBlockedRoutesNoteData')]
