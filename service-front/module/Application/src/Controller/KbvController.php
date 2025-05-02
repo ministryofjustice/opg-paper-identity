@@ -112,12 +112,6 @@ class KbvController extends AbstractActionController
             }
 
             if ($check['passed'] === true) {
-                $caseProgressData = $detailsData['caseProgress'] ?? [];
-                $caseProgressData['kbvs'] = [
-                    'result' => true
-                ];
-                $this->opgApiService->updateCaseProgress($uuid, $caseProgressData);
-
                 return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
             }
 
@@ -127,7 +121,6 @@ class KbvController extends AbstractActionController
 
         return $view->setTemplate('application/pages/identity_check_questions');
     }
-
     /**
      * @template Question of array
      * @param Question[] $questions
