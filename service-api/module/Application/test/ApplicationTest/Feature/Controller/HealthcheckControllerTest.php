@@ -16,6 +16,7 @@ use Laminas\Http\Headers;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
@@ -69,9 +70,7 @@ class HealthcheckControllerTest extends TestCase
         $this->dispatch($path, $method);
     }
 
-    /**
-     * @dataProvider routeAvailabilityData
-     */
+    #[DataProvider('routeAvailabilityData')]
     public function testRouteAvailability(
         string $uuid,
         CaseData $case,

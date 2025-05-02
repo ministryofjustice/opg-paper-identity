@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\NinoValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class NinoValidatorTest extends TestCase
@@ -18,9 +19,7 @@ class NinoValidatorTest extends TestCase
         $this->ninoValidator = new NinoValidator();
     }
 
-    /**
-     * @dataProvider ninoData
-     */
+    #[DataProvider('ninoData')]
     public function testValidator(string $nino, ?string $error, bool $valid): void
     {
         $this->assertEquals($valid, $this->ninoValidator->isValid($nino));

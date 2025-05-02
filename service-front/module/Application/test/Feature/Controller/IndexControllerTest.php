@@ -8,6 +8,7 @@ use Application\Controller\IndexController;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -123,10 +124,10 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
     }
 
     /**
-     * @dataProvider startActionDataProvider
      * @param Lpa $lpa
      * @return void
      */
+    #[DataProvider('startActionDataProvider')]
     public function testStartAction($lpa, string $type, array $createCaseArgs): void
     {
         $siriusApiService = $this->createMock(SiriusApiService::class);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Services\Experian\FraudApi\DTO;
 
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ExperianCrosscoreFraudResponseDTOTest extends TestCase
@@ -14,9 +15,7 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
         parent::setUp();
     }
 
-    /**
-     * @dataProvider data
-     */
+    #[DataProvider('data')]
     public function testDto(array $data, array $expected): void
     {
         $experianCrosscoreFraudResponseDTO = new ResponseDTO($data);

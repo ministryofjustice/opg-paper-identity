@@ -288,7 +288,6 @@ describe("Identify a Certificate Provider", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("Does the address on the ID document match the address in Sirius?");
-        cy.contains("No").click();
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.contains("National insurance number");

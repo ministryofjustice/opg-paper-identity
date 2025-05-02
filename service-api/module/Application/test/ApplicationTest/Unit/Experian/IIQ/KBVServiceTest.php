@@ -12,6 +12,7 @@ use Application\Fixtures\DataWriteHandler;
 use Application\KBV\AnswersOutcome;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\KBVQuestion;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -152,8 +153,8 @@ class KBVServiceTest extends TestCase
 
     /**
      * @param IIQQuestion $newQuestion
-     * @dataProvider checkAnswersProvider
      */
+    #[DataProvider('checkAnswersProvider')]
     public function testCheckAnswers(
         string $nextTransactionId,
         ?string $authResult,

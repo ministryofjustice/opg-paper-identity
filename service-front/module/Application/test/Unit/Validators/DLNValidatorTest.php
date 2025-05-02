@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Validators;
 
 use Application\Validators\DLNValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class DLNValidatorTest extends TestCase
@@ -18,9 +19,7 @@ class DLNValidatorTest extends TestCase
         $this->dlnValidator = new DLNValidator();
     }
 
-    /**
-     * @dataProvider dlnData
-     */
+    #[DataProvider('dlnData')]
     public function testValidator(string $dln, ?string $error, bool $valid): void
     {
         $this->assertEquals($valid, $this->dlnValidator->isValid($dln));

@@ -6,6 +6,7 @@ namespace ApplicationTest\Unit\Model\Entity;
 
 use Application\Model\Entity\AbandonedFlow;
 use Laminas\Form\Annotation\AttributeBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class AbandonedFlowTest extends TestCase
@@ -20,9 +21,7 @@ class AbandonedFlowTest extends TestCase
         $this->assertEquals($data['timestamp'], $abandonedFlow->timestamp);
     }
 
-    /**
-     * @dataProvider invalidDataProvider
-     */
+    #[DataProvider('invalidDataProvider')]
     public function testFormValidation(array $data, bool $isValid): void
     {
         $form = (new AttributeBuilder())->createForm(AbandonedFlow::class);
