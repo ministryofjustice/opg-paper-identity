@@ -122,7 +122,6 @@ class SendSiriusNoteHelperTest extends TestCase
         $testCases = [
             'donor with no docCheck, fraud or kbvs' => ['donor', null, null, null, null],
             'donor failed docCheck' => ['donor', false, null, null, $noVouchingNote,],
-             // TODO: what do we actually want to happen?
             'donor with a NODECISION fraud result' => ['donor', true, 'NODECISION', null, $withVouchingNote],
         ];
 

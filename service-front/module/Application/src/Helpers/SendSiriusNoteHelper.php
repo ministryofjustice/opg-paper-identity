@@ -69,8 +69,6 @@ class SendSiriusNoteHelper
             "The $personTypeLkup[$personType] ($name) has failed to ID over the phone. " .
             "This person can only use the Post Office to ID";
 
-        $this->logger->info("in sendBlockedRoutesNote");  //TODO: remove
-
         $description = null;
 
         if ($docCheck === false) {
@@ -88,7 +86,6 @@ class SendSiriusNoteHelper
         }
 
         if (! is_null($description)) {
-            $this->logger->info("sending note to sirius: {$description}");  //TODO: remove
             foreach ($detailsData['lpas'] as $lpa) {
                 $this->siriusApiService->addNote(
                     $request,
