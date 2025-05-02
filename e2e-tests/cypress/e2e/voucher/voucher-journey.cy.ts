@@ -27,8 +27,9 @@ describe("Voucher journey", () => {
         // how will you confirm page
         cy.get(".govuk-heading-xl").contains("How will you confirm your identity?");
 
-        // vouching should not be available as an option.
+        // vouching/CoP should not be available as an option.
         cy.contains("Have someone vouch for the identity of the donor").should('not.exist');
+        cy.contains("The donor cannot do any of the above (Court of Protection)").should('not.exist');
 
         // requires you to select an option
         cy.get("[id=id_method-error]").should("not.exist");

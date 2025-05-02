@@ -81,17 +81,23 @@ class RouteAvailabilityHelperTest extends TestCase
             ]
         );
 
-        $allRoutesAvailable = [
+        $donorAllRoutesAvailable = [
             IdRoute::KBV->value => true,
             DocumentType::Passport->value => true,
             DocumentType::DrivingLicence->value => true,
             DocumentType::NationalInsuranceNumber->value => true,
             IdRoute::POST_OFFICE->value => true,
-            IdRoute::VOUCHING->value => false,  // set to false as only available for donor so easier to add back in.
+            IdRoute::VOUCHING->value => true,
             IdRoute::COURT_OF_PROTECTION->value => true,
         ];
 
-        $vouchingAvailable = [IdRoute::VOUCHING->value => true];
+        $otherAllRoutesAvailable = array_merge(
+            $donorAllRoutesAvailable,
+            [
+                IdRoute::VOUCHING->value => false,
+                IdRoute::COURT_OF_PROTECTION->value => false,
+            ]
+        );
 
         $allRoutesUnavailable = [
             IdRoute::KBV->value => false,
@@ -103,14 +109,17 @@ class RouteAvailabilityHelperTest extends TestCase
             IdRoute::COURT_OF_PROTECTION->value => false,
         ];
 
-        $offlineRoutesOnly = array_merge(
-            $allRoutesUnavailable,
+        $donorOffline = array_merge(
+            $donorAllRoutesAvailable,
             [
-                IdRoute::POST_OFFICE->value => true,
-                IdRoute::COURT_OF_PROTECTION->value => true,
+                IdRoute::KBV->value => false,
+                DocumentType::Passport->value => false,
+                DocumentType::DrivingLicence->value => false,
+                DocumentType::NationalInsuranceNumber->value => false,
             ]
         );
 
+        $postOfficeOnly = array_merge($allRoutesUnavailable, [IdRoute::POST_OFFICE->value => true,]);
 
         $donor = ["personType" => "donor"];
         $certificateProvider = ["personType" => "certificateProvider"];
@@ -198,25 +207,25 @@ class RouteAvailabilityHelperTest extends TestCase
                 $donor,
                 $externalServices,
                 [
-                    'data' => array_merge($allRoutesAvailable, $vouchingAvailable),
+                    'data' => $donorAllRoutesAvailable,
                     'messages' => [],
                 ],
             ],
-            "fresh certificate-provider case - all but vouching available" => [
+            "fresh certificate-provider case - all but vouching available and CoP" => [
                 $config,
                 $certificateProvider,
                 $externalServices,
                 [
-                    'data' => $allRoutesAvailable,
+                    'data' => $otherAllRoutesAvailable,
                     'messages' => [],
                 ],
             ],
-            "fresh voucher case - all but vouching available" => [
+            "fresh voucher case - all but vouching available and CoP" => [
                 $config,
                 $voucher,
                 $externalServices,
                 [
-                    'data' => $allRoutesAvailable,
+                    'data' => $otherAllRoutesAvailable,
                     'messages' => [],
                 ],
             ],
@@ -234,7 +243,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($donor, $docCheckedFailed),
                 $externalServices,
                 [
-                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'data' => $donorOffline,  // TODO: should vouching be available?
                     'messages' => ['The donor failed doc-check']
                 ]
             ],
@@ -243,7 +252,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($certificateProvider, $docCheckedFailed),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['The certificate provider failed doc-check']
                 ]
             ],
@@ -252,7 +261,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($voucher, $docCheckedFailed),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['The person vouching failed doc-check']
                 ]
             ],
@@ -261,7 +270,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($donor, $docCheckedPassed),
                 $externalServices,
                 [
-                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'data' => $donorOffline,
                     'messages' => ['The donor has already passed doc-check']
                 ]
             ],
@@ -270,7 +279,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($certificateProvider, $docCheckedPassed),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['The certificate provider has already passed doc-check']
                 ]
             ],
@@ -279,34 +288,34 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($voucher, $docCheckedPassed),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['The person vouching has already passed doc-check']
                 ]
             ],
-            "donor with NODECISION fraudscore - ???" => [
+            "donor with NODECISION fraudscore - close off experian routes" => [
+                $config,
+                array_merge($donor, $noDecision),
+                $externalServices,
+                [
+                    'data' => $donorOffline,
+                    'messages' => ['no-decision-message']
+                ]
+            ],
+            "certificate-provider with NODECISION fraudscore - close off experian routes" => [
                 $config,
                 array_merge($certificateProvider, $noDecision),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['no-decision-message']
                 ]
             ],
-            "certificate-provider with NODECISION fraudscore - ???" => [
-                $config,
-                array_merge($certificateProvider, $noDecision),
-                $externalServices,
-                [
-                    'data' => $offlineRoutesOnly,
-                    'messages' => ['no-decision-message']
-                ]
-            ],
-            "voucher with NODECISION fraudscore - ???" => [
+            "voucher with NODECISION fraudscore - close off experian routes" => [
                 $config,
                 array_merge($voucher, $noDecision),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['no-decision-message']
                 ]
             ],
@@ -315,7 +324,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($donor, $thinfile),
                 $externalServices,
                 [
-                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'data' => $donorOffline,
                     'messages' => ['no-decision-message']
                 ]
             ],
@@ -324,7 +333,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($certificateProvider, $thinfile),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['no-decision-message']
                 ]
             ],
@@ -333,11 +342,10 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($voucher, $thinfile),
                 $externalServices,
                 [
-                    'data' => $offlineRoutesOnly,
+                    'data' => $postOfficeOnly,
                     'messages' => ['no-decision-message']
                 ]
             ],
-
             "donor with STOP fraudscore and failed KBVs - only post-office and CoP available" => [
                 $config,
                 array_merge($donor, $stopFailedKbvs),
@@ -358,44 +366,25 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($donor, $continueFailedKbvs),
                 $externalServices,
                 [
-                    'data' => array_merge(
-                        $allRoutesUnavailable,
-                        [
-                            IdRoute::POST_OFFICE->value => true,
-                            IdRoute::VOUCHING->value => true,
-                            IdRoute::COURT_OF_PROTECTION->value => true,
-                        ]
-                    ),
+                    'data' => $donorOffline,
                     'messages' => ['donor-stop-vouching-available-message'],
                 ]
             ],
-            "certificate-provider with failed KBVs - only post-office and CoP available" => [
+            "certificate-provider with failed KBVs - only post-office" => [
                 $config,
                 array_merge($certificateProvider, $stopFailedKbvs),
                 $externalServices,
                 [
-                    'data' => array_merge(
-                        $allRoutesUnavailable,
-                        [
-                            IdRoute::POST_OFFICE->value => true,
-                            IdRoute::COURT_OF_PROTECTION->value => true,
-                        ]
-                    ),
+                    'data' => $postOfficeOnly,
                     'messages' => ['cp-stop-message'],
                 ]
             ],
-            "voucher with failed KBVs - only post-office and CoP available" => [
+            "voucher with failed KBVs - only post-office" => [
                 $config,
                 array_merge($voucher, $stopFailedKbvs),
                 $externalServices,
                 [
-                    'data' => array_merge(
-                        $allRoutesUnavailable,
-                        [
-                            IdRoute::POST_OFFICE->value => true,
-                            IdRoute::COURT_OF_PROTECTION->value => true,
-                        ]
-                    ),
+                    'data' => $postOfficeOnly,
                     'messages' => ['voucher-stop-message'],
                 ]
             ],
@@ -405,8 +394,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $postOfficeUnavailable,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [IdRoute::POST_OFFICE->value => false]
                     ),
                     'messages' => []  //TODO: is it not a bit strange that their isn't a message here???
@@ -417,7 +405,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $donor,
                 $experianUnavailable,
                 [
-                    'data' => array_merge($offlineRoutesOnly, $vouchingAvailable),
+                    'data' => $donorOffline,
                     'messages' => ['Online identity verification is not presently available']
                 ],
             ],
@@ -427,8 +415,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $ninoUnavailable,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [DocumentType::NationalInsuranceNumber->value => false]
                     ),
                     'messages' => ['Some identity verification methods are not presently available']
@@ -440,8 +427,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $passportUnavailable,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [DocumentType::Passport->value => false]
                     ),
                     'messages' => ['Some identity verification methods are not presently available']
@@ -453,8 +439,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $drivingLicenceUnavailable,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [DocumentType::DrivingLicence->value => false]
                     ),
                     'messages' => ['Some identity verification methods are not presently available']
@@ -466,8 +451,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $allDocsUnavailable,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [
                             DocumentType::NationalInsuranceNumber->value => false,
                             DocumentType::Passport->value => false,
@@ -482,8 +466,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [DocumentType::NationalInsuranceNumber->value => false]
                     ),
                     'messages' => ['National Insurance number could not be verified over the phone...']
@@ -504,8 +487,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $passportUnavailable,
                 [
                     'data' => array_merge(
-                        $allRoutesAvailable,
-                        $vouchingAvailable,
+                        $donorAllRoutesAvailable,
                         [
                             DocumentType::NationalInsuranceNumber->value => false,
                             DocumentType::Passport->value => false

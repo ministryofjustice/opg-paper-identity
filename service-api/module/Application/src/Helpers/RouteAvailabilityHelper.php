@@ -39,7 +39,6 @@ class RouteAvailabilityHelper
             array_keys($this->config['opg_settings']['identity_routes']),
         );
         $this->availableRoutes = array_fill_keys($routes, false);
-        $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = true;
     }
 
     private function processExternalServices(array $externalServices): void
@@ -115,6 +114,7 @@ class RouteAvailabilityHelper
                 in_array($case->caseProgress->fraudScore->decision, ["ACCEPT", "CONTINUE", "NODECISION"])
             )
         );
+        $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = ($case->personType === 'donor');
 
         if ($case->caseProgress?->kbvs?->result === true) {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_SUCCESS));
