@@ -41,7 +41,7 @@ class RouteAvailabilityHelperTest extends TestCase
                     IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
                 ],
                 'banner_messages' => [
-                    'NODECISION' => 'no-decision-message',
+                    'NODECISION' => '%s no-decision-message',
                     'DONOR_STOP' => 'donor-stop-message',
                     'DONOR_STOP_VOUCH_AVAILABLE' => 'donor-stop-vouching-available-message',
                     'CP_STOP' => 'cp-stop-message',
@@ -298,7 +298,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['no-decision-message']
+                    'messages' => ['donor no-decision-message']
                 ]
             ],
             "certificate-provider with NODECISION fraudscore - close off experian routes" => [
@@ -307,7 +307,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['no-decision-message']
+                    'messages' => ['certificate provider no-decision-message']
                 ]
             ],
             "voucher with NODECISION fraudscore - close off experian routes" => [
@@ -316,7 +316,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['no-decision-message']
+                    'messages' => ['person vouching no-decision-message']
                 ]
             ],
             "donor with a thinfile (empty KBVs) - offline only" => [
@@ -325,7 +325,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['no-decision-message']
+                    'messages' => ['donor no-decision-message']
                 ]
             ],
             "certificate-provider with a thinfile (empty KBVs) - offline only" => [
@@ -334,7 +334,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['no-decision-message']
+                    'messages' => ['certificate provider no-decision-message']
                 ]
             ],
             "voucher with a thinfile (empty KBVs) - offline only" => [
@@ -343,7 +343,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['no-decision-message']
+                    'messages' => ['person vouching no-decision-message']
                 ]
             ],
             "donor with STOP fraudscore and failed KBVs - only post-office and CoP available" => [

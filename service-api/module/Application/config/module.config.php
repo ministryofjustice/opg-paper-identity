@@ -514,9 +514,8 @@ return [
             IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
         ],
         'banner_messages' => [
-            // TODO: i think we need to vary no-decision message based on personType
             // TODO: why the tiny discrepancy in content between no-decision and STOP messages???
-            'NODECISION' => 'The donor cannot ID over the phone due to a lack of available security questions ' .
+            'NODECISION' => 'The %s cannot ID over the phone due to a lack of available security questions ' .
                 'or failure to answer them correctly on a previous occasion.',
             'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
                 'available information from Experian or a failure to answer the security questions correctly ' .
