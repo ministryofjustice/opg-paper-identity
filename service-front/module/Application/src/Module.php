@@ -25,6 +25,13 @@ class Module
     {
         $eventManager = $event->getApplication()->getEventManager();
         $eventManager->attach(MvcEvent::EVENT_FINISH, [$this, 'onFinish']);
+        $eventManager->attach(MvcEvent::EVENT_ROUTE, [$this, 'log']);
+    }
+
+    public function log(MvcEvent $event): void
+    {
+        $logger = $event->getApplication()->getServiceManager()->get(LoggerInterface::class);
+        $logger->info(sprintf('receiving request to %s', $event->getRouteMatch()?->getMatchedRouteName() ?? 'unknown route'));
     }
 
     public function onFinish(MvcEvent $event): void
