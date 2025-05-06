@@ -12,6 +12,7 @@ use OpenTelemetry\Aws\Xray\Propagator;
 use OpenTelemetry\SDK\Registry;
 use Telemetry\Instrumentation\Guzzle;
 use Telemetry\Instrumentation\Laminas;
+use Telemetry\Instrumentation\Logger;
 
 /**
  * @psalm-suppress UnusedClass
@@ -25,5 +26,6 @@ class Tracer
 
         Guzzle::register();
         Laminas::register();
+        Logger::register();
     }
 }
