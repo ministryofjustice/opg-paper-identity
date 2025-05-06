@@ -27,6 +27,7 @@ class Module
     {
         $eventManager = $event->getApplication()->getEventManager();
         $eventManager->attach(MvcEvent::EVENT_FINISH, [$this, 'onFinish'], 1000000);
+        $eventManager->attach(MvcEvent::EVENT_ROUTE, [$this, 'log']);
 
         $application = $event->getApplication();
         /** @var ServiceManager $serviceManager */
@@ -34,6 +35,16 @@ class Module
         $secretsCache = $serviceManager->get(AwsSecretsCache::class);
         AwsSecret::setCache($secretsCache);
     }
+
+    public function log(MvcEvent $event): void
+    {
+        $logger = $event->getApplication()->getServiceManager()->get(LoggerInterface::class);
+        $logger->info(sprintf(
+            'receiving request to %s',
+            $event->getRouteMatch()?->getMatchedRouteName() ?? 'unknown route'
+        ));
+    }
+
 
     /**
      * Determines whether the error response is the default Laminas
