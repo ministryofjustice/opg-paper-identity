@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Services\Logging;
 
+use Laminas\Http\Request as HttpRequest;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\LogRecord;
 
 class OpgFormatter extends NormalizerFormatter
 {
+    private ?HttpRequest $request = null;
+
+    public function setRequest(?HttpRequest $request): void
+    {
+        $this->request = $request;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -22,6 +30,18 @@ class OpgFormatter extends NormalizerFormatter
             'msg' => $original['message'],
             'service_name' => $original['channel'],
         ];
+
+        if (isset($original['context']['trace_id'])) {
+            $record['trace_id'] = $original['context']['trace_id'];
+            unset($original['context']['trace_id']);
+        }
+
+        if ($this->request !== null) {
+            $record['request'] = [
+                'method' => $this->request->getMethod(),
+                'path' => $this->request->getUri()->getPath(),
+            ];
+        }
 
         unset($original['datetime']);
         unset($original['level_name']);

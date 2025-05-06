@@ -13,6 +13,7 @@ use OpenTelemetry\SDK\Registry;
 use Telemetry\Instrumentation\Aws;
 use Telemetry\Instrumentation\Guzzle;
 use Telemetry\Instrumentation\Laminas;
+use Telemetry\Instrumentation\Logger;
 use Telemetry\Instrumentation\Soap;
 
 /**
@@ -28,6 +29,7 @@ class Tracer
         Aws::register();
         Guzzle::register();
         Laminas::register();
+        Logger::register();
         Soap::register();
     }
 }
