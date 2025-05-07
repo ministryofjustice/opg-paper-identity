@@ -1,4 +1,4 @@
-FROM outofcoffee/imposter:4.6.8
+FROM outofcoffee/imposter-distroless:4.6.8
 
 COPY . /opt/imposter/config
 
