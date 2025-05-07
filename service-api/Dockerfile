@@ -73,6 +73,10 @@ CMD ["php-fpm"]
 FROM app AS development
 USER "root"
 RUN apk add git
+
+# Update vulnerable packages
+RUN apk upgrade --no-cache sqlite-libs
+
 RUN pecl install pcov && docker-php-ext-enable pcov;
 
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\
