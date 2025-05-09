@@ -6,6 +6,7 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\CourtOfProtectionFlowController;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -15,7 +16,7 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiServiceMock;
-
+    private SendSiriusNoteHelper&MockObject $sendSiriusNoteMock;
     private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelper;
     private string $uuid;
 
@@ -27,6 +28,7 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiServiceMock = $this->createMock(SiriusApiService::class);
+        $this->sendSiriusNoteMock = $this->createMock(SendSiriusNoteHelper::class);
         $this->siriusDataProcessorHelper = $this->createMock(SiriusDataProcessorHelper::class);
 
         parent::setUp();
@@ -35,6 +37,7 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiServiceMock);
+        $serviceManager->setService(SendSiriusNoteHelper::class, $this->sendSiriusNoteMock);
         $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelper);
     }
 
@@ -100,6 +103,11 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             ->expects(self::once())
             ->method('sendIdentityCheck')
             ->with($this->uuid);
+
+        $this->sendSiriusNoteMock
+            ->expects(self::once())
+            ->method('sendBlockedRoutesNote')
+            ->with($mockResponseData, $this->getRequest());
 
         $this->dispatch("/{$this->uuid}/court-of-protection", 'POST', ['confirmation' => true]);
         $this->assertResponseStatusCode(302);

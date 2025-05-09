@@ -144,6 +144,8 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ->with($uuid)
             ->willReturn([
                 'personType' => $personType,
+                'caseProgress' => ['fraudScore' => ['decision' => 'ACCEPT']],
+                'lpas' => ['lpa1']
             ]);
 
         $this

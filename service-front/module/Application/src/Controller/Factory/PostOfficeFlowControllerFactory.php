@@ -7,6 +7,7 @@ namespace Application\Controller\Factory;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
@@ -33,6 +34,7 @@ class PostOfficeFlowControllerFactory implements FactoryInterface
         return new PostOfficeFlowController(
             $container->get(OpgApiServiceInterface::class),
             $container->get(FormProcessorHelper::class),
+            $container->get(SendSiriusNoteHelper::class),
             $container->get(SiriusApiService::class),
             $container->get(SiriusDataProcessorHelper::class),
             $container->get(DocumentTypeRepository::class),

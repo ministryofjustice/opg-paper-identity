@@ -11,6 +11,7 @@ use Application\Enums\IdRoute;
 use Application\Forms\ChooseVouching;
 use Application\Forms\FinishIDCheck;
 use Application\Helpers\DateProcessorHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -26,6 +27,7 @@ class DonorFlowController extends AbstractActionController
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly string $siriusPublicUrl,
+        private readonly SendSiriusNoteHelper $sendNoteHelper,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly LoggerInterface $logger,
     ) {
@@ -43,6 +45,7 @@ class DonorFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
             if ($formData['chooseVouching'] == 'yes') {
                 $this->opgApiService->sendIdentityCheck($uuid);
+                $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
                 return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
             } else {
                 return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);

@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\LpaTypes;
 use Application\Forms\ConfirmCourtOfProtection;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
@@ -22,6 +23,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
+        private readonly SendSiriusNoteHelper $sendNoteHelper,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
         private readonly string $siriusPublicUrl,
     ) {
@@ -48,6 +50,7 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $this->opgApiService->sendIdentityCheck($uuid);
+            $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
             return $this->redirect()->toRoute("root/court_of_protection_what_next", ['uuid' => $uuid]);
         }
 

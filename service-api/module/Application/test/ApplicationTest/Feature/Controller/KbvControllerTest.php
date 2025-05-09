@@ -12,6 +12,7 @@ use Application\KBV\AnswersOutcome;
 use Application\KBV\KBVServiceInterface;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
+use Application\Model\Entity\Kbvs;
 use ApplicationTest\TestCase;
 use DateTimeImmutable;
 use Laminas\Http\Response;
@@ -79,8 +80,13 @@ class KbvControllerTest extends TestCase
                 ->willReturn($result);
 
             if ($result->isComplete() && $caseData !== null) {
+                assert(! is_null($caseData->caseProgress));
                 if ($result->isPass()) {
                     $caseData->identityCheckPassed = true;
+                    $caseData->caseProgress->kbvs = Kbvs::fromArray(['result' => true]);
+                } else {
+                    $caseData->identityCheckPassed = false;
+                    $caseData->caseProgress->kbvs = Kbvs::fromArray(['result' => false]);
                 }
                 $this->caseOutcomeCalculatorMock->expects($this->once())
                     ->method('updateSendIdentityCheck')
@@ -137,6 +143,7 @@ class KbvControllerTest extends TestCase
                 'address' => []
             ],
             'lpas' => [],
+            'caseProgress' => [],
         ]);
 
         return [
