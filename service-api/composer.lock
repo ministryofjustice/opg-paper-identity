@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.343.3",
+            "version": "3.343.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "d7ad5f6bdee792a16d2c9d5a3d9b56acfaaaf979"
+                "reference": "9cf2ad840a0dc92929991c3142138182a700d7b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d7ad5f6bdee792a16d2c9d5a3d9b56acfaaaf979",
-                "reference": "d7ad5f6bdee792a16d2c9d5a3d9b56acfaaaf979",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9cf2ad840a0dc92929991c3142138182a700d7b1",
+                "reference": "9cf2ad840a0dc92929991c3142138182a700d7b1",
                 "shasum": ""
             },
             "require": {
@@ -153,9 +153,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.343.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.343.8"
             },
-            "time": "2025-05-02T18:04:58+00:00"
+            "time": "2025-05-09T18:07:37+00:00"
         },
         {
             "name": "brick/math",
@@ -3226,16 +3226,16 @@
         },
         {
             "name": "open-telemetry/sdk",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opentelemetry-php/sdk.git",
-                "reference": "05d9ceb6773b5bddcf485af6d4a6f543bbeb980b"
+                "reference": "939d3a28395c249a763676458140dad44b3a8011"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opentelemetry-php/sdk/zipball/05d9ceb6773b5bddcf485af6d4a6f543bbeb980b",
-                "reference": "05d9ceb6773b5bddcf485af6d4a6f543bbeb980b",
+                "url": "https://api.github.com/repos/opentelemetry-php/sdk/zipball/939d3a28395c249a763676458140dad44b3a8011",
+                "reference": "939d3a28395c249a763676458140dad44b3a8011",
                 "shasum": ""
             },
             "require": {
@@ -3312,7 +3312,7 @@
                 "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
                 "source": "https://github.com/open-telemetry/opentelemetry-php"
             },
-            "time": "2025-05-01T23:20:43+00:00"
+            "time": "2025-05-07T12:32:21+00:00"
         },
         {
             "name": "open-telemetry/sem-conv",
@@ -6627,16 +6627,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "12.1.2",
+            "version": "12.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "05c33d01a856f9f62488d144bafddc3d7b7a4ebb"
+                "reference": "448f2c504d86dbff3949dcd02c95aa85db2c7617"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/05c33d01a856f9f62488d144bafddc3d7b7a4ebb",
-                "reference": "05c33d01a856f9f62488d144bafddc3d7b7a4ebb",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/448f2c504d86dbff3949dcd02c95aa85db2c7617",
+                "reference": "448f2c504d86dbff3949dcd02c95aa85db2c7617",
                 "shasum": ""
             },
             "require": {
@@ -6654,7 +6654,7 @@
                 "theseer/tokenizer": "^1.2.3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^12.0"
+                "phpunit/phpunit": "^12.1"
             },
             "suggest": {
                 "ext-pcov": "PHP extension that provides line coverage",
@@ -6663,7 +6663,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "12.1.x-dev"
+                    "dev-main": "12.2.x-dev"
                 }
             },
             "autoload": {
@@ -6692,15 +6692,27 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/12.1.2"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/12.2.1"
             },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
+                },
+                {
+                    "url": "https://liberapay.com/sebastianbergmann",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
+                    "type": "thanks_dev"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpunit/php-code-coverage",
+                    "type": "tidelift"
                 }
             ],
-            "time": "2025-04-03T14:34:39+00:00"
+            "time": "2025-05-04T05:25:05+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -6949,16 +6961,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.1.4",
+            "version": "12.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "5ee57ad690bda2c487594577600931a99053436c"
+                "reference": "f93ef2198df8d54b3195bcee381a33be51d8705e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5ee57ad690bda2c487594577600931a99053436c",
-                "reference": "5ee57ad690bda2c487594577600931a99053436c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f93ef2198df8d54b3195bcee381a33be51d8705e",
+                "reference": "f93ef2198df8d54b3195bcee381a33be51d8705e",
                 "shasum": ""
             },
             "require": {
@@ -6972,7 +6984,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.3",
-                "phpunit/php-code-coverage": "^12.1.2",
+                "phpunit/php-code-coverage": "^12.2.1",
                 "phpunit/php-file-iterator": "^6.0.0",
                 "phpunit/php-invoker": "^6.0.0",
                 "phpunit/php-text-template": "^5.0.0",
@@ -7026,7 +7038,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.1.4"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.1.5"
             },
             "funding": [
                 {
@@ -7050,7 +7062,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-05-02T07:01:56+00:00"
+            "time": "2025-05-11T06:44:52+00:00"
         },
         {
             "name": "psalm/plugin-phpunit",
@@ -8065,16 +8077,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.12.2",
+            "version": "3.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "6d4cf6032d4b718f168c90a96e36c7d0eaacb2aa"
+                "reference": "65ff2489553b83b4597e89c3b8b721487011d186"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/6d4cf6032d4b718f168c90a96e36c7d0eaacb2aa",
-                "reference": "6d4cf6032d4b718f168c90a96e36c7d0eaacb2aa",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/65ff2489553b83b4597e89c3b8b721487011d186",
+                "reference": "65ff2489553b83b4597e89c3b8b721487011d186",
                 "shasum": ""
             },
             "require": {
@@ -8145,7 +8157,7 @@
                     "type": "thanks_dev"
                 }
             ],
-            "time": "2025-04-13T04:10:18+00:00"
+            "time": "2025-05-11T03:36:00+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
@@ -9026,16 +9038,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.10.2",
+            "version": "6.10.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "a6c7e2358bbd62d81fca6c149f5c5823ecfcdd2a"
+                "reference": "90b5b9f5e7c8e441b191d3c82c58214753d7c7c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/a6c7e2358bbd62d81fca6c149f5c5823ecfcdd2a",
-                "reference": "a6c7e2358bbd62d81fca6c149f5c5823ecfcdd2a",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/90b5b9f5e7c8e441b191d3c82c58214753d7c7c1",
+                "reference": "90b5b9f5e7c8e441b191d3c82c58214753d7c7c1",
                 "shasum": ""
             },
             "require": {
@@ -9140,7 +9152,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2025-05-03T16:37:00+00:00"
+            "time": "2025-05-05T18:23:39+00:00"
         }
     ],
     "aliases": [],
