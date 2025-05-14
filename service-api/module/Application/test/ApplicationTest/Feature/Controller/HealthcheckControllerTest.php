@@ -23,7 +23,7 @@ use Psr\Log\LoggerInterface;
 class HealthcheckControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
-    private string $ssmServiceAvailability = 'service-availability';
+    private string $ssmRouteAvailability = 'service-availability';
     private LoggerInterface&MockObject $loggerMock;
     private FraudApiService $experianCrosscoreFraudApiService;
     private SsmHandler $ssmHandler;
@@ -70,8 +70,8 @@ class HealthcheckControllerTest extends TestCase
         $this->dispatch($path, $method);
     }
 
-    #[DataProvider('serviceAvailabilityData')]
-    public function testServiceAvailability(
+    #[DataProvider('routeAvailabilityData')]
+    public function testRouteAvailability(
         string $uuid,
         CaseData $case,
         array $services,
@@ -88,11 +88,11 @@ class HealthcheckControllerTest extends TestCase
         $this->ssmHandler
             ->expects($this->once())
             ->method('getJsonParameter')
-            ->with($this->ssmServiceAvailability)
+            ->with($this->ssmRouteAvailability)
             ->willReturn($services);
 
         $this->dispatchJSON(
-            sprintf('/service-availability?uuid=%s', $uuid),
+            sprintf('/route-availability?uuid=%s', $uuid),
             'GET'
         );
 
@@ -101,10 +101,10 @@ class HealthcheckControllerTest extends TestCase
         $this->assertModuleName('application');
         $this->assertControllerName(HealthcheckController::class); // as specified in router's controller name alias
         $this->assertControllerClass('HealthcheckController');
-        $this->assertMatchedRouteName('service_availability');
+        $this->assertMatchedRouteName('route_availability');
     }
 
-    public static function serviceAvailabilityData(): array
+    public static function routeAvailabilityData(): array
     {
         $uuid = 'a9bc8ab8-389c-4367-8a9b-762ab3050999';
 
@@ -197,8 +197,6 @@ class HealthcheckControllerTest extends TestCase
                 IdRoute::KBV->value => true,
             ],
             'messages' => [],
-            'additional_restriction_messages' => [],
-
         ];
 
         $responseNoDec = [
@@ -212,11 +210,9 @@ class HealthcheckControllerTest extends TestCase
                 IdRoute::COURT_OF_PROTECTION->value => true
             ],
             'messages' => [
-                'banner' => 'The donor cannot ID over the phone due to a lack of ' .
-                    'available security questions or failure to answer them correctly on a previous occasion.',
+                'The donor cannot ID over the phone due to a lack of ' .
+                'available security questions or failure to answer them correctly on a previous occasion.',
             ],
-            'additional_restriction_messages' => [],
-
         ];
 
         return [

@@ -169,7 +169,7 @@ interface OpgApiServiceInterface
 
     public function estimatePostofficeDeadline(string $uuid): string;
 
-    public function getServiceAvailability(string $uuid = null): array;
+    public function getRouteAvailability(string $uuid = null): array;
 
     /**
      * @return array{decision: string}
