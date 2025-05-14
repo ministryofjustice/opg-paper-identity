@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\IndexController;
 use Application\Exceptions\StartupException;
 use Application\Helpers\LpaFormHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -32,6 +33,7 @@ class IndexControllerFactory implements FactoryInterface
             $container->get(OpgApiServiceInterface::class),
             $container->get(SiriusApiService::class),
             $container->get(LpaFormHelper::class),
+            $container->get(SendSiriusNoteHelper::class),
             $container->get(SiriusDataProcessorHelper::class),
             $siriusPublicUrl,
         );

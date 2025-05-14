@@ -10,6 +10,7 @@ use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Enums\SiriusDocument;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentTypeRepository;
@@ -24,6 +25,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
     private FormProcessorHelper&MockObject $formProcessorService;
+    private SendSiriusNoteHelper&MockObject $sendSiriusNoteMock;
     private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
     private static array $listPostOfficeResponse = [
@@ -50,6 +52,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->siriusApiService = $this->createMock(SiriusApiService::class);
         $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
+        $this->sendSiriusNoteMock = $this->createMock(SendSiriusNoteHelper::class);
         $this->siriusDataProcessorHelperMock = $this->createMock(SiriusDataProcessorHelper::class);
 
 
@@ -60,6 +63,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(SiriusApiService::class, $this->siriusApiService);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
+        $serviceManager->setService(SendSiriusNoteHelper::class, $this->sendSiriusNoteMock);
         $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
 
@@ -582,18 +586,13 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->siriusApiService
             ->expects(self::once())
             ->method('sendDocument')
-            // slightly clunky way of checking the arguments are passed correctly without checking `request`
-            ->willReturnCallback(fn (
-                array $caseDetails,
-                SiriusDocument $systemType,
-                Request $request,
-                string $pdfSuffixBase64) => match (true) {
-                    (
-                        $caseDetails === $mockResponseDataIdDetails &&
-                        $systemType === $docType &&
-                        $pdfSuffixBase64 === 'pdf'
-                    ) => ['status' => 201]
-                });
+            ->with($mockResponseDataIdDetails, $docType, $this->getRequest(), 'pdf')
+            ->willReturn(['status' => 201]);
+
+        $this->sendSiriusNoteMock
+            ->expects(self::once())
+            ->method('sendBlockedRoutesNote')
+            ->with($mockResponseDataIdDetails, $this->getRequest());
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "POST", [
             'confirmPostOffice' => 'Continue'

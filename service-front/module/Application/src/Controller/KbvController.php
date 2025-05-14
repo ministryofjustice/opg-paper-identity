@@ -9,6 +9,7 @@ use Application\Exceptions\HttpException;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Laminas\Http\Response;
+use Laminas\Http\Request;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
@@ -28,6 +29,13 @@ class KbvController extends AbstractActionController
 
     public function idVerifyQuestionsAction(): ViewModel|Response
     {
+        $failRoute = "root/identity_check_failed";
+        $passRoute = [
+            'donor' => "root/identity_check_passed",
+            'certificateProvider' => "root/cp_identity_check_passed",
+            'voucher' => "root/voucher_identity_check_passed"
+        ];
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $view->setVariable('uuid', $uuid);
@@ -39,12 +47,6 @@ class KbvController extends AbstractActionController
             return $view->setTemplate('application/pages/cannot_start');
         }
 
-        $failRoute = "root/identity_check_failed";
-        $passRoute = [
-            'donor' => "root/identity_check_passed",
-            'certificateProvider' => "root/cp_identity_check_passed",
-            'voucher' => "root/voucher_identity_check_passed"
-        ];
         $view->setVariable('details_data', $detailsData);
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);

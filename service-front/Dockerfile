@@ -46,7 +46,7 @@ ENV OTEL_SERVICE_NAME=front.lpa-identity-check.local
 ENV OTEL_TRACES_EXPORTER=none
 ENV OTEL_METRICS_EXPORTER=none
 ENV OTEL_LOGS_EXPORTER=none
-ENV OTEL_PROPAGATORS=xray
+ENV OTEL_PROPAGATORS=tracecontext,xray
 
 COPY --chown=www-data:www-data --chmod=755  --from=composer /usr/bin/composer /usr/bin/
 COPY --chown=www-data:www-data --chmod=755  composer.json composer.json
@@ -78,6 +78,10 @@ STOPSIGNAL SIGQUIT
 FROM app AS development
 USER "root"
 RUN apk add git
+
+# Update vulnerable packages
+RUN apk upgrade --no-cache sqlite-libs
+
 RUN pecl install pcov && docker-php-ext-enable pcov;
 
 RUN composer install --prefer-dist --no-interaction --no-scripts &&\

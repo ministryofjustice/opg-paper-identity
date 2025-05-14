@@ -9,6 +9,7 @@ use Application\Controller\DonorFlowController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -18,6 +19,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private FormProcessorHelper&MockObject $formProcessorService;
+    private SendSiriusNoteHelper&MockObject $sendSiriusNoteMock;
     private SiriusDataProcessorHelper&MockObject $siriusDataProcessorHelperMock;
     private string $uuid;
 
@@ -29,6 +31,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
         $this->formProcessorService = $this->createMock(FormProcessorHelper::class);
+        $this->sendSiriusNoteMock = $this->createMock(SendSiriusNoteHelper::class);
         $this->siriusDataProcessorHelperMock = $this->createMock(SiriusDataProcessorHelper::class);
 
         parent::setUp();
@@ -37,6 +40,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(OpgApiServiceInterface::class, $this->opgApiServiceMock);
         $serviceManager->setService(FormProcessorHelper::class, $this->formProcessorService);
+        $serviceManager->setService(SendSiriusNoteHelper::class, $this->sendSiriusNoteMock);
         $serviceManager->setService(SiriusDataProcessorHelper::class, $this->siriusDataProcessorHelperMock);
     }
 
@@ -195,11 +199,25 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function testWhatIsVouchingPageOptYes(): void
     {
+        $mockResponseDataIdDetails = $this->returnOpgResponseData();
+
+        $this
+        ->opgApiServiceMock
+        ->expects(self::once())
+        ->method('getDetailsData')
+        ->with($this->uuid)
+        ->willReturn($mockResponseDataIdDetails);
+
         $this
             ->opgApiServiceMock
             ->expects(self::once())
             ->method('sendIdentityCheck')
             ->with($this->uuid);
+
+        $this->sendSiriusNoteMock
+            ->expects(self::once())
+            ->method('sendBlockedRoutesNote')
+            ->with($mockResponseDataIdDetails, $this->getRequest());
 
         $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
             'chooseVouching' => 'yes',
