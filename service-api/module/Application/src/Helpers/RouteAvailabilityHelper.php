@@ -10,11 +10,10 @@ use Application\Model\Entity\CaseData;
 
 class RouteAvailabilityHelper
 {
-    public const DECISION_STOP = 'STOP';
-    public const DECISION_NODECISION = 'NODECISION';
-    public const LOCKED = 'LOCKED';
-    public const LOCKED_SUCCESS = 'LOCKED_SUCCESS';
+    public const LOCKED_EXPERIAN = 'LOCKED_EXPERIAN';
+    public const LOCKED_ID_FAILURE = 'LOCKED_ID_FAILURE';
     public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
+    public const LOCKED_COMPLETE = 'LOCKED_COMPLETE';
     public const KBV_FALSE = [
         DocumentType::NationalInsuranceNumber->value => false,
         DocumentType::DrivingLicence->value => false,
@@ -69,42 +68,26 @@ class RouteAvailabilityHelper
 
     private function parseBannerText(CaseData $case, string $configMessage): string
     {
-        if ($configMessage === self::DECISION_STOP) {
-            switch ($case->personType) {
-                case 'donor':
-                    if (
-                        is_null($case->caseProgress) ||
-                        is_null($case->caseProgress->fraudScore) ||
-                        in_array($case->caseProgress->fraudScore->decision, ["ACCEPT", "CONTINUE", "NODECISION"])
-                    ) {
-                        $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_STOP_VOUCH_AVAILABLE'];
-                    } else {
-                        $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_STOP'];
-                    }
-                    break;
-                case 'certificateProvider':
-                    $bannerText = $this->config['opg_settings']['banner_messages']['CP_STOP'];
-                    break;
-                case 'voucher':
-                    $bannerText = $this->config['opg_settings']['banner_messages']['VOUCHER_STOP'];
-                    break;
-            }
+
+        if (
+            $configMessage === self::LOCKED_EXPERIAN &&
+            $case->personType === 'donor' &&
+            in_array($case->caseProgress->fraudScore->decision, ["STOP", "REFER"])
+        ) {
+            $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_VOUCH_UNAVAILABLE'];
         } else {
             $labels = $this->config['opg_settings']['person_type_labels'];
-
             $bannerText = str_replace(
                 "%s",
                 $labels[$case->personType],
                 $this->config['opg_settings']['banner_messages'][$configMessage]
             );
         }
-        /** @psalm-suppress InvalidReturnStatement */
         return $bannerText;
     }
 
     public function processCase(CaseData $case): array
     {
-
         // vouching is only available for donors and only if they have not yet had a fraud-check, or passed one
         $this->availableRoutes[IdRoute::VOUCHING->value] = (
             $case->personType === 'donor' &&
@@ -117,25 +100,19 @@ class RouteAvailabilityHelper
         $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = ($case->personType === 'donor');
 
         if ($case->caseProgress?->kbvs?->result === true) {
-            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_SUCCESS));
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_COMPLETE));
             $this->availableRoutes = array_fill_keys(array_keys($this->availableRoutes), false);
             return $this->toArray();
         }
 
-        if ($case->identityIQ?->thinfile === true || $case->caseProgress?->fraudScore?->decision === 'NODECISION') {
-            array_unshift($this->messages, $this->parseBannerText($case, self::DECISION_NODECISION));
-            $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
-            return $this->toArray();
-        }
-
-        if ($case->caseProgress?->kbvs?->result === false) {
-            array_unshift($this->messages, $this->parseBannerText($case, self::DECISION_STOP));
+        if ($case->identityIQ?->thinfile === true || $case->caseProgress?->kbvs?->result === false) {
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_EXPERIAN));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
         }
 
         if ($case->caseProgress?->docCheck?->state === false) {
-            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED));
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_FAILURE));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
             return $this->toArray();
         }

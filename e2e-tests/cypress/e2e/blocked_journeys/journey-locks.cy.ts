@@ -45,7 +45,8 @@ describe("Identify a Donor", () => {
 
         cy.jumpToPage("how-will-you-confirm");
         cy.contains("The donor has already proved their identity over the phone with a valid document");
-        cy.contains("Post Office");
+        cy.contains("Alternatively, you can take one of the identity documents listed below to a Post Office").should("not.exist");
+        cy.contains("You can take one of the identity documents listed below to a Post Office")
         cy.contains("Have someone vouch for the identity of the donor");
         cy.contains("The donor cannot do any of the above (Court of Protection)");
         cy.contains('Preferred: ID over the phone').should('not.exist');
@@ -65,8 +66,9 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor cannot prove their identity over the phone because they have tried before and their details did not match the document provided.");
-        cy.contains("Post Office");
+        cy.contains("The donor cannot prove their identity over the phone because their ID document could not be verified.");
+        cy.contains("Alternatively, you can take one of the identity documents listed below to a Post Office").should("not.exist");
+        cy.contains("You can take one of the identity documents listed below to a Post Office")
         cy.contains("Have someone vouch for the identity of the donor");
         cy.contains("The donor cannot do any of the above (Court of Protection)");
         cy.contains('Preferred: ID over the phone').should('not.exist');
@@ -86,9 +88,10 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.get(".govuk-button").contains("Continue").click();
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor cannot ID over the phone due to a lack of available security questions or failure to answer them correctly on a previous occasion.");
+        cy.contains("The donor cannot ID over the phone due to a lack of available security questions or failure to answer them correctly.");
         cy.contains('Preferred: ID over the phone').should('not.exist');
-        cy.contains("Post Office");
+        cy.contains("Alternatively, you can take one of the identity documents listed below to a Post Office").should("not.exist");
+        cy.contains("You can take one of the identity documents listed below to a Post Office")
         cy.contains("Have someone vouch for the identity of the donor");
         cy.contains("The donor cannot do any of the above (Court of Protection)");
 
@@ -112,9 +115,10 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor cannot ID over the phone due to a lack of available information from Experian or a failure to answer the security questions correctly on a previous occasion.");
+        cy.contains("The donor cannot ID over the phone due to a lack of available security questions or failure to answer them correctly.");
         cy.contains('Preferred: ID over the phone').should('not.exist');
-        cy.contains("Post Office");
+        cy.contains("Alternatively, you can take one of the identity documents listed below to a Post Office").should("not.exist");
+        cy.contains("You can take one of the identity documents listed below to a Post Office")
         cy.contains("Have someone vouch for the identity of the donor");
         cy.contains("The donor cannot do any of the above (Court of Protection)");
 
@@ -138,9 +142,10 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
 
         cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor cannot ID over the phone or have someone vouch for them due to a lack of available information from Experian or a failure to answer the security questions correctly on a previous occasion.");
+        cy.contains("The donor cannot ID over the phone or have someone vouch for them due to a failure to answer the security questions correctly.");
         cy.contains('Preferred: ID over the phone').should('not.exist');
-        cy.contains("Post Office");
+        cy.contains("Alternatively, you can take one of the identity documents listed below to a Post Office").should("not.exist");
+        cy.contains("You can take one of the identity documents listed below to a Post Office");
         cy.contains("Have someone vouch for the identity of the donor").should('not.exist');
         cy.contains("The donor cannot do any of the above (Court of Protection)");
 

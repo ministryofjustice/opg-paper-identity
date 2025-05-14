@@ -41,14 +41,11 @@ class RouteAvailabilityHelperTest extends TestCase
                     IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
                 ],
                 'banner_messages' => [
-                    'NODECISION' => '%s no-decision-message',
-                    'DONOR_STOP' => 'donor-stop-message',
-                    'DONOR_STOP_VOUCH_AVAILABLE' => 'donor-stop-vouching-available-message',
-                    'CP_STOP' => 'cp-stop-message',
-                    'VOUCHER_STOP' => 'voucher-stop-message',
+                    'DONOR_VOUCH_UNAVAILABLE' => 'donor-vouch-unavailable',
+                    'LOCKED_EXPERIAN' => 'The %s has thinfile or failed KBVs',
                     'LOCKED_ID_SUCCESS' => 'The %s has already passed doc-check',
-                    'LOCKED' => 'The %s failed doc-check',
-                    'LOCKED_SUCCESS' => 'The identity check has already been completed',
+                    'LOCKED_ID_FAILURE' => 'The %s failed doc-check',
+                    'LOCKED_COMPLETE' => 'The identity check has already been completed',
                     'RESTRICTED_OPTIONS' => '%s could not be verified over the phone...'
                 ],
                 'person_type_labels' => [
@@ -243,7 +240,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 array_merge($donor, $docCheckedFailed),
                 $externalServices,
                 [
-                    'data' => $donorOffline,  // TODO: should vouching be available?
+                    'data' => $donorOffline,
                     'messages' => ['The donor failed doc-check']
                 ]
             ],
@@ -325,7 +322,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['donor no-decision-message']
+                    'messages' => ['donor has thinfile or failed KBV']
                 ]
             ],
             "certificate-provider with a thinfile (empty KBVs) - offline only" => [
@@ -334,7 +331,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['certificate provider no-decision-message']
+                    'messages' => ['certificate has thinfile or failed KBV']
                 ]
             ],
             "voucher with a thinfile (empty KBVs) - offline only" => [
@@ -343,7 +340,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['person vouching no-decision-message']
+                    'messages' => ['person vouching has thinfile or failed KBV']
                 ]
             ],
             "donor with STOP fraudscore and failed KBVs - only post-office and CoP available" => [
@@ -358,7 +355,7 @@ class RouteAvailabilityHelperTest extends TestCase
                             IdRoute::COURT_OF_PROTECTION->value => true,
                         ]
                     ),
-                    'messages' => ['donor-stop-message'],
+                    'messages' => ['donor-vouch-unavailable'],
                 ]
             ],
             "donor with CONTINUE fraudscore and failed KBVs - post-office, vouching and CoP available" => [
@@ -367,7 +364,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['donor-stop-vouching-available-message'],
+                    'messages' => ['donor has thinfile or failed KBV'],
                 ]
             ],
             "certificate-provider with failed KBVs - only post-office" => [
@@ -376,7 +373,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['cp-stop-message'],
+                    'messages' => ['cp has thinfile or failed KBV'],
                 ]
             ],
             "voucher with failed KBVs - only post-office" => [
@@ -385,7 +382,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['voucher-stop-message'],
+                    'messages' => ['voucher has thinfile or failed KBV'],
                 ]
             ],
             "post-office route is unavailable" => [
@@ -478,7 +475,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $postOfficeUnavailable,
                 [
                     'data' => array_merge($allRoutesUnavailable, [IdRoute::COURT_OF_PROTECTION->value => true]),
-                    'messages' => ['donor-stop-message']
+                    'messages' => ['donor-vouch-unavailable']
                 ]
             ],
             "donor has NINO restricted and passport-service is not available" => [

@@ -514,25 +514,14 @@ return [
             IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
         ],
         'banner_messages' => [
-            // TODO: why the tiny discrepancy in content between no-decision and STOP messages???
-            'NODECISION' => 'The %s cannot ID over the phone due to a lack of available security questions ' .
-                'or failure to answer them correctly on a previous occasion.',
-            'DONOR_STOP' => 'The donor cannot ID over the phone or have someone vouch for them due to a lack of ' .
-                'available information from Experian or a failure to answer the security questions correctly ' .
-                'on a previous occasion.',
-            'DONOR_STOP_VOUCH_AVAILABLE' => 'The donor cannot ID over the phone due to a lack of ' .
-                'available information from Experian or a failure to answer the security questions correctly ' .
-                'on a previous occasion.',
-            'CP_STOP' => 'The certificate provider cannot ID over the phone due to a lack of available information ' .
-                'from Experian or a failure to answer the security questions correctly on a previous occasion.',
-            'VOUCHER_STOP' => 'The person vouching cannot ID over the phone due to a lack of available information ' .
-                'from Experian or a failure to answer the security questions correctly on a previous occasion.',
-            'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the ' .
-                'phone with a valid document',
-            'LOCKED' => 'The %s cannot prove their identity over the phone because they have tried before ' .
-                'and their details did not match the document provided.',
-            'LOCKED_SUCCESS' => 'The identity check has already been completed',
-            // TODO: verify this message.
+            'DONOR_VOUCH_UNAVAILABLE' => 'The donor cannot ID over the phone or have someone vouch for them due to a ' .
+                'failure to answer the security questions correctly.',
+            'LOCKED_EXPERIAN' => 'The %s cannot ID over the phone due to a lack of available security questions ' .
+                'or failure to answer them correctly.',
+            'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the phone with a valid document',
+            'LOCKED_ID_FAILURE' => 'The %s cannot prove their identity over the phone because their ID document ' .
+                'could not be verified.',
+            'LOCKED_COMPLETE' => 'The identity check has already been completed',
             'RESTRICTED_OPTIONS' => '%s could not be verified over the phone, choose an alternate ID method below.'
         ],
         'person_type_labels' => [

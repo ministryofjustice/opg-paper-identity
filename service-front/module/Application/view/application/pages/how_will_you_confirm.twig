@@ -277,7 +277,8 @@
                         </h2>
 
                         <p class="govuk-body">
-                            Alternatively, you can take one of the identity documents listed below to a Post Office -
+                            {% if route_availability.data.EXPERIAN %}Alternatively, you{% else %}You{% endif %}
+                            can take one of the identity documents listed below to a Post Office -
                             this will take longer as we will need to send you a letter to take to the Post Office with
                             your chosen ID.
                         </p>

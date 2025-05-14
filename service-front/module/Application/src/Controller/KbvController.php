@@ -123,6 +123,7 @@ class KbvController extends AbstractActionController
 
         return $view->setTemplate('application/pages/identity_check_questions');
     }
+
     /**
      * @template Question of array
      * @param Question[] $questions
