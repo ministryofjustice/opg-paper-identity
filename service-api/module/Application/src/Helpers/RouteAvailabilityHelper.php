@@ -42,7 +42,7 @@ class RouteAvailabilityHelper
 
     private function processExternalServices(array $externalServices): void
     {
-        // TODO: are the messages we set here correct?
+        // these messages are being reviewed as part of ID-580
         if (($externalServices[IdRoute::KBV->value] ?? false) === true) {
             $this->availableRoutes = array_merge($this->availableRoutes, $externalServices);
             if (
@@ -114,7 +114,6 @@ class RouteAvailabilityHelper
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_FAILURE));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
         } elseif ($docCheckResult === true) {
-            // TODO: is this actually the behaviour we want?
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_SUCCESS));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
         } else {

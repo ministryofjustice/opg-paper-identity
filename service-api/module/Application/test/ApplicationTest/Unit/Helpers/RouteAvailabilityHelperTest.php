@@ -394,7 +394,7 @@ class RouteAvailabilityHelperTest extends TestCase
                         $donorAllRoutesAvailable,
                         [IdRoute::POST_OFFICE->value => false]
                     ),
-                    'messages' => []  //TODO: is it not a bit strange that their isn't a message here???
+                    'messages' => []
                 ]
             ],
             "experian route is unavailable" => [
@@ -490,7 +490,7 @@ class RouteAvailabilityHelperTest extends TestCase
                             DocumentType::Passport->value => false
                         ]
                     ),
-                    //TODO: is this the behaviour we want?
+                    // being review as part of ID-580
                     'messages' => [
                         'Some identity verification methods are not presently available',
                         'National Insurance number could not be verified over the phone...'
