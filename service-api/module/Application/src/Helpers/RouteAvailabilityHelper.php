@@ -72,7 +72,7 @@ class RouteAvailabilityHelper
         if (
             $configMessage === self::LOCKED_EXPERIAN &&
             $case->personType === 'donor' &&
-            in_array($case->caseProgress->fraudScore->decision, ["STOP", "REFER"])
+            in_array($case->caseProgress->fraudScore->decision ?? '', ['STOP', 'REFER'])
         ) {
             $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_VOUCH_UNAVAILABLE'];
         } else {
@@ -83,53 +83,48 @@ class RouteAvailabilityHelper
                 $this->config['opg_settings']['banner_messages'][$configMessage]
             );
         }
+        /**
+        * @psalm-suppress InvalidReturnStatement
+        */
         return $bannerText;
     }
 
     public function processCase(CaseData $case): array
     {
+        $docCheckResult = $case->caseProgress?->docCheck?->state ?? null;
+        $fraudDecision = $case->caseProgress->fraudScore?->decision ?? null;
+        $kbvsResult = $case->caseProgress?->kbvs?->result ?? null;
+        $thinfile = $case->identityIQ?->thinfile ?? null;
+        $restrictedMethods = $case->caseProgress->restrictedMethods ?? [];
+
         // vouching is only available for donors and only if they have not yet had a fraud-check, or passed one
         $this->availableRoutes[IdRoute::VOUCHING->value] = (
             $case->personType === 'donor' &&
-            (
-                is_null($case->caseProgress) ||
-                is_null($case->caseProgress->fraudScore) ||
-                in_array($case->caseProgress->fraudScore->decision, ["ACCEPT", "CONTINUE", "NODECISION"])
-            )
+            (is_null($fraudDecision) || in_array($fraudDecision, ['ACCEPT', 'CONTINUE', 'NODECISION']))
         );
         $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = ($case->personType === 'donor');
 
-        if ($case->caseProgress?->kbvs?->result === true) {
+        if ($kbvsResult === true) {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_COMPLETE));
             $this->availableRoutes = array_fill_keys(array_keys($this->availableRoutes), false);
-            return $this->toArray();
-        }
-
-        if ($case->identityIQ?->thinfile === true || $case->caseProgress?->kbvs?->result === false) {
+        } elseif ($thinfile === true || $kbvsResult === false || $fraudDecision === 'NODECISION') {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_EXPERIAN));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
-            return $this->toArray();
-        }
-
-        if ($case->caseProgress?->docCheck?->state === false) {
+        } elseif ($docCheckResult === false) {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_FAILURE));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
-            return $this->toArray();
-        }
-
-        if ($case->caseProgress?->docCheck?->state === true) {
+        } elseif ($docCheckResult === true) {
             // TODO: is this actually the behaviour we want?
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_SUCCESS));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
-            return $this->toArray();
-        }
-
-        foreach ($case->caseProgress->restrictedMethods ?? [] as $restrictedOption) {
-            $this->availableRoutes[$restrictedOption] = false;
-            $this->messages[] = sprintf(
-                $this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'],
-                $this->config['opg_settings']['identity_documents'][$restrictedOption]
-            );
+        } else {
+            foreach ($restrictedMethods as $restrictedOption) {
+                $this->availableRoutes[$restrictedOption] = false;
+                $this->messages[] = sprintf(
+                    $this->config['opg_settings']['banner_messages']['RESTRICTED_OPTIONS'],
+                    $this->config['opg_settings']['identity_documents'][$restrictedOption]
+                );
+            }
         }
 
         return $this->toArray();

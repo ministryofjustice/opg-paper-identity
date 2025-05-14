@@ -211,7 +211,7 @@ class HealthcheckControllerTest extends TestCase
             ],
             'messages' => [
                 'The donor cannot ID over the phone due to a lack of ' .
-                'available security questions or failure to answer them correctly on a previous occasion.',
+                'available security questions or failure to answer them correctly.',
             ],
         ];
 

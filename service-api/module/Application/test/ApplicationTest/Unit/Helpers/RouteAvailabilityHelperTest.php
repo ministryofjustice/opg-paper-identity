@@ -295,7 +295,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['donor no-decision-message']
+                    'messages' => ['The donor has thinfile or failed KBVs']
                 ]
             ],
             "certificate-provider with NODECISION fraudscore - close off experian routes" => [
@@ -304,7 +304,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['certificate provider no-decision-message']
+                    'messages' => ['The certificate provider has thinfile or failed KBVs']
                 ]
             ],
             "voucher with NODECISION fraudscore - close off experian routes" => [
@@ -313,7 +313,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['person vouching no-decision-message']
+                    'messages' => ['The person vouching has thinfile or failed KBVs']
                 ]
             ],
             "donor with a thinfile (empty KBVs) - offline only" => [
@@ -322,7 +322,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['donor has thinfile or failed KBV']
+                    'messages' => ['The donor has thinfile or failed KBVs']
                 ]
             ],
             "certificate-provider with a thinfile (empty KBVs) - offline only" => [
@@ -331,7 +331,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['certificate has thinfile or failed KBV']
+                    'messages' => ['The certificate provider has thinfile or failed KBVs']
                 ]
             ],
             "voucher with a thinfile (empty KBVs) - offline only" => [
@@ -340,7 +340,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['person vouching has thinfile or failed KBV']
+                    'messages' => ['The person vouching has thinfile or failed KBVs']
                 ]
             ],
             "donor with STOP fraudscore and failed KBVs - only post-office and CoP available" => [
@@ -364,7 +364,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $donorOffline,
-                    'messages' => ['donor has thinfile or failed KBV'],
+                    'messages' => ['The donor has thinfile or failed KBVs'],
                 ]
             ],
             "certificate-provider with failed KBVs - only post-office" => [
@@ -373,7 +373,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['cp has thinfile or failed KBV'],
+                    'messages' => ['The certificate provider has thinfile or failed KBVs'],
                 ]
             ],
             "voucher with failed KBVs - only post-office" => [
@@ -382,7 +382,7 @@ class RouteAvailabilityHelperTest extends TestCase
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['voucher has thinfile or failed KBV'],
+                    'messages' => ['The person vouching has thinfile or failed KBVs'],
                 ]
             ],
             "post-office route is unavailable" => [
