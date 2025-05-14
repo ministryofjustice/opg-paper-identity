@@ -28,7 +28,7 @@ class HealthcheckControllerFactory implements FactoryInterface
         array $options = null
     ): HealthcheckController {
         /** @var string $siriusBaseUrl */
-        $ssmServiceAvailability = getenv("AWS_SSM_SERVICE_AVAILABILITY");
+        $ssmRouteAvailability = getenv("AWS_SSM_SERVICE_AVAILABILITY");
         $config = $container->get('Config');
         $logger = $container->get(LoggerInterface::class);
         /**
@@ -37,7 +37,7 @@ class HealthcheckControllerFactory implements FactoryInterface
         return new HealthcheckController(
             $container->get(DataQueryHandler::class),
             $container->get(SsmHandler::class),
-            $ssmServiceAvailability,
+            $ssmRouteAvailability,
             $logger,
             $config
         );
