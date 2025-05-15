@@ -3,6 +3,11 @@ describe("Identify a Certificate Provider", () => {
         cy.visit("/start?personType=certificateProvider&lpas[]=M-XYXY-YAGA-0000");
 
         cy.contains("How will you confirm your identity?");
+
+        // vouching/CoP should not be available as an option.
+        cy.contains("Have someone vouch for the identity of the donor").should('not.exist');
+        cy.contains("The donor cannot do any of the above (Court of Protection)").should('not.exist');
+
         cy.get("label").contains("National insurance number").click();
         cy.get(".govuk-button").contains("Continue").click();
 

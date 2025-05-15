@@ -10,7 +10,7 @@ use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
-use Application\Helpers\ServiceAvailabilityHelper;
+use Application\Helpers\RouteAvailabilityHelper;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -23,7 +23,7 @@ class HealthcheckController extends AbstractActionController
     public function __construct(
         private readonly DataQueryHandler $dataQuery,
         private readonly SsmHandler $ssmHandler,
-        private string $ssmServiceAvailability,
+        private string $ssmRouteAvailability,
         private readonly LoggerInterface $logger,
         private array $config = []
     ) {
@@ -69,7 +69,7 @@ class HealthcheckController extends AbstractActionController
         $dependencies = true;
         $dbConnection = $this->dataQuery->healthCheck();
 
-        $dependencyStatus = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
+        $dependencyStatus = $this->ssmHandler->getJsonParameter($this->ssmRouteAvailability);
 
         if (empty($dependencyStatus)) {
             $dependencies = false;
@@ -92,7 +92,7 @@ class HealthcheckController extends AbstractActionController
                 'dynamodb' => [
                     'ok' => true
                 ],
-                'serviceAvailability' => [
+                'routeAvailability' => [
                     'ok' => $dependencies,
                     'values' => $dependencyStatus
                 ]
@@ -103,28 +103,28 @@ class HealthcheckController extends AbstractActionController
     /**
      * @throws \Exception
      */
-    public function serviceAvailabilityAction(): JsonModel
+    public function routeAvailabilityAction(): JsonModel
     {
-        $services = $this->ssmHandler->getJsonParameter($this->ssmServiceAvailability);
+        $externalServices = $this->ssmHandler->getJsonParameter($this->ssmRouteAvailability);
 
         try {
             $uuid = $this->getRequest()->getQuery('uuid');
             if (is_string($uuid)) {
                 $case = $this->dataQuery->getCaseByUUID($uuid);
+                $this->logger->info(json_encode($case));
 
                 if (! is_null($case)) {
-                    $helper = new ServiceAvailabilityHelper(
-                        $services,
-                        $case,
+                    $helper = new RouteAvailabilityHelper(
+                        $externalServices,
                         $this->config
                     );
-                    return new JsonModel($helper->processServicesWithCaseData());
+                    return new JsonModel($helper->processCase($case));
                 }
             }
         } catch (\Exception $exception) {
             $this->logger->error('Unable to parse Fraudscore data ' . $exception->getMessage());
-            return new JsonModel($services);
+            return new JsonModel($externalServices);
         }
-        return new JsonModel($services);
+        return new JsonModel($externalServices);
     }
 }
