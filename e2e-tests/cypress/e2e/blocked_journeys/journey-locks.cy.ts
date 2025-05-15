@@ -31,7 +31,7 @@ describe("Identify a Donor", () => {
         cy.get("Court of Protection").should("not.exist");
     });
 
-    it("shows document pass banner on start page once ID verified and blocks kbv routes" , () => {
+    it("shows banner and blocks kbv routes on start page once ID doc check already done and kbvs abandoned " , () => {
         cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
         cy.contains("How will you confirm your identity?");
@@ -42,9 +42,10 @@ describe("Identify a Donor", () => {
         cy.get(".govuk-button").contains("Continue").click();
         cy.getInputByLabel("National Insurance number").type("NP 112233 C");
         cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-button").contains("Continue").click();
+        cy.get(".govuk-link").contains("I need to prove my identity another way").click();
 
-        cy.jumpToPage("how-will-you-confirm");
-        cy.contains("The donor has already proved their identity over the phone with a valid document");
+        cy.contains("The donor cannot ID over the phone due to a lack of available security questions or failure to answer them correctly.");
         cy.contains("Alternatively, you can take one of the identity documents listed below to a Post Office").should("not.exist");
         cy.contains("You can take one of the identity documents listed below to a Post Office")
         cy.contains("Have someone vouch for the identity of the donor");
@@ -97,7 +98,7 @@ describe("Identify a Donor", () => {
 
     });
 
-    it("shows document fail banner on start page after KBV fail" , () => {
+    it("shows banner on start page after KBV fail" , () => {
         cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G3");
 
         cy.contains("How will you confirm your identity?");
@@ -124,7 +125,7 @@ describe("Identify a Donor", () => {
 
     });
 
-    it("shows document fail banner on start page after KBV fail, vouching is not available as fraud-check returns STOP" , () => {
+    it("shows banner on start page after KBV fail, vouching is not available as fraud-check returns STOP" , () => {
         cy.visit("/start?personType=donor&lpas[]=M-XYXY-YAGA-35G0");  //mock case which returns STOP result.
 
         cy.contains("How will you confirm your identity?");

@@ -43,7 +43,6 @@ class RouteAvailabilityHelperTest extends TestCase
                 'banner_messages' => [
                     'DONOR_VOUCH_UNAVAILABLE' => 'donor-vouch-unavailable',
                     'LOCKED_EXPERIAN' => 'The %s has thinfile or failed KBVs',
-                    'LOCKED_ID_SUCCESS' => 'The %s has already passed doc-check',
                     'LOCKED_ID_FAILURE' => 'The %s failed doc-check',
                     'LOCKED_COMPLETE' => 'The identity check has already been completed',
                     'RESTRICTED_OPTIONS' => '%s could not be verified over the phone...'
@@ -148,17 +147,38 @@ class RouteAvailabilityHelperTest extends TestCase
             ]
         ];
 
-        $docCheckedPassed = [
+    $stopAbandonedKbvs = [
             "caseProgress" => [
                 "docCheck" => [
                     "idDocument" => DocumentType::DrivingLicence->value,
                     "state" => true
                 ],
+                "fraudScore" => [
+                    "decision" => "STOP",
+                    "score" => 999
+                ]
+            ]
+        ];
+
+        $continueAbandonedKbvs = [
+            "caseProgress" => [
+                "docCheck" => [
+                    "idDocument" => DocumentType::DrivingLicence->value,
+                    "state" => true
+                ],
+                "fraudScore" => [
+                    "decision" => "CONTINUE",
+                    "score" => 200,
+                ]
             ]
         ];
 
         $stopFailedKbvs = [
             "caseProgress" => [
+                "docCheck" => [
+                    "idDocument" => DocumentType::DrivingLicence->value,
+                    "state" => true
+                ],
                 "fraudScore" => [
                     "decision" => "STOP",
                     "score" => 999
@@ -171,6 +191,10 @@ class RouteAvailabilityHelperTest extends TestCase
 
         $continueFailedKbvs = [
             "caseProgress" => [
+                "docCheck" => [
+                    "idDocument" => DocumentType::DrivingLicence->value,
+                    "state" => true
+                ],
                 "fraudScore" => [
                     "decision" => "CONTINUE",
                     "score" => 200,
@@ -262,31 +286,37 @@ class RouteAvailabilityHelperTest extends TestCase
                     'messages' => ['The person vouching failed doc-check']
                 ]
             ],
-            "donor doc has already been checked - close off experian routes" => [
+            "donor doc has already been checked abandoned kbvs and STOP fraudscore - block experian and vouching" => [
                 $config,
-                array_merge($donor, $docCheckedPassed),
+                array_merge($donor, $stopAbandonedKbvs),
                 $externalServices,
                 [
-                    'data' => $donorOffline,
-                    'messages' => ['The donor has already passed doc-check']
+                    'data' =>  array_merge(
+                        $allRoutesUnavailable,
+                        [
+                            IdRoute::POST_OFFICE->value => true,
+                            IdRoute::COURT_OF_PROTECTION->value => true,
+                        ]
+                    ),
+                    'messages' => ['donor-vouch-unavailable']
                 ]
             ],
-            "certificate-provider doc has already been checked - close off experian routes" => [
+            "certificate-provider doc has already been checked abandoned kbvs - close off experian routes" => [
                 $config,
-                array_merge($certificateProvider, $docCheckedPassed),
+                array_merge($certificateProvider, $continueAbandonedKbvs),
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['The certificate provider has already passed doc-check']
+                    'messages' => ['The certificate provider has thinfile or failed KBVs']
                 ]
             ],
-            "voucher doc has already been checked - close off experian routes" => [
+            "voucher doc has already been checked abandoned kbvs - close off experian routes" => [
                 $config,
-                array_merge($voucher, $docCheckedPassed),
+                array_merge($voucher, $continueAbandonedKbvs),
                 $externalServices,
                 [
                     'data' => $postOfficeOnly,
-                    'messages' => ['The person vouching has already passed doc-check']
+                    'messages' => ['The person vouching has thinfile or failed KBVs']
                 ]
             ],
             "donor with NODECISION fraudscore - close off experian routes" => [

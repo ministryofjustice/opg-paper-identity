@@ -12,7 +12,6 @@ class RouteAvailabilityHelper
 {
     public const LOCKED_EXPERIAN = 'LOCKED_EXPERIAN';
     public const LOCKED_ID_FAILURE = 'LOCKED_ID_FAILURE';
-    public const LOCKED_ID_SUCCESS = 'LOCKED_ID_SUCCESS';
     public const LOCKED_COMPLETE = 'LOCKED_COMPLETE';
     public const KBV_FALSE = [
         DocumentType::NationalInsuranceNumber->value => false,
@@ -107,14 +106,11 @@ class RouteAvailabilityHelper
         if ($kbvsResult === true) {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_COMPLETE));
             $this->availableRoutes = array_fill_keys(array_keys($this->availableRoutes), false);
-        } elseif ($thinfile === true || $kbvsResult === false || $fraudDecision === 'NODECISION') {
-            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_EXPERIAN));
-            $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
         } elseif ($docCheckResult === false) {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_FAILURE));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
-        } elseif ($docCheckResult === true) {
-            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_ID_SUCCESS));
+        } elseif ($thinfile === true || $fraudDecision === 'NODECISION' || $docCheckResult === true) {
+            array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_EXPERIAN));
             $this->availableRoutes = array_merge($this->availableRoutes, self::KBV_FALSE);
         } else {
             foreach ($restrictedMethods as $restrictedOption) {
