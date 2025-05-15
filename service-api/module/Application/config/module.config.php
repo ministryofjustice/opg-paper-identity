@@ -518,7 +518,6 @@ return [
                 'failure to answer the security questions correctly.',
             'LOCKED_EXPERIAN' => 'The %s cannot ID over the phone due to a lack of available security questions ' .
                 'or failure to answer them correctly.',
-            'LOCKED_ID_SUCCESS' => 'The %s has already proved their identity over the phone with a valid document',
             'LOCKED_ID_FAILURE' => 'The %s cannot prove their identity over the phone because their ID document ' .
                 'could not be verified.',
             'LOCKED_COMPLETE' => 'The identity check has already been completed',

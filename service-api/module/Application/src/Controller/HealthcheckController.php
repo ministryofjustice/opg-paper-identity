@@ -111,6 +111,7 @@ class HealthcheckController extends AbstractActionController
             $uuid = $this->getRequest()->getQuery('uuid');
             if (is_string($uuid)) {
                 $case = $this->dataQuery->getCaseByUUID($uuid);
+                $this->logger->info(json_encode($case));
 
                 if (! is_null($case)) {
                     $helper = new RouteAvailabilityHelper(
