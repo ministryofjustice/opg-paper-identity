@@ -839,8 +839,8 @@ class OpgApiServiceTest extends TestCase
         ];
     }
 
-    #[DataProvider('serviceAvailabilityData')]
-    public function testServiceAvailability(
+    #[DataProvider('routeAvailabilityData')]
+    public function testrouteAvailability(
         Client $client,
         array $expected,
         bool $exception
@@ -851,10 +851,10 @@ class OpgApiServiceTest extends TestCase
 
         $opgApiService = new OpgApiService($client, $this->jwtGenerator);
 
-        $this->assertEquals($expected, $opgApiService->getServiceAvailability());
+        $this->assertEquals($expected, $opgApiService->getRouteAvailability());
     }
 
-    public static function serviceAvailabilityData(): array
+    public static function routeAvailabilityData(): array
     {
         $successMock = new MockHandler([
             new Response(
