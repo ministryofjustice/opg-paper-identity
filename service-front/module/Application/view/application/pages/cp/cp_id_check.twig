@@ -5,25 +5,30 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class="govuk-heading-xl">{% block title %}Does the name match the ID?{% endblock %}</h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">{% block title %}Does the name match the ID?{% endblock %}</h1>
 
-    <p class="govuk-body">
-        The certificate provider’s name that is recorded in Sirius should be identical <br/> to how it is printed on the ID document they have chosen to prove their <br/> identity with. If these details do not match, amend in Sirius as appropriate.
-    </p>
+            <p class="govuk-body">
+                The certificate provider’s name that is recorded in Sirius should be identical to how it is printed on the ID document they have chosen to prove their identity with.
+                If these details do not match, amend in Sirius as appropriate.
+            </p>
 
-    <div class="app-inset-text-blue govuk-inset-text govuk-!-width-two-thirds">
-        <h2 class="govuk-heading-l">
-            Sirius record
-        </h2>
-        <h3 class="govuk-heading-m govuk-!-margin-bottom-0">
-            Name
-        </h3>
-        <p class="govuk-body">
-            {{ details_data.firstName }} {{ details_data.lastName }}
-        </p>
-        <a href="{{ sirius_edit_url }}/lpa-details" class="govuk-link" target="_blank">Edit the certificate provider's details in Sirius</a> (Opens in a new window)<br><br>
+            <div class="app-inset-text-blue govuk-inset-text">
+                <h2 class="govuk-heading-l">
+                    Sirius record
+                </h2>
+                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">
+                    Name
+                </h3>
+                <p class="govuk-body">
+                    {{ details_data.firstName }} {{ details_data.lastName }}
+                </p>
+                <a href="{{ sirius_edit_url }}/lpa-details" class="govuk-link" target="_blank">Edit the certificate provider's details in Sirius</a> (Opens in a new window)<br><br>
 
-        <a href="./name-match-check" class="govuk-link">Update this page</a> (if you've changed the record in Sirius)
+                <a href="./name-match-check" class="govuk-link">Update this page</a> (if you've changed the record in Sirius)
+            </div>
+            <a href="./confirm-lpas" class="govuk-button">Continue</a>
+        </div>
     </div>
-    <a href="./confirm-lpas" class="govuk-button">Continue</a>
 {% endblock %}
