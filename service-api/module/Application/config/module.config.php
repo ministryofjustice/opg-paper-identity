@@ -523,10 +523,5 @@ return [
             'LOCKED_COMPLETE' => 'The identity check has already been completed',
             'RESTRICTED_OPTIONS' => '%s could not be verified over the phone, choose an alternate ID method below.'
         ],
-        'person_type_labels' => [
-            'donor' => 'donor',
-            'certificateProvider' => 'certificate provider',
-            'voucher' => 'person vouching'
-        ]
     ]
 ];
