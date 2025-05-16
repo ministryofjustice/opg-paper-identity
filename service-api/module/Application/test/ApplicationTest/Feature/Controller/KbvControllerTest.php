@@ -6,6 +6,7 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\KbvController;
 use Application\Enums\DocumentType;
+use Application\Enums\PersonType;
 use Application\Fixtures\DataQueryHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\KBV\AnswersOutcome;
@@ -135,7 +136,7 @@ class KbvControllerTest extends TestCase
 
         $actual = CaseData::fromArray([
             'id' => $uuid,
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'claimedIdentity' => [
                 'firstName' => '',
                 'lastName' => '',
@@ -173,7 +174,7 @@ class KbvControllerTest extends TestCase
     public function testKBVQuestionsWithVerifiedDocsCaseGeneratesQuestions(): void
     {
         $caseData = CaseData::fromArray([
-            'personType' => '',
+            'personType' => PersonType::Donor->value,
             'claimedIdentity' => [
                 'firstName' => 'test',
                 'lastName' => 'name',
@@ -218,7 +219,7 @@ class KbvControllerTest extends TestCase
     {
         $response = '{"error":"Document checks incomplete or unable to locate case"}';
         $caseData = CaseData::fromArray([
-            'personType' => '',
+            'personType' => PersonType::Donor->value,
             'claimedIdentity' => [
                 'firstName' => 'test',
                 'lastName' => 'name',

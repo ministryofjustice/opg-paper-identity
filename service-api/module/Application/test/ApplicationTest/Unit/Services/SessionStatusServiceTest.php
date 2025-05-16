@@ -6,6 +6,7 @@ namespace ApplicationTest\ApplicationTest\Unit\Services;
 
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CounterService;
@@ -51,7 +52,7 @@ class SessionStatusServiceTest extends TestCase
                 'firstName' => 'Maria',
                 'lastName' => 'Williams'
             ],
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'yotiSessionId' => 'fcb5d23c-7683-4d9b-b6de-ade49dd030fc',
             'counterService' => [
                 'selectedPostOffice' => '29348729',

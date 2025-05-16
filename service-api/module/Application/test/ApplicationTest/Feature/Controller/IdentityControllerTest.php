@@ -8,6 +8,7 @@ use Application\Controller\IdentityController;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Experian\Crosscore\FraudApi\DTO\ResponseDTO;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
@@ -101,7 +102,7 @@ class IdentityControllerTest extends TestCase
             ->with('2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc')
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                'personType' => 'donor',
+                'personType' => PersonType::Donor->value,
                 'claimedIdentity' => [
                     'firstName' => '',
                     'lastName' => '',
@@ -178,7 +179,7 @@ class IdentityControllerTest extends TestCase
                 'M-XYXY-YAGA-35G3',
                 'M-VGAS-OAGA-34G9',
             ],
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
         ];
 
         return [
@@ -245,7 +246,7 @@ class IdentityControllerTest extends TestCase
             'M-VGAS-OAGA-34G9',
         ];
 
-        $mockCase->personType = 'donor';
+        $mockCase->personType = PersonType::Donor;
 
         if ($returnsMockCase) {
             $mockCase->expects($this->once())
@@ -286,7 +287,7 @@ class IdentityControllerTest extends TestCase
         $uuid = "aaaaaaaa-1111-2222-3333-000000000";
         $case = [
             "id" => $uuid,
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "claimedIdentity" => [
                 "firstName" => "Mary Ann",
                 "lastName" => "Chapman",
@@ -444,7 +445,7 @@ class IdentityControllerTest extends TestCase
     {
         $baseCase = [
             'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'lpas' => ['M-XYXY-YAGA-35G3',],
         ];
 
@@ -528,7 +529,7 @@ class IdentityControllerTest extends TestCase
 
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "claimedIdentity" => [
                 "firstName" => "Mary Ann",
                 "lastName" => "Chapman",
@@ -614,7 +615,7 @@ class IdentityControllerTest extends TestCase
 
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "claimedIdentity" => [
                 "firstName" => "Mary Ann",
                 "lastName" => "Chapman",
@@ -725,7 +726,7 @@ class IdentityControllerTest extends TestCase
 
         $modelResponse = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "claimedIdentity" => [
                 "firstName" => "Mary Ann",
                 "lastName" => "Chapman",
@@ -958,7 +959,7 @@ class IdentityControllerTest extends TestCase
 
         $caseData = CaseData::fromArray([
             'id' => $uuid,
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'lpas' => [
                 'M-XYXY-YAGA-35G3',
                 'M-VGAS-OAGA-34G9',
