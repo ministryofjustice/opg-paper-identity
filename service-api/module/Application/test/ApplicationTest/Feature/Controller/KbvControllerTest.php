@@ -216,7 +216,7 @@ class KbvControllerTest extends TestCase
      */
     public function testKBVQuestionsWithUnVerifiedDocsCase(): void
     {
-        $response = '{"error":"Document checks incomplete or unable to locate case"}';
+        $response = '{"title":"Document checks incomplete or unable to locate case"}';
         $caseData = CaseData::fromArray([
             'personType' => '',
             'claimedIdentity' => [
@@ -233,7 +233,7 @@ class KbvControllerTest extends TestCase
             ->willReturn($caseData);
 
         $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
-        $this->assertResponseStatusCode(200);
+        $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
         $this->assertModuleName('application');
         $this->assertControllerName(KbvController::class);

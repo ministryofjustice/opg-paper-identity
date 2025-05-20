@@ -41,6 +41,7 @@ class DataWriteHandler
             $this->logger->error('Unable to save data [' . $e->getMessage() . '] to ' . $this->tableName, [
                 'data' => $item,
             ]);
+            throw $e;
         }
     }
 
@@ -108,6 +109,7 @@ class DataWriteHandler
             $this->logger->error('Unable to update data [' . $e->getMessage() . '] for case' . $uuid, [
                 'data' => [$attrName => $attrValue],
             ]);
+            throw $e;
         }
     }
 
@@ -146,6 +148,7 @@ class DataWriteHandler
             ]);
         } catch (AwsException $e) {
             $this->logger->error('Unable to set ttl [' . $e->getMessage() . '] for case' . $uuid);
+            throw $e;
         }
     }
 
@@ -171,6 +174,7 @@ class DataWriteHandler
             ]);
         } catch (AwsException $e) {
             $this->logger->error('Unable to unset ttl [' . $e->getMessage() . '] for case' . $uuid);
+            throw $e;
         }
     }
 }

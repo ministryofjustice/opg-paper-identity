@@ -92,6 +92,7 @@ class FraudApiService
                 throw $clientException;
             }
         } catch (\Exception $exception) {
+            $this->logger->error('FraudApiException: ' . $exception->getMessage(), ['exception' => $exception]);
             throw new FraudApiException($exception->getMessage());
         }
     }

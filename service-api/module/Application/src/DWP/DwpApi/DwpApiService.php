@@ -60,30 +60,25 @@ class DwpApiService
     {
         $this->correlationUuid = $correlationUuid;
 
-        try {
-            $matchResponseDTO = $this->makeCitizenMatchRequest(
-                new CitizenRequestDTO($caseData, $nino)
-            );
+        $matchResponseDTO = $this->makeCitizenMatchRequest(
+            new CitizenRequestDTO($caseData, $nino)
+        );
 
-            if ($matchResponseDTO instanceof AmbiguousCitizenResponseDTO) {
-                return "MULTIPLE_MATCH";
-            }
-
-            $detailsResponseDTO = $this->makeCitizenDetailsRequest(
-                new DetailsRequestDTO($matchResponseDTO->id()),
-                $nino
-            );
-
-            return $this->compareRecords(
-                $caseData,
-                $detailsResponseDTO,
-                $matchResponseDTO,
-                $nino
-            ) ? "PASS" : "NO_MATCH";
-        } catch (\Exception $exception) {
-            $this->logger->error('DwpApiException: ' . "($this->correlationUuid) " . $exception->getMessage());
-            throw new DwpApiException($exception->getMessage());
+        if ($matchResponseDTO instanceof AmbiguousCitizenResponseDTO) {
+            return "MULTIPLE_MATCH";
         }
+
+        $detailsResponseDTO = $this->makeCitizenDetailsRequest(
+            new DetailsRequestDTO($matchResponseDTO->id()),
+            $nino
+        );
+
+        return $this->compareRecords(
+            $caseData,
+            $detailsResponseDTO,
+            $matchResponseDTO,
+            $nino
+        ) ? "PASS" : "NO_MATCH";
     }
 
     public function compareRecords(
@@ -163,6 +158,7 @@ class DwpApiService
                 throw $clientException;
             }
         } catch (\Exception $exception) {
+            $this->logger->error('DwpApiException : ' . $exception->getMessage(), ['exception' => $exception]);
             throw new DwpApiException($exception->getMessage());
         }
         return new CitizenResponseDTO(
@@ -201,7 +197,7 @@ class DwpApiService
                 throw $clientException;
             }
         } catch (\Exception $exception) {
-            $this->logger->error("DwpApiException: " . $exception->getMessage());
+            $this->logger->error('DwpApiException : ' . $exception->getMessage(), ['exception' => $exception]);
             throw new DwpApiException("DwpApiException: " . $exception->getMessage());
         }
 
