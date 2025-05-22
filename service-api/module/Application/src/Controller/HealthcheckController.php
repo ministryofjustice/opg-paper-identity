@@ -9,7 +9,6 @@ use Application\Fixtures\DataQueryHandler;
 use Application\View\JsonModel;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
-use Psr\Log\LoggerInterface;
 use Application\Helpers\RouteAvailabilityHelper;
 use Application\Model\Entity\Problem;
 use Exception;
@@ -26,7 +25,6 @@ class HealthcheckController extends AbstractActionController
         private readonly DataQueryHandler $dataQuery,
         private readonly SsmHandler $ssmHandler,
         private string $ssmRouteAvailability,
-        private readonly LoggerInterface $logger,
         private array $config = []
     ) {
     }
