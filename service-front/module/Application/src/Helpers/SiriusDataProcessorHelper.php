@@ -62,13 +62,22 @@ class SiriusDataProcessorHelper
         }
         $processedData = $this->processLpaResponse($detailsData['personType'], $lpaData);
 
-        $this->opgApiService->updateCaseSetName(
-            $uuid,
-            $processedData['first_name'],
-            $processedData['last_name']
-        );
-        $this->opgApiService->updateCaseSetDob($uuid, $processedData['dob']);
-        $this->opgApiService->updateCaseAddress($uuid, $processedData['address']);
+        if (
+            $processedData['first_name'] !== $detailsData['firstName'] ||
+            $processedData['last_name'] !== $detailsData['lastName']
+        ) {
+                $this->opgApiService->updateCaseSetName(
+                    $uuid,
+                    $processedData['first_name'],
+                    $processedData['last_name']
+                );
+        }
+        if ($processedData['dob'] !== $detailsData['dob']) {
+            $this->opgApiService->updateCaseSetDob($uuid, $processedData['dob']);
+        }
+        if ($processedData['address'] !== $detailsData['address']) {
+            $this->opgApiService->updateCaseAddress($uuid, $processedData['address']);
+        }
     }
 
     /**
