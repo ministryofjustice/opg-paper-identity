@@ -126,7 +126,16 @@ class SiriusDataProcessorHelperTest extends TestCase
         $request = $this->createMock(Request::class);
         $detailsData = [
             'lpas' => ['LPA123'],
-            'personType' => 'donor'
+            'personType' => 'donor',
+            'firstName' => 'Jane',
+            'lastName' => 'Smithe',
+            'dob' => '1974-12-31',
+            'address' => [
+                'line1' => '457 High St',
+                'town' => 'Test City',
+                'postcode' => 'CD45 6EF',
+                'country' => 'UK'
+            ]
         ];
         $lpaData = [
             'opg.poas.lpastore' => [
@@ -210,6 +219,67 @@ class SiriusDataProcessorHelperTest extends TestCase
 
         $this->expectException(LpaNotFoundException::class);
         $this->expectExceptionMessage('LPA not found: LPA123');
+
+        $this->helper->updatePaperIdCaseFromSirius($uuid, $request);
+    }
+
+    public function testUpdatePaperIdCaseFromSiriusDoesntUpdateUnchangedOrNullValues(): void
+    {
+        $uuid = 'abcd-1234-abcd-1234-abcd-1234';
+        $request = $this->createMock(Request::class);
+        $detailsData = [
+            'lpas' => ['LPA123'],
+            'personType' => 'certificateProvider',
+            'firstName' => 'Jane',
+            'lastName' => 'Smith',
+            'dob' => null,
+            'address' => [
+                'line1' => '456 High St',
+                'line2' => '',
+                'line3' => '',
+                'town' => 'Test City',
+                'postcode' => 'CD45 6EF',
+                'country' => 'UK'
+            ]
+        ];
+        $lpaData = [
+            'opg.poas.lpastore' => [
+                'certificateProvider' => [
+                    'firstNames' => 'Jane',
+                    'lastName' => 'Smith',
+                    'address' => [
+                        'line1' => '456 High St',
+                        'town' => 'Test City',
+                        'postcode' => 'CD45 6EF',
+                        'country' => 'UK'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->opgApiServiceMock
+            ->expects(self::once())
+            ->method('getDetailsData')
+            ->with($uuid)
+            ->willReturn($detailsData);
+
+        $this->siriusApiServiceMock
+            ->expects(self::once())
+            ->method('getLpaByUid')
+            ->with('LPA123', $request)
+            ->willReturn($lpaData);
+
+        $this->opgApiServiceMock
+            ->expects($this->never())
+            ->method('updateCaseSetName');
+
+        $this->opgApiServiceMock
+            ->expects($this->never())
+            ->method('updateCaseSetDob');
+
+        $this->opgApiServiceMock
+            ->expects($this->never())
+            ->method('updateCaseAddress');
 
         $this->helper->updatePaperIdCaseFromSirius($uuid, $request);
     }

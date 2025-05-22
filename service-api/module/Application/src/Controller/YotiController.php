@@ -76,12 +76,8 @@ class YotiController extends AbstractActionController
         $response = [];
 
         if (! $case) {
-            $status = Response::STATUS_CODE_400;
-            $this->getResponse()->setStatusCode($status);
-            $response = [
-                "error" => "Unable to locate case"
-            ];
-            return new JsonModel($response);
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem("Unable to locate case"));
         }
 
         //start Yoti process

@@ -7,13 +7,8 @@ namespace Application\Controller\Factory;
 use Application\Aws\SsmHandler;
 use Application\Controller\HealthcheckController;
 use Application\Fixtures\DataQueryHandler;
-use Application\Services\Logging\OpgFormatter;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 
 class HealthcheckControllerFactory implements FactoryInterface
 {
@@ -30,7 +25,6 @@ class HealthcheckControllerFactory implements FactoryInterface
         /** @var string $siriusBaseUrl */
         $ssmRouteAvailability = getenv("AWS_SSM_SERVICE_AVAILABILITY");
         $config = $container->get('Config');
-        $logger = $container->get(LoggerInterface::class);
         /**
          * @psalm-suppress PossiblyFalseArgument
          */
@@ -38,7 +32,6 @@ class HealthcheckControllerFactory implements FactoryInterface
             $container->get(DataQueryHandler::class),
             $container->get(SsmHandler::class),
             $ssmRouteAvailability,
-            $logger,
             $config
         );
     }

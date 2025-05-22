@@ -10,7 +10,6 @@ use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 
 class DonorFlowControllerFactory implements FactoryInterface
 {
@@ -29,7 +28,6 @@ class DonorFlowControllerFactory implements FactoryInterface
             $siriusPublicUrl,
             $container->get(SendSiriusNoteHelper::class),
             $container->get(SiriusDataProcessorHelper::class),
-            $container->get(LoggerInterface::class)
         );
     }
 }
