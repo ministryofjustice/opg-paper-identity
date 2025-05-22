@@ -135,6 +135,8 @@ class DataWriteHandlerTest extends TestCase
                 })
             );
 
+        $this->expectException(AwsException::class);
+
         // Call the insertData method with test data
         $this->sut->insertUpdateData($caseData);
     }

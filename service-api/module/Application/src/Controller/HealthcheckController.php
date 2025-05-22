@@ -11,6 +11,8 @@ use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
 use Application\Helpers\RouteAvailabilityHelper;
+use Application\Model\Entity\Problem;
+use Exception;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -100,30 +102,27 @@ class HealthcheckController extends AbstractActionController
         ]);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function routeAvailabilityAction(): JsonModel
     {
         $externalServices = $this->ssmHandler->getJsonParameter($this->ssmRouteAvailability);
 
-        try {
-            $uuid = $this->getRequest()->getQuery('uuid');
-            if (is_string($uuid)) {
-                $case = $this->dataQuery->getCaseByUUID($uuid);
-
-                if (! is_null($case)) {
-                    $helper = new RouteAvailabilityHelper(
-                        $externalServices,
-                        $this->config
-                    );
-                    return new JsonModel($helper->processCase($case));
-                }
-            }
-        } catch (\Exception $exception) {
-            $this->logger->error('Unable to parse Fraudscore data ' . $exception->getMessage());
-            return new JsonModel($externalServices);
+        /** @var string $uuid */
+        $uuid = $this->getRequest()->getQuery('uuid');
+        if (! $uuid) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            return new JsonModel(new Problem('Missing uuid'));
         }
-        return new JsonModel($externalServices);
+
+        $case = $this->dataQuery->getCaseByUUID($uuid);
+        if (! $case) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+            return new JsonModel(new Problem("Could not find case {$uuid}"));
+        }
+
+        $helper = new RouteAvailabilityHelper(
+            $externalServices,
+            $this->config
+        );
+        return new JsonModel($helper->processCase($case));
     }
 }
