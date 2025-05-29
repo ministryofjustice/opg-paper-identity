@@ -6,6 +6,7 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\KbvController;
+use Application\Enums\PersonType;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -28,7 +29,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     }
 
     #[DataProvider('personTypeDataProvider')]
-    public function testKbvQuestionsFormRenders(string $personType): void
+    public function testKbvQuestionsFormRenders(PersonType $personType): void
     {
         $mockResponseData = [];
         $mockUuid = 'uuid';
@@ -124,16 +125,16 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             [
-                'personType' => 'certificateProvider',
+                'personType' => PersonType::CertificateProvider,
             ],
             [
-                'personType' => 'donor',
+                'personType' => PersonType::Donor,
             ],
         ];
     }
 
     #[DataProvider('kbvOutcomeProvider')]
-    public function testKbvQuestionsResponses(string $personType, array $outcome, string $expectedRedirect): void
+    public function testKbvQuestionsResponses(PersonType $personType, array $outcome, string $expectedRedirect): void
     {
         $uuid = '1b6b45ca-7f20-4110-afd4-1d6794423d3c';
 
@@ -187,37 +188,37 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             [
-                'personType' => 'donor',
+                'personType' => PersonType::Donor,
                 'outcome' => ['complete' => false, 'passed' => false],
                 'expectedRedirect' => '/%s/id-verify-questions',
             ],
             [
-                'personType' => 'donor',
+                'personType' => PersonType::Donor,
                 'outcome' => ['complete' => true, 'passed' => false],
                 'expectedRedirect' => '/%s/identity-check-failed',
             ],
             [
-                'personType' => 'donor',
+                'personType' => PersonType::Donor,
                 'outcome' => ['complete' => true, 'passed' => true],
                 'expectedRedirect' => '/%s/identity-check-passed',
             ],
             [
-                'personType' => 'certificateProvider',
+                'personType' => PersonType::CertificateProvider,
                 'outcome' => ['complete' => false, 'passed' => false],
                 'expectedRedirect' => '/%s/id-verify-questions',
             ],
             [
-                'personType' => 'certificateProvider',
+                'personType' => PersonType::CertificateProvider,
                 'outcome' => ['complete' => true, 'passed' => false],
                 'expectedRedirect' => '/%s/identity-check-failed',
             ],
             [
-                'personType' => 'certificateProvider',
+                'personType' => PersonType::CertificateProvider,
                 'outcome' => ['complete' => true, 'passed' => true],
                 'expectedRedirect' => '/%s/cp/identity-check-passed',
             ],
             [
-                'personType' => 'voucher',
+                'personType' => PersonType::Voucher,
                 'outcome' => ['complete' => true, 'passed' => true],
                 'expectedRedirect' => '/%s/vouching/identity-check-passed',
             ],
@@ -235,7 +236,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ->with($uuid)
             ->willReturn([
                 'id' => $uuid,
-                'personType' => 'donor'
+                'personType' => PersonType::Donor
             ]);
 
         $this->dispatch("/$uuid/identity-check-failed", 'GET');

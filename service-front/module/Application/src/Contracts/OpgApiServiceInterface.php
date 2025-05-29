@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Contracts;
 
+use Application\Enums\PersonType;
+
 /**
  * @psalm-type Question = array{
  *   externalId: string,
@@ -23,7 +25,7 @@ namespace Application\Contracts;
  *
  * @psalm-type CaseData = array{
  *   lpas: string[],
- *   personType: "donor"|"certificateProvider"|"voucher",
+ *   personType: PersonType,
  *   firstName: string,
  *   lastName: string,
  *   dob: string|null,
@@ -96,7 +98,7 @@ interface OpgApiServiceInterface
         string $firstname,
         string $lastname,
         string|null $dob,
-        string $personType,
+        PersonType $personType,
         array $lpas,
         array $address,
     ): array;

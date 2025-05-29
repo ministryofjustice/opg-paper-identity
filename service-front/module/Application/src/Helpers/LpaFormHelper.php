@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\PersonType;
 use Application\Helpers\LpaStatusTypeHelper;
 use Application\Helpers\DTO\LpaFormHelperResponseDto;
 use Laminas\Form\FormInterface;
@@ -75,7 +76,7 @@ class LpaFormHelper
                 );
             }
 
-            $statusCheck = $this->checkStatus($siriusCheck);
+            $statusCheck = $this->checkStatus($siriusCheck, $detailsData['personType']);
             if ($statusCheck['error'] === true) {
                 $result['status'] = $statusCheck['status'];
                 $result['messages']['status_check'] = $statusCheck['message'];
@@ -180,14 +181,14 @@ class LpaFormHelper
         return $response;
     }
 
-    private function checkStatus(array $siriusCheck): array
+    private function checkStatus(array $siriusCheck, PersonType $personType): array
     {
         $response = [
             'error' => false,
             'message' => ""
         ];
 
-        $statusCheck = new LpaStatusTypeHelper($siriusCheck, 'certificateProvider');
+        $statusCheck = new LpaStatusTypeHelper($siriusCheck, $personType);
 
         $response['status'] = $statusCheck->getStatus();
 
@@ -254,23 +255,25 @@ class LpaFormHelper
         return true;
     }
 
-    public function lpaIdentitiesMatch(array $lpas, string $type): bool
+    public function lpaIdentitiesMatch(array $lpas, PersonType $personType): bool
     {
         if (count($lpas) == 1) {
             return true;
         }
 
-        $name = $lpas[0]['opg.poas.lpastore'][$type]['firstNames'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+        // TODO: what to do about voucher here? Just compare Donor identity??
 
-        $address = $lpas[0]['opg.poas.lpastore'][$type]['address']['line1'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+        $name = $lpas[0]['opg.poas.lpastore'][$personType->value]['firstNames'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personType->value]['lastName'];
+
+        $address = $lpas[0]['opg.poas.lpastore'][$personType->value]['address']['line1'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personType->value]['address']['postcode'];
         foreach ($lpas as $lpa) {
-            $nextname = $lpa['opg.poas.lpastore'][$type]['firstNames'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+            $nextname = $lpa['opg.poas.lpastore'][$personType->value]['firstNames'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personType->value]['lastName'];
 
-            $nextAddress = $lpa['opg.poas.lpastore'][$type]['address']['line1'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+            $nextAddress = $lpa['opg.poas.lpastore'][$personType->value]['address']['line1'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personType->value]['address']['postcode'];
             if ($name !== $nextname || $address !== $nextAddress) {
                 return false;
             }

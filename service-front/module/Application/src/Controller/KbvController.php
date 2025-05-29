@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
@@ -31,9 +32,9 @@ class KbvController extends AbstractActionController
     {
         $failRoute = "root/identity_check_failed";
         $passRoute = [
-            'donor' => "root/identity_check_passed",
-            'certificateProvider' => "root/cp_identity_check_passed",
-            'voucher' => "root/voucher_identity_check_passed"
+            PersonType::Donor->value => "root/identity_check_passed",
+            PersonType::CertificateProvider->value => "root/cp_identity_check_passed",
+            PersonType::Voucher->value => "root/voucher_identity_check_passed"
         ];
 
         $view = new ViewModel();
@@ -114,7 +115,7 @@ class KbvController extends AbstractActionController
             }
 
             if ($check['passed'] === true) {
-                return $this->redirect()->toRoute($passRoute[$detailsData['personType']], ['uuid' => $uuid]);
+                return $this->redirect()->toRoute($passRoute[$detailsData['personType']->value], ['uuid' => $uuid]);
             }
 
             return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
