@@ -9,6 +9,7 @@ use Application\Controller\Trait\FormBuilder;
 use Application\Enums\DocumentType;
 use Application\Enums\SiriusDocument;
 use Application\Enums\LpaTypes;
+use Application\Enums\PersonType;
 use Application\Exceptions\SiriusApiException;
 use Application\Forms\Country;
 use Application\Forms\CountryDocument;
@@ -80,10 +81,10 @@ class PostOfficeFlowController extends AbstractActionController
                             'idCountry' => PostOfficeCountry::GBR->value,
                         ]);
                         switch ($detailsData["personType"]) {
-                            case "voucher":
+                            case PersonType::Voucher:
                                 $redirect = "root/voucher_name";
                                 break;
-                            case "certificateProvider":
+                            case PersonType::CertificateProvider:
                                 $redirect = "root/cp_name_match_check";
                                 break;
                             default:
@@ -151,10 +152,10 @@ class PostOfficeFlowController extends AbstractActionController
             $this->opgApiService->updateIdMethod($uuid, $formData);
 
             switch ($detailsData["personType"]) {
-                case "voucher":
+                case PersonType::Voucher:
                     $redirect = "root/voucher_name";
                     break;
-                case "certificateProvider":
+                case PersonType::CertificateProvider:
                     $redirect = "root/cp_name_match_check";
                     break;
                 default:
@@ -233,7 +234,7 @@ class PostOfficeFlowController extends AbstractActionController
         array $detailsData,
     ): Response {
 
-        $systemType = $detailsData['personType'] === 'voucher' ?
+        $systemType = $detailsData['personType'] === PersonType::Voucher ?
             SiriusDocument::PostOfficeDocCheckVoucher : SiriusDocument::PostOfficeDocCheckDonor;
 
         //trigger Post Office counter service & send pdf to sirius

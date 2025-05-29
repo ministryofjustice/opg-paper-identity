@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\HowConfirmController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
@@ -44,7 +45,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         array $routeAvailability,
         array $expectedRadios
     ): void {
-        $mockResponseData = ['personType' => 'donor'];
+        $mockResponseData = ['personType' => PersonType::Donor];
         $mockrouteAvailability = [
             'data' => $routeAvailability,
             'messages' => []
@@ -202,7 +203,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ->expects(self::once())
             ->method('getDetailsData')
             ->with($this->uuid)
-            ->willReturn(['personType' => 'donor']);
+            ->willReturn(['personType' => PersonType::Donor]);
 
         $this
             ->opgApiServiceMock
@@ -227,7 +228,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             ->expects(self::once())
             ->method('getDetailsData')
             ->with($this->uuid)
-            ->willReturn(['personType' => 'donor']);
+            ->willReturn(['personType' => PersonType::Donor]);
 
         $this
             ->opgApiServiceMock
@@ -278,7 +279,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
 
     #[DataProvider('idMethodData')]
     public function testHowWillYouConfirmReturnsCorrectRouteAndUpdatesIdMethod(
-        string $personType,
+        PersonType $personType,
         string $idChoice,
         array $expectedDataToSave,
         string $expectedRedirect
@@ -321,19 +322,19 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             'donor via post-office' => [
-                'donor',
+                PersonType::Donor,
                 IdRoute::POST_OFFICE->value,
                 ['idRoute' => IdRoute::POST_OFFICE->value],
                 'post-office-documents',
             ],
             'donor choosing vouching route' => [
-                'donor',
+                PersonType::Donor,
                 IdRoute::VOUCHING->value,
                 ['idRoute' => IdRoute::VOUCHING->value],
                 'what-is-vouching',
             ],
             'donor with passport' => [
-                'donor',
+                PersonType::Donor,
                 DocumentType::Passport->value,
                 [
                     'idRoute' => IdRoute::KBV->value,
@@ -343,7 +344,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'donor-details-match-check',
             ],
             'certificate provider with nino' => [
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 DocumentType::NationalInsuranceNumber->value,
                 [
                     'idRoute' => IdRoute::KBV->value,
@@ -353,7 +354,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 'cp/name-match-check',
             ],
             'voucher with driving licence' => [
-                'voucher',
+                PersonType::Voucher,
                 DocumentType::DrivingLicence->value,
                 [
                     'idRoute' => IdRoute::KBV->value,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\PersonType;
 use Application\Exceptions\LpaTypeException;
 
 class LpaStatusTypeHelper
@@ -22,28 +23,22 @@ class LpaStatusTypeHelper
     ];
 
     private array $lpaPermissions = [
-        'donor' => [
+        PersonType::Donor->value => [
             'draft',
             'in-progress',
             'statutory-waiting-period',
             'do-not-register'
         ],
-        'certificateProvider' => [
+        PersonType::CertificateProvider->value => [
             'in-progress',
             'statutory-waiting-period',
             'do-not-register'
         ],
-        'voucher' => [
+        PersonType::Voucher->value => [
             'in-progress',
             'statutory-waiting-period',
             'do-not-register'
         ]
-    ];
-
-    private array $personTypes = [
-        'donor' => 'Donor',
-        'certificateProvider' => 'Certificate Provider',
-        'voucher' => 'Voucher'
     ];
 
     private bool $startable;
@@ -52,9 +47,10 @@ class LpaStatusTypeHelper
 
     public function __construct(
         private array $lpa,
-        private string $personType = 'donor'
+        private PersonType $personType = PersonType::Donor
     ) {
-        if (isset($lpa['opg.poas.lpastore'][$this->personType]['identityCheck'])) {
+        // TODO: what about PersonType::Voucher
+        if (isset($lpa['opg.poas.lpastore'][$this->personType->value]['identityCheck'])) {
             $this->startable = false;
             $this->status = 'registered';
         } else {
@@ -80,12 +76,8 @@ class LpaStatusTypeHelper
 
     private function setCanStart(): void
     {
-        if (! array_key_exists($this->personType, $this->personTypes)) {
-            throw new LpaTypeException('Person type "' . $this->personType . '" is not valid');
-        }
-
         try {
-            $this->startable = in_array($this->status, $this->lpaPermissions[$this->personType]);
+            $this->startable = in_array($this->status, $this->lpaPermissions[$this->personType->value]);
         } catch (LpaTypeException $exception) {
             $this->startable = false;
         }

@@ -6,6 +6,7 @@ namespace Application\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\LpaTypes;
+use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\LpaNotFoundException;
 use Application\Services\SiriusApiService;
@@ -25,20 +26,21 @@ class SiriusDataProcessorHelper
     }
 
     /**
+     * @param PersonType $personType
      * @param array $lpasQuery
      * @param Lpa $lpaData
      * @return array
      * @throws HttpException
      */
-    public function createPaperIdCase(string $type, array $lpasQuery, array $lpaData): array
+    public function createPaperIdCase(PersonType $personType, array $lpasQuery, array $lpaData): array
     {
-        $processedData = $this->processLpaResponse($type, $lpaData);
+        $processedData = $this->processLpaResponse($personType, $lpaData);
 
         return $this->opgApiService->createCase(
             $processedData['first_name'],
             $processedData['last_name'],
             $processedData['dob'],
-            $type,
+            $personType,
             $lpasQuery,
             $processedData['address']
         );
@@ -81,7 +83,7 @@ class SiriusDataProcessorHelper
     }
 
     /**
-     * @param string $type
+     * @param PersonType $personType
      * @param array $data
      * @return array{
      *   first_name: string,
@@ -99,9 +101,9 @@ class SiriusDataProcessorHelper
      * @throws HttpException
      * @throws \DateMalformedStringException
      */
-    public function processLpaResponse(string $type, array $data): array
+    public function processLpaResponse(PersonType $personType, array $data): array
     {
-        if (in_array($type, ['donor', 'voucher'])) {
+        if (in_array($personType, [PersonType::Donor, PersonType::Voucher])) {
             if (! empty($data['opg.poas.lpastore'])) {
                 $address = (new AddressProcessorHelper())->processAddress(
                     $data['opg.poas.lpastore']['donor']['address'],
@@ -130,7 +132,7 @@ class SiriusDataProcessorHelper
                 )->format("Y-m-d"),
                 'address' => $address,
             ];
-        } elseif ($type === 'certificateProvider') {
+        } elseif ($personType === PersonType::CertificateProvider) {
             if ($data['opg.poas.lpastore'] === null) {
                 throw new HttpException(
                     400,
@@ -151,7 +153,7 @@ class SiriusDataProcessorHelper
             ];
         }
 
-        throw new HttpException(400, 'Person type "' . $type . '" is not valid');
+        throw new HttpException(400, 'Person type "' . $personType->value . '" is not valid');
     }
 
     public function createLpaDetailsArray(

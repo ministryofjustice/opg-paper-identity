@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Helpers;
 
+use Application\Enums\PersonType;
 use Application\Forms\LpaReferenceNumber;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use OpenTelemetry\API\Instrumentation\Configuration\General\PeerConfig;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -444,7 +446,7 @@ class LpaFormHelperTest extends TestCase
     {
         return [
             "id" => "b4d3a25f-d867-4d26-9213-f67ad3b68caf",
-            "personType" => "cp",
+            "personType" => PersonType::CertificateProvider,
             "firstName" => "David",
             "lastName" => "Smith",
             "dob" => "1999-01-01",
@@ -468,7 +470,7 @@ class LpaFormHelperTest extends TestCase
     }
 
     #[DataProvider('lpaIndexCheckData')]
-    public function testIndexLpaMatchCheck(array $lpas, string $personType, bool $pass): void
+    public function testIndexLpaMatchCheck(array $lpas, PersonType $personType, bool $pass): void
     {
         $lpaFormHelper = new LpaFormHelper();
 
@@ -488,33 +490,33 @@ class LpaFormHelperTest extends TestCase
         return [
             [
                 [$slr],
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 true,
             ],
             [
                 [$slr],
-                'donor',
+                PersonType::Donor,
                 true,
             ],
             [
                 [$slr, $slr],
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 true,
             ],
             [
                 [$slr, $slr],
-                'donor',
+                PersonType::Donor,
                 true,
             ],
 
             [
                 [$slr, $slrMismatchedDonor],
-                'donor',
+                PersonType::Donor,
                 false,
             ],
             [
                 [$slr, $slrMismatchedCp],
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 false,
             ]
         ];
