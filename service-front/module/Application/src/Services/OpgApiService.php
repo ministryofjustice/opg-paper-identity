@@ -12,6 +12,7 @@ use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Laminas\Http\Response;
+use Psr\Log\LoggerInterface;
 
 /**
  * @psalm-import-type CaseData from OpgApiServiceInterface
@@ -34,6 +35,7 @@ class OpgApiService implements OpgApiServiceInterface
     public function __construct(
         private Client $httpClient,
         private JwtGenerator $jwtGenerator,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -71,6 +73,7 @@ class OpgApiService implements OpgApiServiceInterface
 
             return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
+            $this->logger->error('opg api request failed', ['exception' => $exception]);
             throw new OpgApiException($exception->getMessage(), 0, $exception);
         }
     }

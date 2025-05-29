@@ -13,7 +13,6 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 
 class CPFlowControllerFactory implements FactoryInterface
 {
@@ -37,7 +36,6 @@ class CPFlowControllerFactory implements FactoryInterface
             $config,
             $siriusPublicUrl,
             $container->get(SiriusDataProcessorHelper::class),
-            $container->get(LoggerInterface::class)
         );
     }
 }

@@ -23,7 +23,6 @@ use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Psr\Log\LoggerInterface;
 use Application\Controller\Trait\DobOver100WarningTrait;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
@@ -45,7 +44,6 @@ class CPFlowController extends AbstractActionController
         private readonly array $config,
         private readonly string $siriusPublicUrl,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -53,11 +51,7 @@ class CPFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
 
-        try {
-            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
-        } catch (\Exception $e) {
-            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
-        }
+        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
 
         $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);

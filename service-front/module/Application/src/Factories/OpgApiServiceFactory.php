@@ -9,6 +9,7 @@ use Application\Services\OpgApiService;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class OpgApiServiceFactory implements FactoryInterface
@@ -30,6 +31,7 @@ class OpgApiServiceFactory implements FactoryInterface
         return new OpgApiService(
             $guzzleClient,
             $container->get(JwtGenerator::class),
+            $container->get(LoggerInterface::class),
         );
     }
 }

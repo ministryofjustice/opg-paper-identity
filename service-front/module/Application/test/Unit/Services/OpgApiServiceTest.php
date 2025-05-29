@@ -18,17 +18,20 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 class OpgApiServiceTest extends TestCase
 {
     private JwtGenerator&MockObject $jwtGenerator;
+    private LoggerInterface&MockObject $mockLogger;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->jwtGenerator = $this->createMock(JwtGenerator::class);
+        $this->mockLogger = $this->createMock(LoggerInterface::class);
     }
 
     public function testAuthorizationHeaderApplied(): void
@@ -46,7 +49,7 @@ class OpgApiServiceTest extends TestCase
             }))
             ->willReturn(new Response(200, [], ''));
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $this->assertTrue($opgApiService->healthCheck());
     }
@@ -64,7 +67,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectException($expectedException);
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->getDetailsData('uuid');
 
@@ -213,7 +216,7 @@ class OpgApiServiceTest extends TestCase
     #[DataProvider('ninoData')]
     public function testValidateNino(string $nino, Client $client, array $responseData): void
     {
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->checkNinoValidity('uuid', $nino);
 
@@ -277,7 +280,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->checkDlnValidity($dln);
 
@@ -358,7 +361,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->checkPassportValidity($passport);
 
@@ -486,7 +489,7 @@ class OpgApiServiceTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->getIdCheckQuestions($uuid);
 
@@ -501,7 +504,7 @@ class OpgApiServiceTest extends TestCase
         }
         $uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->checkIdCheckAnswers($uuid, $answers);
 
@@ -569,7 +572,7 @@ class OpgApiServiceTest extends TestCase
         if ($exception) {
             $this->expectException(OpgApiException::class);
         }
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $response = $opgApiService->createCase(
             $postData['FirstName'],
@@ -655,7 +658,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $opgApiService->updateIdMethod($data['uuid'], $data['method']);
     }
@@ -704,7 +707,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $opgApiService->updateCaseSetDocumentComplete($data['uuid'], DocumentType::NationalInsuranceNumber->value);
     }
@@ -753,7 +756,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $opgApiService->updateCaseSetDob($data['uuid'], $data['dob']);
     }
@@ -803,7 +806,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectNotToPerformAssertions();
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $opgApiService->updateCaseProgress($data['uuid'], $data);
     }
@@ -849,7 +852,7 @@ class OpgApiServiceTest extends TestCase
             $this->expectException(OpgApiException::class);
         }
 
-        $opgApiService = new OpgApiService($client, $this->jwtGenerator);
+        $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $this->assertEquals($expected, $opgApiService->getRouteAvailability());
     }
@@ -915,7 +918,7 @@ class OpgApiServiceTest extends TestCase
 
         $client = new Client(['handler' => HandlerStack::create($successMock)]);
 
-        $sut = new OpgApiService($client, $this->jwtGenerator);
+        $sut = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $sut->sendIdentityCheck('case-uuid');
     }
@@ -933,7 +936,7 @@ class OpgApiServiceTest extends TestCase
 
         $client = new Client(['handler' => HandlerStack::create($successMock)]);
 
-        $sut = new OpgApiService($client, $this->jwtGenerator);
+        $sut = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
         $this->expectException(OpgApiException::class);
 

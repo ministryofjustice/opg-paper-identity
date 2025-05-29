@@ -16,7 +16,6 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
-use Psr\Log\LoggerInterface;
 
 class DonorFlowController extends AbstractActionController
 {
@@ -29,7 +28,6 @@ class DonorFlowController extends AbstractActionController
         private readonly string $siriusPublicUrl,
         private readonly SendSiriusNoteHelper $sendNoteHelper,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -74,11 +72,7 @@ class DonorFlowController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute("uuid");
 
-        try {
-            $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
-        } catch (\Exception $e) {
-            $this->logger->error('Unable to update paper id case from Sirius', ['exception' => $e]);
-        }
+        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
