@@ -86,11 +86,10 @@ class IndexController extends AbstractActionController
         }
 
         if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $personType)) {
-            // TODO: clean up this - and how to handle voucher???
             $personTypeDescription = [
                 'donor' => "Donors",
+                'voucher' => "Donors",
                 'certificateProvider' => "Certificate Providers",
-                'voucher' => "Vouchers"
             ];
             throw new HttpException(
                 400,
