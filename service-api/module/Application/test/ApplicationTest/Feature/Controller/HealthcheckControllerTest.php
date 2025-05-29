@@ -8,6 +8,7 @@ use Application\Aws\SsmHandler;
 use Application\Controller\HealthcheckController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
@@ -110,7 +111,7 @@ class HealthcheckControllerTest extends TestCase
 
         $case = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "claimedIdentity" => [
                 "firstName" => "Mary Ann",
                 "lastName" => "Chapman",
@@ -145,7 +146,7 @@ class HealthcheckControllerTest extends TestCase
 
         $caseNoDec = [
             "id" => "a9bc8ab8-389c-4367-8a9b-762ab3050999",
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "claimedIdentity" => [
                 "firstName" => "Mary Ann",
                 "lastName" => "Chapman",

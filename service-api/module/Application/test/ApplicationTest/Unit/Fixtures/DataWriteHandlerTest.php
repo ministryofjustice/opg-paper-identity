@@ -7,6 +7,7 @@ namespace ApplicationTest\ApplicationTest\Unit\Fixtures;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
 use Application\Enums\DocumentType;
+use Application\Enums\PersonType;
 use Aws\CommandInterface;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Exception\AwsException;
@@ -51,7 +52,7 @@ class DataWriteHandlerTest extends TestCase
     {
         $case = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'claimedIdentity' => [
                 'firstName' => 'Maria',
                 'lastName' => 'Neldon',
@@ -108,7 +109,7 @@ class DataWriteHandlerTest extends TestCase
                     'Postcode'
                 ]
             ],
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'lpas' => []
         ]);
 

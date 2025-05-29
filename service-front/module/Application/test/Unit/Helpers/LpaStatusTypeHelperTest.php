@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Helpers;
 
+use Application\Enums\PersonType;
 use Application\Exceptions\LpaTypeException;
 use Application\Helpers\LpaStatusTypeHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -14,7 +15,7 @@ class LpaStatusTypeHelperTest extends TestCase
     #[DataProvider('lpaStatusTypeHelperData')]
     public function testLpaTypeHelper(
         array $lpa,
-        string $personType,
+        PersonType $personType,
         string $expectedStatus,
         bool $expectedStartable,
         bool $throwsException
@@ -71,112 +72,105 @@ class LpaStatusTypeHelperTest extends TestCase
         return [
             [
                 $draftLpa,
-                'donor',
+                PersonType::Donor,
                 'draft',
                 true,
                 false,
-            ],
-            [
-                $draftLpa,
-                'invalidPersonType',
-                'draft',
-                false,
-                true,
             ],
             [
                 $emptyDraftLpa,
-                'donor',
+                PersonType::Donor,
                 'draft',
                 true,
                 false,
             ],
             [
                 $draftLpa,
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 'draft',
                 false,
                 false,
             ],
             [
                 $draftLpa,
-                'voucher',
+                PersonType::Voucher,
                 'draft',
                 false,
                 false,
             ],
             [
                 $registeredLpa,
-                'donor',
+                PersonType::Donor,
                 'registered',
                 false,
                 false,
             ],
             [
                 $registeredLpa2,
-                'donor',
+                PersonType::Donor,
                 'registered',
                 false,
                 false,
             ],
             [
                 $inProgressLpa,
-                'donor',
+                PersonType::Donor,
                 'in-progress',
                 true,
                 false,
             ],
             [
                 $statutoryWaitingPeriodLpa,
-                'donor',
+                PersonType::Donor,
                 'statutory-waiting-period',
                 true,
                 false,
             ],
             [
                 $doNotRegisterLpa,
-                'donor',
+                PersonType::Donor,
                 'do-not-register',
                 true,
                 false,
             ],
             [
                 $inProgressLpa,
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 'in-progress',
                 true,
                 false,
             ],
             [
                 $statutoryWaitingPeriodLpa,
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 'statutory-waiting-period',
                 true,
                 false,
             ],
             [
                 $doNotRegisterLpa,
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 'do-not-register',
                 true,
                 false,
             ],
             [
                 $inProgressLpa,
-                'voucher',
+                PersonType::Voucher,
                 'in-progress',
                 true,
                 false,
             ],
             [
                 $statutoryWaitingPeriodLpa,
-                'voucher',
+                PersonType::Voucher,
                 'statutory-waiting-period',
                 true,
                 false,
             ],
             [
                 $doNotRegisterLpa,
-                'voucher',
+                PersonType::Voucher,
                 'do-not-register',
                 true,
                 false,
@@ -184,42 +178,42 @@ class LpaStatusTypeHelperTest extends TestCase
 
             [
                 $suspendedLpa,
-                'donor',
+                PersonType::Donor,
                 'suspended',
                 false,
                 false,
             ],
             [
                 $expiredLpa,
-                'voucher',
+                PersonType::Voucher,
                 'expired',
                 false,
                 false,
             ],
             [
                 $cannotRegisterLpa,
-                'voucher',
+                PersonType::Voucher,
                 'cannot-register',
                 false,
                 false,
             ],
             [
                 $cancelledLpa,
-                'voucher',
+                PersonType::Voucher,
                 'cancelled',
                 false,
                 false,
             ],
             [
                 $doRegisteredLpa,
-                'voucher',
+                PersonType::Voucher,
                 'de-registered',
                 false,
                 false,
             ],
             [
                 $invalidLpa,
-                'donor',
+                PersonType::Donor,
                 'invalid',
                 false,
                 true,

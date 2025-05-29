@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Experian\IIQ;
 
+use Application\Enums\PersonType;
 use Application\Experian\IIQ\ConfigBuilder;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\IdentityIQ;
@@ -42,7 +43,7 @@ class ConfigBuilderTest extends TestCase
                             'postcode' => 'NW1 1SP',
                         ]
                     ],
-                    'personType' => 'donor',
+                    'personType' => PersonType::Donor->value,
                     'caseProgress' => [
                         'fraudScore' => [
                             "decision" => "ACCEPT",
@@ -93,7 +94,7 @@ class ConfigBuilderTest extends TestCase
                             'postcode' => 'NW1 1SP',
                         ]
                     ],
-                    'personType' => 'donor',
+                    'personType' => PersonType::Donor->value,
                     'caseProgress' => [
                         'fraudScore' => [
                             "decision" => "STOP",
@@ -145,7 +146,7 @@ class ConfigBuilderTest extends TestCase
                             'postcode' => 'NW1 1SP',
                         ]
                     ],
-                    'personType' => 'donor',
+                    'personType' => PersonType::Donor->value,
                     'caseProgress' => [
                         'fraudScore' => [
                             "decision" => "REFER",

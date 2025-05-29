@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\LpaNotFoundException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
+use OpenTelemetry\API\Instrumentation\Configuration\General\PeerConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -33,7 +35,7 @@ class SiriusDataProcessorHelperTest extends TestCase
 
     public function testCreatePaperIdCase(): void
     {
-        $type = 'donor';
+        $type = PersonType::Donor;
         $lpasQuery = ['caseId' => '12345'];
         $lpaData = [
             'opg.poas.lpastore' => [
@@ -126,7 +128,7 @@ class SiriusDataProcessorHelperTest extends TestCase
         $request = $this->createMock(Request::class);
         $detailsData = [
             'lpas' => ['LPA123'],
-            'personType' => 'donor'
+            'personType' => PersonType::Donor
         ];
         $lpaData = [
             'opg.poas.lpastore' => [
@@ -193,7 +195,7 @@ class SiriusDataProcessorHelperTest extends TestCase
         $request = $this->createMock(Request::class);
         $detailsData = [
             'lpas' => ['LPA123'],
-            'personType' => 'donor'
+            'personType' => PersonType::Donor
         ];
 
         $this->opgApiServiceMock
@@ -216,7 +218,7 @@ class SiriusDataProcessorHelperTest extends TestCase
 
     public function testProcessLpaResponse(): void
     {
-        $type = 'donor';
+        $type = PersonType::Donor;
         $data = [
             'opg.poas.lpastore' => [
                 'donor' => [
@@ -252,14 +254,6 @@ class SiriusDataProcessorHelperTest extends TestCase
         $result = $this->helper->processLpaResponse($type, $data);
 
         $this->assertEquals($expected, $result);
-    }
-
-    public function testProcessLpaResponseWithInvalidType(): void
-    {
-        $this->expectException(HttpException::class);
-        $this->expectExceptionMessage('Person type "invalid" is not valid');
-
-        $this->helper->processLpaResponse('invalid', []);
     }
 
     public function testProcessAddress(): void

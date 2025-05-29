@@ -6,6 +6,7 @@ namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Helpers\RouteAvailabilityHelper;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -47,11 +48,6 @@ class RouteAvailabilityHelperTest extends TestCase
                     'LOCKED_COMPLETE' => 'The identity check has already been completed',
                     'RESTRICTED_OPTIONS' => '%s could not be verified over the phone...'
                 ],
-                'person_type_labels' => [
-                    'donor' => 'donor',
-                    'certificateProvider' => 'certificate provider',
-                    'voucher' => 'person vouching'
-                ]
             ]
         ];
 
@@ -117,9 +113,9 @@ class RouteAvailabilityHelperTest extends TestCase
 
         $postOfficeOnly = array_merge($allRoutesUnavailable, [IdRoute::POST_OFFICE->value => true,]);
 
-        $donor = ["personType" => "donor"];
-        $certificateProvider = ["personType" => "certificateProvider"];
-        $voucher = ["personType" => "voucher"];
+        $donor = ["personType" => PersonType::Donor->value];
+        $certificateProvider = ["personType" => PersonType::CertificateProvider->value];
+        $voucher = ["personType" => PersonType::Voucher->value];
 
         $noDecision = [
             "caseProgress" => [
