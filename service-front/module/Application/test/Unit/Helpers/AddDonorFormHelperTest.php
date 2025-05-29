@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Helpers;
 
 use Application\Enums\LpaActorTypes;
+use Application\Enums\LpaStatusType;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -130,7 +131,7 @@ class AddDonorFormHelperTest extends TestCase
                 ['problem' => true, 'message' => 'No LPA Found.']
             ],
             [
-                ['status' => 'complete'],
+                ['status' => 'registered'],
                 [
                     'problem' => true,
                     'message' => 'This LPA cannot be added as an ID check has already been completed for this LPA.'

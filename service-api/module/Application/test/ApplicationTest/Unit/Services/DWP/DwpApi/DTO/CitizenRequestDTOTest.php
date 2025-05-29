@@ -6,6 +6,7 @@ namespace ApplicationTest\Feature\Services\DWP\DwpApi\DTO;
 
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\Model\Entity\CaseData;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -19,7 +20,7 @@ class CitizenRequestDTOTest extends TestCase
 
     private const CASE = [
         "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
-        "personType" => "donor",
+        "personType" => PersonType::Donor->value,
         "lpas" => [
             "M-XYXY-YAGA-35G3"
         ],
@@ -68,7 +69,7 @@ class CitizenRequestDTOTest extends TestCase
 
         $case = CaseData::fromArray([
             "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
-            "personType" => "donor",
+            "personType" => PersonType::Donor->value,
             "lpas" => [
                 "M-XYXY-YAGA-35G3"
             ],

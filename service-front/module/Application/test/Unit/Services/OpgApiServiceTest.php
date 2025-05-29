@@ -7,6 +7,7 @@ namespace ApplicationTest\Unit\Services;
 use Application\Auth\JwtGenerator;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Services\OpgApiService;
@@ -92,7 +93,7 @@ class OpgApiServiceTest extends TestCase
                     'country' => 'DD',
                 ],
             ],
-            "personType" => "donor",
+            "personType" => PersonType::Donor,
             "identityCheckPassed" => true,
         ];
 
@@ -109,7 +110,7 @@ class OpgApiServiceTest extends TestCase
                 'country' => 'DD',
             ],
             "professionalAddress" => null,
-            "personType" => "donor",
+            "personType" => PersonType::Donor,
             "identityCheckPassed" => true,
         ];
 
@@ -170,7 +171,7 @@ class OpgApiServiceTest extends TestCase
                 'country' => 'DD',
             ],
             "professionalAddress" => null,
-            "personType" => "donor",
+            "personType" => PersonType::Donor,
             "identityCheckPassed" => null,
         ];
 
@@ -601,7 +602,7 @@ class OpgApiServiceTest extends TestCase
             "FirstName" => $firstName,
             "LastName" => $lastName,
             'DOB' => $dob,
-            'personType' => 'donor',
+            'personType' => PersonType::Donor,
             "lpas" => $lpas,
             'address' => [
                 "Line 1",

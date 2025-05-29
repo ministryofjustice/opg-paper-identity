@@ -7,6 +7,7 @@ namespace ApplicationTest\Unit\Model\Entity;
 use Application\Model\Entity\CaseData;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Laminas\Form\Annotation\AttributeBuilder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -47,7 +48,7 @@ class CaseDataTest extends TestCase
                 'M-AGAS-YAGA-35G3',
                 'M-VGAS-OAGA-34G9'
             ],
-            'personType' => 'donor'
+            'personType' => PersonType::Donor->value
         ];
 
         return [

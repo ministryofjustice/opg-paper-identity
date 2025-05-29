@@ -56,7 +56,7 @@ class CaseOutcomeCalculator
 
         $this->eventSender->send("identity-check-updated", [
             "reference" => "opg:" . $caseData->id,
-            "actorType" => $caseData->personType,
+            "actorType" => $caseData->personType->value,
             "lpaUids" => $caseData->lpas,
             "time" => $timestamp->format('c'),
             "state" => $state,

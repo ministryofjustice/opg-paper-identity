@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Controller\IndexController;
+use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
@@ -74,7 +75,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'donor',
                 [
-                    'Lili', 'Laur', '2019-02-18', 'donor', ['M-1234-5678-90AB'],
+                    'Lili', 'Laur', '2019-02-18', PersonType::Donor, ['M-1234-5678-90AB'],
                     [
                         'line1' => '17 East Lane',
                         'line2' => 'Wickerham',
@@ -92,7 +93,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'donor',
                 [
-                    'Lilith', 'Laur', '2009-02-18', 'donor', ['M-1234-5678-90AB'],
+                    'Lilith', 'Laur', '2009-02-18', PersonType::Donor, ['M-1234-5678-90AB'],
                     [
                         'line1' => 'Unit 15',
                         'line2' => 'Uberior House',
@@ -110,7 +111,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'certificateProvider',
                 [
-                    'x', 'x', null, 'certificateProvider', ['M-1234-5678-90AB'],
+                    'x', 'x', null, PersonType::CertificateProvider, ['M-1234-5678-90AB'],
                     [
                         'line1' => '16a Avenida Lucana',
                         'line2' => 'Cordón',
@@ -193,14 +194,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(SiriusApiService::class, $siriusApiService);
         $serviceManager->setService(OpgApiService::class, $opgApiService);
 
-        $draftLpa = [
-            'opg.poas.sirius' => [],
-            'opg.poas.lpastore' => null,
-        ];
-
-        $siriusApiService->expects($this->once())
-            ->method('getLpaByUid')
-            ->willReturn($draftLpa);
+        $siriusApiService->expects($this->never())
+            ->method('getLpaByUid');
 
         $opgApiService->expects($this->never())
             ->method('createCase');
@@ -208,7 +203,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch('/start?personType=invalid&lpas[]=M-1234-5678-90AB', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertStringContainsString(
-            'Person type &quot;invalid&quot; is not valid',
+            'Person type &#039;invalid&#039; is not valid',
             $this->getResponse()->getBody()
         );
     }

@@ -10,6 +10,7 @@ use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\LpaStatusType;
 use DateTime;
 
 /**
@@ -125,13 +126,13 @@ class AddDonorFormHelper
             ! is_null($lpaData['opg.poas.lpastore']) &&
             array_key_exists('status', $lpaData['opg.poas.lpastore'])
         ) {
-            $status = $lpaData['opg.poas.lpastore']['status'];
-            if (in_array($status, ['complete', 'registered'])) {
+            $status = LpaStatusType::from($lpaData['opg.poas.lpastore']['status']);
+            if ($status == LpaStatusType::Registered) {
                 $response["problem"] = true;
                 $response["message"] = "This LPA cannot be added as an ID" .
                     " check has already been completed for this LPA.";
             }
-            if ($status == 'draft') {
+            if ($status == LpaStatusType::Draft) {
                 $response["problem"] = true;
                 $response["message"] = "This LPA cannot be added as it’s status is set to \"Draft\"." .
                     " LPAs need to be in the \"In progress\" status to be added to this ID check.";
