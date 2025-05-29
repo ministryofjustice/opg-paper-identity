@@ -231,7 +231,7 @@ class SiriusDataProcessorHelperTest extends TestCase
         $request = $this->createMock(Request::class);
         $detailsData = [
             'lpas' => ['LPA123'],
-            'personType' => 'certificateProvider',
+            'personType' => PersonType::CertificateProvider,
             'firstName' => 'Jane',
             'lastName' => 'Smith',
             'dob' => null,

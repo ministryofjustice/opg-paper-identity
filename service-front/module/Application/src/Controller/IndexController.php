@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
+use Application\Enums\LpaStatusType;
 use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
@@ -101,9 +102,9 @@ class IndexController extends AbstractActionController
             $lpaStatusCheck = new LpaStatusTypeHelper($lpas[0], $personType);
 
             if (! $lpaStatusCheck->isStartable()) {
-                $lpaStatusTypeCheck = $lpaStatusCheck->getStatus() === 'registered' ?
+                $lpaStatusTypeCheck = $lpaStatusCheck->getStatus() === LpaStatusType::Registered ?
                     "The identity check has already been completed" :
-                    "ID check has status: " . $lpaStatusCheck->getStatus() . " and cannot be started";
+                    "ID check has status: " . $lpaStatusCheck->getStatus()->value . " and cannot be started";
 
                 $view = new ViewModel();
                 $view->setVariables([

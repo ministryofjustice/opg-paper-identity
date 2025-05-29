@@ -4,46 +4,33 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\LpaStatusType;
 use Application\Enums\PersonType;
 use Application\Exceptions\LpaTypeException;
 
 class LpaStatusTypeHelper
 {
-    private array $lpaStatusTypes = [
-        'draft' => 'Draft',
-        'in-progress' => 'In progress',
-        'statutory-waiting-period' => 'Statutory waiting period',
-        'registered' => 'Registered',
-        'suspended' => 'Suspended',
-        'do-not-register' => 'Do not register',
-        'expired' => 'Expired',
-        'cannot-register' => 'Cannot register',
-        'cancelled' => 'Cancelled',
-        'de-registered' => 'De-registered',
-    ];
-
     private array $lpaPermissions = [
         PersonType::Donor->value => [
-            'draft',
-            'in-progress',
-            'statutory-waiting-period',
-            'do-not-register'
+            LpaStatusType::Draft,
+            LpaStatusType::InProgress,
+            LpaStatusType::StatutoryWaitingPeriod,
+            LpaStatusType::DoNotRegister
         ],
         PersonType::CertificateProvider->value => [
-            'in-progress',
-            'statutory-waiting-period',
-            'do-not-register'
+            LpaStatusType::InProgress,
+            LpaStatusType::StatutoryWaitingPeriod,
+            LpaStatusType::DoNotRegister
         ],
         PersonType::Voucher->value => [
-            'in-progress',
-            'statutory-waiting-period',
-            'do-not-register'
+            LpaStatusType::InProgress,
+            LpaStatusType::StatutoryWaitingPeriod,
+            LpaStatusType::DoNotRegister
         ]
     ];
 
     private bool $startable;
-
-    private string $status;
+    private LpaStatusType $status;
 
     public function __construct(
         private array $lpa,
@@ -53,7 +40,7 @@ class LpaStatusTypeHelper
 
         if (isset($lpa['opg.poas.lpastore'][$personTypeValue]['identityCheck'])) {
             $this->startable = false;
-            $this->status = 'registered';
+            $this->status = LpaStatusType::Registered;
         } else {
             $this->setStatus();
             $this->setCanStart();
@@ -66,11 +53,12 @@ class LpaStatusTypeHelper
             ! array_key_exists('opg.poas.lpastore', $this->lpa) ||
             empty($this->lpa['opg.poas.lpastore'])
         ) {
-            $this->status = 'draft';
+            $this->status = LpaStatusType::Draft;
         } else {
-            $this->status = $this->lpa['opg.poas.lpastore']['status'];
-            if (! array_key_exists($this->status, $this->lpaStatusTypes)) {
-                throw new LpaTypeException($this->status . " is not a valid LPA status.");
+            try {
+                $this->status = LpaStatusType::from($this->lpa['opg.poas.lpastore']['status']);
+            } catch (\ValueError) {
+                throw new LpaTypeException($this->lpa['opg.poas.lpastore']['status'] . " is not a valid LPA status.");
             }
         }
     }
@@ -85,9 +73,9 @@ class LpaStatusTypeHelper
     }
 
     /**
-     * @return string
+     * @return LpaStatusType
      */
-    public function getStatus(): string
+    public function getStatus(): LpaStatusType
     {
         return $this->status;
     }
