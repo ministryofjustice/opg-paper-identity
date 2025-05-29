@@ -261,19 +261,19 @@ class LpaFormHelper
             return true;
         }
 
-        // TODO: what to do about voucher here? Just compare Donor identity??
+        $personTypeValue = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
 
-        $name = $lpas[0]['opg.poas.lpastore'][$personType->value]['firstNames'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$personType->value]['lastName'];
+        $name = $lpas[0]['opg.poas.lpastore'][$personTypeValue]['firstNames'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personTypeValue]['lastName'];
 
-        $address = $lpas[0]['opg.poas.lpastore'][$personType->value]['address']['line1'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$personType->value]['address']['postcode'];
+        $address = $lpas[0]['opg.poas.lpastore'][$personTypeValue]['address']['line1'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personTypeValue]['address']['postcode'];
         foreach ($lpas as $lpa) {
-            $nextname = $lpa['opg.poas.lpastore'][$personType->value]['firstNames'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$personType->value]['lastName'];
+            $nextname = $lpa['opg.poas.lpastore'][$personTypeValue]['firstNames'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personTypeValue]['lastName'];
 
-            $nextAddress = $lpa['opg.poas.lpastore'][$personType->value]['address']['line1'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$personType->value]['address']['postcode'];
+            $nextAddress = $lpa['opg.poas.lpastore'][$personTypeValue]['address']['line1'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personTypeValue]['address']['postcode'];
             if ($name !== $nextname || $address !== $nextAddress) {
                 return false;
             }

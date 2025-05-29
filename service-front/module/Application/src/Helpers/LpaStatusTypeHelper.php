@@ -49,8 +49,9 @@ class LpaStatusTypeHelper
         private array $lpa,
         private PersonType $personType = PersonType::Donor
     ) {
-        // TODO: what about PersonType::Voucher
-        if (isset($lpa['opg.poas.lpastore'][$this->personType->value]['identityCheck'])) {
+        $personTypeValue = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
+
+        if (isset($lpa['opg.poas.lpastore'][$personTypeValue]['identityCheck'])) {
             $this->startable = false;
             $this->status = 'registered';
         } else {
