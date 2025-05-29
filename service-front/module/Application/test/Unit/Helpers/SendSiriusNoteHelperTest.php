@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Helpers;
 
+use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
@@ -68,7 +69,7 @@ class SendSiriusNoteHelperTest extends TestCase
 
     #[DataProvider('sendBlockedRoutesNoteData')]
     public function testSendBlockedRoutesNote(
-        string $personType,
+        PersonType $personType,
         ?bool $docCheck,
         ?string $fraudOutcome,
         ?bool $kbvs,
@@ -120,41 +121,52 @@ class SendSiriusNoteHelperTest extends TestCase
         $noVouchingNote = 'They cannot use the vouching route to ID.';
 
         $testCases = [
-            'donor with no docCheck, fraud or kbvs' => ['donor', null, null, null, null],
-            'donor failed docCheck' => ['donor', false, null, null, $noVouchingNote,],
-            'donor with a NODECISION fraud result' => ['donor', true, 'NODECISION', null, $withVouchingNote],
+            'donor with no docCheck, fraud or kbvs' => [PersonType::Donor, null, null, null, null],
+            'donor failed docCheck' => [PersonType::Donor, false, null, null, $noVouchingNote,],
+            'donor with a NODECISION fraud result' => [PersonType::Donor, true, 'NODECISION', null, $withVouchingNote],
         ];
 
         foreach (['ACCEPT', 'CONTINUE'] as $resp) {
             $testCases["donor passed fraud with {$resp} and abandoned kbvs"] = [
-                'donor', true, $resp, null, $withVouchingNote,
+                PersonType::Donor, true, $resp, null, $withVouchingNote,
             ];
-            $testCases["donor passed fraud with {$resp} and passed kbvs"] = ['donor', true, $resp, true, null,];
+            $testCases["donor passed fraud with {$resp} and passed kbvs"] = [
+                PersonType::Donor, true, $resp, true, null,
+            ];
             $testCases["donor passed fraud with {$resp} and failed kbvs"] = [
-                'donor', true, $resp, false, $withVouchingNote,
+                PersonType::Donor, true, $resp, false, $withVouchingNote,
             ];
         }
 
         foreach (['STOP', 'REFER'] as $resp) {
             $testCases["donor failed fraud with {$resp} and abandoned kbvs"] = [
-                'donor', true, $resp, null, $noVouchingNote,
+                PersonType::Donor, true, $resp, null, $noVouchingNote,
             ];
-            $testCases["donor failed fraud with {$resp} and passed kbvs"] = ['donor', true, $resp, true, null,];
+            $testCases["donor failed fraud with {$resp} and passed kbvs"] = [
+                PersonType::Donor, true, $resp, true, null,
+            ];
             $testCases["donor failed fraud with {$resp} and failed kbvs"] = [
-                'donor', true, $resp, false, $noVouchingNote,
+                PersonType::Donor, true, $resp, false, $noVouchingNote,
             ];
         }
 
         $msgLkup = [
-            'certificateProvider' => 'The certificate provider (Lee Manthrope) has failed to ID over the phone.',
-            'voucher' => 'The person vouching (Lee Manthrope) has failed to ID over the phone.'
+            PersonType::CertificateProvider->value =>
+                'The certificate provider (Lee Manthrope) has failed to ID over the phone.',
+            PersonType::Voucher->value => 'The person vouching (Lee Manthrope) has failed to ID over the phone.'
         ];
 
-        foreach (['certificateProvider', 'voucher'] as $personType) {
-            $testCases["$personType with failed docCheck"] = [$personType, false, null, null, $msgLkup[$personType]];
-            $testCases["$personType passed kbvs"] = [$personType, true, 'ACCEPT', true, null];
-            $testCases["$personType abandoned kbvs"] = [$personType, true, 'ACCEPT', null, $msgLkup[$personType]];
-            $testCases["$personType failed kbvs"] = [$personType, true, 'ACCEPT', false, $msgLkup[$personType]];
+        foreach ([PersonType::CertificateProvider, PersonType::Voucher] as $personType) {
+            $testCases["$personType->value with failed docCheck"] = [
+                $personType, false, null, null, $msgLkup[$personType->value]
+            ];
+            $testCases["$personType->value passed kbvs"] = [$personType, true, 'ACCEPT', true, null];
+            $testCases["$personType->value abandoned kbvs"] = [
+                $personType, true, 'ACCEPT', null, $msgLkup[$personType->value]
+            ];
+            $testCases["$personType->value failed kbvs"] = [
+                $personType, true, 'ACCEPT', false, $msgLkup[$personType->value]
+            ];
         }
 
         return $testCases;

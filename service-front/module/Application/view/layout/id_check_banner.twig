@@ -2,16 +2,16 @@
     <div class="moj-identity-bar">
         <div class="moj-identity-bar__container">
             <div class="moj-identity-bar__details">
-                {% if details_data.personType == 'voucher'%}
+                {% if details_data.personType.value == 'voucher'%}
                     <span class="moj-identity-bar__title">Identity Check: <b>{{ details_data.vouchingFor.firstName }} {{ details_data.vouchingFor.lastName }}</b>
                 {% else %}
                     <span class="moj-identity-bar__title">Identity Check: <b>{{ firstName }} {{ lastName }}</b>
                 {% endif %}
-                        {% if details_data.personType == 'certificateProvider' %}
+                        {% if details_data.personType.value == 'certificateProvider' %}
                             (certificate provider)
                         {% else %}
                             (donor)
-                            {% if details_data.personType == 'voucher'%}
+                            {% if details_data.personType.value == 'voucher'%}
                                 <strong class="govuk-tag govuk-!-margin-left-2">vouching route</strong>
                             {% endif %}
                         {% endif %}

@@ -6,6 +6,7 @@ namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
+use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Application\Forms\AbandonFlow;
 use Application\Helpers\LpaFormHelper;
@@ -44,8 +45,16 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         /** @var string[] $lpasQuery */
         $lpasQuery = $this->params()->fromQuery("lpas");
-        /** @var string $type */
         $type = $this->params()->fromQuery("personType");
+        try {
+            /** @var PersonType $personType */
+            $personType = PersonType::from($type);
+        } catch (\ValueError) {
+            throw new HttpException(
+                400,
+                "Person type '$type' is not valid"
+            );
+        }
 
         $lpas = [];
         $unfoundLpas = [];
@@ -57,7 +66,7 @@ class IndexController extends AbstractActionController
                 $view->setVariables([
                     'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
                     'details_data' => [
-                        'personType' => $type,
+                        'personType' => $personType,
                         'firstName' => '',
                         'lastName' => '',
                     ]
@@ -76,20 +85,20 @@ class IndexController extends AbstractActionController
             return $view->setTemplate('application/pages/cannot_start');
         }
 
-        if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $type)) {
+        if (! $this->lpaFormHelper->lpaIdentitiesMatch($lpas, $personType)) {
             $personTypeDescription = [
                 'donor' => "Donors",
+                'voucher' => "Donors",
                 'certificateProvider' => "Certificate Providers",
-                'voucher' => "Vouchers"
             ];
             throw new HttpException(
                 400,
-                "These LPAs are for different {$personTypeDescription[$type]}"
+                "These LPAs are for different {$personTypeDescription[$personType->value]}"
             );
         }
 
         try {
-            $lpaStatusCheck = new LpaStatusTypeHelper($lpas[0], $type);
+            $lpaStatusCheck = new LpaStatusTypeHelper($lpas[0], $personType);
 
             if (! $lpaStatusCheck->isStartable()) {
                 $lpaStatusTypeCheck = $lpaStatusCheck->getStatus() === 'registered' ?
@@ -100,7 +109,7 @@ class IndexController extends AbstractActionController
                 $view->setVariables([
                     'message' => $lpaStatusTypeCheck,
                     'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
-                    'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $type)
+                    'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $personType)
                 ]);
                 return $view->setTemplate('application/pages/cannot_start');
             }
@@ -108,9 +117,9 @@ class IndexController extends AbstractActionController
             throw new HttpException(400, $exception->getMessage());
         }
 
-        $case = $this->siriusDataProcessorHelper->createPaperIdCase($type, $lpasQuery, $lpas[0]);
+        $case = $this->siriusDataProcessorHelper->createPaperIdCase($personType, $lpasQuery, $lpas[0]);
 
-        if ($type === 'voucher') {
+        if ($personType === PersonType::Voucher) {
             $redirect = 'root/confirm_vouching';
         } else {
             $redirect = 'root/how_will_you_confirm';
@@ -118,7 +127,7 @@ class IndexController extends AbstractActionController
         return $this->redirect()->toRoute($redirect, ['uuid' => $case['uuid']]);
     }
 
-    private function constructDetailsDataBeforeCreatedCase(array $lpa, string $personType): array
+    private function constructDetailsDataBeforeCreatedCase(array $lpa, PersonType $personType): array
     {
         $processed = $this->siriusDataProcessorHelper->processLpaResponse(
             $personType,

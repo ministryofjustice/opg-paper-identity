@@ -6,6 +6,7 @@ namespace Application\Services;
 
 use Application\Auth\JwtGenerator;
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
 use Application\Exceptions\OpgApiException;
 use Application\Helpers\AddressProcessorHelper;
@@ -80,6 +81,7 @@ class OpgApiService implements OpgApiServiceInterface
         try {
             $response = $this->makeApiRequest('/identity/details?uuid=' . $uuid);
 
+            $response['personType'] = PersonType::from($response['personType']);
             $response['firstName'] = $response['claimedIdentity']['firstName'];
             $response['lastName'] = $response['claimedIdentity']['lastName'];
             $response['address'] = $response['claimedIdentity']['address'];
@@ -184,14 +186,14 @@ class OpgApiService implements OpgApiServiceInterface
         string $firstname,
         string $lastname,
         string|null $dob,
-        string $personType,
+        PersonType $personType,
         array $lpas,
         array $address,
     ): array {
 
-        if ($personType == 'voucher') {
+        if ($personType == PersonType::Voucher) {
             $data = [
-                'personType' => $personType,
+                'personType' => $personType->value,
                 'lpas' => $lpas,
                 'claimedIdentity' => [],
                 'vouchingFor' => [
@@ -207,7 +209,7 @@ class OpgApiService implements OpgApiServiceInterface
                     'dob' => $dob,
                     'address' => $address,
                 ],
-                'personType' => $personType,
+                'personType' => $personType->value,
                 'lpas' => $lpas,
             ];
         }
