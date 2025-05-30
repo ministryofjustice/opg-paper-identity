@@ -7,6 +7,7 @@ namespace ApplicationTest\ApplicationTest\Unit\Services;
 use Application\Aws\Secrets\AwsSecret;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Model\Entity\CaseData;
 use Application\Yoti\Http\Exception\YotiApiException;
 use Application\Yoti\Http\Exception\YotiException;
@@ -218,7 +219,7 @@ class YotiServiceTest extends TestCase
                     'line1' => '123 long street',
                 ]
             ],
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             "idMethod" => [
                 'docType' => DocumentType::Passport->value,
                 'idCountry' => "GBR",

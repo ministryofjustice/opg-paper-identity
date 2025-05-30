@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers\DTO;
 
+use Application\Enums\LpaStatusType;
 use Laminas\Form\FormInterface;
 
 class LpaFormHelperResponseDto
@@ -11,7 +12,7 @@ class LpaFormHelperResponseDto
     public function __construct(
         private string $uuid,
         private FormInterface $form,
-        private string $status,
+        private ?LpaStatusType $status,
         private array $messages,
         private array $data = [],
         private array $additionalData = [],
@@ -28,7 +29,7 @@ class LpaFormHelperResponseDto
         return $this->form;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?LpaStatusType
     {
         return $this->status;
     }

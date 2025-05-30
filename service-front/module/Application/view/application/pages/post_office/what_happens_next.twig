@@ -28,7 +28,7 @@
                     If you miss this date then you'll need to call us again to get a new letter.
                 </p>
 
-                {% if details_data.personType == 'donor' %}
+                {% if details_data.personType.value == 'donor' %}
                     <p class="govuk-body">
                         You must complete your ID check within 6 months of signing the LPA, or the LPA cannot be registered
                         and your payment will not be refunded.
@@ -37,7 +37,7 @@
                     <p class="govuk-body">
                         If you haven't already, please return your signed LPA.
                     </p>
-                {% elseif details_data.personType == 'certificateProvider' %}
+                {% elseif details_data.personType.value == 'certificateProvider' %}
                     <p class="govuk-body">
                         If you haven't already, please return your signed certificate.
                     </p>

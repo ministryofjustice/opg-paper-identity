@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Unit\Helpers;
 
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
 use Application\Model\Entity\CaseData;
@@ -98,7 +99,7 @@ class CaseOutcomeCalculatorTest extends TestCase
 
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'lpas' => ['M-9387-2843-3891'],
             'idMethod' => ['idRoute' => IdRoute::KBV->value],
             'identityCheckPassed' => true,
@@ -118,7 +119,7 @@ class CaseOutcomeCalculatorTest extends TestCase
             ->method('send')
             ->with("identity-check-updated", [
                 "reference" => "opg:2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc",
-                "actorType" => "donor",
+                "actorType" => PersonType::Donor->value,
                 "lpaUids" => ['M-9387-2843-3891'],
                 "time" => $expectedTimestamp,
                 "state" => 'SUCCESS',

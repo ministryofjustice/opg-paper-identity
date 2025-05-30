@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Unit\Helpers;
 
+use Application\Enums\LpaStatusType;
+use Application\Enums\PersonType;
 use Application\Forms\LpaReferenceNumber;
 use Application\Helpers\LpaFormHelper;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
+use OpenTelemetry\API\Instrumentation\Configuration\General\PeerConfig;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -102,31 +105,11 @@ class LpaFormHelperTest extends TestCase
         $slrRegistered['opg.poas.sirius']['uId'] = $registeredLpa;
         $slrRegistered['opg.poas.lpastore']['status'] = 'registered';
 
-        $mockResponseData = [
-            "data" => [
-                "case_uuid" => $caseUuid,
-                "lpa_number" => $goodLpa,
-                "type_of_lpa" => "property-and-affairs",
-                "donor" => "Kitty Jenkins",
-                "lpa_status" => "processing",
-                "cp_name" => "David Smith",
-                "cp_address" => [
-                    'line1' => '82 Penny Street',
-                    'line2' => 'Lancaster',
-                    'line3' => 'Lancashire',
-                    'postcode' => 'LA1 1XN',
-                    'country' => 'United Kingdom',
-                ]
-            ],
-            "message" => "",
-            "status" => "success",
-        ];
-
         $form = (new AttributeBuilder())->createForm(LpaReferenceNumber::class);
-        $params = new Parameters(['lpa' => $mockResponseData['data']['lpa_number']]);
+        $params = new Parameters(['lpa' => $goodLpa]);
 
         return [
-            [
+            'happy path' => [
                 $caseUuid,
                 [
                     "data" => [
@@ -134,7 +117,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $goodLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "In-progress",
+                        "lpa_status" => LpaStatusType::InProgress,
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -152,7 +135,7 @@ class LpaFormHelperTest extends TestCase
                 $slr,
                 $olr,
             ],
-            [
+            'duplicate LPA' => [
                 $caseUuid,
                 [
                     "message" => ['duplicate_check' => "This LPA has already been added to this identity check."],
@@ -163,56 +146,56 @@ class LpaFormHelperTest extends TestCase
                 $slr,
                 $olr,
             ],
-            [
+            'not found LPA' => [
                 $notFoundLpa,
                 [
                     "message" => ["No LPA found."],
-                    "status" => 'Not Found',
+                    "status" => null,
                 ],
                 new Parameters(['lpa' => $notFoundLpa]),
                 $form,
                 $slrNotFound,
                 $olr,
             ],
-            [
+            'cancelled status cannot be added' => [
                 $caseUuid,
                 [
                     "message" => ["status_check" => "These LPAs cannot be added as they do not have " .
                         "the correct status for an ID check. LPAs need to be in the <b>In progress</b> status " .
                         "to be added to this identity check."
                     ],
-                    "status" => "cancelled",
+                    "status" => LpaStatusType::Cancelled,
                 ],
                 new Parameters(['lpa' => $cancelledLpa]),
                 $form,
                 $slrComplete,
                 $olr,
             ],
-            [
+            'draft status cannot be added (lpastore record exists)' => [
                 $caseUuid,
                 [
                     "message" => ["status_check" => "This LPA cannot be added as it’s status is set to <b>Draft</b>.
                     LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
-                    "status" => "draft",
+                    "status" => LpaStatusType::Draft,
                 ],
                 new Parameters(['lpa' => $draftLpa]),
                 $form,
                 $slrDraft,
                 $olr,
             ],
-            [
+            'draft status cannot be added (lpastore record does not exists)' => [
                 $caseUuid,
                 [
                     "message" => ["This LPA cannot be added as it’s status is set to <b>Draft</b>.
                     LPAs need to be in the <b>In progress</b> status to be added to this ID check."],
-                    "status" => "draft",
+                    "status" => LpaStatusType::Draft,
                 ],
                 new Parameters(['lpa' => $draftLpa]),
                 $form,
                 $slrEmptyDraft,
                 $olr,
             ],
-            [
+            'certificate provider has already signed online' => [
                 $caseUuid,
                 [
                     "message" => ["channel_check" => "This LPA cannot be added to this identity check because
@@ -223,7 +206,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $onlineLpa,
                         "type_of_lpa" => "property-and-affairs",
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => "In-progress",
+                        "lpa_status" => LpaStatusType::InProgress,
                         "cp_name" => "David Smith",
                         "cp_address" => [
                             'line1' => '82 Penny Street',
@@ -239,13 +222,13 @@ class LpaFormHelperTest extends TestCase
                 $slrOnline,
                 $olr,
             ],
-            [
+            'certificate provider details do not match' => [
                 $caseUuid,
                 [
                     "message" => ["id_check" => "This LPA cannot be added to this ID check because the" .
                         " certificate provider details on this LPA do not match. " .
                         "Edit the certificate provider record in Sirius if appropriate and find again."],
-                    "status" => "no match",
+                    "status" => null,
                     "additional_data" => [
                         'name' => "Daniel Smith",
                         'address' => [
@@ -264,7 +247,7 @@ class LpaFormHelperTest extends TestCase
                         "lpa_number" => $noMatchLpa,
                         "type_of_lpa" => 'property-and-affairs',
                         "donor" => "Kitty Jenkins",
-                        "lpa_status" => 'In-progress',
+                        "lpa_status" => LpaStatusType::InProgress,
                         "cp_name" => "Daniel Smith",
                         "cp_address" => [
                             'line1' => '81 Penny Street',
@@ -280,13 +263,13 @@ class LpaFormHelperTest extends TestCase
                 $slrNoMatch,
                 $olr,
             ],
-            [
+            'id-check already completed' => [
                 $caseUuid,
                 [
                     "message" => ["status_check" => "This LPA cannot be added as an identity " .
                         "check has already been completed for this LPA"
                     ],
-                    "status" => "registered",
+                    "status" => LpaStatusType::Registered,
                 ],
                 new Parameters(['lpa' => $registeredLpa]),
                 $form,
@@ -297,7 +280,7 @@ class LpaFormHelperTest extends TestCase
                 $caseUuid,
                 [
                     "message" => ["No LPA found."],
-                    "status" => 'Not Found',
+                    "status" => null,
                 ],
                 new Parameters(['lpa' => 'M-AAAA-BBBB-CCCC']),
                 $form,
@@ -444,7 +427,7 @@ class LpaFormHelperTest extends TestCase
     {
         return [
             "id" => "b4d3a25f-d867-4d26-9213-f67ad3b68caf",
-            "personType" => "cp",
+            "personType" => PersonType::CertificateProvider,
             "firstName" => "David",
             "lastName" => "Smith",
             "dob" => "1999-01-01",
@@ -468,7 +451,7 @@ class LpaFormHelperTest extends TestCase
     }
 
     #[DataProvider('lpaIndexCheckData')]
-    public function testIndexLpaMatchCheck(array $lpas, string $personType, bool $pass): void
+    public function testIndexLpaMatchCheck(array $lpas, PersonType $personType, bool $pass): void
     {
         $lpaFormHelper = new LpaFormHelper();
 
@@ -488,33 +471,33 @@ class LpaFormHelperTest extends TestCase
         return [
             [
                 [$slr],
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 true,
             ],
             [
                 [$slr],
-                'donor',
+                PersonType::Donor,
                 true,
             ],
             [
                 [$slr, $slr],
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 true,
             ],
             [
                 [$slr, $slr],
-                'donor',
+                PersonType::Donor,
                 true,
             ],
 
             [
                 [$slr, $slrMismatchedDonor],
-                'donor',
+                PersonType::Donor,
                 false,
             ],
             [
                 [$slr, $slrMismatchedCp],
-                'certificateProvider',
+                PersonType::CertificateProvider,
                 false,
             ]
         ];

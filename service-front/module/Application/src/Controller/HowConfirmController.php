@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Forms\IdMethod;
 use Application\Forms\PassportDate;
 use Application\Helpers\FormProcessorHelper;
@@ -71,12 +72,12 @@ class HowConfirmController extends AbstractActionController
         FormInterface $idMethodForm,
         array $formData,
         string $uuid,
-        string $personType
+        PersonType $personType
     ): Response|null {
         $routes = [
-            'donor' => 'root/donor_details_match_check',
-            'certificateProvider' => 'root/cp_name_match_check',
-            'voucher' => 'root/voucher_name',
+            PersonType::Donor->value => 'root/donor_details_match_check',
+            PersonType::CertificateProvider->value => 'root/cp_name_match_check',
+            PersonType::Voucher->value => 'root/voucher_name',
         ];
 
         if (! $idMethodForm->isValid()) {
@@ -98,7 +99,7 @@ class HowConfirmController extends AbstractActionController
                 'idCountry' => Country::GBR->value,
                 'docType' => $formData['id_method']
             ];
-            $returnRoute = $routes[$personType];
+            $returnRoute = $routes[$personType->value];
         }
         $this->opgApiService->updateIdMethod($uuid, $idMethod);
         return $this->redirect()->toRoute($returnRoute, ['uuid' => $uuid]);
