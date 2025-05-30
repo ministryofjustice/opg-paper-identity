@@ -8,6 +8,7 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\PostOfficeFlowController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Enums\SiriusDocument;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SendSiriusNoteHelper;
@@ -71,7 +72,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             "id" => "2d86bb9d-d9ce-47a6-8447-4c160acaee6e",
-            "personType" => "donor",
+            "personType" => PersonType::Donor,
             "firstName" => "Mary Anne",
             "lastName" => "Chapman",
             "dob" => "1943-05-01",
@@ -140,7 +141,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     #[DataProvider('postOfficeDocumnentsRedirectData')]
     public function testPostOfficeDocumentsRedirect(
         string $selectedOption,
-        string $personType,
+        PersonType $personType,
         string $expectedRedirect
     ): void {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
@@ -162,11 +163,11 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public static function postOfficeDocumnentsRedirectData(): array
     {
         return [
-            [DocumentType::Passport->value, 'donor', 'donor-details-match-check'],
-            [DocumentType::Passport->value, 'certificateProvider', 'cp/name-match-check'],
-            [DocumentType::Passport->value, 'voucher', 'vouching/voucher-name'],
-            ['NONUKID', 'certificateProvider', 'po-choose-country'],
-            ['NONUKID', 'voucher', 'po-choose-country'],
+            [DocumentType::Passport->value, PersonType::Donor, 'donor-details-match-check'],
+            [DocumentType::Passport->value, PersonType::CertificateProvider, 'cp/name-match-check'],
+            [DocumentType::Passport->value, PersonType::Voucher, 'vouching/voucher-name'],
+            ['NONUKID', PersonType::CertificateProvider, 'po-choose-country'],
+            ['NONUKID', PersonType::Voucher, 'po-choose-country'],
         ];
     }
 
@@ -320,7 +321,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     }
 
     #[DataProvider('postOfficeCountriesIdRedirectData')]
-    public function testPostOfficeCountriesIdPostPage(string $personType, string $expectedRedirect): void
+    public function testPostOfficeCountriesIdPostPage(PersonType $personType, string $expectedRedirect): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
         $mockResponseDataIdDetails['personType'] = $personType;
@@ -346,9 +347,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public static function postOfficeCountriesIdRedirectData(): array
     {
         return [
-            ['donor', 'donor-details-match-check'],
-            ['certificateProvider', 'cp/name-match-check'],
-            ['voucher', 'vouching/voucher-name'],
+            [PersonType::Donor, 'donor-details-match-check'],
+            [PersonType::CertificateProvider, 'cp/name-match-check'],
+            [PersonType::Voucher, 'vouching/voucher-name'],
         ];
     }
 
@@ -563,7 +564,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     }
 
     #[DataProvider('confirmPostOfficeData')]
-    public function testfindPostOfficeBranchConfirm(string $personType, SiriusDocument $docType): void
+    public function testfindPostOfficeBranchConfirm(PersonType $personType, SiriusDocument $docType): void
     {
         $mockResponseDataIdDetails = $this->returnOpgDetailsData();
         $mockResponseDataIdDetails['personType'] = $personType;
@@ -605,8 +606,8 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
     public static function confirmPostOfficeData(): array
     {
         return [
-            ['donor', SiriusDocument::PostOfficeDocCheckDonor],
-            ['voucher', SiriusDocument::PostOfficeDocCheckVoucher],
+            [PersonType::Donor, SiriusDocument::PostOfficeDocCheckDonor],
+            [PersonType::Voucher, SiriusDocument::PostOfficeDocCheckVoucher],
         ];
     }
 }

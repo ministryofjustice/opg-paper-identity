@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\PersonType;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Request;
 use Psr\Log\LoggerInterface;
@@ -43,12 +44,6 @@ class SendSiriusNoteHelper
 
     public function sendBlockedRoutesNote(array $detailsData, Request $request): void
     {
-        $personTypeLkup = [
-            'certificateProvider' => 'certificate provider',
-            'voucher' => 'person vouching',
-            'donor' => null,
-        ];
-
         $personType = $detailsData['personType'];
         $name = $detailsData['firstName'] . " " . $detailsData['lastName'];
         $docCheck = $detailsData['caseProgress']['docCheck']['state'] ?? null;
@@ -66,15 +61,15 @@ class SendSiriusNoteHelper
             "They cannot use the vouching route to ID.";
 
         $nonDonorMessage =
-            "The $personTypeLkup[$personType] ($name) has failed to ID over the phone. " .
+            "The {$personType->translate()} ($name) has failed to ID over the phone. " .
             "This person can only use the Post Office to ID";
 
         $description = null;
 
         if ($docCheck === false) {
-            $description = $personType === 'donor' ? $donorNoVouchingMessage : $nonDonorMessage;
+            $description = $personType === PersonType::Donor ? $donorNoVouchingMessage : $nonDonorMessage;
         } elseif ($docCheck === true && $kbvs !== true) {
-            if ($personType === 'donor') {
+            if ($personType === PersonType::Donor) {
                 if (in_array($fraud, ['ACCEPT', 'CONTINUE', 'NODECISION'])) {
                     $description = $donorWithVouchingMessage;
                 } else {

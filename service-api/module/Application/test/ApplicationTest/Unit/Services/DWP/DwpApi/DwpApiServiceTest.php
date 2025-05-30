@@ -12,6 +12,7 @@ use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Model\Entity\CaseData;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -32,7 +33,7 @@ class DwpApiServiceTest extends TestCase
     private array $headerOptions = [];
     private const CASE = [
         "id" => "b3ed53a7-9df8-4eb5-9726-abd763e6d595",
-        "personType" => "donor",
+        "personType" => PersonType::Donor->value,
         "lpas" => [
             "M-XYXY-YAGA-35G3"
         ],

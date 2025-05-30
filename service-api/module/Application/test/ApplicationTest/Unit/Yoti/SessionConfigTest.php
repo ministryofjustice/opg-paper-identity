@@ -8,6 +8,7 @@ use Application\Model\Entity\CaseData;
 use Application\Model\Entity\IdMethod;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Yoti\SessionConfig;
 use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
@@ -25,7 +26,7 @@ class SessionConfigTest extends TestCase
 
         $this->caseMock = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'claimedIdentity' => [
                 'firstName' => 'Maria',
                 'lastName' => 'Williams',

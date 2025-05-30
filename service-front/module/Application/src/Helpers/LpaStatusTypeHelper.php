@@ -4,59 +4,43 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\LpaStatusType;
+use Application\Enums\PersonType;
 use Application\Exceptions\LpaTypeException;
 
 class LpaStatusTypeHelper
 {
-    private array $lpaStatusTypes = [
-        'draft' => 'Draft',
-        'in-progress' => 'In progress',
-        'statutory-waiting-period' => 'Statutory waiting period',
-        'registered' => 'Registered',
-        'suspended' => 'Suspended',
-        'do-not-register' => 'Do not register',
-        'expired' => 'Expired',
-        'cannot-register' => 'Cannot register',
-        'cancelled' => 'Cancelled',
-        'de-registered' => 'De-registered',
-    ];
-
     private array $lpaPermissions = [
-        'donor' => [
-            'draft',
-            'in-progress',
-            'statutory-waiting-period',
-            'do-not-register'
+        PersonType::Donor->value => [
+            LpaStatusType::Draft,
+            LpaStatusType::InProgress,
+            LpaStatusType::StatutoryWaitingPeriod,
+            LpaStatusType::DoNotRegister
         ],
-        'certificateProvider' => [
-            'in-progress',
-            'statutory-waiting-period',
-            'do-not-register'
+        PersonType::CertificateProvider->value => [
+            LpaStatusType::InProgress,
+            LpaStatusType::StatutoryWaitingPeriod,
+            LpaStatusType::DoNotRegister
         ],
-        'voucher' => [
-            'in-progress',
-            'statutory-waiting-period',
-            'do-not-register'
+        PersonType::Voucher->value => [
+            LpaStatusType::InProgress,
+            LpaStatusType::StatutoryWaitingPeriod,
+            LpaStatusType::DoNotRegister
         ]
     ];
 
-    private array $personTypes = [
-        'donor' => 'Donor',
-        'certificateProvider' => 'Certificate Provider',
-        'voucher' => 'Voucher'
-    ];
-
     private bool $startable;
-
-    private string $status;
+    private LpaStatusType $status;
 
     public function __construct(
         private array $lpa,
-        private string $personType = 'donor'
+        private PersonType $personType = PersonType::Donor
     ) {
-        if (isset($lpa['opg.poas.lpastore'][$this->personType]['identityCheck'])) {
+        $personTypeValue = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
+
+        if (isset($lpa['opg.poas.lpastore'][$personTypeValue]['identityCheck'])) {
             $this->startable = false;
-            $this->status = 'registered';
+            $this->status = LpaStatusType::Registered;
         } else {
             $this->setStatus();
             $this->setCanStart();
@@ -69,32 +53,29 @@ class LpaStatusTypeHelper
             ! array_key_exists('opg.poas.lpastore', $this->lpa) ||
             empty($this->lpa['opg.poas.lpastore'])
         ) {
-            $this->status = 'draft';
+            $this->status = LpaStatusType::Draft;
         } else {
-            $this->status = $this->lpa['opg.poas.lpastore']['status'];
-            if (! array_key_exists($this->status, $this->lpaStatusTypes)) {
-                throw new LpaTypeException($this->status . " is not a valid LPA status.");
+            try {
+                $this->status = LpaStatusType::from($this->lpa['opg.poas.lpastore']['status']);
+            } catch (\ValueError) {
+                throw new LpaTypeException($this->lpa['opg.poas.lpastore']['status'] . " is not a valid LPA status.");
             }
         }
     }
 
     private function setCanStart(): void
     {
-        if (! array_key_exists($this->personType, $this->personTypes)) {
-            throw new LpaTypeException('Person type "' . $this->personType . '" is not valid');
-        }
-
         try {
-            $this->startable = in_array($this->status, $this->lpaPermissions[$this->personType]);
+            $this->startable = in_array($this->status, $this->lpaPermissions[$this->personType->value]);
         } catch (LpaTypeException $exception) {
             $this->startable = false;
         }
     }
 
     /**
-     * @return string
+     * @return LpaStatusType
      */
-    public function getStatus(): string
+    public function getStatus(): LpaStatusType
     {
         return $this->status;
     }
