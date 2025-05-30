@@ -7,6 +7,7 @@ namespace ApplicationTest\Feature\Controller;
 use Application\Controller\YotiController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Model\Entity\CaseData;
@@ -84,7 +85,7 @@ class YotiControllerTest extends TestCase
     {
         $caseData = CaseData::fromArray([
             'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             'claimedIdentity' => [
                 'firstName' => '',
                 'lastName' => '',
@@ -165,7 +166,7 @@ class YotiControllerTest extends TestCase
                     'line1' => '123 upper road'
                 ],
             ],
-            'personType' => 'donor',
+            'personType' => PersonType::Donor->value,
             "idMethod" => [
                 'docType' => DocumentType::Passport->value,
                 'idCountry' => "GBR",
@@ -233,7 +234,7 @@ class YotiControllerTest extends TestCase
             ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                'personType' => 'donor',
+                'personType' => PersonType::Donor->value,
                 'claimedIdentity' => [
                     'firstName' => '',
                     'lastName' => '',
@@ -281,7 +282,7 @@ class YotiControllerTest extends TestCase
             ->with('18f8ecad-066f-4540-9c11-8fbd103ce935')
             ->willReturn(CaseData::fromArray([
                 'id' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc',
-                'personType' => 'donor',
+                'personType' => PersonType::Donor->value,
                 'claimedIdentity' => [
                     'firstName' => '',
                     'lastName' => '',

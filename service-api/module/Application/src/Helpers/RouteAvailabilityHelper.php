@@ -6,6 +6,7 @@ namespace Application\Helpers;
 
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
+use Application\Enums\PersonType;
 use Application\Model\Entity\CaseData;
 
 class RouteAvailabilityHelper
@@ -70,15 +71,14 @@ class RouteAvailabilityHelper
 
         if (
             $configMessage === self::LOCKED_EXPERIAN &&
-            $case->personType === 'donor' &&
+            $case->personType === PersonType::Donor &&
             in_array($case->caseProgress->fraudScore->decision ?? '', ['STOP', 'REFER'])
         ) {
             $bannerText = $this->config['opg_settings']['banner_messages']['DONOR_VOUCH_UNAVAILABLE'];
         } else {
-            $labels = $this->config['opg_settings']['person_type_labels'];
             $bannerText = str_replace(
                 "%s",
-                $labels[$case->personType],
+                $case->personType->translate(),
                 $this->config['opg_settings']['banner_messages'][$configMessage]
             );
         }
@@ -98,10 +98,10 @@ class RouteAvailabilityHelper
 
         // vouching is only available for donors and only if they have not yet had a fraud-check, or passed one
         $this->availableRoutes[IdRoute::VOUCHING->value] = (
-            $case->personType === 'donor' &&
+            $case->personType === PersonType::Donor &&
             (is_null($fraudDecision) || in_array($fraudDecision, ['ACCEPT', 'CONTINUE', 'NODECISION']))
         );
-        $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = ($case->personType === 'donor');
+        $this->availableRoutes[IdRoute::COURT_OF_PROTECTION->value] = ($case->personType === PersonType::Donor);
 
         if ($kbvsResult === true) {
             array_unshift($this->messages, $this->parseBannerText($case, self::LOCKED_COMPLETE));

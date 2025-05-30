@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Helpers;
 
+use Application\Enums\LpaStatusType;
+use Application\Enums\PersonType;
 use Application\Helpers\LpaStatusTypeHelper;
 use Application\Helpers\DTO\LpaFormHelperResponseDto;
 use Laminas\Form\FormInterface;
@@ -38,7 +40,7 @@ class LpaFormHelper
         array $detailsData,
     ): LpaFormHelperResponseDto {
         $result = [
-            'status' => '',
+            'status' => null,
             'messages' => []
         ];
 
@@ -49,7 +51,7 @@ class LpaFormHelper
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,
-                    'Not Found',
+                    null,
                     [self::NOT_FOUND_MESSAGE]
                 );
             }
@@ -64,18 +66,18 @@ class LpaFormHelper
                     "lpa_number" => $formData['lpa'],
                     "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                     "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                    "lpa_status" => 'draft',
+                    "lpa_status" => LpaStatusType::Draft,
                 ];
                 return new LpaFormHelperResponseDto(
                     $uuid,
                     $form,
-                    'draft',
+                    LpaStatusType::Draft,
                     [self::DRAFT_MESSAGE],
                     $data
                 );
             }
 
-            $statusCheck = $this->checkStatus($siriusCheck);
+            $statusCheck = $this->checkStatus($siriusCheck, $detailsData['personType']);
             if ($statusCheck['error'] === true) {
                 $result['status'] = $statusCheck['status'];
                 $result['messages']['status_check'] = $statusCheck['message'];
@@ -85,7 +87,7 @@ class LpaFormHelper
             $channelCheck = $this->checkChannel($siriusCheck);
 
             if ($idCheck['error'] === true) {
-                $result['status'] = 'no match';
+                $result['status'] = null;
                 $result['messages']['id_check'] = $idCheck['message'];
                 $result['additional_data']['id_check'] = [
                     'name' => $idCheck['name'],
@@ -105,7 +107,7 @@ class LpaFormHelper
                 "lpa_number" => $formData['lpa'],
                 "type_of_lpa" => $this->getLpaTypeFromSiriusResponse($siriusCheck),
                 "donor" => $this->getDonorNameFromSiriusResponse($siriusCheck),
-                "lpa_status" => ucfirst($statusCheck['status']),
+                "lpa_status" => $statusCheck['status'],
                 "cp_name" => $idCheck['name'],
                 "cp_address" => $idCheck['address']
             ];
@@ -114,9 +116,6 @@ class LpaFormHelper
         return new LpaFormHelperResponseDto(
             $uuid,
             $form,
-            /**
-             * @psalm-suppress PossiblyUndefinedArrayOffset
-             */
             $result['status'],
             $result['messages'],
             array_key_exists('data', $result) ? $result['data'] : [],
@@ -180,29 +179,29 @@ class LpaFormHelper
         return $response;
     }
 
-    private function checkStatus(array $siriusCheck): array
+    private function checkStatus(array $siriusCheck, PersonType $personType): array
     {
         $response = [
             'error' => false,
             'message' => ""
         ];
 
-        $statusCheck = new LpaStatusTypeHelper($siriusCheck, 'certificateProvider');
+        $statusCheck = new LpaStatusTypeHelper($siriusCheck, $personType);
 
         $response['status'] = $statusCheck->getStatus();
 
-        if ($response['status'] === 'in-progress') {
+        if ($response['status'] === LpaStatusType::InProgress) {
             return $response;
         }
 
-        if ($response['status'] == 'draft') {
+        if ($response['status'] == LpaStatusType::Draft) {
             $response['error'] = true;
             $response['message'] = self::DRAFT_MESSAGE;
 
             return $response;
         }
 
-        if ($response['status'] == 'registered') {
+        if ($response['status'] == LpaStatusType::Registered) {
             $response['error'] = true;
             $response['message'] = self::REGISTERED_MESSAGE;
 
@@ -218,7 +217,7 @@ class LpaFormHelper
 
         $response['error'] = true;
         $response['message'] = self::NOT_FOUND_MESSAGE;
-        $response['status'] = "";
+        $response['status'] = null;
 
         return $response;
     }
@@ -254,23 +253,25 @@ class LpaFormHelper
         return true;
     }
 
-    public function lpaIdentitiesMatch(array $lpas, string $type): bool
+    public function lpaIdentitiesMatch(array $lpas, PersonType $personType): bool
     {
         if (count($lpas) == 1) {
             return true;
         }
 
-        $name = $lpas[0]['opg.poas.lpastore'][$type]['firstNames'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+        $personTypeKey = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
 
-        $address = $lpas[0]['opg.poas.lpastore'][$type]['address']['line1'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+        $name = $lpas[0]['opg.poas.lpastore'][$personTypeKey]['firstNames'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personTypeKey]['lastName'];
+
+        $address = $lpas[0]['opg.poas.lpastore'][$personTypeKey]['address']['line1'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personTypeKey]['address']['postcode'];
         foreach ($lpas as $lpa) {
-            $nextname = $lpa['opg.poas.lpastore'][$type]['firstNames'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$type]['lastName'];
+            $nextname = $lpa['opg.poas.lpastore'][$personTypeKey]['firstNames'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personTypeKey]['lastName'];
 
-            $nextAddress = $lpa['opg.poas.lpastore'][$type]['address']['line1'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$type]['address']['postcode'];
+            $nextAddress = $lpa['opg.poas.lpastore'][$personTypeKey]['address']['line1'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personTypeKey]['address']['postcode'];
             if ($name !== $nextname || $address !== $nextAddress) {
                 return false;
             }

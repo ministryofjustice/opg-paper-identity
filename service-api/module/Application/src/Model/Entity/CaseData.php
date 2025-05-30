@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Model\Entity;
 
+use Application\Enums\PersonType;
 use Application\Exceptions\NotImplementedException;
 use Application\Exceptions\PropertyMatchException;
+use Application\Validators\Enum;
 use Application\Validators\IsType;
 use Application\Validators\LpaUidValidator;
 use Exception;
@@ -29,10 +31,10 @@ class CaseData implements JsonSerializable
     public string $id;
 
     /**
-     * @var "donor"|"certificateProvider"|"voucher"
+     * @var PersonType
      */
-    #[Validator(NotEmpty::class)]
-    public string $personType;
+    #[Annotation\Validator(NotEmpty::class)]
+    public PersonType $personType;
 
     /**
      * @var ?ClaimedIdentity
@@ -110,6 +112,8 @@ class CaseData implements JsonSerializable
                 $instance->identityIQ = IdentityIQ::fromArray($value);
             } elseif ($key === 'ttl') {
                 // avoid throwing error if a ttl has been set on the record
+            } elseif ($key === 'personType') {
+                $instance->personType = PersonType::from($value);
             } elseif (property_exists($instance, $key)) {
                 $instance->{$key} = $value;
             } else {
@@ -123,7 +127,7 @@ class CaseData implements JsonSerializable
     /**
      * @return array{
      *     id: string,
-     *     personType: "donor"|"certificateProvider"|"voucher",
+     *     personType: string,
      *     vouchingFor?: VouchingFor,
      *     lpas: string[],
      *     documentComplete: bool,
@@ -140,7 +144,7 @@ class CaseData implements JsonSerializable
     {
         $arr = [
             'id' => $this->id,
-            'personType' => $this->personType,
+            'personType' => $this->personType->value,
             'lpas' => $this->lpas,
             'documentComplete' => $this->documentComplete,
             'identityCheckPassed' => $this->identityCheckPassed,
