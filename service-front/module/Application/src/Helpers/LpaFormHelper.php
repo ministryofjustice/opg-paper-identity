@@ -259,7 +259,7 @@ class LpaFormHelper
             return true;
         }
 
-        $personTypeValue = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
+        $personTypeKey = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
 
         $name = $lpas[0]['opg.poas.lpastore'][$personTypeValue]['firstNames'] . " " .
             $lpas[0]['opg.poas.lpastore'][$personTypeValue]['lastName'];
