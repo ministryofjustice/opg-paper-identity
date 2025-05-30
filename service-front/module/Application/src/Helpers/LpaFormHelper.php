@@ -259,19 +259,19 @@ class LpaFormHelper
             return true;
         }
 
-        $personTypeValue = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
+        $personTypeKey = $personType === PersonType::CertificateProvider ? 'certificateProvider' : 'donor';
 
-        $name = $lpas[0]['opg.poas.lpastore'][$personTypeValue]['firstNames'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$personTypeValue]['lastName'];
+        $name = $lpas[0]['opg.poas.lpastore'][$personTypeKey]['firstNames'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personTypeKey]['lastName'];
 
-        $address = $lpas[0]['opg.poas.lpastore'][$personTypeValue]['address']['line1'] . " " .
-            $lpas[0]['opg.poas.lpastore'][$personTypeValue]['address']['postcode'];
+        $address = $lpas[0]['opg.poas.lpastore'][$personTypeKey]['address']['line1'] . " " .
+            $lpas[0]['opg.poas.lpastore'][$personTypeKey]['address']['postcode'];
         foreach ($lpas as $lpa) {
-            $nextname = $lpa['opg.poas.lpastore'][$personTypeValue]['firstNames'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$personTypeValue]['lastName'];
+            $nextname = $lpa['opg.poas.lpastore'][$personTypeKey]['firstNames'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personTypeKey]['lastName'];
 
-            $nextAddress = $lpa['opg.poas.lpastore'][$personTypeValue]['address']['line1'] . " " .
-                $lpas[0]['opg.poas.lpastore'][$personTypeValue]['address']['postcode'];
+            $nextAddress = $lpa['opg.poas.lpastore'][$personTypeKey]['address']['line1'] . " " .
+                $lpas[0]['opg.poas.lpastore'][$personTypeKey]['address']['postcode'];
             if ($name !== $nextname || $address !== $nextAddress) {
                 return false;
             }
