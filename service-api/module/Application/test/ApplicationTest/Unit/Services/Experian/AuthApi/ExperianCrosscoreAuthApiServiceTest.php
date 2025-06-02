@@ -92,15 +92,8 @@ class ExperianCrosscoreAuthApiServiceTest extends TestCase
             "issued_at" => "1724856638",
             "expires_in" => "1800",
             "token_type" => "Bearer",
-            "access_token" => "eyJraWQiOiJJSmpTMXJQQjdJODBHWjgybmNsSlZPQkF3V3B3ZTVYblNKZUdSZHdpc
-                EY5IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJTWVNURU0uVUFUQVBJQHB1YmxpY2d1YXJ
-                kaWFuLmNvbSIsIkVtYWlsIjpudWxsLCJGaXJzdE5hbWUiOm51bGwsImlzcyI6IkVYUEVSSUFOIiwiTGFzdE5hb
-                WUiOm51bGwsImV4cCI6MTcyNDg1ODQzOCwiaWF0IjoxNzI0ODU2NjM4LCJqdGkiOiIzNGJlODg5Ny1kYmYyLT
-                QwOTctODZlMS02NTQ3ZDc1YzAwYmMifQ.oqA5HWPnyssBrfCLxQqJmFHEXpD_bRV6hX3hu5DzI4azqrGnFn_q
-                27j6nsd6Urh3DdpAaETCgB3Nn074yTAKX02qIfNROpEiof8oWRbXZp89JJcI7by4mSyiXzhhzO_lTDRFnYIumz
-                RlEgwyGdtq16-5GSw3m7dN0TUReXnSZdSNB1uuCkwVM9VwdPrJhAF8Uq6ECG9rft2WUXuguUA08s5bdFIAOJfOm
-                6uFu5oskaCg79IO3ASdkVlOpWm8-csNCWeXLyq0ShV3jjO7XfZATiVL7zCxZF-ec",
-            "refresh_token" => "6Vx6yOMXQwupKggjueitrwotnFA0o3"
+            "access_token" => "mock-access-token",
+            "refresh_token" => "mock-refresh-token"
         ];
 
         $successMock = new MockHandler([

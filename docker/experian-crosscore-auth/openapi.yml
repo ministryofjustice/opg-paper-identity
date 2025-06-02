@@ -49,16 +49,12 @@ paths:
               properties:
                 username:
                   type: string
-                  example: "SYSTEM.UATAPI@publicguardian.com"
                 password:
                   type: string
-                  example: "58ehgvb74uh8812uw89i329gijv9ekk"
                 client_id:
                   type: string
-                  example: "o0mdjhtybndu73jertoijsogfkidk3i"
                 client_secret:
                   type: string
-                  example: "1ffg85rb7du83wvre"
       responses:
         200:
           description: "HTTP Status 200"
