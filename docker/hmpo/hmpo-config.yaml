@@ -1,0 +1,54 @@
+plugin: openapi
+specFile: openapi.yml
+
+resources:
+  - path: "/health"
+    method: get
+    response:
+      statusCode: 200
+      file: data/healthyResponse.json
+
+  - path: "/auth/token"
+    method: post
+    requestBody:
+      jsonPath: $.clientId
+      value: client-id
+    response:
+      statusCode: 200
+      file: data/tokenResponse.json
+
+  - path: "/graphql"
+    method: post
+    requestBody:
+      jsonPath: $.variables.input.passportNumber
+      value: 123456785
+    response:
+      statusCode: 200
+      file: data/validNotCancelled.json
+
+  - path: "/graphql"
+    method: post
+    requestBody:
+      jsonPath: $.variables.input.passportNumber
+      value: 123456784
+    response:
+      statusCode: 200
+      file: data/validCancelled.json
+
+  - path: "/graphql"
+    method: post
+    requestBody:
+      jsonPath: $.variables.input.passportNumber
+      value: 123456783
+    response:
+      statusCode: 200
+      file: data/validLostStolen.json
+
+  - path: "/graphql"
+    method: post
+    requestBody:
+      jsonPath: $.variables.input.passportNumber
+      value: 123456789
+    response:
+      statusCode: 200
+      file: data/invalid.json

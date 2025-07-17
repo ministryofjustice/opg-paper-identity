@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  title: ValidatePassport API
+  version: '1.0.0'
+paths:
+  /health:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/X-API-Key'
+        - $ref: '#/components/parameters/X-REQUEST-ID'
+        - $ref: '#/components/parameters/X-DVAD-NETWORK-TYPE'
+        - $ref: '#/components/parameters/User-Agent'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: UP
+  /auth/token:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/X-API-Key'
+        - $ref: '#/components/parameters/X-REQUEST-ID'
+        - $ref: '#/components/parameters/X-DVAD-NETWORK-TYPE'
+        - $ref: '#/components/parameters/User-Agent'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  example: client-id
+                secret:
+                  type: string
+                  example: client-secret
+                grantType:
+                  type: string
+                  example: grant-type
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    # I can't see any format given in the docs
+                  expires_in:
+                    type: integer
+                  refresh_expires_in:
+                    type: integer
+                  refresh_token:
+                    type: string
+                    nullable: true
+                  token_type:
+                    type: string
+  /graphql:
+    post:
+      summary: GraphQL endpoint
+      parameters:
+        - $ref: '#/components/parameters/X-API-Key'
+        - $ref: '#/components/parameters/X-REQUEST-ID'
+        - $ref: '#/components/parameters/X-DVAD-NETWORK-TYPE'
+        - $ref: '#/components/parameters/User-Agent'
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  example: 'query validatePassport(input: $input) { validationResult passportCancelled passportLostStolen }'
+                variables:
+                  type: object
+                  properties:
+                    input:
+                      type: object
+                      properties:
+                        surname:
+                          type: string
+                          pattern: ^[A-Za-z.,'\-\s]{1,30}$
+                          example: FLINTSTONE
+                        forenames:
+                          type: string
+                          pattern: ^[A-Za-z.,'\-\s]{1,30}$
+                          example: WILMA
+                        passportNumber:
+                          type: integer
+                          minimum: 1
+                          maximum: 899999999
+                          example: 123456785
+                        dateOfBirth:
+                          type: string
+                          pattern: ^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$
+                          example: 1993-09-17
+      responses:
+        200:
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      validatePassport:
+                        type: object
+                        properties:
+                          validationResult:
+                            type: boolean
+                          passportCancelled:
+                            type: boolean
+                            nullable: true
+                          passportLostStolen:
+                            type: boolean
+                            nullable: true
+
+components:
+  securitySchemes:
+    BearerAuth:
+      description: Bearer token using a JWT
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    X-API-Key:
+      in: header
+      name: X-API-Key
+      description: API gateway key to uniquely identify the customer
+      schema:
+        type: string
+        pattern: ^([a-zA-Z0-9_-]){30,128}$
+      required: true
+    X-REQUEST-ID:
+      in: header
+      name: X-REQUEST-ID
+      description: A transaction reference key with value UUID V1
+      schema:
+        type: string
+        format: uuid
+      required: true
+    X-DVAD-NETWORK-TYPE:
+      in: header
+      name: X-DVAD-NETWORK-TYPE
+      schema:
+        type: string
+        enum:
+          - api
+          - PRIVATELINK
+      required: true
+    User-Agent:
+      in: header
+      name: User-Agent
+      description: used to filter and trace each API customer's requests
+      schema:
+        type: string
+        pattern: hmpo-opg-client
+      required: true
