@@ -1,0 +1,6 @@
+{
+  "access_token": "some-big-long-bearer-token",
+  "expires_in": 900,
+  "refresh_expires_in": 0,
+  "token_type": "Bearer"
+}
