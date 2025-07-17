@@ -33,6 +33,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - clientID
+                - secret
+                - grantType
               properties:
                 clientId:
                   type: string
@@ -78,15 +82,25 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - query
+                - variables
               properties:
                 query:
                   type: string
                   example: 'query validatePassport(input: $input) { validationResult passportCancelled passportLostStolen }'
                 variables:
                   type: object
+                  required:
+                    - input
                   properties:
                     input:
                       type: object
+                      required:
+                        - surname
+                        - forenames
+                        - passportNumber
+                        - dateOfBirth
                       properties:
                         surname:
                           type: string

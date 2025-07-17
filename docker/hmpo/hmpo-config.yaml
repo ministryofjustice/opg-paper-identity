@@ -1,6 +1,9 @@
 plugin: openapi
 specFile: openapi.yml
 
+validation:
+  request: true
+
 resources:
   - path: "/health"
     method: get
