@@ -153,22 +153,18 @@ class OpgApiService implements OpgApiServiceInterface
         return $this->responseData['status'];
     }
 
-    public function checkPassportValidity(string $passport): string
+    public function checkPassportValidity(string $uuid, string $passport): bool
     {
         $passport = strtoupper(preg_replace('/(\s+)|(-)/', '', $passport) ?? '');
 
-        try {
-            $this->makeApiRequest(
-                '/identity/validate_passport',
-                'POST',
-                ['passport' => $passport],
-                ['Content-Type' => self::TYPE_HEADER]
-            );
-        } catch (OpgApiException $opgApiException) {
-            return $opgApiException->getMessage();
-        }
+        $this->makeApiRequest(
+            sprintf('/identity/%s/validate_passport', $uuid),
+            'POST',
+            ['passportNumber' => $passport],
+            ['Content-Type' => self::TYPE_HEADER]
+        );
 
-        return $this->responseData['status'];
+        return $this->responseData['result'];
     }
 
     public function getIdCheckQuestions(string $uuid): array|false
