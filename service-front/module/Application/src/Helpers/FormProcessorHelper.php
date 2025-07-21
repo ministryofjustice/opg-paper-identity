@@ -85,7 +85,7 @@ class FormProcessorHelper
         if ($form->isValid()) {
             $formArray = $form->getData(FormInterface::VALUES_AS_ARRAY);
             $variables['passport_data'] = $formArray;
-            $variables['validity'] = $this->opgApiService->checkPassportValidity($formArray['passport']);
+            $variables['validity'] = $this->opgApiService->checkPassportValidity($uuid, $formArray['passport']);
         }
         return new FormProcessorResponseDto(
             $uuid,

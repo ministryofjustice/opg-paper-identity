@@ -33,6 +33,10 @@ use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\HMPO\AuthApi\AuthApiService as HmpoAuthApiService;
+use Application\HMPO\HmpoApi\HmpoApiService;
+use Application\HMPO\Factories\HmpoApiServiceFactory;
+use Application\HMPO\Factories\HmpoAuthApiServiceFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
 use Application\Nino\ValidatorFactory as NinoValidatorFactory;
@@ -159,7 +163,7 @@ return [
             'validate_passport' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/identity/validate_passport',
+                    'route' => '/identity/:uuid/validate_passport',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'validatePassport',
@@ -486,6 +490,8 @@ return [
             DwpAuthApiService::class => DwpAuthApiServiceFactory::class,
             DwpApiService::class => DwpApiServiceFactory::class,
             AuthListener::class => AuthListenerFactory::class,
+            HmpoAuthApiService::class => HmpoAuthApiServiceFactory::class,
+            HmpoApiService::class => HmpoApiServiceFactory::class,
         ],
     ],
     'listeners' => [
