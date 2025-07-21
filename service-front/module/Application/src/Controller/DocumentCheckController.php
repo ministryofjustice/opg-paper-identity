@@ -190,7 +190,7 @@ class DocumentCheckController extends AbstractActionController
 
                     $view->setVariables($formProcessorResponseDto->getVariables());
 
-                    if ($formProcessorResponseDto->getVariables()['validity'] === 'PASS') {
+                    if ($formProcessorResponseDto->getVariables()['validity'] === true) {
                         $fraudCheck = $this->opgApiService->requestFraudCheck($uuid);
                         $template = $this->formProcessorHelper->processTemplate($fraudCheck, $templates);
                         $this->opgApiService->updateCaseSetDocumentComplete($uuid, DocumentType::Passport->value);
