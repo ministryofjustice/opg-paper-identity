@@ -245,10 +245,6 @@ class CitizenRequestDTOTest extends TestCase
                         ]
                     ]
                 ],
-                new CitizenRequestDTO(
-                    CaseData::fromArray(static::CASE),
-                    static::NINO
-                ),
             ]
         ];
     }

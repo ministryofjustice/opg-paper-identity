@@ -177,7 +177,6 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
                     'decision' => 'CONTINUE',
                     'score' => 265
                 ],
-                false
             ],
             [
                 $noDecisionData,
@@ -185,7 +184,6 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
                     'decision' => 'NODECISION',
                     'score' => 265
                 ],
-                false
             ],
             [
                 $stopData,
@@ -193,7 +191,6 @@ class ExperianCrosscoreFraudResponseDTOTest extends TestCase
                     'decision' => 'STOP',
                     'score' => 780
                 ],
-                false
             ],
         ];
     }
