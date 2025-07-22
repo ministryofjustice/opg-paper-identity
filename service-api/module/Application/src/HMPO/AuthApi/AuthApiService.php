@@ -11,6 +11,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 use GuzzleHttp\Exception\ClientException;
+use Ramsey\Uuid\Uuid;
 
 class AuthApiService
 {
@@ -19,6 +20,7 @@ class AuthApiService
         private readonly ApcHelper $apcHelper,
         private readonly LoggerInterface $logger,
         private readonly RequestDTO $hmpoAuthRequestDTO,
+        private array $headerOptions,
     ) {
     }
 
@@ -28,10 +30,10 @@ class AuthApiService
     {
         return [
             'Content-Type' => 'application/json',
-            'X-API-Key' => 'X-API-Key-X-API-Key-X-API-Key-X-API-Key', # get this from an env
-            'X-REQUEST-ID' => '05ecc9c8-6259-11f0-8ce0-325096b39f47', # should we just generate and log for ourselves??
-            'X-DVAD-NETWORK-TYPE' => 'api', # are we hardcoding this since it wont change?
-            'User-Agent' => 'hmpo-opg-client', # should we get this from an env variable as well?
+            'X-API-Key' => $this->headerOptions['X-API-Key'],
+            'X-REQUEST-ID' => strval(Uuid::uuid1()),
+            'X-DVAD-NETWORK-TYPE' => 'api',
+            'User-Agent' => $this->headerOptions['User-Agent'],
         ];
     }
 
@@ -91,11 +93,14 @@ class AuthApiService
         RequestDTO $hmpoAuthRequestDTO
     ): ResponseDTO {
         try {
+            $headers = $this->makeHeaders();
+            // TODO: maybe only need to log this if there is an error...
+            $this->logger->info('making api request - endpoint: %s, requestId: %s', [self::HMPO_AUTH_ENDPOINT, $headers['X-REQUEST-ID']]);
             $response = $this->client->request(
                 'POST',
                 self::HMPO_AUTH_ENDPOINT,
                 [
-                    'headers' => $this->makeHeaders(),
+                    'headers' => $headers,
                     'json' => $hmpoAuthRequestDTO->toArray()
                 ],
             );
