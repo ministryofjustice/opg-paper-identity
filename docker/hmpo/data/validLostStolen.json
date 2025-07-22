@@ -1,0 +1,9 @@
+{
+  "data": {
+    "validatePassport": {
+      "validationResult": true,
+      "passportCancelled": true,
+      "passportLostStolen": false
+    }
+  }
+}
