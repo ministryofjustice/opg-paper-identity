@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace ApplicationTest\Unit\Helpers;
 
 use Application\Enums\LpaActorTypes;
-use Application\Enums\LpaStatusType;
 use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @psalm-import-type LpaStatus from AddDonorFormHelper
+ * @psalm-import-type LpaIdMatchCheck from AddDonorFormHelper
+ * @package ApplicationTest\Unit\Helpers
+ */
 class AddDonorFormHelperTest extends TestCase
 {
     private VoucherMatchLpaActorHelper&MockObject $matchHelperMock;
@@ -253,6 +257,10 @@ class AddDonorFormHelperTest extends TestCase
         ];
     }
 
+    /**
+     * @param list<LpaStatus>|null $checkLpaStatusReturns
+     * @param list<LpaIdMatchCheck>|null $checkLpaIdMatchReturns
+     */
     #[DataProvider('processLpasData')]
     public function testProcessLpas(
         array $lpasData,

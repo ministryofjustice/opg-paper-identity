@@ -181,35 +181,30 @@ class OpgApiServiceTest extends TestCase
                 $successClient,
                 $expectedReturnData,
                 null,
-                true,
             ],
             // Bad Request Case
             [
                 $failClient,
                 null,
                 OpgApiException::class,
-                false,
             ],
             // Not Found Case
             [
                 $notFoundClient,
                 null,
                 HttpException::class,
-                false,
             ],
             // Identity Check Passed Null Case
             [
                 $identityCheckNullClient,
                 $expectedReturnDataNullCheck,
                 null,
-                false,
             ],
             // Identity Check Passed
             [
                 $identityCheckClient,
                 $expectedReturnData,
                 null,
-                false,
             ],
         ];
     }
