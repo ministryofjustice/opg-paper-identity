@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 
 class HmpoApiService
 {
@@ -24,6 +25,7 @@ class HmpoApiService
         private Client $guzzleClient,
         private AuthApiService $authApiService,
         private LoggerInterface $logger,
+        private array $headerOptions,
     ) {
     }
 
@@ -38,10 +40,10 @@ class HmpoApiService
     {
         return [
             'Content-Type' => 'application/json',
-            'X-API-Key' => 'X-API-Key-X-API-Key-X-API-Key-X-API-Key', # get this from an env
-            'X-REQUEST-ID' => '05ecc9c8-6259-11f0-8ce0-325096b39f47', # should we just generate and log for ourselves??
-            'X-DVAD-NETWORK-TYPE' => 'api', # are we hardcoding this since it wont change?
-            'User-Agent' => 'hmpo-opg-client', # should we get this from an env variable as well?
+            'X-API-Key' => $this->headerOptions['X-API-Key'],
+            'X-REQUEST-ID' => strval(Uuid::uuid1()),
+            'X-DVAD-NETWORK-TYPE' => 'api',
+            'User-Agent' => $this->headerOptions['User-Agent'],
             'Authorization' => sprintf('Bearer %s', $this->authApiService->retrieveCachedTokenResponse())
         ];
     }
@@ -59,11 +61,14 @@ class HmpoApiService
     {
         $this->authCount++;
         try {
+            $headers = $this->makeHeaders();
+            // TODO: maybe only need to log this if there is an error...
+            $this->logger->info('making api request - endpoint: %s, requestId: %s', [self::HMPO_GRAPHQL_ENDPOINT, $headers['X-REQUEST-ID']]);
             $response = $this->guzzleClient->request(
                 'POST',
                 self::HMPO_GRAPHQL_ENDPOINT,
                 [
-                    'headers' => $this->makeHeaders(),
+                    'headers' => $headers,
                     'json' => $request->constructValidatePassportRequestBody(),
                 ]
             );
