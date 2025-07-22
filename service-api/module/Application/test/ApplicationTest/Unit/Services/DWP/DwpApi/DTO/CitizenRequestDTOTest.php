@@ -213,43 +213,28 @@ class CitizenRequestDTOTest extends TestCase
         ];
     }
 
-    #[DataProvider('requestBodyData')]
-    public function testConstructCitizenRequestBody(
-        array $expected
-    ): void {
-        $this->assertEquals(
-            $expected,
-            $this->citizenRequestDTO->constructCitizenRequestBody(),
-        );
-    }
-
-    public static function requestBodyData(): array
+    public function testConstructCitizenRequestBody(): void
     {
-        return [
+        $this->assertEquals(
             [
-                [
-                    "jsonapi" => [
-                        "version" => "1.0"
-                    ],
-                    "data" => [
-                        "type" => "Match",
-                        "attributes" => [
-                            "dateOfBirth" => "1986-09-03",
-                            "ninoFragment" => "2233",
-                            "firstName" => "Lee",
-                            "lastName" => "Manthrope",
-                            "postcode" => "SO15 3AA",
-                            "contactDetails" => [
-                                ""
-                            ]
+                "jsonapi" => [
+                    "version" => "1.0"
+                ],
+                "data" => [
+                    "type" => "Match",
+                    "attributes" => [
+                        "dateOfBirth" => "1986-09-03",
+                        "ninoFragment" => "2233",
+                        "firstName" => "Lee",
+                        "lastName" => "Manthrope",
+                        "postcode" => "SO15 3AA",
+                        "contactDetails" => [
+                            ""
                         ]
                     ]
-                ],
-                new CitizenRequestDTO(
-                    CaseData::fromArray(static::CASE),
-                    static::NINO
-                ),
-            ]
-        ];
+                ]
+            ],
+            $this->citizenRequestDTO->constructCitizenRequestBody(),
+        );
     }
 }
