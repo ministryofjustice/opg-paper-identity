@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\HMPO\Factories;
 
+use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
 use Application\HMPO\AuthApi\DTO\RequestDTO;
 use Application\HMPO\AuthApi\AuthApiException;
@@ -41,10 +42,9 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        // presumably we'd stick these in AWS?
-        $clientId = 'client-id';
-        $clientSecret = 'client-secret';
-        $grantType = 'grant-type';
+        $clientId = (new AwsSecret('hmpo/auth-client-id'))->getValue();
+        $clientSecret = (new AwsSecret('hmpo/auth-client-secret'))->getValue();
+        $grantType = (new AwsSecret('hmpo/grant-type'))->getValue();  // i'm not really sure what this is!!!
 
         $AuthRequestDTO = new RequestDTO(
             $grantType,
@@ -52,11 +52,20 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
             $clientSecret
         );
 
+        $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
+        $userAgent = (new AwsSecret('hmpo/user-agent'))->getValue();
+
+        $headerOptions = [
+            'X-API-Key' => $apiKey,
+            'User-Agent' => $userAgent,
+        ];
+
         return new AuthApiService(
             $guzzleClient,
             $apcHelper,
             $logger,
-            $AuthRequestDTO
+            $AuthRequestDTO,
+            $headerOptions,
         );
     }
 }
