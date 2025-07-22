@@ -252,7 +252,9 @@ class AddDonorFormHelperTest extends TestCase
             [false, false, true, $nameMatchCpLpaStore, $nameMatchCpResponse],
         ];
     }
-
+    /**
+     * @psalm-suppress NamedArgumentNotAllowed
+     */
     #[DataProvider('processLpasData')]
     public function testProcessLpas(
         array $lpasData,
