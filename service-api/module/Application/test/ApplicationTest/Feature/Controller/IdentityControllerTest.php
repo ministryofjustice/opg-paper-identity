@@ -463,13 +463,11 @@ class IdentityControllerTest extends TestCase
                 CaseData::fromArray($baseCase),
                 $idMethod,
                 IdMethod::fromArray($idMethod),
-                false
             ],
             [
                 CaseData::fromArray(array_merge($baseCase, ['idMethod' => $idMethod])),
                 $updateSingleValue,
                 IdMethod::fromArray(array_merge($idMethod, $updateSingleValue)),
-                false
             ],
         ];
     }
