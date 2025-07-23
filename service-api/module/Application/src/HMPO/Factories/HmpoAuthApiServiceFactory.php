@@ -6,9 +6,9 @@ namespace Application\HMPO\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\HMPO\AuthApi\DTO\RequestDTO;
-use Application\HMPO\AuthApi\AuthApiException;
-use Application\HMPO\AuthApi\AuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
+use Application\HMPO\AuthApi\DTO\HmpoRequestDTO;
+use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -26,7 +26,7 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): AuthApiService {
+    ): HmpoAuthApiService {
         $logger = $container->get(LoggerInterface::class);
         $baseUri = getenv("HMPO_BASE_URI");
 
@@ -42,29 +42,25 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        $clientId = (new AwsSecret('hmpo/auth-client-id'))->getValue();
-        $clientSecret = (new AwsSecret('hmpo/auth-client-secret'))->getValue();
-        $grantType = (new AwsSecret('hmpo/grant-type'))->getValue();  // i'm not really sure what this is!!!
+        $requestArray = [
+            'grant-type' => 'client_credentials',
+            'client-id' => (new AwsSecret('hmpo/auth-client-id'))->getValue(),
+            'client-secret' => (new AwsSecret('hmpo/auth-client-secret'))->getValue(),
+        ];
 
-        $AuthRequestDTO = new RequestDTO(
-            $grantType,
-            $clientId,
-            $clientSecret
-        );
+        $requestDTO = new HmpoRequestDTO($requestArray);
 
         $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
-        $userAgent = (new AwsSecret('hmpo/user-agent'))->getValue();
 
         $headerOptions = [
             'X-API-Key' => $apiKey,
-            'User-Agent' => $userAgent,
         ];
 
-        return new AuthApiService(
+        return new HmpoAuthApiService(
             $guzzleClient,
             $apcHelper,
             $logger,
-            $AuthRequestDTO,
+            $requestDTO,
             $headerOptions,
         );
     }

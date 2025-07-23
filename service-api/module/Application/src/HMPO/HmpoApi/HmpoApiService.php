@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Application\HMPO\HmpoApi;
 
-use Application\HMPO\AuthApi\AuthApiException;
-use Application\HMPO\AuthApi\AuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
 use Application\HMPO\HmpoApi\DTO\ValidatePassportRequestDTO;
 use Application\HMPO\HmpoApi\DTO\ValidatePassportResponseDTO;
 use Application\HMPO\HmpoApi\HmpoApiException;
 use Application\Model\Entity\CaseData;
+use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -23,7 +23,7 @@ class HmpoApiService
 
     public function __construct(
         private Client $guzzleClient,
-        private AuthApiService $authApiService,
+        private HmpoAuthApiService $authApiService,
         private LoggerInterface $logger,
         private array $headerOptions,
     ) {
@@ -43,7 +43,7 @@ class HmpoApiService
             'X-API-Key' => $this->headerOptions['X-API-Key'],
             'X-REQUEST-ID' => strval(Uuid::uuid1()),
             'X-DVAD-NETWORK-TYPE' => 'api',
-            'User-Agent' => $this->headerOptions['User-Agent'],
+            'User-Agent' => 'hmpo-opg-client',
             'Authorization' => sprintf('Bearer %s', $this->authApiService->retrieveCachedTokenResponse())
         ];
     }

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Application\HMPO\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\HMPO\AuthApi\AuthApiException;
-use Application\HMPO\AuthApi\AuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
 use Application\HMPO\HmpoApi\HmpoApiException;
 use Application\HMPO\HmpoApi\HmpoApiService;
 use GuzzleHttp\Client;
@@ -41,17 +40,13 @@ class HmpoApiServiceFactory implements FactoryInterface
 
         $logger = $container->get(LoggerInterface::class);
 
-        $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
-        $userAgent = (new AwsSecret('hmpo/user-agent'))->getValue();
-
         $headerOptions = [
-            'X-API-Key' => $apiKey,
-            'User-Agent' => $userAgent,
+            'X-API-Key' => (new AwsSecret('hmpo/api-key'))->getValue(),
         ];
 
         return new HmpoApiService(
             $guzzleClient,
-            $container->get(AuthApiService::class),
+            $container->get(HmpoAuthApiService::class),
             $logger,
             $headerOptions,
         );

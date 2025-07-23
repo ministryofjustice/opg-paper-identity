@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\HMPO\AuthApi;
+namespace Application\Services\Auth;
 
 class AuthApiException extends \Exception
 {

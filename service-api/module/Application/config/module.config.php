@@ -33,16 +33,12 @@ use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
-use Application\HMPO\AuthApi\AuthApiService as HmpoAuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
 use Application\HMPO\HmpoApi\HmpoApiService;
 use Application\HMPO\Factories\HmpoApiServiceFactory;
 use Application\HMPO\Factories\HmpoAuthApiServiceFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
-use Application\Nino\ValidatorFactory as NinoValidatorFactory;
-use Application\Nino\ValidatorInterface as NinoValidatorInterface;
-use Application\Passport\ValidatorFactory as PassportValidatorFactory;
-use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Sirius\EventSender;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
@@ -476,7 +472,6 @@ return [
             ),
             LoggerInterface::class => LoggerFactory::class,
             LicenceInterface::class => LicenceFactory::class,
-            PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,

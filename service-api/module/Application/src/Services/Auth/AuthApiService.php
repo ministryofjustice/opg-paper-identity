@@ -2,39 +2,37 @@
 
 declare(strict_types=1);
 
-namespace Application\HMPO\AuthApi;
+namespace Application\Services\Auth;
 
 use Application\Cache\ApcHelper;
-use Application\HMPO\AuthApi\DTO\RequestDTO;
-use Application\HMPO\AuthApi\DTO\ResponseDTO;
+use Application\Services\Auth\DTO\RequestDTO;
+use Application\Services\Auth\DTO\ResponseDTO;
+use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
-use GuzzleHttp\Exception\ClientException;
-use Ramsey\Uuid\Uuid;
 
-class AuthApiService
+abstract class AuthApiService
 {
+    public string $responseDtoClass;
+    public const AUTH_ENDPOINT = '';
+    public const CACHE_NAME = '';
+    abstract protected function makeHeaders(): array;
+
     public function __construct(
         private readonly Client $client,
         private readonly ApcHelper $apcHelper,
         private readonly LoggerInterface $logger,
-        private readonly RequestDTO $hmpoAuthRequestDTO,
-        private array $headerOptions,
+        private readonly RequestDTO $requestDTO,
+        public array $headerOptions,
     ) {
-    }
-
-    private const HMPO_AUTH_ENDPOINT = '/auth/token';
-
-    public function makeHeaders(): array
-    {
-        return [
-            'Content-Type' => 'application/json',
-            'X-API-Key' => $this->headerOptions['X-API-Key'],
-            'X-REQUEST-ID' => strval(Uuid::uuid1()),
-            'X-DVAD-NETWORK-TYPE' => 'api',
-            'User-Agent' => $this->headerOptions['User-Agent'],
-        ];
+        if (static::AUTH_ENDPOINT === '') {
+            throw new Exception("const AUTH_ENDPOINT must be defined in child class");
+        }
+        if (static::CACHE_NAME === '') {
+            throw new Exception("const CACHE_NAME must be defined in child class");
+        }
     }
 
     /**
@@ -43,23 +41,21 @@ class AuthApiService
      */
     public function authenticate(): ResponseDTO
     {
-        $credentials = $this->hmpoAuthRequestDTO;
-
+        $credentials = $this->requestDTO;
         $tokenResponse = $this->getToken($credentials);
-
         $this->cacheTokenResponse($tokenResponse);
 
         return $tokenResponse;
     }
 
     private function cacheTokenResponse(
-        ResponseDTO $hmpoAuthResponseDTO,
+        ResponseDTO $responseDTO,
     ): void {
         $this->apcHelper->setValue(
-            'hmpo_access_token',
+            static::CACHE_NAME,
             json_encode([
-                'access_token' => $hmpoAuthResponseDTO->accessToken(),
-                'time' => (int)(new \DateTime())->format('U') + (int)$hmpoAuthResponseDTO->expiresIn()
+                'access_token' => $responseDTO->accessToken(),
+                'time' => (int)(new \DateTime())->format('U') + (int)$responseDTO->expiresIn()
             ])
         );
     }
@@ -70,8 +66,7 @@ class AuthApiService
      */
     public function retrieveCachedTokenResponse(): string
     {
-        $cachedToken = $this->apcHelper->getValue('hmpo_access_token');
-
+        $cachedToken = $this->apcHelper->getValue(static::CACHE_NAME);
         if (! $cachedToken) {
             return $this->authenticate()->accessToken();
         }
@@ -90,37 +85,26 @@ class AuthApiService
      * @throws AuthApiException
      */
     private function getToken(
-        RequestDTO $hmpoAuthRequestDTO
+        RequestDTO $requestDTO
     ): ResponseDTO {
         try {
-            $headers = $this->makeHeaders();
-            // TODO: maybe only need to log this if there is an error...
-            $this->logger->info('making api request - endpoint: %s, requestId: %s', [self::HMPO_AUTH_ENDPOINT, $headers['X-REQUEST-ID']]);
             $response = $this->client->request(
                 'POST',
-                self::HMPO_AUTH_ENDPOINT,
+                static::AUTH_ENDPOINT,
                 [
-                    'headers' => $headers,
-                    'json' => $hmpoAuthRequestDTO->toArray()
+                    'headers' => $this->makeHeaders(),
+                    'form_params' => $requestDTO->toArray()
                 ],
             );
-
             $responseArray = json_decode($response->getBody()->getContents(), true);
-
-            return new ResponseDTO(
-                $responseArray['access_token'],
-                $responseArray['expires_in'],
-                $responseArray['refresh_expires_in'],
-                $responseArray['refresh_token'] ?? null,
-                $responseArray['token_type'],
-            );
+            return new $this->responseDtoClass($responseArray);
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();
             $responseBodyAsString = $response->getBody()->getContents();
-            $this->logger->error('GuzzleHmpoAuthApiException: ' . $responseBodyAsString);
+            $this->logger->error('GuzzleAuthException: ' . $responseBodyAsString);
             throw new AuthApiException($clientException->getMessage());
         } catch (\Exception $exception) {
-            $this->logger->error('GuzzleHmpoAuthApiException: ' . $exception->getMessage());
+            $this->logger->error('GuzzleAuthException: ' . $exception->getMessage());
             throw new AuthApiException($exception->getMessage());
         }
     }
