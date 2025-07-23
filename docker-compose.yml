@@ -165,7 +165,7 @@ services:
       - static-content:/var/www/public
 
   localstack:
-    image: localstack/localstack:4.4
+    image: localstack/localstack:4.6
     volumes:
       - "./scripts/localstack/init:/etc/localstack/init/ready.d"
       - "./scripts/localstack/wait:/scripts/wait"

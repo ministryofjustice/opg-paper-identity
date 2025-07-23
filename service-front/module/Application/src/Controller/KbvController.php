@@ -105,7 +105,6 @@ class KbvController extends AbstractActionController
             }
         }
 
-        /** @psalm-suppress InvalidArgument */
         if (count($formData) > 0 && $nextQuestion === null) {
             /** @psalm-suppress InvalidMethodCall */
             $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
