@@ -14,11 +14,21 @@ resources:
   - path: "/auth/token"
     method: post
     requestBody:
-      jsonPath: $.clientId
       value: client-id
+      operator: contains
     response:
       statusCode: 200
       file: data/tokenResponse.json
+
+  - path: "/graphql"
+    method: post
+    requestHeaders:
+      Authorization:
+        value: Bearer some-big-long-bearer-token
+        operator: NotEqualTo
+    response:
+      statusCode: 400
+      file: data/notAuthorisedResponse.json
 
   - path: "/graphql"
     method: post
