@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Application\DWP\Factories;
+namespace Application\HMPO\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\DWP\AuthApi\DTO\DwpRequestDTO;
-use Application\DWP\AuthApi\DwpAuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
+use Application\HMPO\AuthApi\DTO\HmpoRequestDTO;
 use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
-class DwpAuthApiServiceFactory implements FactoryInterface
+class HmpoAuthApiServiceFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
@@ -26,27 +26,17 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): DwpAuthApiService {
+    ): HmpoAuthApiService {
         $logger = $container->get(LoggerInterface::class);
-        $baseUri = getenv("DWP_BASE_URI");
+        $baseUri = getenv("HMPO_BASE_URI");
 
         if ($baseUri === false) {
-            throw new AuthApiException("DWP base URI is empty");
+            throw new AuthApiException("HMPO base URI is empty");
         }
-
-        $suppressCertificate = filter_var(
-            getenv("DWP_SUPPRESS_CERTIFICATE"),
-            FILTER_VALIDATE_BOOLEAN
-        );
 
         $clientOptions = [
             'base_uri' => $baseUri,
         ];
-
-        if (! $suppressCertificate) {
-            $clientOptions['cert'] = '/opg-private/dwp-cert.pem';
-            $clientOptions['ssl_key'] = '/opg-private/dwp-sslkey.pem';
-        }
 
         $guzzleClient = new Client($clientOptions);
 
@@ -54,20 +44,24 @@ class DwpAuthApiServiceFactory implements FactoryInterface
 
         $requestArray = [
             'grant-type' => 'client_credentials',
-            'client-id' => (new AwsSecret('dwp/oauth-client-id'))->getValue(),
-            'client-secret' => (new AwsSecret('dwp/oauth-client-secret'))->getValue(),
+            'client-id' => (new AwsSecret('hmpo/auth-client-id'))->getValue(),
+            'client-secret' => (new AwsSecret('hmpo/auth-client-secret'))->getValue(),
         ];
 
-        $dwpAuthRequestDTO = new DwpRequestDTO($requestArray);
+        $requestDTO = new HmpoRequestDTO($requestArray);
 
-        $headerOptions = [];
+        $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
 
-        return new DwpAuthApiService(
+        $headerOptions = [
+            'X-API-Key' => $apiKey,
+        ];
+
+        return new HmpoAuthApiService(
             $guzzleClient,
             $apcHelper,
             $logger,
-            $dwpAuthRequestDTO,
-            $headerOptions
+            $requestDTO,
+            $headerOptions,
         );
     }
 }
