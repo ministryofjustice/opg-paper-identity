@@ -67,6 +67,8 @@ jobs:
             service_name: experian-crosscore-mock
           - ecr_repository: paper-identity/experian-iiq-mock
             service_name: experian-iiq-mock
+          - ecr_repository: paper-identity/hmpo-mock
+            service_name: hmpo-mock
           - ecr_repository: paper-identity/yoti-mock
             service_name: yoti-mock
     steps:
