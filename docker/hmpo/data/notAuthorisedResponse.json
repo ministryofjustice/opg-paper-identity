@@ -1,0 +1,13 @@
+{
+  "errors": [
+    {
+      "message": "Action Requested not allowed by current profile",
+      "locations": [],
+      "extensions": {
+        "errorCode": "DVAD_400_001",
+        "classification": "INTERNAL_ERROR"
+      }
+    }
+  ],
+  "data": {}
+}
