@@ -42,7 +42,7 @@ use Application\KBV\KBVServiceInterface;
 use Application\Sirius\EventSender;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
-use Application\DWP\AuthApi\AuthApiService as DwpAuthApiService;
+use Application\DWP\AuthApi\DwpAuthApiService;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Aws\DynamoDb\DynamoDbClient;

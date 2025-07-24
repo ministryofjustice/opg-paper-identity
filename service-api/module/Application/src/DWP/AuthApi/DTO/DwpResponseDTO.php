@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Application\DWP\AuthApi\DTO;
 
-class ResponseDTO
+use Application\Services\Auth\DTO\ResponseDTO;
+
+class DwpResponseDTO extends ResponseDTO
 {
-    public function __construct(
-        public readonly string $accessToken,
-        public readonly string|int $expiresIn,
-        public readonly string $tokenType,
-    ) {
+    public readonly string $accessToken;
+    public readonly string|int $expiresIn;
+    public readonly string $tokenType;
+
+    public function __construct(array $responseArray) {
+        $this->accessToken = $responseArray['access_token'];
+        $this->expiresIn = $responseArray['expires_in'];
+        $this->tokenType = $responseArray['token_type'];
     }
 
     public function accessToken(): string

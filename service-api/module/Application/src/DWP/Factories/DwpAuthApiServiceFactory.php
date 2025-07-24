@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Application\DWP\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Aws\SsmHandler;
 use Application\Cache\ApcHelper;
-use Application\DWP\AuthApi\DTO\RequestDTO;
-use Application\DWP\AuthApi\AuthApiException;
-use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\AuthApi\DTO\DwpRequestDTO;
+use Application\DWP\AuthApi\DwpAuthApiService;
+use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -27,7 +26,7 @@ class DwpAuthApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): AuthApiService {
+    ): DwpAuthApiService {
         $logger = $container->get(LoggerInterface::class);
         $baseUri = getenv("DWP_BASE_URI");
 
@@ -53,21 +52,22 @@ class DwpAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        $clientId = (new AwsSecret('dwp/oauth-client-id'))->getValue();
-        $clientSecret = (new AwsSecret('dwp/oauth-client-secret'))->getValue();
-        $grantType = 'client_credentials';
+        $requestArray = [
+            'grant-type' => 'client_credentials',
+            'client-id' => (new AwsSecret('dwp/oauth-client-id'))->getValue(),
+            'client-secret' => (new AwsSecret('dwp/oauth-client-secret'))->getValue(),
+        ];
 
-        $dwpAuthRequestDTO = new RequestDTO(
-            $grantType,
-            $clientId,
-            $clientSecret
-        );
+        $dwpAuthRequestDTO = new DwpRequestDTO($requestArray);
 
-        return new AuthApiService(
+        $headerOptions = [];
+
+        return new DwpAuthApiService(
             $guzzleClient,
             $apcHelper,
             $logger,
-            $dwpAuthRequestDTO
+            $dwpAuthRequestDTO,
+            $headerOptions
         );
     }
 }
