@@ -10,14 +10,11 @@ use Application\Services\Auth\DTO\ResponseDTO;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 
+// TODO: make experian auth use this too??
 abstract class AuthApiService
 {
-    public string $responseDtoClass;
-    public const AUTH_ENDPOINT = '';
-    public const CACHE_NAME = '';
     abstract protected function makeHeaders(): array;
 
     public function __construct(
@@ -25,18 +22,31 @@ abstract class AuthApiService
         private readonly ApcHelper $apcHelper,
         private readonly LoggerInterface $logger,
         private readonly RequestDTO $requestDTO,
-        public array $headerOptions,
+        private readonly string $authEndpoint,
+        private readonly string $cacheName,
+        public readonly ?array $headerOptions = null,
     ) {
-        if (static::AUTH_ENDPOINT === '') {
-            throw new Exception("const AUTH_ENDPOINT must be defined in child class");
+    }
+
+    /**
+     * @throws AuthApiException
+     */
+    public function retrieveCachedTokenResponse(): string
+    {
+        $cachedToken = $this->apcHelper->getValue($this->cacheName);
+        if (! $cachedToken) {
+            return $this->authenticate()->accessToken();
         }
-        if (static::CACHE_NAME === '') {
-            throw new Exception("const CACHE_NAME must be defined in child class");
+
+        $tokenResponse = json_decode($cachedToken, true);
+        if (((int)$tokenResponse['time']) > time()) {
+            return $tokenResponse['access_token'];
+        } else {
+            return $this->authenticate()->accessToken();
         }
     }
 
     /**
-     * @throws GuzzleException
      * @throws AuthApiException
      */
     public function authenticate(): ResponseDTO
@@ -52,7 +62,7 @@ abstract class AuthApiService
         ResponseDTO $responseDTO,
     ): void {
         $this->apcHelper->setValue(
-            static::CACHE_NAME,
+            $this->cacheName,
             json_encode([
                 'access_token' => $responseDTO->accessToken(),
                 'time' => (int)(new \DateTime())->format('U') + (int)$responseDTO->expiresIn()
@@ -61,27 +71,6 @@ abstract class AuthApiService
     }
 
     /**
-     * @throws GuzzleException
-     * @throws AuthApiException
-     */
-    public function retrieveCachedTokenResponse(): string
-    {
-        $cachedToken = $this->apcHelper->getValue(static::CACHE_NAME);
-        if (! $cachedToken) {
-            return $this->authenticate()->accessToken();
-        }
-
-        $tokenResponse = json_decode($cachedToken, true);
-
-        if (is_null($tokenResponse) || ((int)$tokenResponse['time'] + 3500) > time()) {
-            return $tokenResponse['access_token'];
-        } else {
-            return $this->authenticate()->accessToken();
-        }
-    }
-
-    /**
-     * @throws GuzzleException
      * @throws AuthApiException
      */
     private function getToken(
@@ -90,14 +79,19 @@ abstract class AuthApiService
         try {
             $response = $this->client->request(
                 'POST',
-                static::AUTH_ENDPOINT,
+                $this->authEndpoint,
                 [
                     'headers' => $this->makeHeaders(),
                     'form_params' => $requestDTO->toArray()
                 ],
             );
-            $responseArray = json_decode($response->getBody()->getContents(), true);
-            return new $this->responseDtoClass($responseArray);
+            $contents = $response->getBody()->getContents();
+            $responseArray = json_decode($contents, true);
+            return new ResponseDTO(
+                $responseArray['access_token'],
+                $responseArray['expires_in'],
+                $responseArray['token_type'],
+            );
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();
             $responseBodyAsString = $response->getBody()->getContents();

@@ -4,9 +4,25 @@ declare(strict_types=1);
 
 namespace Application\Services\Auth\DTO;
 
-abstract class ResponseDTO
+/**
+ * @psalm-suppress PossiblyUnusedProperty
+ */
+class ResponseDTO
 {
-    public abstract function accessToken(): string;
-    public abstract function expiresIn(): string|int;
-    public abstract function toArray(): array;
+    public function __construct(
+        public readonly string $accessToken,
+        public readonly string|int $expiresIn,
+        public readonly string $tokenType,
+    ) {
+    }
+
+    public function accessToken(): string
+    {
+        return $this->accessToken;
+    }
+
+    public function expiresIn(): string|int
+    {
+        return $this->expiresIn;
+    }
 }

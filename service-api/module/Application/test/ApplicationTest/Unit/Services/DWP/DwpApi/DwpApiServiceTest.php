@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\ApplicationTest\Unit\Services\DWP\DwpApi;
 
-use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\AuthApi\DwpAuthApiService;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 
 class DwpApiServiceTest extends TestCase
 {
-    private AuthApiService&MockObject $dwpAuthApiService;
+    private DwpAuthApiService&MockObject $dwpAuthApiService;
     private DwpApiService $dwpApiService;
     private LoggerInterface&MockObject $logger;
 
@@ -136,7 +136,7 @@ class DwpApiServiceTest extends TestCase
     {
         $this->logger = $this->createMock(LoggerInterface::class);
         $client = $this->createMock(Client::class);
-        $this->dwpAuthApiService = $this->createMock(AuthApiService::class);
+        $this->dwpAuthApiService = $this->createMock(DwpAuthApiService::class);
 
         $this->headerOptions['policy_id'] = "policy-id";
         $this->headerOptions['context'] = 'context';

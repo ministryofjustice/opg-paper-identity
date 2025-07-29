@@ -12,7 +12,6 @@ use Application\Model\Entity\CaseData;
 use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
@@ -27,43 +26,33 @@ class HmpoApiService
         private LoggerInterface $logger,
         private array $headerOptions,
     ) {
+        if (! array_key_exists('X-API-Key', $headerOptions)) {
+            throw new HmpoApiException('X-API-Key must be present in headerOptions');
+        }
     }
 
     private const HMPO_GRAPHQL_ENDPOINT = '/graphql';
 
     /**
-     * @throws GuzzleException
      * @throws AuthApiException
-     * @throws HmpoApiException
      */
-    public function makeHeaders(): array
+    private function makeHeaders(): array
     {
         return [
             'Content-Type' => 'application/json',
             'X-API-Key' => $this->headerOptions['X-API-Key'],
-            'X-REQUEST-ID' => strval(Uuid::uuid1()),
+            'X-REQUEST-ID' => Uuid::uuid1()->toString(),
             'X-DVAD-NETWORK-TYPE' => 'api',
             'User-Agent' => 'hmpo-opg-client',
             'Authorization' => sprintf('Bearer %s', $this->authApiService->retrieveCachedTokenResponse())
         ];
     }
 
-    public function validatePassport(CaseData $caseData, int $passportNumber): bool
-    {
-        $request = new ValidatePassportRequestDTO($caseData, $passportNumber);
-        $result = new ValidatePassportResponseDTO($this->getValidatePassportResponse($request));
-
-        return $result->isValid();
-    }
-
-
-    public function getValidatePassportResponse(ValidatePassportRequestDTO $request): array
+    private function getValidatePassportResponse(ValidatePassportRequestDTO $request): array
     {
         $this->authCount++;
+        $headers = $this->makeHeaders();
         try {
-            $headers = $this->makeHeaders();
-            // TODO: maybe only need to log this if there is an error...
-            $this->logger->info('making api request - endpoint: %s, requestId: %s', [self::HMPO_GRAPHQL_ENDPOINT, $headers['X-REQUEST-ID']]);
             $response = $this->guzzleClient->request(
                 'POST',
                 self::HMPO_GRAPHQL_ENDPOINT,
@@ -78,11 +67,13 @@ class HmpoApiService
                 $this->authCount < 2
             ) {
                 $this->authApiService->authenticate();
-                $response = $this->getvalidatePassportResponse($request);
+                return $this->getvalidatePassportResponse($request);
             } else {
                 $response = $clientException->getResponse();
                 $responseBodyAsString = $response->getBody()->getContents();
-                $this->logger->error('GuzzleHmpoApiException: ' . $responseBodyAsString);
+                $this->logger->error(
+                    "GuzzleHmpoApiException on requestId: {$headers['X-REQUEST-ID']}, response: $responseBodyAsString"
+                );
                 throw $clientException;
             }
         } catch (\Exception $exception) {
@@ -90,6 +81,14 @@ class HmpoApiService
             throw new HmpoApiException($exception->getMessage());
         }
 
-        return json_decode($response->getBody()->getContents(), true);;
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function validatePassport(CaseData $caseData, int $passportNumber): bool
+    {
+        $request = new ValidatePassportRequestDTO($caseData, $passportNumber);
+        $result = new ValidatePassportResponseDTO($this->getValidatePassportResponse($request));
+
+        return $result->isValid();
     }
 }

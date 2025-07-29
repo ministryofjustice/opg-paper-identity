@@ -42,16 +42,16 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        $requestArray = [
-            'grant-type' => 'client_credentials',
-            'client-id' => (new AwsSecret('hmpo/auth-client-id'))->getValue(),
-            'client-secret' => (new AwsSecret('hmpo/auth-client-secret'))->getValue(),
-        ];
-
-        $requestDTO = new HmpoRequestDTO($requestArray);
+        $requestDTO = new HmpoRequestDTO(
+            'client_credentials',
+            (new AwsSecret('hmpo/auth-client-id'))->getValue(),
+            (new AwsSecret('hmpo/auth-client-secret'))->getValue(),
+        );
 
         $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
 
+        $authEndpoint = '/auth/token';
+        $cacheName = 'hmpo_access_token';
         $headerOptions = [
             'X-API-Key' => $apiKey,
         ];
@@ -61,6 +61,8 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
             $apcHelper,
             $logger,
             $requestDTO,
+            $authEndpoint,
+            $cacheName,
             $headerOptions,
         );
     }
