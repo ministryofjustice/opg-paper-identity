@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Services\DWP\AuthApi\DTO;
 
-use Application\DWP\AuthApi\DTO\ResponseDTO;
+use Application\Services\Auth\DTO\ResponseDTO;
 use PHPUnit\Framework\TestCase;
 
-class DwpAuthResponseDTOTest extends TestCase
+class ResponseDTOTest extends TestCase
 {
-    private ResponseDTO $dwpAuthResponseDTO;
+    private ResponseDTO $responseDTO;
 
     private array $data;
 
@@ -19,12 +19,11 @@ class DwpAuthResponseDTOTest extends TestCase
 
         $this->data = [
             'access_token' => 'access_token',
-            'expires_in' => 123456789,
+            'expires_in' => 1800,
             'token_type' => 'Bearer',
         ];
 
-
-        $this->dwpAuthResponseDTO = new ResponseDTO(
+        $this->responseDTO = new ResponseDTO(
             $this->data['access_token'],
             $this->data['expires_in'],
             $this->data['token_type'],
@@ -33,11 +32,11 @@ class DwpAuthResponseDTOTest extends TestCase
 
     public function testAccessToken(): void
     {
-        $this->assertEquals('access_token', $this->dwpAuthResponseDTO->accessToken());
+        $this->assertEquals('access_token', $this->responseDTO->accessToken());
     }
 
-    public function testArray(): void
+    public function testExpiresIn(): void
     {
-        $this->assertEquals($this->data, $this->dwpAuthResponseDTO->toArray());
+        $this->assertEquals(1800, $this->responseDTO->expiresIn());
     }
 }

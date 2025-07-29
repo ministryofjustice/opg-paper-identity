@@ -52,22 +52,21 @@ class DwpAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        $requestArray = [
-            'grant-type' => 'client_credentials',
-            'client-id' => (new AwsSecret('dwp/oauth-client-id'))->getValue(),
-            'client-secret' => (new AwsSecret('dwp/oauth-client-secret'))->getValue(),
-        ];
-
-        $dwpAuthRequestDTO = new DwpRequestDTO($requestArray);
-
-        $headerOptions = [];
+        $dwpAuthRequestDTO = new DwpRequestDTO(
+            'client_credentials',
+            (new AwsSecret('dwp/oauth-client-id'))->getValue(),
+            (new AwsSecret('dwp/oauth-client-secret'))->getValue(),
+        );
+        $authEndpoint = '/citizen-information/oauth2/token';
+        $cacheName = 'dwp_access_token';
 
         return new DwpAuthApiService(
             $guzzleClient,
             $apcHelper,
             $logger,
             $dwpAuthRequestDTO,
-            $headerOptions
+            $authEndpoint,
+            $cacheName,
         );
     }
 }
