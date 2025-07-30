@@ -42,11 +42,9 @@ class HmpoApiServiceFactory implements FactoryInterface
         $logger = $container->get(LoggerInterface::class);
 
         $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
-        $userAgent = (new AwsSecret('hmpo/user-agent'))->getValue();
 
         $headerOptions = [
             'X-API-Key' => $apiKey,
-            'User-Agent' => $userAgent,
         ];
 
         return new HmpoApiService(
