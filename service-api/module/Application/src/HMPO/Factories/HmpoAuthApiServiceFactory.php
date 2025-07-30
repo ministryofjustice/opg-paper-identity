@@ -44,7 +44,7 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
 
         $clientId = (new AwsSecret('hmpo/auth-client-id'))->getValue();
         $clientSecret = (new AwsSecret('hmpo/auth-client-secret'))->getValue();
-        $grantType = (new AwsSecret('hmpo/grant-type'))->getValue();  // i'm not really sure what this is!!!
+        $grantType = 'client_credentials';
 
         $AuthRequestDTO = new RequestDTO(
             $grantType,
@@ -53,11 +53,9 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
         );
 
         $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
-        $userAgent = (new AwsSecret('hmpo/user-agent'))->getValue();
 
         $headerOptions = [
             'X-API-Key' => $apiKey,
-            'User-Agent' => $userAgent,
         ];
 
         return new AuthApiService(
