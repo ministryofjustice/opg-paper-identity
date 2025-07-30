@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Unit\Services\DWP\AuthApi;
 
 use Application\Cache\ApcHelper;
-use Application\HMPO\AuthApi\AuthApiException;
-use Application\HMPO\AuthApi\AuthApiService;
-use Application\HMPO\AuthApi\DTO\RequestDTO;
-use Application\HMPO\AuthApi\DTO\ResponseDTO;
-use AWS\CRT\HTTP\Request;
+use Application\Services\Auth\AuthApiException;
+use Application\Services\Auth\AuthApiService;
+use Application\Services\Auth\DTO\RequestDTO;
+use Application\Services\Auth\DTO\ResponseDTO;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -18,6 +17,33 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Exception;
 
+// simple implementation so we can test core methods
+// phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
+class ExtendedAuthApiService extends AuthApiService
+{
+    public function makeHeaders(): array
+    {
+        return [
+            'headerOne' => '12345',
+            'headerTwo' => 'abcde',
+        ];
+    }
+}
+
+// phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
+class ExtendedRequestDTO extends RequestDTO
+{
+    public function toArray(): array
+    {
+        return [
+            'grant_type' => $this->grantType,
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+        ];
+    }
+}
+
+// phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
 class AuthApiServiceTest extends TestCase
 {
     private Client&MockObject $client;
@@ -34,20 +60,19 @@ class AuthApiServiceTest extends TestCase
         $this->apcHelper = $this->createMock(ApcHelper::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $requestDto = new RequestDTO(
+        $requestDto = new ExtendedRequestDTO(
             'grant-type',
             'client-id',
             'client-secret',
         );
 
-        $headerOptions = ['X-API-Key' => 'X-API-Key'];
-
-        $this->authApiService = new AuthApiService(
+        $this->authApiService = new ExtendedAuthApiService(
             $this->client,
             $this->apcHelper,
             $this->logger,
             $requestDto,
-            $headerOptions,
+            'auth/endpoint',
+            'cache-name',
         );
     }
 
@@ -55,37 +80,27 @@ class AuthApiServiceTest extends TestCase
     {
         $mockResponseData = [
             'access_token' => 'generic-access-token-for-test',
-            'expires_in' => 1800,
+            'expires_in' => '1800',
             'token_type' => 'Bearer',
         ];
-
         $mockResponse = new GuzzleResponse(200, [], json_encode($mockResponseData, JSON_THROW_ON_ERROR));
-        $expectedHeaders = [
-            'Content-Type' => 'application/x-www-form-urlencoded',
-            'X-API-Key' => 'X-API-Key',
-            'X-DVAD-NETWORK-TYPE' => 'api',
-            'User-Agent' => 'hmpo-opg-client',
-        ];
-        $expectedFormParams = [
-            'grantType' => 'grant-type',
-            'clientId' => 'client-id',
-            'secret' => 'client-secret'
-        ];
         $this->client
             ->expects($this->once())
             ->method('request')
             ->with(
                 'POST',
-                '/auth/token',
-                $this->callback(function (array $options) use ($expectedHeaders, $expectedFormParams) {
-                    $this->assertArrayIsEqualToArrayIgnoringListOfKeys(
-                        $options['headers'],
-                        $expectedHeaders,
-                        ['X-REQUEST-ID']
-                    );
-                    $this->assertEquals($options['form_params'], $expectedFormParams);
-                    return true;
-                })
+                'auth/endpoint',
+                [
+                    'headers' => [
+                        'headerOne' => '12345',
+                        'headerTwo' => 'abcde',
+                    ],
+                    'form_params' => [
+                        'grant_type' => 'grant-type',
+                        'client_id' => 'client-id',
+                        'client_secret' => 'client-secret'
+                    ]
+                ]
             )
             ->willReturn($mockResponse);
 
@@ -93,7 +108,7 @@ class AuthApiServiceTest extends TestCase
             ->expects($this->once())
             ->method('setValue')
             ->with(
-                'hmpo_access_token',
+                'cache-name',
                 json_encode([
                     'access_token' => 'generic-access-token-for-test',
                     'time' => (int)(new \DateTime())->format('U') + 1800,
@@ -102,7 +117,8 @@ class AuthApiServiceTest extends TestCase
 
         $expectedResponse = new ResponseDTO(
             'generic-access-token-for-test',
-            1800,
+            '1800',
+            'Bearer',
         );
         $response = $this->authApiService->authenticate();
         $this->assertEquals($expectedResponse, $response);
@@ -124,7 +140,7 @@ class AuthApiServiceTest extends TestCase
         $this->apcHelper
             ->expects($this->once())
             ->method('getValue')
-            ->with('hmpo_access_token')
+            ->with('cache-name')
             ->willReturn($cache);
 
         if (! is_null($responseData)) {
@@ -155,8 +171,7 @@ class AuthApiServiceTest extends TestCase
 
         $responseData = [
             'access_token' => 'newly-generated-token',
-            'expires_in' => 1800,
-            'refresh_expires_in' => 0,
+            'expires_in' => '1800',
             'token_type' => 'Bearer',
         ];
 

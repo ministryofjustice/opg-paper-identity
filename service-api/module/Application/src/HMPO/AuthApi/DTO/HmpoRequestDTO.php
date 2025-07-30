@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Application\HMPO\AuthApi\DTO;
 
-class RequestDTO
-{
-    public function __construct(
-        public readonly string $grantType,
-        public readonly string $clientId,
-        public readonly string $secret,
-    ) {
-    }
+use Application\Services\Auth\DTO\RequestDTO;
 
+class HmpoRequestDTO extends RequestDTO
+{
     public function toArray(): array
     {
         return [
             'grantType' => $this->grantType,
             'clientId' => $this->clientId,
-            'secret' => $this->secret,
+            'secret' => $this->clientSecret,
         ];
     }
 }

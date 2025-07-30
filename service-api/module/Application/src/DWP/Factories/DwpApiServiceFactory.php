@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace Application\DWP\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
-use Application\Aws\SsmHandler;
-use Application\Cache\ApcHelper;
-use Application\DWP\AuthApi\DTO\RequestDTO;
-use Application\DWP\AuthApi\AuthApiException;
-use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\AuthApi\DwpAuthApiService;
 use Application\DWP\DwpApi\DwpApiException;
 use Application\DWP\DwpApi\DwpApiService;
 use GuzzleHttp\Client;
@@ -63,7 +59,7 @@ class DwpApiServiceFactory implements FactoryInterface
 
         return new DwpApiService(
             $guzzleClient,
-            $container->get(AuthApiService::class),
+            $container->get(DwpAuthApiService::class),
             $logger,
             $headerOptions
         );

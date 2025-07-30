@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Application\DWP\AuthApi\DTO;
 
-class RequestDTO
-{
-    public function __construct(
-        public readonly string $grantType,
-        public readonly string $clientId,
-        public readonly string $clientSecret,
-    ) {
-    }
+use Application\Services\Auth\DTO\RequestDTO;
 
+class DwpRequestDTO extends RequestDTO
+{
     public function toArray(): array
     {
         return [

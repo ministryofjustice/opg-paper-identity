@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Services\HMPO\AuthApi\DTO;
 
-use Application\HMPO\AuthApi\DTO\RequestDTO;
+use Application\HMPO\AuthApi\DTO\HmpoRequestDTO;
 use PHPUnit\Framework\TestCase;
 
 class HmpoRequestDTOTest extends TestCase
 {
-    private RequestDTO $hmpoAuthRequestDTO;
+    private HmpoRequestDTO $hmpoAuthRequestDTO;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->hmpoAuthRequestDTO = new RequestDTO(
+        $this->hmpoAuthRequestDTO = new HmpoRequestDTO(
             'client_credentials',
             'clientId',
             'clientSecret',

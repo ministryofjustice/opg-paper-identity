@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ApplicationTest\ApplicationTest\Unit\Services\HMPO\HmpoApi;
 
 use Application\Enums\DocumentType;
-use Application\HMPO\AuthApi\AuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
 use Application\HMPO\HmpoApi\HmpoApiService;
 use Application\HMPO\HmpoApi\HmpoApiException;
 use Application\Model\Entity\CaseData;
@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 class HmpoApiServiceTest extends TestCase
 {
     private Client&MockObject $client;
-    private AuthApiService&MockObject $hmpoAuthApiService;
+    private HmpoAuthApiService&MockObject $hmpoAuthApiService;
     private HmpoApiService $hmpoApiService;
     private LoggerInterface&MockObject $logger;
     private CaseData $caseData;
@@ -34,7 +34,7 @@ class HmpoApiServiceTest extends TestCase
          */
         $this->client = $this->createMock(Client::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->hmpoAuthApiService = $this->createMock(AuthApiService::class);
+        $this->hmpoAuthApiService = $this->createMock(HmpoAuthApiService::class);
 
         $this->caseData = CaseData::fromArray([
             'idMethod' => ['docType' => DocumentType::Passport->value],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Services\DWP\AuthApi\DTO;
 
-use Application\HMPO\AuthApi\DTO\ResponseDTO;
+use Application\Services\Auth\DTO\ResponseDTO;
 use PHPUnit\Framework\TestCase;
 
 class ResponseDTOTest extends TestCase
@@ -26,6 +26,7 @@ class ResponseDTOTest extends TestCase
         $this->responseDTO = new ResponseDTO(
             $this->data['access_token'],
             $this->data['expires_in'],
+            $this->data['token_type'],
         );
     }
 

@@ -6,9 +6,9 @@ namespace Application\HMPO\Factories;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Cache\ApcHelper;
-use Application\HMPO\AuthApi\DTO\RequestDTO;
-use Application\HMPO\AuthApi\AuthApiException;
-use Application\HMPO\AuthApi\AuthApiService;
+use Application\HMPO\AuthApi\HmpoAuthApiService;
+use Application\HMPO\AuthApi\DTO\HmpoRequestDTO;
+use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
@@ -26,7 +26,7 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         array $options = null
-    ): AuthApiService {
+    ): HmpoAuthApiService {
         $logger = $container->get(LoggerInterface::class);
         $baseUri = getenv("HMPO_BASE_URI");
 
@@ -42,27 +42,27 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
 
         $apcHelper = new ApcHelper();
 
-        $clientId = (new AwsSecret('hmpo/auth-client-id'))->getValue();
-        $clientSecret = (new AwsSecret('hmpo/auth-client-secret'))->getValue();
-        $grantType = 'client_credentials';
-
-        $AuthRequestDTO = new RequestDTO(
-            $grantType,
-            $clientId,
-            $clientSecret
+        $requestDTO = new HmpoRequestDTO(
+            'client_credentials',
+            (new AwsSecret('hmpo/auth-client-id'))->getValue(),
+            (new AwsSecret('hmpo/auth-client-secret'))->getValue(),
         );
 
         $apiKey = (new AwsSecret('hmpo/api-key'))->getValue();
 
+        $authEndpoint = '/auth/token';
+        $cacheName = 'hmpo_access_token';
         $headerOptions = [
             'X-API-Key' => $apiKey,
         ];
 
-        return new AuthApiService(
+        return new HmpoAuthApiService(
             $guzzleClient,
             $apcHelper,
             $logger,
-            $AuthRequestDTO,
+            $requestDTO,
+            $authEndpoint,
+            $cacheName,
             $headerOptions,
         );
     }

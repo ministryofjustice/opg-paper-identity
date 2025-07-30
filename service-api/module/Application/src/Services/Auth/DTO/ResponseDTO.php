@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\DWP\AuthApi\DTO;
+namespace Application\Services\Auth\DTO;
 
+/**
+ * @psalm-suppress PossiblyUnusedProperty
+ */
 class ResponseDTO
 {
     public function __construct(
@@ -21,14 +24,5 @@ class ResponseDTO
     public function expiresIn(): string|int
     {
         return $this->expiresIn;
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'access_token' => $this->accessToken,
-            'expires_in' => $this->expiresIn,
-            'token_type' => $this->tokenType,
-        ];
     }
 }

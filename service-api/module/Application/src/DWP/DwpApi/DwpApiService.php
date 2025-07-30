@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Application\DWP\DwpApi;
 
-use Application\DWP\AuthApi\AuthApiException;
-use Application\DWP\AuthApi\AuthApiService;
+use Application\DWP\AuthApi\DwpAuthApiService;
 use Application\DWP\DwpApi\DTO\AmbiguousCitizenResponseDTO;
 use Application\DWP\DwpApi\DTO\CitizenRequestDTO;
 use Application\DWP\DwpApi\DTO\CitizenResponseDTO;
@@ -13,6 +12,7 @@ use Application\DWP\DwpApi\DTO\DetailsRequestDTO;
 use Application\DWP\DwpApi\DTO\DetailsResponseDTO;
 use Application\DWP\DwpApi\DwpApiException;
 use Application\Model\Entity\CaseData;
+use Application\Services\Auth\AuthApiException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -28,7 +28,7 @@ class DwpApiService
     private string $correlationUuid = "";
     public function __construct(
         private Client $guzzleClient,
-        private AuthApiService $authApiService,
+        private DwpAuthApiService $authApiService,
         private LoggerInterface $logger,
         private array $headerOptions,
     ) {
