@@ -3,7 +3,7 @@
     "validatePassport": {
       "validationResult": true,
       "passportCancelled": true,
-      "passportLostStolen": false
+      "passportLostStolen": true
     }
   }
 }

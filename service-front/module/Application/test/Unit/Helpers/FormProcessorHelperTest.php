@@ -191,7 +191,7 @@ class FormProcessorHelperTest extends TestCase
     #[DataProvider('passportData')]
     public function testProcessPassportNumberForm(
         string $caseUuid,
-        array $responseData,
+        ?bool $response,
         Parameters $formData,
         FormInterface $form,
         array $templates,
@@ -206,14 +206,14 @@ class FormProcessorHelperTest extends TestCase
             $opgApiServiceMock
                 ->expects(self::once())
                 ->method('checkPassportValidity')
-                ->with($formData->toArray()['passport'])
-                ->willReturn($responseData['status']);
+                ->with($caseUuid, $formData->toArray()['passport'])
+                ->willReturn($response);
         }
 
         $processed = $formProcessorHelper->processPassportForm($caseUuid, $form, $templates);
         $this->assertEquals($caseUuid, $processed->getUuid());
         if (array_key_exists('validity', $processed->getVariables())) {
-            $this->assertEquals($responseData['status'], $processed->getVariables()['validity']);
+            $this->assertEquals($response, $processed->getVariables()['validity']);
         }
     }
 
@@ -221,15 +221,7 @@ class FormProcessorHelperTest extends TestCase
     public static function passportData(): array
     {
         $caseUuid = "9130a21e-6e5e-4a30-8b27-76d21b747e60";
-        $goodNino = "123456787";
-        $badNino = "123456788";
-        $shortNino = "AA112233";
-        $insufficientNino = "123456789";
-
-        $mockSuccessResponseData = ["status" => "PASS"];
-        $mockFailResponseData = ["status" => "NO_MATCH"];
-        $mockNotEnoughDetailsResponseData = ["status" => "NOT_ENOUGH_DETAILS"];
-        $mockInvalidResponseData = ["status" => "INVALID_FORMAT"];
+        $passport = '123456789';
 
         $form = (new AttributeBuilder())->createForm(PassportNumber::class);
         $templates = [
@@ -239,34 +231,26 @@ class FormProcessorHelperTest extends TestCase
         ];
 
         return [
-            [
+            'invalid form' => [
                 $caseUuid,
-                $mockInvalidResponseData,
-                new Parameters(['passport' => $shortNino, 'inDate' => 'yes']),
+                null,
+                new Parameters(['passport' => $passport, 'inDate' => 'no']),
                 $form,
                 $templates,
                 'default',
             ],
-            [
+            'successful passport' => [
                 $caseUuid,
-                $mockSuccessResponseData,
-                new Parameters(['passport' => $goodNino, 'inDate' => 'yes']),
+                true,
+                new Parameters(['passport' => $passport, 'inDate' => 'yes']),
                 $form,
                 $templates,
                 'success',
             ],
-            [
+            'unsuccessful passport' => [
                 $caseUuid,
-                $mockFailResponseData,
-                new Parameters(['passport' => $badNino, 'inDate' => 'yes']),
-                $form,
-                $templates,
-                'fail',
-            ],
-            [
-                $caseUuid,
-                $mockNotEnoughDetailsResponseData,
-                new Parameters(['passport' => $insufficientNino, 'inDate' => 'yes']),
+                false,
+                new Parameters(['passport' => $passport, 'inDate' => 'yes']),
                 $form,
                 $templates,
                 'fail',
