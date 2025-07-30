@@ -222,10 +222,6 @@ class IdentityController extends AbstractActionController
         return new JsonModel([
             'result' => $hmpoResponse,
         ]);
-        $data = json_decode($this->getRequest()->getContent(), true);
-        $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-
-        return new JsonModel($response);
     }
 
     public function updateIdMethodAction(): JsonModel
