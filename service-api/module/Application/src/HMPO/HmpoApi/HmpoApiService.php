@@ -27,6 +27,9 @@ class HmpoApiService
         private LoggerInterface $logger,
         private array $headerOptions,
     ) {
+        if (! array_key_exists('X-API-Key', $headerOptions)) {
+            throw new HmpoApiException('X-API-Key must be present in headerOptions');
+        }
     }
 
     private const HMPO_GRAPHQL_ENDPOINT = '/graphql';
@@ -43,7 +46,7 @@ class HmpoApiService
             'X-API-Key' => $this->headerOptions['X-API-Key'],
             'X-REQUEST-ID' => strval(Uuid::uuid1()),
             'X-DVAD-NETWORK-TYPE' => 'api',
-            'User-Agent' => $this->headerOptions['User-Agent'],
+            'User-Agent' => 'hmpo-opg-client',
             'Authorization' => sprintf('Bearer %s', $this->authApiService->retrieveCachedTokenResponse())
         ];
     }
@@ -60,10 +63,8 @@ class HmpoApiService
     public function getValidatePassportResponse(ValidatePassportRequestDTO $request): array
     {
         $this->authCount++;
+        $headers = $this->makeHeaders();
         try {
-            $headers = $this->makeHeaders();
-            // TODO: maybe only need to log this if there is an error...
-            $this->logger->info('making api request - endpoint: %s, requestId: %s', [self::HMPO_GRAPHQL_ENDPOINT, $headers['X-REQUEST-ID']]);
             $response = $this->guzzleClient->request(
                 'POST',
                 self::HMPO_GRAPHQL_ENDPOINT,
@@ -78,11 +79,13 @@ class HmpoApiService
                 $this->authCount < 2
             ) {
                 $this->authApiService->authenticate();
-                $response = $this->getvalidatePassportResponse($request);
+                return $this->getvalidatePassportResponse($request);
             } else {
                 $response = $clientException->getResponse();
                 $responseBodyAsString = $response->getBody()->getContents();
-                $this->logger->error('GuzzleHmpoApiException: ' . $responseBodyAsString);
+                $this->logger->error(
+                    "GuzzleHmpoApiException on requestId: {$headers['X-REQUEST-ID']}, response: $responseBodyAsString"
+                );
                 throw $clientException;
             }
         } catch (\Exception $exception) {
@@ -90,6 +93,6 @@ class HmpoApiService
             throw new HmpoApiException($exception->getMessage());
         }
 
-        return json_decode($response->getBody()->getContents(), true);;
+        return json_decode($response->getBody()->getContents(), true);
     }
 }

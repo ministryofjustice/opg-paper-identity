@@ -25,15 +25,16 @@ class AuthApiService
     }
 
     private const HMPO_AUTH_ENDPOINT = '/auth/token';
+    private const CACHE_NAME = 'hmpo_access_token';
 
     public function makeHeaders(): array
     {
         return [
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/x-www-form-urlencoded',
             'X-API-Key' => $this->headerOptions['X-API-Key'],
-            'X-REQUEST-ID' => strval(Uuid::uuid1()),
+            'X-REQUEST-ID' => Uuid::uuid1()->toString(),
             'X-DVAD-NETWORK-TYPE' => 'api',
-            'User-Agent' => $this->headerOptions['User-Agent'],
+            'User-Agent' => 'hmpo-opg-client',
         ];
     }
 
@@ -56,10 +57,10 @@ class AuthApiService
         ResponseDTO $hmpoAuthResponseDTO,
     ): void {
         $this->apcHelper->setValue(
-            'hmpo_access_token',
+            self::CACHE_NAME,
             json_encode([
                 'access_token' => $hmpoAuthResponseDTO->accessToken(),
-                'time' => (int)(new \DateTime())->format('U') + (int)$hmpoAuthResponseDTO->expiresIn()
+                'time' => (int)(new \DateTime())->format('U') + $hmpoAuthResponseDTO->expiresIn()
             ])
         );
     }
@@ -70,7 +71,7 @@ class AuthApiService
      */
     public function retrieveCachedTokenResponse(): string
     {
-        $cachedToken = $this->apcHelper->getValue('hmpo_access_token');
+        $cachedToken = $this->apcHelper->getValue(self::CACHE_NAME);
 
         if (! $cachedToken) {
             return $this->authenticate()->accessToken();
@@ -78,7 +79,7 @@ class AuthApiService
 
         $tokenResponse = json_decode($cachedToken, true);
 
-        if (is_null($tokenResponse) || ((int)$tokenResponse['time'] + 3500) > time()) {
+        if (is_null($tokenResponse) || ((int)$tokenResponse['time']) > time()) {
             return $tokenResponse['access_token'];
         } else {
             return $this->authenticate()->accessToken();
@@ -94,14 +95,12 @@ class AuthApiService
     ): ResponseDTO {
         try {
             $headers = $this->makeHeaders();
-            // TODO: maybe only need to log this if there is an error...
-            $this->logger->info('making api request - endpoint: %s, requestId: %s', [self::HMPO_AUTH_ENDPOINT, $headers['X-REQUEST-ID']]);
             $response = $this->client->request(
                 'POST',
                 self::HMPO_AUTH_ENDPOINT,
                 [
                     'headers' => $headers,
-                    'json' => $hmpoAuthRequestDTO->toArray()
+                    'form_params' => $hmpoAuthRequestDTO->toArray()
                 ],
             );
 
@@ -110,9 +109,6 @@ class AuthApiService
             return new ResponseDTO(
                 $responseArray['access_token'],
                 $responseArray['expires_in'],
-                $responseArray['refresh_expires_in'],
-                $responseArray['refresh_token'] ?? null,
-                $responseArray['token_type'],
             );
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();

@@ -370,7 +370,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     }
 
     #[DataProvider('passportNumberData')]
-    public function testPassportNumberPost(string $validity): void
+    public function testPassportNumberPost(bool $validity): void
     {
         $mockProcessed = $this->createMock(FormProcessorResponseDto::class);
 
@@ -400,31 +400,25 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
             ->method('getVariables')
             ->willReturn(['validity' => $validity]);
 
-        if ($validity === "PASS") {
+        if ($validity) {
             $this
                 ->formProcessorService
                 ->expects(self::once())
                 ->method('processTemplate')
                 ->willReturn('application\/pages\/document_success');
-        }
 
-        if ($validity === 'PASS') {
             $this
                 ->opgApiServiceMock
                 ->expects(self::once())
                 ->method('updateCaseSetDocumentComplete')
                 ->with($this->uuid, DocumentType::Passport->value);
-        }
 
-        if ($validity === 'PASS') {
             $this
                 ->opgApiServiceMock
                 ->expects(self::once())
                 ->method('requestFraudCheck')
                 ->with($this->uuid);
-        }
-
-        if ($validity === 'FAIL') {
+        } else {
             $this
                 ->opgApiServiceMock
                 ->expects(self::never())
@@ -441,8 +435,8 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     public static function passportNumberData(): array
     {
         return [
-            ['PASS'],
-            ['FAIL'],
+            [true],
+            [false],
         ];
     }
 
