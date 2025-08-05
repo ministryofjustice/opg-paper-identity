@@ -137,7 +137,7 @@ class AuthApiServiceTest extends TestCase
 
         $accessToken = $this->authApiService->retrieveCachedTokenResponse();
 
-        $this->assertEquals($accessToken, $expectedToken);
+        $this->assertEquals($expectedToken, $accessToken);
     }
 
 
