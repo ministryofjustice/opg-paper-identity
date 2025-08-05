@@ -34,7 +34,7 @@ class ValidatePassportResponseDTOTest extends TestCase
 
         $dto = new ValidatePassportResponseDTO($response);
 
-        $this->assertEquals($dto->toArray(), $expected);
+        $this->assertEquals($expected, $dto->toArray());
     }
 
     public static function constructData(): array
@@ -75,7 +75,7 @@ class ValidatePassportResponseDTOTest extends TestCase
 
         $dto = new ValidatePassportResponseDTO($response);
 
-        $this->assertEquals($dto->isValid(), $expected);
+        $this->assertEquals($expected, $dto->isValid());
     }
 
     public static function isValidData(): array

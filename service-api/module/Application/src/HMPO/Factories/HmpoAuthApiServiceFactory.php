@@ -46,7 +46,7 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
         $clientSecret = (new AwsSecret('hmpo/auth-client-secret'))->getValue();
         $grantType = 'client_credentials';
 
-        $AuthRequestDTO = new RequestDTO(
+        $authRequestDTO = new RequestDTO(
             $grantType,
             $clientId,
             $clientSecret
@@ -62,7 +62,7 @@ class HmpoAuthApiServiceFactory implements FactoryInterface
             $guzzleClient,
             $apcHelper,
             $logger,
-            $AuthRequestDTO,
+            $authRequestDTO,
             $headerOptions,
         );
     }
