@@ -14,9 +14,11 @@ use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
+use Application\HMPO\HmpoApi\HmpoApiService;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\ClaimedIdentity;
 use Application\Model\Entity\IdMethod;
+use Application\Model\Entity\Problem;
 use Application\Sirius\EventSender;
 use Application\Sirius\UpdateStatus;
 use Application\Yoti\SessionConfig;
@@ -42,6 +44,7 @@ class IdentityControllerTest extends TestCase
     private FraudApiService&MockObject $experianCrosscoreFraudApiService;
     private DwpApiService&MockObject $dwpServiceMock;
     private CaseOutcomeCalculator&MockObject $caseCalcMock;
+    private HmpoApiService&MockObject $hmpoServiceMock;
 
     public function setUp(): void
     {
@@ -63,6 +66,7 @@ class IdentityControllerTest extends TestCase
         $this->experianCrosscoreFraudApiService = $this->createMock(FraudApiService::class);
         $this->dwpServiceMock = $this->createMock(DwpApiService::class);
         $this->caseCalcMock = $this->createMock(CaseOutcomeCalculator::class);
+        $this->hmpoServiceMock = $this->createMock(HmpoApiService::class);
 
         parent::setUp();
 
@@ -75,6 +79,7 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
         $serviceManager->setService(DwpApiService::class, $this->dwpServiceMock);
         $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseCalcMock);
+        $serviceManager->setService(HmpoApiService::class, $this->hmpoServiceMock);
     }
 
     public function testInvalidRouteDoesNotCrash(): void
@@ -396,28 +401,49 @@ class IdentityControllerTest extends TestCase
 
 
     #[DataProvider('passportData')]
-    public function testPassportNumber(int $passportNumber, string $response, int $status): void
+    public function testValidatePassport(?CaseData $case, bool $response, int $status, ?string $error): void
     {
+        $this->dataQueryHandlerMock
+            ->expects($this->once())
+            ->method('getCaseByUUID')
+            ->willReturn($case);
+
+        if ($error === null) {
+            $this->hmpoServiceMock
+                ->expects($this->once())
+                ->method('validatePassport')
+                ->with($case, 123456789)
+                ->willReturn($response);
+        }
+
         $this->dispatchJSON(
-            '/identity/validate_passport',
+            "/identity/abc-def-ghi/validate_passport",
             'POST',
-            ['passport' => $passportNumber]
+            ['passportNumber' => 123456789]
         );
         $this->assertResponseStatusCode($status);
-        $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
+        if ($error === null) {
+            $this->assertEquals(json_encode(["result" => $response]), $this->getResponse()->getContent());
+        } else {
+            $this->assertContains($error, json_decode($this->getResponse()->getBody(), true));
+        }
         $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
+        $this->assertControllerName(IdentityController::class);
         $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_passport');
     }
 
     public static function passportData(): array
     {
+        $case = CaseData::fromArray([
+            'id' => 'a9bc8ab8-389c-4367-8a9b-762ab3050999',
+            'personType' => PersonType::Donor->value,
+            'lpas' => ['M-XYXY-YAGA-35G3',],
+        ]);
         return [
-            [123456788, 'NO_MATCH', Response::STATUS_CODE_200],
-            [123456789, 'NOT_ENOUGH_DETAILS', Response::STATUS_CODE_200],
-            [123333456, 'PASS', Response::STATUS_CODE_200],
-            [123456784, 'PASS', Response::STATUS_CODE_200],
+            [null, false, Response::STATUS_CODE_404, 'Case not found'],
+            [$case, true, Response::STATUS_CODE_200, null],
+            [$case, false, Response::STATUS_CODE_200, null],
         ];
     }
 
