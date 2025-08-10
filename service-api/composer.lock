@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.352.0",
+            "version": "3.352.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "7f3ad0da2545b24259273ea7ab892188bae7d91b"
+                "reference": "d3ce2a85687d55cd67d52682306227bc6aa836d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7f3ad0da2545b24259273ea7ab892188bae7d91b",
-                "reference": "7f3ad0da2545b24259273ea7ab892188bae7d91b",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d3ce2a85687d55cd67d52682306227bc6aa836d6",
+                "reference": "d3ce2a85687d55cd67d52682306227bc6aa836d6",
                 "shasum": ""
             },
             "require": {
@@ -153,9 +153,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.352.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.352.4"
             },
-            "time": "2025-08-01T18:04:23+00:00"
+            "time": "2025-08-07T18:15:55+00:00"
         },
         {
             "name": "brick/math",
@@ -3226,16 +3226,16 @@
         },
         {
             "name": "open-telemetry/sdk",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opentelemetry-php/sdk.git",
-                "reference": "1c0371794e4c0700afd4a9d4d8511cb5e3f78e6a"
+                "reference": "86287cf30fd6549444d7b8f7d8758d92e24086ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opentelemetry-php/sdk/zipball/1c0371794e4c0700afd4a9d4d8511cb5e3f78e6a",
-                "reference": "1c0371794e4c0700afd4a9d4d8511cb5e3f78e6a",
+                "url": "https://api.github.com/repos/opentelemetry-php/sdk/zipball/86287cf30fd6549444d7b8f7d8758d92e24086ac",
+                "reference": "86287cf30fd6549444d7b8f7d8758d92e24086ac",
                 "shasum": ""
             },
             "require": {
@@ -3254,7 +3254,7 @@
                 "ramsey/uuid": "^3.0 || ^4.0",
                 "symfony/polyfill-mbstring": "^1.23",
                 "symfony/polyfill-php82": "^1.26",
-                "tbachert/spi": "^1.0.1"
+                "tbachert/spi": "^1.0.5"
             },
             "suggest": {
                 "ext-gmp": "To support unlimited number of synchronous metric readers",
@@ -3267,6 +3267,9 @@
                     "OpenTelemetry\\API\\Configuration\\ConfigEnv\\EnvComponentLoader": [
                         "OpenTelemetry\\API\\Instrumentation\\Configuration\\General\\ConfigEnv\\EnvComponentLoaderHttpConfig",
                         "OpenTelemetry\\API\\Instrumentation\\Configuration\\General\\ConfigEnv\\EnvComponentLoaderPeerConfig"
+                    ],
+                    "OpenTelemetry\\SDK\\Common\\Configuration\\Resolver\\ResolverInterface": [
+                        "OpenTelemetry\\SDK\\Common\\Configuration\\Resolver\\SdkConfigurationResolver"
                     ],
                     "OpenTelemetry\\API\\Instrumentation\\AutoInstrumentation\\HookManagerInterface": [
                         "OpenTelemetry\\API\\Instrumentation\\AutoInstrumentation\\ExtensionHookManager"
@@ -3316,7 +3319,7 @@
                 "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
                 "source": "https://github.com/open-telemetry/opentelemetry-php"
             },
-            "time": "2025-06-19T23:36:51+00:00"
+            "time": "2025-08-06T03:07:06+00:00"
         },
         {
             "name": "open-telemetry/sem-conv",
@@ -4296,16 +4299,16 @@
         },
         {
             "name": "tbachert/spi",
-            "version": "v1.0.2",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nevay/spi.git",
-                "reference": "2ddfaf815dafb45791a61b08170de8d583c16062"
+                "reference": "e7078767866d0a9e0f91d3f9d42a832df5e39002"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nevay/spi/zipball/2ddfaf815dafb45791a61b08170de8d583c16062",
-                "reference": "2ddfaf815dafb45791a61b08170de8d583c16062",
+                "url": "https://api.github.com/repos/Nevay/spi/zipball/e7078767866d0a9e0f91d3f9d42a832df5e39002",
+                "reference": "e7078767866d0a9e0f91d3f9d42a832df5e39002",
                 "shasum": ""
             },
             "require": {
@@ -4323,7 +4326,7 @@
             "extra": {
                 "class": "Nevay\\SPI\\Composer\\Plugin",
                 "branch-alias": {
-                    "dev-main": "0.2.x-dev"
+                    "dev-main": "1.0.x-dev"
                 },
                 "plugin-optional": true
             },
@@ -4342,9 +4345,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Nevay/spi/issues",
-                "source": "https://github.com/Nevay/spi/tree/v1.0.2"
+                "source": "https://github.com/Nevay/spi/tree/v1.0.5"
             },
-            "time": "2024-10-04T16:36:12+00:00"
+            "time": "2025-06-29T15:42:06+00:00"
         },
         {
             "name": "webimpress/safe-writer",
@@ -9070,16 +9073,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.13.0",
+            "version": "6.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "70cdf647255a1362b426bb0f522a85817b8c791c"
+                "reference": "1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/70cdf647255a1362b426bb0f522a85817b8c791c",
-                "reference": "70cdf647255a1362b426bb0f522a85817b8c791c",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51",
+                "reference": "1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51",
                 "shasum": ""
             },
             "require": {
@@ -9184,7 +9187,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2025-07-14T09:59:17+00:00"
+            "time": "2025-08-06T10:10:28+00:00"
         }
     ],
     "aliases": [],
