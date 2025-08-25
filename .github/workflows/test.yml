@@ -86,7 +86,7 @@ jobs:
           test_file_prefix: +service-${{ matrix.service_name }}/
           check_name: ${{ matrix.service_name }} ${{ matrix.suite }} tests
       - name: service ${{ matrix.service_name }} codecov upload
-        uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
+        uses: codecov/codecov-action@fdcc8476540edceab3de004e990f80d881c6cc00 # v5.5.0
         if: matrix.suite == 'unit-test'
         with:
           name: paper-id-${{ matrix.service_name }}
