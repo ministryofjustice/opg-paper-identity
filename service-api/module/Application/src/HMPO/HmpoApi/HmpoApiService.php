@@ -55,6 +55,7 @@ class HmpoApiService
     {
         $request = new ValidatePassportRequestDTO($caseData, $passportNumber);
         $result = new ValidatePassportResponseDTO($this->getValidatePassportResponse($request));
+        $this->logger->info("Successfully validated against HMPO graphQL endpoint");
 
         return $result->isValid();
     }
@@ -65,6 +66,7 @@ class HmpoApiService
         $this->authCount++;
         $headers = $this->makeHeaders();
         try {
+            $this->logger->info("hitting hmpo graphQL endpoint");
             $response = $this->guzzleClient->request(
                 'POST',
                 self::HMPO_GRAPHQL_ENDPOINT,

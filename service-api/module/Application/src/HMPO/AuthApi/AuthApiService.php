@@ -95,6 +95,7 @@ class AuthApiService
     ): ResponseDTO {
         try {
             $headers = $this->makeHeaders();
+            $this->logger->info("Authenticating with HMPO");
             $response = $this->client->request(
                 'POST',
                 self::HMPO_AUTH_ENDPOINT,
@@ -105,6 +106,7 @@ class AuthApiService
             );
 
             $responseArray = json_decode($response->getBody()->getContents(), true);
+            $this->logger->info("Successfully authenticated with HMPO");
 
             return new ResponseDTO(
                 $responseArray['access_token'],
