@@ -95,7 +95,7 @@ class AuthApiService
     ): ResponseDTO {
         try {
             $headers = $this->makeHeaders();
-            $this->logger->info("Authenticating with HMPO");
+            $this->logger->info("Authenticating with HMPO", ["requestId" => $headers['X-REQUEST-ID']]);
             $response = $this->client->request(
                 'POST',
                 self::HMPO_AUTH_ENDPOINT,
