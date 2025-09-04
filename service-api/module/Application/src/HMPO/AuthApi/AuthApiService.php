@@ -33,7 +33,7 @@ class AuthApiService
             'Content-Type' => 'application/x-www-form-urlencoded',
             'X-API-Key' => $this->headerOptions['X-API-Key'],
             'X-REQUEST-ID' => Uuid::uuid1()->toString(),
-            'X-DVAD-NETWORK-TYPE' => 'api',
+            'X-DVAD-NETWORK-TYPE' => 'API',
             'User-Agent' => 'hmpo-opg-client',
         ];
     }

@@ -63,7 +63,7 @@ class AuthApiServiceTest extends TestCase
         $expectedHeaders = [
             'Content-Type' => 'application/x-www-form-urlencoded',
             'X-API-Key' => 'X-API-Key',
-            'X-DVAD-NETWORK-TYPE' => 'api',
+            'X-DVAD-NETWORK-TYPE' => 'API',
             'User-Agent' => 'hmpo-opg-client',
         ];
         $expectedFormParams = [

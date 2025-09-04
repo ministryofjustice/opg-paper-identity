@@ -171,7 +171,7 @@ components:
       schema:
         type: string
         enum:
-          - api
+          - API
           - PRIVATELINK
       required: true
     User-Agent:
