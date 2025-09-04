@@ -45,7 +45,7 @@ class HmpoApiService
             'Content-Type' => 'application/json',
             'X-API-Key' => $this->headerOptions['X-API-Key'],
             'X-REQUEST-ID' => strval(Uuid::uuid1()),
-            'X-DVAD-NETWORK-TYPE' => 'api',
+            'X-DVAD-NETWORK-TYPE' => 'API',
             'User-Agent' => 'hmpo-opg-client',
             'Authorization' => sprintf('Bearer %s', $this->authApiService->retrieveCachedTokenResponse())
         ];
