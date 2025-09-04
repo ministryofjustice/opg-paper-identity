@@ -79,7 +79,7 @@ class HmpoApiServiceTest extends TestCase
         $expectedHeaders = [
             'Content-Type' => 'application/json',
             'X-API-Key' => 'X-API-Key',
-            'X-DVAD-NETWORK-TYPE' => 'api',
+            'X-DVAD-NETWORK-TYPE' => 'API',
             'User-Agent' => 'hmpo-opg-client',
             'Authorization' => 'Bearer cached-token'
         ];
