@@ -37,6 +37,15 @@ class HmpoApiServiceFactory implements FactoryInterface
             'base_uri' => $baseUri,
         ];
 
+        $certPemFilePath = '/opg-private/hmpo-cert.pem';
+        $certKeyPemFilePath = '/opg-private/hmpo-private-cert-key.pem';
+        $certKeyPassphrase = (new AwsSecret('hmpo/opg-private-cert-key-passphrase'))->getValue();
+
+        if (file_exists($certPemFilePath)) {
+            $clientOptions['cert'] = $certPemFilePath;
+            $clientOptions['ssl_key'] = [$certKeyPemFilePath, $certKeyPassphrase];
+        }
+
         $guzzleClient = new Client($clientOptions);
 
         $logger = $container->get(LoggerInterface::class);

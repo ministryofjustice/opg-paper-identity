@@ -9,8 +9,8 @@ use Application\HMPO\HmpoApi\HmpoApiException;
 class ValidatePassportResponseDTO
 {
     private bool $validationResult;
-    private ?bool $passportCancelled;
-    private ?bool $passportLostStolen;
+    private bool $passportCancelled;
+    private bool $passportLostStolen;
 
     public function __construct(array $response)
     {
@@ -29,12 +29,12 @@ class ValidatePassportResponseDTO
         return $this->validationResult;
     }
 
-    public function passportCancelled(): ?bool
+    public function passportCancelled(): bool
     {
         return $this->passportCancelled;
     }
 
-    public function passportLostStolen(): ?bool
+    public function passportLostStolen(): bool
     {
         return $this->passportLostStolen;
     }
@@ -50,7 +50,6 @@ class ValidatePassportResponseDTO
 
     public function isValid(): bool
     {
-        // TODO: need to establish our logic for this.
         if ($this->validationResult() === true && $this->passportCancelled() === false) {
             return true;
         }
