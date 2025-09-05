@@ -17,7 +17,6 @@ class ValidatePassportRequestDTOTest extends TestCase
 
     public function setUp(): void
     {
-
         parent::setUp();
 
         $this->baseCase = [
@@ -43,7 +42,13 @@ class ValidatePassportRequestDTOTest extends TestCase
 
         $expected = [
                 "query" =>
-                    "query validatePassport(input: \$input) { validationResult passportCancelled passportLostStolen }",
+                    "query validatePassport(\$input: ValidatePassportInput!) {
+                        validatePassport(input: \$input) {
+                            validationResult
+                            passportCancelled
+                            passportLostStolen
+                        }
+                    }",
                 "variables" => [
                     "input" => [
                         'forenames' => 'Mary Ann',
