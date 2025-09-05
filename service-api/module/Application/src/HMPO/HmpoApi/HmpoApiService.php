@@ -95,6 +95,8 @@ class HmpoApiService
             throw new HmpoApiException($exception->getMessage());
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        $response = json_decode($response->getBody()->getContents(), true);
+        $this->logger->info("validate passport response: $response");
+        return $response;
     }
 }
