@@ -67,6 +67,10 @@ class HmpoApiService
         $headers = $this->makeHeaders();
         try {
             $this->logger->info("hitting hmpo graphQL endpoint");
+            $query = json_encode($request->constructValidatePassportRequestBody());
+            if ($query !== false) {
+                $this->logger->info('Query: ' . $query);
+            }
             $response = $this->guzzleClient->request(
                 'POST',
                 self::HMPO_GRAPHQL_ENDPOINT,
@@ -95,6 +99,8 @@ class HmpoApiService
             throw new HmpoApiException($exception->getMessage());
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        $response = $response->getBody()->getContents();
+        $this->logger->info("validate passport response: $response");
+        return json_decode($response, true);
     }
 }
