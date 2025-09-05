@@ -207,11 +207,9 @@ class IdentityController extends AbstractActionController
     public function validatePassportAction(): JsonModel
     {
 
-        $this->logger->info("getting caseData");
         $uuid = $this->params()->fromRoute('uuid');
         $data = json_decode($this->getRequest()->getContent(), true);
         $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
-        $this->logger->info("successfully retrieved caseData");
 
         if (! $caseData) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
@@ -220,9 +218,7 @@ class IdentityController extends AbstractActionController
 
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        $this->logger->info("validating passport with external service");
         $hmpoResponse = $this->hmpoApiService->validatePassport($caseData, intval($data['passportNumber']));
-        $this->logger->info("successfully validated passport with external service");
 
         return new JsonModel([
             'result' => $hmpoResponse,

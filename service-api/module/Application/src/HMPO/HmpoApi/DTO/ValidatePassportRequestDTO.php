@@ -83,7 +83,13 @@ class ValidatePassportRequestDTO
         try {
             return [
                 "query" =>
-                    "query validatePassport(input: \$input) { validationResult passportCancelled passportLostStolen }",
+                    "query validatePassport(\$input: ValidatePassportInput!) {
+                        validatePassport(input: \$input) {
+                            validationResult
+                            passportCancelled
+                            passportLostStolen
+                        }
+                    }",
                 "variables" => [
                     "input" => $this->toArray()
                 ]
