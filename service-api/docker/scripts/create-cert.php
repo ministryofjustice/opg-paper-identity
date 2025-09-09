@@ -48,3 +48,23 @@ $certPemFilename = '/opg-private/dwp-cert.pem';
 $certPemContents = $cert['SecretString'];
 file_put_contents($certPemFilename, $certPemContents);
 chmod($certPemFilename, 0400);
+
+
+// HMPO certs
+$hmpoCertKey = $smClient->getSecretValue([
+    'SecretId' => $prefix . 'hmpo/opg-private-cert-key',
+]);
+
+$hmpoKeyPemFilename = '/opg-private/hmpo-private-cert-key.pem';
+$hmpoKeyPemContents = $hmpoCertKey['SecretString'];
+file_put_contents($hmpoKeyPemFilename, $hmpoKeyPemContents);
+chmod($hmpoKeyPemContents, 0400);
+
+$hmpoCert = $smClient->getSecretValue([
+    'SecretId' => $prefix . 'hmpo/opg-private-cert',
+]);
+
+$hmpoCertPemFilename = '/opg-private/hmpo-cert.pem';
+$hmpoCertPemContents = $hmpoCert['SecretString'];
+file_put_contents($hmpoCertPemFilename, $hmpoCertPemContents);
+chmod($hmpoCertPemFilename, 0400);
