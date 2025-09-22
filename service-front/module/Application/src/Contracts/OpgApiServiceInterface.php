@@ -79,7 +79,7 @@ interface OpgApiServiceInterface
 
     public function checkDlnValidity(string $dln): string;
 
-    public function checkPassportValidity(string $passport): string;
+    public function checkPassportValidity(string $uuid, string $passport): bool;
 
     /**
      * @return Question[]|false
