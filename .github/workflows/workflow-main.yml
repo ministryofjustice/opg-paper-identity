@@ -155,10 +155,10 @@ jobs:
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      - name: Configure OIDC AWS credentials for ECR push
+      - name: Configure OIDC AWS credentials for SSM create
         uses: aws-actions/configure-aws-credentials@a03048d87541d1d9fcf2ecf528a4a65ba9bd7838 # v5.0.0
         with:
-          role-to-assume: arn:aws:iam::311462405659:role/paper-identity-ssm-role
+          role-to-assume: arn:aws:iam::997462338508:role/paper-identity-ssm-role
           role-session-name: opg-paper-identity-github-actions-ssm-push
           role-duration-seconds: 900
           aws-region: eu-west-1
