@@ -5,7 +5,7 @@ WORKDIR /root
 COPY e2e-tests/package.json .
 COPY e2e-tests/package-lock.json .
 
-RUN npm install --ignore-scripts
+RUN npm ci --ignore-scripts
 
 ENV CYPRESS_VIDEO=false
 ENV CYPRESS_baseUrl=http://front-web

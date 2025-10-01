@@ -8,7 +8,7 @@ RUN mkdir -p public
 
 COPY package.json .
 COPY yarn.lock .
-RUN yarn --ignore-scripts
+RUN yarn install --frozen-lockfile --ignore-scripts
 
 COPY web web
 RUN yarn build
