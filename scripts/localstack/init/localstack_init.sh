@@ -97,3 +97,43 @@ awslocal secretsmanager create-secret --name local/paper-identity/dwp/dwp-contex
     --description "DWP Context" \
     --secret-string "context" \
     --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/api-key \
+    --description "HMPO X-API-Key" \
+    --secret-string "X-API-Key-X-API-Key-X-API-Key-X-API-Key-X-API-Key-X-API-Key-X-API-Key" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/user-agent \
+    --description "HMPO User-Agent" \
+    --secret-string "hmpo-opg-client" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/auth-client-id \
+    --description "HMPO clientId" \
+    --secret-string "client-id" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/auth-client-secret \
+    --description "HMPO secret" \
+    --secret-string "client-secret" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/grant-type \
+    --description "HMPO grantType" \
+    --secret-string "grant-type" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/opg-private-cert-key \
+    --description "HMPO private cert key" \
+    --secret-string "private-cert-key" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/opg-private-cert \
+    --description "HMPO private cert" \
+    --secret-string "private-cert" \
+    --region "eu-west-1"
+
+awslocal secretsmanager create-secret --name local/paper-identity/hmpo/opg-private-cert-key-passphrase \
+    --description "HMPO private cert key passphrase" \
+    --secret-string "private-cert-key-passphrase" \
+    --region "eu-west-1"

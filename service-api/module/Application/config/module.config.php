@@ -16,6 +16,7 @@ use Application\Aws\SsmHandlerFactory;
 use Application\Controller\Factory\HealthcheckControllerFactory;
 use Application\DrivingLicence\ValidatorFactory as LicenceFactory;
 use Application\DrivingLicence\ValidatorInterface as LicenceInterface;
+use Application\DWP\AuthApi\AuthApiService as DwpAuthApiService;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\DWP\Factories\DwpApiServiceFactory;
 use Application\DWP\Factories\DwpAuthApiServiceFactory;
@@ -33,16 +34,15 @@ use Application\Factories\ExperianCrosscoreFraudApiServiceFactory;
 use Application\Factories\LoggerFactory;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
+use Application\HMPO\AuthApi\AuthApiService as HmpoAuthApiService;
+use Application\HMPO\HmpoApi\HmpoApiService;
+use Application\HMPO\Factories\HmpoApiServiceFactory;
+use Application\HMPO\Factories\HmpoAuthApiServiceFactory;
 use Application\KBV\KBVServiceFactory;
 use Application\KBV\KBVServiceInterface;
-use Application\Nino\ValidatorFactory as NinoValidatorFactory;
-use Application\Nino\ValidatorInterface as NinoValidatorInterface;
-use Application\Passport\ValidatorFactory as PassportValidatorFactory;
-use Application\Passport\ValidatorInterface as PassportValidatorInterface;
 use Application\Sirius\EventSender;
 use Application\Yoti\YotiServiceFactory;
 use Application\Yoti\YotiServiceInterface;
-use Application\DWP\AuthApi\AuthApiService as DwpAuthApiService;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Aws\DynamoDb\DynamoDbClient;
@@ -159,7 +159,7 @@ return [
             'validate_passport' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/identity/validate_passport',
+                    'route' => '/identity/:uuid/validate_passport',
                     'defaults' => [
                         'controller' => Controller\IdentityController::class,
                         'action' => 'validatePassport',
@@ -472,7 +472,6 @@ return [
             ),
             LoggerInterface::class => LoggerFactory::class,
             LicenceInterface::class => LicenceFactory::class,
-            PassportValidatorInterface::class => PassportValidatorFactory::class,
             KBVServiceInterface::class => KBVServiceFactory::class,
             AwsSecretsCache::class => AwsSecretsCacheFactory::class,
             YotiServiceInterface::class => YotiServiceFactory::class,
@@ -486,6 +485,8 @@ return [
             DwpAuthApiService::class => DwpAuthApiServiceFactory::class,
             DwpApiService::class => DwpApiServiceFactory::class,
             AuthListener::class => AuthListenerFactory::class,
+            HmpoAuthApiService::class => HmpoAuthApiServiceFactory::class,
+            HmpoApiService::class => HmpoApiServiceFactory::class,
         ],
     ],
     'listeners' => [

@@ -351,7 +351,7 @@ class OpgApiServiceTest extends TestCase
     }
 
     #[DataProvider('passportData')]
-    public function testValidatePassport(string $passport, Client $client, string $responseData, bool $exception): void
+    public function testValidatePassport(Client $client, bool $responseData, bool $exception): void
     {
         if ($exception) {
             $this->expectException(OpgApiException::class);
@@ -359,75 +359,28 @@ class OpgApiServiceTest extends TestCase
 
         $opgApiService = new OpgApiService($client, $this->jwtGenerator, $this->mockLogger);
 
-        $response = $opgApiService->checkPassportValidity($passport);
+        $response = $opgApiService->checkPassportValidity('uuid', '123456789');
 
         $this->assertEquals($responseData, $response);
     }
 
     public static function passportData(): array
     {
-        $validPassport = '987654321';
-        $invalidPassport = '123456789';
-        $insufficientPassport = '123456788';
-
-        $successMockResponseData = [
-            'status' => 'PASS',
-            'passport' => $validPassport,
-        ];
-
         $successMock = new MockHandler([
-            new Response(
-                200,
-                ['X-Foo' => 'Bar'],
-                json_encode($successMockResponseData, JSON_THROW_ON_ERROR)
-            ),
+            new Response(200, [], json_encode(['result' => true], JSON_THROW_ON_ERROR)),
         ]);
-        $handlerStack = HandlerStack::create($successMock);
-        $successClient = new Client(['handler' => $handlerStack]);
+        $successHandlerStack = HandlerStack::create($successMock);
+        $successClient = new Client(['handler' => $successHandlerStack]);
 
-        $failMockResponseData = [
-            'status' => 'NO_MATCH',
-            'passport' => $invalidPassport,
-        ];
         $failMock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], json_encode($failMockResponseData, JSON_THROW_ON_ERROR)),
+            new Response(200, [], json_encode(['result' => false], JSON_THROW_ON_ERROR)),
         ]);
-        $handlerStack = HandlerStack::create($failMock);
-        $failClient = new Client(['handler' => $handlerStack]);
-
-        $insufficientMockResponseData = [
-            'status' => 'NOT_ENOUGH_DETAILS',
-            'passport' => $insufficientPassport,
-        ];
-        $insufficientMock = new MockHandler([
-            new Response(
-                200,
-                ['X-Foo' => 'Bar'],
-                json_encode($insufficientMockResponseData, JSON_THROW_ON_ERROR)
-            ),
-        ]);
-        $handlerStack = HandlerStack::create($insufficientMock);
-        $insufficientClient = new Client(['handler' => $handlerStack]);
+        $failHandlerStack = HandlerStack::create($failMock);
+        $failClient = new Client(['handler' => $failHandlerStack]);
 
         return [
-            [
-                $validPassport,
-                $successClient,
-                'PASS',
-                false,
-            ],
-            [
-                $invalidPassport,
-                $failClient,
-                'NO_MATCH',
-                false,
-            ],
-            [
-                $insufficientPassport,
-                $insufficientClient,
-                'NOT_ENOUGH_DETAILS',
-                false,
-            ],
+            [$successClient, true, false],
+            [$failClient, false, false],
         ];
     }
 
