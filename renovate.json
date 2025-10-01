@@ -42,6 +42,18 @@
       "matchPackageNames": [
         "*"
       ]
+    },
+    {
+      "automerge": true,
+      "groupName": "Github Patch & Minor Updates",
+      "groupSlug": "github-minor-patch-updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "prPriority": 2,
+      "minimumReleaseAge": "3 days",
+      "schedule": ["on sunday"],
+      "commitMessageSuffix": " #patch",
+      "matchPackageNames": ["*"],
+      "matchFileNames": [".github/**"]
     }
   ],
   "major": {
