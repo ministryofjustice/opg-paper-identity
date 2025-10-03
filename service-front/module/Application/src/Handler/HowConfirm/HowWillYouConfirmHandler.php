@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Controller;
+namespace Application\Handler\HowConfirm;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Controller\Trait\FormBuilder;
@@ -11,31 +11,38 @@ use Application\Enums\PersonType;
 use Application\Forms\IdMethod;
 use Application\Forms\PassportDate;
 use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\RouteHelper;
 use Application\PostOffice\Country;
-use Laminas\Http\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Form\FormInterface;
-use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
+use Mezzio\Template\TemplateRendererInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class HowConfirmController extends AbstractActionController
+class HowWillYouConfirmHandler implements RequestHandlerInterface
 {
     use FormBuilder;
-
-    protected $plugins;
 
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly FormProcessorHelper $formProcessorHelper,
+        private readonly RouteHelper $routeHelper,
+        private readonly TemplateRendererInterface $renderer,
     ) {
     }
 
-    public function howWillYouConfirmAction(): ViewModel|Response
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $templates = ['default' => 'application/pages/how_will_you_confirm'];
-        $uuid = $this->params()->fromRoute("uuid");
+        $uuid = $request->getAttribute('uuid');
+
         $view = new ViewModel();
-        $dateSubForm = $this->createForm(PassportDate::class);
-        $form = $this->createForm(IdMethod::class);
+        $formData = $request->getParsedBody();
+        $dateSubForm = $this->createForm(PassportDate::class, $formData);
+        $form = $this->createForm(IdMethod::class, $formData);
 
         $routeAvailability = $this->opgApiService->getRouteAvailability($uuid);
 
@@ -47,10 +54,9 @@ class HowConfirmController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable('uuid', $uuid);
 
-        if ($this->getRequest()->isPost()) {
-            $formData = $this->getRequest()->getPost()->toArray();
+        if ($request->getMethod() === 'POST') {
             if (array_key_exists('check_button', $formData)) {
-                $variables = $this->handlePassportDateCheckFormSubmission($dateSubForm, $templates, $uuid);
+                $variables = $this->handlePassportDateCheckFormSubmission($dateSubForm, $formData, $templates, $uuid);
                 $view->setVariables($variables);
             } else {
                 $response = $this->handleIdMethodFormSubmission($form, $formData, $uuid, $detailsData['personType']);
@@ -60,20 +66,18 @@ class HowConfirmController extends AbstractActionController
             }
         }
 
-        return $view->setTemplate($templates['default']);
+        return new HtmlResponse($this->renderer->render($templates['default'], $view->getVariables()));
     }
 
     /**
-    * @param FormInterface $idMethodForm
     * @param array<string, mixed> $formData
-    * @return Response|null
     */
     private function handleIdMethodFormSubmission(
         FormInterface $idMethodForm,
         array $formData,
         string $uuid,
         PersonType $personType
-    ): Response|null {
+    ): ResponseInterface|null {
         $routes = [
             PersonType::Donor->value => 'root/donor_details_match_check',
             PersonType::CertificateProvider->value => 'root/cp_name_match_check',
@@ -97,30 +101,33 @@ class HowConfirmController extends AbstractActionController
             $idMethod = [
                 'idRoute' => IdRoute::KBV->value,
                 'idCountry' => Country::GBR->value,
-                'docType' => $formData['id_method']
+                'docType' => $formData['id_method'],
             ];
             $returnRoute = $routes[$personType->value];
         }
         $this->opgApiService->updateIdMethod($uuid, $idMethod);
-        return $this->redirect()->toRoute($returnRoute, ['uuid' => $uuid]);
+
+        return $this->routeHelper->toRedirect($returnRoute, ['uuid' => $uuid]);
     }
 
     /**
-    * @param FormInterface $dateSubForm
+    * @param array<string, mixed> $formData
     * @param array<string, mixed> $templates
     * @return array<string, mixed>
     */
     private function handlePassportDateCheckFormSubmission(
         FormInterface $dateSubForm,
+        array $formData,
         array $templates,
         string $uuid
     ): array {
         $formProcessorResponseDto = $this->formProcessorHelper->processPassportDateForm(
             $uuid,
-            $this->getRequest()->getPost(),
+            new Parameters($formData),
             $dateSubForm,
             $templates
         );
+
         return $formProcessorResponseDto->getVariables();
     }
 }

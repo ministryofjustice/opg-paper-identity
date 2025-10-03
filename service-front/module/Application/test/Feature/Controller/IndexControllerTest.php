@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Controller;
 
-use Application\Controller\IndexController;
 use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\OpgApiService;
