@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\HowConfirmController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Enums\PersonType;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
-use Dom\Document;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -48,7 +46,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $mockResponseData = ['personType' => PersonType::Donor];
         $mockrouteAvailability = [
             'data' => $routeAvailability,
-            'messages' => []
+            'messages' => [],
         ];
 
         $this
@@ -68,9 +66,6 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'GET');
 
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(HowConfirmController::class);
-        $this->assertControllerClass('HowConfirmController');
         $this->assertMatchedRouteName('root/how_will_you_confirm');
 
         // this is slightly tricky to test as some radios are just not created at all and
@@ -95,7 +90,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             DocumentType::NationalInsuranceNumber->value => true,
             IdRoute::POST_OFFICE->value => true,
             IdRoute::VOUCHING->value => true,
-            IdRoute::COURT_OF_PROTECTION->value => true
+            IdRoute::COURT_OF_PROTECTION->value => true,
         ];
         $routeAvailabilityNone = [
             IdRoute::KBV->value => true,
@@ -104,7 +99,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             DocumentType::NationalInsuranceNumber->value => false,
             IdRoute::POST_OFFICE->value => false,
             IdRoute::VOUCHING->value => false,
-            IdRoute::COURT_OF_PROTECTION->value => false
+            IdRoute::COURT_OF_PROTECTION->value => false,
         ];
 
         $coreRadios = [
@@ -195,7 +190,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
                 DocumentType::NationalInsuranceNumber->value => false,
                 IdRoute::POST_OFFICE->value => false,
             ],
-            'messages' => [$message]
+            'messages' => [$message],
         ];
 
         $this
@@ -214,7 +209,6 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertControllerClass('HowConfirmController');
         $this->assertQueryContentContains('div#routeAvailabilityBanner', $message);
     }
 

@@ -16,10 +16,10 @@ trait FormBuilder
      * @param class-string<T> $form
      * @return FormInterface<U>
      */
-    protected function createForm($form)
+    protected function createForm($form, ?iterable $formData = null)
     {
         $form = (new AttributeBuilder())->createForm($form);
-        $form->setData($this->getRequest()->getPost());
+        $form->setData($formData ?? $this->getRequest()->getPost());
 
         return $form;
     }
