@@ -27,6 +27,8 @@
         <PossiblyUnusedMethod>
             <errorLevel type="suppress">
                 <file name="module/Application/src/Controller/*Controller.php" />
+                <referencedMethod name="*::__construct" />
+                <referencedMethod name="/.*::__construct/" />
             </errorLevel>
         </PossiblyUnusedMethod>
         <PropertyNotSetInConstructor>
