@@ -20,9 +20,6 @@ class IsType extends AbstractValidator
     public readonly array $allowedTypes;
 
     /**
-     * @psalm-suppress PossiblyUnusedMethod
-     * This is called from within laminas-form
-     *
      * @param {types: string[]|string} $options
      */
     public function __construct(array $options)

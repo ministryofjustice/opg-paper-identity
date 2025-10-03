@@ -2,26 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Application\Controller\Factory;
+namespace Application\Handler;
 
-use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\IndexController;
 use Application\Exceptions\StartupException;
 use Application\Helpers\LpaFormHelper;
-use Application\Helpers\SendSiriusNoteHelper;
+use Application\Helpers\RouteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 
-class IndexControllerFactory implements FactoryInterface
+class StartHandlerFactory implements FactoryInterface
 {
     /**
-     * @param ContainerInterface $container
-     * @param string $requestedName
-     * @param mixed[]|null $options
+     * @inheritDoc
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null): IndexController
+    public function __invoke(ContainerInterface $container, $requestedName, ?array $options = null): StartHandler
     {
         $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
 
@@ -29,10 +26,12 @@ class IndexControllerFactory implements FactoryInterface
             throw new StartupException('SIRIUS_PUBLIC_URL environment variable not set');
         }
 
-        return new IndexController(
-            $container->get(OpgApiServiceInterface::class),
+        return new StartHandler(
+            $container->get(RouteHelper::class),
+            $container->get(TemplateRendererInterface::class),
+            $container->get(LpaFormHelper::class),
             $container->get(SiriusApiService::class),
-            $container->get(SendSiriusNoteHelper::class),
+            $container->get(SiriusDataProcessorHelper::class),
             $siriusPublicUrl,
         );
     }

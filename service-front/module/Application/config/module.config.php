@@ -12,12 +12,11 @@ use Application\Controller\Factory\CourtOfProtectionFlowControllerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
-use Application\Controller\Factory\HowConfirmControllerFactory;
 use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
-use Application\Enums\IdRoute;
 use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
@@ -27,11 +26,14 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
-use Exception;
 use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
+use Laminas\Mvc\Middleware\PipeSpec;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Lcobucci\Clock\SystemClock;
+use Mezzio\Template\TemplateRendererInterface;
+use Mezzio\Twig\TwigRenderer;
+use Mezzio\Twig\TwigRendererFactory;
 use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Twig\Extension\DebugExtension;
@@ -77,8 +79,8 @@ return [
                         'options' => [
                             'route' => '/start',
                             'defaults' => [
-                                'controller' => Controller\IndexController::class,
-                                'action' => 'start',
+                                'controller' => PipeSpec::class,
+                                'middleware' => Handler\StartHandler::class,
                             ],
                         ],
                     ],
@@ -87,8 +89,13 @@ return [
                         'options' => [
                             'route' => '/:uuid/how-will-you-confirm',
                             'defaults' => [
-                                'controller' => Controller\HowConfirmController::class,
-                                'action' => 'howWillYouConfirm',
+                                // 'controller' => Controller\HowConfirmController::class,
+                                // 'action' => 'howWillYouConfirm',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\HowConfirm\HowWillYouConfirmHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -511,7 +518,6 @@ return [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
-            Controller\HowConfirmController::class => HowConfirmControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
             Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
@@ -535,13 +541,22 @@ return [
             'error/404' => __DIR__ . '/../view/error/404.phtml',
             'error/index' => __DIR__ . '/../view/error/index.phtml',
         ],
+        'default_template_suffix' => 'twig',
         'template_path_stack' => [
             __DIR__ . '/../view',
+        ],
+    ],
+    'templates' => [
+        'extension' => 'twig',
+        'layout' => 'layout/plain',
+        'map' => [
+            'layout/layout' => __DIR__ . '/../view/layout/layout.phtml',
         ],
     ],
     'service_manager' => [
         'aliases' => [
             Contracts\OpgApiServiceInterface::class => Services\OpgApiService::class,
+            TemplateRendererInterface::class => TwigRenderer::class,
         ],
         'factories' => [
             AuthListener::class => AuthListenerFactory::class,
@@ -552,6 +567,10 @@ return [
             SiriusApiService::class => SiriusApiServiceFactory::class,
             TwigExtension::class => TwigExtensionFactory::class,
             DocumentTypeRepository::class => DocumentTypeRepositoryFactory::class,
+            TwigRenderer::class => TwigRendererFactory::class,
+
+            // Handlers
+            Handler\StartHandler::class => Handler\StartHandlerFactory::class,
         ],
     ],
     'zend_twig' => [
