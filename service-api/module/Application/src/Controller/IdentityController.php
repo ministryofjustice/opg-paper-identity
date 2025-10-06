@@ -17,6 +17,7 @@ use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Fixtures\DataWriteHandler;
 use Application\Helpers\CaseOutcomeCalculator;
+use Application\HMPO\HmpoApi\HmpoApiService;
 use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\DocCheck;
@@ -24,7 +25,6 @@ use Application\Model\Entity\FraudScore;
 use Application\Model\Entity\IdMethod;
 use Application\Model\Entity\Problem;
 use Application\Nino\ValidatorInterface;
-use Application\Passport\ValidatorInterface as PassportValidator;
 use Application\Sirius\UpdateStatus;
 use Application\View\JsonModel;
 use Exception;
@@ -48,7 +48,7 @@ class IdentityController extends AbstractActionController
         private readonly DataQueryHandler $dataQueryHandler,
         private readonly DataWriteHandler $dataHandler,
         private readonly LicenceValidatorInterface $licenceValidator,
-        private readonly PassportValidator $passportService,
+        private readonly HmpoApiService $hmpoApiService,
         private readonly LoggerInterface $logger,
         private readonly FraudApiService $experianCrosscoreFraudApiService,
         private readonly CaseOutcomeCalculator $caseOutcomeCalculator,
@@ -206,15 +206,23 @@ class IdentityController extends AbstractActionController
 
     public function validatePassportAction(): JsonModel
     {
-        $data = json_decode($this->getRequest()->getContent(), true);
-        $passportStatus = $this->passportService->validatePassport(intval($data['passport']));
 
-        $response = [
-            'status' => $passportStatus,
-        ];
+        $uuid = $this->params()->fromRoute('uuid');
+        $data = json_decode($this->getRequest()->getContent(), true);
+        $caseData = $this->dataQueryHandler->getCaseByUUID($uuid);
+
+        if (! $caseData) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_404);
+            return new JsonModel(new Problem('Case not found'));
+        }
+
         $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
 
-        return new JsonModel($response);
+        $hmpoResponse = $this->hmpoApiService->validatePassport($caseData, intval($data['passportNumber']));
+
+        return new JsonModel([
+            'result' => $hmpoResponse,
+        ]);
     }
 
     public function updateIdMethodAction(): JsonModel

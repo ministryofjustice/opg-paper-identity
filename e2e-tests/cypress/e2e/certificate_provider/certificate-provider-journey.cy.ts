@@ -153,7 +153,7 @@ describe("Identify a Certificate Provider", () => {
 
         cy.contains("Passport number").click();
 
-        cy.get("#passport").type("123456781", {force: true});
+        cy.get("#passport").type("123456785", {force: true});
         cy.get(".govuk-button").contains("Continue").click();
         cy.contains("Please choose yes or no");
 
@@ -170,7 +170,7 @@ describe("Identify a Certificate Provider", () => {
         cy.contains("Help with checking if passport is in date").click();
         cy.contains("Enter passport expiry date. For example, 31 03 2012");
 
-        cy.get("#passport").type("123456781", {force: true});
+        cy.get("#passport").type("123456785", {force: true});
         cy.contains("Yes").click();
         cy.get(".govuk-button").contains("Continue").click();
 
