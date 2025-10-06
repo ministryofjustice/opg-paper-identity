@@ -86,12 +86,12 @@ class HmpoApiServiceTest extends TestCase
         $expectedBody = [
             "query" =>
                 "query validatePassport(\$input: ValidatePassportInput!) {
-                        validatePassport(input: \$input) {
-                            validationResult
-                            passportCancelled
-                            passportLostStolen
-                        }
-                    }",
+                    validatePassport(input: \$input) {
+                        validationResult
+                        passportCancelled
+                        passportLostStolen
+                    }
+                }",
             "variables" => [
                 "input" => [
                     'forenames' => 'Mary Ann',

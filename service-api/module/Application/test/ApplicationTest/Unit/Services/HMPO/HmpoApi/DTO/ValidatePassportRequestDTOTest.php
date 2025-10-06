@@ -41,22 +41,22 @@ class ValidatePassportRequestDTOTest extends TestCase
         );
 
         $expected = [
-                "query" =>
-                    "query validatePassport(\$input: ValidatePassportInput!) {
-                        validatePassport(input: \$input) {
-                            validationResult
-                            passportCancelled
-                            passportLostStolen
-                        }
-                    }",
-                "variables" => [
-                    "input" => [
-                        'forenames' => 'Mary Ann',
-                        'surname' => 'Chapman',
-                        'dateOfBirth' => '2000-01-01',
-                        'passportNumber' => 123456789
-                    ]
+            "query" =>
+                "query validatePassport(\$input: ValidatePassportInput!) {
+                    validatePassport(input: \$input) {
+                        validationResult
+                        passportCancelled
+                        passportLostStolen
+                    }
+                }",
+            "variables" => [
+                "input" => [
+                    'forenames' => 'Mary Ann',
+                    'surname' => 'Chapman',
+                    'dateOfBirth' => '2000-01-01',
+                    'passportNumber' => 123456789
                 ]
+            ]
             ];
 
         $this->assertEquals($dto->constructValidatePassportRequestBody(), $expected);

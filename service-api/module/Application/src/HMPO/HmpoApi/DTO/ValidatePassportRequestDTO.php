@@ -80,22 +80,18 @@ class ValidatePassportRequestDTO
 
     public function constructValidatePassportRequestBody(): array
     {
-        try {
-            return [
-                "query" =>
-                    "query validatePassport(\$input: ValidatePassportInput!) {
-                        validatePassport(input: \$input) {
-                            validationResult
-                            passportCancelled
-                            passportLostStolen
-                        }
-                    }",
-                "variables" => [
-                    "input" => $this->toArray()
-                ]
-            ];
-        } catch (\Exception $exception) {
-            throw new HmpoApiException($exception->getMessage());
-        }
+        return [
+            "query" =>
+                "query validatePassport(\$input: ValidatePassportInput!) {
+                    validatePassport(input: \$input) {
+                        validationResult
+                        passportCancelled
+                        passportLostStolen
+                    }
+                }",
+            "variables" => [
+                "input" => $this->toArray()
+            ]
+        ];
     }
 }
