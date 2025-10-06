@@ -15,21 +15,17 @@ use Application\Model\Entity\CaseData;
 use Application\Model\Entity\CaseProgress;
 use Application\Model\Entity\Kbvs;
 use ApplicationTest\TestCase;
-use DateTimeImmutable;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArrayUtils;
-use Lcobucci\Clock\FrozenClock;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Clock\ClockInterface;
 
 class KbvControllerTest extends TestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $kbvServiceMock;
     private CaseOutcomeCalculator&MockObject $caseOutcomeCalculatorMock;
-    private ClockInterface $mockClock;
 
     public function setUp(): void
     {
@@ -47,7 +43,6 @@ class KbvControllerTest extends TestCase
         $this->dataQueryHandlerMock = $this->createMock(DataQueryHandler::class);
         $this->kbvServiceMock = $this->createMock(KBVServiceInterface::class);
         $this->caseOutcomeCalculatorMock = $this->createMock(CaseOutcomeCalculator::class);
-        $this->mockClock = new FrozenClock(new DateTimeImmutable('2024-11-06 13:49:30'));
 
         parent::setUp();
 
@@ -56,7 +51,6 @@ class KbvControllerTest extends TestCase
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(KBVServiceInterface::class, $this->kbvServiceMock);
         $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseOutcomeCalculatorMock);
-        $serviceManager->setService(ClockInterface::class, $this->mockClock);
     }
 
     #[DataProvider('kbvAnswersData')]

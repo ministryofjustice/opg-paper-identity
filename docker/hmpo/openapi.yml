@@ -57,7 +57,6 @@ paths:
                 properties:
                   access_token:
                     type: string
-                    # I can't see any format given in the docs
                   expires_in:
                     type: integer
                   refresh_expires_in:
@@ -172,7 +171,7 @@ components:
       schema:
         type: string
         enum:
-          - api
+          - API
           - PRIVATELINK
       required: true
     User-Agent:
