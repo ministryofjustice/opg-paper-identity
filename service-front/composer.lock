@@ -3067,16 +3067,16 @@
         },
         {
             "name": "laminas/laminas-session",
-            "version": "2.25.0",
+            "version": "2.25.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-session.git",
-                "reference": "ed791de0bd04276886b43192fc1a24e1f536fda2"
+                "reference": "17b5fd6aa9889dc8362c26d4c7500c93ff4347cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/ed791de0bd04276886b43192fc1a24e1f536fda2",
-                "reference": "ed791de0bd04276886b43192fc1a24e1f536fda2",
+                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/17b5fd6aa9889dc8362c26d4c7500c93ff4347cb",
+                "reference": "17b5fd6aa9889dc8362c26d4c7500c93ff4347cb",
                 "shasum": ""
             },
             "require": {
@@ -3146,7 +3146,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-10-01T09:34:43+00:00"
+            "time": "2025-10-11T09:26:06+00:00"
         },
         {
             "name": "laminas/laminas-skeleton-installer",
@@ -3648,34 +3648,34 @@
         },
         {
             "name": "lcobucci/clock",
-            "version": "3.3.1",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/clock.git",
-                "reference": "db3713a61addfffd615b79bf0bc22f0ccc61b86b"
+                "reference": "f91d84f65cb3e974988bbe872b5da8ca132a155f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/clock/zipball/db3713a61addfffd615b79bf0bc22f0ccc61b86b",
-                "reference": "db3713a61addfffd615b79bf0bc22f0ccc61b86b",
+                "url": "https://api.github.com/repos/lcobucci/clock/zipball/f91d84f65cb3e974988bbe872b5da8ca132a155f",
+                "reference": "f91d84f65cb3e974988bbe872b5da8ca132a155f",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.2.0 || ~8.3.0 || ~8.4.0",
+                "php": "~8.3.0 || ~8.4.0",
                 "psr/clock": "^1.0"
             },
             "provide": {
                 "psr/clock-implementation": "1.0"
             },
             "require-dev": {
-                "infection/infection": "^0.29",
+                "infection/infection": "^0.31",
                 "lcobucci/coding-standard": "^11.1.0",
                 "phpstan/extension-installer": "^1.3.1",
-                "phpstan/phpstan": "^1.10.25",
-                "phpstan/phpstan-deprecation-rules": "^1.1.3",
-                "phpstan/phpstan-phpunit": "^1.3.13",
-                "phpstan/phpstan-strict-rules": "^1.5.1",
-                "phpunit/phpunit": "^11.3.6"
+                "phpstan/phpstan": "^2.0.0",
+                "phpstan/phpstan-deprecation-rules": "^2.0.0",
+                "phpstan/phpstan-phpunit": "^2.0.0",
+                "phpstan/phpstan-strict-rules": "^2.0.0",
+                "phpunit/phpunit": "^12.0.0"
             },
             "type": "library",
             "autoload": {
@@ -3696,7 +3696,7 @@
             "description": "Yet another clock abstraction",
             "support": {
                 "issues": "https://github.com/lcobucci/clock/issues",
-                "source": "https://github.com/lcobucci/clock/tree/3.3.1"
+                "source": "https://github.com/lcobucci/clock/tree/3.4.0"
             },
             "funding": [
                 {
@@ -3708,7 +3708,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-09-24T20:45:14+00:00"
+            "time": "2025-10-08T18:00:48+00:00"
         },
         {
             "name": "lcobucci/jwt",
@@ -3864,16 +3864,16 @@
         },
         {
             "name": "mezzio/mezzio-laminasviewrenderer",
-            "version": "2.18.0",
+            "version": "2.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mezzio/mezzio-laminasviewrenderer.git",
-                "reference": "1c42fa9d0e8a6c7d2be6111f802496471baf6552"
+                "reference": "ae8439e46908e966d5e288109158b4c6d9508f31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-laminasviewrenderer/zipball/1c42fa9d0e8a6c7d2be6111f802496471baf6552",
-                "reference": "1c42fa9d0e8a6c7d2be6111f802496471baf6552",
+                "url": "https://api.github.com/repos/mezzio/mezzio-laminasviewrenderer/zipball/ae8439e46908e966d5e288109158b4c6d9508f31",
+                "reference": "ae8439e46908e966d5e288109158b4c6d9508f31",
                 "shasum": ""
             },
             "require": {
@@ -3882,7 +3882,7 @@
                 "mezzio/mezzio-helpers": "^5.15.0",
                 "mezzio/mezzio-router": "^3.16.1 || ^4.0.0",
                 "mezzio/mezzio-template": "^2.8.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
                 "psr/container": "^1.0",
                 "psr/http-message": "^1.0.1 || ^2.0.0"
             },
@@ -3891,10 +3891,10 @@
                 "zendframework/zend-expressive-zendviewrenderer": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~3.0.1",
-                "phpunit/phpunit": "^10.5.45",
+                "laminas/laminas-coding-standard": "~3.1.0",
+                "phpunit/phpunit": "^11.5.42",
                 "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.1"
+                "vimeo/psalm": "^6.13.1"
             },
             "type": "library",
             "extra": {
@@ -3935,7 +3935,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-04-28T08:56:01+00:00"
+            "time": "2025-10-12T19:04:54+00:00"
         },
         {
             "name": "mezzio/mezzio-router",
@@ -4021,29 +4021,29 @@
         },
         {
             "name": "mezzio/mezzio-template",
-            "version": "2.12.0",
+            "version": "2.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mezzio/mezzio-template.git",
-                "reference": "6a3c0211b8e4d403fefce39b65f7a7cd704635fd"
+                "reference": "ad72bb31036d0639a5c5a502af234217faf6932f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-template/zipball/6a3c0211b8e4d403fefce39b65f7a7cd704635fd",
-                "reference": "6a3c0211b8e4d403fefce39b65f7a7cd704635fd",
+                "url": "https://api.github.com/repos/mezzio/mezzio-template/zipball/ad72bb31036d0639a5c5a502af234217faf6932f",
+                "reference": "ad72bb31036d0639a5c5a502af234217faf6932f",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "conflict": {
                 "zendframework/zend-expressive-template": "*"
             },
             "require-dev": {
                 "laminas/laminas-coding-standard": "~3.1.0",
-                "phpunit/phpunit": "^10.5.45",
+                "phpunit/phpunit": "^11.5.42",
                 "psalm/plugin-phpunit": "^0.19.5",
-                "vimeo/psalm": "^6.10.0"
+                "vimeo/psalm": "^6.13.1"
             },
             "suggest": {
                 "mezzio/mezzio-laminasviewrenderer": "^2.0 to use the laminas-view PhpRenderer template renderer",
@@ -4081,27 +4081,27 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-09-30T08:42:10+00:00"
+            "time": "2025-10-11T08:45:28+00:00"
         },
         {
             "name": "mezzio/mezzio-twigrenderer",
-            "version": "2.17.0",
+            "version": "2.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mezzio/mezzio-twigrenderer.git",
-                "reference": "b2856442d6e90d509cdde2a8fa1ba8bb5a33afe6"
+                "reference": "5e6e91cccd157fedb4717e2b0805ee3ca87f3965"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mezzio/mezzio-twigrenderer/zipball/b2856442d6e90d509cdde2a8fa1ba8bb5a33afe6",
-                "reference": "b2856442d6e90d509cdde2a8fa1ba8bb5a33afe6",
+                "url": "https://api.github.com/repos/mezzio/mezzio-twigrenderer/zipball/5e6e91cccd157fedb4717e2b0805ee3ca87f3965",
+                "reference": "5e6e91cccd157fedb4717e2b0805ee3ca87f3965",
                 "shasum": ""
             },
             "require": {
                 "mezzio/mezzio-helpers": "^5.7",
                 "mezzio/mezzio-router": "^3.7",
                 "mezzio/mezzio-template": "^2.2",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
                 "psr/container": "^1.0 || ^2.0",
                 "twig/twig": "^3.14.0"
             },
@@ -4110,10 +4110,10 @@
                 "zendframework/zend-expressive-twigrenderer": "*"
             },
             "require-dev": {
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "phpunit/phpunit": "^10.5.36",
-                "psalm/plugin-phpunit": "^0.19.0",
-                "vimeo/psalm": "^5.26.1"
+                "laminas/laminas-coding-standard": "~3.1.0",
+                "phpunit/phpunit": "^11.5.42",
+                "psalm/plugin-phpunit": "^0.19.5",
+                "vimeo/psalm": "^6.13.1"
             },
             "type": "library",
             "extra": {
@@ -4155,7 +4155,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2024-10-16T20:54:16+00:00"
+            "time": "2025-10-12T19:23:57+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -9658,16 +9658,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.4.0",
+            "version": "12.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "f62aab5794e36ccd26860db2d1bbf89ac19028d9"
+                "reference": "fc5413a2e6d240d2f6d9317bdf7f0a24e73de194"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f62aab5794e36ccd26860db2d1bbf89ac19028d9",
-                "reference": "f62aab5794e36ccd26860db2d1bbf89ac19028d9",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fc5413a2e6d240d2f6d9317bdf7f0a24e73de194",
+                "reference": "fc5413a2e6d240d2f6d9317bdf7f0a24e73de194",
                 "shasum": ""
             },
             "require": {
@@ -9735,7 +9735,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.4.0"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.4.1"
             },
             "funding": [
                 {
@@ -9759,7 +9759,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-03T04:28:03+00:00"
+            "time": "2025-10-09T14:08:29+00:00"
         },
         {
             "name": "psalm/plugin-phpunit",
