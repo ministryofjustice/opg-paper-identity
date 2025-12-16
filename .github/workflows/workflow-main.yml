@@ -27,19 +27,16 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: "0"
-      - name: Define commit SHA and branch
-        id: commit_branch
+      - name: Define branch
+        id: identify_branch
         run: |
           if [ "$GITHUB_HEAD_REF" == "" ]; then
-              echo "COMMIT=${{github.sha}}" >> $GITHUB_OUTPUT
               echo "BRANCH=main" >> $GITHUB_OUTPUT
           else
-              echo "COMMIT=${{github.event.pull_request.head.sha}}" >> $GITHUB_OUTPUT
               echo "BRANCH=$GITHUB_HEAD_REF" >> $GITHUB_OUTPUT
           fi
     outputs:
-      commit: ${{ steps.commit_branch.outputs.COMMIT }}
-      branch_name: ${{ steps.commit_branch.outputs.BRANCH }}
+      branch_name: ${{ steps.identify_branch.outputs.BRANCH }}
 
   # generate tag & timestamp
   create-tag:
