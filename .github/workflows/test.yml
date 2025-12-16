@@ -61,7 +61,7 @@ jobs:
           mkdir -m 0777 service-${{ matrix.service_name }}/build
       - name: Set version env var
         run: |
-          if [ "${{ github.head_ref }}" == "" ]; then
+          if [ "$GITHUB_HEAD_REF" == "" ]; then
               echo "PACT_CONSUMER_VERSION=${{github.sha}}" >> $GITHUB_ENV
           else
               echo "PACT_CONSUMER_VERSION=${{github.event.pull_request.head.sha}}" >> $GITHUB_ENV
