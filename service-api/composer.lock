@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.366.2",
+            "version": "3.368.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "de3b25e2d86aa081814e198fe5cde4ef0ff7f879"
+                "reference": "c1189f8e4ba3268d6306e515f6f65611c671d033"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/de3b25e2d86aa081814e198fe5cde4ef0ff7f879",
-                "reference": "de3b25e2d86aa081814e198fe5cde4ef0ff7f879",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c1189f8e4ba3268d6306e515f6f65611c671d033",
+                "reference": "c1189f8e4ba3268d6306e515f6f65611c671d033",
                 "shasum": ""
             },
             "require": {
@@ -153,9 +153,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.366.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.368.0"
             },
-            "time": "2025-12-05T19:09:22+00:00"
+            "time": "2025-12-16T20:11:32+00:00"
         },
         {
             "name": "brick/math",
@@ -1366,16 +1366,16 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "3.23.0",
+            "version": "3.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "d901cff436516c38c89bdc5eb03b8f4172100214"
+                "reference": "f8d04284db03a0cc6cc712e565c2b012179ec196"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/d901cff436516c38c89bdc5eb03b8f4172100214",
-                "reference": "d901cff436516c38c89bdc5eb03b8f4172100214",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/f8d04284db03a0cc6cc712e565c2b012179ec196",
+                "reference": "f8d04284db03a0cc6cc712e565c2b012179ec196",
                 "shasum": ""
             },
             "require": {
@@ -1461,7 +1461,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-11-07T22:41:15+00:00"
+            "time": "2025-12-15T13:11:28+00:00"
         },
         {
             "name": "laminas/laminas-http",
@@ -4001,20 +4001,20 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "4.9.1",
+            "version": "4.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440"
+                "reference": "8429c78ca35a09f27565311b98101e2826affde0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/81f941f6f729b1e3ceea61d9d014f8b6c6800440",
-                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/8429c78ca35a09f27565311b98101e2826affde0",
+                "reference": "8429c78ca35a09f27565311b98101e2826affde0",
                 "shasum": ""
             },
             "require": {
-                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
+                "brick/math": "^0.8.16 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
                 "php": "^8.0",
                 "ramsey/collection": "^1.2 || ^2.0"
             },
@@ -4073,9 +4073,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-                "source": "https://github.com/ramsey/uuid/tree/4.9.1"
+                "source": "https://github.com/ramsey/uuid/tree/4.9.2"
             },
-            "time": "2025-09-04T20:59:21+00:00"
+            "time": "2025-12-14T04:43:48+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -7120,16 +7120,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.0",
+            "version": "12.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "fef037fe50d20ce826cdbd741b7a2afcdec5f45b"
+                "reference": "4ba0e923f9d3fc655de22f9547c01d15a41fc93a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fef037fe50d20ce826cdbd741b7a2afcdec5f45b",
-                "reference": "fef037fe50d20ce826cdbd741b7a2afcdec5f45b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4ba0e923f9d3fc655de22f9547c01d15a41fc93a",
+                "reference": "4ba0e923f9d3fc655de22f9547c01d15a41fc93a",
                 "shasum": ""
             },
             "require": {
@@ -7143,7 +7143,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.3",
-                "phpunit/php-code-coverage": "^12.5.0",
+                "phpunit/php-code-coverage": "^12.5.1",
                 "phpunit/php-file-iterator": "^6.0.0",
                 "phpunit/php-invoker": "^6.0.0",
                 "phpunit/php-text-template": "^5.0.0",
@@ -7197,7 +7197,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.0"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.4"
             },
             "funding": [
                 {
@@ -7221,7 +7221,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-05T04:59:40+00:00"
+            "time": "2025-12-15T06:05:34+00:00"
         },
         {
             "name": "psalm/plugin-phpunit",
@@ -9119,16 +9119,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.13.1",
+            "version": "6.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51"
+                "reference": "bbd217fc98c0daa0a13aea2a7f119d03ba3fc9a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51",
-                "reference": "1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/bbd217fc98c0daa0a13aea2a7f119d03ba3fc9a0",
+                "reference": "bbd217fc98c0daa0a13aea2a7f119d03ba3fc9a0",
                 "shasum": ""
             },
             "require": {
@@ -9151,7 +9151,7 @@
                 "fidry/cpu-core-counter": "^0.4.1 || ^0.5.1 || ^1.0.0",
                 "netresearch/jsonmapper": "^5.0",
                 "nikic/php-parser": "^5.0.0",
-                "php": "~8.1.31 || ~8.2.27 || ~8.3.16 || ~8.4.3",
+                "php": "~8.1.31 || ~8.2.27 || ~8.3.16 || ~8.4.3 || ~8.5.0",
                 "sebastian/diff": "^4.0 || ^5.0 || ^6.0 || ^7.0",
                 "spatie/array-to-xml": "^2.17.0 || ^3.0",
                 "symfony/console": "^6.0 || ^7.0",
@@ -9233,7 +9233,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2025-08-06T10:10:28+00:00"
+            "time": "2025-12-11T08:58:52+00:00"
         }
     ],
     "aliases": [],
