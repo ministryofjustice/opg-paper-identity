@@ -78,7 +78,7 @@ jobs:
         run: |
           make -i clean-junit-output
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2.21.0
+        uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f # v2.22.0
         if: always()
         with:
           comment_mode: off
@@ -86,7 +86,7 @@ jobs:
           test_file_prefix: +service-${{ matrix.service_name }}/
           check_name: ${{ matrix.service_name }} ${{ matrix.suite }} tests
       - name: service ${{ matrix.service_name }} codecov upload
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         if: matrix.suite == 'unit-test'
         with:
           name: paper-id-${{ matrix.service_name }}
