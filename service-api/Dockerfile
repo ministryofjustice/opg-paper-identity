@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine AS app
+FROM php:8.3-fpm-alpine3.23@sha256:42d49317f2cbeaaad51e9953d845604c08d802d0f9a8fd16624b02809823bbc8 AS app
 
 RUN apk --no-cache add fcgi icu-dev libxml2-dev $PHPIZE_DEPS \
   && docker-php-ext-install opcache \
