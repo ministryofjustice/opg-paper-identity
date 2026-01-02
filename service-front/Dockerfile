@@ -1,4 +1,4 @@
-FROM node:21.4.0-alpine3.17 AS asset-env
+FROM node:25.2.1-alpine3.23@sha256:f4769ca6eeb6ebbd15eb9c8233afed856e437b75f486f7fccaa81d7c8ad56007 AS asset-env
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN yarn build
 
 RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/supported-documents
 
-FROM php:8.3-fpm-alpine AS app
+FROM php:8.3-fpm-alpine3.23@sha256:42d49317f2cbeaaad51e9953d845604c08d802d0f9a8fd16624b02809823bbc8 AS app
 
 RUN apk --no-cache add fcgi icu-dev autoconf libffi-dev linux-headers $PHPIZE_DEPS \
     && docker-php-ext-install ffi intl opcache \
