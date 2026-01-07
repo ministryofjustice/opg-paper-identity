@@ -20,5 +20,4 @@ build
 .psalm-cache
 # vendor files
 node_modules
-yarn-error.log
 .trivy-cache

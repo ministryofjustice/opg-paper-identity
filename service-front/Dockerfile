@@ -7,11 +7,11 @@ RUN apk add --no-cache git
 RUN mkdir -p public
 
 COPY package.json .
-COPY yarn.lock .
-RUN yarn install --frozen-lockfile --ignore-scripts
+COPY package-lock.json .
+RUN npm ci --ignore-scripts
 
 COPY web web
-RUN yarn build
+RUN npm run build
 
 RUN wget -O /app/yoti-supported-documents.json https://api.yoti.com/idverify/v1/supported-documents
 
