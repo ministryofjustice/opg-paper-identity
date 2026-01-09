@@ -47,7 +47,7 @@ In local development the LPA UID(s) you use will impact the behaviour of the app
 
 A number of `make` commands exist to simplify the running of tests and static-code-analysis. `make api-test` and `make front-test` can be used to run unit and integration tests, alongside Psalm and PHPCS. There are more specific commands for each available, which you can find by running `make help`. Reports from these tests, including code-coverage can be found in the `build/` dir for each service.
 
-End-to-end tests for the service have been written with cypress and live in `e2e-tests/cypress/`, these can be run with `make cypress`. If you wish to run an individual e2e-test, this can be achieved by running `npm install` followed by `npm test` from within the `e2e-tests/` folder.
+End-to-end tests for the service have been written with cypress and live in `e2e-tests/cypress/`, these can be run with `make cypress`. If you wish to run an individual e2e-test, this can be achieved by running `npm ci` followed by `npm test` from within the `e2e-tests/` folder.
 
 ## Mocks
 

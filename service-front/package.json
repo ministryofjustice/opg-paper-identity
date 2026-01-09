@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "build": "yarn build:js && yarn build:css && yarn build:assets",
+    "build": "npm run build:js && npm run build:css && npm run build:assets",
     "build:js": "esbuild --bundle web/main.js --minify --outdir=public/js --sourcemap --resolve-extensions=.mjs,.js",
     "build:css": "sass --load-path . --style compressed web/main.scss public/css/all.css",
     "build:assets": "mkdir -p public/assets/images public/assets/fonts && cp node_modules/govuk-frontend/dist/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* web/assets/* public/assets/images && cp node_modules/govuk-frontend/dist/govuk/assets/fonts/* public/assets/fonts",
     "clean": "rm -rf web/static",
     "lint": "prettier --check .",
     "prettier": "prettier --write",
-    "watch": "yarn build:js --watch=forever & yarn build:css --watch"
+    "watch": "npm run build:js --watch=forever & npm run build:css --watch"
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^8.0.0",
