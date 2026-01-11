@@ -8811,16 +8811,16 @@
         },
         {
             "name": "pact-foundation/pact-php",
-            "version": "10.1.1",
+            "version": "10.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pact-foundation/pact-php.git",
-                "reference": "8e1fffb9b7fc15e7f30af18676fa4f289f83673a"
+                "reference": "ef10df2656af33673ed47088ea3c2086ff93c802"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pact-foundation/pact-php/zipball/8e1fffb9b7fc15e7f30af18676fa4f289f83673a",
-                "reference": "8e1fffb9b7fc15e7f30af18676fa4f289f83673a",
+                "url": "https://api.github.com/repos/pact-foundation/pact-php/zipball/ef10df2656af33673ed47088ea3c2086ff93c802",
+                "reference": "ef10df2656af33673ed47088ea3c2086ff93c802",
                 "shasum": ""
             },
             "require": {
@@ -8831,7 +8831,7 @@
                 "guzzlehttp/psr7": "^2.4.5",
                 "pact-foundation/composer-downloads-plugin": "^2.1",
                 "php": "^8.1",
-                "symfony/process": "^5.4|^6.0|^7.0"
+                "symfony/process": "^5.4|^6.0|^7.0|^8.0"
             },
             "require-dev": {
                 "behat/behat": "^3.13",
@@ -8839,14 +8839,18 @@
                 "ext-sockets": "*",
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "galbar/jsonpath": "^3.0",
+                "google/protobuf": "^4.31",
+                "grpc/grpc": "^1.57",
                 "guzzlehttp/guzzle": "^7.8",
-                "pact-foundation/example-protobuf-sync-message-provider": "@dev",
                 "phpstan/phpstan": "^2.0.4",
                 "phpunit/phpunit": "^10.1.0|^11.0",
                 "ramsey/uuid": "^4.7",
                 "rector/rector": "^2.0",
                 "roave/security-advisories": "dev-latest",
                 "webonyx/graphql-php": "^15.14"
+            },
+            "suggest": {
+                "ext-grpc": "If you want to use gRPC then you must install and use this"
             },
             "type": "library",
             "extra": {
@@ -8871,7 +8875,7 @@
                     "pact-stub-server": {
                         "url": "https://github.com/pact-foundation/pact-stub-server/releases/download/v{$version}/pact-stub-server-{$os}-{$architecture}{$extension}.gz",
                         "path": "bin/pact-stub-server/pact-stub-server{$extension}",
-                        "version": "0.6.0",
+                        "version": "0.6.2",
                         "variables": {
                             "{$os}": "PHP_OS === 'Darwin' ? 'osx' : strtolower(PHP_OS_FAMILY)",
                             "{$extension}": "PHP_OS_FAMILY === 'Windows' ? '.exe' : ''",
@@ -8908,9 +8912,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pact-foundation/pact-php/issues",
-                "source": "https://github.com/pact-foundation/pact-php/tree/10.1.1"
+                "source": "https://github.com/pact-foundation/pact-php/tree/10.2.0"
             },
-            "time": "2025-01-09T15:02:26+00:00"
+            "time": "2026-01-07T16:19:33+00:00"
         },
         {
             "name": "phar-io/manifest",
