@@ -13,6 +13,7 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\View\Model\ViewModel;
 
 class CourtOfProtectionFlowController extends AbstractActionController
@@ -31,6 +32,8 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
     public function registerAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $form = $this->createForm(ConfirmCourtOfProtection::class);
         $uuid = $this->params()->fromRoute("uuid");
@@ -45,12 +48,12 @@ class CourtOfProtectionFlowController extends AbstractActionController
 
         $view->setVariable(
             'lpa_details',
-            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $psr7Request)
         );
 
         if ($this->getRequest()->isPost() && $form->isValid()) {
             $this->opgApiService->sendIdentityCheck($uuid);
-            $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
+            $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $psr7Request);
             return $this->redirect()->toRoute("root/court_of_protection_what_next", ['uuid' => $uuid]);
         }
 

@@ -11,8 +11,7 @@ use Application\Exceptions\HttpException;
 use Application\Exceptions\LpaNotFoundException;
 use Application\Services\SiriusApiService;
 use DateTime;
-use Laminas\Http\Request;
-use Laminas\Stdlib\RequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @psalm-import-type Lpa from SiriusApiService
@@ -47,13 +46,10 @@ class SiriusDataProcessorHelper
     }
 
     /**
-     * @param string $uuid
-     * @param Request $request
-     * @return void
      * @throws HttpException
      * @throws \DateMalformedStringException
      */
-    public function updatePaperIdCaseFromSirius(string $uuid, Request $request)
+    public function updatePaperIdCaseFromSirius(string $uuid, RequestInterface $request)
     {
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -158,7 +154,7 @@ class SiriusDataProcessorHelper
 
     public function createLpaDetailsArray(
         array $detailsData,
-        Request|RequestInterface $request
+        RequestInterface $request
     ): array {
         $lpaDetails = [];
 

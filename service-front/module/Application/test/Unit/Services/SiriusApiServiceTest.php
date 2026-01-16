@@ -12,8 +12,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
-use Laminas\Http\Headers;
-use Laminas\Http\Request;
+use Laminas\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -32,10 +31,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $clientMock
             ->expects($this->once())
@@ -65,11 +62,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $exception = $this->createMock(GuzzleException::class);
 
@@ -96,11 +90,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $responseBody = json_encode([
             [
@@ -137,11 +128,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $exception = $this->createMock(ClientException::class);
         $exception
@@ -172,10 +160,8 @@ class SiriusApiServiceTest extends TestCase
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
 
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $exception = $this->createMock(GuzzleException::class);
 
@@ -205,10 +191,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $clientMock
             ->expects($this->once())
@@ -237,10 +221,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $response = new Response(404, [], json_encode($lpaNotFound, JSON_THROW_ON_ERROR));
 
@@ -275,7 +257,7 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-        $request = new Request();
+        $request = new ServerRequest();
 
         $this->expectException(UidInvalidException::class);
         $this->expectExceptionMessage('The LPA needs to be valid in the format M-XXXX-XXXX-XXXX');
@@ -303,10 +285,8 @@ class SiriusApiServiceTest extends TestCase
 
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-        $request = new Request();
-        $headers = $request->getHeaders();
-        assert($headers instanceof Headers);
-        $headers->addHeaderLine("cookie", "mycookie=1; XSRF-TOKEN=abcd");
+        $request = (new ServerRequest())
+            ->withHeader('Cookie', 'mycookie=1; XSRF-TOKEN=abcd');
 
         $expectedHeader = [
             'headers' => [
@@ -319,12 +299,9 @@ class SiriusApiServiceTest extends TestCase
             ->expects($this->exactly(3))
             ->method("get")
             ->willReturnCallback(fn (string $url, array $header) => match (true) {
-                $url === '/api/v1/digital-lpas/M-0000-0000-0000' && $header === $expectedHeader =>
-                    new Response(200, [], json_encode($lpas['M-0000-0000-0000'], JSON_THROW_ON_ERROR)),
-                $url === '/api/v1/digital-lpas/M-0000-0000-0001' && $header === $expectedHeader =>
-                    new Response(200, [], json_encode($lpas['M-0000-0000-0001'], JSON_THROW_ON_ERROR)),
-                $url === '/api/v1/digital-lpas/M-0000-0000-0002' && $header === $expectedHeader =>
-                    new Response(200, [], json_encode($lpas['M-0000-0000-0002'], JSON_THROW_ON_ERROR)),
+                $url === '/api/v1/digital-lpas/M-0000-0000-0000' && $header === $expectedHeader => new Response(200, [], json_encode($lpas['M-0000-0000-0000'], JSON_THROW_ON_ERROR)),
+                $url === '/api/v1/digital-lpas/M-0000-0000-0001' && $header === $expectedHeader => new Response(200, [], json_encode($lpas['M-0000-0000-0001'], JSON_THROW_ON_ERROR)),
+                $url === '/api/v1/digital-lpas/M-0000-0000-0002' && $header === $expectedHeader => new Response(200, [], json_encode($lpas['M-0000-0000-0002'], JSON_THROW_ON_ERROR)),
                 default => self::fail('Did not expect:' . print_r($url, true))
             });
 
@@ -339,7 +316,7 @@ class SiriusApiServiceTest extends TestCase
         $jwtGeneratorMock = $this->createMock(JwtGenerator::class);
         $sut = new SiriusApiService($clientMock, $loggerMock, $jwtGeneratorMock);
 
-        $request = new Request();
+        $request = new ServerRequest();
         $uid = 'M-0000-0000-0000';
         $name = 'ID Check Abandoned';
         $type = 'ID Check Incomplete';
