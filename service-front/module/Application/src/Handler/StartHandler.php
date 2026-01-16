@@ -54,7 +54,7 @@ class StartHandler implements RequestHandlerInterface
         $lpas = [];
         $unfoundLpas = [];
         foreach ($lpasQuery as $key => $lpaUid) {
-            $data = $this->siriusApiService->getLpaByUid($lpaUid, Psr7ServerRequest::toLaminas($request));
+            $data = $this->siriusApiService->getLpaByUid($lpaUid, $request);
 
             if (empty($data)) {
                 $unfoundLpas[] = $lpaUid;

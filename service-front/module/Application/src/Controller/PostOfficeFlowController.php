@@ -28,6 +28,8 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\Form\FormInterface;
 use DateTime;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
+use Psr\Http\Message\RequestInterface;
 
 class PostOfficeFlowController extends AbstractActionController
 {
@@ -177,6 +179,8 @@ class PostOfficeFlowController extends AbstractActionController
 
     public function findPostOfficeBranchAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $templates = [
             'default' => 'application/pages/post_office/find_post_office_branch',
             'confirm' => 'application/pages/post_office/confirm_post_office',
@@ -197,9 +201,10 @@ class PostOfficeFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
 
             if (array_key_exists('confirmPostOffice', $formData)) {
-                return $this->processConfirmPostoffice($uuid, $detailsData);
+                return $this->processConfirmPostoffice($psr7Request, $uuid, $detailsData);
             } elseif (array_key_exists('selectPostoffice', $formData)) {
                 $template = $this->processSelectPostOffice(
+                    $psr7Request,
                     $uuid,
                     $form,
                     $view,
@@ -230,10 +235,10 @@ class PostOfficeFlowController extends AbstractActionController
     }
 
     public function processConfirmPostoffice(
+        RequestInterface $request,
         string $uuid,
         array $detailsData,
     ): Response {
-
         $systemType = $detailsData['personType'] === PersonType::Voucher ?
             SiriusDocument::PostOfficeDocCheckVoucher : SiriusDocument::PostOfficeDocCheckDonor;
 
@@ -243,17 +248,18 @@ class PostOfficeFlowController extends AbstractActionController
         $pdf = $this->siriusApiService->sendDocument(
             $detailsData,
             $systemType,
-            $this->getRequest(),
+            $request,
             $pdfData
         );
         if ($pdf['status'] !== 201) {
             throw new SiriusApiException("Failed to send Post Office document.");
         }
-        $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
+        $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $request);
         return $this->redirect()->toRoute('root/po_what_happens_next', ['uuid' => $uuid]);
     }
 
     public function processSelectPostOffice(
+        RequestInterface $request,
         string $uuid,
         FormInterface $form,
         ViewModel $view,
@@ -271,7 +277,7 @@ class PostOfficeFlowController extends AbstractActionController
             $postOfficeAddress[] = $formArray['postoffice']['post_code'];
 
             $view->setVariables([
-                'lpa_details' => $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request),
+                'lpa_details' => $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $request),
                 'formatted_dob' => (new DateTime($detailsData['dob']))->format("d F Y"),
                 'deadline' => (new DateTime($this->opgApiService->estimatePostofficeDeadline($uuid)))->format("d F Y"),
                 'display_id_method' => $this->getIdMethodForDisplay(

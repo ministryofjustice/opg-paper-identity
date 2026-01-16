@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Application\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\Trait\DobOver100WarningTrait;
 use Application\Controller\Trait\FormBuilder;
-use Application\Enums\LpaTypes;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Exceptions\PostcodeInvalidException;
+use Application\Forms\AddressInput;
 use Application\Forms\AddressJson;
 use Application\Forms\BirthDate;
 use Application\Forms\ConfirmAddress;
-use Application\Forms\AddressInput;
 use Application\Forms\LpaReferenceNumber;
 use Application\Forms\LpaReferenceNumberAdd;
 use Application\Forms\Postcode;
@@ -22,10 +24,8 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\View\Model\ViewModel;
-use Application\Controller\Trait\DobOver100WarningTrait;
-use Application\Enums\DocumentType;
-use Application\Enums\IdRoute;
 
 class CPFlowController extends AbstractActionController
 {
@@ -49,9 +49,11 @@ class CPFlowController extends AbstractActionController
 
     public function nameMatchCheckAction(): ViewModel
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
 
-        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
+        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $psr7Request);
 
         $optionsdata = $this->config['opg_settings']['identity_documents'];
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -63,7 +65,7 @@ class CPFlowController extends AbstractActionController
         $view->setVariables([
             'options_data' => $optionsdata,
             'details_data' => $detailsData,
-            'sirius_edit_url' => $siriusEditUrl
+            'sirius_edit_url' => $siriusEditUrl,
         ]);
 
         return $view->setTemplate('application/pages/cp/cp_id_check');
@@ -71,6 +73,8 @@ class CPFlowController extends AbstractActionController
 
     public function confirmLpasAction(): ViewModel
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
@@ -78,7 +82,7 @@ class CPFlowController extends AbstractActionController
 
         $view->setVariable(
             'lpa_details',
-            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $psr7Request)
         );
 
         $view->setVariable('lpas', $detailsData['lpas']);
@@ -91,6 +95,8 @@ class CPFlowController extends AbstractActionController
 
     public function addLpaAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $template = 'application/pages/cp/add_lpa';
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -105,7 +111,7 @@ class CPFlowController extends AbstractActionController
 
             $view->setVariables([
                 'case_uuid' => $uuid,
-                'form' => $form
+                'form' => $form,
             ]);
 
             if ($this->getRequest()->isPost()) {
@@ -123,11 +129,11 @@ class CPFlowController extends AbstractActionController
 
                 if ($formArray['lpa']) {
                     $siriusCheck = $this->siriusApiService->getLpaByUid(
-                    /**
-                     * @psalm-suppress InvalidMethodCall
-                     */
+                        /**
+                         * @psalm-suppress InvalidMethodCall
+                         */
                         $formArray['lpa'],
-                        $this->getRequest()
+                        $psr7Request,
                     );
 
                     $processed = $this->lpaFormHelper->findLpa(
@@ -139,7 +145,7 @@ class CPFlowController extends AbstractActionController
 
                     $view->setVariables([
                         'lpa_response' => $processed->constructFormVariables(),
-                        'form' => $processed->getForm()
+                        'form' => $processed->getForm(),
                     ]);
 
                     return $view->setTemplate($template);
@@ -153,6 +159,7 @@ class CPFlowController extends AbstractActionController
                 }
             }
         }
+
         return $view->setTemplate($template);
     }
 
@@ -208,7 +215,7 @@ class CPFlowController extends AbstractActionController
             $form->setData([
                 'dob_day' => date_format($dob, 'd'),
                 'dob_month' => date_format($dob, 'm'),
-                'dob_year' => date_format($dob, 'Y')
+                'dob_year' => date_format($dob, 'Y'),
             ]);
         }
 
@@ -216,9 +223,10 @@ class CPFlowController extends AbstractActionController
             'form' => $form,
             'details_data' => $detailsData,
             'include_fraud_id_check_info' => true,
-            'warning_message' => 'By continuing, you confirm that the certificate provider is more than 100 years old. 
+            'warning_message' => 'By continuing, you confirm that the certificate provider is more than 100 years old.
             If not, please change the date.',
         ]);
+
         return $view->setTemplate($templates['default']);
     }
 
@@ -233,8 +241,8 @@ class CPFlowController extends AbstractActionController
 
         $routes = [
             DocumentType::NationalInsuranceNumber->value => 'root/national_insurance_number',
-            DocumentType::DrivingLicence->value  => 'root/driving_licence_number',
-            DocumentType::Passport->value  => 'root/passport_number',
+            DocumentType::DrivingLicence->value => 'root/driving_licence_number',
+            DocumentType::Passport->value => 'root/passport_number',
         ];
 
         /**
@@ -283,11 +291,14 @@ class CPFlowController extends AbstractActionController
             'sirius_url',
             $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0]
         );
+
         return $view->setTemplate('application/pages/cp/identity_check_passed');
     }
 
     public function enterPostcodeAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
@@ -299,7 +310,7 @@ class CPFlowController extends AbstractActionController
             $postcode = $this->formToArray($form)['postcode'];
 
             try {
-                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $this->getRequest());
+                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $psr7Request);
 
                 if (empty($response)) {
                     $form->setMessages([
@@ -326,6 +337,8 @@ class CPFlowController extends AbstractActionController
 
     public function selectAddressAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
         $postcode = $this->params()->fromRoute("postcode");
 
@@ -340,7 +353,7 @@ class CPFlowController extends AbstractActionController
 
         $response = $this->siriusApiService->searchAddressesByPostcode(
             $postcode,
-            $this->getRequest()
+            $psr7Request
         );
         $processedAddresses = [];
         foreach ($response as $foundAddress) {
@@ -373,6 +386,8 @@ class CPFlowController extends AbstractActionController
 
     public function enterAddressManualAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -380,7 +395,7 @@ class CPFlowController extends AbstractActionController
         $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address']);
 
-        $countryList = $this->siriusApiService->getCountryList($this->getRequest());
+        $countryList = $this->siriusApiService->getCountryList($psr7Request);
         $view->setVariable('country_list', $countryList);
 
         if ($this->getRequest()->isPost()) {

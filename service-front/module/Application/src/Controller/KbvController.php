@@ -10,7 +10,6 @@ use Application\Exceptions\HttpException;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 use Laminas\Http\Response;
-use Laminas\Http\Request;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;

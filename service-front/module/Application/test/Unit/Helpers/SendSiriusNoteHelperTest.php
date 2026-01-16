@@ -11,6 +11,7 @@ use Laminas\Http\Request;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 
 class SendSiriusNoteHelperTest extends TestCase
@@ -33,7 +34,7 @@ class SendSiriusNoteHelperTest extends TestCase
     #[DataProvider('sendAbandonFlowNoteData')]
     public function testSendAbandonFlowNote(string $reason, string $verboseReason): void
     {
-        $request = $this->createMock(Request::class);
+        $request = $this->createMock(RequestInterface::class);
 
         $lpas = ['lpaOne', 'lpaTwo'];
 
@@ -75,7 +76,7 @@ class SendSiriusNoteHelperTest extends TestCase
         ?bool $kbvs,
         ?string $expectedDescription
     ): void {
-        $request = $this->createMock(Request::class);
+        $request = $this->createMock(RequestInterface::class);
 
         $docCheck = is_null($docCheck) ? null : ['state' => $docCheck];
         $fraudOutcome = is_null($fraudOutcome) ? null : ['decision' => $fraudOutcome];
