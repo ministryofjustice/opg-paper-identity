@@ -26,12 +26,11 @@ class StartHandler implements RequestHandlerInterface
     use FormBuilder;
 
     public function __construct(
-        private readonly RouteHelper $routeHelper,
-        private readonly TemplateRendererInterface $renderer,
         private readonly LpaFormHelper $lpaFormHelper,
+        private readonly RouteHelper $routeHelper,
         private readonly SiriusApiService $siriusApiService,
         private readonly SiriusDataProcessorHelper $siriusDataProcessorHelper,
-        private readonly string $siriusPublicUrl,
+        private readonly TemplateRendererInterface $renderer,
     ) {
     }
 
@@ -59,7 +58,7 @@ class StartHandler implements RequestHandlerInterface
             if (empty($data)) {
                 $unfoundLpas[] = $lpaUid;
                 $view->setVariables([
-                    'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                    'sirius_url' => $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $lpasQuery[0],
                     'details_data' => [
                         'personType' => $personType,
                         'firstName' => '',
@@ -108,7 +107,7 @@ class StartHandler implements RequestHandlerInterface
                 $view = new ViewModel();
                 $view->setVariables([
                     'message' => $lpaStatusTypeCheck,
-                    'sirius_url' => $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                    'sirius_url' => $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $lpasQuery[0],
                     'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $personType),
                 ]);
 
