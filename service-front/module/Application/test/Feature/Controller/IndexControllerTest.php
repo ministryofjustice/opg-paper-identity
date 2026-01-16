@@ -8,6 +8,7 @@ use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
+use Laminas\Http\Request;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DomCrawler\Crawler;
@@ -42,23 +43,35 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             'uId' => 'M-0000-0000-0000',
             'id' => 1234,
             'donor' => [
-                'firstname' => 'Lili', 'surname' => 'Laur', 'dob' => '18/02/2019',
-                'addressLine1' => '17 East Lane', 'addressLine2' => 'Wickerham',
-                'town' => '', 'postcode' => 'W1 3EJ', 'country' => 'GB',
+                'firstname' => 'Lili',
+                'surname' => 'Laur',
+                'dob' => '18/02/2019',
+                'addressLine1' => '17 East Lane',
+                'addressLine2' => 'Wickerham',
+                'town' => '',
+                'postcode' => 'W1 3EJ',
+                'country' => 'GB',
             ],
             'caseSubtype' => 'property-and-affairs',
         ];
 
         $lpaStoreData = [
             'donor' => [
-                'firstNames' => 'Lilith', 'lastName' => 'Laur', 'dateOfBirth' => '2009-02-18',
+                'firstNames' => 'Lilith',
+                'lastName' => 'Laur',
+                'dateOfBirth' => '2009-02-18',
                 'address' => [
-                    'line1' => 'Unit 15', 'line2' => 'Uberior House', 'town' => 'Edinburgh',
-                    'postcode' => 'EH1 2EJ', 'country' => 'GB',
+                    'line1' => 'Unit 15',
+                    'line2' => 'Uberior House',
+                    'town' => 'Edinburgh',
+                    'postcode' => 'EH1 2EJ',
+                    'country' => 'GB',
                 ],
             ],
             'certificateProvider' => [
-                'firstNames' => 'x', 'lastName' => 'x', 'dateOfBirth' => '1980-01-01',
+                'firstNames' => 'x',
+                'lastName' => 'x',
+                'dateOfBirth' => '1980-01-01',
                 'address' => ['line1' => '16a Avenida Lucana', 'line2' => 'Cordón', 'country' => 'ES'],
             ],
             'lpaType' => 'personal-welfare',
@@ -74,7 +87,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'donor',
                 [
-                    'Lili', 'Laur', '2019-02-18', PersonType::Donor, ['M-1234-5678-90AB'],
+                    'Lili',
+                    'Laur',
+                    '2019-02-18',
+                    PersonType::Donor,
+                    ['M-1234-5678-90AB'],
                     [
                         'line1' => '17 East Lane',
                         'line2' => 'Wickerham',
@@ -92,7 +109,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'donor',
                 [
-                    'Lilith', 'Laur', '2009-02-18', PersonType::Donor, ['M-1234-5678-90AB'],
+                    'Lilith',
+                    'Laur',
+                    '2009-02-18',
+                    PersonType::Donor,
+                    ['M-1234-5678-90AB'],
                     [
                         'line1' => 'Unit 15',
                         'line2' => 'Uberior House',
@@ -110,7 +131,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'certificateProvider',
                 [
-                    'x', 'x', null, PersonType::CertificateProvider, ['M-1234-5678-90AB'],
+                    'x',
+                    'x',
+                    null,
+                    PersonType::CertificateProvider,
+                    ['M-1234-5678-90AB'],
                     [
                         'line1' => '16a Avenida Lucana',
                         'line2' => 'Cordón',
@@ -214,8 +239,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(SiriusApiService::class, $siriusApiService);
 
         $siriusApiService->expects($this->once())
-        ->method('getLpaByUid')
-        ->willReturn(null);
+            ->method('getLpaByUid')
+            ->willReturn(null);
 
         $this->dispatch('/start?personType=donor&lpas[]=M-AAAA-BBBB-CCCC', 'GET');
         $this->assertResponseStatusCode(200);
@@ -300,7 +325,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $opgApiService->expects($this->once())
             ->method('updateCaseProgress')
-            ->with($caseUuid, $this->callback(fn ($data) => isset($data['abandonedFlow'])
+            ->with($caseUuid, $this->callback(fn($data) => isset($data['abandonedFlow'])
                 && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())
@@ -310,12 +335,20 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $siriusNoteMock
             ->expects(self::once())
             ->method('sendAbandonFlowNote')
-            ->with('cd', 'Custom notes', [$lpaUid], $this->getRequest());
+            ->with(
+                'cd',
+                'Custom notes',
+                [$lpaUid],
+                $this->isInstanceOf(Request::class),
+            );
 
         $siriusNoteMock
             ->expects(self::once())
             ->method('sendBlockedRoutesNote')
-            ->with($mockDetailsData, $this->getRequest());
+            ->with(
+                $mockDetailsData,
+                $this->isInstanceOf(Request::class),
+            );
 
         $this->dispatch(sprintf('/%s/abandon-flow?last_page=%s', $caseUuid, $lastPage), 'POST', [
             'reason' => 'cd',

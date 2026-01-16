@@ -11,11 +11,17 @@ class RouteHelper
 {
     public function __construct(
         private readonly RouteStackInterface $routeStack,
+        private readonly string $siriusPublicUrl,
     ) {
     }
 
     public function toRedirect(string $routeName, array $params = []): RedirectResponse
     {
         return new RedirectResponse($this->routeStack->assemble($params, ['name' => $routeName]));
+    }
+
+    public function getSiriusPublicUrl(): string
+    {
+        return $this->siriusPublicUrl;
     }
 }
