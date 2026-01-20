@@ -53,8 +53,8 @@ class ListenerTest extends AbstractHttpControllerTestCase
 
         $siriusApiMock->expects($this->once())
             ->method("checkAuth")
-            ->with($this->callback(function (RequestInterface $psrRequest) {
-                return $psrRequest->getUri()->__toString() === 'https://somehost/my/page?type=somevalue';
+            ->with($this->callback(function (RequestInterface $psr7Request) {
+                return $psr7Request->getUri()->__toString() === 'https://somehost/my/page?type=somevalue';
             }))
             ->willReturn(false);
 

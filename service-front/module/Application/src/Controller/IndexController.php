@@ -97,8 +97,8 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $ok = true;
 
-        $psrRequest = Psr7ServerRequest::fromLaminas($this->getRequest());
-        $siriusResponse = $this->siriusApiService->checkAuth($psrRequest);
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+        $siriusResponse = $this->siriusApiService->checkAuth($psr7Request);
         if ($siriusResponse !== true) {
             $ok = false;
         }

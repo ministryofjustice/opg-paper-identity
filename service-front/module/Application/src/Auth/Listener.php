@@ -45,9 +45,9 @@ class Listener extends AbstractListenerAggregate
         /** @var Request $request */
         $request = $e->getRequest();
 
-        $psrRequest = Psr7ServerRequest::fromLaminas($request);
-        if (! $this->siriusApi->checkAuth($psrRequest)) {
-            $redirect = $this->getRedirect($psrRequest);
+        $psr7Request = Psr7ServerRequest::fromLaminas($request);
+        if (! $this->siriusApi->checkAuth($psr7Request)) {
+            $redirect = $this->getRedirect($psr7Request);
             $location = sprintf("Location: %s/auth?redirect=%s", $this->loginUrl, urlencode($redirect));
 
             $response->setContent('unauthorised, please login at ' . $this->loginUrl);
