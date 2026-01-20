@@ -15,9 +15,7 @@ use Application\Validators\LpaUidValidator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use Laminas\Http\Header\Cookie;
-use Laminas\Http\Request;
-use Laminas\Stdlib\RequestInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -100,19 +98,21 @@ class SiriusApiService
 
     private function getAuthHeaders(RequestInterface $request): ?array
     {
-        if (! ($request instanceof Request)) {
+        $cookieHeader = $request->getHeaderLine('Cookie');
+
+        if (empty($cookieHeader)) {
             return null;
         }
 
-        $cookieHeader = $request->getHeader('Cookie');
-
-        if (! ($cookieHeader instanceof Cookie) || ! isset($cookieHeader['XSRF-TOKEN'])) {
-            return null;
-        }
+        $cookies = [];
+        mb_parse_str(
+            strtr($cookieHeader, ['&' => '%26', '+' => '%2B', ';' => '&']),
+            $cookies
+        );
 
         return [
-            'Cookie' => $cookieHeader->getFieldValue(),
-            'X-XSRF-TOKEN' => $cookieHeader['XSRF-TOKEN'],
+            'Cookie' => $cookieHeader,
+            'X-XSRF-TOKEN' => $cookies['XSRF-TOKEN'] ?? '',
         ];
     }
 
@@ -138,7 +138,7 @@ class SiriusApiService
     /**
      * @return ?Lpa
      */
-    public function getLpaByUid(string $uid, Request|RequestInterface $request): ?array
+    public function getLpaByUid(string $uid, RequestInterface $request): ?array
     {
         $validator = new LpaUidValidator();
         if (! $validator->isValid($uid)) {
@@ -174,7 +174,7 @@ class SiriusApiService
     /**
      * @return Lpa[]
      */
-    public function getAllLinkedLpasByUid(string $uid, Request $request): array
+    public function getAllLinkedLpasByUid(string $uid, RequestInterface $request): array
     {
         $responseArray = [];
 
@@ -210,7 +210,7 @@ class SiriusApiService
      *  postcode: string,
      * }[]
      */
-    public function searchAddressesByPostcode(string $postcode, Request $request): array
+    public function searchAddressesByPostcode(string $postcode, RequestInterface $request): array
     {
         try {
             $response = $this->client->get('/api/v1/postcode-lookup?postcode=' . $postcode, [
@@ -230,19 +230,15 @@ class SiriusApiService
     }
 
     /**
-     * @param array $caseDetails
-     * @param SiriusDocument $systemType
-     * @param Request $request
-     * @param string $pdfSuffixBase64 Optional. PDF file in base-64 format, if provided
+     * @param ?string $pdfSuffixBase64 Optional. PDF file in base-64 format, if provided
      *                                will be added to the generated letter.
-     * @return array
      * @throws GuzzleException
      */
     public function sendDocument(
         array $caseDetails,
         SiriusDocument $systemType,
-        Request $request,
-        string $pdfSuffixBase64 = null
+        RequestInterface $request,
+        ?string $pdfSuffixBase64 = null
     ): array {
         $address = [
             $caseDetails["address"]["line1"],
@@ -295,7 +291,7 @@ class SiriusApiService
     }
 
     public function addNote(
-        Request $request,
+        RequestInterface $request,
         string $uid,
         string $name,
         string $type,
@@ -331,9 +327,9 @@ class SiriusApiService
     }
 
     /**
-    * @return array{handle: string, label: string}
-    */
-    public function getCountryList(Request $request): array
+     * @return array{handle: string, label: string}
+     */
+    public function getCountryList(RequestInterface $request): array
     {
         $response = $this->client->get(
             '/api/v1/reference-data/country',

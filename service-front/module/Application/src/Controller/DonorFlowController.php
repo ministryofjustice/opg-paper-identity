@@ -15,6 +15,7 @@ use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\View\Model\ViewModel;
 
 class DonorFlowController extends AbstractActionController
@@ -33,6 +34,8 @@ class DonorFlowController extends AbstractActionController
 
     public function whatIsVouchingAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -43,7 +46,7 @@ class DonorFlowController extends AbstractActionController
             $formData = $this->getRequest()->getPost()->toArray();
             if ($formData['chooseVouching'] == 'yes') {
                 $this->opgApiService->sendIdentityCheck($uuid);
-                $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
+                $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $psr7Request);
                 return $this->redirect()->toRoute("root/vouching_what_happens_next", ['uuid' => $uuid]);
             } else {
                 return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);
@@ -70,9 +73,10 @@ class DonorFlowController extends AbstractActionController
 
     public function donorDetailsMatchCheckAction(): ViewModel
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
         $uuid = $this->params()->fromRoute("uuid");
 
-        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $this->getRequest());
+        $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $psr7Request);
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -93,6 +97,8 @@ class DonorFlowController extends AbstractActionController
 
     public function donorLpaCheckAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
@@ -103,7 +109,7 @@ class DonorFlowController extends AbstractActionController
 
         $view->setVariable(
             'lpa_details',
-            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $psr7Request)
         );
 
         if ($this->getRequest()->isPost()) {

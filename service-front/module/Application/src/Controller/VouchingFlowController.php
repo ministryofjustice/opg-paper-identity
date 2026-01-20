@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace Application\Controller;
 
-use Application\Enums\LpaTypes;
 use Application\Contracts\OpgApiServiceInterface;
+use Application\Controller\Trait\DobOver100WarningTrait;
 use Application\Controller\Trait\FormBuilder;
+use Application\Enums\DocumentType;
+use Application\Enums\IdRoute;
 use Application\Exceptions\PostcodeInvalidException;
-use Application\Forms\AddressInput;
-use Application\Forms\VoucherBirthDate;
-use Application\Forms\ConfirmVouching;
-use Application\Forms\VoucherName;
 use Application\Forms\AddDonor;
-use Application\Helpers\SiriusDataProcessorHelper;
-use Application\Model\Entity\CaseData;
-use Application\Services\SiriusApiService;
+use Application\Forms\AddressInput;
+use Application\Forms\AddressJson;
+use Application\Forms\ConfirmVouching;
+use Application\Forms\Postcode;
+use Application\Forms\VoucherBirthDate;
+use Application\Forms\VoucherName;
+use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
-use Application\Helpers\AddDonorFormHelper;
+use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
-use Application\Forms\Postcode;
-use Application\Forms\AddressJson;
+use Application\Services\SiriusApiService;
+use DateTime;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\View\Model\ViewModel;
-use Application\Enums\DocumentType;
-use DateTime;
-use Application\Controller\Trait\DobOver100WarningTrait;
-use Application\Enums\IdRoute;
+use Psr\Http\Message\ServerRequestInterface;
 
 class VouchingFlowController extends AbstractActionController
 {
@@ -69,6 +69,7 @@ class VouchingFlowController extends AbstractActionController
             if (isset($formData['tryDifferent'])) {
                 // start the donor journey instead
                 $baseStartUrl = $this->url()->fromRoute('root/start');
+
                 return $this->redirect()->toUrl(
                     $baseStartUrl . "?personType=donor&lpas[]=" . implode("&lpas[]=", $detailsData['lpas'])
                 );
@@ -78,11 +79,14 @@ class VouchingFlowController extends AbstractActionController
                 return $this->redirect()->toRoute("root/how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
+
         return $view->setTemplate('application/pages/vouching/confirm_vouching');
     }
 
     public function voucherNameAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -97,7 +101,7 @@ class VouchingFlowController extends AbstractActionController
 
                 $match = false;
                 foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $psr7Request);
                     if (empty($lpasData)) {
                         continue;
                     }
@@ -117,6 +121,7 @@ class VouchingFlowController extends AbstractActionController
                 } else {
                     try {
                         $this->opgApiService->updateCaseSetName($uuid, $formData["firstName"], $formData["lastName"]);
+
                         return $this->redirect()->toRoute("root/voucher_dob", ['uuid' => $uuid]);
                     } catch (\Exception $exception) {
                         $form->setMessages(["There was an error saving the data"]);
@@ -126,18 +131,21 @@ class VouchingFlowController extends AbstractActionController
         } else {
             $form->setData([
                 "firstName" => $detailsData["firstName"],
-                "lastName" => $detailsData["lastName"]
+                "lastName" => $detailsData["lastName"],
             ]);
         }
 
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 
-    private function checkMatchesForLpas(array $detailsData, string $dateOfBirth): bool | array
-    {
+    private function checkMatchesForLpas(
+        ServerRequestInterface $request,
+        array $detailsData,
+        string $dateOfBirth
+    ): bool | array {
         $match = false;
         foreach ($detailsData['lpas'] as $lpa) {
-            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+            $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
             if (empty($lpasData)) {
                 continue;
             }
@@ -152,11 +160,14 @@ class VouchingFlowController extends AbstractActionController
                 break;
             }
         }
+
         return $match;
     }
 
     public function voucherDobAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -167,7 +178,7 @@ class VouchingFlowController extends AbstractActionController
             $form->setData([
                 'dob_day' => date_format($dob, 'd'),
                 'dob_month' => date_format($dob, 'm'),
-                'dob_year' => date_format($dob, 'Y')
+                'dob_year' => date_format($dob, 'Y'),
             ]);
         }
         $view->setVariable('details_data', $detailsData);
@@ -182,7 +193,7 @@ class VouchingFlowController extends AbstractActionController
             $view->setVariable('form', $form);
 
             if ($form->isValid()) {
-                $match = $this->checkMatchesForLpas($detailsData, $dateOfBirth);
+                $match = $this->checkMatchesForLpas($psr7Request, $detailsData, $dateOfBirth);
                 if ($match !== false) {
                     $view->setVariable('match', $match);
                 } else {
@@ -227,11 +238,14 @@ class VouchingFlowController extends AbstractActionController
             'By continuing, you confirm that the person vouching is more than 100 years old.
             If not, please change the date.'
         );
+
         return $view->setTemplate('application/pages/confirm_dob');
     }
 
     public function enterPostcodeAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
         $view = new ViewModel();
@@ -243,7 +257,7 @@ class VouchingFlowController extends AbstractActionController
             $postcode = $this->formToArray($form)['postcode'];
 
             try {
-                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $this->getRequest());
+                $response = $this->siriusApiService->searchAddressesByPostcode($postcode, $psr7Request);
 
                 if (empty($response)) {
                     $form->setMessages([
@@ -270,6 +284,8 @@ class VouchingFlowController extends AbstractActionController
 
     public function selectAddressAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
         $postcode = $this->params()->fromRoute("postcode");
 
@@ -285,7 +301,7 @@ class VouchingFlowController extends AbstractActionController
 
         $response = $this->siriusApiService->searchAddressesByPostcode(
             $postcode,
-            $this->getRequest()
+            $psr7Request
         );
         $processedAddresses = [];
         foreach ($response as $foundAddress) {
@@ -313,6 +329,8 @@ class VouchingFlowController extends AbstractActionController
 
     public function enterAddressManualAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -320,7 +338,7 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address'] ?? []);
 
-        $countryList = $this->siriusApiService->getCountryList($this->getRequest());
+        $countryList = $this->siriusApiService->getCountryList($psr7Request);
         $view->setVariable('country_list', $countryList);
 
         if ($this->getRequest()->isPost()) {
@@ -330,7 +348,7 @@ class VouchingFlowController extends AbstractActionController
             if ($form->isValid()) {
                 $addressMatch = false;
                 foreach ($detailsData['lpas'] as $lpa) {
-                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $this->getRequest());
+                    $lpasData = $this->siriusApiService->getLpaByUid($lpa, $psr7Request);
                     if (empty($lpasData)) {
                         continue;
                     }
@@ -343,6 +361,7 @@ class VouchingFlowController extends AbstractActionController
                     $view->setVariable('address_match', true);
                 } else {
                     $this->opgApiService->addSelectedAddress($uuid, $this->formToArray($form));
+
                     return $this->redirect()->toRoute($this->routes["confirm_donors"], ['uuid' => $uuid]);
                 }
             }
@@ -356,6 +375,8 @@ class VouchingFlowController extends AbstractActionController
 
     public function confirmDonorsAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -373,12 +394,15 @@ class VouchingFlowController extends AbstractActionController
                 switch ($docType) {
                     case DocumentType::Passport->value:
                         $redirect = "root/passport_number";
+
                         break;
                     case DocumentType::DrivingLicence->value:
                         $redirect = "root/driving_licence_number";
+
                         break;
                     case DocumentType::NationalInsuranceNumber->value:
                         $redirect = "root/national_insurance_number";
+
                         break;
                     default:
                         break;
@@ -394,7 +418,7 @@ class VouchingFlowController extends AbstractActionController
         $view->setVariable('details_data', $detailsData);
         $view->setVariable(
             'lpa_details',
-            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $this->request)
+            $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $psr7Request)
         );
         $view->setVariable('case_uuid', $uuid);
 
@@ -403,6 +427,7 @@ class VouchingFlowController extends AbstractActionController
 
     public function addDonorAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
         $uuid = $this->params()->fromRoute("uuid");
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
@@ -421,6 +446,7 @@ class VouchingFlowController extends AbstractActionController
                     foreach ($formData['lpas'] as $lpa) {
                         $this->opgApiService->updateCaseWithLpa($uuid, $lpa);
                     }
+
                     return $this->redirect()->toRoute($this->routes["confirm_donors"], ['uuid' => $uuid]);
                 } else {
                     $form->setMessages([
@@ -432,13 +458,14 @@ class VouchingFlowController extends AbstractActionController
             }
             $lpas = $this->siriusApiService->getAllLinkedLpasByUid(
                 $formData['lpa'],
-                $this->getRequest()
+                $psr7Request
             );
 
             $processed = $this->addDonorFormHelper->processLpas($lpas, $detailsData);
 
             $view->setVariable('lpa_response', $processed);
         }
+
         return $view->setTemplate('application/pages/vouching/vouch_for_another_donor');
     }
 

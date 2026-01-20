@@ -11,6 +11,7 @@ use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Http\Response;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\View\Model\ViewModel;
 
 /**
@@ -35,6 +36,8 @@ class IndexController extends AbstractActionController
 
     public function abandonFlowAction(): ViewModel|Response
     {
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+
         $view = new ViewModel();
         $uuid = $this->params()->fromRoute("uuid");
 
@@ -62,9 +65,9 @@ class IndexController extends AbstractActionController
                 $postData['reason'],
                 $postData['notes'],
                 $detailsData['lpas'],
-                $this->getRequest()
+                $psr7Request
             );
-            $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $this->getRequest());
+            $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $psr7Request);
             $siriusUrl = $this->siriusPublicUrl . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
 
             return $this->redirect()->toUrl($siriusUrl);
@@ -94,7 +97,8 @@ class IndexController extends AbstractActionController
         $view = new ViewModel();
         $ok = true;
 
-        $siriusResponse = $this->siriusApiService->checkAuth($this->getRequest());
+        $psr7Request = Psr7ServerRequest::fromLaminas($this->getRequest());
+        $siriusResponse = $this->siriusApiService->checkAuth($psr7Request);
         if ($siriusResponse !== true) {
             $ok = false;
         }

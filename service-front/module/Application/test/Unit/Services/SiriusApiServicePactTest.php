@@ -8,8 +8,7 @@ use Application\Auth\JwtGenerator;
 use Application\Enums\SiriusDocument;
 use Application\Services\SiriusApiService;
 use GuzzleHttp\Client;
-use Laminas\Http\Request;
-use Laminas\Stdlib\RequestInterface;
+use Laminas\Diactoros\ServerRequest;
 use PhpPact\Consumer\InteractionBuilder;
 use PhpPact\Consumer\Matcher\Matcher;
 use PhpPact\Consumer\Model\ConsumerRequest;
@@ -18,6 +17,7 @@ use PhpPact\Standalone\MockService\MockServerConfigInterface;
 use PhpPact\Standalone\MockService\MockServerEnvConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -80,7 +80,7 @@ class SiriusApiServicePactTest extends TestCase
             ->with($request)
             ->willRespondWith($response);
 
-        $addresses = $this->buildService()->searchAddressesByPostcode('B1 1TT', new Request());
+        $addresses = $this->buildService()->searchAddressesByPostcode('B1 1TT', new ServerRequest());
 
         $this->assertEquals('18 Leith Road', $addresses[0]['addressLine1']);
         $this->assertEquals('West Verpar', $addresses[0]['addressLine2']);
@@ -142,7 +142,7 @@ class SiriusApiServicePactTest extends TestCase
             ->with($request)
             ->willRespondWith($response);
 
-        $lpa = $this->buildService()->getLpaByUid('M-1234-9876-4567', new Request());
+        $lpa = $this->buildService()->getLpaByUid('M-1234-9876-4567', new ServerRequest());
 
         $this->assertNotNull($lpa);
 
@@ -249,7 +249,7 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             /**
              * @return Lpa
              */
-            public function getLpaByUid(string $uid, Request|RequestInterface $request): array
+            public function getLpaByUid(string $uid, RequestInterface $request): array
             {
                 return ['opg.poas.sirius' => [
                     'uId' => 'M-0000-0000-0000',
@@ -267,7 +267,13 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             }
         };
 
-        $result = $service->sendDocument($details, SiriusDocument::PostOfficeDocCheckVoucher, new Request(), $suffix);
+        $result = $service->sendDocument(
+            $details,
+            SiriusDocument::PostOfficeDocCheckVoucher,
+            new ServerRequest(),
+            $suffix
+        );
+
         $this->assertEquals(201, $result['status']);
     }
 }

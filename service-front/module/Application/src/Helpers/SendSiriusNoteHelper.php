@@ -6,7 +6,7 @@ namespace Application\Helpers;
 
 use Application\Enums\PersonType;
 use Application\Services\SiriusApiService;
-use Laminas\Http\Request;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 
 class SendSiriusNoteHelper
@@ -17,7 +17,7 @@ class SendSiriusNoteHelper
     ) {
     }
 
-    public function sendAbandonFlowNote(string $reason, string $notes, array $lpas, Request $request): void
+    public function sendAbandonFlowNote(string $reason, string $notes, array $lpas, RequestInterface $request): void
     {
         $this->logger->info("in sendAbandonFlowNote");
 
@@ -42,7 +42,7 @@ class SendSiriusNoteHelper
         }
     }
 
-    public function sendBlockedRoutesNote(array $detailsData, Request $request): void
+    public function sendBlockedRoutesNote(array $detailsData, RequestInterface $request): void
     {
         $personType = $detailsData['personType'];
         $name = $detailsData['firstName'] . " " . $detailsData['lastName'];

@@ -14,6 +14,7 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\RequestInterface;
 
 class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 {
@@ -113,8 +114,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->siriusDataProcessorHelperMock
             ->expects(self::once())
-            ->method('updatePaperIdCaseFromSirius')
-            ->willReturn(null);
+            ->method('updatePaperIdCaseFromSirius');
 
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
@@ -217,7 +217,7 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
         $this->sendSiriusNoteMock
             ->expects(self::once())
             ->method('sendBlockedRoutesNote')
-            ->with($mockResponseDataIdDetails, $this->getRequest());
+            ->with($mockResponseDataIdDetails, $this->isInstanceOf(RequestInterface::class));
 
         $this->dispatch("/$this->uuid/what-is-vouching", 'POST', [
             'chooseVouching' => 'yes',

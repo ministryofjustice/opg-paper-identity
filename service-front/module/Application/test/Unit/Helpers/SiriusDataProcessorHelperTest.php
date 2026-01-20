@@ -6,15 +6,13 @@ namespace ApplicationTest\Unit\Helpers;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\PersonType;
-use Application\Exceptions\HttpException;
 use Application\Exceptions\LpaNotFoundException;
 use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Http\Request;
-use OpenTelemetry\API\Instrumentation\Configuration\General\PeerConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 
 class SiriusDataProcessorHelperTest extends TestCase
 {
@@ -125,7 +123,7 @@ class SiriusDataProcessorHelperTest extends TestCase
     public function testUpdatePaperIdCaseFromSirius(): void
     {
         $uuid = 'abcd-1234-abcd-1234-abcd-1234';
-        $request = $this->createMock(Request::class);
+        $request = $this->createMock(RequestInterface::class);
         $detailsData = [
             'lpas' => ['LPA123'],
             'personType' => PersonType::Donor,
@@ -201,7 +199,7 @@ class SiriusDataProcessorHelperTest extends TestCase
     public function testUpdatePaperIdCaseFromSiriusThrowsExceptionWhenLpaNotFound(): void
     {
         $uuid = 'abcd-1234-abcd-1234-abcd-1234';
-        $request = $this->createMock(Request::class);
+        $request = $this->createMock(RequestInterface::class);
         $detailsData = [
             'lpas' => ['LPA123'],
             'personType' => PersonType::Donor
@@ -228,7 +226,7 @@ class SiriusDataProcessorHelperTest extends TestCase
     public function testUpdatePaperIdCaseFromSiriusDoesntUpdateUnchangedOrNullValues(): void
     {
         $uuid = 'abcd-1234-abcd-1234-abcd-1234';
-        $request = $this->createMock(Request::class);
+        $request = $this->createMock(RequestInterface::class);
         $detailsData = [
             'lpas' => ['LPA123'],
             'personType' => PersonType::CertificateProvider,
