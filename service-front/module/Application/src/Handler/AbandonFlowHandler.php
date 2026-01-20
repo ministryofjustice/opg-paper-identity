@@ -11,8 +11,6 @@ use Application\Helpers\RouteHelper;
 use Application\Helpers\SendSiriusNoteHelper;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
-use Laminas\Psr7Bridge\Psr7ServerRequest;
-use Laminas\View\Model\ViewModel;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -32,7 +30,6 @@ class AbandonFlowHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $view = new ViewModel();
         $uuid = $request->getAttribute('uuid');
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
@@ -65,10 +62,10 @@ class AbandonFlowHandler implements RequestHandlerInterface
             return new RedirectResponse($siriusUrl);
         }
 
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('last_page', $lastPage);
-        $view->setVariable('form', $form);
-
-        return new HtmlResponse($this->renderer->render('application/pages/abandoned_flow', $view->getVariables()));
+        return new HtmlResponse($this->renderer->render('application/pages/abandoned_flow', [
+            'details_data' => $detailsData,
+            'last_page' => $lastPage,
+            'form' => $form,
+        ]));
     }
 }

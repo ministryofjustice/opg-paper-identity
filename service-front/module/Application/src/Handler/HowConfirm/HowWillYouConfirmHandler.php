@@ -16,7 +16,6 @@ use Application\PostOffice\Country;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Form\FormInterface;
 use Laminas\Stdlib\Parameters;
-use Laminas\View\Model\ViewModel;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -39,7 +38,6 @@ class HowWillYouConfirmHandler implements RequestHandlerInterface
         $templates = ['default' => 'application/pages/how_will_you_confirm'];
         $uuid = $request->getAttribute('uuid');
 
-        $view = new ViewModel();
         $formData = (array)($request->getParsedBody());
         $dateSubForm = $this->createForm(PassportDate::class, $formData);
         $form = $this->createForm(IdMethod::class, $formData);
@@ -48,16 +46,20 @@ class HowWillYouConfirmHandler implements RequestHandlerInterface
 
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $view->setVariable('date_sub_form', $dateSubForm);
-        $view->setVariable('form', $form);
-        $view->setVariable('route_availability', $routeAvailability);
-        $view->setVariable('details_data', $detailsData);
-        $view->setVariable('uuid', $uuid);
+        $variables = [
+            'date_sub_form' => $dateSubForm,
+            'form' => $form,
+            'route_availability' => $routeAvailability,
+            'details_data' => $detailsData,
+            'uuid' => $uuid,
+        ];
 
         if ($request->getMethod() === 'POST') {
             if (array_key_exists('check_button', $formData)) {
-                $variables = $this->handlePassportDateCheckFormSubmission($dateSubForm, $formData, $templates, $uuid);
-                $view->setVariables($variables);
+                $variables = array_merge(
+                    $variables,
+                    $this->handlePassportDateCheckFormSubmission($dateSubForm, $formData, $templates, $uuid)
+                );
             } else {
                 $response = $this->handleIdMethodFormSubmission($form, $formData, $uuid, $detailsData['personType']);
                 if ($response) {
@@ -66,7 +68,7 @@ class HowWillYouConfirmHandler implements RequestHandlerInterface
             }
         }
 
-        return new HtmlResponse($this->renderer->render($templates['default'], $view->getVariables()));
+        return new HtmlResponse($this->renderer->render($templates['default'], $variables));
     }
 
     /**

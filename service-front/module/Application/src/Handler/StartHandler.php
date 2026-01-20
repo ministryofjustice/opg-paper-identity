@@ -14,8 +14,6 @@ use Application\Helpers\RouteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Diactoros\Response\HtmlResponse;
-use Laminas\Psr7Bridge\Psr7ServerRequest;
-use Laminas\View\Model\ViewModel;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -36,7 +34,6 @@ class StartHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $view = new ViewModel();
         /** @var string[] $lpasQuery */
         $lpasQuery = $request->getQueryParams()["lpas"];
         $type = $request->getQueryParams()["personType"];
@@ -50,6 +47,8 @@ class StartHandler implements RequestHandlerInterface
             );
         }
 
+        $pageVariables = [];
+
         $lpas = [];
         $unfoundLpas = [];
         foreach ($lpasQuery as $key => $lpaUid) {
@@ -57,14 +56,14 @@ class StartHandler implements RequestHandlerInterface
 
             if (empty($data)) {
                 $unfoundLpas[] = $lpaUid;
-                $view->setVariables([
+                $pageVariables = [
                     'sirius_url' => $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $lpasQuery[0],
                     'details_data' => [
                         'personType' => $personType,
                         'firstName' => '',
                         'lastName' => '',
                     ],
-                ]);
+                ];
                 unset($lpasQuery[$key]);
             } else {
                 $lpas[] = $data;
@@ -75,11 +74,11 @@ class StartHandler implements RequestHandlerInterface
 
         if (empty($lpas)) {
             $lpsString = implode(", ", $unfoundLpas);
-            $view->setVariable('message', 'LPA not found for ' . $lpsString);
+            $pageVariables['message'] = 'LPA not found for ' . $lpsString;
 
             return new HtmlResponse($this->renderer->render(
                 'application/pages/cannot_start',
-                $view->getVariables()
+                $pageVariables
             ));
         }
 
@@ -104,16 +103,13 @@ class StartHandler implements RequestHandlerInterface
                     "The identity check has already been completed" :
                     "ID check has status: " . $lpaStatusCheck->getStatus()->value . " and cannot be started";
 
-                $view = new ViewModel();
-                $view->setVariables([
-                    'message' => $lpaStatusTypeCheck,
-                    'sirius_url' => $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $lpasQuery[0],
-                    'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $personType),
-                ]);
-
                 return new HtmlResponse($this->renderer->render(
                     'application/pages/cannot_start',
-                    $view->getVariables()
+                    [
+                        'message' => $lpaStatusTypeCheck,
+                        'sirius_url' => $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $lpasQuery[0],
+                        'details_data' => $this->constructDetailsDataBeforeCreatedCase($lpas[0], $personType),
+                    ]
                 ));
             }
         } catch (\Exception $exception) {
