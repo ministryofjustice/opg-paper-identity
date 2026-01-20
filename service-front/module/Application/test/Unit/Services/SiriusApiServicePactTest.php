@@ -267,7 +267,13 @@ trailer\n<<\n/Root 3 0 R\n>>\n
             }
         };
 
-        $result = $service->sendDocument($details, SiriusDocument::PostOfficeDocCheckVoucher, new ServerRequest(), $suffix);
+        $result = $service->sendDocument(
+            $details,
+            SiriusDocument::PostOfficeDocCheckVoucher,
+            new ServerRequest(),
+            $suffix
+        );
+
         $this->assertEquals(201, $result['status']);
     }
 }

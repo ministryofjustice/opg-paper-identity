@@ -49,7 +49,7 @@ class SiriusDataProcessorHelper
      * @throws HttpException
      * @throws \DateMalformedStringException
      */
-    public function updatePaperIdCaseFromSirius(string $uuid, RequestInterface $request)
+    public function updatePaperIdCaseFromSirius(string $uuid, RequestInterface $request): void
     {
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 

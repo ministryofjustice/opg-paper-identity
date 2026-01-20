@@ -138,8 +138,11 @@ class VouchingFlowController extends AbstractActionController
         return $view->setTemplate('application/pages/vouching/what_is_the_voucher_name');
     }
 
-    private function checkMatchesForLpas(ServerRequestInterface $request, array $detailsData, string $dateOfBirth): bool | array
-    {
+    private function checkMatchesForLpas(
+        ServerRequestInterface $request,
+        array $detailsData,
+        string $dateOfBirth
+    ): bool | array {
         $match = false;
         foreach ($detailsData['lpas'] as $lpa) {
             $lpasData = $this->siriusApiService->getLpaByUid($lpa, $request);
@@ -335,7 +338,7 @@ class VouchingFlowController extends AbstractActionController
         $form = $this->createForm(AddressInput::class);
         $form->setData($detailsData['address'] ?? []);
 
-        $countryList = $this->siriusApiService->getCountryList($psr7Request());
+        $countryList = $this->siriusApiService->getCountryList($psr7Request);
         $view->setVariable('country_list', $countryList);
 
         if ($this->getRequest()->isPost()) {
