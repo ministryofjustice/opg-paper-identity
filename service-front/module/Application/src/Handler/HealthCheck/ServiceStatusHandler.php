@@ -7,7 +7,6 @@ namespace Application\Handler\HealthCheck;
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Services\SiriusApiService;
 use Laminas\Diactoros\Response\JsonResponse;
-use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

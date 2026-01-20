@@ -257,7 +257,29 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertResponseStatusCode(200);
     }
 
-    public function testHealthCheckServiceAction(): void
+    public static function serviceHealthCheckProvider(): array
+    {
+        return [
+            'sirius down' => [
+                'siriusStatus' => false,
+                'apiStatus' => true,
+                'expectedOk' => false,
+            ],
+            'api down' => [
+                'siriusStatus' => true,
+                'apiStatus' => false,
+                'expectedOk' => false,
+            ],
+            'both down' => [
+                'siriusStatus' => false,
+                'apiStatus' => false,
+                'expectedOk' => false,
+            ],
+        ];
+    }
+
+    #[DataProvider('serviceHealthCheckProvider')]
+    public function testHealthCheckServiceAction(bool $siriusStatus, bool $apiStatus, bool $expectedOk): void
     {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $opgApiService = $this->createMock(OpgApiService::class);
@@ -268,14 +290,19 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $siriusApiService->expects($this->once())
             ->method('checkAuth')
-            ->willReturn(true);
+            ->willReturn($siriusStatus);
 
         $opgApiService->expects($this->once())
             ->method('healthCheck')
-            ->willReturn(true);
+            ->willReturn($apiStatus);
 
         $this->dispatch('/health-check/service', 'GET');
         $this->assertResponseStatusCode(200);
+
+        $content = json_decode($this->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertEquals($expectedOk, $content['OK']);
+        $this->assertEquals($siriusStatus, $content['dependencies']['sirius']['ok']);
+        $this->assertEquals($apiStatus, $content['dependencies']['api']['ok']);
     }
 
     public function testAbandonAction(): void
