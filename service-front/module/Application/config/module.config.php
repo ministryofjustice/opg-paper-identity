@@ -12,7 +12,6 @@ use Application\Controller\Factory\CourtOfProtectionFlowControllerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
-use Application\Controller\Factory\IndexControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\DocumentType;
@@ -20,6 +19,8 @@ use Application\Enums\IdRoute;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
+use Application\Helpers\RouteHelper;
+use Application\Helpers\RouteHelperFactory;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\PostOffice\DocumentTypeRepositoryFactory;
 use Application\Services\OpgApiService;
@@ -59,8 +60,10 @@ return [
                         'options' => [
                             'route' => '/health-check',
                             'defaults' => [
-                                'controller' => Controller\IndexController::class,
-                                'action' => 'healthCheck',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Handler\HealthCheck\StatusHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -69,8 +72,10 @@ return [
                         'options' => [
                             'route' => '/health-check/service',
                             'defaults' => [
-                                'controller' => Controller\IndexController::class,
-                                'action' => 'healthCheckService',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Handler\HealthCheck\ServiceStatusHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -89,8 +94,6 @@ return [
                         'options' => [
                             'route' => '/:uuid/how-will-you-confirm',
                             'defaults' => [
-                                // 'controller' => Controller\HowConfirmController::class,
-                                // 'action' => 'howWillYouConfirm',
                                 'controller' => PipeSpec::class,
                                 'middleware' => new PipeSpec(
                                     Middleware\AttributePromotionMiddleware::class,
@@ -364,8 +367,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/abandon-flow',
                             'defaults' => [
-                                'controller' => Controller\IndexController::class,
-                                'action' => 'abandonFlow',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\AbandonFlowHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -519,7 +525,6 @@ return [
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
-            Controller\IndexController::class => IndexControllerFactory::class,
             Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
             Controller\CourtOfProtectionFlowController::class => CourtOfProtectionFlowControllerFactory::class,
@@ -560,17 +565,15 @@ return [
         ],
         'factories' => [
             AuthListener::class => AuthListenerFactory::class,
-            ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
+            ClockInterface::class => fn() => SystemClock::fromSystemTimezone(),
             JwtGenerator::class => JwtGeneratorFactory::class,
             LoggerInterface::class => LoggerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
+            RouteHelper::class => RouteHelperFactory::class,
             SiriusApiService::class => SiriusApiServiceFactory::class,
             TwigExtension::class => TwigExtensionFactory::class,
             DocumentTypeRepository::class => DocumentTypeRepositoryFactory::class,
             TwigRenderer::class => TwigRendererFactory::class,
-
-            // Handlers
-            Handler\StartHandler::class => Handler\StartHandlerFactory::class,
         ],
     ],
     'zend_twig' => [
