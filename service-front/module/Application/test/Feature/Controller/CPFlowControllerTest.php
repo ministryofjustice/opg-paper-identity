@@ -16,6 +16,7 @@ use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\RequestInterface;
 
 class CPFlowControllerTest extends AbstractHttpControllerTestCase
 {
@@ -100,8 +101,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         $this
             ->siriusDataProcessorHelperMock
             ->expects(self::once())
-            ->method('updatePaperIdCaseFromSirius')
-            ->willReturn(null);
+            ->method('updatePaperIdCaseFromSirius');
 
         $this->dispatch("/$this->uuid/cp/name-match-check", 'GET');
         $this->assertResponseStatusCode(200);
@@ -240,7 +240,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->siriusApiService
             ->expects(self::once())
             ->method('searchAddressesByPostcode')
-            ->with('SW1A1AA', $this->isInstanceOf(\Laminas\Http\Request::class))
+            ->with('SW1A1AA', $this->isInstanceOf(RequestInterface::class))
             ->willThrowException(new PostcodeInvalidException());
 
         $this->dispatch(

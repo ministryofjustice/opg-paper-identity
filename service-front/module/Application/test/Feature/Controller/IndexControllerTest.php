@@ -10,6 +10,7 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -310,12 +311,12 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $siriusNoteMock
             ->expects(self::once())
             ->method('sendAbandonFlowNote')
-            ->with('cd', 'Custom notes', [$lpaUid], $this->getRequest());
+            ->with('cd', 'Custom notes', [$lpaUid], $this->isInstanceOf(RequestInterface::class));
 
         $siriusNoteMock
             ->expects(self::once())
             ->method('sendBlockedRoutesNote')
-            ->with($mockDetailsData, $this->getRequest());
+            ->with($mockDetailsData, $this->isInstanceOf(RequestInterface::class));
 
         $this->dispatch(sprintf('/%s/abandon-flow?last_page=%s', $caseUuid, $lastPage), 'POST', [
             'reason' => 'cd',

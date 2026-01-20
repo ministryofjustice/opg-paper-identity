@@ -11,6 +11,7 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\RequestInterface;
 
 class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 {
@@ -107,7 +108,7 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
         $this->sendSiriusNoteMock
             ->expects(self::once())
             ->method('sendBlockedRoutesNote')
-            ->with($mockResponseData, $this->getRequest());
+            ->with($mockResponseData, $this->isInstanceOf(RequestInterface::class));
 
         $this->dispatch("/{$this->uuid}/court-of-protection", 'POST', ['confirmation' => true]);
         $this->assertResponseStatusCode(302);

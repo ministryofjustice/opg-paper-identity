@@ -100,6 +100,10 @@ class SiriusApiService
     {
         $cookieHeader = $request->getHeaderLine('Cookie');
 
+        if (empty($cookieHeader)) {
+            return null;
+        }
+
         $cookies = [];
         mb_parse_str(
             strtr($cookieHeader, ['&' => '%26', '+' => '%2B', ';' => '&']),

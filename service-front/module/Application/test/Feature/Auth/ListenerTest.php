@@ -11,6 +11,7 @@ use Laminas\Http\Request;
 use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Psr\Http\Message\RequestInterface;
 
 class ListenerTest extends AbstractHttpControllerTestCase
 {
@@ -28,7 +29,7 @@ class ListenerTest extends AbstractHttpControllerTestCase
 
         $siriusApiMock->expects($this->once())
             ->method("checkAuth")
-            ->with($request)
+            ->with($this->isInstanceOf(RequestInterface::class))
             ->willReturn(true);
 
         $ret = $sut->checkAuth($event);
@@ -52,7 +53,9 @@ class ListenerTest extends AbstractHttpControllerTestCase
 
         $siriusApiMock->expects($this->once())
             ->method("checkAuth")
-            ->with($request)
+            ->with($this->callback(function (RequestInterface $psrRequest) {
+                return $psrRequest->getUri()->__toString() === 'https://somehost/my/page?type=somevalue';
+            }))
             ->willReturn(false);
 
         $response = $sut->checkAuth($event);

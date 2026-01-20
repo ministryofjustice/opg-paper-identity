@@ -19,6 +19,7 @@ use Application\Services\SiriusApiService;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\RequestInterface;
 
 class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 {
@@ -586,13 +587,13 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->siriusApiService
             ->expects(self::once())
             ->method('sendDocument')
-            ->with($mockResponseDataIdDetails, $docType, $this->getRequest(), 'pdf')
+            ->with($mockResponseDataIdDetails, $docType, $this->isInstanceOf(RequestInterface::class), 'pdf')
             ->willReturn(['status' => 201]);
 
         $this->sendSiriusNoteMock
             ->expects(self::once())
             ->method('sendBlockedRoutesNote')
-            ->with($mockResponseDataIdDetails, $this->getRequest());
+            ->with($mockResponseDataIdDetails, $this->isInstanceOf(RequestInterface::class));
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "POST", [
             'confirmPostOffice' => 'Continue'
