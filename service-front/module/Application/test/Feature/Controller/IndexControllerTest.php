@@ -43,23 +43,35 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
             'uId' => 'M-0000-0000-0000',
             'id' => 1234,
             'donor' => [
-                'firstname' => 'Lili', 'surname' => 'Laur', 'dob' => '18/02/2019',
-                'addressLine1' => '17 East Lane', 'addressLine2' => 'Wickerham',
-                'town' => '', 'postcode' => 'W1 3EJ', 'country' => 'GB',
+                'firstname' => 'Lili',
+                'surname' => 'Laur',
+                'dob' => '18/02/2019',
+                'addressLine1' => '17 East Lane',
+                'addressLine2' => 'Wickerham',
+                'town' => '',
+                'postcode' => 'W1 3EJ',
+                'country' => 'GB',
             ],
             'caseSubtype' => 'property-and-affairs',
         ];
 
         $lpaStoreData = [
             'donor' => [
-                'firstNames' => 'Lilith', 'lastName' => 'Laur', 'dateOfBirth' => '2009-02-18',
+                'firstNames' => 'Lilith',
+                'lastName' => 'Laur',
+                'dateOfBirth' => '2009-02-18',
                 'address' => [
-                    'line1' => 'Unit 15', 'line2' => 'Uberior House', 'town' => 'Edinburgh',
-                    'postcode' => 'EH1 2EJ', 'country' => 'GB',
+                    'line1' => 'Unit 15',
+                    'line2' => 'Uberior House',
+                    'town' => 'Edinburgh',
+                    'postcode' => 'EH1 2EJ',
+                    'country' => 'GB',
                 ],
             ],
             'certificateProvider' => [
-                'firstNames' => 'x', 'lastName' => 'x', 'dateOfBirth' => '1980-01-01',
+                'firstNames' => 'x',
+                'lastName' => 'x',
+                'dateOfBirth' => '1980-01-01',
                 'address' => ['line1' => '16a Avenida Lucana', 'line2' => 'Cordón', 'country' => 'ES'],
             ],
             'lpaType' => 'personal-welfare',
@@ -75,7 +87,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'donor',
                 [
-                    'Lili', 'Laur', '2019-02-18', PersonType::Donor, ['M-1234-5678-90AB'],
+                    'Lili',
+                    'Laur',
+                    '2019-02-18',
+                    PersonType::Donor,
+                    ['M-1234-5678-90AB'],
                     [
                         'line1' => '17 East Lane',
                         'line2' => 'Wickerham',
@@ -93,7 +109,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'donor',
                 [
-                    'Lilith', 'Laur', '2009-02-18', PersonType::Donor, ['M-1234-5678-90AB'],
+                    'Lilith',
+                    'Laur',
+                    '2009-02-18',
+                    PersonType::Donor,
+                    ['M-1234-5678-90AB'],
                     [
                         'line1' => 'Unit 15',
                         'line2' => 'Uberior House',
@@ -111,7 +131,11 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
                 ],
                 'certificateProvider',
                 [
-                    'x', 'x', null, PersonType::CertificateProvider, ['M-1234-5678-90AB'],
+                    'x',
+                    'x',
+                    null,
+                    PersonType::CertificateProvider,
+                    ['M-1234-5678-90AB'],
                     [
                         'line1' => '16a Avenida Lucana',
                         'line2' => 'Cordón',
@@ -215,8 +239,8 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $serviceManager->setService(SiriusApiService::class, $siriusApiService);
 
         $siriusApiService->expects($this->once())
-        ->method('getLpaByUid')
-        ->willReturn(null);
+            ->method('getLpaByUid')
+            ->willReturn(null);
 
         $this->dispatch('/start?personType=donor&lpas[]=M-AAAA-BBBB-CCCC', 'GET');
         $this->assertResponseStatusCode(200);
@@ -233,7 +257,29 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
         $this->assertResponseStatusCode(200);
     }
 
-    public function testHealthCheckServiceAction(): void
+    public static function serviceHealthCheckProvider(): array
+    {
+        return [
+            'sirius down' => [
+                'siriusStatus' => false,
+                'apiStatus' => true,
+                'expectedOk' => false,
+            ],
+            'api down' => [
+                'siriusStatus' => true,
+                'apiStatus' => false,
+                'expectedOk' => false,
+            ],
+            'both down' => [
+                'siriusStatus' => false,
+                'apiStatus' => false,
+                'expectedOk' => false,
+            ],
+        ];
+    }
+
+    #[DataProvider('serviceHealthCheckProvider')]
+    public function testHealthCheckServiceAction(bool $siriusStatus, bool $apiStatus, bool $expectedOk): void
     {
         $siriusApiService = $this->createMock(SiriusApiService::class);
         $opgApiService = $this->createMock(OpgApiService::class);
@@ -244,14 +290,19 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $siriusApiService->expects($this->once())
             ->method('checkAuth')
-            ->willReturn(true);
+            ->willReturn($siriusStatus);
 
         $opgApiService->expects($this->once())
             ->method('healthCheck')
-            ->willReturn(true);
+            ->willReturn($apiStatus);
 
         $this->dispatch('/health-check/service', 'GET');
         $this->assertResponseStatusCode(200);
+
+        $content = json_decode($this->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertEquals($expectedOk, $content['OK']);
+        $this->assertEquals($siriusStatus, $content['dependencies']['sirius']['ok']);
+        $this->assertEquals($apiStatus, $content['dependencies']['api']['ok']);
     }
 
     public function testAbandonAction(): void
@@ -301,7 +352,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $opgApiService->expects($this->once())
             ->method('updateCaseProgress')
-            ->with($caseUuid, $this->callback(fn ($data) => isset($data['abandonedFlow'])
+            ->with($caseUuid, $this->callback(fn($data) => isset($data['abandonedFlow'])
                 && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())
