@@ -157,8 +157,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/id-verify-questions',
                             'defaults' => [
-                                'controller' => Controller\KbvController::class,
-                                'action' => 'idVerifyQuestions',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Kbv\QuestionsHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -177,8 +180,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/identity-check-failed',
                             'defaults' => [
-                                'controller' => Controller\KbvController::class,
-                                'action' => 'identityCheckFailed',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Kbv\IdentityCheckFailedHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -207,8 +213,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/court-of-protection',
                             'defaults' => [
-                                'controller' => Controller\CourtOfProtectionFlowController::class,
-                                'action' => 'register',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CourtOfProtection\RegisterHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -217,8 +226,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/court-of-protection-what-next',
                             'defaults' => [
-                                'controller' => Controller\CourtOfProtectionFlowController::class,
-                                'action' => 'whatNext',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CourtOfProtection\WhatNextHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -525,9 +537,7 @@ return [
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
-            Controller\KbvController::class => LazyControllerAbstractFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
-            Controller\CourtOfProtectionFlowController::class => CourtOfProtectionFlowControllerFactory::class,
         ],
     ],
     'listeners' => [

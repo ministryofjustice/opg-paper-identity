@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\KbvController;
 use Application\Enums\PersonType;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -109,9 +108,6 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch('/' . $mockUuid . '/id-verify-questions', 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('root/id_verify_questions');
 
         $this->assertQueryContentContains('h1', 'Who provides your personal mobile contract?');
@@ -241,9 +237,6 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class);
-        $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('root/identity_check_failed');
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\CourtOfProtectionFlowController;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
@@ -79,9 +78,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/{$this->uuid}/court-of-protection", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CourtOfProtectionFlowController::class);
-        $this->assertControllerClass('CourtOfProtectionFlowController');
         $this->assertMatchedRouteName('root/court_of_protection');
     }
 
@@ -94,11 +90,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
             ->method('getDetailsData')
             ->with($this->uuid)
             ->willReturn($mockResponseData);
-
-        $this->siriusDataProcessorHelper
-            ->expects(self::once())
-            ->method('createLpaDetailsArray')
-            ->willReturn($this->returnMockLpaArray());
 
         $this->opgApiServiceMock
             ->expects(self::once())
@@ -127,9 +118,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/{$this->uuid}/court-of-protection-what-next", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CourtOfProtectionFlowController::class);
-        $this->assertControllerClass('CourtOfProtectionFlowController');
         $this->assertMatchedRouteName('root/court_of_protection_what_next');
     }
 }
