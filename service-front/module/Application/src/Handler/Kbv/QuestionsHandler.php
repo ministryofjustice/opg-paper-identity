@@ -2,52 +2,61 @@
 
 declare(strict_types=1);
 
-namespace Application\Controller;
+namespace Application\Handler\Kbv;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\PersonType;
 use Application\Exceptions\HttpException;
+use Application\Helpers\RouteHelper;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
-use Laminas\Http\Response;
-use Laminas\Mvc\Controller\AbstractActionController;
-use Laminas\Stdlib\Parameters;
-use Laminas\View\Model\ViewModel;
 use Laminas\InputFilter\InputFilter;
+use Mezzio\Template\TemplateRendererInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * @psalm-import-type Question from OpgApiServiceInterface
  */
-class KbvController extends AbstractActionController
+class QuestionsHandler implements RequestHandlerInterface
 {
-    protected $plugins;
-
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
+        private readonly RouteHelper $routeHelper,
+        private readonly TemplateRendererInterface $renderer,
     ) {
     }
 
-    public function idVerifyQuestionsAction(): ViewModel|Response
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $failRoute = "root/identity_check_failed";
         $passRoute = [
             PersonType::Donor->value => "root/identity_check_passed",
             PersonType::CertificateProvider->value => "root/cp_identity_check_passed",
-            PersonType::Voucher->value => "root/voucher_identity_check_passed"
+            PersonType::Voucher->value => "root/voucher_identity_check_passed",
         ];
 
-        $view = new ViewModel();
-        $uuid = $this->params()->fromRoute("uuid");
-        $view->setVariable('uuid', $uuid);
-
+        $uuid = $request->getAttribute('uuid');
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        if (isset($detailsData['identityCheckPassed'])) {
-            $view->setVariable('message', 'The identity check has already been completed');
-            return $view->setTemplate('application/pages/cannot_start');
-        }
 
-        $view->setVariable('details_data', $detailsData);
+        $variables = ['uuid' => $uuid, 'details_data' => $detailsData];
+
+        if (isset($detailsData['identityCheckPassed'])) {
+            $siriusUrl = $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $detailsData['lpas'][0];
+
+            return new HtmlResponse($this->renderer->render(
+                'application/pages/cannot_start',
+                [
+                    ...$variables,
+                    'message' => 'The identity check has already been completed',
+                    'sirius_url' => $siriusUrl,
+                ]
+            ));
+        }
 
         $questionsData = $this->opgApiService->getIdCheckQuestions($uuid);
 
@@ -55,14 +64,14 @@ class KbvController extends AbstractActionController
          * @psalm-suppress PossiblyInvalidArrayAccess
          */
         $firstQuestion = $questionsData[0];
-        $view->setVariable('first_question', $firstQuestion['question']);
+        $variables['first_question'] = $firstQuestion['question'];
 
         if ($questionsData === false) {
             throw new HttpException(500, 'Could not load KBV questions');
         }
 
         if (count($questionsData) === 0) {
-            return $this->redirect()->toRoute('root/thin_file_failure', ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect('root/thin_file_failure', ['uuid' => $uuid]);
         }
 
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);
@@ -80,18 +89,17 @@ class KbvController extends AbstractActionController
             ]);
         }
 
-        $view->setVariable('questions_data', $questionsData);
+        $variables['questions_data'] = $questionsData;
 
-        $formData = $this->getRequest()->getPost();
+        $formData = (array)($request->getParsedBody());
         $form->setData($formData);
 
-        /** @psalm-suppress InvalidArgument */
         $nextQuestion = $this->getNextQuestion($questionsData, $formData);
-        $view->setVariable('form_valid', $form->isValid());
-        $view->setVariable('question', $nextQuestion);
+        $variables['form_valid'] = $form->isValid();
+        $variables['question'] = $nextQuestion;
 
-        if ($this->getRequest()->isGet()) {
-            $view->setVariable('form_valid', true);
+        if ($request->getMethod() === 'GET') {
+            $variables['form_valid'] = true;
         }
 
         // this check look weird, but it works for preventing a spurious form error on page 2
@@ -100,27 +108,30 @@ class KbvController extends AbstractActionController
                 (is_null($nextQuestion) || $firstQuestion['question'] !== $nextQuestion['question']) &&
                     $postVar === ""
             ) {
-                $view->setVariable('form_valid', true);
+                $variables['form_valid'] = true;
             }
         }
 
         if (count($formData) > 0 && $nextQuestion === null) {
-            /** @psalm-suppress InvalidMethodCall */
-            $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData->toArray()]);
+            $check = $this->opgApiService->checkIdCheckAnswers($uuid, ['answers' => $formData]);
 
             if (! $check['complete']) {
-                return $this->redirect()->refresh();
+                return new RedirectResponse($request->getUri()->getPath());
             }
 
             if ($check['passed'] === true) {
-                return $this->redirect()->toRoute($passRoute[$detailsData['personType']->value], ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect($passRoute[$detailsData['personType']->value], ['uuid' => $uuid]);
             }
 
-            return $this->redirect()->toRoute($failRoute, ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect($failRoute, ['uuid' => $uuid]);
         }
-        $view->setVariable('form', $form);
 
-        return $view->setTemplate('application/pages/identity_check_questions');
+        $variables['form'] = $form;
+
+        return new HtmlResponse($this->renderer->render(
+            'application/pages/identity_check_questions',
+            $variables
+        ));
     }
 
     /**
@@ -128,25 +139,14 @@ class KbvController extends AbstractActionController
      * @param Question[] $questions
      * @return ?Question
      */
-    private function getNextQuestion(array $questions, Parameters $formData): ?array
+    private function getNextQuestion(array $questions, array $formData): ?array
     {
         foreach ($questions as $question) {
-            if (! $formData[$question['externalId']]) {
+            if (empty($formData[$question['externalId']])) {
                 return $question;
             }
         }
 
         return null;
-    }
-
-    public function identityCheckFailedAction(): ViewModel
-    {
-        $uuid = $this->params()->fromRoute("uuid");
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
-
-        $view = new ViewModel();
-        $view->setVariable('details_data', $detailsData);
-
-        return $view->setTemplate('application/pages/identity_check_failed');
     }
 }

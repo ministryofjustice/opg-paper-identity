@@ -10,6 +10,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * Promotes `RouteMatch` parameters to top-level attributes. This emulates how
+ * mezzio-router works so can be removed when we migrate to Mezzio.
+ */
 class AttributePromotionMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
