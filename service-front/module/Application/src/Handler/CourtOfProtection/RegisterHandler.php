@@ -48,15 +48,14 @@ class RegisterHandler implements RequestHandlerInterface
         }
 
         $lpaDetails = $this->siriusDataProcessorHelper->createLpaDetailsArray($detailsData, $request);
-        $hasFraudMarker = isset($detailsData["caseProgress"]["fraudScore"]["decision"])
-            && $detailsData["caseProgress"]["fraudScore"]["decision"] === "STOP";
+        $fraudMarker = $detailsData["caseProgress"]["fraudScore"]["decision"] ?? null;
 
         return new HtmlResponse($this->renderer->render(
             'application/pages/court_of_protection',
             [
                 'details_data' => $detailsData,
                 'form' => $form,
-                'has_fraud_marker' => $hasFraudMarker,
+                'has_fraud_marker' => $fraudMarker === "STOP",
                 'lpa_details' => $lpaDetails,
             ]
         ));
