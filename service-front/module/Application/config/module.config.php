@@ -8,9 +8,7 @@ use Application\Auth\JwtGenerator;
 use Application\Auth\JwtGeneratorFactory;
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
-use Application\Controller\Factory\CourtOfProtectionFlowControllerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
-use Application\Controller\Factory\DocumentCheckControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
@@ -27,7 +25,6 @@ use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
 use Application\Views\TwigExtension;
 use Application\Views\TwigExtensionFactory;
-use Laminas\Mvc\Controller\LazyControllerAbstractFactory;
 use Laminas\Mvc\Middleware\PipeSpec;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -127,8 +124,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/national-insurance-number',
                             'defaults' => [
-                                'controller' => Controller\DocumentCheckController::class,
-                                'action' => 'nationalInsuranceNumber',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\DocumentCheck\NationalInsuranceNumberHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -137,8 +137,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/driving-licence-number',
                             'defaults' => [
-                                'controller' => Controller\DocumentCheckController::class,
-                                'action' => 'drivingLicenceNumber',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\DocumentCheck\DrivingLicenceNumberHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -147,8 +150,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/passport-number',
                             'defaults' => [
-                                'controller' => Controller\DocumentCheckController::class,
-                                'action' => 'passportNumber',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\DocumentCheck\PassportNumberHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -535,7 +541,6 @@ return [
         'factories' => [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
-            Controller\DocumentCheckController::class => DocumentCheckControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
             Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
         ],
@@ -575,7 +580,7 @@ return [
         ],
         'factories' => [
             AuthListener::class => AuthListenerFactory::class,
-            ClockInterface::class => fn() => SystemClock::fromSystemTimezone(),
+            ClockInterface::class => fn () => SystemClock::fromSystemTimezone(),
             JwtGenerator::class => JwtGeneratorFactory::class,
             LoggerInterface::class => LoggerFactory::class,
             OpgApiService::class => OpgApiServiceFactory::class,
@@ -605,30 +610,6 @@ return [
             IdRoute::POST_OFFICE->value => 'Post Office',
             IdRoute::VOUCHING->value => 'Have someone vouch for the identity of the donor',
             IdRoute::COURT_OF_PROTECTION->value => 'Court of protection',
-        ],
-        'template_options' => [
-            DocumentType::NationalInsuranceNumber->value => [
-                'default' => 'application/pages/national_insurance_number',
-                'success' => 'application/pages/document_success',
-                'fail' => 'application/pages/national_insurance_number_fail',
-                'amb_fail' => 'application/pages/national_insurance_number_ambiguous_fail',
-                'thin_file' => 'application/pages/thin_file_failure',
-                'fraud' => 'application/pages/fraud_failure',
-            ],
-            DocumentType::Passport->value => [
-                'default' => 'application/pages/passport_number',
-                'success' => 'application/pages/document_success',
-                'fail' => 'application/pages/passport_number_fail',
-                'thin_file' => 'application/pages/thin_file_failure',
-                'fraud' => 'application/pages/fraud_failure',
-            ],
-            DocumentType::DrivingLicence->value => [
-                'default' => 'application/pages/driving_licence_number',
-                'success' => 'application/pages/document_success',
-                'fail' => 'application/pages/driving_licence_number_fail',
-                'thin_file' => 'application/pages/thin_file_failure',
-                'fraud' => 'application/pages/fraud_failure',
-            ],
         ],
         'yoti_supported_documents' => json_decode(
             $yotiSupportedDocs === false ? '' : $yotiSupportedDocs,
