@@ -10,13 +10,13 @@ use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\DonorFlowControllerFactory;
-use Application\Controller\Factory\PostOfficeFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Factories\LoggerFactory;
 use Application\Factories\OpgApiServiceFactory;
 use Application\Factories\SiriusApiServiceFactory;
+use Application\Handler\PostOffice\FindPostOfficeBranchHandlerFactory;
 use Application\Helpers\RouteHelper;
 use Application\Helpers\RouteHelperFactory;
 use Application\PostOffice\DocumentTypeRepository;
@@ -209,8 +209,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/post-office-documents',
                             'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'postOfficeDocuments',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\PostOffice\ChooseUKDocumentHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -245,8 +248,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/find-post-office-branch',
                             'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'findPostOfficeBranch',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\PostOffice\FindPostOfficeBranchHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -255,8 +261,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/post-office-what-happens-next',
                             'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'whatHappensNext',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\PostOffice\WhatHappensNextHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -265,8 +274,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/post-office-route-not-available',
                             'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'postOfficeRouteNotAvailable',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\PostOffice\RouteNotAvailableHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -398,8 +410,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/po-choose-country',
                             'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'chooseCountry',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\PostOffice\ChooseCountryHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -408,8 +423,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/po-choose-country-id',
                             'defaults' => [
-                                'controller' => Controller\PostOfficeFlowController::class,
-                                'action' => 'chooseCountryId',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\PostOffice\ChooseInternationalDocumentHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -542,7 +560,6 @@ return [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
-            Controller\PostOfficeFlowController::class => PostOfficeFlowControllerFactory::class,
         ],
     ],
     'listeners' => [
@@ -589,6 +606,8 @@ return [
             TwigExtension::class => TwigExtensionFactory::class,
             DocumentTypeRepository::class => DocumentTypeRepositoryFactory::class,
             TwigRenderer::class => TwigRendererFactory::class,
+            // Handlers
+            Handler\PostOffice\FindPostOfficeBranchHandler::class => FindPostOfficeBranchHandlerFactory::class,
         ],
     ],
     'zend_twig' => [
