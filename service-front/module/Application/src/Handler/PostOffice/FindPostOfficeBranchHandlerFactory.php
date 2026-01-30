@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Application\Controller\Factory;
+namespace Application\Handler\PostOffice;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\PostOfficeFlowController;
-use Application\Helpers\FormProcessorHelper;
+use Application\Helpers\RouteHelper;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 
-class PostOfficeFlowControllerFactory implements FactoryInterface
+class FindPostOfficeBranchHandlerFactory implements FactoryInterface
 {
     /**
      * @param ContainerInterface $container
@@ -24,21 +23,18 @@ class PostOfficeFlowControllerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
-    ): PostOfficeFlowController {
+        ?array $options = null
+    ): FindPostOfficeBranchHandler {
+        /** @var array{"opg_settings": array{"identity_documents": array<string, string>}} $config */
         $config = $container->get('Config');
 
-        /** @var string $siriusPublicUrl */
-        $siriusPublicUrl = getenv("SIRIUS_PUBLIC_URL");
-
-        return new PostOfficeFlowController(
+        return new FindPostOfficeBranchHandler(
             $container->get(OpgApiServiceInterface::class),
-            $container->get(FormProcessorHelper::class),
+            $container->get(RouteHelper::class),
             $container->get(SendSiriusNoteHelper::class),
             $container->get(SiriusApiService::class),
             $container->get(SiriusDataProcessorHelper::class),
-            $container->get(DocumentTypeRepository::class),
-            $siriusPublicUrl,
+            $container->get(TemplateRendererInterface::class),
             $config,
         );
     }

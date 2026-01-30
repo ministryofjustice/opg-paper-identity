@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\PostOfficeFlowController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Enums\PersonType;
@@ -132,9 +131,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/post-office-documents", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class);
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/post_office_documents');
     }
 
@@ -184,9 +180,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/post-office-what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class);
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_what_happens_next');
     }
 
@@ -203,9 +196,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/post-office-route-not-available", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class);
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/post_office_route_not_available');
     }
 
@@ -222,9 +212,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/po-choose-country", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class);
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_choose_country');
 
         $this->assertQueryContentContains('[name="idCountry"] > option[value="AUT"]', 'Austria');
@@ -254,9 +241,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/po-choose-country-id", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class);
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_choose_country_id');
     }
 
@@ -283,9 +267,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', []);
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_choose_country_id');
 
         $response = $this->getResponse()->getContent();
@@ -310,9 +291,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ['docType' => 'NOT_A_DOCUMENT_TYPE']
         );
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/po_choose_country_id');
 
         $response = $this->getResponse()->getContent();
@@ -377,9 +355,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "GET");
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(PostOfficeFlowController::class);
-        $this->assertControllerClass('PostOfficeFlowController');
         $this->assertMatchedRouteName('root/find_post_office_branch');
         $this->assertQuery("input#postoffice-1234567[value='$poOne']");
         $this->assertQueryContentContains('span#poAddress-1234567', '1 Fake Street, Faketown, FA1 2KE');

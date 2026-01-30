@@ -15,7 +15,15 @@ use function PHPUnit\Framework\isNan;
 
 /**
  * @psalm-suppress MissingConstructor
- * @implements FormTemplate<array{postoffice: string}>
+ * @implements FormTemplate<array{
+ *   postoffice: array{
+ *     fad_code: string,
+ *     address: string,
+ *     post_code: string
+ *   }|null,
+ *   selectPostoffice: bool,
+ *   searchString: string
+ *  }>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class PostOfficeSelect implements FormTemplate
@@ -35,6 +43,7 @@ class PostOfficeSelect implements FormTemplate
 
     /**
      * @psalm-suppress PossiblyUnusedProperty
+     * @var array{fad_code: string, address: string, post_code: string}
      */
     #[Annotation\Filter(Callback::class, options: [
         'callback' => [self::class, 'jsonDecodeToArray']
