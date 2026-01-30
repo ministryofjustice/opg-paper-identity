@@ -10,7 +10,7 @@ use Laminas\Validator\NotEmpty;
 
 /**
  * @psalm-suppress MissingConstructor
- * @implements FormTemplate<array{location: string}>
+ * @implements FormTemplate<array{searchString: string}>
  */
 #[Annotation\Hydrator(ObjectPropertyHydrator::class)]
 class PostOfficeSearch implements FormTemplate
