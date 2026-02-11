@@ -75,6 +75,7 @@ class OpgApiService implements OpgApiServiceInterface
             return $this->responseData;
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
             $this->logger->error('opg api request failed', ['exception' => $exception]);
+
             throw new OpgApiException($exception->getMessage(), 0, $exception);
         }
     }

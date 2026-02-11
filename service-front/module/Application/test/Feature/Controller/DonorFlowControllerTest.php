@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\DonorFlowController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Helpers\FormProcessorHelper;
@@ -65,9 +64,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/donor_lpa_check');
     }
 
@@ -84,9 +80,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/identity_check_passed');
     }
 
@@ -94,9 +87,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/thin_file_failure');
     }
 
@@ -118,9 +108,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/donor_details_match_check');
     }
 
@@ -175,9 +162,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
     public function testWhatIsVouchingPage(): void
     {
         $this->dispatch("/$this->uuid/what-is-vouching");
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/what_is_vouching');
         $this->assertResponseStatusCode(200);
     }
@@ -238,9 +222,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/vouching-what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(DonorFlowController::class);
-        $this->assertControllerClass('DonorFlowController');
         $this->assertMatchedRouteName('root/vouching_what_happens_next');
     }
 

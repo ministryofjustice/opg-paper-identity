@@ -38,8 +38,8 @@
                                         {{ datum['name'] }}
                                     </td>
                                     <td class="govuk-table__cell">
-                                        {% if lpa_count > 1 %}
-                                            <a href="./remove-lpa/{{ index }}">Remove</a>
+                                        {% if lpa_count > 1 or true %}
+                                            <a href="./remove-lpa/{{ index }}" class="govuk-link">Remove</a>
                                         {% endif %}
                                     </td>
                                 </tr>
