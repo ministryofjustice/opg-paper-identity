@@ -9,7 +9,6 @@ use Application\Auth\JwtGeneratorFactory;
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
 use Application\Controller\Factory\CPFlowControllerFactory;
-use Application\Controller\Factory\DonorFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
@@ -104,8 +103,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/donor-lpa-check',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'donorLpaCheck',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\LpaCheckHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -114,8 +116,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/donor-details-match-check',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'donorDetailsMatchCheck',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\DonorDetailsMatchCheckHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -176,8 +181,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/identity-check-passed',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'identityCheckPassed',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\IdentityCheckPassedHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -199,8 +207,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/thin-file-failure',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'thinFileFailure',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\ThinFileFailureHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -377,8 +388,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/remove-lpa/:lpa',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'removeLpa',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\RemoveLpaHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -436,8 +450,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/what-is-vouching',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'whatIsVouching',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\WhatIsVouchingHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -446,8 +463,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching-what-happens-next',
                             'defaults' => [
-                                'controller' => Controller\DonorFlowController::class,
-                                'action' => 'vouchingWhatHappensNext',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Donor\VouchingWhatHappensNextHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -558,7 +578,6 @@ return [
     'controllers' => [
         'factories' => [
             Controller\CPFlowController::class => CPFlowControllerFactory::class,
-            Controller\DonorFlowController::class => DonorFlowControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
         ],
     ],
