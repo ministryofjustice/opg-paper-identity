@@ -27,9 +27,11 @@ class DonorDetailsMatchCheckHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $uuid = $request->getAttribute('uuid');
-        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
+        // Ensure we're using the latest data from Sirius, as the user may have updated it and refreshed this page
         $this->siriusDataProcessorHelper->updatePaperIdCaseFromSirius($uuid, $request);
+
+        $detailsData = $this->opgApiService->getDetailsData($uuid);
 
         $siriusEditUrl = $this->routeHelper->getSiriusPublicUrl() . '/lpa/frontend/lpa/' . $detailsData["lpas"][0];
 
