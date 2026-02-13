@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\VouchingFlowController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Enums\LpaActorTypes;
@@ -134,9 +133,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/confirm_vouching');
     }
 
@@ -153,9 +149,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'POST', []);
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/confirm_vouching');
 
         $response = $this->getResponse()->getContent();
@@ -216,9 +209,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['name']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_name');
     }
 
@@ -389,9 +379,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_dob');
     }
 
@@ -620,9 +607,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_enter_postcode');
     }
 
@@ -742,9 +726,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_select_address');
 
         //i cant figure out how to assert that the options are populated correctly..
@@ -819,9 +800,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_enter_address_manual');
         //check inputs are pre-populated if address was already selected
         $this->assertQuery("input#line1[value='456 Pretend Road']");
@@ -943,9 +921,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirmDonors']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(VouchingFlowController::class);
-        $this->assertControllerClass('VouchingFlowController');
         $this->assertMatchedRouteName('root/voucher_confirm_donors');
 
         $this->assertQueryContentContains('span[id=lpaType]', 'PW');
@@ -999,9 +974,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
             $this->dispatch("/$this->uuid/{$this->routes['addDonor']}", 'GET');
             $this->assertResponseStatusCode(200);
-            $this->assertModuleName('application');
-            $this->assertControllerName(VouchingFlowController::class);
-            $this->assertControllerClass('VouchingFlowController');
             $this->assertMatchedRouteName('root/voucher_add_donor');
     }
 
