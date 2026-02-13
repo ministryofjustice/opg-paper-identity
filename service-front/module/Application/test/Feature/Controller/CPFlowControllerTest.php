@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\CPFlowController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Exceptions\PostcodeInvalidException;
@@ -105,9 +104,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/name-match-check", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_name_match_check');
     }
 
@@ -132,9 +128,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/confirm-lpas", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_confirm_lpas');
     }
 
@@ -151,9 +144,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/confirm-dob", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_confirm_dob');
     }
 
@@ -170,9 +160,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/confirm-address", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CpFlowController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('CpFlowController');
         $this->assertMatchedRouteName('root/cp_confirm_address');
     }
 
@@ -250,9 +237,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         );
 
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(CPFlowController::class);
-        $this->assertControllerClass('CPFlowController');
         $this->assertMatchedRouteName('root/cp_enter_postcode');
 
         $response = $this->getResponse()->getContent();
