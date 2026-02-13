@@ -18,6 +18,8 @@ class LpaReferenceNumber implements FormTemplate
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    #[Annotation\Validator(LpaUidValidator::class)]
+    #[Annotation\Validator(LpaUidValidator::class, options: [
+        'message' => 'Not a valid LPA number. Enter an LPA number to continue!'
+    ])]
     public string $lpa;
 }
