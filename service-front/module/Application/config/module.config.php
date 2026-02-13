@@ -8,7 +8,6 @@ use Application\Auth\JwtGenerator;
 use Application\Auth\JwtGeneratorFactory;
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
-use Application\Controller\Factory\CPFlowControllerFactory;
 use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
@@ -298,8 +297,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/name-match-check',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'nameMatchCheck',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\NameMatchCheckHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -308,8 +310,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/confirm-lpas',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'confirmLpas',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\ConfirmLpasHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -318,8 +323,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/add-lpa',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'addLpa',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\AddLpaHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -328,8 +336,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/confirm-dob',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'confirmDob',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\ConfirmDobHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -338,8 +349,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/confirm-address',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'confirmAddress',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\Address\ConfirmHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -348,8 +362,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/identity-check-passed',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'identityCheckPassed',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\IdentityCheckPassedHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -358,8 +375,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/enter-postcode',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'enterPostcode',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\Address\PostcodeSearchHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -368,8 +388,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/enter-address-manual',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'enterAddressManual',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\Address\ManualEntryHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -378,8 +401,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/select-address/:postcode',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'selectAddress',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\Address\SelectHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -401,8 +427,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/cp/remove-lpa/:lpa',
                             'defaults' => [
-                                'controller' => Controller\CPFlowController::class,
-                                'action' => 'removeLpa',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\CertificateProvider\RemoveLpaHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -577,7 +606,6 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\CPFlowController::class => CPFlowControllerFactory::class,
             Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
         ],
     ],

@@ -58,9 +58,9 @@ describe("Voucher journey", () => {
         // voucher-dob
 
         // forces you to enter dob to continue
-        cy.get("[name=date_problem]").should("not.exist");
+        cy.get("[name=govuk-error-message]").should("not.exist");
         cy.get(".govuk-button").contains("Continue").click();
-        cy.get("[name=date_problem]").should("be.visible");
+        cy.get("[name=govuk-error-message]").should("be.visible");
 
         cy.get("[id=dob-day]").type("26");
         cy.get("[id=dob-month]").type("05");
