@@ -8,7 +8,6 @@ use Application\Auth\JwtGenerator;
 use Application\Auth\JwtGeneratorFactory;
 use Application\Auth\Listener as AuthListener;
 use Application\Auth\ListenerFactory as AuthListenerFactory;
-use Application\Controller\Factory\VouchingFlowControllerFactory;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Factories\LoggerFactory;
@@ -505,8 +504,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/confirm-vouching',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'confirmVouching',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\ConfirmVouchingHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -515,8 +517,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/voucher-name',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'voucherName',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\NameHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -525,8 +530,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/voucher-dob',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'voucherDob',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\DateOfBirthHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -535,8 +543,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/enter-postcode',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'enterPostcode',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\Address\PostcodeSearchHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -545,8 +556,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/select-address/:postcode',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'selectAddress',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\Address\SelectHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -555,8 +569,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/enter-address-manual',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'enterAddressManual',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\Address\ManualEntryHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -565,8 +582,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/confirm-donors',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'confirmDonors',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\ConfirmDonorsHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -575,8 +595,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/add-donor',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'addDonor',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\AddLpaHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -585,8 +608,11 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/remove-lpa/:lpa',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'removeLpa',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\RemoveLpaHandler::class
+                                ),
                             ],
                         ],
                     ],
@@ -595,18 +621,16 @@ return [
                         'options' => [
                             'route' => '/:uuid/vouching/identity-check-passed',
                             'defaults' => [
-                                'controller' => Controller\VouchingFlowController::class,
-                                'action' => 'identityCheckPassed',
+                                'controller' => PipeSpec::class,
+                                'middleware' => new PipeSpec(
+                                    Middleware\AttributePromotionMiddleware::class,
+                                    Handler\Voucher\IdentityCheckPassedHandler::class
+                                ),
                             ],
                         ],
                     ],
                 ],
             ],
-        ],
-    ],
-    'controllers' => [
-        'factories' => [
-            Controller\VouchingFlowController::class => VouchingFlowControllerFactory::class,
         ],
     ],
     'listeners' => [

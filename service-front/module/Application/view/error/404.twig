@@ -7,18 +7,6 @@
     </h1>
 
     <p class="govuk-body">
-        {% if reason == "error-controller-cannot-dispatch" %}
-            The requested controller was unable to dispatch the request.
-        {% elseif reason == "error-middleware-cannot-dispatch" %}
-            The requested controller could not be mapped to an existing controller class
-        {% elseif reason == "error-controller-not-found" %}
-            The requested middleware was unable to dispatch the request.
-        {% elseif reason == "error-controller-invalid" %}
-            The requested controller was not dispatchable.
-        {% elseif reason == "error-router-no-match" %}
-            The requested URL could not be matched by routing.
-        {% else %}
-            {{ reasonMessage }}
-        {% endif %}
+        {{ reasonMessage }}
     </p>
 {% endblock %}
