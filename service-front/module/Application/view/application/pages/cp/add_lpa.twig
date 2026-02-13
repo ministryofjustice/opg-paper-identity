@@ -13,9 +13,9 @@
                 <p class="govuk-body">
                     <b>There is a problem</b>
                 </p>
-                <p>
-                    Not a valid LPA number. Enter an LPA number to continue.
-                </p>
+                {% for message in form.get('lpa').messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
             </div>
         </div>
     {% endif %}
@@ -30,7 +30,7 @@
                         <p class="govuk-body">
                             <b>There is a problem</b>
                         </p>
-                        {{ message|raw }}
+                        <p>{{ message|raw }}</p>
 
                         {% if lpa_response['additionalData'][key] %}
                             <br><br>This ID check is for:
