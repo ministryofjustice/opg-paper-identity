@@ -7,7 +7,6 @@ namespace Application\Controller\Trait;
 use Application\Forms\FormTemplate;
 use Laminas\Form\Annotation\AttributeBuilder;
 use Laminas\Form\FormInterface;
-use Laminas\Mvc\Controller\AbstractController;
 
 trait FormBuilder
 {
@@ -17,14 +16,10 @@ trait FormBuilder
      * @param class-string<T> $form
      * @return FormInterface<U>
      */
-    protected function createForm($form, ?iterable $formData = null)
+    protected function createForm($form, iterable $formData)
     {
-        if ($formData === null && $this instanceof AbstractController) {
-            $formData = $this->getRequest()->getPost();
-        }
-
         $form = (new AttributeBuilder())->createForm($form);
-        $form->setData($formData ?? []);
+        $form->setData($formData);
 
         return $form;
     }

@@ -50,13 +50,13 @@
                     {% elseif match['type'] == 'attorney' %}
                         <h2 class="govuk-heading-m" name="attorney_warning">There is an attorney called {{ matched_name }} named on this LPA. An attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
                     {% elseif match['type'] == 'replacement attorney' %}
-                        <h2 class="govuk-heading-m",name="ra_warning">There is a replacement attorney called {{ matched_name }} named on this LPA. A replacement attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
+                        <h2 class="govuk-heading-m" name="ra_warning">There is a replacement attorney called {{ matched_name }} named on this LPA. A replacement attorney cannot vouch for the identity of a donor. Confirm that these are two different people with the same name.</h2>
                     {% endif %}
                 </div>
             </div>
         </section>
         <div class="govuk-button-group">
-            <input type="submit" class="govuk-button" value="Continue", name="continue-after-warning">
+            <input type="submit" class="govuk-button" value="Continue" name="continue-after-warning">
         </div>
     {% else %}
         <div class="govuk-button-group">
