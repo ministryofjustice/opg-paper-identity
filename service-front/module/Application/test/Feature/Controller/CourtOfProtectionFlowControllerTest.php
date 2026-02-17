@@ -8,11 +8,10 @@ use Application\Contracts\OpgApiServiceInterface;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\RequestInterface;
 
-class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
+class CourtOfProtectionFlowControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiServiceMock;
@@ -22,8 +21,6 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->uuid = '123e4567-e89b-12d3-a456-426614174000';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
@@ -45,9 +42,9 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             "caseProgress" => [
-                "fraudScore" => ["decision" => "STOP"]
+                "fraudScore" => ["decision" => "STOP"],
             ],
-            "lpas" => ["LP-12345"]
+            "lpas" => ["LP-12345"],
         ];
     }
 
@@ -56,8 +53,8 @@ class CourtOfProtectionFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             "M-0000-0000-0000" => [
                 "name" => "John Doe",
-                "type" => "property-and-affairs"
-            ]
+                "type" => "property-and-affairs",
+            ],
         ];
     }
 
