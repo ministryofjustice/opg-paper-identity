@@ -34,7 +34,11 @@ class ManualEntryHandler implements RequestHandlerInterface
         $uuid = $request->getAttribute('uuid');
         $detailsData = $this->opgApiService->getDetailsData($uuid);
 
-        $formData = $request->getMethod() === 'POST' ? (array)($request->getParsedBody()) : $detailsData['address'];
+        $formData = $detailsData['address'] ?? [];
+        if ($request->getMethod() === 'POST') {
+            $formData = (array) $request->getParsedBody();
+        }
+
         $form = $this->createForm(AddressInput::class, $formData);
 
         $countryList = $this->siriusApiService->getCountryList($request);
