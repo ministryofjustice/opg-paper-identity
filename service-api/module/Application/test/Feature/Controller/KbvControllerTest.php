@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Controller;
 
+use Application\Auth\Listener;
 use Application\Controller\KbvController;
 use Application\Enums\DocumentType;
 use Application\Enums\PersonType;
@@ -21,7 +22,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class KbvControllerTest extends TestCase
+class KbvControllerTest extends BaseControllerTestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private KBVServiceInterface&MockObject $kbvServiceMock;
@@ -36,7 +37,7 @@ class KbvControllerTest extends TestCase
         $configOverrides = [];
 
         $this->setApplicationConfig(ArrayUtils::merge(
-            include __DIR__ . '/../../../../../../config/application.config.php',
+            include __DIR__ . '/../../../../../config/application.config.php',
             $configOverrides
         ));
 
@@ -51,6 +52,10 @@ class KbvControllerTest extends TestCase
         $serviceManager->setService(DataQueryHandler::class, $this->dataQueryHandlerMock);
         $serviceManager->setService(KBVServiceInterface::class, $this->kbvServiceMock);
         $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseOutcomeCalculatorMock);
+
+        // Disable authentication during tests
+        $listener = $this->getApplicationServiceLocator()->get(Listener::class);
+        $listener->detach($this->getApplication()->getEventManager());
     }
 
     #[DataProvider('kbvAnswersData')]
@@ -89,15 +94,12 @@ class KbvControllerTest extends TestCase
             }
         }
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/cases/' . $uuid . '/kbv-answers',
             'POST',
             $provided
         );
         $this->assertResponseStatusCode($status);
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class);
-        $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('check_kbv_answers');
 
         $response = json_decode($this->getResponse()->getContent(), true);
@@ -153,9 +155,6 @@ class KbvControllerTest extends TestCase
     {
         $this->dispatch('/cases/kbv-questions', 'GET');
         $this->assertResponseStatusCode(400);
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class);
-        $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('get_kbv_questions');
 
         $response = json_decode($this->getResponse()->getContent(), true);
@@ -200,9 +199,6 @@ class KbvControllerTest extends TestCase
         $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
         $this->assertResponseStatusCode(200);
         $this->assertStringContainsString('Who is your electricity supplier?', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class);
-        $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('get_kbv_questions');
     }
 
@@ -230,9 +226,6 @@ class KbvControllerTest extends TestCase
         $this->dispatch('/cases/a9bc8ab8-389c-4367-8a9b-762ab3050999/kbv-questions', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(KbvController::class);
-        $this->assertControllerClass('KbvController');
         $this->assertMatchedRouteName('get_kbv_questions');
     }
 

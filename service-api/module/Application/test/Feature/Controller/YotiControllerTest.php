@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Controller;
 
+use Application\Auth\Listener;
 use Application\Controller\YotiController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
@@ -15,14 +16,11 @@ use Application\Yoti\SessionConfig;
 use Application\Yoti\SessionStatusService;
 use Application\Yoti\YotiService;
 use Application\Yoti\YotiServiceInterface;
-use ApplicationTest\TestCase;
-use Laminas\Http\Headers;
-use Laminas\Http\Request as HttpRequest;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
-class YotiControllerTest extends TestCase
+class YotiControllerTest extends BaseControllerTestCase
 {
     private YotiService&MockObject $yotiServiceMock;
     private SessionStatusService&MockObject $statusService;
@@ -40,7 +38,7 @@ class YotiControllerTest extends TestCase
         $configOverrides = [];
 
         $this->setApplicationConfig(ArrayUtils::merge(
-            include __DIR__ . '/../../../../../../config/application.config.php',
+            include __DIR__ . '/../../../../../config/application.config.php',
             $configOverrides
         ));
 
@@ -61,24 +59,16 @@ class YotiControllerTest extends TestCase
         $serviceManager->setService(SessionConfig::class, $this->sessionConfigMock);
         $serviceManager->setService(DataWriteHandler::class, $this->dataHandler);
         $serviceManager->setService(LoggerInterface::class, $this->logger);
+
+        // Disable authentication during tests
+        $listener = $this->getApplicationServiceLocator()->get(Listener::class);
+        $listener->detach($this->getApplication()->getEventManager());
     }
 
     public function testInvalidRouteDoesNotCrash(): void
     {
-        $this->jsonHeaders();
-
         $this->dispatch('/invalid/route', 'GET');
         $this->assertResponseStatusCode(404);
-    }
-
-    public function jsonHeaders(): void
-    {
-        $headers = new Headers();
-        $headers->addHeaderLine('Accept', 'application/json');
-
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        $request->setHeaders($headers);
     }
 
     public function testStatusWithID(): void
@@ -89,12 +79,12 @@ class YotiControllerTest extends TestCase
             'claimedIdentity' => [
                 'firstName' => '',
                 'lastName' => '',
-                'address' => []
+                'address' => [],
             ],
             'yotiSessionId' => '2b45a8c1-dd35-47ef-a00e-c7b6264bf1dd',
             'counterService' => [
-                'notificationsAuthToken' => ''
-            ]
+                'notificationsAuthToken' => '',
+            ],
         ]);
         $this->dataQueryHandlerMock
             ->expects($this->once())
@@ -109,9 +99,6 @@ class YotiControllerTest extends TestCase
 
         $this->dispatch('/counter-service/2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc/retrieve-status', 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('retrieve_yoti_status');
     }
 
@@ -126,7 +113,7 @@ class YotiControllerTest extends TestCase
      */
     public function testBranchSearchNoPostCode(): void
     {
-        $this->dispatchJSON('/counter-service/branches', 'POST', []);
+        $this->dispatch('/counter-service/branches', 'POST', []);
         $this->assertResponseStatusCode(400);
     }
 
@@ -144,12 +131,9 @@ class YotiControllerTest extends TestCase
             ->with('NW1 4PG')
             ->willReturn($this->branchesArray());
 
-        $this->dispatchJSON('/counter-service/branches', 'POST', ['search_string' => 'NW1 4PG']);
+        $this->dispatch('/counter-service/branches', 'POST', ['search_string' => 'NW1 4PG']);
         $this->assertResponseStatusCode(200);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('find_postoffice_branches');
     }
 
@@ -163,7 +147,7 @@ class YotiControllerTest extends TestCase
                 'lastName' => 'opg',
                 'dob' => '1980-01-01',
                 'address' => [
-                    'line1' => '123 upper road'
+                    'line1' => '123 upper road',
                 ],
             ],
             'personType' => PersonType::Donor->value,
@@ -173,8 +157,8 @@ class YotiControllerTest extends TestCase
                 'idRoute' => IdRoute::KBV->value,
             ],
             'counterService' => [
-                'selectedPostOffice' => '29348729'
-            ]
+                'selectedPostOffice' => '29348729',
+            ],
         ]);
 
         $sessionData = $this->sessionConfig($caseData);
@@ -183,7 +167,7 @@ class YotiControllerTest extends TestCase
         $response["data"] = [
             "client_session_token_ttl" => 2630012,
             "session_id" => "19eb9325-61ed-4089-88dc-5bbc659443d3",
-            "client_session_token" => "1c9f8e92-3a04-463e-9dd1-98dad2b657f2"
+            "client_session_token" => "1c9f8e92-3a04-463e-9dd1-98dad2b657f2",
         ];
         $pdfResponse = ["status" => "PDF Created"];
         $pdfLetter = ["status" => "PDF Created", "pdfBase64" => "contents"];
@@ -218,9 +202,6 @@ class YotiControllerTest extends TestCase
 
         $this->dispatch('/counter-service/test-uuid/create-session', 'POST', []);
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('create_yoti_session');
     }
 
@@ -243,8 +224,8 @@ class YotiControllerTest extends TestCase
                 ],
                 'lpas' => [],
                 'counterService' => [
-                    'notificationsAuthToken' => $bearerToken
-                ]
+                    'notificationsAuthToken' => $bearerToken,
+                ],
             ]));
 
         $this->dataHandler
@@ -255,7 +236,7 @@ class YotiControllerTest extends TestCase
             ->method('info')
             ->with('Unauthorized notification for case: 2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc: first_branch_visit');
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/counter-service/notification',
             'POST',
             [
@@ -263,13 +244,10 @@ class YotiControllerTest extends TestCase
             'topic' => 'first_branch_visit',
 
             ],
-            'Bearer ' . $incorrectToken,
+            ['Authorization' => 'Bearer ' . $incorrectToken],
         );
         $this->assertResponseStatusCode(403);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('yoti_notification');
     }
 
@@ -291,8 +269,8 @@ class YotiControllerTest extends TestCase
                 ],
                 'lpas' => [],
                 'counterService' => [
-                    'notificationsAuthToken' => $bearerToken
-                ]
+                    'notificationsAuthToken' => $bearerToken,
+                ],
             ]));
 
         $this->dataHandler
@@ -303,7 +281,7 @@ class YotiControllerTest extends TestCase
                 'first_branch_visit',
             );
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/counter-service/notification',
             'POST',
             [
@@ -311,13 +289,10 @@ class YotiControllerTest extends TestCase
             'topic' => 'first_branch_visit',
 
             ],
-            'Bearer ' . $bearerToken,
+            ['Authorization' => 'Bearer ' . $bearerToken],
         );
         $this->assertResponseStatusCode(200);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('yoti_notification');
     }
 
@@ -333,20 +308,17 @@ class YotiControllerTest extends TestCase
         $this->dataHandler
             ->expects($this->never())->method('updateCaseData');
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/counter-service/notification',
             'POST',
             [
             'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
             'topic' => 'first_branch_visit',
             ],
-            'Bearer ' . $bearerToken,
+            ['Authorization' => 'Bearer ' . $bearerToken],
         );
         $this->assertResponseStatusCode(500);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('yoti_notification');
     }
 
@@ -360,37 +332,17 @@ class YotiControllerTest extends TestCase
         $this->dataHandler
             ->expects($this->never())->method('updateCaseData');
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/counter-service/notification',
             'POST',
             [
             'session_id' => '18f8ecad-066f-4540-9c11-8fbd103ce935',
             ],
-            'Bearer ' . $bearerToken,
+            ['Authorization' => 'Bearer ' . $bearerToken],
         );
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(YotiController::class);
-        $this->assertControllerClass('YotiController');
         $this->assertMatchedRouteName('yoti_notification');
-    }
-
-    public function dispatchJSON(string $path, string $method, mixed $data = null, string $authorize = null): void
-    {
-        $headers = new Headers();
-        $headers->addHeaderLine('Accept', 'application/json');
-        $headers->addHeaderLine('Content-Type', 'application/json');
-
-        if ($authorize !== null) {
-            $headers->addHeaderLine('authorization', $authorize);
-        }
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        $request->setHeaders($headers);
-        $request->setContent(is_string($data) ? $data : json_encode($data));
-
-        $this->dispatch($path, $method);
     }
 
     public function branchesArray(): array
@@ -405,8 +357,8 @@ class YotiControllerTest extends TestCase
                     "post_code" => "PE19 1NL",
                     "location" => [
                         "latitude" => 52.22864,
-                        "longitude" => -0.26762
-                    ]
+                        "longitude" => -0.26762,
+                    ],
                 ],
                 [
                     "type" => "UK_POST_OFFICE",
@@ -416,10 +368,10 @@ class YotiControllerTest extends TestCase
                     "post_code" => "NW3 6LR",
                     "location" => [
                         "latitude" => 52.22864,
-                        "longitude" => -0.26762
-                    ]
-                ]
-            ]
+                        "longitude" => -0.26762,
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -434,8 +386,8 @@ class YotiControllerTest extends TestCase
             [
                 "type" => "PROFILE_DOCUMENT_MATCH",
                 "config" => [
-                    "manual_check" => "IBV"
-                ]
+                    "manual_check" => "IBV",
+                ],
             ],
         ];
         $sessionConfig["required_documents"] = [
@@ -447,11 +399,11 @@ class YotiControllerTest extends TestCase
                     "documents" => [
                         [
                             "country_codes" => ["GBR"],
-                            "document_types" => [DocumentType::Passport->value]
-                        ]
-                    ]
-                ]
-            ]
+                            "document_types" => [DocumentType::Passport->value],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $sessionConfig["resources"] = [
@@ -460,7 +412,7 @@ class YotiControllerTest extends TestCase
                 "family_name" => $case->claimedIdentity?->lastName,
                 "date_of_birth" => $case->claimedIdentity?->dob,
                 "structured_postal_address" => [],
-            ]
+            ],
         ];
 
         return $sessionConfig;

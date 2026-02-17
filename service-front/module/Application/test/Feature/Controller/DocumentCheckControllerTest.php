@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
-use Application\Controller\DocumentCheckController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
+class DocumentCheckControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
@@ -180,10 +178,10 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             'empty_form' => [
-                []
+                [],
             ],
             'wrong format' => [
-                ['nino' => 'not a nino']
+                ['nino' => 'not a nino'],
             ],
         ];
     }
@@ -284,7 +282,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             ["PASS"],
-            ["FAIL"]
+            ["FAIL"],
         ];
     }
 
@@ -318,19 +316,19 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         return [
             'empty form' => [
                 [],
-                ['p#dln-error', 'p#inDate-error']
+                ['p#dln-error', 'p#inDate-error'],
             ],
             'both invalid' => [
                 ['dln' => '2345', 'inDate' => 'no'],
-                ['p#dln-error', 'p#inDate-error']
+                ['p#dln-error', 'p#inDate-error'],
             ],
             'valid dln,  invalid inDate' => [
                 ['dln' => 'MORGA657054SM9IJ', 'inDate' => 'no'],
-                ['p#inDate-error']
+                ['p#inDate-error'],
             ],
             'invalid dln, valid inDate' => [
                 ['dln' => '1234', 'inDate' => 'yes'],
-                ['p#dln-error']
+                ['p#dln-error'],
             ],
         ];
     }
@@ -488,28 +486,28 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         return [
             'empty form' => [
                 [],
-                ['p#passport-error', 'p#inDate-error']
+                ['p#passport-error', 'p#inDate-error'],
             ],
             'both invalid' => [
                 [
                     'passport' => 'invalid passport number',
-                    'inDate' => 'no'
+                    'inDate' => 'no',
                 ],
-                ['p#passport-error', 'p#inDate-error']
+                ['p#passport-error', 'p#inDate-error'],
             ],
             'valid passport, invalid inDate' => [
                 [
                     'passport' => '123456785',
-                    'inDate' => 'no'
+                    'inDate' => 'no',
                 ],
-                ['p#inDate-error']
+                ['p#inDate-error'],
             ],
             'invalid passport, valid inDate' => [
                 [
                     'passport' => 'invalid passport number',
-                    'inDate' => 'yes'
+                    'inDate' => 'yes',
                 ],
-                ['p#passport-error']
+                ['p#passport-error'],
             ],
         ];
     }
@@ -539,7 +537,7 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
                 "idCountry" => "GBR",
                 "docType" => DocumentType::DrivingLicence->value,
                 'idRoute' => IdRoute::KBV->value,
-            ]
+            ],
         ];
     }
 
@@ -548,14 +546,14 @@ class DocumentCheckControllerTest extends AbstractHttpControllerTestCase
         return [
             'data' => [
                 DocumentType::Passport->value => false,
-                DocumentType::DrivingLicence->value  => false,
-                DocumentType::NationalInsuranceNumber->value  => false,
+                DocumentType::DrivingLicence->value => false,
+                DocumentType::NationalInsuranceNumber->value => false,
                 IdRoute::POST_OFFICE->value => true,
                 IdRoute::VOUCHING->value => true,
                 IdRoute::COURT_OF_PROTECTION->value => true,
                 IdRoute::KBV->value => false,
             ],
-            'messages' => []
+            'messages' => [],
         ];
     }
 }

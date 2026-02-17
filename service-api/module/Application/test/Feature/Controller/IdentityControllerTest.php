@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Controller;
 
+use Application\Auth\Listener;
 use Application\Controller\IdentityController;
 use Application\DWP\DwpApi\DwpApiService;
 use Application\Enums\DocumentType;
@@ -35,7 +36,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Clock\ClockInterface;
 
-class IdentityControllerTest extends TestCase
+class IdentityControllerTest extends BaseControllerTestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private DataWriteHandler&MockObject $dataImportHandler;
@@ -55,7 +56,7 @@ class IdentityControllerTest extends TestCase
         $configOverrides = [];
 
         $this->setApplicationConfig(ArrayUtils::merge(
-            include __DIR__ . '/../../../../../../config/application.config.php',
+            include __DIR__ . '/../../../../../config/application.config.php',
             $configOverrides
         ));
 
@@ -80,24 +81,16 @@ class IdentityControllerTest extends TestCase
         $serviceManager->setService(DwpApiService::class, $this->dwpServiceMock);
         $serviceManager->setService(CaseOutcomeCalculator::class, $this->caseCalcMock);
         $serviceManager->setService(HmpoApiService::class, $this->hmpoServiceMock);
+
+        // Disable authentication during tests
+        $listener = $this->getApplicationServiceLocator()->get(Listener::class);
+        $listener->detach($this->getApplication()->getEventManager());
     }
 
     public function testInvalidRouteDoesNotCrash(): void
     {
-        $this->jsonHeaders();
-
         $this->dispatch('/invalid/route', 'GET');
         $this->assertResponseStatusCode(404);
-    }
-
-    public function jsonHeaders(): void
-    {
-        $headers = new Headers();
-        $headers->addHeaderLine('Accept', 'application/json');
-
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        $request->setHeaders($headers);
     }
 
     public function testDetailsWithUUID(): void
@@ -119,9 +112,6 @@ class IdentityControllerTest extends TestCase
 
         $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('details');
     }
 
@@ -129,9 +119,6 @@ class IdentityControllerTest extends TestCase
     {
         $this->dispatch('/identity/details?uuid=2b45a8c1-dd35-47ef-a00e-c7b6264bf1cc', 'GET');
         $this->assertResponseStatusCode(404);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('details');
     }
 
@@ -141,9 +128,6 @@ class IdentityControllerTest extends TestCase
         $this->dispatch('/identity/details', 'GET');
         $this->assertResponseStatusCode(400);
         $this->assertEquals($response, $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('details');
     }
 
@@ -155,15 +139,12 @@ class IdentityControllerTest extends TestCase
     #[DataProvider('caseData')]
     public function testCreate(array $case, int $status): void
     {
-        $this->dispatchJSON(
+        $this->dispatch(
             '/identity/create',
             'POST',
             $case
         );
         $this->assertResponseStatusCode($status);
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('create_case');
     }
 
@@ -273,7 +254,7 @@ class IdentityControllerTest extends TestCase
             ->willReturn($mockCase);
 
         try {
-            $this->dispatchJSON('/cases/update/' . $uuid, 'PATCH', $inputData);
+            $this->dispatch('/cases/update/' . $uuid, 'PATCH', $inputData);
         } catch (\Exception $e) {
             $this->fail('Unexpected exception: ' . $e->getMessage());
         }
@@ -329,17 +310,14 @@ class IdentityControllerTest extends TestCase
             ->method('validateNino')
             ->willReturn($result);
 
-        $this->dispatchJSON(
+        $this->dispatch(
             "/identity/$uuid/validate_nino",
             'POST',
             ['nino' => $nino]
         );
 
         $this->assertResponseStatusCode($status);
-        $this->assertModuleName('application');
         $this->assertEquals(json_encode($response), $this->getResponse()->getContent());
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_nino');
     }
 
@@ -376,16 +354,13 @@ class IdentityControllerTest extends TestCase
     #[DataProvider('drivingLicenceData')]
     public function testDrivingLicence(string $drivingLicenceNo, string $response, int $status): void
     {
-        $this->dispatchJSON(
+        $this->dispatch(
             '/identity/validate_driving_licence',
             'POST',
             ['dln' => $drivingLicenceNo]
         );
         $this->assertResponseStatusCode($status);
         $this->assertEquals('{"status":"' . $response . '"}', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_driving_licence');
     }
 
@@ -416,7 +391,7 @@ class IdentityControllerTest extends TestCase
                 ->willReturn($response);
         }
 
-        $this->dispatchJSON(
+        $this->dispatch(
             "/identity/abc-def-ghi/validate_passport",
             'POST',
             ['passportNumber' => 123456789]
@@ -427,9 +402,6 @@ class IdentityControllerTest extends TestCase
         } else {
             $this->assertContains($error, json_decode($this->getResponse()->getBody(), true));
         }
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class);
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('validate_passport');
     }
 
@@ -460,7 +432,7 @@ class IdentityControllerTest extends TestCase
             ->method('updateCaseData')
             ->with($case->id, 'idMethod', $expectedUpdate);
 
-        $this->dispatchJSON(
+        $this->dispatch(
             "/cases/{$case->id}/update-id-method",
             'POST',
             $idMethod
@@ -498,21 +470,6 @@ class IdentityControllerTest extends TestCase
         ];
     }
 
-
-    public function dispatchJSON(string $path, string $method, mixed $data = null): void
-    {
-        $headers = new Headers();
-        $headers->addHeaderLine('Accept', 'application/json');
-        $headers->addHeaderLine('Content-Type', 'application/json');
-
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        $request->setHeaders($headers);
-        $request->setContent(is_string($data) ? $data : json_encode($data));
-
-        $this->dispatch($path, $method);
-    }
-
     #[DataProvider('lpaAddData')]
     public function testAddLpaToCase(
         string $uuid,
@@ -532,16 +489,13 @@ class IdentityControllerTest extends TestCase
                 ->method('updateCaseData');
         }
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/cases/' . $uuid . '/lpas/' . $lpa,
             'PUT'
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
         $this->assertEquals('{"result":"' . $response . '"}', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('change_case_lpa/put');
     }
 
@@ -618,16 +572,13 @@ class IdentityControllerTest extends TestCase
                 ->method('updateCaseData');
         }
 
-        $this->dispatchJSON(
+        $this->dispatch(
             '/cases/' . $uuid . '/lpas/' . $lpa,
             'DELETE'
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
         $this->assertEquals('{"result":"' . $response . '"}', $this->getResponse()->getContent());
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('change_case_lpa/delete');
     }
 
@@ -702,12 +653,9 @@ class IdentityControllerTest extends TestCase
                 $data,
             );
 
-        $this->dispatchJSON("/cases/{$uuid}/save-case-progress", 'PUT', $data);
+        $this->dispatch("/cases/{$uuid}/save-case-progress", 'PUT', $data);
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
         $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('save_case_progress/put');
     }
 
@@ -731,16 +679,13 @@ class IdentityControllerTest extends TestCase
 
         $path  = sprintf('/cases/%s/request-fraud-check', $uuid);
 
-        $this->dispatchJSON(
+        $this->dispatch(
             $path,
             'GET'
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
         $this->assertEquals($response->toArray(), json_decode($this->getResponse()->getContent(), true));
-        $this->assertModuleName('application');
-        $this->assertControllerName(IdentityController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('IdentityController');
         $this->assertMatchedRouteName('request_fraud_check');
     }
 
@@ -1001,7 +946,7 @@ class IdentityControllerTest extends TestCase
             ->method('updateSendIdentityCheck')
             ->with($caseData);
 
-        $this->dispatchJSON("/cases/{$uuid}/send-identity-check", 'POST');
+        $this->dispatch("/cases/{$uuid}/send-identity-check", 'POST');
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
     }
 
@@ -1015,7 +960,7 @@ class IdentityControllerTest extends TestCase
             ->with($uuid)
             ->willReturn(null);
 
-        $this->dispatchJSON("/cases/{$uuid}/send-identity-check", 'POST');
+        $this->dispatch("/cases/{$uuid}/send-identity-check", 'POST');
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_404);
         $body = json_decode($this->getResponse()->getContent(), true);

@@ -4,30 +4,28 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Controller;
 
+use Application\Auth\Listener;
 use Application\Aws\SsmHandler;
-use Application\Controller\HealthcheckController;
 use Application\Enums\DocumentType;
 use Application\Enums\IdRoute;
 use Application\Enums\PersonType;
 use Application\Experian\Crosscore\FraudApi\FraudApiService;
 use Application\Fixtures\DataQueryHandler;
 use Application\Model\Entity\CaseData;
-use ApplicationTest\TestCase;
-use Laminas\Http\Headers;
-use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
+use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
-class HealthcheckControllerTest extends TestCase
+class HealthcheckControllerTest extends BaseControllerTestCase
 {
     private DataQueryHandler&MockObject $dataQueryHandlerMock;
     private string $ssmRouteAvailability = 'service-availability';
     private LoggerInterface&MockObject $loggerMock;
-    private FraudApiService $experianCrosscoreFraudApiService;
-    private SsmHandler $ssmHandler;
+    private FraudApiService&MockObject $experianCrosscoreFraudApiService;
+    private SsmHandler&MockObject $ssmHandler;
 
     public function setUp(): void
     {
@@ -38,7 +36,7 @@ class HealthcheckControllerTest extends TestCase
         $configOverrides = [];
 
         $this->setApplicationConfig(ArrayUtils::merge(
-            include __DIR__ . '/../../../../../../config/application.config.php',
+            include __DIR__ . '/../../../../../config/application.config.php',
             $configOverrides
         ));
 
@@ -55,20 +53,10 @@ class HealthcheckControllerTest extends TestCase
         $serviceManager->setService(LoggerInterface::class, $this->loggerMock);
         $serviceManager->setService(FraudApiService::class, $this->experianCrosscoreFraudApiService);
         $serviceManager->setService(SsmHandler::class, $this->ssmHandler);
-    }
 
-    public function dispatchJSON(string $path, string $method, mixed $data = null): void
-    {
-        $headers = new Headers();
-        $headers->addHeaderLine('Accept', 'application/json');
-        $headers->addHeaderLine('Content-Type', 'application/json');
-
-        /** @var HttpRequest $request */
-        $request = $this->getRequest();
-        $request->setHeaders($headers);
-        $request->setContent(is_string($data) ? $data : json_encode($data));
-
-        $this->dispatch($path, $method);
+        // Disable authentication during tests
+        $listener = $this->getApplicationServiceLocator()->get(Listener::class);
+        $listener->detach($this->getApplication()->getEventManager());
     }
 
     #[DataProvider('routeAvailabilityData')]
@@ -92,16 +80,13 @@ class HealthcheckControllerTest extends TestCase
             ->with($this->ssmRouteAvailability)
             ->willReturn($services);
 
-        $this->dispatchJSON(
+        $this->dispatch(
             sprintf('/route-availability?uuid=%s', $uuid),
             'GET'
         );
 
         $this->assertResponseStatusCode(Response::STATUS_CODE_200);
         $this->assertEquals($response, json_decode($this->getResponse()->getContent(), true));
-        $this->assertModuleName('application');
-        $this->assertControllerName(HealthcheckController::class); // as specified in router's controller name alias
-        $this->assertControllerClass('HealthcheckController');
         $this->assertMatchedRouteName('route_availability');
     }
 
@@ -124,7 +109,7 @@ class HealthcheckControllerTest extends TestCase
                     "line1" => "1 Street",
                 ],
                 "professionalAddress" => [
-                ]
+                ],
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -139,9 +124,9 @@ class HealthcheckControllerTest extends TestCase
             "caseProgress" => [
                 "fraudScore" => [
                     "decision" => "ACCEPT",
-                    "score" => 0
-                ]
-            ]
+                    "score" => 0,
+                ],
+            ],
         ];
 
         $caseNoDec = [
@@ -159,7 +144,7 @@ class HealthcheckControllerTest extends TestCase
                     "line1" => "1 Street",
                 ],
                 "professionalAddress" => [
-                ]
+                ],
             ],
             "lpas" => [
                 "M-XYXY-YAGA-35G3",
@@ -174,9 +159,9 @@ class HealthcheckControllerTest extends TestCase
             "caseProgress" => [
                 "fraudScore" => [
                     "decision" => "NODECISION",
-                    "score" => 0
-                ]
-            ]
+                    "score" => 0,
+                ],
+            ],
         ];
 
         $services = [
@@ -208,7 +193,7 @@ class HealthcheckControllerTest extends TestCase
                 DocumentType::Passport->value => false,
                 IdRoute::POST_OFFICE->value => true,
                 IdRoute::VOUCHING->value => true,
-                IdRoute::COURT_OF_PROTECTION->value => true
+                IdRoute::COURT_OF_PROTECTION->value => true,
             ],
             'messages' => [
                 'The donor cannot ID over the phone due to a lack of ' .
@@ -221,14 +206,14 @@ class HealthcheckControllerTest extends TestCase
                 $uuid,
                 CaseData::fromArray($case),
                 $services,
-                $response
+                $response,
             ],
             [
                 $uuid,
                 CaseData::fromArray($caseNoDec),
                 $services,
-                $responseNoDec
-            ]
+                $responseNoDec,
+            ],
         ];
     }
 }

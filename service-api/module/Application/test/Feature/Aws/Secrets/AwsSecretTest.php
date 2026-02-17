@@ -6,7 +6,7 @@ namespace ApplicationTest\Feature\Aws\Secrets;
 
 use Application\Aws\Secrets\AwsSecret;
 use Application\Aws\Secrets\AwsSecretsCache;
-use ApplicationTest\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class AwsSecretTest extends TestCase
 {

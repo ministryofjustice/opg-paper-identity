@@ -6,14 +6,14 @@ namespace ApplicationTest\Feature\Auth;
 
 use Application\Auth\Listener;
 use Application\Services\SiriusApiService;
+use ApplicationTest\Feature\Controller\BaseControllerTestCase;
 use Laminas\Http\Header\Location;
 use Laminas\Http\Request;
 use Laminas\Http\Response;
 use Laminas\Mvc\MvcEvent;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use Psr\Http\Message\RequestInterface;
 
-class ListenerTest extends AbstractHttpControllerTestCase
+class ListenerTest extends BaseControllerTestCase
 {
     public function testCheckAuthSuccess(): void
     {
