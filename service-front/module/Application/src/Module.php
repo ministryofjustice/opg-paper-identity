@@ -10,6 +10,10 @@ use Laminas\Mvc\MvcEvent;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
+/**
+ * @psalm-suppress UnusedClass
+ * This is called auto-magically by the Laminas framework
+ */
 class Module
 {
     public function getConfig(): array
@@ -17,10 +21,6 @@ class Module
         return include __DIR__ . '/../config/module.config.php';
     }
 
-    /**
-     * @psalm-suppress PossiblyUnusedMethod
-     * This is called auto-magically by the Laminas framework
-     */
     public function onBootstrap(MvcEvent $event): void
     {
         $eventManager = $event->getApplication()->getEventManager();
