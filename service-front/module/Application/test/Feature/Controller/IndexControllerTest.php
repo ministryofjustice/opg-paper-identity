@@ -8,7 +8,7 @@ use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Laminas\Http\Header\Location;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -16,12 +16,10 @@ use Symfony\Component\DomCrawler\Crawler;
 /**
  * @psalm-import-type Lpa from SiriusApiService
  */
-class IndexControllerTest extends AbstractHttpControllerTestCase
+class IndexControllerTest extends BaseControllerTestCase
 {
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         parent::setUp();
 
         $serviceManager = $this->getApplicationServiceLocator();
@@ -174,7 +172,13 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch('/start?personType=' . $type . '&lpas[]=M-1234-5678-90AB', 'GET');
         $this->assertResponseStatusCode(302);
-        $this->assertResponseHeaderRegex('Location', '/e9a50129-aebf-4bbc-a5cb-916d42ee2e56/');
+
+        $locationHeader = $this->getResponse()->getHeaders()->get('Location');
+        $this->assertInstanceOf(Location::class, $locationHeader);
+        $this->assertMatchesRegularExpression(
+            '/e9a50129-aebf-4bbc-a5cb-916d42ee2e56/',
+            $locationHeader->getFieldValue()
+        );
     }
 
     /**
@@ -352,7 +356,7 @@ class IndexControllerTest extends AbstractHttpControllerTestCase
 
         $opgApiService->expects($this->once())
             ->method('updateCaseProgress')
-            ->with($caseUuid, $this->callback(fn($data) => isset($data['abandonedFlow'])
+            ->with($caseUuid, $this->callback(fn ($data) => isset($data['abandonedFlow'])
                 && $data['abandonedFlow']['last_page'] === $lastPage));
 
         $opgApiService->expects($this->once())

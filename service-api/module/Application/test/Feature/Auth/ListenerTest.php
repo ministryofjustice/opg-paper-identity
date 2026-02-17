@@ -6,9 +6,6 @@ namespace ApplicationTest\Feature\Controller;
 
 use DateInterval;
 use DateTimeImmutable;
-use Laminas\Http\Headers;
-use Laminas\Http\Request;
-use Laminas\Test\PHPUnit\Controller\AbstractControllerTestCase;
 use Lcobucci\JWT\Builder as JWTBuilder;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Encoding\JoseEncoder;
@@ -17,15 +14,13 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class ListenerTest extends AbstractControllerTestCase
+class ListenerTest extends BaseControllerTestCase
 {
     private Builder $builder;
 
     public function setUp(): void
     {
         $this->builder = new Builder(new JoseEncoder(), ChainedFormatter::default());
-
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../../config/application.config.php');
 
         parent::setUp();
     }
@@ -44,7 +39,7 @@ class ListenerTest extends AbstractControllerTestCase
         $this->assertResponseStatusCode(200);
     }
 
-    private function addSignedTokenHeader(JWTBuilder $tokenBuilder): void
+    private function getSignedTokenHeader(JWTBuilder $tokenBuilder): string
     {
         /** @var non-empty-string $secret */
         $secret = getenv('API_JWT_KEY');
@@ -56,13 +51,7 @@ class ListenerTest extends AbstractControllerTestCase
             ->getToken($signer, $signingKey)
             ->toString();
 
-        /** @var Request $request */
-        $request = $this->getRequest();
-
-        /** @var Headers $headers */
-        $headers = $request->getHeaders();
-
-        $headers->addHeaderLine('Authorization', "Bearer {$token}");
+        return "Bearer {$token}";
     }
 
     public function testValidJwt(): void
@@ -75,9 +64,11 @@ class ListenerTest extends AbstractControllerTestCase
             ->expiresAt($now->add(new DateInterval('PT10S')))
             ->relatedTo('user14@opg.example');
 
-        $this->addSignedTokenHeader($token);
+        $headers = [
+            'Authorization' => $this->getSignedTokenHeader($token),
+        ];
 
-        $this->dispatch('/no-exist', 'GET');
+        $this->dispatch('/no-exist', 'GET', null, $headers);
 
         $this->assertResponseStatusCode(404);
     }
@@ -110,9 +101,11 @@ class ListenerTest extends AbstractControllerTestCase
             $token = $token->expiresAt($expiresAt);
         }
 
-        $this->addSignedTokenHeader($token);
+        $headers = [
+            'Authorization' => $this->getSignedTokenHeader($token),
+        ];
 
-        $this->dispatch('/no-exist', 'GET');
+        $this->dispatch('/no-exist', 'GET', null, $headers);
 
         $this->assertResponseStatusCode(401);
     }

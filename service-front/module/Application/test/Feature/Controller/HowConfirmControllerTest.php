@@ -11,11 +11,10 @@ use Application\Enums\PersonType;
 use Application\Helpers\DTO\FormProcessorResponseDto;
 use Application\Helpers\FormProcessorHelper;
 use Application\PostOffice\Country;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class HowConfirmControllerTest extends AbstractHttpControllerTestCase
+class HowConfirmControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private FormProcessorHelper&MockObject $formProcessorMock;
@@ -23,8 +22,6 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
@@ -74,7 +71,7 @@ class HowConfirmControllerTest extends AbstractHttpControllerTestCase
             $this->assertQuery("#{$id}");
         }
         foreach ($expectedRadios['unavailable'] as $id) {
-            $this->assertNotQuery("#{$id}");
+            $this->assertQueryCount("#{$id}", 0);
         }
         foreach ($expectedRadios['hidden'] as $id) {
             $this->assertQuery("div[class='govuk-radios__item moj-hidden'] > #{$id}");

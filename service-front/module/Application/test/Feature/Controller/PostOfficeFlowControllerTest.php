@@ -15,12 +15,11 @@ use Application\Helpers\SiriusDataProcessorHelper;
 use Application\PostOffice\Country as PostOfficeCountry;
 use Application\PostOffice\DocumentTypeRepository;
 use Application\Services\SiriusApiService;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\RequestInterface;
 
-class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
+class PostOfficeFlowControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
@@ -45,8 +44,6 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
@@ -95,7 +92,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                 "idCountry" => "AUT",
                 "docType" => DocumentType::DrivingLicence->value,
                 'idRoute' => IdRoute::POST_OFFICE->value,
-            ]
+            ],
         ];
     }
 
@@ -104,12 +101,12 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             "M-0000-0000-0001" => [
                 "name" => "firstname surname",
-                "type" => "PW"
+                "type" => "PW",
             ],
             "M-0000-0000-0002" => [
                 "name" => "another name",
-                "type" => "PA"
-            ]
+                "type" => "PA",
+            ],
         ];
     }
 
@@ -150,7 +147,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn($mockResponseDataIdDetails);
 
         $this->dispatch("/$this->uuid/post-office-documents", 'POST', [
-            'id_method' => $selectedOption
+            'id_method' => $selectedOption,
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/$expectedRedirect");
@@ -215,7 +212,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
         $this->assertMatchedRouteName('root/po_choose_country');
 
         $this->assertQueryContentContains('[name="idCountry"] > option[value="AUT"]', 'Austria');
-        $this->assertNotQuery('[name="idCountry"] > option[value="GBR"]');
+        $this->assertQueryCount('[name="idCountry"] > option[value="GBR"]', 0);
     }
 
     public function testPostOfficeCountriesIdPage(): void
@@ -426,7 +423,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         $ukPassport = [
             'docType' => DocumentType::Passport->value,
-            'idCountry' => PostOfficeCountry::GBR->value
+            'idCountry' => PostOfficeCountry::GBR->value,
         ];
 
         return [
@@ -443,33 +440,33 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                     ['dd#displayIdMethod', 'Photocard driving licence (Austria)'],
                     ['span#poAddressLine', '1 Fake Street'],
                     ['span#poAddressLine', 'Faketown'],
-                    ['span#poAddressLine', 'FA1 2KE']
-                ]
+                    ['span#poAddressLine', 'FA1 2KE'],
+                ],
             ],
             'uk driving licence on confirm page' => [
                 $validPost, true, $ukPassport, null,
                 [
                     ['dd#displayIdMethod', 'UK Passport (current or expired in the last 18 months)'],
-                ]
+                ],
             ],
             'invalid, render find-post-office page with error' => [
                 ['selectPostoffice' => 'Continue'], false, null, null,
                 [
                     ['input#searchString[value="SW1B 1BB"]', ''],
-                    ['span#postoffice-error', 'Please select an option']
-                ]
+                    ['span#postoffice-error', 'Please select an option'],
+                ],
             ],
             'invalid, but different searchString provided' => [
                 [
                     'searchString' => 'somewhere',
-                    'selectPostoffice' => 'Continue'
+                    'selectPostoffice' => 'Continue',
                 ],
                 false, null, 'somewhere',
                 [
                     ['input#searchString[value="somewhere"]', ''],
-                    ['span#postoffice-error', 'Please select an option']
-                ]
-            ]
+                    ['span#postoffice-error', 'Please select an option'],
+                ],
+            ],
         ];
     }
 
@@ -506,7 +503,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
 
         if (! $valid) {
             // if the serach form is not valid then no post-offices are returned
-            $this->assertNotQuery('input[name="postoffice"]');
+            $this->assertQueryCount('input[name="postoffice"]', 0);
         }
     }
 
@@ -521,7 +518,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                 ['searchString' => ''],
                 false,
                 [
-                    ['span#searchString-error', 'Please enter a postcode, town or street name']
+                    ['span#searchString-error', 'Please enter a postcode, town or street name'],
                 ],
             ],
             'search with a different searchString' => [
@@ -532,9 +529,9 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
                     ["input#postoffice-1234567[value='$poOne']", ''],
                     ['span#poAddress-1234567', '1 Fake Street, Faketown, FA1 2KE'],
                     ["input#postoffice-7654321[value='$poTwo']", ''],
-                    ['span#poAddress-7654321', '2 Pretend Road, Pretendcity, PR3 2TN']
+                    ['span#poAddress-7654321', '2 Pretend Road, Pretendcity, PR3 2TN'],
                 ],
-            ]
+            ],
         ];
     }
 
@@ -571,7 +568,7 @@ class PostOfficeFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($mockResponseDataIdDetails, $this->isInstanceOf(RequestInterface::class));
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "POST", [
-            'confirmPostOffice' => 'Continue'
+            'confirmPostOffice' => 'Continue',
         ]);
 
         $this->assertResponseStatusCode(302);
