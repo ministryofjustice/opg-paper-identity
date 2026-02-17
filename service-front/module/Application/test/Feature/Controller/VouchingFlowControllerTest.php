@@ -549,10 +549,11 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "dob_month" => "11",
             "dob_year" => "2024"
         ]);
+
         $this->assertResponseStatusCode(200);
-        $this->assertQueryContentContains(
-            'div[name=donor_underage_warning]',
-            'The person vouching must be 18 years or older.'
+        $this->assertQueryContentRegex(
+            '[class=govuk-error-message]',
+            '/The person vouching must be 18 years or older\./'
         );
     }
 
@@ -575,9 +576,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "dob_year" => ""
         ]);
         $this->assertResponseStatusCode(200);
-        $this->assertQueryContentContains(
-            'div[name=date_problem]',
-            'Error:Enter their date of birth'
+        $this->assertQueryContentRegex(
+            '[class=govuk-error-message]',
+            '/Error:\s+Enter their date of birth/'
         );
     }
 
@@ -600,9 +601,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             "dob_year" => "thing"
         ]);
         $this->assertResponseStatusCode(200);
-        $this->assertQueryContentContains(
-            'div[name=date_problem]',
-            'Error:Date of birth must be a valid date'
+        $this->assertQueryContentRegex(
+            '[class=govuk-error-message]',
+            '/Error:\s+Date of birth must be a valid date/'
         );
     }
 
