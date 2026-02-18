@@ -1,4 +1,4 @@
-FROM outofcoffee/imposter:4.7.0
+FROM outofcoffee/imposter:4.8.0
 
 COPY ./dwp-config.yaml /opt/imposter/config/dwp-config.yaml
 COPY ./openapi.yml /opt/imposter/config/openapi.yml
