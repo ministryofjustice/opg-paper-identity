@@ -25,7 +25,10 @@ class VoucherBirthDate
     ])]
     // empty values are handled in the BirthDateValidator
     #[Annotation\Validator(NotEmpty::class, options: [
-        'type' => NotEmpty::ALL & ~NotEmpty::STRING
+        'type' => NotEmpty::ALL & ~NotEmpty::STRING,
+        'messages' => [
+            NotEmpty::IS_EMPTY => 'Enter a date of birth',
+        ],
     ])]
     public mixed $date;
     /**

@@ -26,21 +26,11 @@
         <MissingOverrideAttribute errorLevel="suppress" />
         <PossiblyUnusedMethod>
             <errorLevel type="suppress">
-                <file name="module/Application/src/Controller/*Controller.php" />
                 <referencedMethod name="*::__construct" />
                 <referencedMethod name="/.*::__construct/" />
             </errorLevel>
         </PossiblyUnusedMethod>
-        <PropertyNotSetInConstructor>
-            <errorLevel type="suppress">
-                <file name="module/Application/src/Controller/*Controller.php" />
-            </errorLevel>
-        </PropertyNotSetInConstructor>
     </issueHandlers>
-
-    <stubs>
-        <file name="module/Application/test/stubs/laminas.phpstub"/>
-    </stubs>
 
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
