@@ -12,12 +12,10 @@ use Application\Helpers\AddDonorFormHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Helpers\VoucherMatchLpaActorHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
-use Laminas\Validator\IsArray;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
+class VouchingFlowControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiServiceMock;
@@ -37,8 +35,6 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
         $this->routes = [
             "confirm" => "vouching/confirm-vouching",
@@ -79,12 +75,12 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             "M-XYXY-YAGA-35G3" => [
                 "name" => "firstname surname",
-                "type" => "PW"
+                "type" => "PW",
             ],
             "M-AAAA-1234-5678" => [
                 "name" => "another name",
-                "type" => "PA"
-            ]
+                "type" => "PA",
+            ],
         ];
     }
 
@@ -115,8 +111,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                 "idCountry" => "AUT",
                 "docType" => DocumentType::DrivingLicence->value,
                 'idRoute' => IdRoute::KBV->value,
-            ]
+            ],
         ];
+
         return array_merge($base, $overwrite);
     }
 
@@ -169,7 +166,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'POST', [
             'eligibility' => "eligibility_confirmed",
-            'declaration' => "declaration_confirmed"
+            'declaration' => "declaration_confirmed",
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/{$this->routes['howConfirm']}");
@@ -258,7 +255,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->method("checkMatch")
             ->willReturnMap([
                 [["lpaData" => "one"], "firstName", "lastName", null, false],
-                [["lpaData" => "two"], "firstName", "lastName", null, false]
+                [["lpaData" => "two"], "firstName", "lastName", null, false],
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['name']}", 'POST', [
@@ -300,13 +297,13 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstName" => "firstName",
                     "lastName" => "lastName",
                     "dob" => "dob",
-                    "type" => LpaActorTypes::DONOR->value
-                ]]
+                    "type" => LpaActorTypes::DONOR->value,
+                ]],
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['name']}", 'POST', [
             "firstName" => "firstName",
-            "lastName" => "lastName"
+            "lastName" => "lastName",
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains(
@@ -347,14 +344,14 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstName" => "firstName",
                     "lastName" => "lastName",
                     "dob" => "dob",
-                    "type" => LpaActorTypes::DONOR->value
-                ]]
+                    "type" => LpaActorTypes::DONOR->value,
+                ]],
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['name']}", 'POST', [
             "firstName" => "firstName",
             "lastName" => "lastName",
-            "continue-after-warning" => "continue"
+            "continue-after-warning" => "continue",
         ]);
 
         $this->assertResponseStatusCode(302);
@@ -385,7 +382,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     public function testVoucherDobPreFilled(): void
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData([
-            "dob" => '1980-01-01'
+            "dob" => '1980-01-01',
         ]);
 
         $this
@@ -429,13 +426,13 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->method("checkMatch")
             ->willReturnMap([
                 [["lpaData" => "one"], "firstName", "lastName", "1980-01-01", false],
-                [["lpaData" => "two"], "firstName", "lastName", "1980-01-01", false]
+                [["lpaData" => "two"], "firstName", "lastName", "1980-01-01", false],
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
             "dob_day" => "1",
             "dob_month" => "1",
-            "dob_year" => "1980"
+            "dob_year" => "1980",
         ]);
 
         $this->assertResponseStatusCode(302);
@@ -450,7 +447,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstName" => "firstName",
                     "lastName" => "lastName",
                 ],
-                'postcode'
+                'postcode',
             ],
             [
                 [
@@ -463,8 +460,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                         'country' => 'United Kingdom',
                     ],
                 ],
-                'manualAddress'
-            ]
+                'manualAddress',
+            ],
         ];
     }
 
@@ -472,7 +469,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     {
         $mockResponseDataIdDetails = $this->returnOpgResponseData([
             "firstName" => "firstName",
-            "lastName" => "lastName"
+            "lastName" => "lastName",
         ]);
 
         $this
@@ -502,14 +499,14 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     "firstName" => "firstName",
                     "lastName" => "lastName",
                     "dob" => "1980-01-01",
-                    "type" => LpaActorTypes::DONOR->value
-                ]]
+                    "type" => LpaActorTypes::DONOR->value,
+                ]],
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
             "dob_day" => "01",
             "dob_month" => "01",
-            "dob_year" => "1980"
+            "dob_year" => "1980",
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains(
@@ -534,7 +531,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
             "dob_day" => "20",
             "dob_month" => "11",
-            "dob_year" => "2024"
+            "dob_year" => "2024",
         ]);
 
         $this->assertResponseStatusCode(200);
@@ -560,7 +557,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
             "dob_day" => "",
             "dob_month" => "",
-            "dob_year" => ""
+            "dob_year" => "",
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentRegex(
@@ -585,7 +582,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'POST', [
             "dob_day" => "999",
             "dob_month" => "999",
-            "dob_year" => "thing"
+            "dob_year" => "thing",
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentRegex(
@@ -642,9 +639,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                         'docType' => DocumentType::DrivingLicence->value,
                         'idCountry' => 'AUS',
                         'idRoute' => IdRoute::POST_OFFICE->value,
-                    ]
+                    ],
                 ],
-                ['p#PO_NON_GBR_DL']
+                ['p#PO_NON_GBR_DL'],
             ],
             'post office UK driving licence' => [
                 [
@@ -652,10 +649,10 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                         'docType' => DocumentType::DrivingLicence->value,
                         'idCountry' => 'GBR',
                         'idRoute' => IdRoute::POST_OFFICE->value,
-                    ]
+                    ],
                 ],
-                ['p#PO_GBR_DL']
-            ]
+                ['p#PO_GBR_DL'],
+            ],
         ];
     }
 
@@ -677,7 +674,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn([]);
 
         $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'POST', [
-            "postcode" => "A12 3BC"
+            "postcode" => "A12 3BC",
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQuery('p[id=postcode-error]');
@@ -701,7 +698,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->willReturn(["response" => true]);
 
         $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'POST', [
-            "postcode" => "FA2 3KE"
+            "postcode" => "FA2 3KE",
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE");
@@ -766,9 +763,8 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             );
 
         $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'POST', [
-            "address_json" =>
-                "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\"," .
-                "\"postcode\":\"FA2 3KE\",\"country\":\"United Kingdom\"}"
+            "address_json" => "{\"line1\":\"456 Pretend Road\",\"town\":\"Faketown\"," .
+                "\"postcode\":\"FA2 3KE\",\"country\":\"United Kingdom\"}",
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo("/$this->uuid/{$this->routes['manualAddress']}");
@@ -849,7 +845,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
         $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'POST', [
             "line1" => "",
             "town" => "",
-            "postcode" => "NOTAPOSTCODE"
+            "postcode" => "NOTAPOSTCODE",
         ]);
         $this->assertResponseStatusCode(200);
         $this->assertQueryContentContains("p[id='line1-error']", "Error:Enter an address");
@@ -956,7 +952,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     "docType" => DocumentType::DrivingLicence->value,
                     'idRoute' => IdRoute::POST_OFFICE->value,
                 ],
-                'find-post-office-branch'
+                'find-post-office-branch',
             ],
         ];
     }
@@ -972,9 +968,9 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-            $this->dispatch("/$this->uuid/{$this->routes['addDonor']}", 'GET');
-            $this->assertResponseStatusCode(200);
-            $this->assertMatchedRouteName('root/voucher_add_donor');
+        $this->dispatch("/$this->uuid/{$this->routes['addDonor']}", 'GET');
+        $this->assertResponseStatusCode(200);
+        $this->assertMatchedRouteName('root/voucher_add_donor');
     }
 
     #[DataProvider('addDonorValidationErrorData')]
@@ -997,7 +993,7 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
     {
         return [
             ['', 'Enter an LPA number to continue.'],
-            ['invalid lpa number', 'The LPA needs to be valid in the format M-XXXX-XXXX-XXXX']
+            ['invalid lpa number', 'The LPA needs to be valid in the format M-XXXX-XXXX-XXXX'],
         ];
     }
 
@@ -1040,15 +1036,15 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
             // problem - no LPAs returned...
             [
                 [
-                    'lpa' => 'M-AAAA-AAAA-AAAA'
+                    'lpa' => 'M-AAAA-AAAA-AAAA',
                 ],
                 [
                     'problem' => true,
-                    'message' => 'This is the problem message'
+                    'message' => 'This is the problem message',
                 ],
                 [
-                    ["p[id=problemMessage]", 'This is the problem message']
-                ]
+                    ["p[id=problemMessage]", 'This is the problem message'],
+                ],
             ],
             // lpa with error and attached warnings
             [
@@ -1062,21 +1058,21 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     'additionalRows' => [
                         [
                             'type' => 'Actor name',
-                            'value' => 'Joe Blogs'
+                            'value' => 'Joe Blogs',
                         ],
                         [
                             'type' => 'Actor date of birth',
-                            'value' => '01 Jan 2001'
-                        ]
-                    ]
+                            'value' => '01 Jan 2001',
+                        ],
+                    ],
                 ],
                 [
                     ["div[id=warningMessage]", 'There is a warning message'],
                     ["th[id=addRowType]", 'Actor name'],
                     ["td[id=addRowValue]", 'Joe Blogs'],
                     ["th[id=addRowType]", 'Actor date of birth'],
-                    ["td[id=addRowValue]", '01 Jan 2001']
-                ]
+                    ["td[id=addRowValue]", '01 Jan 2001'],
+                ],
             ],
             // valid LPAs - declaration not ticked
             [
@@ -1088,23 +1084,23 @@ class VouchingFlowControllerTest extends AbstractHttpControllerTestCase
                     'lpasCount' => 2,
                     'lpas' => [
                         ['uId' => 'lpa1', 'type' => 'PW'],
-                        ['uId' => 'lpa2', 'type' => 'PA']
+                        ['uId' => 'lpa2', 'type' => 'PA'],
                     ],
                     'donorName' => 'Joe Blogs',
                     'donorDob' => '01 Feb 2000',
                     'donorAddress' => [
                         'line1' => 'line 1 of address',
                         'town' => 'some town',
-                        'postcode' => 'FA3 K12'
-                    ]
+                        'postcode' => 'FA3 K12',
+                    ],
                 ],
                 [
                     ["caption[id=lpaCount]", 'Results: 2 eligible LPAs found for this donor.'],
                     ["td[id=donorName]", 'Joe Blogs'],
                     ["td[id=donorDob]", '01 Feb 2000'],
                     ["span[id=declarationError]", "Confirm declaration to continue"],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 

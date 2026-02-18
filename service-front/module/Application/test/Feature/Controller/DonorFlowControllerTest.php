@@ -10,12 +10,11 @@ use Application\Enums\IdRoute;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\RequestInterface;
 
-class DonorFlowControllerTest extends AbstractHttpControllerTestCase
+class DonorFlowControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private FormProcessorHelper&MockObject $formProcessorService;
@@ -25,8 +24,6 @@ class DonorFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);

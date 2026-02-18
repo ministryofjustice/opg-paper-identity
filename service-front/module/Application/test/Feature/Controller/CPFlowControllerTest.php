@@ -12,12 +12,11 @@ use Application\Helpers\AddressProcessorHelper;
 use Application\Helpers\FormProcessorHelper;
 use Application\Helpers\SiriusDataProcessorHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\RequestInterface;
 
-class CPFlowControllerTest extends AbstractHttpControllerTestCase
+class CPFlowControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
     private SiriusApiService&MockObject $siriusApiService;
@@ -27,8 +26,6 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->uuid = '49895f88-501b-4491-8381-e8aeeaef177d';
 
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
@@ -72,7 +69,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                 "idCountry" => "AUT",
                 "docType" => DocumentType::DrivingLicence->value,
                 'idRoute' => IdRoute::KBV->value,
-            ]
+            ],
         ];
     }
 
@@ -81,8 +78,8 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             "M-0000-0000-0000" => [
                 "name" => "John Doe",
-                "type" => "property-and-affairs"
-            ]
+                "type" => "property-and-affairs",
+            ],
         ];
     }
 
@@ -118,7 +115,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
             ->with($this->uuid)
             ->willReturn($mockResponseDataIdDetails);
 
-//        $mockResponseDataSiriusLpa = $this->returnSiriusLpaResponse();
+        //        $mockResponseDataSiriusLpa = $this->returnSiriusLpaResponse();
 
         $this
             ->siriusDataProcessorHelperMock
@@ -187,7 +184,7 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
         return [
             'not post-office route' => [
                 [],
-                ['p#NOT_PO']
+                ['p#NOT_PO'],
             ],
             'post office non UK driving-licence id' => [
                 [
@@ -195,9 +192,9 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                         'docType' => DocumentType::DrivingLicence->value,
                         'idCountry' => 'AUS',
                         'idRoute' => IdRoute::POST_OFFICE->value,
-                    ]
+                    ],
                 ],
-                ['p#PO_NON_GBR_DL']
+                ['p#PO_NON_GBR_DL'],
             ],
             'post office UK driving licence' => [
                 [
@@ -205,10 +202,10 @@ class CPFlowControllerTest extends AbstractHttpControllerTestCase
                         'docType' => DocumentType::DrivingLicence->value,
                         'idCountry' => 'GBR',
                         'idRoute' => IdRoute::POST_OFFICE->value,
-                    ]
+                    ],
                 ],
-                ['p#PO_GBR_DL']
-            ]
+                ['p#PO_GBR_DL'],
+            ],
         ];
     }
 

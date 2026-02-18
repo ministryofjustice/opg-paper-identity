@@ -6,18 +6,15 @@ namespace ApplicationTest\Feature\Controller;
 
 use Application\Contracts\OpgApiServiceInterface;
 use Application\Enums\PersonType;
-use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class KbvControllerTest extends AbstractHttpControllerTestCase
+class KbvControllerTest extends BaseControllerTestCase
 {
     private OpgApiServiceInterface&MockObject $opgApiServiceMock;
 
     public function setUp(): void
     {
-        $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-
         $this->opgApiServiceMock = $this->createMock(OpgApiServiceInterface::class);
 
         parent::setUp();
@@ -142,7 +139,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ->willReturn([
                 'personType' => $personType,
                 'caseProgress' => ['fraudScore' => ['decision' => 'ACCEPT']],
-                'lpas' => ['lpa1']
+                'lpas' => ['lpa1'],
             ]);
 
         $this
@@ -232,7 +229,7 @@ class KbvControllerTest extends AbstractHttpControllerTestCase
             ->with($uuid)
             ->willReturn([
                 'id' => $uuid,
-                'personType' => PersonType::Donor
+                'personType' => PersonType::Donor,
             ]);
 
         $this->dispatch("/$uuid/identity-check-failed", 'GET');
