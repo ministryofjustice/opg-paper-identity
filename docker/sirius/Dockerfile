@@ -1,4 +1,4 @@
-FROM outofcoffee/imposter:4.7.0
+FROM outofcoffee/imposter:4.8.0
 
 COPY . /opt/imposter/config
 
