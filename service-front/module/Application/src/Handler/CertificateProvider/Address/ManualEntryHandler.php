@@ -46,7 +46,7 @@ class ManualEntryHandler implements RequestHandlerInterface
                 $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
             }
 
-            return $this->routeHelper->toRedirect('root/cp_confirm_address', ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect('cp_confirm_address', ['uuid' => $uuid]);
         }
 
         return new HtmlResponse($this->renderer->render(

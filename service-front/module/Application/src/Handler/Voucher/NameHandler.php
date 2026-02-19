@@ -68,7 +68,7 @@ class NameHandler implements RequestHandlerInterface
             } else {
                 $this->opgApiService->updateCaseSetName($uuid, $formData["firstName"], $formData["lastName"]);
 
-                return $this->routeHelper->toRedirect("root/voucher_dob", ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect("voucher_dob", ['uuid' => $uuid]);
             }
         } else {
             $form->setData([

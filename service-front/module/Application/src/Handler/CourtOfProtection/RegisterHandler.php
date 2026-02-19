@@ -42,7 +42,7 @@ class RegisterHandler implements RequestHandlerInterface
             $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $request);
 
             return $this->routeHelper->toRedirect(
-                'root/court_of_protection_what_next',
+                'court_of_protection_what_next',
                 ['uuid' => $uuid]
             );
         }

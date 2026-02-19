@@ -46,7 +46,7 @@ class PostcodeSearchHandler implements RequestHandlerInterface
 
                 if (! empty($response)) {
                     return $this->routeHelper->toRedirect(
-                        'root/voucher_select_address',
+                        'voucher_select_address',
                         [
                             'uuid' => $uuid,
                             'postcode' => $postcode,

@@ -51,15 +51,15 @@ class ChooseInternationalDocumentHandler implements RequestHandlerInterface
 
             switch ($detailsData["personType"]) {
                 case PersonType::Voucher:
-                    $redirect = "root/voucher_name";
+                    $redirect = "voucher_name";
 
                     break;
                 case PersonType::CertificateProvider:
-                    $redirect = "root/cp_name_match_check";
+                    $redirect = "cp_name_match_check";
 
                     break;
                 default:
-                    $redirect = "root/donor_details_match_check";
+                    $redirect = "donor_details_match_check";
 
                     break;
             }

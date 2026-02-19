@@ -43,591 +43,583 @@ $yotiSupportedDocs = file_get_contents(__DIR__ . '/yoti-supported-documents.json
 return [
     'router' => [
         'routes' => [
-            'root' => [
+            'health_check' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => $prefix . '/health-check',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Handler\HealthCheck\StatusHandler::class
+                        ),
+                    ],
+                ],
+            ],
+            'health_check_service' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => $prefix . '/health-check/service',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Handler\HealthCheck\ServiceStatusHandler::class
+                        ),
+                    ],
+                ],
+            ],
+            'start' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => $prefix,
+                    'route' => $prefix . '/start',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => Handler\StartHandler::class,
+                    ],
                 ],
-                'child_routes' => [
-                    'health_check' => [
-                        'type' => Literal::class,
-                        'options' => [
-                            'route' => '/health-check',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Handler\HealthCheck\StatusHandler::class
-                                ),
-                            ],
-                        ],
+            ],
+            'how_will_you_confirm' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/how-will-you-confirm',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\HowConfirm\HowWillYouConfirmHandler::class
+                        ),
                     ],
-                    'health_check_service' => [
-                        'type' => Literal::class,
-                        'options' => [
-                            'route' => '/health-check/service',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Handler\HealthCheck\ServiceStatusHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'donor_lpa_check' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/donor-lpa-check',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\LpaCheckHandler::class
+                        ),
                     ],
-                    'start' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/start',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => Handler\StartHandler::class,
-                            ],
-                        ],
+                ],
+            ],
+            'donor_details_match_check' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/donor-details-match-check',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\DonorDetailsMatchCheckHandler::class
+                        ),
                     ],
-                    'how_will_you_confirm' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/how-will-you-confirm',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\HowConfirm\HowWillYouConfirmHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'national_insurance_number' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/national-insurance-number',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\DocumentCheck\NationalInsuranceNumberHandler::class
+                        ),
                     ],
-                    'donor_lpa_check' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/donor-lpa-check',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\LpaCheckHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'driving_licence_number' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/driving-licence-number',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\DocumentCheck\DrivingLicenceNumberHandler::class
+                        ),
                     ],
-                    'donor_details_match_check' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/donor-details-match-check',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\DonorDetailsMatchCheckHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'passport_number' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/passport-number',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\DocumentCheck\PassportNumberHandler::class
+                        ),
                     ],
-                    'national_insurance_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/national-insurance-number',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\DocumentCheck\NationalInsuranceNumberHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'id_verify_questions' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/id-verify-questions',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Kbv\QuestionsHandler::class
+                        ),
                     ],
-                    'driving_licence_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/driving-licence-number',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\DocumentCheck\DrivingLicenceNumberHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'identity_check_passed' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/identity-check-passed',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\IdentityCheckPassedHandler::class
+                        ),
                     ],
-                    'passport_number' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/passport-number',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\DocumentCheck\PassportNumberHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'identity_check_failed' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/identity-check-failed',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Kbv\IdentityCheckFailedHandler::class
+                        ),
                     ],
-                    'id_verify_questions' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/id-verify-questions',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Kbv\QuestionsHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'thin_file_failure' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/thin-file-failure',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\ThinFileFailureHandler::class
+                        ),
                     ],
-                    'identity_check_passed' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/identity-check-passed',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\IdentityCheckPassedHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'post_office_documents' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/post-office-documents',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\PostOffice\ChooseUKDocumentHandler::class
+                        ),
                     ],
-                    'identity_check_failed' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/identity-check-failed',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Kbv\IdentityCheckFailedHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'court_of_protection' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/court-of-protection',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CourtOfProtection\RegisterHandler::class
+                        ),
                     ],
-                    'thin_file_failure' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/thin-file-failure',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\ThinFileFailureHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'court_of_protection_what_next' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/court-of-protection-what-next',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CourtOfProtection\WhatNextHandler::class
+                        ),
                     ],
-                    'post_office_documents' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/post-office-documents',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\PostOffice\ChooseUKDocumentHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'find_post_office_branch' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/find-post-office-branch',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\PostOffice\FindPostOfficeBranchHandler::class
+                        ),
                     ],
-                    'court_of_protection' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/court-of-protection',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CourtOfProtection\RegisterHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'po_what_happens_next' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/post-office-what-happens-next',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\PostOffice\WhatHappensNextHandler::class
+                        ),
                     ],
-                    'court_of_protection_what_next' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/court-of-protection-what-next',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CourtOfProtection\WhatNextHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'post_office_route_not_available' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/post-office-route-not-available',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\PostOffice\RouteNotAvailableHandler::class
+                        ),
                     ],
-                    'find_post_office_branch' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/find-post-office-branch',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\PostOffice\FindPostOfficeBranchHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_name_match_check' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/name-match-check',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\NameMatchCheckHandler::class
+                        ),
                     ],
-                    'po_what_happens_next' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/post-office-what-happens-next',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\PostOffice\WhatHappensNextHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_confirm_lpas' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/confirm-lpas',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\ConfirmLpasHandler::class
+                        ),
                     ],
-                    'post_office_route_not_available' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/post-office-route-not-available',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\PostOffice\RouteNotAvailableHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_add_lpa' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/add-lpa',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\AddLpaHandler::class
+                        ),
                     ],
-                    'cp_name_match_check' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/name-match-check',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\NameMatchCheckHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_confirm_dob' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/confirm-dob',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\ConfirmDobHandler::class
+                        ),
                     ],
-                    'cp_confirm_lpas' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/confirm-lpas',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\ConfirmLpasHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_confirm_address' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/confirm-address',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\Address\ConfirmHandler::class
+                        ),
                     ],
-                    'cp_add_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/add-lpa',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\AddLpaHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_identity_check_passed' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/identity-check-passed',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\IdentityCheckPassedHandler::class
+                        ),
                     ],
-                    'cp_confirm_dob' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/confirm-dob',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\ConfirmDobHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_enter_postcode' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/enter-postcode',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\Address\PostcodeSearchHandler::class
+                        ),
                     ],
-                    'cp_confirm_address' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/confirm-address',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\Address\ConfirmHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_enter_address_manual' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/enter-address-manual',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\Address\ManualEntryHandler::class
+                        ),
                     ],
-                    'cp_identity_check_passed' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/identity-check-passed',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\IdentityCheckPassedHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_select_address' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/select-address/:postcode',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\Address\SelectHandler::class
+                        ),
                     ],
-                    'cp_enter_postcode' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/enter-postcode',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\Address\PostcodeSearchHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'remove_lpa' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/remove-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\RemoveLpaHandler::class
+                        ),
                     ],
-                    'cp_enter_address_manual' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/enter-address-manual',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\Address\ManualEntryHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'cp_remove_lpa' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/cp/remove-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\CertificateProvider\RemoveLpaHandler::class
+                        ),
                     ],
-                    'cp_select_address' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/select-address/:postcode',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\Address\SelectHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'abandon_flow' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/abandon-flow',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\AbandonFlowHandler::class
+                        ),
                     ],
-                    'remove_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/remove-lpa/:lpa',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\RemoveLpaHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'po_choose_country' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/po-choose-country',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\PostOffice\ChooseCountryHandler::class
+                        ),
                     ],
-                    'cp_remove_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/cp/remove-lpa/:lpa',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\CertificateProvider\RemoveLpaHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'po_choose_country_id' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/po-choose-country-id',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\PostOffice\ChooseInternationalDocumentHandler::class
+                        ),
                     ],
-                    'abandon_flow' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/abandon-flow',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\AbandonFlowHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'what_is_vouching' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/what-is-vouching',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\WhatIsVouchingHandler::class
+                        ),
                     ],
-                    'po_choose_country' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/po-choose-country',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\PostOffice\ChooseCountryHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'vouching_what_happens_next' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching-what-happens-next',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Donor\VouchingWhatHappensNextHandler::class
+                        ),
                     ],
-                    'po_choose_country_id' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/po-choose-country-id',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\PostOffice\ChooseInternationalDocumentHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'confirm_vouching' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/confirm-vouching',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\ConfirmVouchingHandler::class
+                        ),
                     ],
-                    'what_is_vouching' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/what-is-vouching',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\WhatIsVouchingHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_name' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/voucher-name',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\NameHandler::class
+                        ),
                     ],
-                    'vouching_what_happens_next' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching-what-happens-next',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Donor\VouchingWhatHappensNextHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_dob' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/voucher-dob',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\DateOfBirthHandler::class
+                        ),
                     ],
-                    'confirm_vouching' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/confirm-vouching',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\ConfirmVouchingHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_enter_postcode' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/enter-postcode',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\Address\PostcodeSearchHandler::class
+                        ),
                     ],
-                    'voucher_name' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/voucher-name',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\NameHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_select_address' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/select-address/:postcode',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\Address\SelectHandler::class
+                        ),
                     ],
-                    'voucher_dob' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/voucher-dob',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\DateOfBirthHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_enter_address_manual' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/enter-address-manual',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\Address\ManualEntryHandler::class
+                        ),
                     ],
-                    'voucher_enter_postcode' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/enter-postcode',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\Address\PostcodeSearchHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_confirm_donors' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/confirm-donors',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\ConfirmDonorsHandler::class
+                        ),
                     ],
-                    'voucher_select_address' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/select-address/:postcode',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\Address\SelectHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_add_donor' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/add-donor',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\AddLpaHandler::class
+                        ),
                     ],
-                    'voucher_enter_address_manual' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/enter-address-manual',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\Address\ManualEntryHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_remove_lpa' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/remove-lpa/:lpa',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\RemoveLpaHandler::class
+                        ),
                     ],
-                    'voucher_confirm_donors' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/confirm-donors',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\ConfirmDonorsHandler::class
-                                ),
-                            ],
-                        ],
-                    ],
-                    'voucher_add_donor' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/add-donor',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\AddLpaHandler::class
-                                ),
-                            ],
-                        ],
-                    ],
-                    'voucher_remove_lpa' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/remove-lpa/:lpa',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\RemoveLpaHandler::class
-                                ),
-                            ],
-                        ],
-                    ],
-                    'voucher_identity_check_passed' => [
-                        'type' => Segment::class,
-                        'options' => [
-                            'route' => '/:uuid/vouching/identity-check-passed',
-                            'defaults' => [
-                                'controller' => PipeSpec::class,
-                                'middleware' => new PipeSpec(
-                                    Middleware\AttributePromotionMiddleware::class,
-                                    Handler\Voucher\IdentityCheckPassedHandler::class
-                                ),
-                            ],
-                        ],
+                ],
+            ],
+            'voucher_identity_check_passed' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => $prefix . '/:uuid/vouching/identity-check-passed',
+                    'defaults' => [
+                        'controller' => PipeSpec::class,
+                        'middleware' => new PipeSpec(
+                            Middleware\AttributePromotionMiddleware::class,
+                            Handler\Voucher\IdentityCheckPassedHandler::class
+                        ),
                     ],
                 ],
             ],

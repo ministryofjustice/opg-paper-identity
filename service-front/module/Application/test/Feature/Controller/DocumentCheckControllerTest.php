@@ -61,7 +61,7 @@ class DocumentCheckControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/national-insurance-number", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/national_insurance_number');
+        $this->assertMatchedRouteName('national_insurance_number');
         $this->assertQueryContentContains('p[id=nino_fullname]', 'Mary Anne Chapman');
         $this->assertQueryContentContains('p[id=nino_dob]', '01 May 1943');
     }
@@ -204,7 +204,7 @@ class DocumentCheckControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/driving-licence-number", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/driving_licence_number');
+        $this->assertMatchedRouteName('driving_licence_number');
     }
 
     #[DataProvider('drivingLicenceData')]
@@ -351,7 +351,7 @@ class DocumentCheckControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/passport-number", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/passport_number');
+        $this->assertMatchedRouteName('passport_number');
         $this->assertQueryContentContains('p[id=passport_fullname]', 'Mary Anne Chapman');
         $this->assertQueryContentContains('p[id=passport_dob]', '01 May 1943');
     }

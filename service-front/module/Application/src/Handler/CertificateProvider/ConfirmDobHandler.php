@@ -56,7 +56,7 @@ class ConfirmDobHandler implements RequestHandlerInterface
                 if ($proceed) {
                     $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
 
-                    return $this->routeHelper->toRedirect('root/cp_confirm_address', ['uuid' => $uuid]);
+                    return $this->routeHelper->toRedirect('cp_confirm_address', ['uuid' => $uuid]);
                 } else {
                     $variables['displaying_dob_100_warning'] = true;
                 }
