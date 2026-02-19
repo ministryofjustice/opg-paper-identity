@@ -101,7 +101,7 @@ class CPFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/name-match-check", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/cp_name_match_check');
+        $this->assertMatchedRouteName('cp_name_match_check');
     }
 
     public function testConfirmLpasPageWithData(): void
@@ -125,7 +125,7 @@ class CPFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/confirm-lpas", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/cp_confirm_lpas');
+        $this->assertMatchedRouteName('cp_confirm_lpas');
     }
 
     public function testConfirmDobPageWithData(): void
@@ -141,7 +141,7 @@ class CPFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/confirm-dob", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/cp_confirm_dob');
+        $this->assertMatchedRouteName('cp_confirm_dob');
     }
 
     public function testConfirmAddressPageWithData(): void
@@ -157,7 +157,7 @@ class CPFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/cp/confirm-address", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/cp_confirm_address');
+        $this->assertMatchedRouteName('cp_confirm_address');
     }
 
     #[DataProvider('confirmAddressData')]
@@ -234,7 +234,7 @@ class CPFlowControllerTest extends BaseControllerTestCase
         );
 
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/cp_enter_postcode');
+        $this->assertMatchedRouteName('cp_enter_postcode');
 
         $response = $this->getResponse()->getContent();
         $this->assertStringContainsString(AddressProcessorHelper::ERROR_POSTCODE_NOT_FOUND, $response);

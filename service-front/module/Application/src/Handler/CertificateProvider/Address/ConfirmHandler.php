@@ -50,7 +50,7 @@ class ConfirmHandler implements RequestHandlerInterface
                 if ($form->get('chosenAddress')->getValue() === 'yes') {
                     return $this->routeHelper->toRedirect($nextRoute, ['uuid' => $uuid]);
                 } else {
-                    return $this->routeHelper->toRedirect('root/cp_enter_postcode', ['uuid' => $uuid]);
+                    return $this->routeHelper->toRedirect('cp_enter_postcode', ['uuid' => $uuid]);
                 }
             }
         }
@@ -70,13 +70,13 @@ class ConfirmHandler implements RequestHandlerInterface
     public function getNextRoute(array $detailsData): string
     {
         if (isset($detailsData['idMethod']['idRoute']) && $detailsData['idMethod']['idRoute'] !== IdRoute::KBV->value) {
-            return 'root/find_post_office_branch';
+            return 'find_post_office_branch';
         }
 
         return match ($detailsData['idMethod']['docType'] ?? null) {
-            DocumentType::NationalInsuranceNumber->value => 'root/national_insurance_number',
-            DocumentType::DrivingLicence->value => 'root/driving_licence_number',
-            DocumentType::Passport->value => 'root/passport_number',
+            DocumentType::NationalInsuranceNumber->value => 'national_insurance_number',
+            DocumentType::DrivingLicence->value => 'driving_licence_number',
+            DocumentType::Passport->value => 'passport_number',
             default => throw new RuntimeException('Unknown document type: ' .
                 ($detailsData['idMethod']['docType'] ?? 'unknown')),
         };

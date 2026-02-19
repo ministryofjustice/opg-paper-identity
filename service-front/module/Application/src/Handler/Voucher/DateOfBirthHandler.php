@@ -70,8 +70,8 @@ class DateOfBirthHandler implements RequestHandlerInterface
                         $this->opgApiService->updateCaseSetDob($uuid, $dateOfBirth);
 
                         $nextRoute = isset($detailsData["address"])
-                            ? "root/voucher_enter_address_manual"
-                            : "root/voucher_enter_postcode";
+                            ? "voucher_enter_address_manual"
+                            : "voucher_enter_postcode";
 
                         return $this->routeHelper->toRedirect($nextRoute, ['uuid' => $uuid]);
                     } else {

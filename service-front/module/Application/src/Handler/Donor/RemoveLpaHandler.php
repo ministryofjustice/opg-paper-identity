@@ -25,6 +25,6 @@ class RemoveLpaHandler implements RequestHandlerInterface
 
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
-        return $this->routeHelper->toRedirect("root/donor_lpa_check", ['uuid' => $uuid]);
+        return $this->routeHelper->toRedirect("donor_lpa_check", ['uuid' => $uuid]);
     }
 }

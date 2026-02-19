@@ -28,6 +28,6 @@ class RemoveLpaHandler implements RequestHandlerInterface
 
         $this->opgApiService->updateCaseWithLpa($uuid, $lpa, true);
 
-        return $this->routeHelper->toRedirect('root/voucher_confirm_donors', ['uuid' => $uuid]);
+        return $this->routeHelper->toRedirect('voucher_confirm_donors', ['uuid' => $uuid]);
     }
 }
