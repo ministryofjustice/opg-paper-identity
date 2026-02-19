@@ -8,7 +8,6 @@ use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\OpgApiService;
 use Application\Services\SiriusApiService;
-use Laminas\Http\Header\Location;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -173,11 +172,10 @@ class IndexControllerTest extends BaseControllerTestCase
         $this->dispatch('/start?personType=' . $type . '&lpas[]=M-1234-5678-90AB', 'GET');
         $this->assertResponseStatusCode(302);
 
-        $locationHeader = $this->getResponse()->getHeaders()->get('Location');
-        $this->assertInstanceOf(Location::class, $locationHeader);
+        $locationHeader = $this->getResponse()->getHeaderLine('Location');
         $this->assertMatchesRegularExpression(
             '/e9a50129-aebf-4bbc-a5cb-916d42ee2e56/',
-            $locationHeader->getFieldValue()
+            $locationHeader
         );
     }
 
@@ -209,7 +207,7 @@ class IndexControllerTest extends BaseControllerTestCase
         $this->assertResponseStatusCode(400);
         $this->assertStringContainsString(
             'ID check has status: draft and cannot be started',
-            $this->getResponse()->getBody()
+            strval($this->getResponse()->getBody())
         );
     }
 
@@ -232,7 +230,7 @@ class IndexControllerTest extends BaseControllerTestCase
         $this->assertResponseStatusCode(400);
         $this->assertStringContainsString(
             'Person type &#039;invalid&#039; is not valid',
-            $this->getResponse()->getBody()
+            strval($this->getResponse()->getBody())
         );
     }
 
@@ -251,7 +249,7 @@ class IndexControllerTest extends BaseControllerTestCase
 
         $this->assertStringContainsString(
             'LPA not found for M-AAAA-BBBB-CCCC',
-            $this->getResponse()->getBody()
+            strval($this->getResponse()->getBody())
         );
     }
 
@@ -303,7 +301,7 @@ class IndexControllerTest extends BaseControllerTestCase
         $this->dispatch('/health-check/service', 'GET');
         $this->assertResponseStatusCode(200);
 
-        $content = json_decode($this->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $content = json_decode(strval($this->getResponse()->getBody()), true, 512, JSON_THROW_ON_ERROR);
         $this->assertEquals($expectedOk, $content['OK']);
         $this->assertEquals($siriusStatus, $content['dependencies']['sirius']['ok']);
         $this->assertEquals($apiStatus, $content['dependencies']['api']['ok']);
@@ -323,7 +321,7 @@ class IndexControllerTest extends BaseControllerTestCase
         $this->dispatch(sprintf('/case-uuid/abandon-flow?last_page=%s', $lastPage), 'GET');
         $this->assertResponseStatusCode(200);
 
-        $button = (new Crawler($this->getResponse()->getContent()))
+        $button = (new Crawler(strval($this->getResponse()->getBody())))
             ->filterXPath('//a[contains(., "No, continue identity check")]');
 
         $this->assertEquals('/case-uuid/national-insurance-number', $button->attr('href'));

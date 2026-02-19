@@ -7,7 +7,6 @@ namespace ApplicationTest\Unit\Helpers;
 use Application\Enums\PersonType;
 use Application\Helpers\SendSiriusNoteHelper;
 use Application\Services\SiriusApiService;
-use Laminas\Http\Request;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

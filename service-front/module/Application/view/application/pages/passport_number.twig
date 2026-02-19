@@ -75,7 +75,7 @@
                         Passport in date (max 18 months out of date)
                     </h2>
                 </legend>
-                <details class="govuk-details" {% if details_open %} open {% endif %}>
+                <details class="govuk-details" {% if details_open|default(false) %} open {% endif %}>
                     <summary class="govuk-details__summary">
             <span class="govuk-details__summary-text">
                 Help with checking if passport is in date

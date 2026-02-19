@@ -266,7 +266,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
         $this->assertResponseStatusCode(200);
         $this->assertMatchedRouteName('po_choose_country_id');
 
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
 
         $this->assertStringContainsString('Please choose a type of document', $response);
     }
@@ -290,7 +290,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
         $this->assertResponseStatusCode(200);
         $this->assertMatchedRouteName('po_choose_country_id');
 
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
 
         $this->assertStringContainsString('This document code is not recognised', $response);
     }
