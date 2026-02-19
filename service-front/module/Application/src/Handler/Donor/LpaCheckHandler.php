@@ -37,17 +37,17 @@ class LpaCheckHandler implements RequestHandlerInterface
             }
 
             if ($detailsData['idMethod']['idRoute'] === IdRoute::POST_OFFICE->value) {
-                return $this->routeHelper->toRedirect("root/find_post_office_branch", ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect("find_post_office_branch", ['uuid' => $uuid]);
             } else {
                 switch ($detailsData['idMethod']['docType'] ?? null) {
                     case DocumentType::Passport->value:
-                        return $this->routeHelper->toRedirect("root/passport_number", ['uuid' => $uuid]);
+                        return $this->routeHelper->toRedirect("passport_number", ['uuid' => $uuid]);
 
                     case DocumentType::DrivingLicence->value:
-                        return $this->routeHelper->toRedirect("root/driving_licence_number", ['uuid' => $uuid]);
+                        return $this->routeHelper->toRedirect("driving_licence_number", ['uuid' => $uuid]);
 
                     case DocumentType::NationalInsuranceNumber->value:
-                        return $this->routeHelper->toRedirect("root/national_insurance_number", ['uuid' => $uuid]);
+                        return $this->routeHelper->toRedirect("national_insurance_number", ['uuid' => $uuid]);
 
                     default:
                         throw new RuntimeException('Document type is not set for this case');

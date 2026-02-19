@@ -105,7 +105,7 @@ class KbvControllerTest extends BaseControllerTestCase
 
         $this->dispatch('/' . $mockUuid . '/id-verify-questions', 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/id_verify_questions');
+        $this->assertMatchedRouteName('id_verify_questions');
 
         $this->assertQueryContentContains('h1', 'Who provides your personal mobile contract?');
         $this->assertQuery('input[type="radio"][name="question-two"]');
@@ -234,6 +234,6 @@ class KbvControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$uuid/identity-check-failed", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/identity_check_failed');
+        $this->assertMatchedRouteName('identity_check_failed');
     }
 }

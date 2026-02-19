@@ -40,14 +40,14 @@ class ConfirmVouchingHandler implements RequestHandlerInterface
             $validity = $form->isValid();
 
             if ($form->get('tryDifferent')->getValue()) {
-                $startUrl = $this->routeStack->assemble([], ['name' => 'root/start'])
+                $startUrl = $this->routeStack->assemble([], ['name' => 'start'])
                     . "?personType=donor&lpas[]=" . implode("&lpas[]=", $detailsData['lpas']);
 
                 return new RedirectResponse($startUrl);
             }
 
             if ($validity) {
-                return $this->routeHelper->toRedirect("root/how_will_you_confirm", ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect("how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
 

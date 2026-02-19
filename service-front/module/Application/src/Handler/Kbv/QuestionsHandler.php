@@ -32,11 +32,11 @@ class QuestionsHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $failRoute = "root/identity_check_failed";
+        $failRoute = "identity_check_failed";
         $passRoute = [
-            PersonType::Donor->value => "root/identity_check_passed",
-            PersonType::CertificateProvider->value => "root/cp_identity_check_passed",
-            PersonType::Voucher->value => "root/voucher_identity_check_passed",
+            PersonType::Donor->value => "identity_check_passed",
+            PersonType::CertificateProvider->value => "cp_identity_check_passed",
+            PersonType::Voucher->value => "voucher_identity_check_passed",
         ];
 
         $uuid = $request->getAttribute('uuid');
@@ -71,7 +71,7 @@ class QuestionsHandler implements RequestHandlerInterface
         }
 
         if (count($questionsData) === 0) {
-            return $this->routeHelper->toRedirect('root/thin_file_failure', ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect('thin_file_failure', ['uuid' => $uuid]);
         }
 
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);

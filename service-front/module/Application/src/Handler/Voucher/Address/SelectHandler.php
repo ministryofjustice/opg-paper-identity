@@ -55,7 +55,7 @@ class SelectHandler implements RequestHandlerInterface
 
             $this->opgApiService->addSelectedAddress($uuid, $structuredAddress);
 
-            return $this->routeHelper->toRedirect('root/voucher_enter_address_manual', ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect('voucher_enter_address_manual', ['uuid' => $uuid]);
         }
 
         return new HtmlResponse($this->renderer->render(

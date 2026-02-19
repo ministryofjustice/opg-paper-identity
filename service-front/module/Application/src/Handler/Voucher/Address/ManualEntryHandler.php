@@ -66,7 +66,7 @@ class ManualEntryHandler implements RequestHandlerInterface
             } else {
                 $this->opgApiService->addSelectedAddress($uuid, $this->formToArray($form));
 
-                return $this->routeHelper->toRedirect('root/voucher_confirm_donors', ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect('voucher_confirm_donors', ['uuid' => $uuid]);
             }
         }
 
