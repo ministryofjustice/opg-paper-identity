@@ -52,7 +52,7 @@ class AddLpaHandler implements RequestHandlerInterface
                     $selectForm->get('add_lpa_number')->getValue()
                 );
 
-                return $this->routeHelper->toRedirect('root/cp_confirm_lpas', ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect('cp_confirm_lpas', ['uuid' => $uuid]);
             }
 
             if ($searchForm->isValid()) {

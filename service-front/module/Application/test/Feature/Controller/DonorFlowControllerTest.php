@@ -61,7 +61,7 @@ class DonorFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/donor-lpa-check", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/donor_lpa_check');
+        $this->assertMatchedRouteName('donor_lpa_check');
     }
 
     public function testIdentityCheckPassedPage(): void
@@ -77,14 +77,14 @@ class DonorFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/identity-check-passed", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/identity_check_passed');
+        $this->assertMatchedRouteName('identity_check_passed');
     }
 
     public function testThinFileFailurePage(): void
     {
         $this->dispatch("/$this->uuid/thin-file-failure", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/thin_file_failure');
+        $this->assertMatchedRouteName('thin_file_failure');
     }
 
     public function testDonorIdMatchPage(): void
@@ -105,7 +105,7 @@ class DonorFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/donor-details-match-check", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/donor_details_match_check');
+        $this->assertMatchedRouteName('donor_details_match_check');
     }
 
     #[DataProvider('donorDetailsMatchData')]
@@ -159,7 +159,7 @@ class DonorFlowControllerTest extends BaseControllerTestCase
     public function testWhatIsVouchingPage(): void
     {
         $this->dispatch("/$this->uuid/what-is-vouching");
-        $this->assertMatchedRouteName('root/what_is_vouching');
+        $this->assertMatchedRouteName('what_is_vouching');
         $this->assertResponseStatusCode(200);
     }
 
@@ -219,7 +219,7 @@ class DonorFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/vouching-what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/vouching_what_happens_next');
+        $this->assertMatchedRouteName('vouching_what_happens_next');
     }
 
     public function returnOpgResponseData(): array

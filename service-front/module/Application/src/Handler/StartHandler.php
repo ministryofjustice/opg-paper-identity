@@ -119,9 +119,9 @@ class StartHandler implements RequestHandlerInterface
         $case = $this->siriusDataProcessorHelper->createPaperIdCase($personType, $lpasQuery, $lpas[0]);
 
         if ($personType === PersonType::Voucher) {
-            $redirect = 'root/confirm_vouching';
+            $redirect = 'confirm_vouching';
         } else {
-            $redirect = 'root/how_will_you_confirm';
+            $redirect = 'how_will_you_confirm';
         }
 
         return $this->routeHelper->toRedirect($redirect, ['uuid' => $case['uuid']]);

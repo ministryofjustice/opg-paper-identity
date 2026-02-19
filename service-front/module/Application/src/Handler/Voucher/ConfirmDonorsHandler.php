@@ -62,13 +62,13 @@ class ConfirmDonorsHandler implements RequestHandlerInterface
             isset($detailsData['idMethod']['idRoute'])
             && $detailsData['idMethod']['idRoute'] === IdRoute::POST_OFFICE->value
         ) {
-            return 'root/find_post_office_branch';
+            return 'find_post_office_branch';
         }
 
         return match ($detailsData['idMethod']['docType'] ?? null) {
-            DocumentType::DrivingLicence->value => 'root/driving_licence_number',
-            DocumentType::NationalInsuranceNumber->value => 'root/national_insurance_number',
-            DocumentType::Passport->value => 'root/passport_number',
+            DocumentType::DrivingLicence->value => 'driving_licence_number',
+            DocumentType::NationalInsuranceNumber->value => 'national_insurance_number',
+            DocumentType::Passport->value => 'passport_number',
             default => throw new RuntimeException('Unknown document type: ' .
                 ($detailsData['idMethod']['docType'] ?? 'unknown')),
         };

@@ -83,7 +83,7 @@ class FindPostOfficeBranchHandler implements RequestHandlerInterface
 
                 $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $request);
 
-                return $this->routeHelper->toRedirect('root/po_what_happens_next', ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect('po_what_happens_next', ['uuid' => $uuid]);
             }
 
             if (array_key_exists('selectPostoffice', $formData)) {

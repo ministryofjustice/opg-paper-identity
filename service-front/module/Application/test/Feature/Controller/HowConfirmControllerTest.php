@@ -63,7 +63,7 @@ class HowConfirmControllerTest extends BaseControllerTestCase
         $this->dispatch("/$this->uuid/how-will-you-confirm", 'GET');
 
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/how_will_you_confirm');
+        $this->assertMatchedRouteName('how_will_you_confirm');
 
         // this is slightly tricky to test as some radios are just not created at all and
         // some are hidden, so need to distinguish between the 2 in testing.

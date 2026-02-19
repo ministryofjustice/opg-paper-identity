@@ -71,7 +71,7 @@ class QuestionsHandler implements RequestHandlerInterface
         }
 
         if (count($questionsData) === 0) {
-            return $this->routeHelper->toRedirect('root/thin_file_failure', ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect('thin_file_failure', ['uuid' => $uuid]);
         }
 
         $questionsData = array_filter($questionsData, fn (array $question) => $question['answered'] !== true);

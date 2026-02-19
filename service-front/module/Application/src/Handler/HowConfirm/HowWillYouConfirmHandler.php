@@ -81,9 +81,9 @@ class HowWillYouConfirmHandler implements RequestHandlerInterface
         PersonType $personType
     ): ResponseInterface|null {
         $routes = [
-            PersonType::Donor->value => 'root/donor_details_match_check',
-            PersonType::CertificateProvider->value => 'root/cp_name_match_check',
-            PersonType::Voucher->value => 'root/voucher_name',
+            PersonType::Donor->value => 'donor_details_match_check',
+            PersonType::CertificateProvider->value => 'cp_name_match_check',
+            PersonType::Voucher->value => 'voucher_name',
         ];
 
         if (! $idMethodForm->isValid()) {
@@ -92,7 +92,7 @@ class HowWillYouConfirmHandler implements RequestHandlerInterface
 
         if ($formData['id_method'] == IdRoute::POST_OFFICE->value) {
             $idMethod = ['idRoute' => IdRoute::POST_OFFICE->value];
-            $returnRoute = 'root/post_office_documents';
+            $returnRoute = 'post_office_documents';
         } elseif ($formData['id_method'] == IdRoute::VOUCHING->value) {
             $idMethod = ['idRoute' => IdRoute::VOUCHING->value];
             $returnRoute = "root/what_is_vouching";
