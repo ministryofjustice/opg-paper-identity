@@ -4,36 +4,35 @@ declare(strict_types=1);
 
 namespace ApplicationTest\Feature\Controller;
 
-use Exception;
-use Laminas\Http\Header\HeaderInterface;
-use Laminas\Http\Headers;
-use Laminas\Http\Request;
-use Laminas\Http\Response;
-use Laminas\Mvc\Application;
+use GuzzleHttp\Psr7\Utils;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\ServerRequest;
+use Laminas\Diactoros\Uri;
 use Laminas\ServiceManager\ServiceManager;
-use Laminas\Stdlib\Parameters;
+use Mezzio\Helper\UrlHelper;
+use Mezzio\Router\RouteResult;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Throwable;
 
 abstract class BaseControllerTestCase extends TestCase
 {
     protected ServiceManager $serviceManager;
-
-    /** @var array<string, mixed> */
-    protected array $applicationConfig = [];
-    private ?Application $application = null;
-    private Response $response;
+    private ResponseInterface $response;
 
     protected function setUp(): void
     {
-        parent::setUp();
-        if (empty($this->applicationConfig)) {
-            $this->setApplicationConfig(include __DIR__ . '/../../../../../config/application.config.php');
-        }
+        $container = include __DIR__ . '/../../../../../config/container.php';
+        $this->serviceManager = $container;
 
-        $this->serviceManager = $this->getApplication()->getServiceManager();
+        $app = $container->get(\Mezzio\Application::class);
+
+        // Execute programmatic/declarative middleware pipeline and routing
+        // configuration statements
+        (include __DIR__ . '/../../../../../config/pipeline.php')($app);
+        (include __DIR__ . '/../../../../../config/routes.php')($app);
 
         $this->response = new Response();
     }
@@ -45,67 +44,42 @@ abstract class BaseControllerTestCase extends TestCase
         unset($this->serviceManager);
     }
 
-    protected function setApplicationConfig(array $config): void
-    {
-        $this->applicationConfig = $config;
-    }
-
     public function getApplicationServiceLocator(): ServiceManager
     {
         return $this->serviceManager;
     }
 
-    public function getResponse(): Response
+    public function getResponse(): ResponseInterface
     {
         return $this->response;
     }
 
-    private function getApplication(): Application
-    {
-        if ($this->application === null) {
-            $this->application = Application::init($this->applicationConfig);
-        }
-
-        return $this->application;
-    }
-
     public function dispatch(string $url, string $method = 'GET', array|string|null $body = null): void
     {
-        /** @var Request $request */
-        $request = $this->getApplication()->getRequest();
-
-        $request->setUri($url);
-        $request->setMethod($method);
-
-        /** @var Headers $headers */
-        $headers = $request->getHeaders();
-
-        if (is_string($body)) {
-            $headers->addHeaderLine('Content-Type', str_starts_with($body, '<?xml') ? 'text/xml' : 'application/json');
-            $request->setContent($body);
-        } elseif (is_array($body)) {
-            $headers->addHeaderLine('Content-Type', 'application/x-www-form-urlencoded');
-            $request->setContent(http_build_query($body));
-            $request->setPost(new Parameters($body));
-        }
-
-        // Convert query string to params if necessary
-        $query = $request->getQuery()->toArray();
-        $queryString = $request->getUri()->getQuery();
-        if (null !== $queryString) {
+        $query = [];
+        $queryString = parse_url($url, PHP_URL_QUERY);
+        if (is_string($queryString)) {
             parse_str($queryString, $query);
         }
-        $request->setQuery(new Parameters($query));
 
-        // Run request
-        ob_start();
-        $this->getApplication()->run();
-        ob_end_clean();
+        $request = (new ServerRequest())
+            ->withUri(new Uri($url))
+            ->withMethod($method)
+            ->withQueryParams($query);
 
-        /** @var Response $response */
-        $response = $this->getApplication()->getMvcEvent()->getResponse();
+        if (is_string($body)) {
+            $request = $request->withBody(Utils::streamFor($body));
+        } elseif (is_array($body)) {
+            $request = $request
+                ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
+                ->withParsedBody($body)
+                ->withBody(Utils::streamFor(http_build_query($body)));
+        }
 
-        $this->response = $response;
+        /** @var \Mezzio\Application $app */
+        $app = $this->getApplicationServiceLocator()->get(\Mezzio\Application::class);
+
+        $this->response = $app->handle($request);
     }
 
     public function assertResponseStatusCode(int $code): void
@@ -121,47 +95,44 @@ abstract class BaseControllerTestCase extends TestCase
 
     public function assertMatchedRouteName(string $route): void
     {
-        $routeMatch = $this->getApplication()->getMvcEvent()->getRouteMatch();
+        $routeMatch = $this->getApplicationServiceLocator()->get(UrlHelper::class)->getRouteResult();
         if (! $routeMatch) {
-            throw new ExpectationFailedException($this->createFailureMessage('No route matched'));
+            throw new ExpectationFailedException('No route matched');
         }
         $match = $routeMatch->getMatchedRouteName();
         $match = strtolower($match);
         $route = strtolower($route);
         if ($route !== $match) {
-            throw new ExpectationFailedException($this->createFailureMessage(
+            throw new ExpectationFailedException(
                 sprintf(
                     'Failed asserting matched route name was "%s", actual matched route name is "%s"',
                     $route,
                     $match
                 )
-            ));
+            );
         }
         $this->assertEquals($route, $match);
     }
 
     public function assertRedirectTo(string $url): void
     {
-        $locationHeader = $this->getResponse()->getHeaders()->get('Location');
-        if (! $locationHeader instanceof HeaderInterface) {
-            $message = $this->createFailureMessage('Failed asserting redirect, no Location header found');
-
-            throw new ExpectationFailedException($message);
+        $locationHeader = $this->getResponse()->getHeaderLine('Location');
+        if ($locationHeader === '') {
+            throw new ExpectationFailedException('Failed asserting redirect, no Location header found');
         }
 
-        $match = $locationHeader->getFieldValue();
-        if ($url !== $match) {
-            throw new ExpectationFailedException($this->createFailureMessage(
-                sprintf('Failed asserting redirect to "%s", actual redirect is to "%s"', $url, $match)
-            ));
+        if ($url !== $locationHeader) {
+            throw new ExpectationFailedException(
+                sprintf('Failed asserting redirect to "%s", actual redirect is to "%s"', $url, $locationHeader)
+            );
         }
-        $this->assertEquals($url, $match);
+        $this->assertEquals($url, $locationHeader);
     }
 
     private function query(string $query): Crawler
     {
         $response = $this->getResponse();
-        $document = new Crawler($response->getContent());
+        $document = new Crawler(strval($response->getBody()));
 
         return $document->filter($query);
     }
@@ -212,13 +183,13 @@ abstract class BaseControllerTestCase extends TestCase
             }
         }
 
-        throw new ExpectationFailedException($this->createFailureMessage(
+        throw new ExpectationFailedException(
             sprintf(
                 'Failed asserting content for query "%s" contains "%s"',
                 $query,
                 $content,
             )
-        ));
+        );
     }
 
     /**
@@ -243,33 +214,12 @@ abstract class BaseControllerTestCase extends TestCase
             }
         }
 
-        throw new ExpectationFailedException($this->createFailureMessage(
+        throw new ExpectationFailedException(
             sprintf(
                 'Failed asserting content for query "%s" matches pattern "%s"',
                 $query,
                 $pattern,
             )
-        ));
-    }
-
-    protected function createFailureMessage(string $message): string
-    {
-        $exception = $this->getApplication()->getMvcEvent()->getParam('exception');
-        if (! $exception instanceof Throwable && ! $exception instanceof Exception) {
-            return $message;
-        }
-
-        $messages = [];
-        do {
-            $messages[] = sprintf(
-                "Exception '%s' with message '%s' in %s:%d",
-                $exception::class,
-                $exception->getMessage(),
-                $exception->getFile(),
-                $exception->getLine()
-            );
-        } while ($exception = $exception->getPrevious());
-
-        return sprintf("%s\n\nExceptions raised:\n%s\n", $message, implode("\n\n", $messages));
+        );
     }
 }

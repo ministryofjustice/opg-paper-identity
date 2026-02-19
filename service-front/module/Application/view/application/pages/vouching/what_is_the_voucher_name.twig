@@ -33,7 +33,7 @@
             <input class="govuk-input" id="voucher-last-name" name="lastName" type="text" value="{{ form.get('lastName').value }}">
         </div>
     </fieldset>
-    {% if match %}
+    {% if match is defined %}
         <section class="govuk-!-width-two-thirds">
             <div class="moj-alert moj-alert--information" role="region" aria-label="information">
                 <div>

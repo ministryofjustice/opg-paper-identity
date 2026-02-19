@@ -15,7 +15,7 @@
                 </div>
             </div>
         {% endif %}
-        {% if lpa_response['problem'] %}
+        {% if lpa_response['problem']|default(false) %}
             <div class="moj-alert moj-alert--error" role="region" aria-label="Warning">
                 <div></div>
                 <div class="moj-alert__content">
@@ -25,9 +25,8 @@
             </div>
         {% endif %}
 
-
-        {% if lpa_response['warning'] %}
-            {% if lpa_response['error'] %}
+        {% if lpa_response['warning']|default(false) %}
+            {% if lpa_response['error']|default(false) %}
                 <div class="moj-alert moj-alert--error" role="region" aria-label="Warning">
                     <div>
                     <svg class="moj-alert__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -80,7 +79,7 @@
             </div>
         </div>
     </form>
-    {% if lpa_response and not lpa_response['problem'] %}
+    {% if lpa_response is defined and not lpa_response['problem'] %}
         <div>
             <table class="govuk-table govuk-!-width-two-thirds">
                 <caption class="govuk-table__caption govuk-table__caption--m" id="lpaCount">Results: <strong class="govuk-!-font-weight-regular">{{ lpa_response['lpasCount'] }} eligible LPA{% if lpa_response['lpasCount'] > 1 %}s{% endif %} found for this donor.</strong></caption>

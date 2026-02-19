@@ -11,9 +11,18 @@ build: ## Build containers
 
 up: ## Start application
 	docker compose up -d front-web
+	${MAKE} devmode-enable
 
 down: ## Stop application
 	docker compose down
+
+devmode-enable: ## Enable development mode
+	docker compose exec api composer development-enable
+	docker compose exec front composer development-enable
+
+devmode-disable: ## Disable development mode
+	docker compose exec api composer development-disable
+	docker compose exec front composer development-disable
 
 download-reference-data:
 	curl https://api.yoti.com/idverify/v1/supported-documents > ./service-front/module/Application/config/yoti-supported-documents.json
@@ -69,7 +78,7 @@ clean-junit-output:
 cypress:
 	docker compose run --rm cypress
 
-scan: scan-api scan-front 
+scan: scan-api scan-front
 scan-api:
 	docker compose run --rm trivy image --format table paper-identity/api:latest
 scan-front:

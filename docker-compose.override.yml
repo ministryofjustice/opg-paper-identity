@@ -22,7 +22,6 @@ services:
   api:
     volumes:
       - ./service-api:/var/www
-      - ./service-api/config/development.config.php.dist:/var/www/config/development.config.php
 
   api-web:
     ports:
@@ -40,7 +39,6 @@ services:
   front:
     volumes:
       - ./service-front:/var/www
-      - ./service-front/config/development.config.php.dist:/var/www/config/development.config.php
 
   front-test:
     volumes:
