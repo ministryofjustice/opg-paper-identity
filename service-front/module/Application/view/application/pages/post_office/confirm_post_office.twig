@@ -100,7 +100,7 @@
                 </dl>
             </div>
         </div>
-        {% if errors %}
+        {% if errors is defined %}
             <p id="postcode-error" class="govuk-error-message">
                 {% for error in errors %}
                     {{ error }}

@@ -122,7 +122,7 @@
                                             </button>
                                         </div>
 
-                                        {% if invalid_date %}
+                                        {% if invalid_date|default(false) %}
                                             <div class="govuk-date-input__item">
                                                 <div class="moj-alert moj-alert--warning moj-alert--date app-moj-alert"
                                                      role="region"
@@ -139,7 +139,7 @@
                                             </div>
                                         {% endif %}
 
-                                        {% if valid_date %}
+                                        {% if valid_date|default(false) %}
                                             <div class="govuk-date-input__item">
                                                 <div class="moj-alert moj-alert--success moj-alert--date app-moj-alert"
                                                      role="region"

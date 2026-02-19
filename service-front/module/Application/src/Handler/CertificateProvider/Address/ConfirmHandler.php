@@ -42,7 +42,7 @@ class ConfirmHandler implements RequestHandlerInterface
         $nextRoute = $this->getNextRoute($detailsData);
 
         if ($request->getMethod() === 'POST') {
-            if ($formData['confirm_alt'] === 'confirmed') {
+            if (($formData['confirm_alt'] ?? null) === 'confirmed') {
                 return $this->routeHelper->toRedirect($nextRoute, ['uuid' => $uuid]);
             }
 

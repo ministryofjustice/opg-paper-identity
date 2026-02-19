@@ -19,7 +19,7 @@
             </div>
         </div>
     {% endif %}
-    {% if lpa_response %}
+    {% if lpa_response is defined %}
         {% if lpa_response['messages']|length > 0 %}
 
             {% for key,message in lpa_response['messages'] %}
@@ -32,7 +32,7 @@
                         </p>
                         <p>{{ message|raw }}</p>
 
-                        {% if lpa_response['additionalData'][key] %}
+                        {% if lpa_response['additionalData'][key] is defined %}
                             <br><br>This ID check is for:
                             <table class="govuk-table govuk-!-width-one-half">
                                 <tr class="govuk-table__row">
@@ -81,7 +81,7 @@
             <input type="submit" class="govuk-button" value="Find LPA">
         </form>
 
-        {% if lpa_response %}
+        {% if lpa_response is defined %}
             {%  if lpa_response.status != 'Not Found' %}
             <div class="govuk-form-group">
                 <table class="govuk-table govuk-!-width-two-thirds">
@@ -176,7 +176,7 @@
             {% endif %}
         {% endif %}
     </div>
-    {% if lpa_response %}
+    {% if lpa_response is defined %}
         <form method="POST">
             {% if lpa_response['messages']|length == 0 %}
                 <input type="hidden" name="add_lpa_number" value="{{ lpa_response['data']['lpa_number'] }}">
