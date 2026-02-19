@@ -128,7 +128,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/post-office-documents", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/post_office_documents');
+        $this->assertMatchedRouteName('post_office_documents');
     }
 
     #[DataProvider('postOfficeDocumnentsRedirectData')]
@@ -177,7 +177,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/post-office-what-happens-next", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/po_what_happens_next');
+        $this->assertMatchedRouteName('po_what_happens_next');
     }
 
     public function testRouteNotAvailableData(): void
@@ -193,7 +193,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/post-office-route-not-available", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/post_office_route_not_available');
+        $this->assertMatchedRouteName('post_office_route_not_available');
     }
 
     public function testChooseCountryPage(): void
@@ -209,7 +209,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/po-choose-country", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/po_choose_country');
+        $this->assertMatchedRouteName('po_choose_country');
 
         $this->assertQueryContentContains('[name="idCountry"] > option[value="AUT"]', 'Austria');
         $this->assertQueryCount('[name="idCountry"] > option[value="GBR"]', 0);
@@ -238,7 +238,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/po-choose-country-id", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/po_choose_country_id');
+        $this->assertMatchedRouteName('po_choose_country_id');
     }
 
     public function testPostOfficeCountriesIdEmptyPostErrorPage(): void
@@ -264,9 +264,9 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/po-choose-country-id", 'POST', []);
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/po_choose_country_id');
+        $this->assertMatchedRouteName('po_choose_country_id');
 
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
 
         $this->assertStringContainsString('Please choose a type of document', $response);
     }
@@ -288,9 +288,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
             ['docType' => 'NOT_A_DOCUMENT_TYPE']
         );
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/po_choose_country_id');
-
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
 
         $this->assertStringContainsString('This document code is not recognised', $response);
     }
@@ -352,7 +350,7 @@ class PostOfficeFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/find-post-office-branch", "GET");
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/find_post_office_branch');
+        $this->assertMatchedRouteName('find_post_office_branch');
         $this->assertQuery("input#postoffice-1234567[value='$poOne']");
         $this->assertQueryContentContains('span#poAddress-1234567', '1 Fake Street, Faketown, FA1 2KE');
         $this->assertQuery("input#postoffice-7654321[value='$poTwo']");

@@ -39,7 +39,7 @@ class ChooseCountryHandler implements RequestHandlerInterface
 
             $this->opgApiService->updateIdMethod($uuid, $formData);
 
-            return $this->routeHelper->toRedirect("root/po_choose_country_id", ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect("po_choose_country_id", ['uuid' => $uuid]);
         }
 
         $countriesData = PostOfficeCountry::cases();

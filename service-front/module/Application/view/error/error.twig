@@ -1,6 +1,6 @@
-{% extends "layout/layout" %}
+{% extends "@layout/layout.twig" %}
 {% block content %}
-{% if exception.statusCode == 404 %}
+{% if status == 404 %}
   <h1 class="govuk-heading-l">Page not found</h1>
   <p class="govuk-body">
     If you typed the web address, check it is correct.
@@ -11,25 +11,25 @@
   <p class="govuk-body">
     Please use your browser to go back to the previous page, or return to the <a class="govuk-link" href="{{ SIRIUS_PUBLIC_URL }}">Sirius homepage</a>.
   </p>
-{% elseif exception.statusCode == 400 %}
+{% elseif status == 400 %}
   <h1 class="govuk-heading-l">Invalid request</h1>
   <p class="govuk-body">
-    {{ exception.message }}
+    {{ reason }}
   </p>
 {% else %}
   <h1 class="govuk-heading-l">An error occurred</h1>
-  <p class="govuk-body">{{ message }}</p>
+  <p class="govuk-body">{{ reason }}</p>
 {% endif %}
 
 {% if DEBUG %}
   <h2 class="govuk-heading-m">Debug information</h2>
-  <p class="govuk-body"><strong>Internal error:</strong> {{ exception.message }}</p>
+  <p class="govuk-body"><strong>Internal error:</strong> {{ error.message }}</p>
   <details class="govuk-details">
     <summary class="govuk-details__summary">
       <span class="govuk-details__summary-text">Full details and trace</span>
     </summary>
     <div class="govuk-details__text">
-      <pre>{{ dump(exception) }}</pre>
+      <pre>{{ dump(error) }}</pre>
     </div>
   </details>
 {% endif %}

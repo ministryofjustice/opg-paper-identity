@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Application\Services\Logging;
 
-use Laminas\Http\Request as HttpRequest;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\LogRecord;
+use Psr\Http\Message\RequestInterface;
 
 class OpgFormatter extends NormalizerFormatter
 {
-    private ?HttpRequest $request = null;
+    private ?RequestInterface $request = null;
 
-    public function setRequest(?HttpRequest $request): void
+    public function setRequest(?RequestInterface $request): void
     {
         $this->request = $request;
     }

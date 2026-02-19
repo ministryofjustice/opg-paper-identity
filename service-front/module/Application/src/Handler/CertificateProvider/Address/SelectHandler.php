@@ -60,7 +60,7 @@ class SelectHandler implements RequestHandlerInterface
                 $this->opgApiService->updateCaseProfessionalAddress($uuid, $existingAddress);
             }
 
-            return $this->routeHelper->toRedirect('root/cp_enter_address_manual', ['uuid' => $uuid]);
+            return $this->routeHelper->toRedirect('cp_enter_address_manual', ['uuid' => $uuid]);
         }
 
         return new HtmlResponse($this->renderer->render(

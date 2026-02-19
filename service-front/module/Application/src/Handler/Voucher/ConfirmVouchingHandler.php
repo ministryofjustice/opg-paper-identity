@@ -10,7 +10,7 @@ use Application\Forms\ConfirmVouching;
 use Application\Helpers\RouteHelper;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
-use Laminas\Router\RouteStackInterface;
+use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,7 +23,7 @@ class ConfirmVouchingHandler implements RequestHandlerInterface
     public function __construct(
         private readonly OpgApiServiceInterface $opgApiService,
         private readonly RouteHelper $routeHelper,
-        private readonly RouteStackInterface $routeStack,
+        private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
     ) {
     }
@@ -40,14 +40,14 @@ class ConfirmVouchingHandler implements RequestHandlerInterface
             $validity = $form->isValid();
 
             if ($form->get('tryDifferent')->getValue()) {
-                $startUrl = $this->routeStack->assemble([], ['name' => 'root/start'])
+                $startUrl = $this->router->generateUri('start')
                     . "?personType=donor&lpas[]=" . implode("&lpas[]=", $detailsData['lpas']);
 
                 return new RedirectResponse($startUrl);
             }
 
             if ($validity) {
-                return $this->routeHelper->toRedirect("root/how_will_you_confirm", ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect("how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
 

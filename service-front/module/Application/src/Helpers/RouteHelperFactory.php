@@ -6,8 +6,8 @@ namespace Application\Helpers;
 
 use Application\Exceptions\StartupException;
 use Application\Helpers\RouteHelper;
-use Laminas\Router\RouteStackInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Mezzio\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 
 class RouteHelperFactory implements FactoryInterface
@@ -29,7 +29,7 @@ class RouteHelperFactory implements FactoryInterface
         }
 
         return new RouteHelper(
-            $container->get(RouteStackInterface::class),
+            $container->get(RouterInterface::class),
             $siriusPublicUrl,
         );
     }

@@ -1,4 +1,4 @@
-{% extends "layout/layout" %}
+{% extends "@layout/layout.twig" %}
 
 {% block beforeMain %}
     {% include 'layout/id_check_banner.twig' with details_data %}
@@ -67,7 +67,7 @@
                         <label class="govuk-label govuk-radios__label" for="PASSPORT">UK passport (up to 18 months expired)
 
                             <details
-                                    class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
+                                    class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-0" {% if details_open|default(false) %} open {% endif %}>
                                 <summary class="govuk-details__summary">
                                 <span class="govuk-details__summary-text">
                                     Help with checking if passport is in date

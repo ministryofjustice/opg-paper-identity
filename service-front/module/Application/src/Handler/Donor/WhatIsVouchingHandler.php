@@ -40,9 +40,9 @@ class WhatIsVouchingHandler implements RequestHandlerInterface
                 $this->opgApiService->sendIdentityCheck($uuid);
                 $this->sendNoteHelper->sendBlockedRoutesNote($detailsData, $request);
 
-                return $this->routeHelper->toRedirect("root/vouching_what_happens_next", ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect("vouching_what_happens_next", ['uuid' => $uuid]);
             } else {
-                return $this->routeHelper->toRedirect("root/how_will_you_confirm", ['uuid' => $uuid]);
+                return $this->routeHelper->toRedirect("how_will_you_confirm", ['uuid' => $uuid]);
             }
         }
 

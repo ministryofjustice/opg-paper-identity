@@ -1,4 +1,4 @@
-{% extends "layout/layout" %}
+{% extends "@layout/layout.twig" %}
 
 {% block beforeMain %}
     {% include 'layout/id_check_banner.twig' with details_data %}
@@ -130,7 +130,7 @@
                                 UK Passport (current or expired in the last 18 months)
 
                                 <details
-                                        class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open %} open {% endif %}>
+                                        class="govuk-details govuk-!-margin-top-4 govuk-!-margin-bottom-0" {% if details_open|default(false) %} open {% endif %}>
                                     <summary class="govuk-details__summary">
                                         <span class="govuk-details__summary-text">
                                             Check if you're able to use an expired passport
@@ -192,7 +192,7 @@
                                                 </button>
                                             </div>
 
-                                            {% if invalid_date %}
+                                            {% if invalid_date|default(false) %}
                                                 <div class="govuk-date-input__item">
                                                     <div
                                                             class="moj-alert moj-alert--warning moj-alert--date app-moj-alert"
@@ -219,7 +219,7 @@
                                                 </div>
                                             {% endif %}
 
-                                            {% if valid_date %}
+                                            {% if valid_date|default(false) %}
                                                 <div class="govuk-date-input__item">
                                                     <div
                                                             class="moj-alert moj-alert--success moj-alert--date app-moj-alert"

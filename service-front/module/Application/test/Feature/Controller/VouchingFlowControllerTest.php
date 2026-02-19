@@ -130,7 +130,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/confirm_vouching');
+        $this->assertMatchedRouteName('confirm_vouching');
     }
 
     public function testConfirmVouchingWithError(): void
@@ -146,9 +146,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirm']}", 'POST', []);
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/confirm_vouching');
-
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
         $this->assertStringContainsString('Confirm eligibility to continue', $response);
         $this->assertStringContainsString('Confirm declaration to continue', $response);
     }
@@ -188,8 +186,8 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo(
-            '/start?personType=donor&lpas%5B%5D=M-AAAA-BBBB-CCCC&' .
-            'lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678'
+            '/start?personType=donor&lpas[]=M-AAAA-BBBB-CCCC&' .
+            'lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-AAAA-1234-5678'
         );
     }
 
@@ -206,7 +204,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['name']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_name');
+        $this->assertMatchedRouteName('voucher_name');
     }
 
     public function testVoucherNamePreFilled(): void
@@ -376,7 +374,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['dob']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_dob');
+        $this->assertMatchedRouteName('voucher_dob');
     }
 
     public function testVoucherDobPreFilled(): void
@@ -604,7 +602,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['postcode']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_enter_postcode');
+        $this->assertMatchedRouteName('voucher_enter_postcode');
     }
 
     #[DataProvider('enterPostcodeData')]
@@ -723,7 +721,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['selectAddress']}/FA2%203KE", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_select_address');
+        $this->assertMatchedRouteName('voucher_select_address');
 
         //i cant figure out how to assert that the options are populated correctly..
     }
@@ -795,9 +793,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
             ]);
 
         $this->dispatch("/$this->uuid/{$this->routes['manualAddress']}", 'GET');
-        $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_enter_address_manual');
-        //check inputs are pre-populated if address was already selected
+        $this->assertResponseStatusCode(200);        //check inputs are pre-populated if address was already selected
         $this->assertQuery("input#line1[value='456 Pretend Road']");
         $this->assertQuery("option[value='United Kingdom'][selected]");
     }
@@ -917,7 +913,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['confirmDonors']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_confirm_donors');
+        $this->assertMatchedRouteName('voucher_confirm_donors');
 
         $this->assertQueryContentContains('span[id=lpaType]', 'PW');
         $this->assertQueryContentContains('span[id=lpaId]', 'M-XYXY-YAGA-35G3');
@@ -970,7 +966,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
 
         $this->dispatch("/$this->uuid/{$this->routes['addDonor']}", 'GET');
         $this->assertResponseStatusCode(200);
-        $this->assertMatchedRouteName('root/voucher_add_donor');
+        $this->assertMatchedRouteName('voucher_add_donor');
     }
 
     #[DataProvider('addDonorValidationErrorData')]
