@@ -11,6 +11,6 @@ class ConfigProvider
      */
     public function __invoke(): array
     {
-        return require(__DIR__ . '/../config/module.config.php');
+        return require __DIR__ . '/../config/module.config.php';
     }
 }
