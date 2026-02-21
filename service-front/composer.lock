@@ -9530,16 +9530,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.10",
+            "version": "12.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1686e30f6b32d35592f878a7f56fd0421d7d56c5"
+                "reference": "89d94361ae5bc3244e7e769ee65267b2e4976749"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1686e30f6b32d35592f878a7f56fd0421d7d56c5",
-                "reference": "1686e30f6b32d35592f878a7f56fd0421d7d56c5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/89d94361ae5bc3244e7e769ee65267b2e4976749",
+                "reference": "89d94361ae5bc3244e7e769ee65267b2e4976749",
                 "shasum": ""
             },
             "require": {
@@ -9608,7 +9608,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.10"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.13"
             },
             "funding": [
                 {
@@ -9632,7 +9632,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-08T07:06:48+00:00"
+            "time": "2026-02-18T08:58:58+00:00"
         },
         {
             "name": "psalm/plugin-phpunit",
