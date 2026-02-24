@@ -81,7 +81,7 @@ jobs:
   trivy_scan:
     needs: [docker_build]
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - ecr_repository: paper-identity/api
