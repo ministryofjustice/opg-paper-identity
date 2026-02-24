@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\Middleware\AuthMiddleware as AuthListener;
+use Application\Middleware\AuthMiddleware;
 use Application\Middleware\LoggerMiddleware;
 use Laminas\Stratigility\Middleware\ErrorHandler;
 use Mezzio\Application;
@@ -33,7 +33,7 @@ return function (Application $app,): void {
     $app->pipe(UrlHelperMiddleware::class);
 
     // Authentication
-    $app->pipe(AuthListener::class);
+    $app->pipe(AuthMiddleware::class);
 
     // Dispatch the request
     $app->pipe(DispatchMiddleware::class);

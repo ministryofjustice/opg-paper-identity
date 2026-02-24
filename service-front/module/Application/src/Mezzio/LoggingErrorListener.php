@@ -9,8 +9,6 @@ use Throwable;
 
 class LoggingErrorListener
 {
-    public const LOG_FORMAT = '%d [%s] %s: %s';
-
     public function __construct(private readonly LoggerInterface $logger)
     {
     }
