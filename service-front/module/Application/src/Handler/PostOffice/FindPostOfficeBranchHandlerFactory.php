@@ -26,7 +26,7 @@ class FindPostOfficeBranchHandlerFactory implements FactoryInterface
         ?array $options = null
     ): FindPostOfficeBranchHandler {
         /** @var array{"opg_settings": array{"identity_documents": array<string, string>}} $config */
-        $config = $container->get('Config');
+        $config = $container->get('config');
 
         return new FindPostOfficeBranchHandler(
             $container->get(OpgApiServiceInterface::class),

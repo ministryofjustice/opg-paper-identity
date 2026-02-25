@@ -59,7 +59,6 @@ RUN composer check-platform-reqs &&\
 VOLUME ["/var/www/public"]
 COPY --chown=www-data:www-data --chmod=755 public public
 COPY --chown=www-data:www-data --chmod=755 --from=asset-env /app/public public
-COPY --chown=www-data:www-data --chmod=755 config/autoload config/autoload
 COPY --chown=www-data:www-data --chmod=755 config/*.php config/
 COPY --chown=www-data:www-data --chmod=755 module module
 

@@ -148,7 +148,7 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
         $this->assertResponseStatusCode(200);
         $this->assertMatchedRouteName('confirm_vouching');
 
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
         $this->assertStringContainsString('Confirm eligibility to continue', $response);
         $this->assertStringContainsString('Confirm declaration to continue', $response);
     }
@@ -188,8 +188,8 @@ class VouchingFlowControllerTest extends BaseControllerTestCase
         ]);
         $this->assertResponseStatusCode(302);
         $this->assertRedirectTo(
-            '/start?personType=donor&lpas%5B%5D=M-AAAA-BBBB-CCCC&' .
-            'lpas%5B%5D=M-XYXY-YAGA-35G3&lpas%5B%5D=M-AAAA-1234-5678'
+            '/start?personType=donor&lpas[]=M-AAAA-BBBB-CCCC&' .
+            'lpas[]=M-XYXY-YAGA-35G3&lpas[]=M-AAAA-1234-5678'
         );
     }
 

@@ -11,8 +11,8 @@ use OpenTelemetry\Aws\Ecs\Detector;
 use OpenTelemetry\Aws\Xray\Propagator;
 use OpenTelemetry\SDK\Registry;
 use Telemetry\Instrumentation\Guzzle;
-use Telemetry\Instrumentation\Laminas;
 use Telemetry\Instrumentation\Logger;
+use Telemetry\Instrumentation\PSR15Handler;
 
 /**
  * @psalm-suppress UnusedClass
@@ -25,7 +25,7 @@ class Tracer
         Registry::registerResourceDetector('aws', new Detector(new DataProvider(), new Client(), new HttpFactory()));
 
         Guzzle::register();
-        Laminas::register();
+        PSR15Handler::register();
         Logger::register();
     }
 }

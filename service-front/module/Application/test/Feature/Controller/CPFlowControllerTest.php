@@ -236,7 +236,7 @@ class CPFlowControllerTest extends BaseControllerTestCase
         $this->assertResponseStatusCode(200);
         $this->assertMatchedRouteName('cp_enter_postcode');
 
-        $response = $this->getResponse()->getContent();
+        $response = strval($this->getResponse()->getBody());
         $this->assertStringContainsString(AddressProcessorHelper::ERROR_POSTCODE_NOT_FOUND, $response);
     }
 }

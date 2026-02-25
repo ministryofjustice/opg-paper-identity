@@ -12,7 +12,6 @@ use Application\Exceptions\OpgApiException;
 use Application\Helpers\AddressProcessorHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
-use Laminas\Http\Response;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -65,10 +64,10 @@ class OpgApiService implements OpgApiServiceInterface
                 'json' => $data,
             ]);
 
-            $this->responseStatus = Response::STATUS_CODE_200;
+            $this->responseStatus = 200;
             $this->responseData = json_decode($response->getBody()->getContents(), true) ?? [];
 
-            if ($response->getStatusCode() !== Response::STATUS_CODE_200) {
+            if ($response->getStatusCode() !== 200) {
                 throw new OpgApiException($response->getReasonPhrase());
             }
 

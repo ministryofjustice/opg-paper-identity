@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    {% if (match or form.get('date').messages) %}
+    {% if (match is defined or form.get('date').messages) %}
             <div class="govuk-error-summary" data-module="govuk-error-summary">
             <div role="alert">
                 <h2 class="govuk-error-summary__title">
@@ -37,7 +37,7 @@
     {% endif %}
 
     <form method="POST">
-        {% if (displaying_dob_100_warning) %}
+        {% if (displaying_dob_100_warning|default(false)) %}
             <input type="hidden" name="dob_warning_100_accepted" value="true"/>
         {% endif %}
         <div class="govuk-form-group">
@@ -50,7 +50,7 @@
                     </h1>
                 </legend>
 
-                {% if (include_fraud_id_check_info) %}
+                {% if (include_fraud_id_check_info|default(false)) %}
                     <p class="govuk-body govuk-!-width-two-thirds">
                         To perform the fraud and identity checks we need some additional
                         information including date of birth. We do not hold the certificate provider's
@@ -135,7 +135,7 @@
                     </div>
                 </div>
 
-                {% if (displaying_dob_100_warning) %}
+                {% if (displaying_dob_100_warning|default(false)) %}
                     <br/>
                     <div class="moj-alert moj-alert--information" role="region" aria-label="information">
                         <svg class="moj-alert__icon" fill="currentColor" role="presentation" focusable="false"

@@ -6,15 +6,12 @@
  * It also adds the Laminas Developer Tools to show profiling information
  * at the bottom of the page.
  */
+
+declare(strict_types=1);
+
+use Laminas\ConfigAggregator\ConfigAggregator;
+
 return [
-    // Additional modules to include when in development mode
-    'modules' => [
-        //'Laminas\DeveloperTools'
-    ],
-    // Configuration overrides during development mode
-    'module_listener_options' => [
-        'config_glob_paths' => [__DIR__ . '/autoload/{,*.}{global,local}-development.php'],
-        'config_cache_enabled' => false,
-        'module_map_cache_enabled' => false,
-    ],
+    'debug' => true,
+    ConfigAggregator::ENABLE_CACHE => false,
 ];
