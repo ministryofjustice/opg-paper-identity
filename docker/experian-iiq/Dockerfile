@@ -1,4 +1,4 @@
-FROM outofcoffee/imposter:4.9.0@sha256:d28ed1a752392454aad04443a72161fd28c36f271e04379b2a185798e8cbf10d
+FROM outofcoffee/imposter-distroless:4.9.0@sha256:28cf00475da841086c16281b2230d6f464c9962d745b5b740fb24ab089fffdec
 
 HEALTHCHECK --interval=5s --timeout=10s --start-period=2s --retries=10 \
     CMD ["imposter", "list", "-x" ]
