@@ -16,4 +16,8 @@ RUN apk upgrade --no-cache zlib
 HEALTHCHECK --interval=5s --timeout=10s --start-period=2s --retries=10 \
     CMD wget -O /dev/null -S 'http://0.0.0.0:8080/api/v1/healthcheck' 2>&1 | grep 'HTTP/1.1 200 OK' || exit 1
 
+RUN chown -R node:node /usr/src/prism 
+
+USER node
+
 CMD [ "node", "./node_modules/@stoplight/prism-cli/dist/index.js", "mock", "-h", "0.0.0.0", "-p", "8080", "-d", "/usr/src/prism/openapi.yml" ]
