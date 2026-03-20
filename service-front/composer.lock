@@ -775,16 +775,16 @@
         },
         {
             "name": "laminas/laminas-cli",
-            "version": "1.14.0",
+            "version": "1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-cli.git",
-                "reference": "e8e02de142059ea25f84ccd5386c74a026198adb"
+                "reference": "926a884548a5ff078128ffa3fe9381cd0a4ae8c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-cli/zipball/e8e02de142059ea25f84ccd5386c74a026198adb",
-                "reference": "e8e02de142059ea25f84ccd5386c74a026198adb",
+                "url": "https://api.github.com/repos/laminas/laminas-cli/zipball/926a884548a5ff078128ffa3fe9381cd0a4ae8c4",
+                "reference": "926a884548a5ff078128ffa3fe9381cd0a4ae8c4",
                 "shasum": ""
             },
             "require": {
@@ -841,7 +841,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2026-02-19T16:20:14+00:00"
+            "time": "2026-03-10T09:04:36+00:00"
         },
         {
             "name": "laminas/laminas-component-installer",
@@ -8632,16 +8632,16 @@
         },
         {
             "name": "psalm/plugin-phpunit",
-            "version": "0.19.5",
+            "version": "0.19.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-phpunit.git",
-                "reference": "143f9d5e049fffcdbc0da3fbb99f6149f9d3e2dc"
+                "reference": "ed7b87080910aad237d652674768a64fc1c80b78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/143f9d5e049fffcdbc0da3fbb99f6149f9d3e2dc",
-                "reference": "143f9d5e049fffcdbc0da3fbb99f6149f9d3e2dc",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-phpunit/zipball/ed7b87080910aad237d652674768a64fc1c80b78",
+                "reference": "ed7b87080910aad237d652674768a64fc1c80b78",
                 "shasum": ""
             },
             "require": {
@@ -8684,9 +8684,9 @@
             "description": "Psalm plugin for PHPUnit",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-phpunit/issues",
-                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/0.19.5"
+                "source": "https://github.com/psalm/psalm-plugin-phpunit/tree/0.19.6"
             },
-            "time": "2025-03-31T18:49:55+00:00"
+            "time": "2025-04-01T09:10:55+00:00"
         },
         {
             "name": "revolt/event-loop",
