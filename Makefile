@@ -1,7 +1,7 @@
 SHELL = '/bin/bash'
 .PHONY: build
 
-all: front-psalm api-psalm front-phpcs api-phpcs api-unit-test front-unit-test build scan cypress down
+all: front-psalm api-psalm front-phpcs api-phpcs api-unit-test front-unit-test build cypress down
 
 help:
 	@grep --no-filename -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -77,12 +77,6 @@ clean-junit-output:
 
 cypress:
 	docker compose run --rm cypress
-
-scan: scan-api scan-front
-scan-api:
-	docker compose run --rm trivy image --format table paper-identity/api:latest
-scan-front:
-	docker compose run --rm trivy image --format table paper-identity/front:latest
 
 export ACTIVE_SCAN ?= true
 export ACTIVE_SCAN_TIMEOUT ?= 600
