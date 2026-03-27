@@ -20,4 +20,3 @@ build
 .psalm-cache
 # vendor files
 node_modules
-.trivy-cache

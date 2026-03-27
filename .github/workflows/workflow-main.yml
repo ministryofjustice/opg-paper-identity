@@ -49,6 +49,7 @@ jobs:
     secrets:
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      snyk_opg_org_token: ${{ secrets.SNYK_OPG_ORG_TOKEN }}
 
   test:
     name: Test

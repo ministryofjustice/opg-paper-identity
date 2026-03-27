@@ -12,6 +12,7 @@
   ],
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
+  "minimumReleaseAge": "7 days",
   "packageRules": [
     {
       "description": [
@@ -34,7 +35,6 @@
         "minor",
         "patch"
       ],
-      "minimumReleaseAge": "3 days",
       "schedule": [
         "on sunday"
       ],
@@ -49,7 +49,6 @@
       "groupSlug": "github-minor-patch-updates",
       "matchUpdateTypes": ["minor", "patch"],
       "prPriority": 2,
-      "minimumReleaseAge": "3 days",
       "schedule": ["on sunday"],
       "commitMessageSuffix": " #patch",
       "matchPackageNames": ["*"],
@@ -60,8 +59,7 @@
     "schedule": [
       "on sunday"
     ],
-    "commitMessageSuffix": " #minor",
-    "minimumReleaseAge": "3 days"
+    "commitMessageSuffix": " #minor"
   },
   "vulnerabilityAlerts": {
     "groupName": "Security Alerts",

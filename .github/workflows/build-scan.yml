@@ -15,6 +15,9 @@ on:
       aws_secret_access_key:
         description: 'AWS Secret Access Key for ECR'
         required: true
+      snyk_opg_org_token:
+        description: 'Snyk token for OPG organization'
+        required: true
 
 defaults:
   run:
@@ -78,7 +81,7 @@ jobs:
       build_path: ${{ matrix.context }}
       build_options: ${{ matrix.build_options }}
 
-  trivy_scan:
+  snyk_scan:
     needs: [docker_build]
     strategy:
       fail-fast: false
@@ -134,22 +137,16 @@ jobs:
         uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
         with:
           registries: 311462405659
-      - name: Trivy Image Vulnerability Scanner for ${{ matrix.service_name }}
-        id: trivy_scan
-        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
-        env:
-          TRIVY_DB_REPOSITORY: ${{ steps.login_ecr.outputs.registry }}/trivy-db-public-ecr/aquasecurity/trivy-db:2
-          TRIVY_JAVA_DB_REPOSITORY: ${{ steps.login_ecr.outputs.registry }}/trivy-db-public-ecr/aquasecurity/trivy-java-db:1
+      - name: Snyk Scan
+        uses: ministryofjustice/opg-github-actions/actions/snyk-scan@8dea82fc8b8e7ffca431f0fb83848d523147ccd8 # v4.5.0
         with:
-          version: v0.69.2
-          image-ref: ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest
-          severity: "HIGH,CRITICAL"
-          format: "sarif"
-          output: "trivy-results-${{ matrix.service_name }}.sarif"
-          vuln-type: 'os,library'
-      - name: Upload Trivy scan results to GitHub Security tab for  ${{ matrix.service_name }}
-        id: trivy_upload_sarif
+          SNYK_TEST_IMAGE: ${{ steps.login_ecr.outputs.registry }}/${{ matrix.ecr_repository }}:latest
+          SNYK_TOKEN: ${{ secrets.snyk_opg_org_token }}
+          sarif_filename: ${{ matrix.service_name }}.sarif
+
+      - name: Upload Snyk scan results to GitHub Security tab for  ${{ matrix.service_name }}
+        id: snyk_upload_sarif
         uses: github/codeql-action/upload-sarif@0d579ffd059c29b07949a3cce3983f0780820c98 # v4.32.6
         if: ${{ matrix.service_name != 'yoti-mock' && !cancelled() }}
         with:
-          sarif_file: "trivy-results-${{ matrix.service_name }}.sarif"
+          sarif_file: "test-results/${{ matrix.service_name }}.sarif"
